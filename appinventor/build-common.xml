@@ -251,7 +251,7 @@
           <structure name="Coverage Report">
                <classfiles>
                     <fileset dir="${class.dir}">
-                         <exclude name="**/*.aix"/>
+                         <exclude name="**/*.aix"/> 
                     </fileset>
                </classfiles>
                <sourcefiles encoding="UTF-8">

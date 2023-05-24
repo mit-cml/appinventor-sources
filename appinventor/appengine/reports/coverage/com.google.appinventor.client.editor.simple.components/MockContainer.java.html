@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockContainer.java</span></div><h1>MockContainer.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.common.base.Preconditions;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Abstract superclass for all container mock components.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public abstract class MockContainer extends MockVisibleComponent implements DropTarget {
+
+  protected final MockLayout layout;
+
+  // List of components within the container
+  protected final List&lt;MockComponent&gt; children;
+
+  /**
+   * Directly contains the widgets corresponding to children MockComponents.
+   * &lt;p&gt;
+   * This should not be modified directly by implementations;
+   * use {@link #addComponent} and {@link #removeComponent} to make
+   * modifications.
+   * &lt;p&gt;
+   * This is a GWT absolute panel so that the {@link MockLayout} associated
+   * with this container can freely position and size children widgets as desired.
+   */
+  protected final AbsolutePanel rootPanel;
+
+  /**
+   * Creates a new component container.
+   * &lt;p&gt;
+   * Implementations are responsible for constructing their own visual appearance
+   * and calling {@link #initWidget(com.google.gwt.user.client.ui.Widget)}.
+   * This appearance should include {@link #rootPanel} so that children
+   * components are displayed correctly.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  MockContainer(SimpleEditor editor, String type, ImageResource icon,
+      MockLayout layout) {
+<span class="nc" id="L59">    super(editor, type, icon);</span>
+
+<span class="nc" id="L61">    this.layout = layout;</span>
+<span class="nc" id="L62">    layout.setContainer(this);</span>
+
+<span class="nc" id="L64">    children = new ArrayList&lt;MockComponent&gt;();</span>
+<span class="nc" id="L65">    rootPanel = new AbsolutePanel();</span>
+<span class="nc" id="L66">  }</span>
+
+  @Override
+  public List&lt;MockComponent&gt; getChildren() {
+<span class="nc" id="L70">    return children;</span>
+  }
+
+  @Override
+  public int getPreferredWidth() {
+<span class="nc" id="L75">    return layout.getLayoutWidth();</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+<span class="nc" id="L80">    return layout.getLayoutHeight();</span>
+  }
+
+  /**
+   * Returns the layout used by this container to position its components.
+   */
+  public final MockLayout getLayout() {
+<span class="nc" id="L87">    return layout;</span>
+  }
+
+  @Override
+  protected TreeItem buildTree() {
+<span class="nc" id="L92">    TreeItem itemNode = super.buildTree();</span>
+
+    // Recursively build the tree for child components
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    for (MockComponent child : children) {</span>
+<span class="nc" id="L96">      itemNode.addItem(child.buildTree());</span>
+<span class="nc" id="L97">    }</span>
+
+<span class="nc" id="L99">    itemNode.setState(expanded);</span>
+
+<span class="nc" id="L101">    return itemNode;</span>
+  }
+
+  @Override
+  public void collectTypesAndIcons(Map&lt;String, String&gt; typesAndIcons) {
+<span class="nc" id="L106">    super.collectTypesAndIcons(typesAndIcons);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">    for (MockComponent child : children) {</span>
+<span class="nc" id="L108">      child.collectTypesAndIcons(typesAndIcons);</span>
+<span class="nc" id="L109">    }</span>
+<span class="nc" id="L110">  }</span>
+
+  
+  /**
+   * Adds a new component to the end of this container.
+   *
+   * @param component  component to be added
+   */
+  public final void addComponent(MockComponent component) {
+<span class="nc" id="L119">    addComponent(component, -1);</span>
+<span class="nc" id="L120">  }</span>
+
+  /**
+   * Adds a new visible component to the container at the specified visible-index.
+   *
+   * @param component  visible component to be added
+   * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
+   *                            or {@code -1} to insert the component at the end
+   */
+  public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+<span class="nc" id="L130">    List&lt;MockComponent&gt; visibleChildren = getShowingVisibleChildren();</span>
+
+    int beforeActualIndex;
+<span class="nc bnc" id="L133" title="All 4 branches missed.">    if ((beforeVisibleIndex == -1) || (beforeVisibleIndex &gt;= visibleChildren.size())) {</span>
+      // Insert after last visible component
+<span class="nc bnc" id="L135" title="All 2 branches missed.">      if (visibleChildren.size() == 0) {</span>
+<span class="nc" id="L136">        beforeActualIndex = 0;</span>
+      } else {
+<span class="nc" id="L138">        beforeActualIndex = getChildren().indexOf(</span>
+<span class="nc" id="L139">            /* lastVisibleChild */ visibleChildren.get(visibleChildren.size() - 1)) + 1;</span>
+      }
+    } else {
+      // Insert before the specified visible component
+<span class="nc" id="L143">      beforeActualIndex = getChildren().indexOf(visibleChildren.get(beforeVisibleIndex));</span>
+    }
+
+<span class="nc" id="L146">    addComponent(component, beforeActualIndex);</span>
+<span class="nc" id="L147">  }</span>
+
+  /**
+   * Adds a new component to the container at the specified index.
+   *
+   * @param component  component to be added
+   * @param beforeIndex  index at which the inserted component will reside in the children,
+   *                     or {@code -1} to insert the component at the end
+   */
+  private void addComponent(MockComponent component, int beforeIndex) {
+    // Set the container to be the parent of the component
+<span class="nc" id="L158">    component.setContainer(this);</span>
+
+    // Add the component as a child component of the container
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (beforeIndex == -1) {</span>
+<span class="nc" id="L162">      children.add(component);</span>
+    } else {
+<span class="nc" id="L164">      children.add(beforeIndex, component);</span>
+    }
+
+    // Components with a visible representation require a re-layout of the container
+    // (note that non-visible components will only be added to the editor's non-visible components
+    // panel)
+<span class="nc bnc" id="L170" title="All 2 branches missed.">    if (component.isVisibleComponent()) {</span>
+      // NOTE: The order of widgets in the root panel does not necessarily
+      //       match the order of their associated children of this container
+<span class="nc" id="L173">      rootPanel.add(component);</span>
+<span class="nc" id="L174">      refreshForm();</span>
+    }
+
+<span class="nc" id="L177">    getForm().fireComponentAdded(component);</span>
+<span class="nc" id="L178">  }</span>
+
+  /**
+   * Removes a component from the container (assumes that component is a child
+   * component of the container).  If the component itself contains other
+   * components, we first ask for confirmation.
+   *
+   * @param component  component to be removed
+   * @param permanentlyDeleted true if the component is being permanently
+   *        deleted, false if the component is being moved from one container
+   *        to another container
+   */
+  public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
+    // Remove the component from the list of child components
+<span class="nc" id="L192">    children.remove(component);</span>
+
+    // Removal of components with a visible representation requires a re-layout of the container
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (component.isVisibleComponent()) {</span>
+<span class="nc" id="L196">      rootPanel.remove(component);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">      if (permanentlyDeleted) {</span>
+<span class="nc" id="L198">        refreshForm();</span>
+      }
+    } else {
+<span class="nc" id="L201">      editor.getNonVisibleComponentsPanel().removeComponent(component);</span>
+    }
+
+<span class="nc" id="L204">    getForm().fireComponentRemoved(component, permanentlyDeleted);</span>
+<span class="nc" id="L205">  }</span>
+
+  /**
+   * Returns the GWT root panel that displays the children of this container.
+   * &lt;p&gt;
+   * This method should only be called by layout managers.
+   */
+  final AbsolutePanel getRootPanel() {
+<span class="nc" id="L213">    return rootPanel;</span>
+  }
+
+  /**
+   * Sets the size and position of the child component within the container.
+   * Sizes and positions are given in pixels.
+   * &lt;p&gt;
+   * This method should only be called by layout managers.
+   *
+   * @param child  component to be sized and positioned
+   * @param childLayoutInfo the layout info for the child
+   * @param x  new relative x coordinate for the component
+   * @param y  new relative y coordinate for the component
+   */
+  final void setChildSizeAndPosition(MockComponent child, LayoutInfo childLayoutInfo,
+      int x, int y) {
+<span class="nc" id="L229">    child.setPixelSize(childLayoutInfo.width, childLayoutInfo.height);</span>
+    // Note that the actual size of the child will be larger than childLayoutInfo.width X
+    // childLayoutInfo.height because the actual size will include the CSS border.
+<span class="nc" id="L232">    rootPanel.setWidgetPosition(child, x, y);</span>
+<span class="nc" id="L233">  }</span>
+
+  // DropTarget implementation
+
+  @Override
+  public final Widget getDropTargetWidget() {
+<span class="nc" id="L239">    return getRootPanel();</span>
+  }
+
+  /**
+   * Indicates whether a component from the given source can be placed in
+   * this container.
+   *
+   * @param source
+   * @return true if the component is acceptable, false otherwise
+   */
+  protected boolean acceptableSource(DragSource source) {
+<span class="nc" id="L250">    MockComponent component = null;</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (source instanceof MockComponent) {</span>
+<span class="nc" id="L252">      component = (MockComponent) source;</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">    } else if (source instanceof SimplePaletteItem) {</span>
+<span class="nc" id="L254">      component = (MockComponent) source.getDragWidget();</span>
+    }
+<span class="nc bnc" id="L256" title="All 2 branches missed.">    if (component instanceof MockVisibleComponent) {</span>
+      // Sprites are only allowed on Canvas, not other containers.
+      // Map features are only allowed on Map, not other containers.
+      // Chart Data components are only allowed on Charts, not other containers.
+<span class="nc bnc" id="L260" title="All 6 branches missed.">      if (!(component instanceof MockSprite) &amp;&amp; !(component instanceof MockMapFeature)</span>
+              &amp;&amp; !(component instanceof MockChartData)) {
+<span class="nc" id="L262">        return true;</span>
+      }
+    }
+<span class="nc" id="L265">    return false;</span>
+  }
+
+  public boolean willAcceptComponentType(String type) {
+<span class="nc bnc" id="L269" title="All 4 branches missed.">    return !MockCanvas.ACCEPTABLE_TYPES.contains(type) &amp;&amp; !MockMap.ACCEPTABLE_TYPES.contains(type);</span>
+  }
+
+  // TODO(user): Draw a colored border around the edges of the container
+  //                    area while an eligible component is hovering over it.
+  @Override
+  public final boolean onDragEnter(DragSource source, int x, int y) {
+<span class="nc" id="L276">    boolean accept = acceptableSource(source);</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">    if (accept) {</span>
+<span class="nc" id="L278">      layout.onDragEnter(x, y);</span>
+    }
+<span class="nc" id="L280">    return accept;</span>
+  }
+
+  @Override
+  public final void onDragContinue(DragSource source, int x, int y) {
+<span class="nc" id="L285">    layout.onDragContinue(x, y);</span>
+<span class="nc" id="L286">  }</span>
+
+  @Override
+  public final void onDragLeave(DragSource source) {
+<span class="nc" id="L290">    layout.onDragLeave();</span>
+<span class="nc" id="L291">  }</span>
+
+  @Override
+  public final void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L295">    Preconditions.checkArgument(acceptableSource(source));</span>
+
+    MockComponent sourceComponent;
+<span class="nc bnc" id="L298" title="All 2 branches missed.">    if (source instanceof MockComponent) {</span>
+      // preexisting component already elsewhere in the form
+<span class="nc" id="L300">      sourceComponent = (MockComponent) source;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">    } else if (source instanceof SimplePaletteItem) {</span>
+      // new component generated by a palette item
+<span class="nc" id="L303">      sourceComponent = ((SimplePaletteItem) source).createMockComponent();</span>
+    } else {
+<span class="nc" id="L305">      throw new IllegalArgumentException();</span>
+    }
+
+<span class="nc bnc" id="L308" title="All 2 branches missed.">    if (layout.onDrop(sourceComponent, x, y, offsetX, offsetY)) {</span>
+<span class="nc" id="L309">      sourceComponent.select(null);</span>
+    }
+<span class="nc" id="L311">  }</span>
+
+  public List&lt;DropTarget&gt; getDropTargetsWithin() {
+<span class="nc" id="L314">    ArrayList&lt;DropTarget&gt; targets = new ArrayList&lt;DropTarget&gt;();</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    for (MockComponent child : children) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">      if (child instanceof MockContainer) {</span>
+<span class="nc" id="L317">        targets.addAll(((MockContainer) child).getDropTargetsWithin());</span>
+      }
+<span class="nc" id="L319">    }</span>
+<span class="nc" id="L320">    targets.add(this);</span>
+<span class="nc" id="L321">    return targets;</span>
+  }
+
+  @Override
+  public void delete() {
+    // Traverse list backwards to make removal easier
+<span class="nc bnc" id="L327" title="All 2 branches missed.">    for (int i = children.size() - 1; i &gt;= 0; --i) {</span>
+<span class="nc" id="L328">      MockComponent child = children.get(i);</span>
+
+      // Manually delete child component to ensure that it is
+      // completely removed from the Designer.
+<span class="nc" id="L332">      child.delete();</span>
+    }
+
+<span class="nc" id="L335">    super.delete();</span>
+<span class="nc" id="L336">  }</span>
+
+  @Override
+  LayoutInfo createLayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap) {
+<span class="nc" id="L340">    return layout.createContainerLayoutInfo(layoutInfoMap);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UploadServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">UploadServlet.java</span></div><h1>UploadServlet.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.server.util.CacheHeaders;
+import com.google.appinventor.server.util.CacheHeadersImpl;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.component.Component;
+import com.google.appinventor.shared.rpc.project.UserProject;
+
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet for uploading files.
+ *
+ */
+<span class="nc" id="L32">public class UploadServlet extends OdeServlet {</span>
+
+  /*
+   * URIs for upload requests are structured as follows:
+   *    /&lt;baseurl&gt;/upload/project/&lt;projectname&gt;}
+   *    /&lt;baseurl&gt;/upload/file/&lt;projectId&gt;/&lt;filePath&gt;
+   *    /&lt;baseurl&gt;/upload/userfile/&lt;filePath&gt;
+   */
+
+  // Constants for accessing split URI
+  /*
+   * Upload kind can be: &quot;project&quot;, &quot;file&quot;, or &quot;userfile&quot;.
+   * Constants for these are defined in ServerLayout.
+   */
+  private static final int UPLOAD_KIND_INDEX = 3;
+
+  // Constants used when upload kind is &quot;project&quot;.
+  private static final int PROJECT_TITLE_INDEX = 4;
+  private static final int SPLIT_LIMIT_PROJECT_SOURCE = 5;
+
+  // Constants used when upload kind is &quot;file&quot;.
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int PROJECT_ID_INDEX = 4;
+  private static final int FILE_PATH_INDEX = 5;
+  private static final int SPLIT_LIMIT_FILE = 6;
+
+  // Constants used when upload kind is &quot;userfile&quot;.
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int USERFILE_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_USERFILE = 5;
+
+  // Constants used when upload kind is &quot;component&quot;.
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int COMPONENT_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_COMPONENT = 5;
+
+
+  // Logging support
+<span class="nc" id="L70">  private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());</span>
+
+  // Object used to safely set cache headers in responses
+<span class="nc" id="L73">  private static final CacheHeaders CACHE_HEADERS = new CacheHeadersImpl();</span>
+
+  // Content type for response header (to avoid security vulnerabilities)
+  private static final String CONTENT_TYPE = &quot;text/html; charset=utf-8&quot;;
+
+<span class="nc" id="L78">  private final FileImporter fileImporter = new FileImporterImpl();</span>
+
+  @Override
+  public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+<span class="nc" id="L82">    setDefaultHeader(resp);</span>
+
+    UploadResponse uploadResponse;
+
+    try {
+<span class="nc" id="L87">      String uri = req.getRequestURI();</span>
+      // First, call split with no limit parameter.
+<span class="nc" id="L89">      String[] uriComponents = uri.split(&quot;/&quot;);</span>
+<span class="nc" id="L90">      String uploadKind = uriComponents[UPLOAD_KIND_INDEX];</span>
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">      if (uploadKind.equals(ServerLayout.UPLOAD_PROJECT)) {</span>
+<span class="nc" id="L93">        uriComponents = uri.split(&quot;/&quot;, SPLIT_LIMIT_PROJECT_SOURCE);</span>
+<span class="nc" id="L94">        String projectName = uriComponents[PROJECT_TITLE_INDEX];</span>
+        InputStream uploadedStream;
+        try {
+<span class="nc" id="L97">          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);</span>
+<span class="nc" id="L98">        } catch (Exception e) {</span>
+<span class="nc" id="L99">          throw CrashReport.createAndLogError(LOG, req, null, e);</span>
+<span class="nc" id="L100">        }</span>
+
+        try {
+<span class="nc" id="L103">          UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),</span>
+              projectName, uploadedStream);
+<span class="nc" id="L105">          String info = userProject.toString();</span>
+<span class="nc" id="L106">          uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0, info);</span>
+<span class="nc" id="L107">        } catch (FileImporterException e) {</span>
+<span class="nc" id="L108">          uploadResponse = e.uploadResponse;</span>
+<span class="nc" id="L109">        }</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      } else if (uploadKind.equals(ServerLayout.UPLOAD_FILE)) {</span>
+<span class="nc" id="L111">        uriComponents = uri.split(&quot;/&quot;, SPLIT_LIMIT_FILE);</span>
+<span class="nc" id="L112">        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);</span>
+<span class="nc" id="L113">        String fileName = uriComponents[FILE_PATH_INDEX];</span>
+        InputStream uploadedStream;
+        try {
+<span class="nc" id="L116">          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);</span>
+<span class="nc" id="L117">        } catch (Exception e) {</span>
+<span class="nc" id="L118">          throw CrashReport.createAndLogError(LOG, req, null, e);</span>
+<span class="nc" id="L119">        }</span>
+
+        try {
+<span class="nc" id="L122">          long modificationDate = fileImporter.importFile(userInfoProvider.getUserId(),</span>
+              projectId, fileName, uploadedStream);
+<span class="nc" id="L124">          uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, modificationDate);</span>
+<span class="nc" id="L125">        } catch (FileImporterException e) {</span>
+<span class="nc" id="L126">          uploadResponse = e.uploadResponse;</span>
+<span class="nc" id="L127">        }</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">      } else if (uploadKind.equals(ServerLayout.UPLOAD_USERFILE)) {</span>
+<span class="nc" id="L129">        uriComponents = uri.split(&quot;/&quot;, SPLIT_LIMIT_USERFILE);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (USERFILE_PATH_INDEX &gt;= uriComponents.length) {</span>
+<span class="nc" id="L131">          throw CrashReport.createAndLogError(LOG, req, null,</span>
+              new IllegalArgumentException(&quot;Missing user file path.&quot;));
+        }
+<span class="nc" id="L134">        String fileName = uriComponents[USERFILE_PATH_INDEX];</span>
+        InputStream uploadedStream;
+        try {
+<span class="nc" id="L137">          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);</span>
+<span class="nc" id="L138">        } catch (Exception e) {</span>
+<span class="nc" id="L139">          throw CrashReport.createAndLogError(LOG, req, null, e);</span>
+<span class="nc" id="L140">        }</span>
+
+<span class="nc" id="L142">        fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);</span>
+<span class="nc" id="L143">        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">      } else if (uploadKind.equals(ServerLayout.UPLOAD_COMPONENT)) {</span>
+<span class="nc" id="L145">        uriComponents = uri.split(&quot;/&quot;, SPLIT_LIMIT_COMPONENT);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (COMPONENT_PATH_INDEX &gt;= uriComponents.length) {</span>
+<span class="nc" id="L147">          throw CrashReport.createAndLogError(LOG, req, null,</span>
+              new IllegalArgumentException(&quot;Missing component file path.&quot;));
+        }
+
+        InputStream uploadedStream;
+        try {
+<span class="nc" id="L153">          uploadedStream = getRequestStream(req,</span>
+              ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
+<span class="nc" id="L155">        } catch (Exception e) {</span>
+<span class="nc" id="L156">          throw CrashReport.createAndLogError(LOG, req, null, e);</span>
+<span class="nc" id="L157">        }</span>
+
+<span class="nc" id="L159">        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,</span>
+<span class="nc" id="L160">          fileImporter.importTempFile(uploadedStream));</span>
+<span class="nc" id="L161">      } else {</span>
+<span class="nc" id="L162">        throw CrashReport.createAndLogError(LOG, req, null,</span>
+            new IllegalArgumentException(&quot;Unknown upload kind: &quot; + uploadKind));
+      }
+
+      // Now, get the PrintWriter for the servlet response and print the UploadResponse.
+      // On the client side, in the onSubmitComplete method in ode/client/utils/Uploader.java, the
+      // UploadResponse value will be retrieved as a String via the
+      // FormSubmitCompleteEvent.getResults() method.
+<span class="nc" id="L170">      PrintWriter out = resp.getWriter();</span>
+<span class="nc" id="L171">      out.print(uploadResponse.formatAsHtml());</span>
+
+<span class="nc" id="L173">    } catch (IOException e) {</span>
+<span class="nc" id="L174">      throw CrashReport.createAndLogError(LOG, req, null, e);</span>
+<span class="nc" id="L175">    }</span>
+
+    // Set http response information
+<span class="nc" id="L178">    resp.setStatus(HttpServletResponse.SC_OK);</span>
+<span class="nc" id="L179">  }</span>
+
+  private InputStream getRequestStream(HttpServletRequest req, String expectedFieldName)
+      throws Exception {
+<span class="nc" id="L183">    ServletFileUpload upload = new ServletFileUpload();</span>
+<span class="nc" id="L184">    FileItemIterator iterator = upload.getItemIterator(req);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+<span class="nc" id="L186">      FileItemStream item = iterator.next();</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">      if (item.getFieldName().equals(expectedFieldName)) {</span>
+<span class="nc" id="L188">        return item.openStream();</span>
+      }
+<span class="nc" id="L190">    }</span>
+
+<span class="nc" id="L192">    throw new IllegalArgumentException(&quot;Field &quot; + expectedFieldName + &quot; not found in upload&quot;);</span>
+  }
+
+  /**
+   * Set a default http header to avoid security vulnerabilities.
+   */
+  private static void setDefaultHeader(HttpServletResponse resp) {
+<span class="nc" id="L199">    CACHE_HEADERS.setNotCacheable(resp);</span>
+<span class="nc" id="L200">    resp.setContentType(CONTENT_TYPE);</span>
+<span class="nc" id="L201">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -543,6 +543,7 @@
 	"Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS": "<br/><i>Внимание:</i>&nbsp;Отчет о другой ошибке появится не ранее, чем через 5 секунд.",
 	"Blockly.Msg.REPL_NO_START_EMULATOR": "Невозможно запустить MIT AI Companion с эмулятором",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Перезагрузить",
 	"Blockly.Msg.REPL_OK_LOWER": "Ок",
 	"Blockly.Msg.REPL_PLUGGED_IN_Q": "Вы подключены?",
 	"Blockly.Msg.REPL_RUNTIME_ERROR": "Ошибка времени исполнения",

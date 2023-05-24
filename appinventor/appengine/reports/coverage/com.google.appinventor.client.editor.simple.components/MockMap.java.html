@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockMap.java</span></div><h1>MockMap.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.common.collect.Sets;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public final class MockMap extends MockContainer {
+  public static final String TYPE = &quot;Map&quot;;
+<span class="nc" id="L28">  public static final Set&lt;String&gt; ACCEPTABLE_TYPES = Collections.unmodifiableSet(Sets.newHashSet(MockMarker.TYPE, MockLineString.TYPE, MockPolygon.TYPE, MockRectangle.TYPE, MockCircle.TYPE, MockFeatureCollection.TYPE));</span>
+  protected static final String PROPERTY_NAME_LATITUDE = &quot;Latitude&quot;;
+  protected static final String PROPERTY_NAME_LONGITUDE = &quot;Longitude&quot;;
+  protected static final String PROPERTY_NAME_MAP_TYPE = &quot;MapType&quot;;
+  protected static final String PROPERTY_NAME_CENTER_FROM_STRING = &quot;CenterFromString&quot;;
+  protected static final String PROPERTY_NAME_ZOOM_LEVEL = &quot;ZoomLevel&quot;;
+  protected static final String PROPERTY_NAME_SHOW_COMPASS = &quot;ShowCompass&quot;;
+  protected static final String PROPERTY_NAME_SHOW_ZOOM = &quot;ShowZoom&quot;;
+  protected static final String PROPERTY_NAME_SHOW_USER = &quot;ShowUser&quot;;
+  protected static final String PROPERTY_NAME_ENABLE_ROTATION = &quot;EnableRotation&quot;;
+  protected static final String PROPERTY_NAME_SHOW_SCALE = &quot;ShowScale&quot;;
+  protected static final String PROPERTY_NAME_SCALE_UNITS = &quot;ScaleUnits&quot;;
+
+  /**
+   * The Widget wrapping the element where the map tiles will be rendered.
+   */
+  protected final AbsolutePanel mapWidget;
+
+  /**
+   * The JavaScript object representing the non-GWT maps renderer.
+   */
+  private JavaScriptObject mapInstance;
+
+  /**
+   * A JavaScript array containing the (1-indexed) tile layers used for maps.
+   */
+  private JavaScriptObject tileLayers;
+
+  /**
+   * Active base tile layer.
+   */
+  private JavaScriptObject baseLayer;
+
+  /**
+   * Set of event listeners that will be triggered on native map events.
+   */
+<span class="nc" id="L64">  private final Set&lt;MockMapEventListener&gt; listeners = new HashSet&lt;MockMapEventListener&gt;();</span>
+
+  // Settings for the internal maps component
+<span class="nc" id="L67">  private double latitude = 42.359144;</span>
+<span class="nc" id="L68">  private double longitude = -71.093612;</span>
+<span class="nc" id="L69">  private int zoomLevel = 13;</span>
+<span class="nc" id="L70">  private int selectedTileLayer = 1;</span>
+<span class="nc" id="L71">  private boolean zoomControl = false;</span>
+<span class="nc" id="L72">  private boolean compassEnabled = false;</span>
+<span class="nc" id="L73">  private boolean userLocationEnabled = false;</span>
+<span class="nc" id="L74">  private boolean showScale = false;</span>
+<span class="nc" id="L75">  private int scaleUnits = 1;</span>
+
+  public MockMap(SimpleEditor editor) {
+<span class="nc" id="L78">    super(editor, TYPE, images.map(), new MockMapLayout());</span>
+<span class="nc" id="L79">    initToolbarItems();</span>
+
+<span class="nc" id="L81">    rootPanel.setHeight(&quot;100%&quot;);</span>
+
+<span class="nc" id="L83">    mapWidget = new AbsolutePanel();</span>
+<span class="nc" id="L84">    mapWidget.setStylePrimaryName(&quot;ode-SimpleMockContainer&quot;);</span>
+<span class="nc" id="L85">    mapWidget.add(rootPanel);</span>
+
+<span class="nc" id="L87">    initComponent(mapWidget);</span>
+<span class="nc" id="L88">    mapWidget.addAttachHandler(new AttachEvent.Handler() {</span>
+      @Override
+      public void onAttachOrDetach(AttachEvent arg0) {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (arg0.isAttached()) {</span>
+<span class="nc" id="L92">          initPanel();</span>
+<span class="nc" id="L93">          invalidateMap();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">          for (MockComponent child : children) {</span>
+<span class="nc" id="L95">            ((MockMapFeature) child).addToMap(MockMap.this);</span>
+<span class="nc" id="L96">          }</span>
+        }
+<span class="nc" id="L98">      }</span>
+    });
+<span class="nc" id="L100">  }</span>
+
+  @Override
+  public void collectTypesAndIcons(Map&lt;String, String&gt; typesAndIcons) {
+<span class="nc" id="L104">    super.collectTypesAndIcons(typesAndIcons);</span>
+    // These types can be loaded dynamically using LoadFromURL, so we want to show
+    // generic options even though the user might not have explicitly created one
+<span class="nc" id="L107">    typesAndIcons.put(&quot;Marker&quot;, new Image(images.marker()).getElement().getString());</span>
+<span class="nc" id="L108">    typesAndIcons.put(&quot;LineString&quot;, new Image(images.linestring()).getElement().getString());</span>
+<span class="nc" id="L109">    typesAndIcons.put(&quot;Polygon&quot;, new Image(images.polygon()).getElement().getString());</span>
+<span class="nc" id="L110">  }</span>
+
+  public void addEventListener(MockMapEventListener listener) {
+<span class="nc" id="L113">    listeners.add(listener);</span>
+<span class="nc" id="L114">  }</span>
+
+  public void removeEventListener(MockMapEventListener listener) {
+<span class="nc" id="L117">    listeners.remove(listener);</span>
+<span class="nc" id="L118">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+<span class="nc" id="L122">    return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+<span class="nc" id="L127">    return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;</span>
+  }
+
+  @Override
+  public void onBrowserEvent(Event event) {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (isUnlocked()) {</span>
+<span class="nc" id="L133">      setShouldCancel(event, false);</span>
+    } else {
+<span class="nc" id="L135">      super.onBrowserEvent(event);</span>
+    }
+<span class="nc" id="L137">  }</span>
+
+  @Override
+  protected boolean acceptableSource(DragSource source) {
+<span class="nc" id="L141">    MockComponent component = null;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (source instanceof MockComponent) {</span>
+<span class="nc" id="L143">      component = (MockComponent) source;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    } else if (source instanceof SimplePaletteItem) {</span>
+<span class="nc" id="L145">      component = (MockComponent) source.getDragWidget();</span>
+    }
+<span class="nc" id="L147">    return component instanceof MockMapFeature;</span>
+  }
+
+  @Override
+  public boolean willAcceptComponentType(String type) {
+<span class="nc" id="L152">    return ACCEPTABLE_TYPES.contains(type);</span>
+  }
+
+  private void setBackgroundColorProperty(String text) {
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L157">      text = &quot;&amp;HFFFFFFFF&quot;;</span>
+    }
+<span class="nc" id="L159">    MockComponentsUtil.setWidgetBackgroundColor(mapWidget, text);</span>
+<span class="nc" id="L160">  }</span>
+
+  private void setEnabledProperty(String text) {
+<span class="nc" id="L163">    MockComponentsUtil.setEnabled(this, text);</span>
+<span class="nc" id="L164">  }</span>
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L168">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L170" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_ENABLED)) {</span>
+<span class="nc" id="L171">      setEnabledProperty(newValue);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {</span>
+<span class="nc" id="L173">      setBackgroundColorProperty(newValue);</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_LATITUDE)) {</span>
+<span class="nc" id="L175">      setLatitude(newValue);</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_LONGITUDE)) {</span>
+<span class="nc" id="L177">      setLongitude(newValue);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {</span>
+<span class="nc" id="L179">      invalidateMap();</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L181">      invalidateMap();</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_MAP_TYPE)) {</span>
+<span class="nc" id="L183">      setMapType(newValue);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_CENTER_FROM_STRING)) {</span>
+<span class="nc" id="L185">      setCenter(newValue);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ZOOM_LEVEL)) {</span>
+<span class="nc" id="L187">      setZoomLevel(newValue);</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_COMPASS)) {</span>
+<span class="nc" id="L189">      setShowCompass(newValue);</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_USER)) {</span>
+<span class="nc" id="L191">      setShowUser(newValue);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_ZOOM)) {</span>
+<span class="nc" id="L193">      setShowZoom(newValue);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_SCALE)) {</span>
+<span class="nc" id="L195">      setShowScale(newValue);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SCALE_UNITS)) {</span>
+<span class="nc" id="L197">      setScaleUnits(newValue);</span>
+    }
+<span class="nc" id="L199">  }</span>
+
+  public final JavaScriptObject getMapInstance() {
+<span class="nc" id="L202">    return mapInstance;</span>
+  }
+
+  private void setLatitude(String text) {
+<span class="nc" id="L206">    latitude = Double.parseDouble(text);</span>
+<span class="nc" id="L207">    updateMapLatitude(latitude);</span>
+<span class="nc" id="L208">  }</span>
+
+  private void setLongitude(String text) {
+<span class="nc" id="L211">    longitude = Double.parseDouble(text);</span>
+<span class="nc" id="L212">    updateMapLongitude(longitude);</span>
+<span class="nc" id="L213">  }</span>
+
+  private void setMapType(String tileLayerId) {
+    try {
+<span class="nc" id="L217">      selectedTileLayer = Integer.parseInt(tileLayerId);</span>
+<span class="nc" id="L218">      updateMapType(selectedTileLayer);</span>
+<span class="nc" id="L219">    } catch(NumberFormatException e) {</span>
+<span class="nc" id="L220">      ErrorReporter.reportError(MESSAGES.unknownMapTypeException(tileLayerId));</span>
+<span class="nc" id="L221">      changeProperty(PROPERTY_NAME_MAP_TYPE, Integer.toString(selectedTileLayer));</span>
+<span class="nc" id="L222">    }</span>
+<span class="nc" id="L223">  }</span>
+
+  private void setCenter(String center) {
+<span class="nc" id="L226">    String[] parts = center.split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (parts.length != 2) {</span>
+<span class="nc" id="L228">      ErrorReporter.reportError(MESSAGES.mapCenterWrongNumberArgumentsException(parts.length));</span>
+<span class="nc" id="L229">      changeProperty(PROPERTY_NAME_CENTER_FROM_STRING, latitude + &quot;, &quot; + longitude);</span>
+    } else {
+<span class="nc" id="L231">      latitude = Double.parseDouble(parts[0].trim());</span>
+<span class="nc" id="L232">      longitude = Double.parseDouble(parts[1].trim());</span>
+<span class="nc" id="L233">      updateMapCenter(latitude, longitude);</span>
+    }
+<span class="nc" id="L235">  }</span>
+
+  private void setZoomLevel(String zoom) {
+<span class="nc" id="L238">    int zoomLevel = Integer.parseInt(zoom);</span>
+<span class="nc bnc" id="L239" title="All 4 branches missed.">    if (zoomLevel &lt; 1 || zoomLevel &gt; 18) {</span>
+<span class="nc" id="L240">      ErrorReporter.reportError(MESSAGES.mapZoomLevelOutOfBoundsException());</span>
+<span class="nc" id="L241">      changeProperty(PROPERTY_NAME_ZOOM_LEVEL, Integer.toString(this.zoomLevel));</span>
+    } else {
+<span class="nc" id="L243">      this.zoomLevel = zoomLevel;</span>
+<span class="nc" id="L244">      updateMapZoomLevel(Integer.parseInt(zoom));</span>
+    }
+<span class="nc" id="L246">  }</span>
+
+  private void setShowCompass(String state) {
+<span class="nc" id="L249">    this.compassEnabled = Boolean.parseBoolean(state);</span>
+<span class="nc" id="L250">    updateMapCompassControl(this.compassEnabled);</span>
+<span class="nc" id="L251">  }</span>
+
+  private void setShowUser(String state) {
+<span class="nc" id="L254">    this.userLocationEnabled = Boolean.parseBoolean(state);</span>
+<span class="nc" id="L255">    updateMapShowUser(this.userLocationEnabled);</span>
+<span class="nc" id="L256">  }</span>
+
+  private void setShowZoom(String state) {
+<span class="nc" id="L259">    this.zoomControl = Boolean.parseBoolean(state);</span>
+<span class="nc" id="L260">    updateMapZoomControl(this.zoomControl);</span>
+<span class="nc" id="L261">  }</span>
+
+  private void setShowScale(String state) {
+<span class="nc" id="L264">    this.showScale = Boolean.parseBoolean(state);</span>
+<span class="nc" id="L265">    updateMapShowScale(this.showScale);</span>
+<span class="nc" id="L266">  }</span>
+
+  private void setScaleUnits(String state) {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    if (state.equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L270">      this.scaleUnits = 1;</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">    } else if (state.equals(&quot;2&quot;)) {</span>
+<span class="nc" id="L272">      this.scaleUnits = 2;</span>
+    } else {
+<span class="nc" id="L274">      throw new IllegalArgumentException(&quot;Unexpected value for scale: &quot; + state);</span>
+    }
+<span class="nc" id="L276">    updateScaleUnits(this.scaleUnits);</span>
+<span class="nc" id="L277">  }</span>
+
+  // event handlers
+  protected void onBoundsChanged() {
+    // TODO(ewpatton): Send incremental update to companion
+<span class="nc bnc" id="L282" title="All 2 branches missed.">    for (MockMapEventListener listener : listeners) {</span>
+<span class="nc" id="L283">      listener.onBoundsChanged();</span>
+<span class="nc" id="L284">    }</span>
+<span class="nc" id="L285">  }</span>
+
+  protected void onResetButtonClicked() {
+    try {
+<span class="nc" id="L289">      updateMapZoomLevel(zoomLevel);</span>
+<span class="nc" id="L290">      updateMapCenter(latitude, longitude);</span>
+<span class="nc" id="L291">    } catch(NumberFormatException e) {</span>
+      // this shouldn't happen in the normal use of the component
+<span class="nc" id="L293">    }</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">    for (MockMapEventListener listener : listeners) {</span>
+<span class="nc" id="L295">      listener.onResetButtonClicked();</span>
+<span class="nc" id="L296">    }</span>
+<span class="nc" id="L297">  }</span>
+
+  protected void onLockButtonClicked() {
+    // we are moving to an unlocked state
+<span class="nc bnc" id="L301" title="All 2 branches missed.">    for (MockMapEventListener listener : listeners) {</span>
+<span class="nc" id="L302">      listener.onLockButtonClicked();</span>
+<span class="nc" id="L303">    }</span>
+<span class="nc" id="L304">  }</span>
+
+  protected void onUnlockButtonClicked() {
+    // we are moving to a locked state
+<span class="nc bnc" id="L308" title="All 2 branches missed.">    for (MockMapEventListener listener : listeners) {</span>
+<span class="nc" id="L309">      listener.onUnlockButtonClicked();</span>
+<span class="nc" id="L310">    }</span>
+<span class="nc" id="L311">  }</span>
+
+  protected void onSetInitialBoundsClicked() {
+<span class="nc" id="L314">    final LatLng centerPoint = getCenter();</span>
+<span class="nc" id="L315">    final int zoom = getZoom();</span>
+
+<span class="nc" id="L317">    this.latitude = centerPoint.latitude;</span>
+<span class="nc" id="L318">    this.longitude = centerPoint.longitude;</span>
+<span class="nc" id="L319">    this.zoomLevel = zoom;</span>
+
+<span class="nc" id="L321">    properties.changePropertyValue(&quot;CenterFromString&quot;, centerPoint.toString());</span>
+<span class="nc" id="L322">    properties.changePropertyValue(&quot;ZoomLevel&quot;, Integer.toString(zoom));</span>
+
+<span class="nc bnc" id="L324" title="All 2 branches missed.">    for (MockMapEventListener listener : listeners) {</span>
+<span class="nc" id="L325">      listener.onSetInitialBoundsClicked();</span>
+<span class="nc" id="L326">    }</span>
+<span class="nc" id="L327">  }</span>
+
+  // Native Javascript Methods (JSNI)
+  /**
+   * Initialize the controls for the AppInventor map toolbar.
+   * These controls allow the user to:
+   * &lt;ul&gt;
+   * &lt;li&gt;change the drag behavior from the default of component reordering to panning the map.
+   * &lt;li&gt;update the starting center and zoom level from the map viewport.
+   * &lt;li&gt;reset the map viewport to the center and zoom level specified in the properties.
+   * &lt;/ul&gt;
+   * This method will be called with every MockMap created, but will only instantiate a singleton
+   * set of items.
+   */
+  private static native void initToolbarItems()/*-{
+    var MESSAGES = @com.google.appinventor.client.Ode::MESSAGES;
+    var L = $wnd.top.L;
+    if (L.AI2Lock === undefined) {
+      L.AI2Lock = L.ToolbarAction.extend({
+        options: {
+          toolbarIcon: {
+            tooltip: MESSAGES.@com.google.appinventor.client.OdeMessages::mapLockMovementTooltip()()
+          }
+        },
+        _createIcon: function(toolbar, container, args) {
+          L.ToolbarAction.prototype._createIcon.call(this, toolbar, container, args);
+          var lockIcon = L.DomUtil.create('i'),
+            unlockIcon = L.DomUtil.create('i');
+          lockIcon.setAttribute('class', 'fa fa-lock');
+          lockIcon.setAttribute('aria-hidden', 'true');
+          unlockIcon.setAttribute('class', 'fa fa-unlock');
+          unlockIcon.setAttribute('aria-hidden', 'true');
+          this.locked = false;
+          L.DomUtil.addClass(this._link, 'unlocked');
+          this._link.appendChild(lockIcon);
+          this._link.appendChild(unlockIcon);
+          var self = this;
+          L.DomEvent.on(this._link, 'mousedown', function(e) {
+            e.stopPropagation();
+          });
+          L.DomEvent.on(this._link, 'click', function(e) {
+            self.locked = !self.locked;
+            var map = self.toolbar._control._map;
+            map.unlocked = !self.locked;
+            var interactions = [map.dragging, map.touchZoom, map.doubleClickZoom, map.scrollWheelZoom, map.boxZoom, map.keyboard, map.tap];
+            if (self.locked) {
+              for (var i in interactions) interactions[i] &amp;&amp; interactions[i].disable();
+              L.DomUtil.addClass(self._link, 'locked');
+              L.DomUtil.removeClass(self._link, 'unlocked');
+              self._link.setAttribute('title', MESSAGES.@com.google.appinventor.client.OdeMessages::mapUnlockMovementTooltip()());
+              map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::onUnlockButtonClicked()();
+            } else {
+              for (var i in interactions) interactions[i] &amp;&amp; interactions[i].enable();
+              L.DomUtil.addClass(self._link, 'unlocked');
+              L.DomUtil.removeClass(self._link, 'locked');
+              self._link.setAttribute('title', MESSAGES.@com.google.appinventor.client.OdeMessages::mapLockMovementTooltip()());
+              map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::onLockButtonClicked()();
+            }
+          });
+        }
+      });
+      L.AI2Center = L.ToolbarAction.extend({
+        options: {
+          toolbarIcon: {
+            tooltip: MESSAGES.@com.google.appinventor.client.OdeMessages::mapSetInitialMapTooltip()()
+          }
+        },
+        _createIcon: function(toolbar, container, args) {
+          var icon = L.DomUtil.create('i');
+          L.ToolbarAction.prototype._createIcon.call(this, toolbar, container, args);
+          icon.setAttribute('class', 'fa fa-crosshairs');
+          this._link.appendChild(icon);
+          var self = this;
+          L.DomEvent.on(this._link, 'click', function() {
+            var javaMockMap = self.toolbar._control._map.owner;
+            javaMockMap.@com.google.appinventor.client.editor.simple.components.MockMap::onSetInitialBoundsClicked()();
+          });
+        }
+      });
+      L.AI2Reset = L.ToolbarAction.extend({
+        options: {
+          toolbarIcon: {
+            tooltip: MESSAGES.@com.google.appinventor.client.OdeMessages::mapResetBoundingBoxTooltip()()
+          }
+        },
+        _createIcon: function(toolbar, container, args) {
+          var icon = L.DomUtil.create('i');
+          L.ToolbarAction.prototype._createIcon.call(this, toolbar, container, args);
+          icon.setAttribute('class', 'fa fa-history');
+          this._link.appendChild(icon);
+          var self = this;
+          L.DomEvent.on(this._link, 'click', $entry(function() {
+            var javaMockMap = self.toolbar._control._map.owner;
+            javaMockMap.@com.google.appinventor.client.editor.simple.components.MockMap::onResetButtonClicked()();
+          }));
+        }
+      });
+      L.Control.Compass = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function () {
+          var container = L.DomUtil.create('div', 'compass-control'),
+              img = L.DomUtil.create('img');
+          img.setAttribute('src', '/static/leaflet/assets/compass.svg');
+          container.appendChild(img);
+          return container;
+        }
+      });
+      L.control.compass = function(options) {
+        return new L.Control.Compass(options);
+      };
+      L.UserOverlay = L.Layer.extend({
+        onAdd: function(map) {
+          this._map = map;
+          this._el = L.DomUtil.create('div', 'ai2-user-mock-location leaflet-zoom-hide');
+          var img = L.DomUtil.create('img');
+          this._el.appendChild(img);
+          img.setAttribute('src', '/static/leaflet/assets/location.png');
+          map.getPanes()['overlayPane'].appendChild(this._el);
+          map.on('viewreset', this._reposition, this);
+          this._reposition();
+          return this._el;
+        },
+        onRemove: function(map) {
+          map.getPanes().overlayPane.removeChild(this._el);
+          map.off('resize', this._reposition);
+        },
+        _reposition: function(e) {
+          var pos = this._map.latLngToLayerPoint(this._map.getCenter());
+          L.DomUtil.setPosition(this._el, pos);
+        }
+      });
+    }
+  }-*/;
+
+  public native LatLng getCenter()/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      var center = map.getCenter();
+      return @com.google.appinventor.client.editor.simple.components.MockMap.LatLng::new(DD)(center.lat, center.lng);
+    }
+    return null;
+  }-*/;
+
+  public native int getZoom()/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    return map ? map.getZoom() : 0;
+  }-*/;
+
+  private native void initPanel()/*-{
+    var L = $wnd.top.L;
+    var tileLayers = [
+      null,  // because AppInventor is 1-indexed, we leave element 0 as null
+      L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  {minZoom: 0, maxZoom: 18,
+                   attribution: 'Map data &amp;copy; &lt;a href=&quot;http://openstreetmap.org&quot;&gt;OpenStreetMap&lt;/a&gt; contributors'}),
+      L.tileLayer('//basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
+                  {minZoom: 0, maxZoom: 15,
+                   attribution: 'Satellite imagery &amp;copy; &lt;a href=&quot;http://mapquest.com&quot;&gt;USGS&lt;/a&gt;'}),
+      L.tileLayer('//basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+                  {minZoom: 0, maxZoom: 15,
+                   attribution: 'Map data &amp;copy; &lt;a href=&quot;http://www.usgs.gov&quot;&gt;USGS&lt;/a&gt;'})
+    ];
+    this.@com.google.appinventor.client.editor.simple.components.MockMap::tileLayers = tileLayers;
+    this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer =
+      tileLayers[this.@com.google.appinventor.client.editor.simple.components.MockMap::selectedTileLayer];
+
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      // map exists but may be invalid due to change in the dom, so invalidate and redraw
+      map.invalidateSize(false);
+    } else {
+      var panel = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapWidget;
+      var elem = panel.@com.google.gwt.user.client.ui.UIObject::getElement()();
+      if (elem.firstElementChild != null) elem = elem.firstElementChild;
+      var latitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::latitude,
+          longitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::longitude,
+          zoomControl = this.@com.google.appinventor.client.editor.simple.components.MockMap::zoomControl,
+          zoom = this.@com.google.appinventor.client.editor.simple.components.MockMap::zoomLevel,
+          showScale = this.@com.google.appinventor.client.editor.simple.components.MockMap::showScale,
+          scaleUnits = this.@com.google.appinventor.client.editor.simple.components.MockMap::scaleUnits;
+      map = L.map(elem, {zoomControl: false, editable: true}).setView([latitude, longitude], zoom);
+      var messages = @com.google.appinventor.client.Ode::getMessages()();
+      map.zoomControl = L.control.zoom({
+        position: 'topleft',
+        zoomInTitle: messages.@com.google.appinventor.client.OdeMessages::mapZoomIn()(),
+        zoomOutTitle: messages.@com.google.appinventor.client.OdeMessages::mapZoomOut()()
+      });
+      if (zoomControl) {
+        map.zoomControl.addTo(map);
+      }
+      var scaleOptions = {metric: true, imperial: false, position: 'bottomright'};
+      if (scaleUnits == 2) {
+        scaleOptions.metric = false;
+        scaleOptions.imperial = true;
+      }
+      map.scaleControl = L.control.scale(scaleOptions);
+      if (showScale) {
+        map.scaleControl.addTo(map);
+      }
+      map.owner = this;
+      map.unlocked = true;
+      map.aiControls = new L.Toolbar.Control({position: 'bottomleft',
+                                             actions: [ L.AI2Lock, L.AI2Center, L.AI2Reset ]});
+      map.aiControls.addTo(map);
+      map.compassLayer = L.control.compass();
+      map.userLayer = new L.UserOverlay();
+      map.on('mouseup click', function(e) {
+        e = e.originalEvent;
+        if (e.eventPhase !== 3) return;
+        var el = e.target,
+            overlay = this.getPanes()['overlayPane'],
+            markers = this.getPanes()['markerPane'],
+            background = this.getPanes()['tilePane'],
+            container = this.getContainer();
+        while (el &amp;&amp; el.parentNode !== container) {
+          if (el === overlay || el === markers) {
+            // Overlays handle their own click events, but sometimes it propagates to the map and eventually GWT.
+            // This is not desirable because it causes issues with the selected component.
+            return;
+          } else if (el === background) {
+            this.owner.@com.google.appinventor.client.editor.simple.components.MockComponent::select(*)(e);
+            return;
+          }
+          el = el.parentNode;
+        }
+      });
+      this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance = map;
+      setTimeout(function() {
+        map.addLayer(map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer);
+        map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::updateMapZoomControl(*)(
+          map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::zoomControl);
+        map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::updateMapCompassControl(*)(
+          map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::compassEnabled);
+        map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::updateMapShowUser(*)(
+          map.owner.@com.google.appinventor.client.editor.simple.components.MockMap::userLocationEnabled);
+      });
+    }
+  }-*/;
+
+  native void invalidateMap()/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {  // Map may not be initialized yet, e.g., during project load.
+      setTimeout(function() {
+        map.invalidateSize(false);
+      }, 0);
+    }
+  }-*/;
+
+  private native void updateMapLatitude(double latitude)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    var longitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::longitude;
+    map.panTo($wnd.top.L.latLng(latitude, longitude));
+  }-*/;
+
+  private native void updateMapLongitude(double longitude)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    var latitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::latitude;
+    map.panTo($wnd.top.L.latLng(latitude, longitude));
+  }-*/;
+
+  private native void updateMapCenter(double latitude, double longitude)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {  // Map may not be initialized yet, e.g., during project load.
+      map.panTo([latitude, longitude], {animate: true});
+    }
+  }-*/;
+
+  private native void updateMapType(int type)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    var tileLayers = this.@com.google.appinventor.client.editor.simple.components.MockMap::tileLayers;
+    var baseLayer = this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer;
+    if (map &amp;&amp; baseLayer &amp;&amp; tileLayers) {
+      if (0 &lt; type &amp;&amp; type &lt; tileLayers.length) {
+        map.removeLayer(baseLayer);
+        baseLayer = tileLayers[type];
+        map.addLayer(baseLayer);
+        baseLayer.bringToBack();
+        this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer = baseLayer;
+      }
+    }
+  }-*/;
+
+  native LatLng projectFromXY(int x, int y)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      var result = map.containerPointToLatLng([x, y]);
+      return @com.google.appinventor.client.editor.simple.components.MockMap.LatLng::new(DD)(result.lat, result.lng);
+    }
+  }-*/;
+
+  private native void updateMapZoomLevel(int zoomLevel)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      map.setZoom(zoomLevel);
+    }
+  }-*/;
+
+  private native void updateMapCompassControl(boolean enable)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      if (enable) {
+        map.addControl(map.compassLayer);
+      } else {
+        map.removeControl(map.compassLayer);
+      }
+    }
+  }-*/;
+
+  private native void updateMapShowUser(boolean enable)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      if (enable) {
+        map.addLayer(map.userLayer);
+      } else {
+        map.removeLayer(map.userLayer);
+      }
+    }
+  }-*/;
+
+  private native void updateMapZoomControl(boolean enable)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      if (!map.zoomControl) {
+        map.zoomControl = $wnd.top.L.control.zoom();
+      }
+      if (enable) {
+        map.zoomControl.addTo(map);
+      } else {
+        map.removeControl(map.zoomControl);
+      }
+    }
+  }-*/;
+
+  private native void updateMapShowScale(boolean enable)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      if (!map.scaleControl) {
+        map.scaleControl = $wnd.top.L.control.scale({position: 'topleft'});
+      }
+      if (enable) {
+        map.scaleControl.addTo(map);
+      } else {
+        map.removeControl(map.scaleControl);
+      }
+    }
+  }-*/;
+
+  private native void updateScaleUnits(int units)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance,
+      scaleVisible = this.@com.google.appinventor.client.editor.simple.components.MockMap::showScale;
+    if (map) {
+      if (scaleVisible) {
+        map.removeControl(map.scaleControl);
+      }
+      map.scaleControl = $wnd.top.L.control.scale({
+        metric: units == 1,
+        imperial: units == 2,
+        position: 'bottomright'
+      });
+      if (scaleVisible) {
+        map.scaleControl.addTo(map);
+      }
+    }
+  }-*/;
+
+  private native boolean isUnlocked()/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      return map.unlocked;
+    } else {
+      return false;
+    }
+  }-*/;
+
+  public static class LatLng {
+    public double latitude;
+    public double longitude;
+
+<span class="nc" id="L705">    public LatLng(double latitude, double longitude) {</span>
+<span class="nc" id="L706">      this.latitude = latitude;</span>
+<span class="nc" id="L707">      this.longitude = longitude;</span>
+<span class="nc" id="L708">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L712">      return Double.toString(latitude) + &quot;, &quot; + Double.toString(longitude);</span>
+    }
+
+    public native NativeLatLng toNative()/*-{
+      return {
+        lat: this.@com.google.appinventor.client.editor.simple.components.MockMap.LatLng::latitude,
+        lng: this.@com.google.appinventor.client.editor.simple.components.MockMap.LatLng::longitude
+      };
+    }-*/;
+  }
+
+  public static class NativeLatLng extends JavaScriptObject {
+<span class="nc" id="L724">    protected NativeLatLng() {}</span>
+
+    public final native double getLatitude()/*-{
+      return this.lat;
+    }-*/;
+
+    public final native double getLongitude()/*-{
+      return this.lng;
+    }-*/;
+  }
+
+  public interface MockMapEventListener {
+    void onBoundsChanged();
+    void onResetButtonClicked();
+    void onLockButtonClicked();
+    void onUnlockButtonClicked();
+    void onSetInitialBoundsClicked();
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

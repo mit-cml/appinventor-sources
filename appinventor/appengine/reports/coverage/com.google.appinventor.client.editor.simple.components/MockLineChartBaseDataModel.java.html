@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockLineChartBaseDataModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockLineChartBaseDataModel.java</span></div><h1>MockLineChartBaseDataModel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.components.common.LineType;
+
+import java.util.Comparator;
+
+import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.enums.SteppedLine;
+
+/**
+ * Chart Data Model for Mock Line Chart based views.
+ */
+public abstract class MockLineChartBaseDataModel&lt;V extends MockLineChartViewBase&lt;V&gt;&gt;
+    extends MockPointChartDataModel&lt;V&gt; {
+  /**
+   * Creates a new MockLineChartBaseDataModel instance.
+   *
+   * @param view Chart View to link the model to.
+   */
+  public MockLineChartBaseDataModel(V view) {
+<span class="nc" id="L26">    super(view);</span>
+<span class="nc" id="L27">  }</span>
+
+  @Override
+  protected void setDefaultStylingProperties() {
+<span class="nc" id="L31">    dataSeries.setBorderWidth(1);</span>
+<span class="nc" id="L32">    dataSeries.setLineTension(0);</span>
+<span class="nc" id="L33">    dataSeries.setShowLine(true);</span>
+<span class="nc" id="L34">  }</span>
+
+  @Override
+  protected void postDataImportAction() {
+    // No data points generated, fallback to default option.
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (dataSeries.getDataPoints().isEmpty()) {</span>
+<span class="nc" id="L40">      setDefaultElements();</span>
+    } else {
+      // Since we are dealing with an underlying Scatter Data Series
+      // from the Charba library (which makes representing Line Charts
+      // more conveniently than using the Line Chart Data Series), sorting
+      // is a must, because otherwise, the Chart will not look representative.
+      // Consider adding: (1, 2), (5, 3), (2, 5). We want the x = 2
+      // value to be continuous on the Line Chart, rather than
+      // going outside the Chart, which would happen since we
+      // are using a Scatter Chart.
+<span class="nc" id="L50">      dataSeries.getDataPoints().sort(Comparator.comparingDouble(DataPoint::getX));</span>
+    }
+<span class="nc" id="L52">  }</span>
+
+  /**
+   * Changes the Line type of the Data Series.
+   *
+   * &lt;p&gt;The following values are used:
+   * 0 - Linear
+   * 1 - Curved
+   * 2 - Stepped
+   *
+   * @param type new Line type value (integer)
+   */
+  public void setLineType(LineType type) {
+<span class="nc bnc" id="L65" title="All 4 branches missed.">    switch (type) {</span>
+      case Linear:
+<span class="nc" id="L67">        dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line</span>
+<span class="nc" id="L68">        dataSeries.setLineTension(0); // Disable curved line</span>
+<span class="nc" id="L69">        break;</span>
+
+      case Curved:
+<span class="nc" id="L72">        dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line</span>
+<span class="nc" id="L73">        dataSeries.setLineTension(0.5); // Set 50% Line Tension (enable curve)</span>
+<span class="nc" id="L74">        break;</span>
+
+      case Stepped:
+<span class="nc" id="L77">        dataSeries.setSteppedLine(SteppedLine.BEFORE); // Enable stepped line</span>
+<span class="nc" id="L78">        dataSeries.setLineTension(0); // Disable curved line</span>
+<span class="nc" id="L79">        break;</span>
+
+      default:
+<span class="nc" id="L82">        throw new IllegalArgumentException(&quot;Unknown line type: &quot; + type);</span>
+    }
+<span class="nc" id="L84">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

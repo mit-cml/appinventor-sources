@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">RestServlet.java</span></div><h1>RestServlet.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2014-2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.common.utils.StringUtils;
+
+import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData.ProjectNotFoundException;
+
+import com.google.appinventor.server.storage.UserAlreadyExistsException;
+
+import com.google.appinventor.server.tokens.Token;
+import com.google.appinventor.server.tokens.TokenException;
+import com.google.appinventor.server.tokens.TokenProto;
+
+import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
+
+import com.google.appinventor.shared.rpc.user.User;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import java.net.URLDecoder;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+
+/**
+ * REST API for managing MIT App Inventor.
+ *
+ * Note: A lot of the operations are not available in this code.  This
+ * code was adapted from code used in the Coolthink project to
+ * communicate between their proprietary learning management system
+ * and App Inventor. It depends on methods added to the StorageIO
+ * layer that are not implemented in the App Engine version (this
+ * version).
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ */
+
+<span class="nc" id="L57">public class RestServlet extends HttpServlet {</span>
+
+<span class="nc" id="L59">  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();</span>
+  private static Logger LOG;
+<span class="nc" id="L61">  private final transient YoungAndroidProjectService youngAndroidProjectService = new YoungAndroidProjectService(storageIo);</span>
+
+
+  private static class RestException extends Exception {
+    private int code;
+    RestException(int code, String reason) {
+<span class="nc" id="L67">      super(reason);</span>
+<span class="nc" id="L68">      this.code = code;</span>
+<span class="nc" id="L69">    }</span>
+    int getCode() {
+<span class="nc" id="L71">      return code;</span>
+    }
+
+  }
+
+  public void init(ServletConfig config) throws ServletException {
+<span class="nc" id="L77">    super.init(config);</span>
+<span class="nc" id="L78">    LOG = Logger.getLogger(RestServlet.class);</span>
+<span class="nc" id="L79">  }</span>
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+<span class="nc" id="L83">    String queryString = req.getQueryString();</span>
+<span class="nc" id="L84">    HashMap&lt;String, String&gt; params = getQueryMap(queryString);</span>
+
+<span class="nc" id="L86">    String encodedToken = params.get(&quot;token&quot;);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">    if (encodedToken == null) {</span>
+<span class="nc" id="L88">      LOG.error(&quot;doGet(): No Token Provided&quot;);</span>
+<span class="nc" id="L89">      fail(req, resp, 1, &quot;No Token Provided&quot;);</span>
+<span class="nc" id="L90">      return;</span>
+    }
+<span class="nc" id="L92">    TokenProto.token token = null;</span>
+    try {
+<span class="nc" id="L94">      token = Token.verifyToken(encodedToken);</span>
+<span class="nc" id="L95">    } catch (TokenException e) {</span>
+<span class="nc" id="L96">      LOG.error(&quot;doGet(): Invalid Token -- &quot; + e.getMessage());</span>
+<span class="nc" id="L97">      fail(req, resp, 2, e.getMessage());</span>
+<span class="nc" id="L98">      return;</span>
+<span class="nc" id="L99">    }</span>
+
+<span class="nc" id="L101">    long offset = System.currentTimeMillis() - token.getTs();</span>
+<span class="nc" id="L102">    offset /= 1000;  // Convert to seconds</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">    if (offset &gt; 120) {       // Two minutes</span>
+<span class="nc" id="L104">      LOG.error(&quot;doGet(): Token Expired. Was valid until &quot; + new Date(token.getTs()));</span>
+<span class="nc" id="L105">      fail(req, resp, 3, &quot;Token Expired. Was valid until &quot; +</span>
+<span class="nc" id="L106">        new Date(token.getTs()));</span>
+<span class="nc" id="L107">      return;</span>
+    }
+
+<span class="nc bnc" id="L110" title="All 3 branches missed.">    switch (token.getCommand()) {</span>
+    case SSOLOGIN:
+    case SSOLOGIN2:
+<span class="nc" id="L113">      fail(req, resp, 4, &quot;Must use Login Servlet to SSO Login&quot;);</span>
+<span class="nc" id="L114">      return;</span>
+    case FETCHUUID:
+<span class="nc" id="L116">      User user = storageIo.getUserFromEmail(token.getName());</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">      if (user == null) {</span>
+<span class="nc" id="L118">        fail(req, resp, -1, &quot;Invalid User&quot;);</span>
+<span class="nc" id="L119">        return;</span>
+      }
+<span class="nc" id="L121">      String retval = Token.makeUUIDReturnToken(user.getUserEmail(),</span>
+<span class="nc" id="L122">        user.getUserId());</span>
+<span class="nc" id="L123">      ok(req, resp, retval);</span>
+<span class="nc" id="L124">      return;</span>
+    default:
+<span class="nc" id="L126">      fail(req, resp, -1, &quot;Unimplemented&quot;);</span>
+    }
+
+<span class="nc" id="L129">  }</span>
+
+  private void ok(HttpServletRequest req, HttpServletResponse resp, String message) throws IOException {
+<span class="nc" id="L132">    resp.setContentType(&quot;application/json; charset=utf-8&quot;);</span>
+<span class="nc" id="L133">    PrintWriter out = resp.getWriter();</span>
+<span class="nc" id="L134">    out.write(&quot;{ \&quot;ok\&quot;: \&quot;&quot; + message + &quot;\&quot;}\n&quot;);</span>
+<span class="nc" id="L135">    return;</span>
+  }
+
+  private void fail(HttpServletRequest req, HttpServletResponse resp, int code, String message) throws IOException {
+<span class="nc" id="L139">    resp.setContentType(&quot;application/json; charset=utf-8&quot;);</span>
+//    resp.setStatus(HttpServletResponse.SC_FORBIDDEN); // Don't return an HTTP level error for now
+<span class="nc" id="L141">    PrintWriter out = resp.getWriter();</span>
+<span class="nc" id="L142">    out.write(&quot;{ \&quot;error\&quot;: &quot; + code + &quot;, \&quot;message\&quot; : \&quot;&quot; + message + &quot;\&quot;}\n&quot;);</span>
+<span class="nc" id="L143">    return;</span>
+  }
+
+  private static HashMap&lt;String, String&gt; getQueryMap(String query)  {
+<span class="nc" id="L147">    HashMap&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();</span>
+<span class="nc bnc" id="L148" title="All 4 branches missed.">    if (query == null || query.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L149">      return map;               // Empty map</span>
+    }
+<span class="nc" id="L151">    String[] params = query.split(&quot;&amp;&quot;);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">    for (String param : params)  {</span>
+<span class="nc" id="L153">      String [] nvpair = param.split(&quot;=&quot;);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">      if (nvpair.length &lt;= 1) {</span>
+<span class="nc" id="L155">        map.put(nvpair[0], &quot;&quot;);</span>
+      } else
+<span class="nc" id="L157">        map.put(nvpair[0], URLDecoder.decode(nvpair[1]));</span>
+    }
+<span class="nc" id="L159">    return map;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

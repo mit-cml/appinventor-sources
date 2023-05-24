@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockFeatureCollection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockFeatureCollection.java</span></div><h1>MockFeatureCollection.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MockFeatureCollection extends MockContainer implements MockMapFeature {
+  public static final String TYPE = &quot;FeatureCollection&quot;;
+
+  private static final String PROPERTY_NAME_SOURCE = &quot;Source&quot;;
+  private static final String PROPERTY_NAME_FEATURESFROMGEOJSON = &quot;FeaturesFromGeoJSON&quot;;
+
+  private MockMap map;
+<span class="nc" id="L27">  private List&lt;MockMapFeature&gt; features = new ArrayList&lt;MockMapFeature&gt;();</span>
+  private JavaScriptObject collection;
+<span class="nc" id="L29">  private boolean initialized = false;</span>
+
+  public MockFeatureCollection(SimpleEditor editor) {
+<span class="nc" id="L32">    super(editor, TYPE, images.featurecollection(), new MockFeatureCollectionLayout());</span>
+
+<span class="nc" id="L34">    SimplePanel panel = new SimplePanel();</span>
+<span class="nc" id="L35">    panel.setWidth(&quot;16px&quot;);</span>
+<span class="nc" id="L36">    panel.setHeight(&quot;16px&quot;);</span>
+<span class="nc" id="L37">    panel.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+<span class="nc" id="L38">    Image icon = new Image(images.featurecollection());</span>
+<span class="nc" id="L39">    panel.add(icon);</span>
+
+<span class="nc" id="L41">    initComponent(panel);</span>
+<span class="nc" id="L42">    initCollection();</span>
+<span class="nc" id="L43">    initialized = true;</span>
+<span class="nc" id="L44">  }</span>
+
+  MockMap getMap() {
+<span class="nc" id="L47">    return map;</span>
+  }
+
+  @Override
+  public void addToMap(MockMap map) {
+<span class="nc" id="L52">    setVisible(false);  // MockFeatureCollection is managed by Leaflet</span>
+<span class="nc" id="L53">    layout.layoutWidth = 0;</span>
+<span class="nc" id="L54">    layout.layoutHeight = 0;</span>
+<span class="nc" id="L55">    this.map = map;</span>
+<span class="nc" id="L56">    setContainer(map);</span>
+<span class="nc" id="L57">    addToMap(map.getMapInstance());</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    for (MockComponent component : getChildren()) {</span>
+<span class="nc" id="L59">      ((MockMapFeature) component).addToMap(map);</span>
+<span class="nc" id="L60">    }</span>
+<span class="nc" id="L61">  }</span>
+
+  @Override
+  public boolean onDrop(MockMap map, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L65">    return true;</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L72">      return false;</span>
+    }
+<span class="nc" id="L74">    return super.isPropertyVisible(propertyName);</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L79">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_SOURCE)) {</span>
+<span class="nc" id="L82">      setSourceProperty(newValue);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_FEATURESFROMGEOJSON)) {</span>
+<span class="nc" id="L84">      setGeoJSONProperty(newValue);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {</span>
+<span class="nc" id="L86">      setVisibleProperty(newValue);</span>
+    }
+<span class="nc" id="L88">  }</span>
+
+  @Override
+  public void onRemoved() {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">    for (MockMapFeature feature : features) {</span>
+<span class="nc" id="L93">      ((MockComponent) feature).onRemoved();</span>
+<span class="nc" id="L94">    }</span>
+<span class="nc" id="L95">    features.clear();</span>
+<span class="nc" id="L96">  }</span>
+
+  private void setSourceProperty(String text) {
+<span class="nc bnc" id="L99" title="All 4 branches missed.">    if (!initialized || !editor.isLoadComplete()) {</span>
+<span class="nc" id="L100">      return;</span>
+    }
+<span class="nc bnc" id="L102" title="All 4 branches missed.">    if (text == null || text.equals(&quot;&quot;)) {</span>
+      // Setting the property to null removes all children
+<span class="nc" id="L104">      List&lt;MockComponent&gt; children = new ArrayList&lt;MockComponent&gt;(getChildren());</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">      for (MockComponent component : children) {</span>
+<span class="nc" id="L106">        removeComponent(component, true);</span>
+<span class="nc" id="L107">        component.onRemoved();</span>
+<span class="nc" id="L108">      }</span>
+<span class="nc" id="L109">      children.clear();</span>
+<span class="nc" id="L110">      features.clear();</span>
+<span class="nc" id="L111">      clearLayers();</span>
+<span class="nc" id="L112">      return;</span>
+    }
+<span class="nc" id="L114">    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();</span>
+<span class="nc" id="L115">    Ode.getInstance().getProjectService().load(projectId, &quot;assets/&quot; + text, new AsyncCallback&lt;String&gt;() {</span>
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc" id="L118">        ErrorReporter.reportError(caught.getMessage());</span>
+<span class="nc" id="L119">      }</span>
+
+      @Override
+      public void onSuccess(String result) {
+<span class="nc" id="L123">        setGeoJSONProperty(result);</span>
+<span class="nc" id="L124">        MockFeatureCollection.this.onSelectedChange(true);  // otherwise the last imported component</span>
+                                                            // will be shown in the properties panel
+<span class="nc" id="L126">      }</span>
+    });
+<span class="nc" id="L128">  }</span>
+
+  private void setVisibleProperty(String text) {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    if (map == null) {</span>
+      // cannot change visibility if there is no map
+<span class="nc" id="L133">      return;</span>
+    }
+<span class="nc" id="L135">    boolean isVisible = Boolean.parseBoolean(text);</span>
+<span class="nc" id="L136">    setNativeVisible(map.getMapInstance(), isVisible);</span>
+<span class="nc" id="L137">  }</span>
+
+  private void setGeoJSONProperty(String text) {
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    if (map == null) {</span>
+      // cannot change features if there is no map
+<span class="nc" id="L142">      return;</span>
+    }
+<span class="nc" id="L144">    setNativeGeoJSON(map.getMapInstance(), text);</span>
+<span class="nc" id="L145">  }</span>
+
+  @SuppressWarnings(&quot;unused&quot;)  // Called from JSNI
+  private void onEachFeature(String type, JSONObject properties, JavaScriptObject layer) {
+<span class="nc bnc" id="L149" title="All 4 branches missed.">    if (type.equals(&quot;Point&quot;) || type.equals(&quot;MultiPoint&quot;)) {</span>
+<span class="nc" id="L150">      features.add(MockMarker.fromGeoJSON(this, properties, layer));</span>
+<span class="nc bnc" id="L151" title="All 4 branches missed.">    } else if (type.equals(&quot;LineString&quot;) || type.equals(&quot;MultiLineString&quot;)) {</span>
+<span class="nc" id="L152">      features.add(MockLineString.fromGeoJSON(this, properties, layer));</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">    } else if (type.equals(&quot;Polygon&quot;) || type.equals(&quot;MultiPolygon&quot;)) {</span>
+<span class="nc" id="L154">      features.add(MockPolygon.fromGeoJSON(this, properties, layer));</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    } else if (type.equals(&quot;Circle&quot;)) {</span>
+<span class="nc" id="L156">      features.add(MockCircle.fromGeoJSON(this, properties, layer));</span>
+    }
+<span class="nc" id="L158">  }</span>
+
+  // JSNI Methods
+  private native void initCollection()/*-{
+    this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection =
+      top.L.featureGroup();
+  }-*/;
+
+  private native void addToMap(JavaScriptObject map)/*-{
+    var collection = this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection;
+    map.addLayer(collection);
+  }-*/;
+
+  private native void clearLayers()/*-{
+    var collection = this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection;
+    if (collection) {
+      collection.clearLayers();
+    }
+  }-*/;
+
+  private native void setNativeGeoJSON(JavaScriptObject map, String geojson)/*-{
+    var collection = this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection;
+    if (collection) {
+      var self = this;
+      map.removeLayer(collection);
+      if (geojson.charCodeAt(0) == 0xFEFF) geojson = geojson.substr(1);  // strip byte order marker, if present
+      collection = top.L.geoJson(JSON.parse(geojson), {
+        pointToLayer: function(feature, latlng) {
+          for (var key in feature.properties) {
+            var lowerKey = key.toLowerCase();
+            if (lowerKey == 'r' || lowerKey == 'radius') {
+              return top.L.circle(latlng, feature.properties[key]);
+            }
+          }
+          return top.L.marker(latlng, {draggable: true, keyboard: false, alt: 'Marker'});
+        },
+        style: function(feature) {
+          return {
+            color: '#000',
+            weight: 2,
+            fillColor: '#480',
+            fillOpacity: 1,
+            pointerEvents: 'auto'
+          };
+        },
+        onEachFeature: function(feature, layer) {
+          var properties = @com.google.gwt.json.client.JSONObject::new(Lcom/google/gwt/core/client/JavaScriptObject;)(
+            feature.properties);
+          self.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::onEachFeature(*)(
+            layer instanceof top.L.Circle ? 'Circle' : feature.geometry.type, properties, layer);
+        }
+      });
+//      collection.addTo(map);
+      this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection = collection;
+    }
+  }-*/;
+
+  private native void setNativeVisible(JavaScriptObject map, boolean visible)/*-{
+  }-*/;
+  /*
+    var collection = this.@com.google.appinventor.client.editor.simple.components.MockFeatureCollection::collection;
+    if (collection) {
+      if (visible) {
+        map.addLayer(collection);
+      } else {
+        map.removeLayer(collection);
+      }
+    }
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

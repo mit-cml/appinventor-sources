@@ -1,0 +1,281 @@
+<html xmlns:string="xalan://java.lang.String" xmlns:lxslt="http://xml.apache.org/xslt">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Unit Test Results: com.google.appinventor.server.project.utils.SecurityTest</title>
+<link rel="stylesheet" type="text/css" title="Style" href="../../../../../../stylesheet.css">
+<script type="text/javascript" language="JavaScript">
+        var TestCases = new Array();
+        var cur;
+        
+    cur = TestCases['com.google.appinventor.server.project.utils.SecurityTest'] = new Array();
+    
+        cur['_jacoco.agentFile'] = '/tmp/jacocoagent1108506997062565969.jar';
+    
+        cur['AiClientLib-class.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiClientLib';
+    
+        cur['AiServerLib-class.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiServerLib';
+    
+        cur['AiSharedLib-class.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiSharedLib';
+    
+        cur['ant.core.lib'] = '/usr/share/ant/lib/ant.jar';
+    
+        cur['ant.file'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml';
+    
+        cur['ant.file.AllProjects'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/build.xml';
+    
+        cur['ant.file.appengine'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml';
+    
+        cur['ant.file.CommonDefinitions'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/build-common.xml';
+    
+        cur['ant.file.type'] = 'file';
+    
+        cur['ant.file.type.AllProjects'] = 'file';
+    
+        cur['ant.file.type.appengine'] = 'file';
+    
+        cur['ant.file.type.CommonDefinitions'] = 'file';
+    
+        cur['ant.home'] = '/usr/share/ant';
+    
+        cur['ant.java.version'] = '1.8';
+    
+        cur['ant.library.dir'] = '/usr/share/ant/lib';
+    
+        cur['ant.project.default-target'] = 'all';
+    
+        cur['ant.project.invoked-targets'] = 'tests';
+    
+        cur['ant.project.name'] = 'appengine';
+    
+        cur['ant.version'] = 'Apache Ant(TM) version 1.10.7 compiled on October 24 2019';
+    
+        cur['appengine.sdk'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46';
+    
+        cur['appinventor.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor';
+    
+        cur['appinventor.pkg'] = 'com/google/appinventor';
+    
+        cur['awt.toolkit'] = 'sun.awt.X11.XToolkit';
+    
+        cur['basedir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine';
+    
+        cur['build.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/build';
+    
+        cur['build.extra.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/extra';
+    
+        cur['build.static.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/static';
+    
+        cur['build.war.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war';
+    
+        cur['class.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes';
+    
+        cur['client.flags'] = '-style pretty';
+    
+        cur['client.module'] = 'com.google.appinventor.YaClient-dev';
+    
+        cur['coverage.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/coverage';
+    
+        cur['debug'] = 'true';
+    
+        cur['debug.compile'] = 'true';
+    
+        cur['docs.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/docs';
+    
+        cur['file.encoding'] = 'UTF-8';
+    
+        cur['file.encoding.pkg'] = 'sun.io';
+    
+        cur['file.separator'] = '/';
+    
+        cur['force.builddocs'] = 'false';
+    
+        cur['gwt.args'] = '-devMode -logLevel WARN -war /home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/build/war';
+    
+        cur['gwt.sdk'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched';
+    
+        cur['java.awt.graphicsenv'] = 'sun.awt.X11GraphicsEnvironment';
+    
+        cur['java.awt.headless'] = 'true';
+    
+        cur['java.awt.printerjob'] = 'sun.print.PSPrinterJob';
+    
+        cur['java.class.path'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiServerLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonTestUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/components/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/error_prone_annotations-2.0.12.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/j2objc-annotations-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/json/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit/junit-4.8.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit-addons/junit-addons-1.4.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/keyczar/KeyczarTool.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/objectify-3.1/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/cglib-nodep-2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/easymock-3.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/javassist-3.18.0-GA.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/objenesis-1.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/responder-iq/responderiq-test.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/protobuf/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-1.0-sdk-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-labs-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-jsr107cache-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-codec-1.7.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-fileupload-1.2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-lang3-3.10.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-appengine-1.0.10.final.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-core-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-jpa-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/firebase-token-generator-2.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-jackson2-1.20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gson-2.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet-deps.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jdo2-api-2.3-eb.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr107cache-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr305.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/keyczar-0.66-080111-java-1.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/libservice.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/log4j-1.2.16.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/owasp-java-html-sanitizer-20160628.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiServerLibTests.jar:/usr/share/java/ant-launcher-1.10.7.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar:/usr/share/ant/lib/ant-junit4.jar:/tmp/jacocoagent1108506997062565969.jar';
+    
+        cur['java.class.version'] = '52.0';
+    
+        cur['java.endorsed.dirs'] = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/endorsed';
+    
+        cur['java.ext.dirs'] = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext:/usr/java/packages/lib/ext';
+    
+        cur['java.home'] = '/usr/lib/jvm/java-8-openjdk-amd64/jre';
+    
+        cur['java.io.tmpdir'] = '/tmp';
+    
+        cur['java.library.path'] = '/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib';
+    
+        cur['java.runtime.name'] = 'OpenJDK Runtime Environment';
+    
+        cur['java.runtime.version'] = '1.8.0_362-8u372-ga~us1-0ubuntu1~20.04-b09';
+    
+        cur['java.specification.maintenance.version'] = '4';
+    
+        cur['java.specification.name'] = 'Java Platform API Specification';
+    
+        cur['java.specification.vendor'] = 'Oracle Corporation';
+    
+        cur['java.specification.version'] = '1.8';
+    
+        cur['java.vendor'] = 'Private Build';
+    
+        cur['java.vendor.url'] = 'http://java.oracle.com/';
+    
+        cur['java.vendor.url.bug'] = 'http://bugreport.sun.com/bugreport/';
+    
+        cur['java.version'] = '1.8.0_362';
+    
+        cur['java.vm.info'] = 'mixed mode';
+    
+        cur['java.vm.name'] = 'OpenJDK 64-Bit Server VM';
+    
+        cur['java.vm.specification.name'] = 'Java Virtual Machine Specification';
+    
+        cur['java.vm.specification.vendor'] = 'Oracle Corporation';
+    
+        cur['java.vm.specification.version'] = '1.8';
+    
+        cur['java.vm.vendor'] = 'Private Build';
+    
+        cur['java.vm.version'] = '25.362-b09';
+    
+        cur['keystore.present'] = 'true';
+    
+        cur['lib.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/lib';
+    
+        cur['line.separator'] = '\n';
+    
+        cur['local.build.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build';
+    
+        cur['org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer0'] = '/tmp/null1451506058';
+    
+        cur['org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer1'] = '/tmp/null1094864961';
+    
+        cur['os.arch'] = 'amd64';
+    
+        cur['os.name'] = 'Linux';
+    
+        cur['os.version'] = '5.15.0-71-generic';
+    
+        cur['path.separator'] = ':';
+    
+        cur['public.build.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/build/appengine';
+    
+        cur['release'] = 'false';
+    
+        cur['reports.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports';
+    
+        cur['src.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/src';
+    
+        cur['sun.arch.data.model'] = '64';
+    
+        cur['sun.boot.class.path'] = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/classes';
+    
+        cur['sun.boot.library.path'] = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64';
+    
+        cur['sun.cpu.endian'] = 'little';
+    
+        cur['sun.cpu.isalist'] = '';
+    
+        cur['sun.desktop'] = 'gnome';
+    
+        cur['sun.io.unicode.encoding'] = 'UnicodeLittle';
+    
+        cur['sun.java.command'] = 'org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner testsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junittestcases1664461052465813715.properties skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/raw/IGNORETHIS.xml crashfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junitvmwatcher8273386773775132230.properties propsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junit3531896620058218012.properties';
+    
+        cur['sun.java.launcher'] = 'SUN_STANDARD';
+    
+        cur['sun.jnu.encoding'] = 'UTF-8';
+    
+        cur['sun.management.compiler'] = 'HotSpot 64-Bit Tiered Compilers';
+    
+        cur['sun.os.patch.level'] = 'unknown';
+    
+        cur['test_name.class'] = '${test_name}';
+    
+        cur['tests.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/tests';
+    
+        cur['user.country'] = 'IN';
+    
+        cur['user.dir'] = '/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine';
+    
+        cur['user.home'] = '/home/ubuntu';
+    
+        cur['user.language'] = 'en';
+    
+        cur['user.name'] = 'ubuntu';
+    
+        cur['user.timezone'] = '';
+    
+        cur['XstartOnFirstThread'] = '';
+    </script><script type="text/javascript" language="JavaScript">
+        function displayProperties (name) {
+          var win = window.open('','JUnitSystemProperties','scrollbars=1,resizable=1');
+          var doc = win.document;
+          doc.open();
+          doc.write("<html><head><title>Properties of " + name + "</title>");
+          doc.write("<style type=\"text/css\">");
+          doc.write("body {font:normal 68% verdana,arial,helvetica; color:#000000; }");
+          doc.write("table tr td, table tr th { font-size: 68%; }");
+          doc.write("table.properties { border-collapse:collapse; border-left:solid 1 #cccccc; border-top:solid 1 #cccccc; padding:5px; }");
+          doc.write("table.properties th { text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#eeeeee; }");
+          doc.write("table.properties td { font:normal; text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#fffffff; }");
+          doc.write("h3 { margin-bottom: 0.5em; font: bold 115% verdana,arial,helvetica }");
+          doc.write("</style>");
+          doc.write("</head><body>");
+          doc.write("<h3>Properties of " + name + "</h3>");
+          doc.write("<div align=\"right\"><a href=\"javascript:window.close();\">Close</a></div>");
+          doc.write("<table class='properties'>");
+          doc.write("<tr><th>Name</th><th>Value</th></tr>");
+          for (prop in TestCases[name]) {
+            doc.write("<tr><th>" + prop + "</th><td>" + TestCases[name][prop] + "</td></tr>");
+          }
+          doc.write("</table>");
+          doc.write("</body></html>");
+          doc.close();
+          win.focus();
+        }
+      
+      </script>
+</head>
+<body>
+<h1>Unit Test Results.</h1>
+<table width="100%">
+<tr>
+<td align="left"></td><td align="right">Designed for use with <a href="https://www.junit.org/">JUnit</a> and <a href="https://ant.apache.org/">Ant</a>.</td>
+</tr>
+</table>
+<hr size="1">
+<h3>Class com.google.appinventor.server.project.utils.SecurityTest</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th><th>Tests</th><th>Errors</th><th>Failures</th><th>Skipped</th><th nowrap>Time(s)</th><th nowrap>Time Stamp</th><th>Host</th>
+</tr>
+<tr valign="top" class="Pass">
+<td><a title="Display all tests" href="16_SecurityTest.html">SecurityTest</a></td><td><a title="Display all tests" href="16_SecurityTest.html">1</a></td><td>0</td><td>0</td><td>0</td><td>0.015</td><td>2023-05-22T18:48:39</td><td>ubuntu-Lenovo-IdeaPad-S540-15IWL-D</td>
+</tr>
+</table>
+<h2>Tests</h2>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th><th>Status</th><th width="80%">Type</th><th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="TableRowColor">
+<td><a name="testUserAndProjectIdEncryption"></a>testUserAndProjectIdEncryption</td><td>Success</td><td></td><td>0.013</td>
+</tr>
+</table>
+<div class="Properties">
+<a href="javascript:displayProperties('com.google.appinventor.server.project.utils.SecurityTest');">
+                    Properties &raquo;
+                </a>
+</div>
+</body>
+</html>

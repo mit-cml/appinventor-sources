@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PZAwarePositionCallback.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.utils</a> &gt; <span class="el_source">PZAwarePositionCallback.java</span></div><h1>PZAwarePositionCallback.java</h1><pre class="source lang-java linenums">package com.google.appinventor.client.utils;
+
+import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.PopupPanel;
+
+/**
+ * Implementation of PopupPanel.PositionCallback that can be alerted
+ * when the browser is Pinch Zoomed in Google Chrome. Pinch Zooming in Chrome
+ * causes both UIObject#getAbsoluteLeft() and UIObject#getAbsoluteTop() to return
+ * inaccurate values. This class contains patched implementations for each.
+ *
+ * @author will2596@gmail.com (William Byrne)
+ */
+public abstract class PZAwarePositionCallback implements PopupPanel.PositionCallback {
+    // Pinch Zoom flag which is tripped by a handler in Ode.java
+<span class="nc" id="L17">    private static boolean pinchZoomed = false;</span>
+
+    // Element of the enclosing instance
+    private final Element elem;
+
+<span class="nc" id="L22">    public PZAwarePositionCallback(Element elem) {</span>
+<span class="nc" id="L23">        this.elem = elem;</span>
+<span class="nc" id="L24">    }</span>
+
+<span class="nc" id="L26">    public static boolean isPinchZoomed() { return pinchZoomed; }</span>
+
+<span class="nc" id="L28">    public static void setPinchZoomed(boolean pinchZoomed) { PZAwarePositionCallback.pinchZoomed = pinchZoomed; }</span>
+
+<span class="nc" id="L30">    public int getTrueAbsoluteLeft() { return getAbsolutePosition(elem).get(0); }</span>
+
+<span class="nc" id="L32">    public int getTrueAbsoluteTop() { return getAbsolutePosition(elem).get(1); }</span>
+
+    //  Helper used to accurately determine the absolute left and absolute top
+    //  of the Element for use in positioning. Pinch Zooming breaks GWT's built-in
+    //  equivalents, DOMImpl#getSubPixelAbsoluteLeft(Element) and
+    //  DOMImpl#getSubPixelAbsoluteTop(Element).
+    private native JsArrayInteger getAbsolutePosition(Element elem) /*-{
+        var curr = elem;
+        var left = 0;
+        var top = 0;
+
+        if ($doc.getElementById) {
+            do  {
+                left += elem.offsetLeft - elem.scrollLeft;
+                top += elem.offsetTop - elem.scrollTop;
+
+                elem = elem.offsetParent;
+                curr = curr.parentNode;
+                while (curr != elem) {
+                    left -= curr.scrollLeft;
+                    top -= curr.scrollTop;
+
+                    curr = curr.parentNode;
+                }
+            } while (elem.offsetParent);
+        }
+
+        return [left, top];
+    }-*/;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

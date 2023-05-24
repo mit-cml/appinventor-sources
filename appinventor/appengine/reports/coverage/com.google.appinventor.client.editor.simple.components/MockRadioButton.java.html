@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockRadioButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockRadioButton.java</span></div><h1>MockRadioButton.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.user.client.ui.RadioButton;
+
+/**
+ * Mock RadioButton component.
+ *
+ */
+public final class MockRadioButton extends MockVisibleComponent {
+
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = &quot;RadioButton&quot;;
+
+  // Property names
+  private static final String PROPERTY_NAME_GROUP = &quot;Group&quot;;
+
+  // GWT radioButton widget used to mock a Simple RadioButton
+  private final RadioButton radioButtonWidget;
+
+  /**
+   * Creates a new MockRadioButton component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  public MockRadioButton(SimpleEditor editor) {
+<span class="nc" id="L36">    super(editor, TYPE, images.radiobutton());</span>
+
+    // Initialize mock radioButton UI
+<span class="nc" id="L39">    radioButtonWidget = new RadioButton(&quot;dummy-group&quot;);</span>
+<span class="nc" id="L40">    radioButtonWidget.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+<span class="nc" id="L41">    initComponent(radioButtonWidget);</span>
+<span class="nc" id="L42">  }</span>
+
+  @Override
+  public void onCreateFromPalette() {
+    // Change radio button text to component name.
+<span class="nc" id="L47">    changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));</span>
+<span class="nc" id="L48">  }</span>
+
+  /*
+   * Sets the radioButton's BackgroundColor property to a new value.
+   */
+  private void setBackgroundColorProperty(String text) {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">    if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L55">      text = &quot;&amp;HFFFFFFFF&quot;;  // white</span>
+    }
+<span class="nc" id="L57">    MockComponentsUtil.setWidgetBackgroundColor(radioButtonWidget, text);</span>
+<span class="nc" id="L58">  }</span>
+
+  /*
+   * Sets the radioButton's Enabled property to a new value.
+   */
+  private void setEnabledProperty(String text) {
+<span class="nc" id="L64">    MockComponentsUtil.setEnabled(this, text);</span>
+<span class="nc" id="L65">  }</span>
+
+  /*
+   * Sets the radioButton's FontBold property to a new value.
+   */
+  private void setFontBoldProperty(String text) {
+<span class="nc" id="L71">    MockComponentsUtil.setWidgetFontBold(radioButtonWidget, text);</span>
+<span class="nc" id="L72">  }</span>
+
+  /*
+   * Sets the radioButton's FontItalic property to a new value.
+   */
+  private void setFontItalicProperty(String text) {
+<span class="nc" id="L78">    MockComponentsUtil.setWidgetFontItalic(radioButtonWidget, text);</span>
+<span class="nc" id="L79">  }</span>
+
+  /*
+   * Sets the radioButton's FontSize property to a new value.
+   */
+  private void setFontSizeProperty(String text) {
+<span class="nc" id="L85">    MockComponentsUtil.setWidgetFontSize(radioButtonWidget, text);</span>
+<span class="nc" id="L86">  }</span>
+
+  /*
+   * Sets the radioButton's FontTypeface property to a new value.
+   */
+  private void setFontTypefaceProperty(String text) {
+<span class="nc" id="L92">    MockComponentsUtil.setWidgetFontTypeface(this.editor, radioButtonWidget, text);</span>
+<span class="nc" id="L93">  }</span>
+
+  /*
+   * Sets the radioButton's Text property to a new value.
+   */
+  private void setTextProperty(String text) {
+<span class="nc" id="L99">    radioButtonWidget.setText(text);</span>
+<span class="nc" id="L100">  }</span>
+
+  /*
+   * Sets the radioButton's TextColor property to a new value.
+   */
+  private void setTextColorProperty(String text) {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L107">      text = &quot;&amp;HFF000000&quot;;  // black</span>
+    }
+<span class="nc" id="L109">    MockComponentsUtil.setWidgetTextColor(radioButtonWidget, text);</span>
+<span class="nc" id="L110">  }</span>
+
+  /*
+   * Sets the radioButton's Checked property to a new value.
+   */
+  private void setCheckedProperty(String text) {
+<span class="nc" id="L116">    radioButtonWidget.setChecked(Boolean.parseBoolean(text));</span>
+<span class="nc" id="L117">  }</span>
+
+  // PropertyChangeListener implementation
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L122">    super.onPropertyChange(propertyName, newValue);</span>
+
+    // Apply changed properties to the mock component
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {</span>
+<span class="nc" id="L126">      setBackgroundColorProperty(newValue);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {</span>
+<span class="nc" id="L128">      setEnabledProperty(newValue);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {</span>
+<span class="nc" id="L130">      setFontBoldProperty(newValue);</span>
+<span class="nc" id="L131">      refreshForm();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {</span>
+<span class="nc" id="L133">      setFontItalicProperty(newValue);</span>
+<span class="nc" id="L134">      refreshForm();</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {</span>
+<span class="nc" id="L136">      setFontSizeProperty(newValue);</span>
+<span class="nc" id="L137">      refreshForm();</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {</span>
+<span class="nc" id="L139">      setFontTypefaceProperty(newValue);</span>
+<span class="nc" id="L140">      refreshForm();</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {</span>
+<span class="nc" id="L142">      setTextProperty(newValue);</span>
+<span class="nc" id="L143">      refreshForm();</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {</span>
+<span class="nc" id="L145">      setTextColorProperty(newValue);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {</span>
+<span class="nc" id="L147">      setCheckedProperty(newValue);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {</span>
+<span class="nc" id="L149">      MockComponentsUtil.updateTextAppearances(radioButtonWidget, newValue);</span>
+<span class="nc" id="L150">      refreshForm();</span>
+    }
+<span class="nc" id="L152">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

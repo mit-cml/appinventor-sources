@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPieChartDataModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockPieChartDataModel.java</span></div><h1>MockPieChartDataModel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.pepstock.charba.client.data.PieDataset;
+
+public class MockPieChartDataModel extends MockChartDataModel&lt;PieDataset, MockPieChartView&gt; {
+  // Local references of the colors and labels properties have to be
+  // kept in the Data Model class to be able to add to them and set them.
+  // This is due to the API for changing colors and labels being quite limited (in v2.5)
+<span class="nc" id="L21">  private final List&lt;String&gt; colors = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L22">  private final List&lt;String&gt; labels = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L23">  private String color = &quot;&quot;;</span>
+
+  /**
+   * Creates a new Mock Pie Chart Model object instance, linking it with
+   * the specified Chart View.
+   *
+   * @param view  Mock Pie Chart View to link Data Model to
+   */
+  public MockPieChartDataModel(MockPieChartView view) {
+<span class="nc" id="L32">    super(view);</span>
+
+    // Create the Data Series object
+<span class="nc" id="L35">    dataSeries = new PieDataset();</span>
+
+    // Set the default style properties for the Data Series
+<span class="nc" id="L38">    setDefaultStylingProperties();</span>
+
+    // Adds the Data Series to the Chart.
+<span class="nc" id="L41">    addDataSeriesToChart();</span>
+<span class="nc" id="L42">  }</span>
+
+  @Override
+  public void changeColor(String color) {
+<span class="nc" id="L46">    this.color = color;</span>
+<span class="nc" id="L47">    color = getHexColor(color);</span>
+
+    // Clear the old colors list
+<span class="nc" id="L50">    colors.clear();</span>
+
+    // Add the same color for every entry
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    for (int i = 0; i &lt; dataSeries.getData().size(); ++i) {</span>
+<span class="nc" id="L54">      colors.add(color);</span>
+    }
+
+    // Since the setBackgroundColor method accepts varargs as parameters,
+    // we have to cast our result to a String array.
+<span class="nc" id="L59">    dataSeries.setBackgroundColor(colors.toArray(new String[0]));</span>
+<span class="nc" id="L60">  }</span>
+
+  @Override
+  protected void setDefaultElements() {
+<span class="nc" id="L64">    final int values = 3; // Number of values to add</span>
+
+    // Get the index of the Data Series to use for default entries, and
+    // multiply it by the number of values to use to create an offset
+    // TODO: Much like the MockPointChartDataModel does now, this should
+    // TODO: take into account the maximum data value in all the data series, since removing Data
+    // TODO: components can re-add the same entries to the Pie Chart itself.
+    // TODO: This can be kept and applied to the Line Chart Data Model as well if simplicity
+    // TODO: is opted for instead.
+<span class="nc" id="L73">    int indexOffset = chartData.getDatasets().indexOf(this.dataSeries) * values;</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    for (int i = 0; i &lt; values; ++i) {</span>
+      // Construct the x and y values based on the data series
+      // index offset and the loop index. This allows to differentiate
+      // the default entries of each individual Data Series.
+<span class="nc" id="L79">      double x = indexOffset + i + 1;</span>
+<span class="nc" id="L80">      double y = indexOffset + i + 1;</span>
+
+      // Add an entry based on the constructed values
+<span class="nc" id="L83">      addEntryFromTuple(x + &quot;&quot;, y + &quot;&quot;);</span>
+    }
+<span class="nc" id="L85">  }</span>
+
+  @Override
+  public void addEntryFromTuple(String... tuple) {
+    try {
+      // First entry is a String
+<span class="nc" id="L91">      String x = tuple[0];</span>
+
+      // Second entry is expected to be a double; attempt parsing
+<span class="nc" id="L94">      Double y = Double.parseDouble(tuple[1]);</span>
+
+      // Add data entry (this if check is required due to
+      // the underlying library implementation of getData)
+<span class="nc bnc" id="L98" title="All 2 branches missed.">      if (dataSeries.getData().size() == 0) {</span>
+<span class="nc" id="L99">        dataSeries.setData(y);</span>
+      } else {
+<span class="nc" id="L101">        dataSeries.getData().add(y);</span>
+      }
+
+      // Add entry label (x value corresponds to the label)
+<span class="nc" id="L105">      labels.add(x);</span>
+<span class="nc" id="L106">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L107">      ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());</span>
+<span class="nc" id="L108">    }</span>
+<span class="nc" id="L109">  }</span>
+
+  @Override
+  protected String getDefaultTupleEntry(int index) {
+    // TODO: In the future, the getDefaultTupleEntry method could have
+    // TODO: an additional parameter for the index of the dimension
+    // TODO: to return differentiated values. Something like &quot;Entry 1&quot;
+    // TODO: could be more suited for the x value, while &quot;1&quot; would be more
+    // TODO: suited for the y value.
+<span class="nc" id="L118">    return index + &quot;&quot;;</span>
+  }
+
+  @Override
+  public void clearEntries() {
+<span class="nc" id="L123">    dataSeries.getData().clear();</span>
+<span class="nc" id="L124">    labels.clear(); // Clear the labels (since they represent the x values)</span>
+<span class="nc" id="L125">  }</span>
+
+  @Override
+  protected void postDataImportAction() {
+    // No data points generated, fallback to default option.
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    if (dataSeries.getData().isEmpty()) {</span>
+<span class="nc" id="L131">      setDefaultElements();</span>
+    }
+
+    // After importing the data, the colors have to be changed again
+    // (since the new entry count might be different)
+    // TODO: possible to optimize by tracking differences
+<span class="nc" id="L137">    changeColor(this.color);</span>
+<span class="nc" id="L138">  }</span>
+
+  @Override
+  protected int getTupleSize() {
+<span class="nc" id="L142">    return 2;</span>
+  }
+
+  /**
+   * Returns a List of entry labels corresponding to the
+   * x values of the Data Series in order.
+   *
+   * @return List of entry labels (Strings)
+   */
+  public List&lt;String&gt; getLabels() {
+<span class="nc" id="L152">    return labels;</span>
+  }
+
+  @Override
+  public void removeDataSeriesFromChart() {
+    // The view has to be notified of the removal of the Data Model
+<span class="nc" id="L158">    view.removeDataModel(this);</span>
+
+    // Proceed with general removal from the Chart
+<span class="nc" id="L161">    super.removeDataSeriesFromChart();</span>
+<span class="nc" id="L162">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

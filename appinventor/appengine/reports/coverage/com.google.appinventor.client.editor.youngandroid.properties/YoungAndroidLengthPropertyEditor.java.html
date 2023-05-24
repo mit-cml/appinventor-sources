@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidLengthPropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">YoungAndroidLengthPropertyEditor.java</span></div><h1>YoungAndroidLengthPropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * Property editor for length properties (i.e. width and height).
+ *
+ */
+public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEditor {
+  public static final String CONST_AUTOMATIC = &quot;&quot; + MockVisibleComponent.LENGTH_PREFERRED;
+  public static final String CONST_FILL_PARENT = &quot;&quot; + MockVisibleComponent.LENGTH_FILL_PARENT;
+
+<span class="nc" id="L32">  private static int uniqueIdSeed = 0;</span>
+
+  private final RadioButton automaticRadioButton;
+  private final RadioButton fillParentRadioButton;
+  private final RadioButton customLengthRadioButton;
+  private final RadioButton percentfillRadioButton;
+  private final TextBox customLengthField;
+  private final TextBox percentLengthField;
+
+
+  public YoungAndroidLengthPropertyEditor() {
+<span class="nc" id="L43">    this(true);</span>
+<span class="nc" id="L44">  }</span>
+
+  /**
+   * Creates a new length property editor.
+   *
+   * @param includePercent  whether to include percent of screen option
+   */
+<span class="nc" id="L51">  public YoungAndroidLengthPropertyEditor(boolean includePercent) {</span>
+    // The radio button group cannot be shared across all instances, so we append a unique id.
+<span class="nc" id="L53">    int uniqueId = ++uniqueIdSeed;</span>
+<span class="nc" id="L54">    String radioButtonGroup = &quot;LengthType-&quot; + uniqueId;</span>
+<span class="nc" id="L55">    automaticRadioButton = new RadioButton(radioButtonGroup, MESSAGES.automaticCaption());</span>
+<span class="nc" id="L56">    fillParentRadioButton = new RadioButton(radioButtonGroup, MESSAGES.fillParentCaption());</span>
+<span class="nc" id="L57">    percentfillRadioButton = new RadioButton(radioButtonGroup);</span>
+<span class="nc" id="L58">    customLengthRadioButton = new RadioButton(radioButtonGroup);</span>
+<span class="nc" id="L59">    customLengthField = new TextBox();</span>
+<span class="nc" id="L60">    customLengthField.setVisibleLength(4);</span>
+<span class="nc" id="L61">    customLengthField.setMaxLength(4);</span>
+<span class="nc" id="L62">    percentLengthField = new TextBox();</span>
+<span class="nc" id="L63">    percentLengthField.setVisibleLength(4);</span>
+<span class="nc" id="L64">    percentLengthField.setMaxLength(4);</span>
+
+<span class="nc" id="L66">    Panel customRow = new HorizontalPanel();</span>
+<span class="nc" id="L67">    customRow.add(customLengthRadioButton);</span>
+<span class="nc" id="L68">    customRow.add(customLengthField);</span>
+<span class="nc" id="L69">    Label pixels = new Label(MESSAGES.pixelsCaption());</span>
+<span class="nc" id="L70">    pixels.setStylePrimaryName(&quot;ode-PixelsLabel&quot;);</span>
+<span class="nc" id="L71">    customRow.add(pixels);</span>
+
+<span class="nc" id="L73">    Panel percentRow = new HorizontalPanel();</span>
+<span class="nc" id="L74">    percentRow.add(percentfillRadioButton);</span>
+<span class="nc" id="L75">    percentRow.add(percentLengthField);</span>
+<span class="nc" id="L76">    Label percent = new Label(MESSAGES.percentCaption());</span>
+<span class="nc" id="L77">    percent.setStylePrimaryName(&quot;ode-PixelsLabel&quot;); // recycle css definition</span>
+<span class="nc" id="L78">    percentRow.add(percent);</span>
+
+<span class="nc" id="L80">    Panel panel = new VerticalPanel();</span>
+<span class="nc" id="L81">    panel.add(automaticRadioButton);</span>
+<span class="nc" id="L82">    panel.add(fillParentRadioButton);</span>
+<span class="nc" id="L83">    panel.add(customRow);</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    if ( includePercent ) {</span>
+<span class="nc" id="L86">      panel.add(percentRow);</span>
+    }
+
+<span class="nc" id="L89">    automaticRadioButton.addValueChangeHandler(new ValueChangeHandler() {</span>
+      @Override
+      public void onValueChange(ValueChangeEvent event) {
+        // Clear the custom and percent length fields.
+<span class="nc" id="L93">        customLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L94">        percentLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L95">        setOkButtonEnabled(true);</span>
+<span class="nc" id="L96">      }</span>
+    });
+<span class="nc" id="L98">    fillParentRadioButton.addValueChangeHandler(new ValueChangeHandler() {</span>
+      @Override
+      public void onValueChange(ValueChangeEvent event) {
+        // Clear the custom and percent length fields.
+<span class="nc" id="L102">        customLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L103">        percentLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L104">        setOkButtonEnabled(true);</span>
+<span class="nc" id="L105">      }</span>
+    });
+<span class="nc" id="L107">    customLengthField.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+        // If the user clicks on the custom length field, but the radio button for a custom length
+        // is not checked, check it.
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (!customLengthRadioButton.isChecked()) {</span>
+<span class="nc" id="L113">          customLengthRadioButton.setChecked(true);</span>
+<span class="nc" id="L114">          percentLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L115">          setOkButtonEnabled(true);</span>
+        }
+<span class="nc" id="L117">      }</span>
+    });
+
+<span class="nc" id="L120">    percentLengthField.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+        // If the user clicks on the percent length field, but the radio button for a custom length
+        // is not checked, check it.
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (!percentfillRadioButton.isChecked()) {</span>
+<span class="nc" id="L126">          percentfillRadioButton.setChecked(true);</span>
+<span class="nc" id="L127">          customLengthField.setText(&quot;&quot;);</span>
+<span class="nc" id="L128">          setOkButtonEnabled(true);</span>
+        }
+<span class="nc" id="L130">      }</span>
+    });
+
+<span class="nc" id="L133">    initAdditionalChoicePanel(panel);</span>
+<span class="nc" id="L134">  }</span>
+
+  @Override
+  protected void updateValue() {
+<span class="nc" id="L138">    super.updateValue();</span>
+
+<span class="nc" id="L140">    String propertyValue = property.getValue();</span>
+<span class="nc bnc" id="L141" title="All 4 branches missed.">    if (propertyValue.isEmpty() &amp;&amp; isMultipleValues()) {  // Multiselect collision</span>
+<span class="nc" id="L142">      automaticRadioButton.setValue(false);</span>
+<span class="nc" id="L143">      fillParentRadioButton.setValue(false);</span>
+<span class="nc" id="L144">      percentfillRadioButton.setValue(false);</span>
+<span class="nc" id="L145">      percentLengthField.setValue(&quot;&quot;);</span>
+<span class="nc" id="L146">      customLengthRadioButton.setValue(false);</span>
+<span class="nc" id="L147">      customLengthField.setValue(&quot;&quot;);</span>
+<span class="nc" id="L148">      setOkButtonEnabled(false);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">    } else if (propertyValue.equals(CONST_AUTOMATIC)) {</span>
+<span class="nc" id="L150">      automaticRadioButton.setChecked(true);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">    } else if (propertyValue.equals(CONST_FILL_PARENT)) {</span>
+<span class="nc" id="L152">      fillParentRadioButton.setChecked(true);</span>
+    } else {
+<span class="nc" id="L154">      int v = Integer.parseInt(propertyValue);</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (v &lt;= MockVisibleComponent.LENGTH_PERCENT_TAG) {</span>
+<span class="nc" id="L156">        v = (-v) + MockVisibleComponent.LENGTH_PERCENT_TAG;</span>
+<span class="nc" id="L157">        percentfillRadioButton.setChecked(true);</span>
+<span class="nc" id="L158">        percentLengthField.setText(&quot;&quot; + v);</span>
+      } else {
+<span class="nc" id="L160">        customLengthRadioButton.setChecked(true);</span>
+<span class="nc" id="L161">        customLengthField.setText(propertyValue);</span>
+      }
+    }
+<span class="nc" id="L164">  }</span>
+
+  @Override
+  protected String getPropertyValueSummary() {
+<span class="nc" id="L168">    String lengthHint = property.getValue();</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">    if (lengthHint.isEmpty() &amp;&amp; isMultipleValues()) {</span>
+<span class="nc" id="L170">      return MESSAGES.multipleValues();</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    } else if (lengthHint.equals(CONST_AUTOMATIC)) {</span>
+<span class="nc" id="L172">      return MESSAGES.automaticCaption();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    } else if (lengthHint.equals(CONST_FILL_PARENT)) {</span>
+<span class="nc" id="L174">      return MESSAGES.fillParentCaption();</span>
+    } else {
+<span class="nc" id="L176">      int v = Integer.parseInt(lengthHint);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">      if (v &lt;= MockVisibleComponent.LENGTH_PERCENT_TAG) {</span>
+<span class="nc" id="L178">        v = (-v) + MockVisibleComponent.LENGTH_PERCENT_TAG;</span>
+<span class="nc" id="L179">        return MESSAGES.percentSummary(&quot;&quot; + v);</span>
+      } else {
+<span class="nc" id="L181">        return MESSAGES.pixelsSummary(lengthHint);</span>
+      }
+    }
+  }
+
+  @Override
+  protected boolean okAction() {
+<span class="nc" id="L188">    setMultipleValues(false);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">    if (automaticRadioButton.isChecked()) {</span>
+<span class="nc" id="L190">      property.setValue(CONST_AUTOMATIC);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">    } else if (fillParentRadioButton.isChecked()) {</span>
+<span class="nc" id="L192">      property.setValue(CONST_FILL_PARENT);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">    } else if (customLengthRadioButton.isChecked()) {</span>
+      // Custom length
+<span class="nc" id="L195">      String text = customLengthField.getText();</span>
+      // Make sure it's a non-negative number.  It is important
+      // that this check stay within the custom length case because
+      // CONST_AUTOMATIC and CONST_FILL_PARENT are deliberately negative.
+<span class="nc" id="L199">      boolean success = false;</span>
+      try {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (Integer.parseInt(text) &gt;= 0) {</span>
+<span class="nc" id="L202">          success = true;</span>
+        }
+<span class="nc" id="L204">      } catch (NumberFormatException e) {</span>
+        // fall through with success == false
+<span class="nc" id="L206">      }</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">      if (!success) {</span>
+<span class="nc" id="L208">        Window.alert(MESSAGES.nonnumericInputError());</span>
+<span class="nc" id="L209">        return false;</span>
+      }
+<span class="nc" id="L211">      property.setValue(text);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">    } else if (percentfillRadioButton.getValue()) {         // Percent field!</span>
+<span class="nc" id="L213">      String text = percentLengthField.getText();</span>
+<span class="nc" id="L214">      boolean success = false;</span>
+      try {
+<span class="nc" id="L216">        int v = Integer.parseInt(text);</span>
+<span class="nc bnc" id="L217" title="All 4 branches missed.">        if (v &gt;= 0 &amp;&amp; v &lt;= 100) {</span>
+<span class="nc" id="L218">          success = true;</span>
+<span class="nc" id="L219">          property.setValue(&quot;&quot; + (-v + MockVisibleComponent.LENGTH_PERCENT_TAG));</span>
+        }
+<span class="nc" id="L221">      } catch (NumberFormatException e) {</span>
+        // fall through with success == false
+<span class="nc" id="L223">      }</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">      if (!success) {</span>
+<span class="nc" id="L225">        Window.alert(MESSAGES.nonvalidPercentValue());</span>
+<span class="nc" id="L226">        return false;</span>
+      }
+    }
+<span class="nc" id="L229">    return true;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

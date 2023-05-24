@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockDataFile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockDataFile.java</span></div><h1>MockDataFile.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import com.google.gwt.user.client.ui.Image;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Mock component for the Data File component.
+ * Is a non-visible component due to serving as a File.
+ */
+public class MockDataFile extends MockNonVisibleComponent {
+  public static final String TYPE = &quot;DataFile&quot;;
+
+  private static final String PROPERTY_NAME_SOURCE_FILE = &quot;SourceFile&quot;;
+
+  private List&lt;String&gt; columnNames; // First row of the Data File's contents
+
+  private List&lt;List&lt;String&gt;&gt; columns; // Parsed columns of the Data File
+
+<span class="nc" id="L37">  private final Set&lt;DataFileChangeListener&gt; dataFileChangeListeners = new HashSet&lt;&gt;();</span>
+
+  /**
+   * Creates a new instance of a DataFile component whose icon is
+   * loaded dynamically (not part of the icon image bundle).
+   */
+  public MockDataFile(SimpleEditor editor, String type, Image iconImage) {
+<span class="nc" id="L44">    super(editor, type, iconImage);</span>
+<span class="nc" id="L45">  }</span>
+
+  /**
+   * Changes the Source File property of the MockDataFile.
+   * Upon change, the new file is imported and parsed, the
+   * contents are stored, and DataFileChangeListeners are
+   * updated.
+   *
+   * @param fileSource  name of the new Source File
+   */
+  private void setSourceFileProperty(String fileSource) {
+    // Update the source file property &amp; reset the
+    // columnNames and rows property
+<span class="nc" id="L58">    columnNames = new ArrayList&lt;&gt;();</span>
+
+    // Update DataFileChangeListeners to notify that
+    // the columns list is (at least temporarily) empty
+<span class="nc" id="L62">    updateDataFileChangeListeners();</span>
+
+    // Check that the SourceFile property is a valid file
+<span class="nc bnc" id="L65" title="All 4 branches missed.">    if (fileSource == null || fileSource.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L66">      return;</span>
+    }
+
+    // Read the media file
+<span class="nc" id="L70">    long projectId = editor.getProjectId();</span>
+
+<span class="nc" id="L72">    Ode.getInstance().getProjectService().loadDataFile(projectId, &quot;assets/&quot; + fileSource,</span>
+<span class="nc" id="L73">        new AsyncCallback&lt;List&lt;List&lt;String&gt;&gt;&gt;() {</span>
+          @Override
+          public void onFailure(Throwable caught) {
+<span class="nc" id="L76">            ErrorReporter.reportError(caught.getMessage());</span>
+<span class="nc" id="L77">          }</span>
+
+          @Override
+          public void onSuccess(List&lt;List&lt;String&gt;&gt; result) {
+            // Update columns property
+<span class="nc" id="L82">            columns = result;</span>
+
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (result.isEmpty()) {</span>
+<span class="nc" id="L85">              ErrorReporter.reportError(MESSAGES.emptyFileError());</span>
+<span class="nc" id="L86">              return;</span>
+            }
+
+            // Populate columnNames List (it was empty before)
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            for (List&lt;String&gt; column : columns) {</span>
+              // Add first element of the column if the column is not empty
+<span class="nc bnc" id="L92" title="All 2 branches missed.">              if (!column.isEmpty()) {</span>
+<span class="nc" id="L93">                columnNames.add(column.get(0));</span>
+              }
+<span class="nc" id="L95">            }</span>
+
+            // Notify DataFileChangeListeners of the changes
+<span class="nc" id="L98">            updateDataFileChangeListeners();</span>
+
+            // Hide the info message shown after setting the Source File property
+<span class="nc" id="L101">            ErrorReporter.hide();</span>
+<span class="nc" id="L102">          }</span>
+        });
+
+    // Show message to indicate parsing of the files
+    // (since this is an asynchronous operation)
+<span class="nc" id="L107">    ErrorReporter.reportInfo(MESSAGES.dataFileParsingMessage(fileSource, this.getName()));</span>
+<span class="nc" id="L108">  }</span>
+
+  /**
+   * Get the Column Names (first row) of the MockDataFile's parsed content.
+   *
+   * @return  column names of the Data File (list of Strings)
+   */
+  public List&lt;String&gt; getColumnNames() {
+<span class="nc" id="L116">    return columnNames;</span>
+  }
+
+  /**
+   * Returns a List of the specified columns.
+   *
+   * &lt;p&gt;If a column is not found, it is substituted by
+   * an empty List.
+   *
+   * @param columns  List of columns to get
+   * @return  List of columns (a column is a List of Strings)
+   */
+  public List&lt;List&lt;String&gt;&gt; getColumns(List&lt;String&gt; columns) {
+<span class="nc" id="L129">    List&lt;List&lt;String&gt;&gt; dataColumns = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    for (String column : columns) {</span>
+      // Get the index of the column and get the column itself
+<span class="nc" id="L133">      int index = columnNames.indexOf(column);</span>
+<span class="nc" id="L134">      List&lt;String&gt; dataColumn = getColumn(index);</span>
+
+      // Add the column to the result
+<span class="nc" id="L137">      dataColumns.add(dataColumn);</span>
+<span class="nc" id="L138">    }</span>
+
+<span class="nc" id="L140">    return dataColumns;</span>
+  }
+
+  /**
+   * Gets the column in the specified index.
+   *
+   * @param index  index of the column
+   * @return  List of Strings representing the column
+   * */
+  private List&lt;String&gt; getColumn(int index) {
+<span class="nc" id="L150">    List&lt;String&gt; column = new ArrayList&lt;&gt;();</span>
+
+    // If index is invalid, return empty List
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    if (index &lt; 0) {</span>
+<span class="nc" id="L154">      return column;</span>
+    }
+
+<span class="nc" id="L157">    return columns.get(index);</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L162">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L164" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_SOURCE_FILE)) {</span>
+<span class="nc" id="L165">      setSourceFileProperty(newValue);</span>
+    }
+<span class="nc" id="L167">  }</span>
+
+  /**
+   * Adds a new Data File Change listener to the Mock Data File component.
+   *
+   * @param listener  Listener to add
+   */
+  public void addDataFileChangeListener(DataFileChangeListener listener) {
+<span class="nc" id="L175">    dataFileChangeListeners.add(listener);</span>
+<span class="nc" id="L176">  }</span>
+
+  /**
+   * Removes a Data File Change Listener from the Mock Data File component.
+   *
+   * @param listener  Listener to remove
+   */
+  public void removeDataFileChangeListener(DataFileChangeListener listener) {
+<span class="nc" id="L184">    dataFileChangeListeners.remove(listener);</span>
+<span class="nc" id="L185">  }</span>
+
+  /**
+   * Updates all the attached DataFileChangeListeners.
+   */
+  private void updateDataFileChangeListeners() {
+    /* To prevent errors, and extra check here is needed.
+       It only makes sense updating the listeners only when
+       the data file is attached.
+    */
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (this.isAttached()) {</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">      for (DataFileChangeListener listener : dataFileChangeListeners) {</span>
+        // Call onColumnsChange event
+<span class="nc" id="L198">        listener.onColumnsChange(this);</span>
+<span class="nc" id="L199">      }</span>
+    }
+<span class="nc" id="L201">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

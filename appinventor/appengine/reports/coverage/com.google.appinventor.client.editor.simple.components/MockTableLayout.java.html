@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockTableLayout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockTableLayout.java</span></div><h1>MockTableLayout.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.output.OdeLog;
+
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import java.util.Arrays;
+import java.util.Map;
+
+/**
+ * A layout that arranges its children in a grid (with variable sized rows and
+ * columns).
+ * &lt;p&gt;
+ * If multiple children claim to be in the same cell, the last child in the
+ * children list wins.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+final class MockTableLayout extends MockLayout {
+  private static class Cell {
+    int row;
+    int col;
+
+<span class="nc" id="L30">    private Cell(int row, int col) {</span>
+<span class="nc" id="L31">      this.row = row;</span>
+<span class="nc" id="L32">      this.col = col;</span>
+<span class="nc" id="L33">    }</span>
+  };
+
+  private class TableLayoutInfo extends LayoutInfo {
+    MockComponent[][] cellChildren;
+
+<span class="nc" id="L39">    TableLayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap, MockComponent table) {</span>
+<span class="nc" id="L40">      super(layoutInfoMap, table);</span>
+
+<span class="nc" id="L42">      cellChildren = new MockComponent[nrows][ncols];</span>
+<span class="nc" id="L43">    }</span>
+
+    @Override
+    protected void prepareToGatherDimensions() {
+<span class="nc" id="L47">      prepareForLayout(this);</span>
+<span class="nc" id="L48">      super.prepareToGatherDimensions();</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    int calculateAutomaticWidth() {
+<span class="nc" id="L53">      return colLefts[ncols - 1] + colWidths[ncols - 1];</span>
+    }
+
+    @Override
+    int calculateAutomaticHeight() {
+<span class="nc" id="L58">      return rowTops[nrows - 1] + rowHeights[nrows - 1];</span>
+    }
+
+    @Override
+    void cleanUp() {
+<span class="nc" id="L63">      super.cleanUp();</span>
+<span class="nc" id="L64">      cellChildren = null;</span>
+<span class="nc" id="L65">    }</span>
+  }
+
+  private static final int DEFAULT_NUM_ROWS = 2;
+  private static final int DEFAULT_NUM_COLUMNS = 2;
+
+  // The color of the drop-target area's border
+  private static final String DROP_TARGET_AREA_COLOR = &quot;#0000ff&quot;;
+
+  // The preferred width and height of empty cells in the UI designer
+  private static final int EMPTY_COL_WIDTH = 50;
+  private static final int EMPTY_ROW_HEIGHT = 50;
+
+  private int nrows;
+  private int ncols;
+
+  // Position and size of each row and column in the table;
+  // calculated in layoutContainer; used to calculate the correct
+  // drop location for a component dropped onto this layout's container.
+  private int[] rowTops;
+  private int[] rowHeights;
+  private int[] colLefts;
+  private int[] colWidths;
+
+  // The DIV element that displays the drop-target area.
+  private Element dropTargetArea; // lazily initialized
+
+  // The cell onto which the currently hovering component will be dropped onto.
+  private Cell dropTargetCell;
+
+  /**
+   * Creates a new table layout.
+   */
+<span class="nc" id="L98">  MockTableLayout() {</span>
+<span class="nc" id="L99">    nrows = DEFAULT_NUM_ROWS;</span>
+<span class="nc" id="L100">    ncols = DEFAULT_NUM_COLUMNS;</span>
+
+    // Allocate the arrays for position and size of rows and columns now.
+    // We only need to reallocate them if the number of rows/columns changes.
+<span class="nc" id="L104">    rowTops = new int[nrows];</span>
+<span class="nc" id="L105">    rowHeights = new int[nrows];</span>
+<span class="nc" id="L106">    colLefts = new int[ncols];</span>
+<span class="nc" id="L107">    colWidths = new int[ncols];</span>
+
+    // Initialize layoutHeight and layoutWidth because they are used in getPreferredHeight and
+    // getPreferredWidth.
+<span class="nc" id="L111">    layoutHeight = nrows * EMPTY_ROW_HEIGHT;</span>
+<span class="nc" id="L112">    layoutWidth = ncols * EMPTY_COL_WIDTH;</span>
+<span class="nc" id="L113">  }</span>
+
+  public void setRows(int nrows) {
+<span class="nc" id="L116">    this.nrows = nrows;</span>
+<span class="nc" id="L117">    rowTops = new int[nrows];</span>
+<span class="nc" id="L118">    rowHeights = new int[nrows];</span>
+<span class="nc" id="L119">    container.refreshForm();</span>
+<span class="nc" id="L120">  }</span>
+
+  public void setColumns(int ncols) {
+<span class="nc" id="L123">    this.ncols = ncols;</span>
+<span class="nc" id="L124">    colLefts = new int[ncols];</span>
+<span class="nc" id="L125">    colWidths = new int[ncols];</span>
+<span class="nc" id="L126">    container.refreshForm();</span>
+<span class="nc" id="L127">  }</span>
+
+  // Drop target area
+
+  private void ensureDropTargetArea() {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (dropTargetArea == null) {</span>
+<span class="nc" id="L133">      dropTargetArea = DOM.createDiv();</span>
+<span class="nc" id="L134">      setDropTargetAreaVisible(false);</span>
+<span class="nc" id="L135">      DOM.setStyleAttribute(dropTargetArea, &quot;border&quot;, &quot;2px solid &quot; + DROP_TARGET_AREA_COLOR);</span>
+<span class="nc" id="L136">      DOM.appendChild(container.getRootPanel().getElement(), dropTargetArea);</span>
+    }
+<span class="nc" id="L138">  }</span>
+
+  private void setDropTargetCell(Cell cell) {
+<span class="nc" id="L141">    dropTargetCell = cell;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (dropTargetCell != null) {</span>
+      // Display the drop target area at the cell that the user is hovering over.
+<span class="nc" id="L144">      setDropTargetAreaBoundsAndShow(</span>
+          colLefts[dropTargetCell.col], rowTops[dropTargetCell.row],
+          colWidths[dropTargetCell.col], rowHeights[dropTargetCell.row]);
+    } else {
+<span class="nc" id="L148">      setDropTargetAreaVisible(false);</span>
+    }
+<span class="nc" id="L150">  }</span>
+
+  private void setDropTargetAreaVisible(boolean visible) {
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    DOM.setStyleAttribute(dropTargetArea, &quot;visibility&quot;, visible ? &quot;visible&quot; : &quot;hidden&quot;);</span>
+<span class="nc" id="L154">  }</span>
+
+  private void setDropTargetAreaBoundsAndShow(int x, int y, int width, int height) {
+<span class="nc" id="L157">    DOM.setStyleAttribute(dropTargetArea, &quot;position&quot;, &quot;absolute&quot;);</span>
+<span class="nc" id="L158">    DOM.setStyleAttribute(dropTargetArea, &quot;left&quot;, x + &quot;px&quot;);</span>
+<span class="nc" id="L159">    DOM.setStyleAttribute(dropTargetArea, &quot;top&quot;, y + &quot;px&quot;);</span>
+<span class="nc" id="L160">    DOM.setStyleAttribute(dropTargetArea, &quot;width&quot;, width + &quot;px&quot;);</span>
+<span class="nc" id="L161">    DOM.setStyleAttribute(dropTargetArea, &quot;height&quot;, height + &quot;px&quot;);</span>
+<span class="nc" id="L162">    setDropTargetAreaVisible(true);</span>
+<span class="nc" id="L163">  }</span>
+
+  // Table information
+
+  private Cell getCellOfChild(MockComponent child) {
+<span class="nc" id="L168">    String rowString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_ROW);</span>
+<span class="nc" id="L169">    String colString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_COLUMN);</span>
+<span class="nc" id="L170">    return new Cell(Integer.parseInt(rowString), Integer.parseInt(colString));</span>
+  }
+
+  /**
+   * Returns the cell that contains the specified point,
+   * or {@code null} if the point is out of bounds.
+   */
+  private Cell getCellContainingPoint(int x, int y) {
+<span class="nc bnc" id="L178" title="All 4 branches missed.">    if (x &lt; 0 || y &lt; 0) {</span>
+<span class="nc" id="L179">      return null;</span>
+    }
+
+<span class="nc" id="L182">    int cellRow = -1;</span>
+<span class="nc" id="L183">    int rowY = 0;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">    for (int row = 0; row &lt; nrows; row++) {</span>
+<span class="nc" id="L185">      rowY += rowHeights[row];</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">      if (y &lt; rowY) {</span>
+<span class="nc" id="L187">        cellRow = row;</span>
+<span class="nc" id="L188">        break;</span>
+      }
+    }
+<span class="nc bnc" id="L191" title="All 2 branches missed.">    if (cellRow == -1) {</span>
+<span class="nc" id="L192">      return null;</span>
+    }
+
+<span class="nc" id="L195">    int cellCol = -1;</span>
+<span class="nc" id="L196">    int colX = 0;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">    for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc" id="L198">      colX += colWidths[col];</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">      if (x &lt; colX) {</span>
+<span class="nc" id="L200">        cellCol = col;</span>
+<span class="nc" id="L201">        break;</span>
+      }
+    }
+<span class="nc bnc" id="L204" title="All 2 branches missed.">    if (cellCol == -1) {</span>
+<span class="nc" id="L205">      return null;</span>
+    }
+
+<span class="nc" id="L208">    return new Cell(cellRow, cellCol);</span>
+  }
+
+  // MockLayout methods
+
+  // NOTE(lizlooney) - layout behavior:
+
+  // In a TableArrangement, components are arranged in a grid of rows and columns, with not more
+  // than one component visible in each cell. If multiple components occupy the same cell, only the
+  // last one will be visible. Within each row, components are vertically center-aligned.
+  // The width of a column is determined by the widest component in that column. When calculating
+  // column width, the automatic width is used for components whose Width property is set to Fill
+  // Parent. However, each component will always fill the full width of the column that it occupies.
+  // The height of a row is determined by the tallest component in that row whose Height property
+  // is not set to Fill Parent. If a row contains only components whose Height properties are set to
+  // Fill Parent, the height of the row is calculated using the automatic heights of the components.
+
+  @Override
+  LayoutInfo createContainerLayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap) {
+<span class="nc" id="L227">    ensureDropTargetArea();</span>
+<span class="nc" id="L228">    return new TableLayoutInfo(layoutInfoMap, container);</span>
+  }
+
+  private void prepareForLayout(TableLayoutInfo tableLayoutInfo) {
+    // Figure out which child (if any) will be in each cell.
+    // If multiple children claim to be in the same cell, only the last child in the children list
+    // will be visible.
+
+<span class="nc" id="L236">    MockForm form = container.getForm();</span>
+
+<span class="nc bnc" id="L238" title="All 2 branches missed.">    for (MockComponent child : tableLayoutInfo.visibleChildren) {</span>
+<span class="nc" id="L239">      Cell cell = getCellOfChild(child);</span>
+<span class="nc bnc" id="L240" title="All 4 branches missed.">      if (cell.row &gt;= nrows || cell.col &gt;= ncols) {</span>
+        // This child has an invalid cell. This can happen if the user changes the table's
+        // dimensions after they've already dragged a component into a cell. It's not a big deal.
+        // We just hide the child. The hidden component will still show up in the Components list.
+<span class="nc" id="L244">        child.setVisible(false);</span>
+<span class="nc" id="L245">        continue;</span>
+      }
+
+<span class="nc bnc" id="L248" title="All 2 branches missed.">      if (tableLayoutInfo.cellChildren[cell.row][cell.col] != null) {</span>
+        // A previous child claimed to be in this cell.
+        // Since the rule is that the last child in the children list wins, we hide the previous
+        // child. The hidden component will still show up in the Components list.
+<span class="nc" id="L252">        MockComponent previousCellChild = tableLayoutInfo.cellChildren[cell.row][cell.col];</span>
+<span class="nc" id="L253">        previousCellChild.setVisible(false);</span>
+      }
+
+<span class="nc" id="L256">      tableLayoutInfo.cellChildren[cell.row][cell.col] = child;</span>
+<span class="nc" id="L257">    }</span>
+
+    // Figure out the column widths and row heights, using the automatic widths for all children
+    // whose width is fill parent and ignoring any child's height that is fill parent.
+<span class="nc" id="L261">    Arrays.fill(colWidths, 0);</span>
+<span class="nc" id="L262">    Arrays.fill(rowHeights, 0);</span>
+<span class="nc" id="L263">    boolean[] colEmpty = new boolean[ncols];</span>
+<span class="nc" id="L264">    boolean[] rowEmpty = new boolean[nrows];</span>
+<span class="nc" id="L265">    boolean[] rowAllFillParent = new boolean[nrows];</span>
+<span class="nc" id="L266">    Arrays.fill(colEmpty, true);</span>
+<span class="nc" id="L267">    Arrays.fill(rowEmpty, true);</span>
+<span class="nc" id="L268">    Arrays.fill(rowAllFillParent, true);</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    for (int row = 0; row &lt; nrows; row++) {</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">      for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc" id="L271">        MockComponent cellChild = tableLayoutInfo.cellChildren[row][col];</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (cellChild != null) {</span>
+<span class="nc" id="L273">          LayoutInfo childLayoutInfo = tableLayoutInfo.layoutInfoMap.get(cellChild);</span>
+<span class="nc" id="L274">          colEmpty[col] = false;</span>
+<span class="nc" id="L275">          rowEmpty[row] = false;</span>
+
+          // Use automatic width for children whose width is fill parent.
+          // or if our width is automatic or fill parent
+
+<span class="nc" id="L280">          int childWidth = childLayoutInfo.width;</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">          if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)</span>
+<span class="nc" id="L282">            childWidth = childLayoutInfo.calculateAutomaticWidth();</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">          else if (childLayoutInfo.width &lt;= MockVisibleComponent.LENGTH_PERCENT_TAG) {</span>
+            // If childWidth is a percent tag... do it
+<span class="nc" id="L285">            childWidth = (- (childWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * form.screenWidth /100;</span>
+<span class="nc" id="L286">            childLayoutInfo.width = childWidth; // Side effect it...</span>
+<span class="nc" id="L287">            OdeLog.log(&quot;MockTableLayout: form.screenWidth = &quot; + form.screenWidth + &quot; childWidth = &quot; + childWidth);</span>
+          }
+
+          // int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
+          //     ? childLayoutInfo.calculateAutomaticWidth()
+          //     : childLayoutInfo.width;
+
+<span class="nc" id="L294">          colWidths[col] = Math.max(colWidths[col], childWidth + BORDER_SIZE);</span>
+
+          // Ignore child's height if it is fill parent.
+<span class="nc bnc" id="L297" title="All 2 branches missed.">          if (childLayoutInfo.height != MockVisibleComponent.LENGTH_FILL_PARENT) {</span>
+
+<span class="nc" id="L299">            int childHeight = childLayoutInfo.height;</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">            if (childHeight &lt;= MockVisibleComponent.LENGTH_PERCENT_TAG) {</span>
+<span class="nc" id="L301">              childHeight = (- (childHeight - MockVisibleComponent.LENGTH_PERCENT_TAG) * form.usableScreenHeight) / 100;</span>
+<span class="nc" id="L302">              childLayoutInfo.height = childHeight; // Side effect it...</span>
+<span class="nc" id="L303">              rowAllFillParent[row] = false;</span>
+<span class="nc" id="L304">              OdeLog.log(&quot;MockTableLayout: form.usableScreenHeight = &quot; + form.usableScreenHeight + &quot; childHeight = &quot; + childHeight);</span>
+<span class="nc" id="L305">              rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);</span>
+            }
+
+<span class="nc bnc" id="L308" title="All 4 branches missed.">            if ((childHeight != MockVisibleComponent.LENGTH_FILL_PARENT)</span>
+              &amp;&amp; (childHeight &gt; MockVisibleComponent.LENGTH_PERCENT_TAG)) {
+<span class="nc" id="L310">              rowAllFillParent[row] = false;</span>
+<span class="nc" id="L311">              rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);</span>
+            }
+
+          }
+        }
+      }
+    }
+    // If any row is completely empty then its height in the designer should be EMPTY_ROW_HEIGHT.
+    // If any row contains only children with height set to fill parent, recalculate the row height
+    // using the automatic heights of the children.
+<span class="nc bnc" id="L321" title="All 2 branches missed.">    for (int row = 0; row &lt; nrows; row++) {</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">      if (rowEmpty[row]) {</span>
+<span class="nc" id="L323">        rowHeights[row] = EMPTY_ROW_HEIGHT;</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">      } else if (rowAllFillParent[row]) {</span>
+<span class="nc bnc" id="L325" title="All 2 branches missed.">        for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc" id="L326">          MockComponent cellChild = tableLayoutInfo.cellChildren[row][col];</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">          if (cellChild != null) {</span>
+<span class="nc" id="L328">            LayoutInfo childLayoutInfo = tableLayoutInfo.layoutInfoMap.get(cellChild);</span>
+<span class="nc" id="L329">            int childHeight = childLayoutInfo.calculateAutomaticHeight();</span>
+<span class="nc" id="L330">            rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);</span>
+          }
+        }
+      }
+    }
+    // If any column is completely empty, then its width in the designer should be EMPTY_COL_WIDTH.
+<span class="nc bnc" id="L336" title="All 2 branches missed.">    for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">      if (colEmpty[col]) {</span>
+<span class="nc" id="L338">        colWidths[col] = EMPTY_COL_WIDTH;</span>
+      }
+    }
+
+    // Set all childrens' widths to the column width.
+    // This matches what happens on an Android device.
+<span class="nc bnc" id="L344" title="All 2 branches missed.">    for (int row = 0; row &lt; nrows; row++) {</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">      for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc" id="L346">        MockComponent cellChild = tableLayoutInfo.cellChildren[row][col];</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">        if (cellChild != null) {</span>
+<span class="nc" id="L348">          LayoutInfo childLayoutInfo = tableLayoutInfo.layoutInfoMap.get(cellChild);</span>
+<span class="nc" id="L349">          childLayoutInfo.width = colWidths[col] - BORDER_SIZE;</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">          if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {</span>
+<span class="nc" id="L351">            childLayoutInfo.height = rowHeights[row] - BORDER_SIZE;</span>
+          }
+        }
+      }
+    }
+
+    // Figure out the top coordinate of each row.
+<span class="nc bnc" id="L358" title="All 2 branches missed.">    for (int row = 0, y = 0; row &lt; nrows; y += rowHeights[row++]) {</span>
+<span class="nc" id="L359">      rowTops[row] = y;</span>
+    }
+
+    // Figure out the left coordinate of each column.
+<span class="nc bnc" id="L363" title="All 2 branches missed.">    for (int col = 0, x = 0; col &lt; ncols; x += colWidths[col++]) {</span>
+<span class="nc" id="L364">      colLefts[col] = x;</span>
+    }
+<span class="nc" id="L366">  }</span>
+
+  @Override
+  void layoutChildren(LayoutInfo containerLayoutInfo) {
+<span class="nc" id="L370">    TableLayoutInfo tableLayoutInfo = (TableLayoutInfo) containerLayoutInfo;</span>
+
+    // Call layoutChildren for children that are containers.
+    // Position the children.
+<span class="nc bnc" id="L374" title="All 2 branches missed.">    for (int row = 0; row &lt; nrows; row++) {</span>
+      // Within each row, components are vertically center-aligned.
+<span class="nc" id="L376">      int centerY = rowTops[row] + rowHeights[row] / 2;</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">      for (int col = 0; col &lt; ncols; col++) {</span>
+<span class="nc" id="L378">        MockComponent cellChild = tableLayoutInfo.cellChildren[row][col];</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (cellChild != null) {</span>
+<span class="nc" id="L380">          LayoutInfo childLayoutInfo = tableLayoutInfo.layoutInfoMap.get(cellChild);</span>
+          // If the cell child is a container call layoutChildren for it.
+<span class="nc bnc" id="L382" title="All 2 branches missed.">          if (cellChild instanceof MockContainer) {</span>
+<span class="nc" id="L383">            ((MockContainer) cellChild).getLayout().layoutChildren(childLayoutInfo);</span>
+          }
+<span class="nc" id="L385">          int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;</span>
+<span class="nc" id="L386">          int y = centerY - (childHeightWithBorder / 2);</span>
+<span class="nc" id="L387">          container.setChildSizeAndPosition(cellChild, childLayoutInfo, colLefts[col], y);</span>
+        }
+      }
+    }
+
+    // Update layoutWidth and layoutHeight.
+<span class="nc" id="L393">    layoutHeight = rowTops[nrows - 1] + rowHeights[nrows - 1];</span>
+<span class="nc" id="L394">    layoutWidth = colLefts[ncols - 1] + colWidths[ncols - 1];</span>
+<span class="nc" id="L395">    OdeLog.log(&quot;MockTableLayout: setting layoutHeight = &quot; + layoutHeight + &quot; setting layoutWidth = &quot; + layoutWidth);</span>
+<span class="nc" id="L396">  }</span>
+
+  @Override
+  void onDragContinue(int x, int y) {
+    // Find the cell the user is hovering over.
+<span class="nc" id="L401">    setDropTargetCell(getCellContainingPoint(x, y));</span>
+<span class="nc" id="L402">  }</span>
+
+  @Override
+  void onDragLeave() {
+    // Hide the drop target area and clean up.
+<span class="nc" id="L407">    setDropTargetCell(null);</span>
+<span class="nc" id="L408">  }</span>
+
+  @Override
+  boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
+<span class="nc bnc" id="L412" title="All 2 branches missed.">    if (dropTargetCell != null) {</span>
+<span class="nc" id="L413">      Cell destCell = dropTargetCell;</span>
+
+      // Hide the drop target area and clean up.
+<span class="nc" id="L416">      setDropTargetCell(null);</span>
+
+      // Perform drop.
+<span class="nc" id="L419">      MockContainer srcContainer = source.getContainer();</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">      if (srcContainer != null) {</span>
+        // Pass false to indicate that the component isn't being permanently deleted.
+        // It's just being moved from one container to another.
+<span class="nc" id="L423">        srcContainer.removeComponent(source, false);</span>
+      }
+<span class="nc" id="L425">      source.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, &quot;&quot; + destCell.col);</span>
+<span class="nc" id="L426">      source.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, &quot;&quot; + destCell.row);</span>
+<span class="nc" id="L427">      container.addComponent(source);</span>
+<span class="nc" id="L428">      return true;</span>
+    }
+<span class="nc" id="L430">    return false;</span>
+  }
+
+  @Override
+  void dispose() {
+<span class="nc bnc" id="L435" title="All 2 branches missed.">    if (dropTargetArea != null) {</span>
+<span class="nc" id="L436">      DOM.removeChild(container.getRootPanel().getElement(), dropTargetArea);</span>
+    }
+<span class="nc" id="L438">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

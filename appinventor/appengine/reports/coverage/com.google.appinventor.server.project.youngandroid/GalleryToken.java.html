@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GalleryToken.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.project.youngandroid</a> &gt; <span class="el_source">GalleryToken.java</span></div><h1>GalleryToken.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+/**
+ * This module is used to generate and validate &quot;tokens&quot; used to
+ * securely communicate between the new MIT App Inventor Gallery and a
+ * given instance of MIT App Inventor
+ *
+ * tokens are serialized protocol buffers which are then encrypted
+ * with KeyCzar
+ *
+ * As a hack to keep the tokens smaller, the timestamp uses python
+ * timestamps (which are Java timestamps divided by 1000 with January
+ * 1, 2020 substracted &quot;Hackito Ergo Sum&quot;
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ *
+ */
+
+package com.google.appinventor.server.project.youngandroid;
+
+import com.google.appinventor.server.flags.Flag;
+
+import org.keyczar.Crypter;
+import org.keyczar.exceptions.KeyczarException;
+
+import org.keyczar.util.Base64Coder;
+
+// Log4j
+import org.apache.log4j.Logger;
+
+public class GalleryToken {
+<span class="nc" id="L35">  private static long JANONE2020 = 1577836800L; // January 1, 2020 00:00 UTC</span>
+<span class="nc" id="L36">  private static final Flag&lt;String&gt; galleryKeyFile = Flag.createFlag(&quot;gallery.tokenkey&quot;, &quot;WEB-INF/gallerykey&quot;);</span>
+<span class="nc" id="L37">  private static final Logger LOG = Logger.getLogger(GalleryToken.class);</span>
+<span class="nc" id="L38">  private static Crypter crypter = null; // accessed through getCrypter only</span>
+<span class="nc" id="L39">  private static final Object crypterSync = new Object();</span>
+
+  private GalleryToken() {      // No instantiation
+  }
+
+  public static String makeToken (String userId, long projectId, String projectName) {
+<span class="nc" id="L45">    long ts = System.currentTimeMillis() / 1000L;</span>
+<span class="nc" id="L46">    ts -= JANONE2020;</span>
+<span class="nc" id="L47">    GalleryProtobuf.token buffer = GalleryProtobuf.token.newBuilder()</span>
+<span class="nc" id="L48">      .setUserid(userId)</span>
+<span class="nc" id="L49">      .setProjectid(projectId)</span>
+<span class="nc" id="L50">      .setProjectname(projectName)</span>
+<span class="nc" id="L51">      .setTs(ts).build();</span>
+    try {
+<span class="nc" id="L53">      Crypter crypter = getCrypter();</span>
+<span class="nc" id="L54">      return Base64Coder.encode(crypter.encrypt(buffer.toByteArray()));</span>
+<span class="nc" id="L55">    } catch (Exception e) {</span>
+<span class="nc" id="L56">      throw new RuntimeException(e);</span>
+    }
+  }
+
+
+  private static Crypter getCrypter() throws KeyczarException {
+<span class="nc" id="L62">    synchronized(crypterSync) {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">      if (crypter != null) {</span>
+<span class="nc" id="L64">        return crypter;</span>
+      } else {
+<span class="nc" id="L66">        crypter = new Crypter(galleryKeyFile.get());</span>
+<span class="nc" id="L67">        return crypter;</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

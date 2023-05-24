@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColorChoicePropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">ColorChoicePropertyEditor.java</span></div><h1>ColorChoicePropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.common.collect.Lists;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Property editor for color properties.
+ *
+ */
+public abstract class ColorChoicePropertyEditor extends PropertyEditor {
+
+  /**
+   * Color definitions for property editor.
+   */
+  public static final class Color {
+
+    /**
+     * Constants for most common alpha values: transparent and opaque.
+     */
+    public static final String ALPHA_TRANSPARENT = &quot;00&quot;;
+    public static final String ALPHA_OPAQUE = &quot;FF&quot;;
+
+    // Color name
+    private final String name;
+
+    // Alpha value in hex format without leading hex designator
+    private final String alphaString;
+
+    // Color RGB value in hex format without leading hex designator
+    private final String rgbString;
+
+    // Color RGB with alpha value
+    private final long argbValue;
+
+    /**
+     * Creates a new color definition.
+     *
+     * @param name  color name
+     * @param rgb  RGB value for the color - must be 6 hex digits
+     */
+    public Color(String name, String rgb) {
+<span class="nc" id="L64">      this(name, ALPHA_OPAQUE, rgb);</span>
+<span class="nc" id="L65">    }</span>
+
+    /**
+     * Creates a new color definition.
+     *
+     * @param name  color name
+     * @param alpha  alpha value for the color - must be 2 hex digits -
+     * @param rgb  RGB value for the color - must be 6 hex digits
+     */
+<span class="nc" id="L74">    public Color(String name, String alpha, String rgb) {</span>
+<span class="nc" id="L75">      this.name = name;</span>
+<span class="nc" id="L76">      alphaString = alpha;</span>
+<span class="nc" id="L77">      rgbString = rgb;</span>
+<span class="nc" id="L78">      argbValue = Long.valueOf(alpha + rgb, 16);</span>
+<span class="nc" id="L79">    }</span>
+
+    /**
+     * Returns a description of the color in HTML format.
+     *
+     * @return  color description
+     */
+    String getHtmlDescription() {
+<span class="nc" id="L87">      return Color.getHtmlDescription(rgbString, name);</span>
+    }
+
+    static String getHtmlDescription(String rgbString, String name) {
+<span class="nc" id="L91">      return &quot;&lt;span style=\&quot;background:#&quot; + rgbString + &quot;; border:1px solid black; &quot; +</span>
+          &quot;width:1em; height:1em\&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&quot; + name;
+    }
+  }
+
+  // UI for the list of colors will be represented by a ContextMenu
+  private final DropDownButton selectedColorMenu;
+
+  // Prefix for hex numbers
+  private final String hexPrefix;
+
+  /**
+   * Flag indicating whether the advanced (custom) color picker is available.
+   */
+  private final boolean advanced;
+
+  // Colors
+  private final Color[] colors;
+
+  /**
+   * The default value of the color, shown when Default is selected.
+   */
+  private final String defaultValue;
+
+  // Widget Name
+  private static final String WIDGET_NAME = &quot;Color Choice Property Editor&quot;;
+
+  /**
+   * Panel to hold the color picker palette and associated controls.
+   */
+  private PopupPanel advancedPanel;
+
+  /**
+   * Reference to the native palette picker.
+   */
+  private JavaScriptObject palettePicker;
+
+  /**
+   * Command to show the native picker.
+   */
+  private Command showCustomPicker;
+
+  /**
+   * The default color value, as a numeric value.
+   */
+  private long defaultValueArgb;
+
+  /**
+   * Creates a new instance of the property editor.
+   *
+   * @param hexPrefix  language specific hex number prefix
+   * @param colors  colors to be shown in property editor - must not be
+   *                {@code null} or empty
+   */
+  public ColorChoicePropertyEditor(final Color[] colors, final String hexPrefix, final String defaultValue) {
+<span class="nc" id="L146">    this(colors, hexPrefix, defaultValue, false);</span>
+<span class="nc" id="L147">  }</span>
+
+  /**
+   * Creates a new instance of the property editor.
+   *
+   * @param colors  language specific hex number prefix
+   * @param hexPrefix  colors to be shown in property editor - must not be
+   *                   {@code null} or empty
+   * @param defaultValue  the color of the default value, for display in the editor only
+   * @param advanced  specify true to show a button for the advanced picker
+   */
+<span class="nc" id="L158">  public ColorChoicePropertyEditor(final Color[] colors, final String hexPrefix, final String defaultValue, final boolean advanced) {</span>
+<span class="nc" id="L159">    this.hexPrefix = hexPrefix;</span>
+<span class="nc" id="L160">    this.colors = colors;</span>
+<span class="nc" id="L161">    this.advanced = advanced;</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (defaultValue.startsWith(hexPrefix)) {</span>
+<span class="nc" id="L163">      this.defaultValue = defaultValue.substring(defaultValue.length()-6);  // Take last 6 digits (assumes RRGGBB format)</span>
+<span class="nc" id="L164">      this.defaultValueArgb = Long.valueOf(&quot;FF&quot; + this.defaultValue, 16) &amp; 0xFFFFFFFFL;</span>
+    } else {
+<span class="nc" id="L166">      this.defaultValue = defaultValue;</span>
+<span class="nc" id="L167">      this.defaultValueArgb = Long.valueOf(defaultValue, 10) &amp; 0xFFFFFFFFL;</span>
+    }
+
+    // Initialize UI
+<span class="nc" id="L171">    List&lt;DropDownItem&gt; choices = Lists.newArrayList();</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">    for (final Color color : colors) {</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      final String description = color.argbValue == 0 ?</span>
+<span class="nc" id="L174">          Color.getHtmlDescription(this.defaultValue, color.name) : color.getHtmlDescription();</span>
+<span class="nc" id="L175">      choices.add(new DropDownItem(WIDGET_NAME, description, new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L178">          boolean isMultiple = isMultipleValues();</span>
+<span class="nc" id="L179">          setMultipleValues(false);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">          if (color.argbValue == 0) {</span>
+            // Handle default value specially to prevent sending #x00000000 to the REPL...
+<span class="nc" id="L182">            property.setValue(defaultValue, isMultiple);</span>
+          } else {
+<span class="nc" id="L184">            property.setValue(hexPrefix + color.alphaString + color.rgbString, isMultiple);</span>
+          }
+<span class="nc bnc" id="L186" title="All 2 branches missed.">          if (advanced) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            String customColor = color.argbValue == 0 ?</span>
+<span class="nc" id="L188">                Color.ALPHA_OPAQUE + ColorChoicePropertyEditor.this.defaultValue :</span>
+<span class="nc" id="L189">                color.alphaString + color.rgbString;</span>
+<span class="nc" id="L190">            selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(customColor), showCustomPicker));</span>
+          }
+<span class="nc" id="L192">        }</span>
+      }));
+    }
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (advanced) {</span>
+<span class="nc" id="L196">      SimplePanel container = new SimplePanel();</span>
+<span class="nc" id="L197">      prepareCustomColorPicker(container.getElement());</span>
+<span class="nc" id="L198">      showCustomPicker = new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L201">          showCustomColorPicker();</span>
+<span class="nc" id="L202">        }</span>
+      };
+
+<span class="nc" id="L205">      Button cancelButton = new Button();</span>
+<span class="nc" id="L206">      cancelButton.setText(MESSAGES.cancelButton());</span>
+<span class="nc" id="L207">      cancelButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L210">          dismissAdvancedPicker();</span>
+<span class="nc" id="L211">        }</span>
+      });
+
+<span class="nc" id="L214">      Button doneButton = new Button();</span>
+<span class="nc" id="L215">      doneButton.setText(MESSAGES.done());</span>
+<span class="nc" id="L216">      doneButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L219">          String color = getColor().toUpperCase();</span>
+<span class="nc" id="L220">          dismissAdvancedPicker();</span>
+<span class="nc" id="L221">          property.setValue(color);</span>
+<span class="nc" id="L222">          selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(color), showCustomPicker));</span>
+<span class="nc" id="L223">        }</span>
+      });
+
+<span class="nc" id="L226">      HorizontalPanel buttons = new HorizontalPanel();</span>
+<span class="nc" id="L227">      buttons.add(cancelButton);</span>
+<span class="nc" id="L228">      buttons.add(doneButton);</span>
+
+<span class="nc" id="L230">      VerticalPanel panel = new VerticalPanel();</span>
+<span class="nc" id="L231">      panel.add(container);</span>
+<span class="nc" id="L232">      panel.add(buttons);</span>
+
+<span class="nc" id="L234">      advancedPanel = new PopupPanel();</span>
+<span class="nc" id="L235">      advancedPanel.add(panel);</span>
+<span class="nc" id="L236">      advancedPanel.setAutoHideEnabled(true);</span>
+
+<span class="nc" id="L238">      choices.add(new DropDownItem(WIDGET_NAME, makeCustomHTML(1.0, 255, 0, 0), new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L241">          showCustomColorPicker();</span>
+<span class="nc" id="L242">        }</span>
+      }));
+    }
+<span class="nc" id="L245">    selectedColorMenu = new DropDownButton(WIDGET_NAME, colors[0].getHtmlDescription(), choices, false,  true, false);</span>
+
+<span class="nc" id="L247">    selectedColorMenu.setStylePrimaryName(&quot;ode-ColorChoicePropertyEditor&quot;);</span>
+
+<span class="nc" id="L249">    initWidget(selectedColorMenu);</span>
+<span class="nc" id="L250">  }</span>
+
+  @Override
+  protected void updateValue() {
+    // There was a collision so we should show the multiple indicator
+<span class="nc bnc" id="L255" title="All 2 branches missed.">    if (isMultipleValues()) {</span>
+<span class="nc" id="L256">      selectedColorMenu.setCaption(MESSAGES.multipleValues());</span>
+<span class="nc" id="L257">      return;</span>
+    }
+    // When receiving the property values from the server hex numbers were converted to decimal
+    // numbers
+<span class="nc" id="L261">    String propertyValue = property.getValue();</span>
+    // Screens can be loaded in an arbitrary order and if Screen1 is not the first screen loaded,
+    // then a value of &quot;&quot; will be sent. Just ignore it because it will be corrected after Screen1
+    // is loaded.
+<span class="nc bnc" id="L265" title="All 4 branches missed.">    if (propertyValue == null || propertyValue.isEmpty()) {</span>
+<span class="nc" id="L266">      return;</span>
+    }
+<span class="nc" id="L268">    int radix = 10;</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    if (propertyValue.startsWith(hexPrefix)) {</span>
+<span class="nc" id="L270">      propertyValue = propertyValue.substring(hexPrefix.length());</span>
+<span class="nc" id="L271">      radix = 16;</span>
+    }
+
+<span class="nc" id="L274">    long argbValue = Long.valueOf(propertyValue, radix) &amp; 0xFFFFFFFFL;</span>
+<span class="nc bnc" id="L275" title="All 4 branches missed.">    if (argbValue == this.defaultValueArgb || argbValue == 0) {</span>
+<span class="nc" id="L276">      selectedColorMenu.setHTML(Color.getHtmlDescription(defaultValue, Ode.MESSAGES.defaultColor()));</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">      if (advanced) {</span>
+<span class="nc" id="L278">        selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(this.defaultValueArgb), showCustomPicker));</span>
+<span class="nc" id="L279">        setPickerColor(this.defaultValueArgb);</span>
+      }
+<span class="nc" id="L281">      return;</span>
+    }
+<span class="nc" id="L283">    String html = makeCustomHTML(argbValue);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">    for (final Color color : colors) {</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">      if (color.argbValue == argbValue) {</span>
+<span class="nc" id="L286">        selectedColorMenu.setHTML(color.getHtmlDescription());</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        if (advanced) {</span>
+          // Update the custom picker state
+<span class="nc" id="L289">          selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, html, showCustomPicker));</span>
+<span class="nc" id="L290">          setPickerColor(argbValue);</span>
+        }
+<span class="nc" id="L292">        return;</span>
+      }
+    }
+<span class="nc bnc" id="L295" title="All 2 branches missed.">    if (advanced) {</span>
+      // No predefined color matched, so assume a custom value.
+<span class="nc" id="L297">      selectedColorMenu.setHTML(html);</span>
+<span class="nc" id="L298">      selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, html, showCustomPicker));</span>
+<span class="nc" id="L299">      setPickerColor(argbValue);</span>
+    }
+<span class="nc" id="L301">  }</span>
+
+  /**
+   * Make a HTML string for the custom picker dropdown menu item.
+   *
+   * @param a Alpha channel value of the color in [0, 1]
+   * @param r Red channel value of the color in [0, 255]
+   * @param g Green channel value of the color in [0, 255]
+   * @param b Blue channel value of the color in [0, 255]
+   * @return HTML string for the Custom... dropdown entry
+   */
+  private static String makeCustomHTML(double a, int r, int g, int b) {
+<span class="nc" id="L313">    return &quot;&lt;span style=\&quot;background:rgba(&quot; + r + &quot;,&quot; + g + &quot;,&quot; + b + &quot;,&quot; + a + &quot;); border:1px solid black; &quot; +</span>
+<span class="nc" id="L314">        &quot;width:1em; height:1em\&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&quot; + MESSAGES.customEllipsis();</span>
+  }
+
+  /**
+   * Make a HTML string for the custom picker dropdown menu item.
+   *
+   * @param argbValue Long storing the color in ARGB format
+   * @return HTML string for the Custom... dropdown entry
+   */
+  private static String makeCustomHTML(long argbValue) {
+<span class="nc" id="L324">    int b = (int)(argbValue &amp; 0xFF);</span>
+<span class="nc" id="L325">    int g = (int)((argbValue &gt;&gt; 8) &amp; 0xFF);</span>
+<span class="nc" id="L326">    int r = (int)((argbValue &gt;&gt; 16) &amp; 0xFF);</span>
+<span class="nc" id="L327">    double a = (double)((argbValue &gt;&gt; 24) &amp; 0xFF) / 255.0;</span>
+<span class="nc" id="L328">    return makeCustomHTML(a, r, g, b);</span>
+  }
+
+  /**
+   * Make a HTML string for the custom picker dropdown menu item.
+   *
+   * @param argb String storing the color in ARGB hex format
+   * @return HTML string for the Custom... dropdown entry
+   */
+  private String makeCustomHTML(String argb) {
+<span class="nc bnc" id="L338" title="All 2 branches missed.">    if (argb.startsWith(hexPrefix)) {</span>
+<span class="nc" id="L339">      argb = argb.substring(hexPrefix.length());</span>
+    }
+<span class="nc" id="L341">    int a = Integer.parseInt(argb.substring(0, 2), 16);</span>
+<span class="nc" id="L342">    int r = Integer.parseInt(argb.substring(2, 4), 16);</span>
+<span class="nc" id="L343">    int g = Integer.parseInt(argb.substring(4, 6), 16);</span>
+<span class="nc" id="L344">    int b = Integer.parseInt(argb.substring(6, 8), 16);</span>
+<span class="nc" id="L345">    double aDouble = (double) a / 255.0;</span>
+<span class="nc" id="L346">    return makeCustomHTML(aDouble, r, g, b);</span>
+  }
+
+  private void showCustomColorPicker() {
+<span class="nc" id="L350">    advancedPanel.showRelativeTo(selectedColorMenu);</span>
+<span class="nc" id="L351">    redrawPanel();</span>
+<span class="nc" id="L352">  }</span>
+
+  private void dismissAdvancedPicker() {
+<span class="nc" id="L355">    advancedPanel.hide();</span>
+<span class="nc" id="L356">  }</span>
+
+  private void setPickerColor(long argbValue) {
+<span class="nc" id="L359">    String b = Integer.toHexString((int) (argbValue &amp; 0xFF));</span>
+<span class="nc" id="L360">    String g = Integer.toHexString((int) ((argbValue &gt;&gt; 8) &amp; 0xFF));</span>
+<span class="nc" id="L361">    String r = Integer.toHexString((int) ((argbValue &gt;&gt; 16) &amp; 0xFF));</span>
+<span class="nc" id="L362">    String a = Integer.toHexString((int) ((argbValue &gt;&gt; 24) &amp; 0xFF));</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">    if (b.length() &lt; 2) b = &quot;0&quot; + b;</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">    if (g.length() &lt; 2) g = &quot;0&quot; + g;</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">    if (r.length() &lt; 2) r = &quot;0&quot; + r;</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">    if (a.length() &lt; 2) a = &quot;0&quot; + a;</span>
+<span class="nc" id="L367">    setPickerColorNative(&quot;#&quot; + r + g + b + a);</span>
+<span class="nc" id="L368">  }</span>
+
+  // JSNI Methods
+  private native void prepareCustomColorPicker(Element parent)/*-{
+    var picker = new goog.ui.HsvaPalette(new goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
+    picker.render(parent);
+    this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker = picker;
+  }-*/;
+
+  private native String getColor()/*-{
+    var palette = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker;
+    var color = palette.getColorRgbaHex();  // Color format is #rrggbbaa
+    var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
+    return prefix + color.substr(7, 2) + color.substr(1, 6);
+  }-*/;
+
+  private native void setPickerColorNative(String rgba)/*-{
+    var palette = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker;
+    palette.setColorRgbaHex(rgba);
+  }-*/;
+
+  private native void redrawPanel()/*-{
+    var palette = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker;
+    setTimeout(function() {
+      palette.setColorRgbaHex(palette.getColorRgbaHex());
+      palette.updateUi();
+    });
+  }-*/;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

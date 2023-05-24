@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentDatabaseInterface.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.simple</a> &gt; <span class="el_source">ComponentDatabaseInterface.java</span></div><h1>ComponentDatabaseInterface.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.shared.simple;
+
+import com.google.appinventor.components.common.ComponentCategory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Database holding property and event information of Simple components.
+ *
+ * @author lizlooney@google.com (lizlooney)
+ */
+public interface ComponentDatabaseInterface {
+
+  /**
+   * Simple component information: component name, its properties
+   */
+  public static class ComponentDefinition {
+    private final String name;
+    private final int version;
+    private final String versionName;
+    private final String dateBuilt;
+    private final String type;
+    private final boolean external;
+    private final String categoryString;
+    private final String helpString;
+    private final String helpUrl;
+    private final boolean showOnPalette;
+    private final String categoryDocUrlString;
+    private final List&lt;PropertyDefinition&gt; properties;
+    private final List&lt;BlockPropertyDefinition&gt; blockProperties;
+    private final List&lt;EventDefinition&gt; events;
+    private final List&lt;MethodDefinition&gt; methods;
+    private final Map&lt;String, String&gt; propertiesTypesByName;
+    private final boolean nonVisible;
+    private final String iconName;
+    private final String licenseName;
+    private final String typeDescription;
+
+    public ComponentDefinition(String name, int version, String versionName, String dateBuilt, String type, boolean external,
+              String categoryString, String helpString, String helpUrl,
+              boolean showOnPalette, boolean nonVisible, String iconName,
+<span class="nc" id="L52">              String licenseName, String typeDescription) {</span>
+<span class="nc" id="L53">      this.name = name;</span>
+<span class="nc" id="L54">      this.version = version;</span>
+<span class="nc" id="L55">      this.versionName = versionName;</span>
+<span class="nc" id="L56">      this.dateBuilt = dateBuilt;</span>
+<span class="nc" id="L57">      this.type = type;</span>
+<span class="nc" id="L58">      this.external = external;</span>
+<span class="nc" id="L59">      this.categoryString = categoryString;</span>
+<span class="nc" id="L60">      this.helpString = helpString;</span>
+<span class="nc" id="L61">      this.helpUrl = helpUrl;</span>
+<span class="nc" id="L62">      this.showOnPalette = showOnPalette;</span>
+<span class="nc" id="L63">      this.categoryDocUrlString = ComponentCategory.valueOf(categoryString).getDocName();</span>
+<span class="nc" id="L64">      this.properties = new ArrayList&lt;PropertyDefinition&gt;();</span>
+<span class="nc" id="L65">      this.blockProperties = new ArrayList&lt;BlockPropertyDefinition&gt;();</span>
+<span class="nc" id="L66">      this.events = new ArrayList&lt;EventDefinition&gt;();</span>
+<span class="nc" id="L67">      this.methods = new ArrayList&lt;MethodDefinition&gt;();</span>
+<span class="nc" id="L68">      this.propertiesTypesByName = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L69">      this.nonVisible = nonVisible;</span>
+<span class="nc" id="L70">      this.iconName = iconName;</span>
+<span class="nc" id="L71">      this.licenseName = licenseName;</span>
+<span class="nc" id="L72">      this.typeDescription = typeDescription;</span>
+<span class="nc" id="L73">    }</span>
+
+    public void add(PropertyDefinition property) {
+<span class="nc" id="L76">      properties.add(property);</span>
+<span class="nc" id="L77">      propertiesTypesByName.put(property.getName(), property.getEditorType());</span>
+<span class="nc" id="L78">    }</span>
+
+    public void add(BlockPropertyDefinition blockProperty) {
+<span class="nc" id="L81">      blockProperties.add(blockProperty);</span>
+<span class="nc" id="L82">    }</span>
+
+    public void add(EventDefinition event) {
+<span class="nc" id="L85">      events.add(event);</span>
+<span class="nc" id="L86">    }</span>
+
+    public void add(MethodDefinition method) {
+<span class="nc" id="L89">      methods.add(method);</span>
+<span class="nc" id="L90">    }</span>
+
+    public String getName() {
+<span class="nc" id="L93">      return name;</span>
+    }
+
+    public int getVersion() {
+<span class="nc" id="L97">      return version;</span>
+    }
+
+    public String getVersionName() {
+<span class="nc" id="L101">      return versionName;</span>
+    }
+
+    public String getDateBuilt() {
+<span class="nc" id="L105">      return dateBuilt;</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L109">      return type;</span>
+    }
+
+    public boolean isExternal() {
+<span class="nc" id="L113">      return external;</span>
+    }
+
+    public String getCategoryString() {
+<span class="nc" id="L117">      return categoryString;</span>
+    }
+
+    public String getHelpString() {
+<span class="nc" id="L121">      return helpString;</span>
+    }
+
+<span class="nc" id="L124">    public String getHelpUrl() { return helpUrl; }</span>
+
+    public boolean isShowOnPalette() {
+<span class="nc" id="L127">      return showOnPalette;</span>
+    }
+
+    public String getCategoryDocUrlString() {
+<span class="nc" id="L131">      return categoryDocUrlString;</span>
+    }
+
+    public List&lt;PropertyDefinition&gt; getProperties() {
+<span class="nc" id="L135">      return properties;</span>
+    }
+
+    public List&lt;BlockPropertyDefinition&gt; getBlockProperties() {
+<span class="nc" id="L139">      return blockProperties;</span>
+    }
+
+    public List&lt;EventDefinition&gt; getEvents() {
+<span class="nc" id="L143">      return events;</span>
+    }
+
+    public List&lt;MethodDefinition&gt; getMethods() {
+<span class="nc" id="L147">      return methods;</span>
+    }
+
+    public Map&lt;String, String&gt; getPropertiesTypesByName() {
+<span class="nc" id="L151">      return propertiesTypesByName;</span>
+    }
+
+    public boolean isNonVisible() {
+<span class="nc" id="L155">      return nonVisible;</span>
+    }
+
+    public String getIconName() {
+<span class="nc" id="L159">      return iconName;</span>
+    }
+
+    public String getLicenseName() {
+<span class="nc" id="L163">      return licenseName;</span>
+    }
+
+    public String getTypeDescription() {
+<span class="nc" id="L167">      return typeDescription;</span>
+    }
+  }
+
+
+  /**
+   * Property definition: property name, property editor type and property
+   * default value.
+   */
+  public static class PropertyDefinition {
+    private final String name;
+    private final String defaultValue;
+    private final String caption;
+    private final String editorType;
+    private final String[] editorArgs;
+
+    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
+<span class="nc" id="L184">      this(name, defaultValue, name, editorType, editorArgs);</span>
+<span class="nc" id="L185">    }</span>
+
+<span class="nc" id="L187">    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs) {</span>
+<span class="nc" id="L188">      this.name = name;</span>
+<span class="nc" id="L189">      this.defaultValue = defaultValue;</span>
+<span class="nc" id="L190">      this.caption = caption;</span>
+<span class="nc" id="L191">      this.editorType = editorType;</span>
+<span class="nc" id="L192">      this.editorArgs = editorArgs;</span>
+<span class="nc" id="L193">    }</span>
+
+    public String getName() {
+<span class="nc" id="L196">      return name;</span>
+    }
+
+    public String getCaption() {
+<span class="nc" id="L200">      return caption;</span>
+    }
+
+    public String getDefaultValue() {
+<span class="nc" id="L204">      return defaultValue;</span>
+    }
+
+    public String getEditorType() {
+<span class="nc" id="L208">      return editorType;</span>
+    }
+
+    public String[] getEditorArgs() {
+<span class="nc" id="L212">      return editorArgs;</span>
+    }
+  }
+
+  /**
+   * Block Property definition: property name, property description and property
+   * type and read/write permission.
+   */
+  public static class BlockPropertyDefinition {
+    private final String name;
+    private final String description;
+    private final String type;
+    private final String rw;
+
+    public BlockPropertyDefinition(String name, String description, String type) {
+<span class="nc" id="L227">      this(name, description, type, &quot;read-write&quot;);</span>
+<span class="nc" id="L228">    }</span>
+
+    public BlockPropertyDefinition(String name, String description,
+<span class="nc" id="L231">        String type, String rw) {</span>
+<span class="nc" id="L232">      this.name = name;</span>
+<span class="nc" id="L233">      this.description = description;</span>
+<span class="nc" id="L234">      this.type = type;</span>
+<span class="nc" id="L235">      this.rw = rw;</span>
+<span class="nc" id="L236">    }</span>
+
+    public String getName() {
+<span class="nc" id="L239">      return name;</span>
+    }
+
+    public String getDescription() {
+<span class="nc" id="L243">      return description;</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L247">      return type;</span>
+    }
+
+    public String getRW() {
+<span class="nc" id="L251">      return rw;</span>
+    }
+  }
+
+  /**
+   * Method and Event's parameter definition: parameter name and
+   * parameter type.
+   */
+  public static class ParameterDefinition {
+    private final String name;
+    private final String type;
+
+<span class="nc" id="L263">    public ParameterDefinition(String name, String type) {</span>
+<span class="nc" id="L264">      this.name = name;</span>
+<span class="nc" id="L265">      this.type = type;</span>
+<span class="nc" id="L266">    }</span>
+
+    public String getName() {
+<span class="nc" id="L269">      return name;</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L273">      return type;</span>
+    }
+  }
+
+  /**
+   * Event definition: event name, event description and event params.
+   */
+  public static class EventDefinition {
+    private final String name;
+    private final String description;
+    private final boolean deprecated;
+    // &quot;params&quot;: [{ &quot;name&quot;: &quot;xAccel&quot;, &quot;type&quot;: &quot;number&quot;},*]
+    private final List&lt;ParameterDefinition&gt; params;
+
+    public EventDefinition(String name, String description, boolean deprecated,
+<span class="nc" id="L288">        List&lt;ParameterDefinition&gt; params) {</span>
+<span class="nc" id="L289">      this.name = name;</span>
+<span class="nc" id="L290">      this.description = description;</span>
+<span class="nc" id="L291">      this.deprecated = deprecated;</span>
+<span class="nc" id="L292">      this.params = params;</span>
+<span class="nc" id="L293">    }</span>
+
+    public String getName() {
+<span class="nc" id="L296">      return name;</span>
+    }
+
+    public String getDescription() {
+<span class="nc" id="L300">      return description;</span>
+    }
+
+<span class="nc" id="L303">    public boolean getDeprecated() { return deprecated; }</span>
+
+    public List&lt;ParameterDefinition&gt; getParam() {
+<span class="nc" id="L306">      return params;</span>
+    }
+  }
+
+  /**
+   * Method definition: method name, method description, method params,
+   * and return type.
+   */
+  public static class MethodDefinition {
+    private final String name;
+    private final String description;
+    private final boolean deprecated;
+    // &quot;params&quot;: [{ &quot;name&quot;: &quot;xAccel&quot;, &quot;type&quot;: &quot;number&quot;},*]
+    private List&lt;ParameterDefinition&gt; params;
+
+    public MethodDefinition(String name, String description, boolean deprecated,
+<span class="nc" id="L322">        List&lt;ParameterDefinition&gt; params) {</span>
+<span class="nc" id="L323">      this.name = name;</span>
+<span class="nc" id="L324">      this.description = description;</span>
+<span class="nc" id="L325">      this.deprecated = deprecated;</span>
+<span class="nc" id="L326">      this.params = params;</span>
+<span class="nc" id="L327">    }</span>
+
+    public String getName() {
+<span class="nc" id="L330">      return name;</span>
+    }
+
+    public String getDescription() {
+<span class="nc" id="L334">      return description;</span>
+    }
+
+<span class="nc" id="L337">    public boolean getDeprecated() { return deprecated; }</span>
+
+    public List&lt;ParameterDefinition&gt; getParam() {
+<span class="nc" id="L340">      return params;</span>
+    }
+  }
+
+  /**
+   * Returns the component names.
+   */
+  Set&lt;String&gt; getComponentNames();
+
+  /**
+   *Returns the type of a component
+   *
+   *@param componentName name of component to query
+   *@return type of the component
+   */
+  String getComponentType(String componentName);
+
+  /**
+   *Returns the name of a component
+   *
+   *@param componentType type of component to query
+   *@return name of the component
+   */
+  String getComponentName(String componentType);
+
+  /**
+   *
+   *Returns the whether a component is external or not
+   *
+   *@param componentName name of component to query
+   *@return true if componentName is external false otherwise
+   */
+  boolean getComponentExternal(String componentName);
+
+  /**
+   * Returns the version number of a component.
+   *
+   * @param componentName  name of component to query
+   * @return  the component version number
+   */
+  int getComponentVersion(String componentName);
+
+  /**
+   * Returns the version name of a component.
+   *
+   * @param componentName  name of the component to query
+   * @return  the component version name, or the empty string if none is provided
+   */
+  String getComponentVersionName(String componentName);
+
+  /**
+   * Returns the build date of a component.
+   *
+   * @param componentName  mame of the component to query
+   * @return  the component build date, or the empty string if non is provided
+   */
+  String getComponentBuildDate(String componentName);
+
+  /**
+   * Returns the String version of a component's category.  Note that this
+   * is the result of calling getString() on a ComponentCategory, not the
+   * result of calling getName().  For example, for the ComponentCategory
+   * EXPERIMENTAL, this returns &quot;EXPERIMENTAL&quot;, not &quot;Not ready for prime
+   * time&quot;.  The procedure was written this way so that the result could
+   * be converted back to a ComponentCategory with valueOf().
+   *
+   * @param componentName  name of component to query
+   * @return  the component's category
+   */
+  String getCategoryString(String componentName);
+
+  /**
+   * Returns the appropriate piece of the URL in the goro docs for a
+   * component's category (or null, if the mapping is not known).
+   *
+   * @param componentName  name of component to query
+   * @return  the URL piece in the docs
+   */
+  String getCategoryDocUrlString(String componentName);
+
+  /**
+   * Returns a helpful message about the component.  This message
+   * originates in the &lt;code&gt;designerHelpDescription&lt;/code&gt; field of the
+   * component's
+   * {@link com.google.appinventor.components.annotations.DesignerComponent}
+   * annotation, is written to the file &quot;simple_component.json&quot; by
+   * {@link com.google.appinventor.components.scripts.ComponentDescriptorGenerator},
+   * and is read back by
+   * {@link com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel}.
+   * It is not allowed to contain HTML or XML markup.
+   *
+   * @param componentName  name of component to query
+   * @return helpful message about the component
+   */
+  String getHelpString(String componentName);
+
+  /**
+   * Returns a URL to documentation for extensions.
+   *
+   * @param componentName  name of component to query
+   * @return optional URL to external documentation for a component
+   */
+  String getHelpUrl(String componentName);
+
+  /**
+   * Returns whether the component with this name should be shown on the
+   * palette.  As the time this is written (2/22/10), the only component
+   * that should not be shown on the palette is Form/Screen.
+   *
+   * @param componentName  name of component to query
+   * @return whether the component should be shown on the palette
+   */
+  boolean getShowOnPalette(String componentName);
+
+  /**
+   * Returns whether the component with this name is a &quot;non-visible&quot; component
+   * (i.e., one that doesn't have a representation in the UI). Non-visible
+   * components can be handled uniformly in the Designer and don't need
+   * special MockComponent representations.
+   *
+   * @param componentName  name of component to query
+   * @return whether the component is non-visible
+   */
+  boolean getNonVisible(String componentName);
+
+  /**
+   * Returns the name of the icon file (last part of the path name) for the
+   * icon to be shown in the Designer
+   */
+  String getIconName(String componentName);
+
+  /**
+   * Returns the name of the license file used by the component. Intended for use
+   * by external components.
+   */
+  String getLicenseName(String componentName);
+
+  /**
+   * Returns a list of a component's property definitions.
+   *
+   * @param componentName  name of component to query
+   * @return  list of property definition for the component
+   */
+  List&lt;PropertyDefinition&gt; getPropertyDefinitions(String componentName);
+
+  /**
+   * Returns a list of a component's block property definitions.
+   *
+   * @param componentName  name of component to query
+   * @return  list of block property definition for the component
+   */
+  List&lt;BlockPropertyDefinition&gt; getBlockPropertyDefinitions(String componentName);
+
+  /**
+   * Returns a list of a component's event definitions.
+   *
+   * @param componentName  name of component to query
+   * @return  list of event definition for the component
+   */
+  List&lt;EventDefinition&gt; getEventDefinitions(String componentName);
+
+  /**
+   * Returns a list of a component's method definitions.
+   *
+   * @param componentName  name of component to query
+   * @return  list of method definition for the component
+   */
+  List&lt;MethodDefinition&gt; getMethodDefinitions(String componentName);
+
+  /*
+   * Returns a map of the property names and types for a component
+   *
+   * @param componentName  name of component to query
+   * @return  map of property names and types
+   */
+  Map&lt;String, String&gt; getPropertyTypesByName(String componentName);
+
+  /*
+   * Returns the JSON string describing the component type for a component
+   *
+   * @param componentName  name of component to query
+   */
+  String getTypeDescription(String componentName);
+
+   /*
+   * Returns true if componentName matches some component
+   *
+   * @param componentName  name of component to query
+   */
+  boolean isComponent(String componentName);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

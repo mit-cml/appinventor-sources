@@ -1,0 +1,2774 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectifyStorageIo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.storage</a> &gt; <span class="el_source">ObjectifyStorageIo.java</span></div><h1>ObjectifyStorageIo.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.storage;
+
+import com.google.appengine.api.appidentity.AppIdentityService;
+import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
+import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreInputStream;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.apphosting.api.ApiProxy;
+import com.google.appinventor.server.CrashReport;
+import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.Server;
+import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
+import com.google.appinventor.server.storage.StoredData.Backpack;
+import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
+import com.google.appinventor.server.storage.StoredData.FeedbackData;
+import com.google.appinventor.server.storage.StoredData.FileData;
+import com.google.appinventor.server.storage.StoredData.MotdData;
+import com.google.appinventor.server.storage.StoredData.NonceData;
+import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.PWData;
+import com.google.appinventor.server.storage.StoredData.SplashData;
+import com.google.appinventor.server.storage.StoredData.UserData;
+import com.google.appinventor.server.storage.StoredData.UserFileData;
+import com.google.appinventor.server.storage.StoredData.UserProjectData;
+import com.google.appinventor.server.storage.StoredData.RendezvousData;
+import com.google.appinventor.server.storage.StoredData.WhiteListData;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.Motd;
+import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
+import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.RawFile;
+import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Query;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+// GCS imports
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import org.json.JSONObject;
+
+/**
+ * Implements the StorageIo interface using Objectify as the underlying data
+ * store.
+ *
+ * @author sharon@google.com (Sharon Perl)
+ *
+ */
+public class ObjectifyStorageIo implements  StorageIo {
+<span class="fc" id="L117">  static final Flag&lt;Boolean&gt; requireTos = Flag.createFlag(&quot;require.tos&quot;, false);</span>
+
+<span class="fc" id="L119">  private static final Logger LOG = Logger.getLogger(ObjectifyStorageIo.class.getName());</span>
+
+  private static final String DEFAULT_ENCODING = &quot;UTF-8&quot;;
+
+  private static final long MOTD_ID = 1;
+  private static final long ALLOWEDURL_ID = 1;
+  private static final long SPLASHDATA_ID = 1;
+
+  // TODO(user): need a way to modify this. Also, what is really a good value?
+  private static final int MAX_JOB_RETRIES = 10;
+
+<span class="fc" id="L130">  private final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();</span>
+
+  private final GcsService gcsService;
+
+  private static final String GCS_BUCKET_NAME;
+  private static final String APK_BUCKET_NAME;
+
+  private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
+
+<span class="fc" id="L139">  private static final boolean DEBUG = Flag.createFlag(&quot;appinventor.debugging&quot;, false).get();</span>
+
+  // Use this class to define the work of a job that can be
+  // retried. The &quot;datastore&quot; argument to run() is the Objectify
+  // object for this job (created with
+  // ObjectifyService.beginTransaction() if a transaction is used or
+  // ObjectifyService.begin if no transaction is used). Note that all
+  // operations on &quot;datastore&quot; should be for objects in the same
+  // entity group if a transaction is used.
+
+  // Note: 1/25/2015: Added code to make the use of a transaction
+  //                  optional.  In general we only need to use a
+  //                  transaction where there work we would need to
+  //                  rollback if an operation on the datastore
+  //                  failed. We have not necessarily converted all
+  //                  cases yet (out of a sense of caution). However
+  //                  we have removed transaction in places where
+  //                  doing so permits Objectify to use its global
+  //                  cache (memcache) in a way that helps
+  //                  performance.
+
+  // used for getting the allowed tutorial urls
+<span class="fc" id="L161">  private static final JSONParser JSON_PARSER = new ServerJsonParser();</span>
+
+  @VisibleForTesting
+<span class="fc" id="L164">  abstract class JobRetryHelper {</span>
+<span class="fc" id="L165">    private IOException exception = null;</span>
+    public abstract void run(Objectify datastore) throws ObjectifyException, IOException;
+    /*
+     * Called before retrying the job. Note that the underlying datastore
+     * still has the transaction active, so restrictions about operations
+     * over multiple entity groups still apply.
+     */
+    public void onNonFatalError() {
+      // Default is to do nothing
+<span class="fc" id="L174">    }</span>
+    public void onIOException(IOException error) {
+<span class="nc" id="L176">      exception = error;</span>
+<span class="nc" id="L177">    }</span>
+    public IOException getIOException() {
+<span class="fc" id="L179">      return exception;</span>
+    }
+  }
+
+  // Create a final object of this class to hold a modifiable result value that
+  // can be used in a method of an inner class.
+<span class="fc" id="L185">  private class Result&lt;T&gt; {</span>
+    T t;
+  }
+
+  static {
+    // Register the data object classes stored in the database
+<span class="fc" id="L191">    ObjectifyService.register(UserData.class);</span>
+<span class="fc" id="L192">    ObjectifyService.register(ProjectData.class);</span>
+<span class="fc" id="L193">    ObjectifyService.register(UserProjectData.class);</span>
+<span class="fc" id="L194">    ObjectifyService.register(FileData.class);</span>
+<span class="fc" id="L195">    ObjectifyService.register(UserFileData.class);</span>
+<span class="fc" id="L196">    ObjectifyService.register(MotdData.class);</span>
+<span class="fc" id="L197">    ObjectifyService.register(RendezvousData.class);</span>
+<span class="fc" id="L198">    ObjectifyService.register(WhiteListData.class);</span>
+<span class="fc" id="L199">    ObjectifyService.register(FeedbackData.class);</span>
+<span class="fc" id="L200">    ObjectifyService.register(NonceData.class);</span>
+<span class="fc" id="L201">    ObjectifyService.register(CorruptionRecord.class);</span>
+<span class="fc" id="L202">    ObjectifyService.register(PWData.class);</span>
+<span class="fc" id="L203">    ObjectifyService.register(SplashData.class);</span>
+<span class="fc" id="L204">    ObjectifyService.register(Backpack.class);</span>
+<span class="fc" id="L205">    ObjectifyService.register(AllowedTutorialUrls.class);</span>
+
+    // Learn GCS Bucket from App Configuration or App Engine Default
+    // gcsBucket is where project storage goes
+    // apkBucket is only for storing APK files and perhaps other
+    // temporary files. It should be configured in GCS to have a
+    // limited lifetime set for objects in the bucket. We recommend
+    // one day (which we believe is the minimum as of this writing).
+<span class="fc" id="L213">    String gcsBucket = Flag.createFlag(&quot;gcs.bucket&quot;, &quot;&quot;).get();</span>
+
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">    if (gcsBucket.equals(&quot;&quot;)) { // Attempt to get default bucket</span>
+                                // from AppIdentity Service
+<span class="fc" id="L217">      AppIdentityService appIdentity = AppIdentityServiceFactory.getAppIdentityService();</span>
+      try {
+<span class="fc" id="L219">        gcsBucket = appIdentity.getDefaultGcsBucketName();</span>
+<span class="nc" id="L220">      } catch (AppIdentityServiceFailureException e) {</span>
+        // We get this exception when we are running on an App Engine instance
+        // created before App Engine version 1.9.0 and we have neither configured
+        // the GCS bucket in appengine-web.xml or used the App Engine console to
+        // create the default bucket. The Default Bucket is a better approach for
+        // personal instances because they have a default free quota of 5 Gb (as
+        // of 5/29/2015 when this code was written).
+<span class="nc" id="L227">        gcsBucket = &quot;&quot;; // This will cause a RunTimeException in the RPC code later</span>
+                        // which will log a better message
+<span class="fc" id="L229">      }</span>
+<span class="fc" id="L230">      LOG.log(Level.INFO, &quot;Default GCS Bucket Configured from App Identity: &quot; + gcsBucket);</span>
+    }
+<span class="fc" id="L232">    GCS_BUCKET_NAME = gcsBucket;</span>
+<span class="fc" id="L233">    APK_BUCKET_NAME = Flag.createFlag(&quot;gcs.apkbucket&quot;, gcsBucket).get();</span>
+<span class="fc" id="L234">  }</span>
+
+<span class="fc" id="L236">  ObjectifyStorageIo() {</span>
+<span class="fc" id="L237">    RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)</span>
+<span class="fc" id="L238">      .retryMaxAttempts(10)</span>
+<span class="fc" id="L239">      .totalRetryPeriodMillis(10000).build();</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L241">      LOG.log(Level.INFO, &quot;RetryParams: getInitialRetryDelayMillis() = &quot; + retryParams.getInitialRetryDelayMillis());</span>
+<span class="nc" id="L242">      LOG.log(Level.INFO, &quot;RetryParams: getRequestTimeoutMillis() = &quot; + retryParams.getRequestTimeoutMillis());</span>
+<span class="nc" id="L243">      LOG.log(Level.INFO, &quot;RetryParams: getRetryDelayBackoffFactor() = &quot; + retryParams.getRetryDelayBackoffFactor());</span>
+<span class="nc" id="L244">      LOG.log(Level.INFO, &quot;RetryParams: getRetryMaxAttempts() = &quot; + retryParams.getRetryMaxAttempts());</span>
+<span class="nc" id="L245">      LOG.log(Level.INFO, &quot;RetryParams: getRetryMinAttempts() = &quot; + retryParams.getRetryMinAttempts());</span>
+<span class="nc" id="L246">      LOG.log(Level.INFO, &quot;RetryParams: getTotalRetryPeriodMillis() = &quot; + retryParams.getTotalRetryPeriodMillis());</span>
+    }
+<span class="fc" id="L248">    gcsService = GcsServiceFactory.createGcsService(retryParams);</span>
+<span class="fc" id="L249">    memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));</span>
+<span class="fc" id="L250">    initMotd();</span>
+<span class="fc" id="L251">    initAllowedTutorialUrls();</span>
+<span class="fc" id="L252">  }</span>
+
+  @Override
+  public User getUser(String userId) {
+<span class="fc" id="L256">    return getUser(userId, null);</span>
+  }
+
+  /*
+   * We return isAdmin if the UserData object has the flag set. However
+   * even if we return it as false, if the user is logging in with Google
+   * Credentials and the apiUser indicates they are an admin of the app,
+   * then isAdmin will be set by our caller.
+   */
+  @Override
+  public User getUser(final String userId, final String email) {
+<span class="fc" id="L267">    String cachekey = User.usercachekey + &quot;|&quot; + userId;</span>
+<span class="fc" id="L268">    User tuser = (User) memcache.get(cachekey);</span>
+<span class="fc bfc" id="L269" title="All 8 branches covered.">    if (tuser != null &amp;&amp; tuser.getUserTosAccepted() &amp;&amp; ((email == null) || (tuser.getUserEmail().equals(email)))) {</span>
+<span class="fc" id="L270">      return tuser;</span>
+    } else {                    // If not in memcache, or tos
+                                // not yet accepted, fetch from datastore
+<span class="fc" id="L273">        tuser = new User(userId, email, false, false, null);</span>
+    }
+<span class="fc" id="L275">    final User user = tuser;</span>
+    try {
+<span class="fc" id="L277">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L280">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="fc" id="L281">          boolean viaemail = false; // Which datastore copy did we find it with...</span>
+<span class="fc" id="L282">          Objectify qDatastore = null;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">          if (userData == null) { // Attempt to find them by email</span>
+<span class="fc" id="L284">            LOG.info(&quot;Did not find userId &quot; + userId);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (email != null) {</span>
+<span class="fc" id="L286">              qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction</span>
+<span class="fc" id="L287">              userData = qDatastore.query(UserData.class).filter(&quot;email&quot;, email).get();</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">              if (userData == null) { // Still null!</span>
+<span class="fc" id="L289">                userData = qDatastore.query(UserData.class).filter(&quot;emaillower&quot;, email.toLowerCase()).get();</span>
+              }
+              // Need to fix userId...
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">              if (userData != null) {</span>
+<span class="nc" id="L293">                LOG.info(&quot;Found based on email, userData.id = &quot; + userData.id);</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">                if (!userData.id.equals(userId)) {</span>
+<span class="nc" id="L295">                  user.setUserId(userData.id);</span>
+<span class="nc" id="L296">                  LOG.info(&quot;Set user.setUserId&quot;);</span>
+                }
+<span class="nc" id="L298">                viaemail = true;</span>
+              }
+            }
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">            if (userData == null) { // No joy, create it.</span>
+<span class="fc" id="L302">              userData = createUser(datastore, userId, email);</span>
+            }
+<span class="pc bpc" id="L304" title="1 of 4 branches missed.">          } else if (email != null &amp;&amp; !email.equals(userData.email)) {</span>
+<span class="fc" id="L305">            userData.email = email;</span>
+<span class="fc" id="L306">            userData.emaillower = email.toLowerCase();</span>
+<span class="fc" id="L307">            datastore.put(userData);</span>
+          }
+          // Add emaillower if it isn't already there
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">          if (userData.emaillower == null) {</span>
+<span class="nc" id="L311">            userData.emaillower = userData.email.toLowerCase();</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">            if (viaemail) {</span>
+<span class="nc" id="L313">              qDatastore.put(userData);</span>
+            } else {
+<span class="nc" id="L315">              datastore.put(userData);</span>
+            }
+          }
+<span class="fc" id="L318">          user.setUserEmail(userData.email);</span>
+<span class="fc bfc" id="L319" title="All 4 branches covered.">          user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());</span>
+<span class="fc" id="L320">          user.setIsAdmin(userData.isAdmin);</span>
+<span class="fc" id="L321">          user.setSessionId(userData.sessionid);</span>
+<span class="fc" id="L322">          user.setPassword(userData.password);</span>
+<span class="fc" id="L323">        }</span>
+      }, false);                // Transaction not needed. If we fail there is nothing to rollback
+<span class="nc" id="L325">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L326">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L327">    }</span>
+<span class="fc" id="L328">    memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute</span>
+    // The choice of one minute here is arbitrary. getUser() is called on every authenticated
+    // RPC call to the system (out of OdeAuthFilter), so using memcache will save a significant
+    // number of calls to the datastore. If someone is idle for more then a minute, it isn't
+    // unreasonable to hit the datastore again. By pruning memcache ourselves, we have a
+    // bit more control (maybe) of how things are flushed from memcache. Otherwise we are
+    // at the whim of whatever algorithm App Engine employs now or in the future.
+<span class="fc" id="L335">    return user;</span>
+  }
+
+  // Get User from email address alone. This version will create the user
+  // if they don't exist
+  @Override
+  public User getUserFromEmail(String email) {
+<span class="nc" id="L342">    String emaillower = email.toLowerCase();</span>
+<span class="nc" id="L343">    LOG.info(&quot;getUserFromEmail: email = &quot; + email + &quot; emaillower = &quot; + emaillower);</span>
+<span class="nc" id="L344">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L345">    String newId = UUID.randomUUID().toString();</span>
+    // First try lookup using entered case (which will be the case for Google Accounts)
+<span class="nc" id="L347">    UserData user = datastore.query(UserData.class).filter(&quot;email&quot;, email).get();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    if (user == null) {</span>
+<span class="nc" id="L349">      LOG.info(&quot;getUserFromEmail: first attempt failed using &quot; + email);</span>
+      // Now try lower case version
+<span class="nc" id="L351">      user = datastore.query(UserData.class).filter(&quot;emaillower&quot;, emaillower).get();</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">      if (user == null) {       // Finally, create it (in lower case)</span>
+<span class="nc" id="L353">        LOG.info(&quot;getUserFromEmail: second attempt failed using &quot; + emaillower);</span>
+<span class="nc" id="L354">        user = createUser(datastore, newId, email);</span>
+      }
+    }
+<span class="nc" id="L357">    User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);</span>
+<span class="nc" id="L358">    retUser.setPassword(user.password);</span>
+<span class="nc" id="L359">    return retUser;</span>
+  }
+
+  private UserData createUser(Objectify datastore, String userId, String email) {
+<span class="fc" id="L363">    String emaillower = null;</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">    if (email != null) {</span>
+<span class="fc" id="L365">      emaillower = email.toLowerCase();</span>
+    }
+<span class="fc" id="L367">    UserData userData = new UserData();</span>
+<span class="fc" id="L368">    userData.id = userId;</span>
+<span class="fc" id="L369">    userData.tosAccepted = false;</span>
+<span class="fc" id="L370">    userData.settings = &quot;&quot;;</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">    userData.email = email == null ? &quot;&quot; : email;</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">    userData.emaillower = email == null ? &quot;&quot; : emaillower;</span>
+<span class="fc" id="L373">    datastore.put(userData);</span>
+<span class="fc" id="L374">    return userData;</span>
+  }
+
+  @Override
+  public void setTosAccepted(final String userId) {
+    try {
+<span class="fc" id="L380">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L383">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">          if (userData != null) {</span>
+<span class="fc" id="L385">            userData.tosAccepted = true;</span>
+<span class="fc" id="L386">            datastore.put(userData);</span>
+          }
+<span class="fc" id="L388">        }</span>
+      }, true);
+<span class="nc" id="L390">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L391">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L392">    }</span>
+<span class="fc" id="L393">  }</span>
+
+  @Override
+  public void setUserEmail(final String userId, String inputemail) {
+<span class="nc" id="L397">    final String email = inputemail.toLowerCase();</span>
+    try {
+<span class="nc" id="L399">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L402">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">          if (userData != null) {</span>
+<span class="nc" id="L404">            userData.email = email;</span>
+<span class="nc" id="L405">            datastore.put(userData);</span>
+          }
+<span class="nc" id="L407">        }</span>
+      }, true);
+<span class="nc" id="L409">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L410">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="nc" id="L411">    }</span>
+<span class="nc" id="L412">  }</span>
+
+  @Override
+  public void setUserSessionId(final String userId, final String sessionId) {
+    try {
+<span class="nc" id="L417">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L420">          String cachekey = User.usercachekey + &quot;|&quot; + userId;</span>
+<span class="nc" id="L421">          memcache.delete(cachekey);  // Flush cached copy prior to update</span>
+<span class="nc" id="L422">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">          if (userData != null) {</span>
+<span class="nc" id="L424">            userData.sessionid = sessionId;</span>
+<span class="nc" id="L425">            datastore.put(userData);</span>
+          }
+<span class="nc" id="L427">        }</span>
+      }, false);
+<span class="nc" id="L429">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L430">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="nc" id="L431">    }</span>
+<span class="nc" id="L432">  }</span>
+
+  @Override
+  public void setUserPassword(final String userId, final String password) {
+    try {
+<span class="nc" id="L437">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L440">          String cachekey = User.usercachekey + &quot;|&quot; + userId;</span>
+<span class="nc" id="L441">          memcache.delete(cachekey);  // Flush cached copy prior to update</span>
+<span class="nc" id="L442">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="nc bnc" id="L443" title="All 2 branches missed.">          if (userData != null) {</span>
+<span class="nc" id="L444">            userData.password = password;</span>
+<span class="nc" id="L445">            datastore.put(userData);</span>
+          }
+<span class="nc" id="L447">        }</span>
+      }, true);
+<span class="nc" id="L449">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L450">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="nc" id="L451">    }</span>
+<span class="nc" id="L452">  }</span>
+
+  @Override
+  public String loadSettings(final String userId) {
+<span class="fc" id="L456">    final Result&lt;String&gt; settings = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L458">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L461">          UserData userData = datastore.find(UserData.class, userId);</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">          if (userData != null) {</span>
+<span class="fc" id="L463">            settings.t = userData.settings;</span>
+          } else {
+<span class="fc" id="L465">            settings.t = &quot;&quot;;</span>
+          }
+<span class="fc" id="L467">        }</span>
+      }, false);
+<span class="nc" id="L469">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L470">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L471">    }</span>
+<span class="fc" id="L472">    return settings.t;</span>
+  }
+
+  @Override
+  public void storeSettings(final String userId, final String settings) {
+    try {
+<span class="fc" id="L478">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L481">          UserData userData = datastore.find(userKey(userId));</span>
+<span class="pc bpc" id="L482" title="1 of 2 branches missed.">          if (userData != null) {</span>
+<span class="fc" id="L483">            userData.settings = settings;</span>
+<span class="fc" id="L484">            userData.visited = new Date(); // Indicate that this person was active now</span>
+<span class="fc" id="L485">            datastore.put(userData);</span>
+          }
+<span class="fc" id="L487">        }</span>
+      }, false);
+<span class="nc" id="L489">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L490">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L491">    }</span>
+<span class="fc" id="L492">  }</span>
+
+  @Override
+  public long createProject(final String userId, final Project project,
+      final String projectSettings) {
+<span class="fc" id="L497">    final Result&lt;Long&gt; projectId = new Result&lt;Long&gt;();</span>
+<span class="fc" id="L498">    final List&lt;FileData&gt; addedFiles = new ArrayList&lt;FileData&gt;();</span>
+
+    try {
+      // first job is on the project entity, creating the ProjectData object
+      // and the associated files.
+<span class="fc" id="L503">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException {
+<span class="fc" id="L506">          long date = System.currentTimeMillis();</span>
+<span class="fc" id="L507">          ProjectData pd = new ProjectData();</span>
+<span class="fc" id="L508">          pd.id = null;  // let Objectify auto-generate the project id</span>
+<span class="fc" id="L509">          pd.dateCreated = date;</span>
+<span class="fc" id="L510">          pd.dateModified = date;</span>
+<span class="fc" id="L511">          pd.history = project.getProjectHistory();</span>
+<span class="fc" id="L512">          pd.name = project.getProjectName();</span>
+<span class="fc" id="L513">          pd.settings = projectSettings;</span>
+<span class="fc" id="L514">          pd.type = project.getProjectType();</span>
+<span class="fc" id="L515">          datastore.put(pd); // put the project in the db so that it gets assigned an id</span>
+
+<span class="pc bnc" id="L517" title="All 2 branches missed.">          assert pd.id != null;</span>
+<span class="fc" id="L518">          projectId.t = pd.id;</span>
+          // After the job commits projectId.t should end up with the last value
+          // we've gotten for pd.id (i.e. the one that committed if there
+          // was no error).
+          // Note that while we cannot expect to read back a value that we've
+          // written in this job, reading the assigned id from pd should work.
+
+<span class="fc" id="L525">          Key&lt;ProjectData&gt; projectKey = projectKey(projectId.t);</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">          for (TextFile file : project.getSourceFiles()) {</span>
+            try {
+<span class="fc" id="L528">              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,</span>
+<span class="fc" id="L529">                  file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));</span>
+<span class="nc" id="L530">            } catch (IOException e) { // GCS throws this</span>
+<span class="nc" id="L531">              throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L532">                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);</span>
+<span class="fc" id="L533">            }</span>
+<span class="fc" id="L534">          }</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">          for (RawFile file : project.getRawSourceFiles()) {</span>
+            try {
+<span class="fc" id="L537">              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId, file.getFileName(),</span>
+<span class="fc" id="L538">                  file.getContent()));</span>
+<span class="nc" id="L539">            } catch (IOException e) {</span>
+<span class="nc" id="L540">              throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L541">                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);</span>
+<span class="fc" id="L542">            }</span>
+<span class="fc" id="L543">          }</span>
+<span class="fc" id="L544">          datastore.put(addedFiles);  // batch put</span>
+<span class="fc" id="L545">        }</span>
+
+        @Override
+        public void onNonFatalError() {
+<span class="nc" id="L549">        }</span>
+
+<span class="fc" id="L551">      }, Server.isProductionServer()); // Only use a transaction on the production server</span>
+                                       // The App Engine dev server simulates the Google Cloud
+                                       // Store using the datastore. If we use a transaction
+                                       // here we wind up covering more then one entity group
+                                       // (Our access to FileData and Fake-GCS access to its own
+                                       // datastore kind to simulate GCS) which is an error.
+                                       // We can use a transaction in production between the
+                                       // production implementation of GCS does not touch the
+                                       // datastore
+
+      // second job is on the user entity
+<span class="fc" id="L562">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L565">          UserProjectData upd = new UserProjectData();</span>
+<span class="fc" id="L566">          upd.projectId = projectId.t;</span>
+<span class="fc" id="L567">          upd.settings = projectSettings;</span>
+<span class="fc" id="L568">          upd.state = UserProjectData.StateEnum.OPEN;</span>
+<span class="fc" id="L569">          upd.userKey = userKey(userId);</span>
+<span class="fc" id="L570">          datastore.put(upd);</span>
+<span class="fc" id="L571">        }</span>
+      }, true);
+<span class="fc" id="L573">    } catch (ObjectifyException e) {</span>
+<span class="fc bfc" id="L574" title="All 2 branches covered.">      for (FileData addedFile : addedFiles) {</span>
+<span class="pc bpc" id="L575" title="1 of 2 branches missed.">        if (isTrue(addedFile.isGCS)) {  // Do something</span>
+<span class="nc bnc" id="L576" title="All 2 branches missed.">          if (addedFile.gcsName != null) {</span>
+            try {
+<span class="nc" id="L578">              gcsService.delete(new GcsFilename(getGcsBucketToUse(addedFile.role), addedFile.gcsName));</span>
+<span class="nc" id="L579">            } catch (IOException ee) {</span>
+<span class="nc" id="L580">              LOG.log(Level.WARNING, &quot;Unable to delete &quot; + addedFile.gcsName +</span>
+                &quot; from GCS while aborting project creation.&quot;, ee);
+<span class="nc" id="L582">          }</span>
+        }
+      }
+      // clear addedFiles in case we end up here more than once
+<span class="fc" id="L586">      addedFiles.clear();</span>
+<span class="fc" id="L587">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="fc" id="L588">          collectUserProjectErrorInfo(userId, projectId.t), e);</span>
+      }
+<span class="fc" id="L590">    }</span>
+<span class="fc" id="L591">    return projectId.t;</span>
+  }
+
+  /*
+   *  Creates and returns a new FileData object with the specified fields.
+   *  Does not check for the existence of the object and does not update
+   *  the database.
+   */
+  private FileData createRawFile(Key&lt;ProjectData&gt; projectKey, FileData.RoleEnum role,
+    String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
+<span class="fc" id="L601">    validateGCS();</span>
+<span class="fc" id="L602">    FileData file = new FileData();</span>
+<span class="fc" id="L603">    file.fileName = fileName;</span>
+<span class="fc" id="L604">    file.projectKey = projectKey;</span>
+<span class="fc" id="L605">    file.role = role;</span>
+<span class="fc" id="L606">    file.userId = userId;</span>
+<span class="fc bfc" id="L607" title="All 2 branches covered.">    if (useGCSforFile(fileName, content.length)) {</span>
+<span class="fc" id="L608">      file.isGCS = true;</span>
+<span class="fc" id="L609">      file.gcsName = makeGCSfileName(fileName, projectKey.getId());</span>
+<span class="fc" id="L610">      GcsOutputChannel outputChannel =</span>
+<span class="fc" id="L611">        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(file.role), file.gcsName), GcsFileOptions.getDefaultInstance());</span>
+<span class="fc" id="L612">      outputChannel.write(ByteBuffer.wrap(content));</span>
+<span class="fc" id="L613">      outputChannel.close();</span>
+<span class="fc" id="L614">    } else {</span>
+<span class="fc" id="L615">      file.content = content;</span>
+    }
+<span class="fc" id="L617">    return file;</span>
+  }
+
+  @Override
+  public void deleteProject(final String userId, final long projectId) {
+<span class="fc" id="L622">    validateGCS();</span>
+    // blobs associated with the project
+<span class="fc" id="L624">    final List&lt;String&gt; blobKeys = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L625">    final List&lt;String&gt; gcsPaths = new ArrayList&lt;String&gt;();</span>
+    try {
+      // first job deletes the UserProjectData in the user's entity group
+<span class="fc" id="L628">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+          // delete the UserProjectData object
+<span class="fc" id="L632">          Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="fc" id="L633">          datastore.delete(userProjectKey(userKey, projectId));</span>
+          // delete any FileData objects associated with this project
+<span class="fc" id="L635">        }</span>
+      }, true);
+      // second job deletes the project files and ProjectData in the project's
+      // entity group
+<span class="fc" id="L639">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L642">          Key&lt;ProjectData&gt; projectKey = projectKey(projectId);</span>
+<span class="fc" id="L643">          Query&lt;FileData&gt; fdq = datastore.query(FileData.class).ancestor(projectKey);</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">          for (FileData fd: fdq) {</span>
+<span class="pc bpc" id="L645" title="1 of 2 branches missed.">            if (isTrue(fd.isGCS)) {</span>
+<span class="nc" id="L646">              gcsPaths.add(fd.gcsName);</span>
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">            } else if (fd.isBlob) {</span>
+<span class="nc" id="L648">              blobKeys.add(fd.blobKey);</span>
+            }
+<span class="fc" id="L650">          }</span>
+<span class="fc" id="L651">          datastore.delete(fdq);</span>
+          // finally, delete the ProjectData object
+<span class="fc" id="L653">          datastore.delete(projectKey);</span>
+<span class="fc" id="L654">        }</span>
+      }, true);
+      // have to delete the blobs outside of the user and project jobs
+<span class="pc bpc" id="L657" title="1 of 2 branches missed.">      for (String blobKeyString: blobKeys) {</span>
+<span class="nc" id="L658">        deleteBlobstoreFile(blobKeyString);</span>
+<span class="nc" id="L659">      }</span>
+      // Now delete the gcs files
+<span class="pc bpc" id="L661" title="1 of 2 branches missed.">      for (String gcsName: gcsPaths) {</span>
+        try {
+<span class="nc" id="L663">          gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName));</span>
+<span class="nc" id="L664">        } catch (IOException e) {</span>
+          // Note: this warning will happen if we attempt to remove an APK file, because we may be looking
+          // in the wrong bucket. But that's OK. Things in the apk bucket will go away on their own.
+<span class="nc" id="L667">          LOG.log(Level.WARNING, &quot;Unable to delete &quot; + gcsName + &quot; from GCS while deleting project&quot;, e);</span>
+<span class="nc" id="L668">        }</span>
+<span class="nc" id="L669">      }</span>
+<span class="nc" id="L670">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L671">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L672">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L673">    }</span>
+<span class="fc" id="L674">  }</span>
+
+  @Override
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    try {
+<span class="nc" id="L679">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L682">          ProjectData projectData = datastore.find(projectKey(projectId));</span>
+<span class="nc bnc" id="L683" title="All 2 branches missed.">          if (projectData != null) {</span>
+<span class="nc" id="L684">            projectData.projectMovedToTrashFlag = flag;</span>
+<span class="nc" id="L685">            datastore.put(projectData);</span>
+          }
+<span class="nc" id="L687">        }</span>
+      }, true);
+<span class="nc" id="L689">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L690">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="nc" id="L691">    }</span>
+<span class="nc" id="L692">  }</span>
+
+  @Override
+  public List&lt;Long&gt; getProjects(final String userId) {
+<span class="fc" id="L696">    final List&lt;Long&gt; projects = new ArrayList&lt;Long&gt;();</span>
+    try {
+<span class="fc" id="L698">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L701">          Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="fc bfc" id="L702" title="All 2 branches covered.">          for (UserProjectData upd : datastore.query(UserProjectData.class).ancestor(userKey)) {</span>
+<span class="fc" id="L703">            projects.add(upd.projectId);</span>
+<span class="fc" id="L704">          }</span>
+<span class="fc" id="L705">        }</span>
+      }, false);
+<span class="nc" id="L707">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L708">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L709">    }</span>
+
+<span class="fc" id="L711">    return projects;</span>
+  }
+
+  @Override
+  public String loadProjectSettings(final String userId, final long projectId) {
+<span class="fc" id="L716">    final Result&lt;String&gt; settings = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L718">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L721">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L722" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L723">            settings.t = pd.settings;</span>
+          } else {
+<span class="nc" id="L725">            settings.t = &quot;&quot;;</span>
+          }
+<span class="fc" id="L727">        }</span>
+      }, false);
+<span class="nc" id="L729">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L730">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L731">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L732">    }</span>
+<span class="fc" id="L733">    return settings.t;</span>
+  }
+
+  @Override
+  public void storeProjectSettings(final String userId, final long projectId,
+      final String settings) {
+    try {
+<span class="fc" id="L740">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L743">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L744" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L745">            pd.settings = settings;</span>
+<span class="fc" id="L746">            datastore.put(pd);</span>
+          }
+<span class="fc" id="L748">        }</span>
+      }, false);
+<span class="nc" id="L750">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L751">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L752">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L753">    }</span>
+<span class="fc" id="L754">  }</span>
+
+  /**
+   * getProjectType -- Get the type of this project
+   *
+   * @param userId the user whose project this is
+   * @param projectId the id of the project
+   * @return String type of project
+   *
+   * Note: There is currently only one type of project supported,
+   *       so to avoid database calls (which cost both time and money)
+   *       we just return a constant. If we add a second (or more) type
+   *       of project, we should add appropriate code here.
+   */
+
+  @Override
+  public String getProjectType(final String userId, final long projectId) {
+//    final Result&lt;String&gt; projectType = new Result&lt;String&gt;();
+//    try {
+//      runJobWithRetries(new JobRetryHelper() {
+//        @Override
+//        public void run(Objectify datastore) {
+//          ProjectData pd = datastore.find(projectKey(projectId));
+//          if (pd != null) {
+//            projectType.t = pd.type;
+//          } else {
+//            projectType.t = &quot;&quot;;
+//          }
+//        }
+//      });
+//    } catch (ObjectifyException e) {
+//      throw CrashReport.createAndLogError(LOG, null,
+//          collectUserProjectErrorInfo(userId, projectId), e);
+//    }
+    // We only have one project type, no need to ask about it
+<span class="fc" id="L789">    return YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE;</span>
+  }
+
+  @Override
+  public UserProject getUserProject(final String userId, final long projectId) {
+<span class="fc" id="L794">    final Result&lt;ProjectData&gt; projectData = new Result&lt;ProjectData&gt;();</span>
+    try {
+<span class="fc" id="L796">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L799">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L800" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L801">            projectData.t = pd;</span>
+          } else {
+<span class="nc" id="L803">            projectData.t = null;</span>
+          }
+<span class="fc" id="L805">        }</span>
+      }, false);
+<span class="nc" id="L807">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L808">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L809">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L810">    }</span>
+<span class="pc bpc" id="L811" title="1 of 2 branches missed.">    if (projectData.t == null) {</span>
+<span class="nc" id="L812">      return null;</span>
+    } else {
+<span class="fc" id="L814">      return new UserProject(projectId, projectData.t.name,</span>
+          projectData.t.type, projectData.t.dateCreated,
+          projectData.t.dateModified, projectData.t.projectMovedToTrashFlag);
+    }
+  }
+
+  @Override
+  public List&lt;UserProject&gt; getUserProjects(final String userId, final List&lt;Long&gt; projectIds) {
+<span class="fc" id="L822">    final Result&lt;Map&lt;Long,ProjectData&gt;&gt; projectDatas = new Result&lt;Map&lt;Long,ProjectData&gt;&gt;();</span>
+    try {
+<span class="fc" id="L824">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L827">          Map&lt;Long,ProjectData&gt; pd = datastore.get(ProjectData.class, projectIds);</span>
+<span class="pc bpc" id="L828" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L829">            projectDatas.t = pd;</span>
+          } else {
+<span class="nc" id="L831">            projectDatas.t = null;</span>
+          }
+<span class="fc" id="L833">        }</span>
+      }, false);
+<span class="nc" id="L835">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L836">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L837">        collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L838">    }</span>
+<span class="pc bpc" id="L839" title="1 of 2 branches missed.">    if (projectDatas.t == null) {</span>
+<span class="nc" id="L840">      throw new RuntimeException(&quot;getUserProjects wants to return null, userId = &quot; + userId);</span>
+      // Note we directly throw a RuntimeException instead of calling CrashReport
+      // because we don't have an explicitly caught exception to hand it.
+    } else {
+<span class="fc" id="L844">      List&lt;UserProject&gt; uProjects = Lists.newArrayListWithExpectedSize(projectDatas.t.size());</span>
+<span class="fc bfc" id="L845" title="All 2 branches covered.">      for (ProjectData projectData : projectDatas.t.values()) {</span>
+<span class="fc" id="L846">        uProjects.add(new UserProject(projectData.id, projectData.name,</span>
+            projectData.type, projectData.dateCreated,
+            projectData.dateModified, projectData.projectMovedToTrashFlag));
+<span class="fc" id="L849">      }</span>
+<span class="fc" id="L850">      return uProjects;</span>
+    }
+  }
+
+  @Override
+  public String getProjectName(final String userId, final long projectId) {
+<span class="fc" id="L856">    final Result&lt;String&gt; projectName = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L858">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L861">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L862" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L863">            projectName.t = pd.name;</span>
+          } else {
+<span class="nc" id="L865">            projectName.t = &quot;&quot;;</span>
+          }
+<span class="fc" id="L867">        }</span>
+      }, false);
+<span class="nc" id="L869">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L870">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L871">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L872">    }</span>
+<span class="fc" id="L873">    return projectName.t;</span>
+  }
+
+  @Override
+  public long getProjectDateModified(final String userId, final long projectId) {
+<span class="fc" id="L878">    final Result&lt;Long&gt; modDate = new Result&lt;Long&gt;();</span>
+    try {
+<span class="fc" id="L880">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L883">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L884" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L885">            modDate.t = pd.dateModified;</span>
+          } else {
+<span class="nc" id="L887">            modDate.t = (long) 0;</span>
+          }
+<span class="fc" id="L889">        }</span>
+      }, false); // Transaction not needed, and we want the caching we get if we don't
+                 // use them.
+<span class="nc" id="L892">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L893">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L894">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L895">    }</span>
+<span class="fc" id="L896">    return modDate.t;</span>
+  }
+
+  @Override
+  public String getProjectHistory(final String userId, final long projectId) {
+<span class="fc" id="L901">    final Result&lt;String&gt; projectHistory = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L903">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L906">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L907" title="1 of 2 branches missed.">          if (pd != null) {</span>
+<span class="fc" id="L908">            projectHistory.t = pd.history;</span>
+          } else {
+<span class="nc" id="L910">            projectHistory.t = &quot;&quot;;</span>
+          }
+<span class="fc" id="L912">        }</span>
+      }, true);
+<span class="nc" id="L914">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L915">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L916">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L917">    }</span>
+<span class="fc" id="L918">    return projectHistory.t;</span>
+  }
+
+  // JIS XXX
+
+  @Override
+  public long getProjectDateCreated(final String userId, final long projectId) {
+<span class="nc" id="L925">    final Result&lt;Long&gt; dateCreated = new Result&lt;Long&gt;();</span>
+    try {
+<span class="nc" id="L927">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L930">          ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="nc bnc" id="L931" title="All 2 branches missed.">          if (pd != null) {</span>
+<span class="nc" id="L932">            dateCreated.t = pd.dateCreated;</span>
+          } else {
+<span class="nc" id="L934">            dateCreated.t = (long) 0;</span>
+          }
+<span class="nc" id="L936">        }</span>
+      }, true);
+<span class="nc" id="L938">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L939">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L940">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="nc" id="L941">    }</span>
+<span class="nc" id="L942">    return dateCreated.t;</span>
+  }
+
+  @Override
+  public void addFilesToUser(final String userId, final String... fileNames) {
+    try {
+<span class="fc" id="L948">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L951">          Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="fc" id="L952">          List&lt;UserFileData&gt; addedFiles = new ArrayList&lt;UserFileData&gt;();</span>
+<span class="fc bfc" id="L953" title="All 2 branches covered.">          for (String fileName : fileNames) {</span>
+<span class="fc" id="L954">            UserFileData ufd = createUserFile(datastore, userKey, fileName);</span>
+<span class="pc bpc" id="L955" title="1 of 2 branches missed.">            if (ufd != null) {</span>
+<span class="fc" id="L956">              addedFiles.add(ufd);</span>
+            }
+          }
+<span class="fc" id="L959">          datastore.put(addedFiles);  // batch put</span>
+<span class="fc" id="L960">        }</span>
+      }, true);
+<span class="nc" id="L962">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L963">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L964">          collectUserErrorInfo(userId, fileNames[0]), e);</span>
+<span class="fc" id="L965">    }</span>
+<span class="fc" id="L966">  }</span>
+
+  /*
+   * Creates a UserFileData object for the given userKey and fileName, if it
+   * doesn't already exist. Returns the new UserFileData object, or null if
+   * already existed. This method does not add the UserFileData object to the
+   * datastore.
+   */
+  private UserFileData createUserFile(Objectify datastore, Key&lt;UserData&gt; userKey,
+      String fileName) {
+<span class="fc" id="L976">    UserFileData ufd = datastore.find(userFileKey(userKey, fileName));</span>
+<span class="pc bpc" id="L977" title="1 of 2 branches missed.">    if (ufd == null) {</span>
+<span class="fc" id="L978">      ufd = new UserFileData();</span>
+<span class="fc" id="L979">      ufd.fileName = fileName;</span>
+<span class="fc" id="L980">      ufd.userKey = userKey;</span>
+<span class="fc" id="L981">      return ufd;</span>
+    }
+<span class="nc" id="L983">    return null;</span>
+  }
+
+  @Override
+  public List&lt;String&gt; getUserFiles(final String userId) {
+<span class="fc" id="L988">    final List&lt;String&gt; fileList = new ArrayList&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L990">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L993">          Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="fc bfc" id="L994" title="All 2 branches covered.">          for (UserFileData ufd : datastore.query(UserFileData.class).ancestor(userKey)) {</span>
+<span class="fc" id="L995">            fileList.add(ufd.fileName);</span>
+<span class="fc" id="L996">          }</span>
+<span class="fc" id="L997">        }</span>
+      }, false);
+<span class="nc" id="L999">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1000">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L1001">    }</span>
+<span class="fc" id="L1002">    return fileList;</span>
+  }
+
+  @Override
+  public void uploadUserFile(final String userId, final String fileName,
+      final String content, final String encoding) {
+    try {
+<span class="fc" id="L1009">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+          byte[] bytes;
+          try {
+<span class="fc" id="L1014">            bytes = content.getBytes(encoding);</span>
+<span class="fc" id="L1015">          } catch (UnsupportedEncodingException e) {</span>
+            // Note: this RuntimeException should propagate up out of runJobWithRetries
+<span class="fc" id="L1017">            throw CrashReport.createAndLogError(LOG, null, &quot;Unsupported file content encoding, &quot;</span>
+<span class="fc" id="L1018">                + collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1019">          }</span>
+<span class="fc" id="L1020">          addUserFileContents(datastore, userId, fileName, bytes);</span>
+<span class="fc" id="L1021">        }</span>
+      }, true);
+<span class="nc" id="L1023">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1024">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1025">    }</span>
+<span class="fc" id="L1026">  }</span>
+
+  @Override
+  public void uploadRawUserFile(final String userId, final String fileName,
+      final byte[] content) {
+    try {
+<span class="fc" id="L1032">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1035">          addUserFileContents(datastore, userId, fileName, content);</span>
+<span class="fc" id="L1036">        }</span>
+      }, true);
+<span class="nc" id="L1038">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1039">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1040">    }</span>
+<span class="fc" id="L1041">  }</span>
+
+  /*
+   * We look for the UserFileData object for the given userId and fileName.
+   * If it doesn't exit, we create it.
+   *
+   * SPECIAL CASE: If fileName == StorageUtil.USER_BACKBACK_FILENAME and the
+   * content is &quot;[]&quot;, we *delete* the file because the default value returned
+   * if the file doesn't exist is &quot;[]&quot; (the JSON empty list). This is to reduce
+   * the clutter of files for the case where someone doesn't have anything in
+   * the backpack. We pay $$ for storage.
+   *
+   */
+  private void addUserFileContents(Objectify datastore, String userId, String fileName, byte[] content) {
+<span class="fc" id="L1055">    UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));</span>
+<span class="fc" id="L1056">    byte [] empty = new byte[] { (byte)0x5b, (byte)0x5d }; // &quot;[]&quot; in bytes</span>
+<span class="pc bpc" id="L1057" title="1 of 2 branches missed.">    if (ufd == null) {          // File doesn't exist</span>
+<span class="nc bnc" id="L1058" title="All 2 branches missed.">      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &amp;&amp;</span>
+<span class="nc bnc" id="L1059" title="All 2 branches missed.">        Arrays.equals(empty, content)) {</span>
+<span class="nc" id="L1060">        return;                 // Nothing to do</span>
+      }
+<span class="nc" id="L1062">      ufd = new UserFileData();</span>
+<span class="nc" id="L1063">      ufd.fileName = fileName;</span>
+<span class="nc" id="L1064">      ufd.userKey = userKey(userId);</span>
+    } else {
+<span class="pc bpc" id="L1066" title="1 of 2 branches missed.">      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &amp;&amp;</span>
+<span class="nc bnc" id="L1067" title="All 2 branches missed.">        Arrays.equals(empty, content)) {</span>
+        // Storing an empty backback, just delete the file
+<span class="nc" id="L1069">        datastore.delete(userFileKey(userKey(userId), fileName));</span>
+<span class="nc" id="L1070">        return;</span>
+      }
+    }
+<span class="fc" id="L1073">    ufd.content = content;</span>
+<span class="fc" id="L1074">    datastore.put(ufd);</span>
+<span class="fc" id="L1075">  }</span>
+
+  @Override
+  public String downloadUserFile(final String userId, final String fileName,
+      final String encoding) {
+<span class="fc" id="L1080">    final Result&lt;String&gt; result = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L1082">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+          try {
+<span class="fc" id="L1086">            result.t = new String(downloadRawUserFile(userId, fileName), encoding);</span>
+<span class="fc" id="L1087">          } catch (UnsupportedEncodingException e) {</span>
+<span class="fc" id="L1088">            throw CrashReport.createAndLogError(LOG, null, &quot;Unsupported file content encoding, &quot; +</span>
+<span class="fc" id="L1089">                collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1090">          }</span>
+<span class="fc" id="L1091">        }</span>
+      }, true);
+<span class="nc" id="L1093">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1094">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1095">    }</span>
+<span class="fc" id="L1096">    return result.t;</span>
+  }
+
+  @Override
+  public byte[] downloadRawUserFile(final String userId, final String fileName) {
+<span class="fc" id="L1101">    final Result&lt;byte[]&gt; result = new Result&lt;byte[]&gt;();</span>
+    try {
+<span class="fc" id="L1103">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1106">          UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));</span>
+<span class="pc bpc" id="L1107" title="1 of 2 branches missed.">          if (ufd != null) {</span>
+<span class="fc" id="L1108">            result.t = ufd.content;</span>
+          } else {
+<span class="nc" id="L1110">            throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName),</span>
+                new FileNotFoundException(fileName));
+          }
+<span class="fc" id="L1113">        }</span>
+      }, true);
+<span class="nc" id="L1115">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1116">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1117">    }</span>
+<span class="fc" id="L1118">    return result.t;</span>
+  }
+
+  @Override
+  public void deleteUserFile(final String userId, final String fileName) {
+    try {
+<span class="fc" id="L1124">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1127">          Key&lt;UserFileData&gt; ufdKey = userFileKey(userKey(userId), fileName);</span>
+<span class="fc bfc" id="L1128" title="All 2 branches covered.">          if (datastore.find(ufdKey) != null) {</span>
+<span class="fc" id="L1129">            datastore.delete(ufdKey);</span>
+          }
+<span class="fc" id="L1131">        }</span>
+      }, true);
+<span class="nc" id="L1133">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1134">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);</span>
+<span class="fc" id="L1135">    }</span>
+<span class="fc" id="L1136">  }</span>
+
+  @Override
+  public int getMaxJobSizeBytes() {
+    // TODO(user): what should this mean?
+<span class="fc" id="L1141">    return 5 * 1024 * 1024;</span>
+  }
+
+  @Override
+  public void addSourceFilesToProject(final String userId, final long projectId,
+    final boolean changeModDate, final String... fileNames) {
+    try {
+<span class="fc" id="L1148">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1151">          addFilesToProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, userId, fileNames);</span>
+<span class="fc" id="L1152">        }</span>
+      }, true);
+<span class="nc" id="L1154">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1155">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1156">          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);</span>
+<span class="fc" id="L1157">    }</span>
+<span class="fc" id="L1158">  }</span>
+
+  @Override
+  public void addOutputFilesToProject(final String userId, final long projectId,
+    final String... fileNames) {
+    try {
+<span class="fc" id="L1164">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1167">          addFilesToProject(datastore, projectId, FileData.RoleEnum.TARGET, false, userId, fileNames);</span>
+<span class="fc" id="L1168">        }</span>
+      }, true);
+<span class="nc" id="L1170">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1171">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1172">          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);</span>
+<span class="fc" id="L1173">    }</span>
+<span class="fc" id="L1174">  }</span>
+
+  private void addFilesToProject(Objectify datastore, long projectId, FileData.RoleEnum role,
+    boolean changeModDate, String userId, String... fileNames) {
+<span class="fc" id="L1178">    List&lt;FileData&gt; addedFiles = new ArrayList&lt;FileData&gt;();</span>
+<span class="fc" id="L1179">    Key&lt;ProjectData&gt; projectKey = projectKey(projectId);</span>
+<span class="fc bfc" id="L1180" title="All 2 branches covered.">    for (String fileName : fileNames) {</span>
+<span class="fc" id="L1181">      FileData fd = createProjectFile(datastore, projectKey, role, fileName);</span>
+<span class="pc bpc" id="L1182" title="1 of 2 branches missed.">      if (fd != null) {</span>
+<span class="fc" id="L1183">        fd.userId = userId;</span>
+<span class="fc" id="L1184">        addedFiles.add(fd);</span>
+      }
+    }
+<span class="fc" id="L1187">    datastore.put(addedFiles); // batch put</span>
+<span class="fc bfc" id="L1188" title="All 2 branches covered.">    if (changeModDate) {</span>
+<span class="fc" id="L1189">      updateProjectModDate(datastore, projectId);</span>
+    }
+<span class="fc" id="L1191">  }</span>
+
+  private FileData createProjectFile(Objectify datastore, Key&lt;ProjectData&gt; projectKey,
+      FileData.RoleEnum role, String fileName) {
+<span class="fc" id="L1195">    FileData fd = datastore.find(projectFileKey(projectKey, fileName));</span>
+<span class="fc bfc" id="L1196" title="All 2 branches covered.">    if (fd == null) {</span>
+<span class="fc" id="L1197">      fd = new FileData();</span>
+<span class="fc" id="L1198">      fd.fileName = fileName;</span>
+<span class="fc" id="L1199">      fd.projectKey = projectKey;</span>
+<span class="fc" id="L1200">      fd.role = role;</span>
+<span class="fc" id="L1201">      return fd;</span>
+<span class="pc bpc" id="L1202" title="1 of 2 branches missed.">    } else if (!fd.role.equals(role)) {</span>
+<span class="fc" id="L1203">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="fc" id="L1204">          collectProjectErrorInfo(null, projectKey.getId(), fileName),</span>
+          new IllegalStateException(&quot;File role change is not supported&quot;));
+    }
+<span class="nc" id="L1207">    return null;</span>
+  }
+
+  @Override
+  public void removeSourceFilesFromProject(final String userId, final long projectId,
+      final boolean changeModDate, final String... fileNames) {
+    try {
+<span class="fc" id="L1214">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1217">          removeFilesFromProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, fileNames);</span>
+<span class="fc" id="L1218">        }</span>
+      }, true);
+<span class="nc" id="L1220">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1221">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1222">          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);</span>
+<span class="fc" id="L1223">    }</span>
+<span class="fc" id="L1224">  }</span>
+
+  @Override
+  public void removeOutputFilesFromProject(final String userId, final long projectId,
+      final String... fileNames) {
+    try {
+<span class="fc" id="L1230">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1233">          removeFilesFromProject(datastore, projectId, FileData.RoleEnum.TARGET, false, fileNames);</span>
+<span class="fc" id="L1234">        }</span>
+      }, true);
+<span class="nc" id="L1236">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1237">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1238">          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);</span>
+<span class="fc" id="L1239">    }</span>
+<span class="fc" id="L1240">  }</span>
+
+  private void removeFilesFromProject(Objectify datastore, long projectId,
+      FileData.RoleEnum role, boolean changeModDate, String... fileNames) {
+<span class="fc" id="L1244">    Key&lt;ProjectData&gt; projectKey = projectKey(projectId);</span>
+<span class="fc" id="L1245">    List&lt;Key&lt;FileData&gt;&gt; filesToRemove = new ArrayList&lt;Key&lt;FileData&gt;&gt;();</span>
+<span class="fc bfc" id="L1246" title="All 2 branches covered.">    for (String fileName : fileNames) {</span>
+<span class="fc" id="L1247">      Key&lt;FileData&gt; key = projectFileKey(projectKey, fileName);</span>
+<span class="fc" id="L1248">      memcache.delete(key.getString()); // Remove it from memcache (if it is there)</span>
+<span class="fc" id="L1249">      FileData fd = datastore.find(key);</span>
+<span class="fc bfc" id="L1250" title="All 2 branches covered.">      if (fd != null) {</span>
+<span class="fc bfc" id="L1251" title="All 2 branches covered.">        if (fd.role.equals(role)) {</span>
+<span class="fc" id="L1252">          filesToRemove.add(projectFileKey(projectKey, fileName));</span>
+        } else {
+<span class="fc" id="L1254">          throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="fc" id="L1255">              collectProjectErrorInfo(null, projectId, fileName),</span>
+              new IllegalStateException(&quot;File role change is not supported&quot;));
+        }
+      }
+    }
+<span class="fc" id="L1260">    datastore.delete(filesToRemove);  // batch delete</span>
+<span class="fc bfc" id="L1261" title="All 2 branches covered.">    if (changeModDate) {</span>
+<span class="fc" id="L1262">      updateProjectModDate(datastore, projectId);</span>
+    }
+<span class="fc" id="L1264">  }</span>
+
+  @Override
+  public List&lt;String&gt; getProjectSourceFiles(final String userId, final long projectId) {
+<span class="fc" id="L1268">    final Result&lt;List&lt;String&gt;&gt; result = new Result&lt;List&lt;String&gt;&gt;();</span>
+    try {
+<span class="fc" id="L1270">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1273">          result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.SOURCE);</span>
+<span class="fc" id="L1274">        }</span>
+      }, false);
+<span class="nc" id="L1276">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1277">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1278">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L1279">    }</span>
+<span class="fc" id="L1280">    return result.t;</span>
+  }
+
+  @Override
+  public List&lt;String&gt; getProjectOutputFiles(final String userId, final long projectId) {
+<span class="fc" id="L1285">   final Result&lt;List&lt;String&gt;&gt; result = new Result&lt;List&lt;String&gt;&gt;();</span>
+   try {
+<span class="fc" id="L1287">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1290">          result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.TARGET);</span>
+<span class="fc" id="L1291">        }</span>
+      }, false);
+<span class="nc" id="L1293">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1294">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1295">          collectUserProjectErrorInfo(userId, projectId), e);</span>
+<span class="fc" id="L1296">    }</span>
+<span class="fc" id="L1297">    return result.t;</span>
+  }
+
+  private List&lt;String&gt; getProjectFiles(Objectify datastore, long projectId,
+                                       FileData.RoleEnum role) {
+<span class="fc" id="L1302">    Key&lt;ProjectData&gt; projectKey = projectKey(projectId);</span>
+<span class="fc" id="L1303">    List&lt;String&gt; fileList = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L1304" title="All 2 branches covered.">    for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {</span>
+<span class="fc bfc" id="L1305" title="All 2 branches covered.">      if (fd.role.equals(role)) {</span>
+<span class="fc" id="L1306">        fileList.add(fd.fileName);</span>
+      }
+<span class="fc" id="L1308">    }</span>
+<span class="fc" id="L1309">    return fileList;</span>
+  }
+
+  @Override
+  public long uploadFile(final long projectId, final String fileName, final String userId,
+      final String content, final String encoding) throws BlocksTruncatedException {
+    try {
+<span class="fc" id="L1316">      return uploadRawFile(projectId, fileName, userId, false, content.getBytes(encoding));</span>
+<span class="fc" id="L1317">    } catch (UnsupportedEncodingException e) {</span>
+<span class="fc" id="L1318">      throw CrashReport.createAndLogError(LOG, null, &quot;Unsupported file content encoding,&quot;</span>
+<span class="fc" id="L1319">          + collectProjectErrorInfo(null, projectId, fileName), e);</span>
+    }
+  }
+
+  @Override
+  public long uploadFileForce(final long projectId, final String fileName, final String userId,
+      final String content, final String encoding) {
+    try {
+<span class="fc" id="L1327">      return uploadRawFileForce(projectId, fileName, userId, content.getBytes(encoding));</span>
+<span class="nc" id="L1328">    } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L1329">      throw CrashReport.createAndLogError(LOG, null, &quot;Unsupported file content encoding,&quot;</span>
+<span class="nc" id="L1330">          + collectProjectErrorInfo(null, projectId, fileName), e);</span>
+    }
+  }
+
+  private long updateProjectModDate(Objectify datastore, long projectId) {
+<span class="fc" id="L1335">    long modDate = System.currentTimeMillis();</span>
+<span class="fc" id="L1336">    ProjectData pd = datastore.find(projectKey(projectId));</span>
+<span class="pc bpc" id="L1337" title="1 of 2 branches missed.">    if (pd != null) {</span>
+      // Only update the ProjectData dateModified if it is more then a minute
+      // in the future. Do this to avoid unnecessary datastore puts.
+<span class="pc bpc" id="L1340" title="1 of 2 branches missed.">      if (modDate &gt; (pd.dateModified + 1000*60)) {</span>
+<span class="nc" id="L1341">        pd.dateModified = modDate;</span>
+<span class="nc" id="L1342">        datastore.put(pd);</span>
+      } else {
+        // return the (old) dateModified
+<span class="fc" id="L1345">        modDate = pd.dateModified;</span>
+      }
+<span class="fc" id="L1347">      return modDate;</span>
+    } else {
+<span class="nc" id="L1349">      throw CrashReport.createAndLogError(LOG, null, null,</span>
+          new IllegalArgumentException(&quot;project &quot; + projectId + &quot; doesn't exist&quot;));
+    }
+  }
+
+  @Override
+  public long uploadRawFileForce(final long projectId, final String fileName, final String userId,
+      final byte[] content) {
+    try {
+<span class="fc" id="L1358">      return uploadRawFile(projectId, fileName, userId, true, content);</span>
+<span class="nc" id="L1359">    } catch (BlocksTruncatedException e) {</span>
+      // Won't get here, exception isn't thrown when force is true
+<span class="nc" id="L1361">      return 0;</span>
+    }
+  }
+
+  @Override
+  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+      final boolean force, final byte[] content) throws BlocksTruncatedException {
+<span class="fc" id="L1368">    validateGCS();</span>
+<span class="fc" id="L1369">    final Result&lt;Long&gt; modTime = new Result&lt;Long&gt;();</span>
+<span class="fc" id="L1370">    final boolean useGCS = useGCSforFile(fileName, content.length);</span>
+
+<span class="fc bfc" id="L1372" title="All 2 branches covered.">    final boolean considerBackup = (fileName.contains(&quot;src/&quot;) &amp;&amp;</span>
+<span class="fc bfc" id="L1373" title="All 4 branches covered.">      (fileName.endsWith(&quot;.bky&quot;) || fileName.endsWith(&quot;.scm&quot;)));</span>
+
+    try {
+<span class="fc" id="L1376">      runJobWithRetries(new JobRetryHelper() {</span>
+        FileData fd;
+
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException {
+<span class="fc" id="L1381">          Key&lt;FileData&gt; key = projectFileKey(projectKey(projectId), fileName);</span>
+<span class="fc" id="L1382">          fd = (FileData) memcache.get(key.getString());</span>
+<span class="fc bfc" id="L1383" title="All 2 branches covered.">          if (fd == null) {</span>
+<span class="fc" id="L1384">            fd = datastore.find(projectFileKey(projectKey(projectId), fileName));</span>
+          } else {
+<span class="pc bpc" id="L1386" title="1 of 2 branches missed.">            if (DEBUG) {</span>
+<span class="nc" id="L1387">              LOG.log(Level.INFO, &quot;Fetched &quot; + key.getString() + &quot; from memcache.&quot;);</span>
+            }
+          }
+
+          // &lt;Screen&gt;.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a &lt;Screen&gt;.yail file
+<span class="pc bpc" id="L1393" title="2 of 6 branches missed.">          if (fd == null &amp;&amp; (fileName.endsWith(&quot;.yail&quot;) || (fileName.endsWith(&quot;.png&quot;)))){</span>
+<span class="nc" id="L1394">            fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);</span>
+<span class="nc" id="L1395">            fd.userId = userId;</span>
+          }
+
+<span class="fc bfc" id="L1398" title="All 2 branches covered.">          Preconditions.checkState(fd != null);</span>
+
+<span class="pc bpc" id="L1400" title="2 of 4 branches missed.">          if (fd.userId != null &amp;&amp; !fd.userId.equals(&quot;&quot;)) {</span>
+<span class="pc bpc" id="L1401" title="1 of 2 branches missed.">            if (!fd.userId.equals(userId)) {</span>
+<span class="nc" id="L1402">              throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1403">                collectUserProjectErrorInfo(userId, projectId),</span>
+                new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
+
+<span class="pc bpc" id="L1408" title="1 of 4 branches missed.">          if ((content.length &lt; 125) &amp;&amp; (fileName.endsWith(&quot;.bky&quot;))) { // Likely this is an empty blocks workspace</span>
+<span class="nc bnc" id="L1409" title="All 2 branches missed.">            if (!force) {            // force is true if we *really* want to save it!</span>
+<span class="nc" id="L1410">              checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so</span>
+            }
+          }
+
+<span class="fc bfc" id="L1414" title="All 2 branches covered.">          if (useGCS) {</span>
+<span class="fc" id="L1415">            fd.isGCS = true;</span>
+<span class="fc" id="L1416">            fd.gcsName = makeGCSfileName(fileName, projectId);</span>
+            try {
+<span class="fc" id="L1418">              GcsOutputChannel outputChannel =</span>
+<span class="fc" id="L1419">                  gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName), GcsFileOptions.getDefaultInstance());</span>
+<span class="fc" id="L1420">              outputChannel.write(ByteBuffer.wrap(content));</span>
+<span class="fc" id="L1421">              outputChannel.close();</span>
+<span class="nc" id="L1422">            } catch (IOException e) {</span>
+<span class="nc" id="L1423">              throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1424">                collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="fc" id="L1425">            }</span>
+            // If the content was previously stored in the datastore, clear it out.
+<span class="fc" id="L1427">            fd.content = null;</span>
+<span class="fc" id="L1428">            fd.isBlob = false;  // in case we are converting from a blob</span>
+<span class="fc" id="L1429">            fd.blobstorePath = null;</span>
+          } else {
+<span class="pc bpc" id="L1431" title="1 of 2 branches missed.">            if (isTrue(fd.isGCS)) {     // Was a GCS file, must have gotten smaller</span>
+              try {             // and is now stored in the data store
+<span class="nc" id="L1433">                gcsService.delete(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName));</span>
+<span class="nc" id="L1434">              } catch (IOException e) {</span>
+<span class="nc" id="L1435">                throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1436">                  collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1437">              }</span>
+<span class="nc" id="L1438">              fd.isGCS = false;</span>
+<span class="nc" id="L1439">              fd.gcsName = null;</span>
+            }
+            // Note, Don't have to do anything if the file was in the
+            // Blobstore and shrank because the code above (3 lines
+            // into the function) already handles removing the old
+            // contents from the Blobstore.
+<span class="fc" id="L1445">            fd.isBlob = false;</span>
+<span class="fc" id="L1446">            fd.blobstorePath = null;</span>
+<span class="fc" id="L1447">            fd.content = content;</span>
+          }
+<span class="fc bfc" id="L1449" title="All 2 branches covered.">          if (considerBackup) {</span>
+<span class="fc bfc" id="L1450" title="All 2 branches covered.">            if ((fd.lastBackup + TWENTYFOURHOURS) &lt; System.currentTimeMillis()) {</span>
+              try {
+<span class="fc" id="L1452">                String gcsName = makeGCSfileName(fileName + &quot;.&quot; + formattedTime() + &quot;.backup&quot;, projectId);</span>
+<span class="fc" id="L1453">                GcsOutputChannel outputChannel =</span>
+<span class="fc" id="L1454">                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName)), GcsFileOptions.getDefaultInstance());</span>
+<span class="fc" id="L1455">                outputChannel.write(ByteBuffer.wrap(content));</span>
+<span class="fc" id="L1456">                outputChannel.close();</span>
+<span class="fc" id="L1457">                fd.lastBackup = System.currentTimeMillis();</span>
+<span class="nc" id="L1458">              } catch (IOException e) {</span>
+<span class="nc" id="L1459">                throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1460">                    collectProjectErrorInfo(userId, projectId, fileName + &quot;(backup)&quot;), e);</span>
+<span class="fc" id="L1461">              }</span>
+            }
+          }
+          // Old file not marked with ownership, mark it now
+<span class="pc bpc" id="L1465" title="2 of 4 branches missed.">          if (fd.userId == null || fd.userId.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L1466">            fd.userId = userId;</span>
+          }
+<span class="fc" id="L1468">          datastore.put(fd);</span>
+<span class="fc" id="L1469">          memcache.put(key.getString(), fd); // Store the updated data in memcache</span>
+<span class="fc" id="L1470">          modTime.t = updateProjectModDate(datastore, projectId);</span>
+<span class="fc" id="L1471">        }</span>
+      }, false); // Use transaction for blobstore, otherwise we don't need one
+                 // and without one the caching code comes into play.
+
+<span class="nc" id="L1475">    } catch (ObjectifyException e) {</span>
+<span class="nc bnc" id="L1476" title="All 2 branches missed.">      if (e.getMessage().startsWith(&quot;Blocks&quot;)) { // Convert Exception</span>
+<span class="nc" id="L1477">        throw new BlocksTruncatedException();</span>
+      }
+<span class="nc" id="L1479">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1480">          collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="fc" id="L1481">    }</span>
+<span class="fc" id="L1482">    return modTime.t;</span>
+  }
+
+  protected void deleteBlobstoreFile(String blobKeyString) {
+    // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
+    // have to get the BlobKey and delete via the BlobstoreService.
+<span class="nc" id="L1488">    BlobKey blobKey = null;</span>
+    try {
+<span class="nc" id="L1490">      blobKey = new BlobKey(blobKeyString);</span>
+<span class="nc" id="L1491">      BlobstoreServiceFactory.getBlobstoreService().delete(blobKey);</span>
+<span class="nc" id="L1492">    } catch (RuntimeException e) {</span>
+      // Log blob delete errors but don't make them fatal
+<span class="nc" id="L1494">      CrashReport.createAndLogError(LOG, null, &quot;Error deleting blob with blobKey &quot; +</span>
+        blobKey, e);
+<span class="nc" id="L1496">    }</span>
+<span class="nc" id="L1497">  }</span>
+
+  @VisibleForTesting
+  boolean useGCSforFile(String fileName, int length) {
+<span class="fc bfc" id="L1501" title="All 2 branches covered.">    boolean shouldUse =  fileName.contains(&quot;assets/&quot;)</span>
+<span class="pc bpc" id="L1502" title="1 of 4 branches missed.">      || fileName.endsWith(&quot;.apk&quot;) || fileName.endsWith(&quot;.aab&quot;);</span>
+<span class="fc bfc" id="L1503" title="All 2 branches covered.">    if (shouldUse)</span>
+<span class="fc" id="L1504">      return true;              // Use GCS for package output and assets</span>
+<span class="fc bfc" id="L1505" title="All 4 branches covered.">    boolean mayUse = (fileName.contains(&quot;src/&quot;) &amp;&amp; fileName.endsWith(&quot;.blk&quot;)) // AI1 Blocks Files</span>
+<span class="fc bfc" id="L1506" title="All 4 branches covered.">      || (fileName.contains(&quot;src/&quot;) &amp;&amp; fileName.endsWith(&quot;.bky&quot;)); // Blockly files</span>
+<span class="pc bpc" id="L1507" title="1 of 4 branches missed.">    if (mayUse &amp;&amp; length &gt; 50000) // Only use GCS for larger blocks files</span>
+<span class="nc" id="L1508">      return true;</span>
+<span class="fc" id="L1509">    return false;</span>
+  }
+
+  // Make a GCS file name
+  String makeGCSfileName(String fileName, long projectId) {
+<span class="fc" id="L1514">    return (projectId + &quot;/&quot; + fileName);</span>
+  }
+
+  @Override
+  public long deleteFile(final String userId, final long projectId, final String fileName) {
+<span class="fc" id="L1519">    validateGCS();</span>
+<span class="fc" id="L1520">    final Result&lt;Long&gt; modTime = new Result&lt;Long&gt;();</span>
+<span class="fc" id="L1521">    final Result&lt;String&gt; oldBlobKeyString = new Result&lt;String&gt;();</span>
+<span class="fc" id="L1522">    final Result&lt;String&gt; oldgcsName = new Result&lt;String&gt;();</span>
+    try {
+<span class="fc" id="L1524">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1527">          Key&lt;FileData&gt; fileKey = projectFileKey(projectKey(projectId), fileName);</span>
+<span class="fc" id="L1528">          memcache.delete(fileKey.getString());</span>
+<span class="fc" id="L1529">          FileData fileData = datastore.find(fileKey);</span>
+<span class="fc bfc" id="L1530" title="All 2 branches covered.">          if (fileData != null) {</span>
+<span class="pc bpc" id="L1531" title="2 of 4 branches missed.">            if (fileData.userId != null &amp;&amp; !fileData.userId.equals(&quot;&quot;)) {</span>
+<span class="pc bpc" id="L1532" title="1 of 2 branches missed.">              if (!fileData.userId.equals(userId)) {</span>
+<span class="nc" id="L1533">                throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1534">                  collectUserProjectErrorInfo(userId, projectId),</span>
+                  new UnauthorizedAccessException(userId, projectId, null));
+              }
+            }
+<span class="fc" id="L1538">            oldBlobKeyString.t = fileData.blobKey;</span>
+<span class="fc bfc" id="L1539" title="All 2 branches covered.">            if (isTrue(fileData.isGCS)) {</span>
+<span class="fc" id="L1540">              oldgcsName.t = fileData.gcsName;</span>
+            }
+          }
+<span class="fc" id="L1543">          datastore.delete(fileKey);</span>
+<span class="fc" id="L1544">          modTime.t = updateProjectModDate(datastore, projectId);</span>
+<span class="fc" id="L1545">        }</span>
+      }, true);
+<span class="nc" id="L1547">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1548">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1549">          collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="fc" id="L1550">    }</span>
+<span class="pc bpc" id="L1551" title="1 of 2 branches missed.">    if (oldBlobKeyString.t != null) {</span>
+<span class="nc" id="L1552">      deleteBlobstoreFile(oldBlobKeyString.t);</span>
+    }
+<span class="fc bfc" id="L1554" title="All 2 branches covered.">    if (oldgcsName.t != null) {</span>
+      try {
+<span class="fc" id="L1556">        gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), oldgcsName.t));</span>
+<span class="nc" id="L1557">      } catch (IOException e) {</span>
+        // This may get logged if we attempt to delete an APK file. But we can ignore
+        // this case because APK files will be deleted on their own
+<span class="nc" id="L1560">        LOG.log(Level.WARNING, &quot;Unable to delete &quot; + oldgcsName + &quot; from GCS.&quot;, e);</span>
+<span class="fc" id="L1561">      }</span>
+    }
+<span class="pc bpc" id="L1563" title="1 of 2 branches missed.">    return (modTime.t == null) ? 0 : modTime.t;</span>
+  }
+
+  // TODO(user) - just use &quot;UTF-8&quot; (instead of having an encoding argument),
+  // which will never cause UnsupportedEncodingException. (Here and in other
+  // methods with the encoding arg.
+  @Override
+  public String downloadFile(final String userId, final long projectId, final String fileName,
+      final String encoding) {
+    try {
+<span class="fc" id="L1573">      return new String(downloadRawFile(userId, projectId, fileName), encoding);</span>
+<span class="fc" id="L1574">    } catch (UnsupportedEncodingException e) {</span>
+<span class="fc" id="L1575">      throw CrashReport.createAndLogError(LOG, null, &quot;Unsupported file content encoding, &quot;</span>
+<span class="fc" id="L1576">          + collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+    }
+  }
+
+  @Override
+  public void recordCorruption(String userId, long projectId, String fileId, String message) {
+<span class="nc" id="L1582">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L1583">    final CorruptionRecord data = new CorruptionRecord();</span>
+<span class="nc" id="L1584">    data.timestamp = new Date();</span>
+<span class="nc" id="L1585">    data.id = null;</span>
+<span class="nc" id="L1586">    data.userId = userId;</span>
+<span class="nc" id="L1587">    data.fileId = fileId;</span>
+<span class="nc" id="L1588">    data.projectId = projectId;</span>
+<span class="nc" id="L1589">    data.message = message;</span>
+    try {
+<span class="nc" id="L1591">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L1594">            datastore.put(data);</span>
+<span class="nc" id="L1595">          }</span>
+      }, true);
+<span class="nc" id="L1597">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1598">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L1599">    }</span>
+<span class="nc" id="L1600">  }</span>
+
+  @Override
+  public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
+<span class="fc" id="L1604">    validateGCS();</span>
+<span class="fc" id="L1605">    final Result&lt;byte[]&gt; result = new Result&lt;byte[]&gt;();</span>
+<span class="fc" id="L1606">    final Result&lt;FileData&gt; fd = new Result&lt;FileData&gt;();</span>
+    try {
+<span class="fc" id="L1608">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L1611">          Key&lt;FileData&gt; fileKey = projectFileKey(projectKey(projectId), fileName);</span>
+<span class="fc" id="L1612">          fd.t = (FileData) memcache.get(fileKey.getString());</span>
+<span class="fc bfc" id="L1613" title="All 2 branches covered.">          if (fd.t == null) {</span>
+<span class="fc" id="L1614">            fd.t = datastore.find(fileKey);</span>
+          }
+<span class="fc" id="L1616">        }</span>
+      }, false); // Transaction not needed
+<span class="nc" id="L1618">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1619">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1620">          collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="fc" id="L1621">    }</span>
+    // read the blob/GCS File outside of the job
+<span class="fc" id="L1623">    FileData fileData = fd.t;</span>
+<span class="fc bfc" id="L1624" title="All 2 branches covered.">    if (fileData != null) {</span>
+<span class="pc bpc" id="L1625" title="2 of 4 branches missed.">      if (fileData.userId != null &amp;&amp; !fileData.userId.equals(&quot;&quot;)) {</span>
+<span class="fc bfc" id="L1626" title="All 2 branches covered.">        if (!fileData.userId.equals(userId)) {</span>
+<span class="fc" id="L1627">          throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="fc" id="L1628">            collectUserProjectErrorInfo(userId, projectId),</span>
+            new UnauthorizedAccessException(userId, projectId, null));
+        }
+      }
+<span class="fc bfc" id="L1632" title="All 2 branches covered.">      if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store</span>
+        try {
+          int count;
+<span class="fc" id="L1635">          boolean npfHappened = false;</span>
+<span class="fc" id="L1636">          boolean recovered = false;</span>
+<span class="pc bpc" id="L1637" title="1 of 2 branches missed.">          for (count = 0; count &lt; 5; count++) {</span>
+<span class="fc" id="L1638">            GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fileData.role), fileData.gcsName);</span>
+<span class="fc" id="L1639">            int bytesRead = 0;</span>
+<span class="fc" id="L1640">            int fileSize = 0;</span>
+            ByteBuffer resultBuffer;
+            try {
+<span class="fc" id="L1643">              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();</span>
+<span class="fc" id="L1644">              resultBuffer = ByteBuffer.allocate(fileSize);</span>
+<span class="fc" id="L1645">              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);</span>
+              try {
+<span class="fc bfc" id="L1647" title="All 2 branches covered.">                while (bytesRead &lt; fileSize) {</span>
+<span class="fc" id="L1648">                  bytesRead += readChannel.read(resultBuffer);</span>
+<span class="pc bpc" id="L1649" title="1 of 2 branches missed.">                  if (bytesRead &lt; fileSize) {</span>
+<span class="nc bnc" id="L1650" title="All 2 branches missed.">                    if (DEBUG) {</span>
+<span class="nc" id="L1651">                      LOG.log(Level.INFO, &quot;readChannel: bytesRead = &quot; + bytesRead + &quot; fileSize = &quot; + fileSize);</span>
+                    }
+                  }
+                }
+<span class="fc" id="L1655">                recovered = true;</span>
+<span class="fc" id="L1656">                result.t = resultBuffer.array();</span>
+                break;          // We got the data, break out of the loop!
+              } finally {
+<span class="fc" id="L1659">                readChannel.close();</span>
+              }
+<span class="nc" id="L1661">            } catch (NullPointerException e) {</span>
+              // This happens if the object in GCS is non-existent, which would happen
+              // when people uploaded a zero length object. As of this change, we now
+              // store zero length objects into GCS, but there are plenty of older objects
+              // that are missing in GCS.
+<span class="nc" id="L1666">              LOG.log(Level.WARNING, &quot;downloadrawfile: NPF recorded for &quot; + fileData.gcsName);</span>
+<span class="nc" id="L1667">              npfHappened = true;</span>
+<span class="nc" id="L1668">              resultBuffer = ByteBuffer.allocate(0);</span>
+<span class="nc" id="L1669">              result.t = resultBuffer.array();</span>
+            }
+          }
+
+          // report out on how things went above
+<span class="pc bpc" id="L1674" title="1 of 2 branches missed.">          if (npfHappened) {    // We lost at least once</span>
+<span class="nc bnc" id="L1675" title="All 2 branches missed.">            if (recovered) {</span>
+<span class="nc" id="L1676">              LOG.log(Level.WARNING, &quot;recovered from NPF in downloadrawfile filename = &quot; + fileData.gcsName +</span>
+                &quot; count = &quot; + count);
+            } else {
+<span class="nc" id="L1679">              LOG.log(Level.WARNING, &quot;FATAL NPF in downloadrawfile filename = &quot; + fileData.gcsName);</span>
+            }
+          }
+
+<span class="nc" id="L1683">        } catch (IOException e) {</span>
+<span class="nc" id="L1684">          throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1685">              collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="fc" id="L1686">        }</span>
+<span class="pc bpc" id="L1687" title="1 of 2 branches missed.">      } else if (fileData.isBlob) {</span>
+        try {
+<span class="nc bnc" id="L1689" title="All 2 branches missed.">          if (fileData.blobKey == null) {</span>
+<span class="nc" id="L1690">            throw new BlobReadException(&quot;blobKey is null&quot;);</span>
+          }
+<span class="nc" id="L1692">          result.t = getBlobstoreBytes(fileData.blobKey);</span>
+          // Time to consider upgrading this file if we are moving to GCS
+          // Note: We only run if we have at least 5 seconds of runtime left in the request
+<span class="nc" id="L1695">          long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();</span>
+<span class="nc" id="L1696">        } catch (BlobReadException e) {</span>
+<span class="nc" id="L1697">          throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1698">              collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1699">        }</span>
+      } else {
+<span class="pc bpc" id="L1701" title="1 of 2 branches missed.">        if (fileData.content == null) {</span>
+<span class="nc" id="L1702">          result.t = new byte[0];</span>
+        } else {
+<span class="fc" id="L1704">          result.t = fileData.content;</span>
+        }
+      }
+    } else {
+<span class="fc" id="L1708">      throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="fc" id="L1709">          collectProjectErrorInfo(userId, projectId, fileName),</span>
+          new FileNotFoundException(&quot;No data for &quot; + fileName));
+    }
+<span class="fc" id="L1712">    return result.t;</span>
+  }
+
+  // Note: this must be called outside of any transaction, since getBlobKey()
+  // uses the current transaction and it will most likely have the wrong
+  // entity group!
+  private byte[] getBlobstoreBytes(String blobKeyString) throws BlobReadException {
+<span class="nc" id="L1719">    BlobKey blobKey = new BlobKey(blobKeyString);</span>
+<span class="nc bnc" id="L1720" title="All 2 branches missed.">    if (blobKey == null) {</span>
+<span class="nc" id="L1721">      throw new BlobReadException(&quot;Could not find BlobKey for &quot; + blobKeyString);</span>
+    }
+    try {
+<span class="nc" id="L1724">      InputStream blobInputStream = new BlobstoreInputStream(blobKey);</span>
+<span class="nc" id="L1725">      return ByteStreams.toByteArray(blobInputStream);</span>
+<span class="nc" id="L1726">    } catch (IOException e) {</span>
+<span class="nc" id="L1727">      throw new BlobReadException(e, &quot;Error trying to read blob from &quot; + blobKey);</span>
+    }
+  }
+
+  /**
+   *  Exports project files as a zip archive
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param includeProjectHistory  whether or not to include the project history
+   * @param includeAndroidKeystore  whether or not to include the Android keystore
+   * @param zipName  the name of the zip file, if a specific one is desired
+   * @param includeYail include any yail files in the project
+   * @param includeScreenShots include any screen shots stored with the project
+   * @param fatalError Signal a fatal error if a file is not found
+   * @param forGallery flag to indicate we are exporting for the gallery
+   * @return  project with the content as requested by params.
+   */
+  @Override
+  public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
+    final boolean includeProjectHistory,
+    final boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean includeScreenShots,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException {
+<span class="pc bpc" id="L1753" title="1 of 4 branches missed.">    final boolean forBuildserver = includeAndroidKeystore &amp;&amp; includeYail;</span>
+<span class="fc" id="L1754">    validateGCS();</span>
+<span class="fc" id="L1755">    final Result&lt;Integer&gt; fileCount = new Result&lt;Integer&gt;();</span>
+<span class="fc" id="L1756">    fileCount.t = 0;</span>
+<span class="fc" id="L1757">    final Result&lt;String&gt; projectHistory = new Result&lt;String&gt;();</span>
+<span class="fc" id="L1758">    projectHistory.t = null;</span>
+    // We collect up all the file data for the project in a transaction but
+    // then we read the data and write the zip file outside of the transaction
+    // to avoid problems reading blobs in a transaction with the wrong
+    // entity group.
+<span class="fc" id="L1763">    final List&lt;FileData&gt; fileData = new ArrayList&lt;FileData&gt;();</span>
+<span class="fc" id="L1764">    final Result&lt;String&gt; projectName = new Result&lt;String&gt;();</span>
+<span class="fc" id="L1765">    final Map&lt;String, Integer&gt; screens = new HashMap&lt;String, Integer&gt;();</span>
+<span class="fc" id="L1766">    projectName.t = null;</span>
+<span class="fc" id="L1767">    String fileName = null;</span>
+
+<span class="fc" id="L1769">    ByteArrayOutputStream zipFile = new ByteArrayOutputStream();</span>
+<span class="fc" id="L1770">    final ZipOutputStream out = new ZipOutputStream(zipFile);</span>
+<span class="fc" id="L1771">    out.setComment(&quot;Built with MIT App Inventor&quot;);</span>
+
+    try {
+<span class="fc" id="L1774">      JobRetryHelper job = new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) throws IOException {
+<span class="fc" id="L1777">          Key&lt;ProjectData&gt; projectKey = projectKey(projectId);</span>
+<span class="fc bfc" id="L1778" title="All 2 branches covered.">          for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {</span>
+<span class="fc" id="L1779">            fileData.add(fd);</span>
+<span class="fc" id="L1780">            String fileName = fd.fileName;</span>
+<span class="pc bpc" id="L1781" title="1 of 8 branches missed.">            if (fileName.startsWith(&quot;src/&quot;) &amp;&amp; (fileName.endsWith(&quot;.scm&quot;) || fileName.endsWith(&quot;.bky&quot;) || fileName.endsWith(&quot;.yail&quot;))) {</span>
+<span class="fc" id="L1782">              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf(&quot;.&quot;));</span>
+<span class="fc bfc" id="L1783" title="All 2 branches covered.">              int count = screens.containsKey(fileNameNoExt) ? screens.get(fileNameNoExt) + 1 : 1;</span>
+<span class="fc" id="L1784">              screens.put(fileNameNoExt, count);</span>
+            }
+<span class="fc" id="L1786">          }</span>
+<span class="fc" id="L1787">          Iterator&lt;FileData&gt; it = fileData.iterator();</span>
+<span class="fc bfc" id="L1788" title="All 2 branches covered.">          while (it.hasNext()) {</span>
+<span class="fc" id="L1789">            FileData fd = it.next();</span>
+<span class="fc" id="L1790">            String fileName = fd.fileName;</span>
+<span class="pc bpc" id="L1791" title="3 of 4 branches missed.">            if (fileName.startsWith(&quot;assets/external_comps&quot;) &amp;&amp; forGallery) {</span>
+<span class="nc" id="L1792">              throw new IOException(&quot;FATAL Error, external component in gallery app&quot;);</span>
+            }
+<span class="fc bfc" id="L1794" title="All 2 branches covered.">            if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {</span>
+<span class="fc" id="L1795">              it.remove();</span>
+<span class="pc bpc" id="L1796" title="1 of 2 branches missed.">            } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||</span>
+<span class="pc bpc" id="L1797" title="3 of 4 branches missed.">                      (fileName.startsWith(&quot;screenshots&quot;) &amp;&amp; !includeScreenShots) ||</span>
+<span class="pc bpc" id="L1798" title="1 of 6 branches missed.">                      (fileName.startsWith(&quot;src/&quot;) &amp;&amp; fileName.endsWith(&quot;.yail&quot;) &amp;&amp; !includeYail)) {</span>
+              // Skip legacy remix history files that were previous stored with the project
+              // only include screenshots if asked ...
+              // Don't include YAIL files when exporting projects
+              // includeYail will be set to true when we are exporting the source
+              // to send to the buildserver or when the person exporting
+              // a project is an Admin (for debugging).
+              // Otherwise Yail files are confusing cruft. In the case of
+              // the Firebase Component they may contain secrets which we would
+              // rather not have leak into an export .aia file or into the Gallery
+<span class="nc" id="L1808">              it.remove();</span>
+<span class="fc bfc" id="L1809" title="All 4 branches covered.">            } else if (forBuildserver &amp;&amp; fileName.startsWith(&quot;src/&quot;) &amp;&amp;</span>
+<span class="pc bpc" id="L1810" title="1 of 6 branches missed.">                (fileName.endsWith(&quot;.scm&quot;) || fileName.endsWith(&quot;.bky&quot;) || fileName.endsWith(&quot;.yail&quot;))) {</span>
+<span class="fc" id="L1811">              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf(&quot;.&quot;));</span>
+<span class="fc bfc" id="L1812" title="All 2 branches covered.">              if ((Integer)screens.get(fileNameNoExt) &lt; 3) {</span>
+<span class="fc" id="L1813">                LOG.log(Level.INFO, &quot;Not adding file to build &quot;, fileName);</span>
+<span class="fc" id="L1814">                it.remove();</span>
+<span class="fc bfc" id="L1815" title="All 2 branches covered.">                if (fileName.endsWith(&quot;.yail&quot;)) {</span>
+<span class="fc" id="L1816">                  deleteFile(userId, projectId, fileName);</span>
+                }
+              }
+            }
+<span class="fc" id="L1820">          }</span>
+<span class="fc bfc" id="L1821" title="All 2 branches covered.">          if (fileData.size() &gt; 0) {</span>
+<span class="fc" id="L1822">            ProjectData pd = datastore.find(projectKey);</span>
+<span class="fc" id="L1823">            projectName.t = pd.name;</span>
+<span class="pc bpc" id="L1824" title="1 of 4 branches missed.">            if (includeProjectHistory &amp;&amp; !Strings.isNullOrEmpty(pd.history)) {</span>
+<span class="fc" id="L1825">              projectHistory.t = pd.history;</span>
+            }
+          }
+<span class="fc" id="L1828">        }</span>
+      };
+<span class="fc" id="L1830">      runJobWithRetries(job, true);</span>
+<span class="fc" id="L1831">      IOException error = job.getIOException();</span>
+<span class="pc bpc" id="L1832" title="1 of 2 branches missed.">      if (error != null) {</span>
+<span class="nc" id="L1833">        throw error;</span>
+      }
+      // Process the file contents outside of the job since we can't read
+      // blobs in the job.
+<span class="fc bfc" id="L1837" title="All 2 branches covered.">      for (FileData fd : fileData) {</span>
+<span class="fc" id="L1838">        fileName = fd.fileName;</span>
+<span class="fc" id="L1839">        byte[] data = null;</span>
+<span class="pc bpc" id="L1840" title="1 of 2 branches missed.">        if (fd.isBlob) {</span>
+          try {
+<span class="nc bnc" id="L1842" title="All 2 branches missed.">            if (fd.blobKey == null) {</span>
+<span class="nc" id="L1843">              throw new BlobReadException(&quot;blobKey is null&quot;);</span>
+            }
+<span class="nc" id="L1845">            data = getBlobstoreBytes(fd.blobKey);</span>
+<span class="nc" id="L1846">          } catch (BlobReadException e) {</span>
+<span class="nc" id="L1847">            throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1848">                collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1849">          }</span>
+<span class="pc bpc" id="L1850" title="1 of 2 branches missed.">        } else if (isTrue(fd.isGCS)) {</span>
+          try {
+            int count;
+<span class="nc" id="L1853">            boolean npfHappened = false;</span>
+<span class="nc" id="L1854">            boolean recovered = false;</span>
+<span class="nc bnc" id="L1855" title="All 2 branches missed.">            for (count = 0; count &lt; 5; count++) {</span>
+<span class="nc" id="L1856">              GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName);</span>
+<span class="nc" id="L1857">              int bytesRead = 0;</span>
+<span class="nc" id="L1858">              int fileSize = 0;</span>
+              ByteBuffer resultBuffer;
+              try {
+<span class="nc" id="L1861">                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();</span>
+<span class="nc" id="L1862">                resultBuffer = ByteBuffer.allocate(fileSize);</span>
+<span class="nc" id="L1863">                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);</span>
+                try {
+<span class="nc bnc" id="L1865" title="All 2 branches missed.">                  while (bytesRead &lt; fileSize) {</span>
+<span class="nc" id="L1866">                    bytesRead += readChannel.read(resultBuffer);</span>
+<span class="nc bnc" id="L1867" title="All 2 branches missed.">                    if (bytesRead &lt; fileSize) {</span>
+<span class="nc bnc" id="L1868" title="All 2 branches missed.">                      if (DEBUG) {</span>
+<span class="nc" id="L1869">                        LOG.log(Level.INFO, &quot;readChannel: bytesRead = &quot; + bytesRead + &quot; fileSize = &quot; + fileSize);</span>
+                      }
+                    }
+                  }
+<span class="nc" id="L1873">                  recovered = true;</span>
+<span class="nc" id="L1874">                  data = resultBuffer.array();</span>
+                  break;        // We got the data, break out of the loop!
+                } finally {
+<span class="nc" id="L1877">                  readChannel.close();</span>
+                }
+<span class="nc" id="L1879">              } catch (NullPointerException e) {</span>
+                // This happens if the object in GCS is non-existent, which would happen
+                // when people uploaded a zero length object. As of this change, we now
+                // store zero length objects into GCS, but there are plenty of older objects
+                // that are missing in GCS.
+<span class="nc" id="L1884">                LOG.log(Level.WARNING, &quot;exportProjectFile: NPF recorded for &quot; + fd.gcsName);</span>
+<span class="nc" id="L1885">                npfHappened = true;</span>
+<span class="nc" id="L1886">                resultBuffer = ByteBuffer.allocate(0);</span>
+<span class="nc" id="L1887">                data = resultBuffer.array();</span>
+              }
+            }
+
+            // report out on how things went above
+<span class="nc bnc" id="L1892" title="All 2 branches missed.">            if (npfHappened) {    // We lost at least once</span>
+<span class="nc bnc" id="L1893" title="All 2 branches missed.">              if (recovered) {</span>
+<span class="nc" id="L1894">                LOG.log(Level.WARNING, &quot;recovered from NPF in exportProjectFile filename = &quot; + fd.gcsName +</span>
+                  &quot; count = &quot; + count);
+              } else {
+<span class="nc" id="L1897">                LOG.log(Level.WARNING, &quot;FATAL NPF in exportProjectFile filename = &quot; + fd.gcsName);</span>
+<span class="nc bnc" id="L1898" title="All 2 branches missed.">                if (fatalError) {</span>
+<span class="nc" id="L1899">                  throw new IOException(&quot;FATAL Error reading file from GCS filename = &quot; + fd.gcsName);</span>
+                }
+              }
+            }
+<span class="nc" id="L1903">          } catch (IOException e) {</span>
+<span class="nc" id="L1904">            throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1905">              collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1906">          }</span>
+        } else {
+<span class="fc" id="L1908">          data = fd.content;</span>
+        }
+<span class="pc bpc" id="L1910" title="1 of 2 branches missed.">        if (data == null) {     // This happens if file creation is interrupted</span>
+<span class="nc" id="L1911">          data = new byte[0];</span>
+        }
+<span class="fc" id="L1913">        out.putNextEntry(new ZipEntry(fileName));</span>
+<span class="fc" id="L1914">        out.write(data, 0, data.length);</span>
+<span class="fc" id="L1915">        out.closeEntry();</span>
+<span class="fc" id="L1916">        fileCount.t++;</span>
+<span class="fc" id="L1917">      }</span>
+<span class="fc bfc" id="L1918" title="All 2 branches covered.">      if (projectHistory.t != null) {</span>
+<span class="fc" id="L1919">        byte[] data = projectHistory.t.getBytes(StorageUtil.DEFAULT_CHARSET);</span>
+<span class="fc" id="L1920">        out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));</span>
+<span class="fc" id="L1921">        out.write(data, 0, data.length);</span>
+<span class="fc" id="L1922">        out.closeEntry();</span>
+<span class="fc" id="L1923">        fileCount.t++;</span>
+      }
+<span class="nc" id="L1925">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1926">      CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1927">          collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1928">      throw new IOException(&quot;Reflecting exception for userid &quot; + userId +</span>
+<span class="nc" id="L1929">          &quot; projectId &quot; + projectId + &quot;, original exception &quot; + e.getMessage());</span>
+<span class="nc" id="L1930">    } catch (RuntimeException e) {</span>
+<span class="nc" id="L1931">      CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1932">          collectProjectErrorInfo(userId, projectId, fileName), e);</span>
+<span class="nc" id="L1933">      throw new IOException(&quot;Reflecting exception for userid &quot; + userId +</span>
+<span class="nc" id="L1934">          &quot; projectId &quot; + projectId + &quot;, original exception &quot; + e.getMessage());</span>
+<span class="fc" id="L1935">    }</span>
+
+<span class="fc bfc" id="L1937" title="All 2 branches covered.">    if (fileCount.t == 0) {</span>
+      // can't close out since will get a ZipException due to the lack of files
+<span class="fc" id="L1939">      throw new IllegalArgumentException(&quot;No files to download&quot;);</span>
+    }
+
+<span class="fc bfc" id="L1942" title="All 2 branches covered.">    if (includeAndroidKeystore) {</span>
+      try {
+<span class="fc" id="L1944">        runJobWithRetries(new JobRetryHelper() {</span>
+            @Override
+            public void run(Objectify datastore) {
+              try {
+<span class="fc" id="L1948">                Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="pc bpc" id="L1949" title="1 of 2 branches missed.">                for (UserFileData ufd : datastore.query(UserFileData.class).ancestor(userKey)) {</span>
+<span class="nc bnc" id="L1950" title="All 4 branches missed.">                  if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &amp;&amp;</span>
+                      (ufd.content.length &gt; 0)) {
+<span class="nc" id="L1952">                    out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));</span>
+<span class="nc" id="L1953">                    out.write(ufd.content, 0, ufd.content.length);</span>
+<span class="nc" id="L1954">                    out.closeEntry();</span>
+<span class="nc" id="L1955">                    fileCount.t++;</span>
+                  }
+<span class="nc" id="L1957">                }</span>
+<span class="nc" id="L1958">              } catch (IOException e) {</span>
+<span class="nc" id="L1959">                throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L1960">                    collectProjectErrorInfo(userId, projectId,</span>
+                        StorageUtil.ANDROID_KEYSTORE_FILENAME), e);
+<span class="fc" id="L1962">              }</span>
+<span class="fc" id="L1963">            }</span>
+        }, false);
+<span class="nc" id="L1965">      } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1966">        throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+<span class="fc" id="L1967">      }</span>
+    }
+
+<span class="fc" id="L1970">    out.close();</span>
+
+<span class="fc bfc" id="L1972" title="All 2 branches covered.">    if (zipName == null) {</span>
+<span class="fc" id="L1973">      zipName = projectName.t + &quot;.aia&quot;;</span>
+    }
+<span class="fc" id="L1975">    ProjectSourceZip projectSourceZip =</span>
+<span class="fc" id="L1976">        new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);</span>
+<span class="fc" id="L1977">    projectSourceZip.setMetadata(projectName.t);</span>
+<span class="fc" id="L1978">    return projectSourceZip;</span>
+  }
+
+  @Override
+  public Motd getCurrentMotd() {
+<span class="nc" id="L1983">    final Result&lt;Motd&gt; motd = new Result&lt;Motd&gt;();</span>
+    try {
+<span class="nc" id="L1985">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="nc" id="L1988">          MotdData motdData = datastore.find(MotdData.class, MOTD_ID);</span>
+<span class="nc bnc" id="L1989" title="All 2 branches missed.">          if (motdData != null) { // it shouldn't be!</span>
+<span class="nc" id="L1990">            motd.t =  new Motd(motdData.id, motdData.caption, motdData.content);</span>
+          } else {
+<span class="nc" id="L1992">            motd.t = new Motd(MOTD_ID, &quot;Oops, no message of the day!&quot;, null);</span>
+          }
+<span class="nc" id="L1994">        }</span>
+      }, false);
+<span class="nc" id="L1996">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L1997">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L1998">    }</span>
+<span class="nc" id="L1999">    return motd.t;</span>
+  }
+
+  // Find a user by email address. This version does *not* create a new user
+  // if the user does not exist
+  @Override
+  public String findUserByEmail(String inputemail) throws NoSuchElementException {
+<span class="nc" id="L2006">    String email = inputemail.toLowerCase();</span>
+<span class="nc" id="L2007">    Objectify datastore = ObjectifyService.begin();</span>
+    // note: if there are multiple users with the same email we'll only
+    // get the first one. we don't expect this to happen
+<span class="nc" id="L2010">    UserData userData = datastore.query(UserData.class).filter(&quot;email&quot;, inputemail).get();</span>
+<span class="nc bnc" id="L2011" title="All 2 branches missed.">    if (userData == null) {     // Mixed case didn't work, try lower case</span>
+<span class="nc" id="L2012">      userData = datastore.query(UserData.class).filter(&quot;email&quot;, email).get();</span>
+<span class="nc bnc" id="L2013" title="All 2 branches missed.">      if (userData == null) {</span>
+<span class="nc" id="L2014">        throw new NoSuchElementException(&quot;Couldn't find a user with email &quot; + inputemail);</span>
+      }
+    }
+<span class="nc" id="L2017">    return userData.id;</span>
+  }
+
+  @Override
+  public String findIpAddressByKey(final String key) {
+<span class="nc" id="L2022">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2023">    RendezvousData data  = datastore.query(RendezvousData.class).filter(&quot;key&quot;, key).get();</span>
+<span class="nc bnc" id="L2024" title="All 2 branches missed.">    if (data == null) {</span>
+<span class="nc" id="L2025">      return null;</span>
+    } else {
+<span class="nc" id="L2027">      return data.ipAddress;</span>
+    }
+  }
+
+  @Override
+  public void storeIpAddressByKey(final String key, final String ipAddress) {
+<span class="nc" id="L2033">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2034">    final RendezvousData data  = datastore.query(RendezvousData.class).filter(&quot;key&quot;, key).get();</span>
+    try {
+<span class="nc" id="L2036">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2039">            RendezvousData new_data = null;</span>
+<span class="nc bnc" id="L2040" title="All 2 branches missed.">            if (data == null) {</span>
+<span class="nc" id="L2041">              new_data = new RendezvousData();</span>
+<span class="nc" id="L2042">              new_data.id = null;</span>
+<span class="nc" id="L2043">              new_data.key = key;</span>
+<span class="nc" id="L2044">              new_data.ipAddress = ipAddress;</span>
+<span class="nc" id="L2045">              new_data.used = new Date(); // So we can cleanup old entries</span>
+<span class="nc" id="L2046">              datastore.put(new_data);</span>
+            } else {
+<span class="nc" id="L2048">              new_data = data;</span>
+<span class="nc" id="L2049">              new_data.ipAddress = ipAddress;</span>
+<span class="nc" id="L2050">              new_data.used = new Date();</span>
+<span class="nc" id="L2051">              datastore.put(new_data);</span>
+          }
+<span class="nc" id="L2053">          }</span>
+      }, true);
+<span class="nc" id="L2055">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2056">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2057">    }</span>
+<span class="nc" id="L2058">  }</span>
+
+  @Override
+  public boolean checkWhiteList(String email) {
+<span class="nc" id="L2062">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2063">    WhiteListData data = datastore.query(WhiteListData.class).filter(&quot;emailLower&quot;, email.toLowerCase()).get();</span>
+<span class="nc bnc" id="L2064" title="All 2 branches missed.">    if (data == null)</span>
+<span class="nc" id="L2065">      return false;</span>
+<span class="nc" id="L2066">    return true;</span>
+  }
+
+  @Override
+  public void storeFeedback(final String notes, final String foundIn, final String faultData,
+    final String comments, final String datestamp, final String email, final String projectId) {
+<span class="nc" id="L2072">    Objectify datastore = ObjectifyService.begin();</span>
+    try {
+<span class="nc" id="L2074">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2077">            FeedbackData data = new FeedbackData();</span>
+<span class="nc" id="L2078">            data.id = null;</span>
+<span class="nc" id="L2079">            data.notes = notes;</span>
+<span class="nc" id="L2080">            data.foundIn = foundIn;</span>
+<span class="nc" id="L2081">            data.faultData = faultData;</span>
+<span class="nc" id="L2082">            data.comments = comments;</span>
+<span class="nc" id="L2083">            data.datestamp = datestamp;</span>
+<span class="nc" id="L2084">            data.email = email;</span>
+<span class="nc" id="L2085">            data.projectId = projectId;</span>
+<span class="nc" id="L2086">            datastore.put(data);</span>
+<span class="nc" id="L2087">          }</span>
+      }, false);
+<span class="nc" id="L2089">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2090">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2091">    }</span>
+<span class="nc" id="L2092">  }</span>
+
+  private void initAllowedTutorialUrls() {
+    try {
+<span class="fc" id="L2096">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L2099">          AllowedTutorialUrls allowedUrls = datastore.find(AllowedTutorialUrls.class, ALLOWEDURL_ID);</span>
+<span class="fc bfc" id="L2100" title="All 2 branches covered.">          if (allowedUrls == null) {</span>
+<span class="fc" id="L2101">            AllowedTutorialUrls firstAllowedUrls = new AllowedTutorialUrls();</span>
+<span class="fc" id="L2102">            firstAllowedUrls.id = ALLOWEDURL_ID;</span>
+<span class="fc" id="L2103">            firstAllowedUrls.allowedUrls = &quot;[\&quot;http://appinventor.mit.edu/\&quot;,\&quot;https://appinventor.mit.edu/\&quot;,\&quot;http://appinv.us/\&quot;]&quot;;</span>
+<span class="fc" id="L2104">            datastore.put(firstAllowedUrls);</span>
+          }
+<span class="fc" id="L2106">        }</span>
+      }, true);
+<span class="nc" id="L2108">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2109">      throw CrashReport.createAndLogError(LOG, null, &quot;Initing Allowed Urls&quot;, e);</span>
+<span class="fc" id="L2110">    }</span>
+<span class="fc" id="L2111">  }</span>
+
+  private void initMotd() {
+    try {
+<span class="fc" id="L2115">      runJobWithRetries(new JobRetryHelper() {</span>
+        @Override
+        public void run(Objectify datastore) {
+<span class="fc" id="L2118">          MotdData motdData = datastore.find(MotdData.class, MOTD_ID);</span>
+<span class="fc bfc" id="L2119" title="All 2 branches covered.">          if (motdData == null) {</span>
+<span class="fc" id="L2120">            MotdData firstMotd = new MotdData();</span>
+<span class="fc" id="L2121">            firstMotd.id = MOTD_ID;</span>
+<span class="fc" id="L2122">            firstMotd.caption = &quot;Hello!&quot;;</span>
+<span class="fc" id="L2123">            firstMotd.content = &quot;Welcome to the experimental App Inventor system from MIT. &quot; +</span>
+                &quot;This is still a prototype.  It would be a good idea to frequently back up &quot; +
+                &quot;your projects to local storage.&quot;;
+<span class="fc" id="L2126">            datastore.put(firstMotd);</span>
+          }
+<span class="fc" id="L2128">        }</span>
+      }, true);
+<span class="nc" id="L2130">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2131">      throw CrashReport.createAndLogError(LOG, null, &quot;Initing MOTD&quot;, e);</span>
+<span class="fc" id="L2132">    }</span>
+<span class="fc" id="L2133">  }</span>
+
+  // Nonce Management Routines.
+  // The Nonce is used to map to userId and ProjectId and is used
+  // for non-authenticated access to a built APK file.
+
+  public void storeNonce(final String nonceValue, final String userId, final long projectId) {
+<span class="nc" id="L2140">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2141">    final NonceData data  = datastore.query(NonceData.class).filter(&quot;nonce&quot;, nonceValue).get();</span>
+    try {
+<span class="nc" id="L2143">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2146">            NonceData new_data = null;</span>
+<span class="nc bnc" id="L2147" title="All 2 branches missed.">            if (data == null) {</span>
+<span class="nc" id="L2148">              new_data = new NonceData();</span>
+<span class="nc" id="L2149">              new_data.id = null;</span>
+<span class="nc" id="L2150">              new_data.nonce = nonceValue;</span>
+<span class="nc" id="L2151">              new_data.userId = userId;</span>
+<span class="nc" id="L2152">              new_data.projectId = projectId;</span>
+<span class="nc" id="L2153">              new_data.timestamp = new Date();</span>
+<span class="nc" id="L2154">              datastore.put(new_data);</span>
+            } else {
+<span class="nc" id="L2156">              new_data = data;</span>
+<span class="nc" id="L2157">              new_data.userId = userId;</span>
+<span class="nc" id="L2158">              new_data.projectId = projectId;</span>
+<span class="nc" id="L2159">              new_data.timestamp = new Date();</span>
+<span class="nc" id="L2160">              datastore.put(new_data);</span>
+          }
+<span class="nc" id="L2162">          }</span>
+      }, true);
+<span class="nc" id="L2164">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2165">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2166">    }</span>
+<span class="nc" id="L2167">  }</span>
+
+  public Nonce getNoncebyValue(String nonceValue) {
+<span class="nc" id="L2170">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2171">    NonceData data  = datastore.query(NonceData.class).filter(&quot;nonce&quot;, nonceValue).get();</span>
+<span class="nc bnc" id="L2172" title="All 2 branches missed.">    if (data == null) {</span>
+<span class="nc" id="L2173">      return null;</span>
+    } else {
+<span class="nc" id="L2175">      return (new Nonce(nonceValue, data.userId, data.projectId, data.timestamp));</span>
+    }
+  }
+
+  // Cleanup expired nonces which are older then 3 hours. Normal Nonce lifetime
+  // is 2 hours. So for one hour they persist and return &quot;link expired&quot; instead of
+  // &quot;link not found&quot; (after the object itself is removed).
+  //
+  // Note: We only process up to 10 here to limit the amount of processing time
+  // we spend here. If we remove up to 10 for each call, we should keep ahead
+  // of the growing garbage.
+  //
+  // Also note that we are not running in a transaction, there is no need
+  public void cleanupNonces() {
+<span class="nc" id="L2189">    Objectify datastore = ObjectifyService.begin();</span>
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to download a built APK
+    // via a QR Code.
+    try {
+<span class="nc" id="L2194">      datastore.delete(datastore.query(NonceData.class)</span>
+<span class="nc" id="L2195">        .filter(&quot;timestamp &lt;&quot;, new Date((new Date()).getTime() - 3600*3*1000L))</span>
+<span class="nc" id="L2196">        .limit(10).fetchKeys());</span>
+<span class="nc" id="L2197">    } catch (Exception ex) {</span>
+<span class="nc" id="L2198">        LOG.log(Level.WARNING, &quot;Exception during cleanupNonces&quot;, ex);</span>
+<span class="nc" id="L2199">    }</span>
+
+<span class="nc" id="L2201">  }</span>
+
+  @Override
+  public PWData createPWData(final String email) {
+<span class="nc" id="L2205">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="nc" id="L2206">    final PWData pwData = new PWData();</span>
+<span class="nc" id="L2207">    pwData.id = UUID.randomUUID().toString();</span>
+<span class="nc" id="L2208">    pwData.email = email;</span>
+<span class="nc" id="L2209">    pwData.timestamp = new Date();</span>
+    try {
+<span class="nc" id="L2211">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2214">            datastore.put(pwData);</span>
+<span class="nc" id="L2215">          }</span>
+        }, true);
+<span class="nc" id="L2217">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2218">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2219">    }</span>
+<span class="nc" id="L2220">    return pwData;</span>
+  }
+
+  @Override
+  public StoredData.PWData findPWData(final String uid) {
+<span class="nc" id="L2225">    final Result&lt;PWData&gt; result = new Result&lt;PWData&gt;();</span>
+    try {
+<span class="nc" id="L2227">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2230">            PWData pwData = datastore.find(pwdataKey(uid));</span>
+<span class="nc bnc" id="L2231" title="All 2 branches missed.">            if (pwData != null) {</span>
+<span class="nc" id="L2232">              result.t = pwData;</span>
+            }
+<span class="nc" id="L2234">          }</span>
+        }, false);
+<span class="nc" id="L2236">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2237">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2238">    }</span>
+<span class="nc" id="L2239">    return result.t;</span>
+  }
+
+  // Remove up to 10 expired PWData elements from the datastore
+  @Override
+  public void cleanuppwdata() {
+<span class="nc" id="L2245">    Objectify datastore = ObjectifyService.begin();</span>
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to set a password
+    // Note: we remove data after 24 hours.
+    try {
+<span class="nc" id="L2250">      datastore.delete(datastore.query(PWData.class)</span>
+<span class="nc" id="L2251">        .filter(&quot;timestamp &lt;&quot;, new Date((new Date()).getTime() - 3600*24*1000L))</span>
+<span class="nc" id="L2252">        .limit(10).fetchKeys());</span>
+<span class="nc" id="L2253">    } catch (Exception ex) {</span>
+<span class="nc" id="L2254">        LOG.log(Level.WARNING, &quot;Exception during cleanupNonces&quot;, ex);</span>
+<span class="nc" id="L2255">    }</span>
+<span class="nc" id="L2256">  }</span>
+
+  private Key&lt;StoredData.PWData&gt; pwdataKey(String uid) {
+<span class="nc" id="L2259">    return new Key&lt;StoredData.PWData&gt;(PWData.class, uid);</span>
+  }
+
+  private Key&lt;StoredData.Backpack&gt; backpackdataKey(String backPackId) {
+<span class="nc" id="L2263">    return new Key&lt;StoredData.Backpack&gt;(Backpack.class, backPackId);</span>
+  }
+
+  // Create a name for a blob from a project id and file name. This is mostly
+  // to help with debugging and viewing the blobstore via the admin console.
+  // We don't currently use these blob names anywhere else.
+  private String makeBlobName(long projectId, String fileName) {
+<span class="nc" id="L2270">    return projectId + &quot;/&quot; + fileName;</span>
+  }
+
+  private Key&lt;UserData&gt; userKey(String userId) {
+<span class="fc" id="L2274">    return new Key&lt;UserData&gt;(UserData.class, userId);</span>
+  }
+
+  private Key&lt;ProjectData&gt; projectKey(long projectId) {
+<span class="fc" id="L2278">    return new Key&lt;ProjectData&gt;(ProjectData.class, projectId);</span>
+  }
+
+  private Key&lt;UserProjectData&gt; userProjectKey(Key&lt;UserData&gt; userKey, long projectId) {
+<span class="fc" id="L2282">    return new Key&lt;UserProjectData&gt;(userKey, UserProjectData.class, projectId);</span>
+  }
+
+  private Key&lt;UserFileData&gt; userFileKey(Key&lt;UserData&gt; userKey, String fileName) {
+<span class="fc" id="L2286">    return new Key&lt;UserFileData&gt;(userKey, UserFileData.class, fileName);</span>
+  }
+
+  private Key&lt;FileData&gt; projectFileKey(Key&lt;ProjectData&gt; projectKey, String fileName) {
+<span class="fc" id="L2290">    return new Key&lt;FileData&gt;(projectKey, FileData.class, fileName);</span>
+  }
+
+  /**
+   * Call job.run() if we get a {@link java.util.ConcurrentModificationException}
+   * or {@link com.google.appinventor.server.storage.ObjectifyException}
+   * we will retry the job (at most {@code MAX_JOB_RETRIES times}).
+   * Any other exception will cause the job to fail immediately.
+   * If useTransaction is true, create a transaction and run the job in
+   * that transaction. If the job terminates normally, commit the transaction.
+   *
+   * Note: Originally we ran all jobs in a transaction. However in
+   *       many places there is no need for a transaction because
+   *       there is nothing to rollback on failure. Using transactions
+   *       has a performance implication, it disables Objectify's
+   *       ability to use memcache.
+   *
+   * @param job
+   * @param useTransaction -- Set to true to run job in a transaction
+   * @throws ObjectifyException
+   */
+  @VisibleForTesting
+  void runJobWithRetries(JobRetryHelper job, boolean useTransaction) throws ObjectifyException {
+<span class="fc" id="L2313">    int tries = 0;</span>
+<span class="pc bpc" id="L2314" title="1 of 2 branches missed.">    while (tries &lt;= MAX_JOB_RETRIES) {</span>
+      Objectify datastore;
+<span class="fc bfc" id="L2316" title="All 2 branches covered.">      if (useTransaction) {</span>
+<span class="fc" id="L2317">        datastore = ObjectifyService.beginTransaction();</span>
+      } else {
+<span class="fc" id="L2319">        datastore = ObjectifyService.begin();</span>
+      }
+      try {
+<span class="fc" id="L2322">        job.run(datastore);</span>
+<span class="fc bfc" id="L2323" title="All 2 branches covered.">        if (useTransaction) {</span>
+<span class="fc" id="L2324">          datastore.getTxn().commit();</span>
+        }
+        break;
+<span class="fc" id="L2327">      } catch (ConcurrentModificationException ex) {</span>
+<span class="fc" id="L2328">        job.onNonFatalError();</span>
+<span class="fc" id="L2329">        LOG.log(Level.WARNING, &quot;Optimistic concurrency failure&quot;, ex);</span>
+<span class="nc" id="L2330">      } catch (ObjectifyException oe) {</span>
+<span class="nc" id="L2331">        String message = oe.getMessage();</span>
+<span class="nc bnc" id="L2332" title="All 2 branches missed.">        if (message != null &amp;&amp;</span>
+<span class="nc bnc" id="L2333" title="All 4 branches missed.">          (message.startsWith(&quot;Blocks&quot;) || message.startsWith(&quot;User Al&quot;))) { // This one is fatal!</span>
+<span class="nc" id="L2334">          throw oe;</span>
+        }
+        // maybe this should be a fatal error? I think only thing
+        // that creates this exception is this method.
+<span class="nc" id="L2338">        job.onNonFatalError();</span>
+<span class="nc" id="L2339">      } catch (IOException e) {</span>
+<span class="nc" id="L2340">        job.onIOException(e);</span>
+        break;
+      } finally {
+<span class="fc bfc" id="L2343" title="All 4 branches covered.">        if (useTransaction &amp;&amp; datastore.getTxn().isActive()) {</span>
+          try {
+<span class="fc" id="L2345">            datastore.getTxn().rollback();</span>
+<span class="nc" id="L2346">          } catch (RuntimeException e) {</span>
+<span class="nc" id="L2347">            LOG.log(Level.WARNING, &quot;Transaction rollback failed&quot;, e);</span>
+<span class="fc" id="L2348">          }</span>
+        }
+      }
+<span class="fc" id="L2351">      tries++;</span>
+<span class="fc" id="L2352">    }</span>
+<span class="pc bpc" id="L2353" title="1 of 2 branches missed.">    if (tries &gt; MAX_JOB_RETRIES) {</span>
+<span class="nc" id="L2354">      throw new ObjectifyException(&quot;Couldn't commit job after max retries.&quot;);</span>
+    }
+<span class="fc" id="L2356">  }</span>
+
+  private static String collectUserErrorInfo(final String userId) {
+<span class="nc" id="L2359">    return collectUserErrorInfo(userId, CrashReport.NOT_AVAILABLE);</span>
+  }
+
+  private static String collectUserErrorInfo(final String userId, String fileName) {
+<span class="fc" id="L2363">    return &quot;user=&quot; + userId + &quot;, file=&quot; + fileName;</span>
+  }
+
+  private static String collectProjectErrorInfo(final String userId, final long projectId,
+      final String fileName) {
+<span class="fc" id="L2368">    return &quot;user=&quot; + userId + &quot;, project=&quot; + projectId + &quot;, file=&quot; + fileName;</span>
+  }
+
+  private static String collectUserProjectErrorInfo(final String userId, final long projectId) {
+<span class="fc" id="L2372">    return &quot;user=&quot; + userId + &quot;, project=&quot; + projectId;</span>
+  }
+
+  @Override
+  public String uploadTempFile(byte[] content) throws IOException {
+<span class="fc" id="L2377">    String uuid = UUID.randomUUID().toString();</span>
+<span class="fc" id="L2378">    String fileName = &quot;__TEMP__/&quot; + uuid;</span>
+<span class="fc" id="L2379">    setGcsFileContent(fileName, content);</span>
+<span class="fc" id="L2380">    return fileName;</span>
+  }
+
+  @Override
+  public InputStream openTempFile(String fileName) throws IOException {
+<span class="pc bpc" id="L2385" title="1 of 2 branches missed.">    if (!fileName.startsWith(&quot;__TEMP__&quot;)) {</span>
+<span class="nc" id="L2386">      throw new RuntimeException(&quot;deleteTempFile (&quot; + fileName + &quot;) Invalid File Name&quot;);</span>
+    }
+    // Use FileData.RoleEnum.TARGET because these temp files never live very long
+<span class="fc" id="L2389">    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName);</span>
+<span class="fc" id="L2390">    int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();</span>
+<span class="fc" id="L2391">    ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);</span>
+<span class="fc" id="L2392">    GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);</span>
+<span class="fc" id="L2393">    int bytesRead = 0;</span>
+    try {
+<span class="fc bfc" id="L2395" title="All 2 branches covered.">      while (bytesRead &lt; fileSize) {</span>
+<span class="fc" id="L2396">        bytesRead += readChannel.read(resultBuffer);</span>
+      }
+    } finally {
+<span class="fc" id="L2399">      readChannel.close();</span>
+    }
+<span class="fc" id="L2401">    return new ByteArrayInputStream(resultBuffer.array());</span>
+  }
+
+  @Override
+  public void deleteTempFile(String fileName) throws IOException {
+<span class="fc bfc" id="L2406" title="All 2 branches covered.">    if (!fileName.startsWith(&quot;__TEMP__&quot;)) {</span>
+<span class="fc" id="L2407">      throw new RuntimeException(&quot;deleteTempFile (&quot; + fileName + &quot;) Invalid File Name&quot;);</span>
+    }
+<span class="fc" id="L2409">    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName));</span>
+<span class="fc" id="L2410">  }</span>
+
+  // ********* METHODS BELOW ARE ONLY FOR TESTING *********
+
+  @VisibleForTesting
+  void createRawUserFile(String userId, String fileName, byte[] content) {
+<span class="fc" id="L2416">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="fc" id="L2417">    UserFileData ufd = createUserFile(datastore, userKey(userId), fileName);</span>
+<span class="pc bpc" id="L2418" title="1 of 2 branches missed.">    if (ufd != null) {</span>
+<span class="fc" id="L2419">      ufd.content = content;</span>
+<span class="fc" id="L2420">      datastore.put(ufd);</span>
+    }
+<span class="fc" id="L2422">  }</span>
+
+  @VisibleForTesting
+  boolean isGcsFile(long projectId, String fileName) {
+<span class="fc" id="L2426">    Objectify datastore = ObjectifyService.begin();</span>
+<span class="fc" id="L2427">    Key&lt;FileData&gt; fileKey = projectFileKey(projectKey(projectId), fileName);</span>
+    FileData fd;
+<span class="fc" id="L2429">    fd = (FileData) memcache.get(fileKey.getString());</span>
+<span class="pc bpc" id="L2430" title="1 of 2 branches missed.">    if (fd == null) {</span>
+<span class="nc" id="L2431">      fd = datastore.find(fileKey);</span>
+    }
+<span class="pc bpc" id="L2433" title="1 of 2 branches missed.">    if (fd != null) {</span>
+<span class="fc" id="L2434">      return isTrue(fd.isGCS);</span>
+    } else {
+<span class="nc" id="L2436">      return false;</span>
+    }
+  }
+
+  @VisibleForTesting
+  ProjectData getProject(long projectId) {
+<span class="fc" id="L2442">    return ObjectifyService.begin().find(projectKey(projectId));</span>
+  }
+
+  @VisibleForTesting
+  void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
+<span class="fc" id="L2447">    GcsOutputChannel outputChannel = gcsService.createOrReplace(</span>
+<span class="fc" id="L2448">      new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), gcsPath),</span>
+<span class="fc" id="L2449">        GcsFileOptions.getDefaultInstance());</span>
+<span class="fc" id="L2450">    outputChannel.write(ByteBuffer.wrap(content));</span>
+<span class="fc" id="L2451">    outputChannel.close();</span>
+<span class="fc" id="L2452">  }</span>
+
+  // Return time in ISO_8660 format
+  private static String formattedTime() {
+<span class="fc" id="L2456">    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ssZ&quot;);</span>
+<span class="fc" id="L2457">    return formatter.format(new java.util.Date());</span>
+  }
+
+  // We are called when our caller detects we are about to write a trivial (empty)
+  // workspace. We check to see if previously the workspace was non-trivial and
+  // if so, throw the BlocksTruncatedException. This will be passed through the RPC
+  // layer to the client code which will put up a dialog box for the user to review
+  // See Ode.java for more information
+  private void checkForBlocksTruncation(FileData fd) throws ObjectifyException {
+<span class="nc bnc" id="L2466" title="All 6 branches missed.">    if (fd.isBlob || isTrue(fd.isGCS) || fd.content.length &gt; 120)</span>
+<span class="nc" id="L2467">      throw new ObjectifyException(&quot;BlocksTruncated&quot;); // Hack</span>
+    // I'm avoiding having to modify every use of runJobWithRetries to handle a new
+    // exception, so we use this dodge.
+<span class="nc" id="L2470">  }</span>
+
+  // Make sure we throw an exception if the GCS bucket isn't defined. This hopefully
+  // will prompt the person deploying App Inventor to check the server logs and see
+  // the message below.
+  //
+  // This only happens when deploying code that uses GCS but doesn't specify a bucket
+  // name in appengine-web.xml *AND* the instance was created before App Engine version
+  // 1.9.0. Apps created after 1.9.0 automatically have a default bucket created for
+  // them. Older Apps can configure a default bucket. The App Engine documentation
+  // explains how.
+
+  private void validateGCS() {
+<span class="pc bpc" id="L2483" title="1 of 2 branches missed.">    if (GCS_BUCKET_NAME.equals(&quot;&quot;)) {</span>
+      try {
+<span class="nc" id="L2485">        throw new RuntimeException(&quot;You need to configure the default GCS Bucket for your App. &quot; +</span>
+          &quot;Follow instructions in the App Engine Developer's Documentation&quot;);
+<span class="nc" id="L2487">      } catch (RuntimeException e) {</span>
+<span class="nc" id="L2488">        throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+      }
+    }
+<span class="fc" id="L2491">  }</span>
+
+  public SplashConfig getSplashConfig() {
+<span class="nc" id="L2494">    final Result&lt;SplashConfig&gt; result = new Result&lt;SplashConfig&gt;();</span>
+    try {
+<span class="nc" id="L2496">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+            // Fixed key because only one record
+<span class="nc" id="L2500">            SplashData sd = datastore.find(SplashData.class, SPLASHDATA_ID);</span>
+<span class="nc bnc" id="L2501" title="All 2 branches missed.">            if (sd == null) {   // If we don't have Splash Data, create it</span>
+<span class="nc" id="L2502">              SplashData firstSd = new SplashData(); // We do this so cacheing works</span>
+<span class="nc" id="L2503">              firstSd.id = SPLASHDATA_ID;</span>
+<span class="nc" id="L2504">              firstSd.version = 0;                   // on future calls</span>
+<span class="nc" id="L2505">              firstSd.content = &quot;&lt;b&gt;Welcome to MIT App Inventor&lt;/b&gt;&quot;;</span>
+<span class="nc" id="L2506">              firstSd.width = 350;</span>
+<span class="nc" id="L2507">              firstSd.height = 100;</span>
+<span class="nc" id="L2508">              datastore.put(firstSd);</span>
+<span class="nc" id="L2509">              result.t = new SplashConfig(0, firstSd.width, firstSd.height, firstSd.content);</span>
+<span class="nc" id="L2510">            } else {</span>
+<span class="nc" id="L2511">              result.t = new SplashConfig(sd.version, sd.width, sd.height, sd.content);</span>
+            }
+<span class="nc" id="L2513">          }</span>
+        }, false);             // No transaction, Objectify will cache
+<span class="nc" id="L2515">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2516">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2517">    }</span>
+<span class="nc" id="L2518">    return result.t;</span>
+  }
+
+  private boolean isTrue(Boolean b) {
+<span class="pc bpc" id="L2522" title="1 of 4 branches missed.">    if (b != null &amp;&amp; b) {</span>
+<span class="fc" id="L2523">      return true;</span>
+    } else {
+<span class="fc" id="L2525">      return false;</span>
+    }
+  }
+
+  // The routines below are part of the user admin interface. Called from AdminInfoServiceImpl
+
+  @Override
+  public List&lt;AdminUser&gt; searchUsers(final String partialEmail) {
+<span class="nc" id="L2533">    final List&lt;AdminUser&gt; retval = new ArrayList();</span>
+    try {
+<span class="nc" id="L2535">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2538">            Query&lt;UserData&gt; userDataQuery = datastore.query(UserData.class).filter(&quot;email &gt;=&quot;, partialEmail);</span>
+<span class="nc" id="L2539">            int count = 0;</span>
+<span class="nc bnc" id="L2540" title="All 2 branches missed.">            for (UserData user : userDataQuery) {</span>
+<span class="nc" id="L2541">              retval.add(new AdminUser(user.id, user.name, user.email, user.tosAccepted,</span>
+                  user.isAdmin, user.visited));
+<span class="nc" id="L2543">              count++;</span>
+<span class="nc bnc" id="L2544" title="All 2 branches missed.">              if (count &gt; 20) {</span>
+<span class="nc" id="L2545">                break;</span>
+              }
+<span class="nc" id="L2547">            }</span>
+<span class="nc" id="L2548">          }</span>
+        }, false);
+<span class="nc" id="L2550">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2551">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2552">    }</span>
+<span class="nc" id="L2553">    return retval;</span>
+  }
+
+  @Override
+  public void storeUser(final AdminUser user) throws AdminInterfaceException {
+    try {
+<span class="nc" id="L2559">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) throws ObjectifyException {
+<span class="nc" id="L2562">            UserData userData = null;</span>
+<span class="nc bnc" id="L2563" title="All 2 branches missed.">            if (user.getId() != null) {</span>
+<span class="nc" id="L2564">              userData = datastore.find(userKey(user.getId()));</span>
+            }
+<span class="nc bnc" id="L2566" title="All 2 branches missed.">            if (userData != null) {</span>
+<span class="nc" id="L2567">              userData.email = user.getEmail();</span>
+<span class="nc" id="L2568">              userData.emaillower = userData.email.toLowerCase();</span>
+<span class="nc" id="L2569">              String password = user.getPassword();</span>
+<span class="nc bnc" id="L2570" title="All 4 branches missed.">              if (password != null &amp;&amp; !password.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L2571">                userData.password = user.getPassword();</span>
+              }
+<span class="nc" id="L2573">              userData.isAdmin = user.getIsAdmin();</span>
+<span class="nc" id="L2574">              datastore.put(userData);</span>
+<span class="nc" id="L2575">            } else {            // New User</span>
+<span class="nc" id="L2576">              String emaillower = user.getEmail().toLowerCase();</span>
+<span class="nc" id="L2577">              Objectify qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction</span>
+<span class="nc" id="L2578">              UserData tuser = qDatastore.query(UserData.class).filter(&quot;email&quot;, emaillower).get();</span>
+<span class="nc bnc" id="L2579" title="All 2 branches missed.">              if (tuser != null) {</span>
+                // This is a total kludge, but we have to do things this way because of
+                // how runJobWithRetries works
+<span class="nc" id="L2582">                throw new ObjectifyException(&quot;User Already exists = &quot; + user.getEmail());</span>
+              }
+<span class="nc" id="L2584">              userData = new UserData();</span>
+<span class="nc" id="L2585">              userData.id = UUID.randomUUID().toString();</span>
+<span class="nc" id="L2586">              userData.tosAccepted = false;</span>
+<span class="nc" id="L2587">              userData.settings = &quot;&quot;;</span>
+<span class="nc" id="L2588">              userData.email = user.getEmail();</span>
+<span class="nc" id="L2589">              userData.emaillower = emaillower;</span>
+<span class="nc bnc" id="L2590" title="All 2 branches missed.">              if (!user.getPassword().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L2591">                userData.password = user.getPassword();</span>
+              }
+<span class="nc" id="L2593">              userData.isAdmin = user.getIsAdmin();</span>
+<span class="nc" id="L2594">              datastore.put(userData);</span>
+            }
+<span class="nc" id="L2596">          }</span>
+        }, true);
+<span class="nc" id="L2598">    } catch (ObjectifyException e) {</span>
+<span class="nc bnc" id="L2599" title="All 2 branches missed.">      if (e.getMessage().startsWith(&quot;User Al&quot;)) {</span>
+<span class="nc" id="L2600">        throw new AdminInterfaceException(e.getMessage());</span>
+      }
+<span class="nc" id="L2602">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2603">    }</span>
+<span class="nc" id="L2604">  }</span>
+
+  /* Store a shared backpack.
+   *
+   * We only store backpacks in the datastore (cached in
+   * memcache by Objectify). So backpacks are limited in
+   * size to what can be stored in a data store entity.
+   */
+
+  @Override
+  public String downloadBackpack(final String backPackId) {
+<span class="nc" id="L2615">    final Result&lt;Backpack&gt; result = new Result&lt;Backpack&gt;();</span>
+    try {
+<span class="nc" id="L2617">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2620">            Backpack backPack = datastore.find(backpackdataKey(backPackId));</span>
+<span class="nc bnc" id="L2621" title="All 2 branches missed.">            if (backPack != null) {</span>
+<span class="nc" id="L2622">              result.t = backPack;</span>
+            }
+<span class="nc" id="L2624">          }</span>
+        }, false);
+<span class="nc" id="L2626">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2627">      CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2628">    }</span>
+<span class="nc bnc" id="L2629" title="All 2 branches missed.">    if (result.t != null) {</span>
+<span class="nc" id="L2630">      return result.t.content;</span>
+    } else {
+<span class="nc" id="L2632">      return &quot;[]&quot;;              // No shared backpack, return an empty backpack</span>
+    }
+  }
+
+  @Override
+  public void uploadBackpack(String backPackId, String content) {
+<span class="nc" id="L2638">    final Backpack backPack = new Backpack();</span>
+<span class="nc" id="L2639">    backPack.id = backPackId;</span>
+<span class="nc" id="L2640">    backPack.content = content;</span>
+    try {
+<span class="nc" id="L2642">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2645">            datastore.put(backPack);</span>
+<span class="nc" id="L2646">          }</span>
+        }, true);
+<span class="nc" id="L2648">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2649">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2650">    }</span>
+<span class="nc" id="L2651">  }</span>
+
+
+  @Override
+  public void storeBuildStatus(String userId, long projectId, int progress) {
+<span class="nc" id="L2656">    String prelim = &quot;40bae275-070f-478b-9a5f-d50361809b99&quot;;</span>
+<span class="nc" id="L2657">    String cacheKey = prelim + userId + projectId;</span>
+<span class="nc" id="L2658">    memcache.put(cacheKey, progress);</span>
+<span class="nc" id="L2659">  }</span>
+
+  @Override
+  public int getBuildStatus(String userId, long projectId) {
+<span class="nc" id="L2663">    String prelim = &quot;40bae275-070f-478b-9a5f-d50361809b99&quot;;</span>
+<span class="nc" id="L2664">    String cacheKey = prelim + userId + projectId;</span>
+<span class="nc" id="L2665">    Integer ival = (Integer) memcache.get(cacheKey);</span>
+<span class="nc bnc" id="L2666" title="All 2 branches missed.">    if (ival == null) {         // not in memcache (or memcache service down)</span>
+<span class="nc" id="L2667">      return 50;</span>
+    } else {
+<span class="nc" id="L2669">      return ival.intValue();</span>
+    }
+  }
+
+  @Override
+  public void assertUserHasProject(final String userId, final long projectId) {
+    try {
+<span class="nc" id="L2676">      runJobWithRetries(new JobRetryHelper() {</span>
+        @SuppressWarnings(&quot;RedundantThrows&quot;)
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+<span class="nc" id="L2680">          Key&lt;UserData&gt; userKey = userKey(userId);</span>
+<span class="nc" id="L2681">          Key&lt;UserProjectData&gt; userProjectKey = userProjectKey(userKey, projectId);</span>
+<span class="nc" id="L2682">          UserProjectData data = datastore.find(userProjectKey);</span>
+<span class="nc bnc" id="L2683" title="All 2 branches missed.">          if (data == null) {  // User doesn't have the corresponding project.</span>
+<span class="nc" id="L2684">            throw new SecurityException(&quot;Unauthorized access&quot;);</span>
+          }
+          // User has data for project, so everything checks out.
+<span class="nc" id="L2687">        }</span>
+      }, false);
+<span class="nc" id="L2689">    } catch(ObjectifyException e) {</span>
+<span class="nc" id="L2690">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2691">    }</span>
+<span class="nc" id="L2692">  }</span>
+
+  @Override
+  public List&lt;String&gt; getTutorialsUrlAllowed() {
+<span class="nc" id="L2696">    final Result&lt;String&gt; result = new Result&lt;String&gt;();</span>
+    try {
+<span class="nc" id="L2698">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+<span class="nc" id="L2701">            AllowedTutorialUrls allowedUrls = datastore.find(AllowedTutorialUrls.class, ALLOWEDURL_ID);</span>
+<span class="nc bnc" id="L2702" title="All 2 branches missed.">            if (allowedUrls != null) { // This shouldn't be</span>
+<span class="nc" id="L2703">              result.t = allowedUrls.allowedUrls;</span>
+            } else {
+<span class="nc" id="L2705">              result.t = &quot;[]&quot;;</span>
+            }
+<span class="nc" id="L2707">          }</span>
+        }, false);
+<span class="nc" id="L2709">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2710">      throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L2711">    }</span>
+<span class="nc" id="L2712">    JSONArray parsedUrls = (JSONArray) JSON_PARSER.parse(result.t);</span>
+<span class="nc" id="L2713">    List&lt;JSONValue&gt; jsonList = parsedUrls.getElements();</span>
+<span class="nc" id="L2714">    List&lt;String&gt; returnValue = new ArrayList();</span>
+<span class="nc bnc" id="L2715" title="All 2 branches missed.">    for (JSONValue v : jsonList) {</span>
+<span class="nc" id="L2716">      returnValue.add(v.asString().getString());</span>
+<span class="nc" id="L2717">    }</span>
+<span class="nc" id="L2718">    return returnValue;</span>
+  }
+
+  @Override
+  public boolean deleteAccount(final String userId) {
+<span class="nc" id="L2723">    List&lt;Long&gt; projectIds = getProjects(userId);</span>
+    // We iterate over the projects in two loops The first loop is
+    // just to determine that all remaining projects are in the trash.
+    // The second loop actually removes such projects.  We do it this
+    // way so that no projects are removed if any projects
+    // exist. Otherwise some trashed projects may get removed before
+    // we discover a live project.
+<span class="nc bnc" id="L2730" title="All 2 branches missed.">    for (long projectId : projectIds) {</span>
+<span class="nc" id="L2731">      ProjectData projectData = getProject(projectId);</span>
+<span class="nc bnc" id="L2732" title="All 2 branches missed.">      if (!projectData.projectMovedToTrashFlag) {</span>
+<span class="nc" id="L2733">        return false;           // Have a live project</span>
+      }
+<span class="nc" id="L2735">    }</span>
+    // Got here, no live projects, remove the remainders
+<span class="nc bnc" id="L2737" title="All 2 branches missed.">    for (long projectId : projectIds) {</span>
+<span class="nc" id="L2738">      deleteProject(userId, projectId);</span>
+<span class="nc" id="L2739">    }</span>
+
+    // Now flush the user data object both from the datastore and the
+    // cache.
+    try {
+<span class="nc" id="L2744">      runJobWithRetries(new JobRetryHelper() {</span>
+          @Override
+          public void run(Objectify datastore) {
+            // Delete the UserData object
+<span class="nc" id="L2748">            datastore.delete(userKey(userId));</span>
+            // And remove it from memcache
+<span class="nc" id="L2750">            String cachekey = User.usercachekey + &quot;|&quot; + userId;</span>
+<span class="nc" id="L2751">            memcache.delete(cachekey);</span>
+<span class="nc" id="L2752">          }</span>
+        }, true);
+<span class="nc" id="L2754">      return true;</span>
+<span class="nc" id="L2755">    } catch (ObjectifyException e) {</span>
+<span class="nc" id="L2756">      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);</span>
+    }
+  }
+
+  /*
+   * Determine which GCS Bucket to use based on filename. In particular
+   * APK files go in a bucket with a short TTL, because they are really
+   * temporary files.
+   */
+  private static final String getGcsBucketToUse(FileData.RoleEnum role) {
+<span class="fc bfc" id="L2766" title="All 2 branches covered.">    if (role == FileData.RoleEnum.TARGET) {</span>
+<span class="fc" id="L2767">      return APK_BUCKET_NAME;</span>
+    } else {
+<span class="fc" id="L2769">      return GCS_BUCKET_NAME;</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

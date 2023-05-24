@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPolygon.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockPolygon.java</span></div><h1>MockPolygon.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+
+public class MockPolygon extends MockPolygonBase {
+  public static final String TYPE = &quot;Polygon&quot;;
+
+  private static final String PROPERTY_NAME_POINTS = &quot;PointsFromString&quot;;
+  private static final String PROPERTY_NAME_HOLEPOINTS = &quot;HolePointsFromString&quot;;
+
+  public MockPolygon(SimpleEditor editor) {
+<span class="nc" id="L21">    super(editor, TYPE, images.polygon());</span>
+
+<span class="nc" id="L23">    SVGPanel svgpanel = new SVGPanel();</span>
+<span class="nc" id="L24">    svgpanel.setPixelSize(ComponentConstants.POLYGON_PREFERRED_WIDTH + 2,</span>
+        ComponentConstants.POLYGON_PREFERRED_HEIGHT + 2);
+<span class="nc" id="L26">    svgpanel.setInnerSVG(&quot;&lt;path d=\&quot;M0 30L25 0L50 30Z\&quot; stroke-width=\&quot;1\&quot; stroke=\&quot;black\&quot; fill=\&quot;red\&quot; /&gt;&quot;);</span>
+<span class="nc" id="L27">    panel.setWidget(svgpanel);</span>
+<span class="nc" id="L28">    panel.setWidth(Integer.toString(ComponentConstants.POLYGON_PREFERRED_WIDTH + 2) + &quot;px&quot;);</span>
+<span class="nc" id="L29">    panel.setHeight(Integer.toString(ComponentConstants.POLYGON_PREFERRED_HEIGHT + 2) + &quot;px&quot;);</span>
+
+<span class="nc" id="L31">    initPolygon();</span>
+<span class="nc" id="L32">  }</span>
+
+  static MockPolygon fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
+<span class="nc" id="L35">    MockPolygon polygon = new MockPolygon(parent.editor);</span>
+<span class="nc" id="L36">    polygon.feature = layer;</span>
+<span class="nc" id="L37">    polygon.preserveLayerData();</span>
+<span class="nc" id="L38">    polygon.processFromGeoJSON(parent, properties);</span>
+<span class="nc" id="L39">    return polygon;</span>
+  }
+
+  @Override
+  public boolean onDrop(MockMap map, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L44">    MockMap.LatLng bottomLeft = map.projectFromXY(x - offsetX, y - offsetY + 30);</span>
+<span class="nc" id="L45">    MockMap.LatLng topMid = map.projectFromXY(x - offsetX + 25, y - offsetY);</span>
+<span class="nc" id="L46">    MockMap.LatLng bottomRight = map.projectFromXY(x - offsetX + 50, y - offsetY + 30);</span>
+<span class="nc" id="L47">    setPoints3(bottomLeft.toNative(), topMid.toNative(), bottomRight.toNative());</span>
+<span class="nc" id="L48">    String pointstr = &quot;[[&quot; + bottomLeft.latitude + &quot;,&quot; + bottomLeft.longitude + &quot;],[&quot; + topMid.latitude + &quot;,&quot; +</span>
+        topMid.longitude + &quot;],[&quot; + bottomRight.latitude + &quot;,&quot; + bottomRight.longitude + &quot;]]&quot;;
+<span class="nc" id="L50">    getProperties().changePropertyValue(PROPERTY_NAME_POINTS, pointstr);</span>
+<span class="nc" id="L51">    getProperties().changePropertyValue(PROPERTY_NAME_HOLEPOINTS, &quot;&quot;);</span>
+<span class="nc" id="L52">    super.onPropertyChange(PROPERTY_NAME_POINTS, pointstr);</span>
+<span class="nc" id="L53">    super.onPropertyChange(PROPERTY_NAME_HOLEPOINTS, &quot;&quot;);</span>
+<span class="nc" id="L54">    return true;</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L59">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_POINTS)) {</span>
+<span class="nc" id="L62">      setPointsStr(newValue);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_HOLEPOINTS)) {</span>
+<span class="nc" id="L64">      setHolePointsStr(newValue);</span>
+    }
+<span class="nc" id="L66">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+<span class="nc" id="L70">    return ComponentConstants.POLYGON_PREFERRED_WIDTH + 2;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+<span class="nc" id="L75">    return ComponentConstants.POLYGON_PREFERRED_HEIGHT + 2;</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L82">      return false;</span>
+    }
+<span class="nc" id="L84">    return super.isPropertyVisible(propertyName);</span>
+  }
+
+  private void updatePointsStr(String points) {
+<span class="nc" id="L88">    getProperties().changePropertyValue(PROPERTY_NAME_POINTS, points);</span>
+<span class="nc" id="L89">    super.onPropertyChange(PROPERTY_NAME_POINTS, points);</span>
+<span class="nc" id="L90">  }</span>
+
+  private void updateHolePointsStr(String points) {
+<span class="nc" id="L93">    getProperties().changePropertyValue(PROPERTY_NAME_HOLEPOINTS, points);</span>
+<span class="nc" id="L94">    super.onPropertyChange(PROPERTY_NAME_HOLEPOINTS, points);</span>
+<span class="nc" id="L95">  }</span>
+
+  // JSNI Methods
+  private native void initPolygon()/*-{
+    this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature =
+      top.L.polygon([], {
+        className: 'leaflet-interactive',
+        weight: 1,
+        color: '#000',
+        fillColor: '#f00',
+        fillOpacity: 1,
+        draggable: true,
+        pointerEvents: 'auto'
+      });
+  }-*/;
+
+  private native void setPoints3(JavaScriptObject bl, JavaScriptObject tc, JavaScriptObject br)/*-{
+    var feature = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    feature.setLatLngs([[bl, tc, br]]);
+  }-*/;
+
+  private native void setPointsStr(String values)/*-{
+    try {
+      var polygon = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature,
+          latlngs = polygon &amp;&amp; polygon.getLatLngs();
+      if (polygon &amp;&amp; values !== '') {
+        var points = JSON.parse(values);
+        if (!latlngs) {
+          latlngs = [points];
+        } else {
+          latlngs[0] = points;
+        }
+        polygon.setLatLngs(latlngs);
+        if (polygon.editor) polygon.editor.reset();  // reset vertices of the editor
+      }
+    } catch(e) {
+      // pass
+    }
+  }-*/;
+
+  private native void setHolePointsStr(String values)/*-{
+    try {
+      var polygon = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature,
+          latlngs = polygon &amp;&amp; polygon.getLatLngs(),
+          reset = false;
+      if (polygon &amp;&amp; values !== '') {
+        var points = JSON.parse(values);
+        if (!latlngs) {
+          latlngs = [[]];
+        }
+        latlngs.splice(1, latlngs.length);
+        for (var i = 0; i &lt; points.length; i++) {
+          latlngs.push(points[i]);
+        }
+        polygon.setLatLngs(latlngs);
+        reset = true;
+      } else if (latlngs) {
+        if (latlngs.length &gt; 1) {
+          latlngs.splice(1);  // remove all but outer ring of polygon
+        }
+        polygon.setLatLngs(latlngs);
+        reset = true;
+      }
+      if (reset &amp;&amp; polygon.editor) polygon.editor.reset();  // reset vertices of the editor
+    } catch(e) {
+      // pass
+    }
+  }-*/;
+
+  protected native void addToMap(JavaScriptObject map)/*-{
+    var el = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getElement()();
+    var polygon = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    map.addLayer(polygon);
+    if (!polygon.clickHandler) {
+      while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
+      polygon.clickHandler = function(e) {
+        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select(*)(e);
+        if (e.originalEvent) {
+          if ((e.originalEvent.metaKey || e.originalEvent.ctrlKey) &amp;&amp; polygon.editEnabled()) {
+            polygon.editor.newHole(e.latlng);
+          }
+          e.originalEvent.stopPropagation();
+        }
+      };
+      polygon.dragHandler = function() {
+        var points = polygon.getLatLngs(),
+            pointstr = '[',
+            holepointstr = '[',
+            i, j;
+        if (typeof points[0][0] === 'number') {
+          points = [points];
+        }
+        for (i = 0; i &lt; points[0].length; i++) {
+          if (i &gt; 0) pointstr += ',';
+          pointstr += '[' + points[0][i].lat + ',' + points[0][i].lng + ']';
+        }
+        for (j = 1; j &lt; points.length; j++) {
+          if (j &gt; 1) holepointstr += ',[';
+          else holepointstr += '[';
+          for (i = 0; i &lt; points[j].length; i++) {
+            if (i &gt; 0) holepointstr += ',';
+            holepointstr += '[' + points[j][i].lat + ',' + points[j][i].lng + ']';
+          }
+          holepointstr += ']';
+        }
+        pointstr += ']';
+        holepointstr += ']';
+        if (pointstr === '[]') pointstr = '';
+        if (holepointstr === '[]' || holepointstr === '[[]]') holepointstr = '';
+        this.@com.google.appinventor.client.editor.simple.components.MockPolygon::updatePointsStr(*)(pointstr);
+        this.@com.google.appinventor.client.editor.simple.components.MockPolygon::updateHolePointsStr(*)(holepointstr);
+      };
+      polygon.on('click dragstart editable:dragstart editable:vertex:dragstart editable:vertex:clicked editable:drawing:click editable:drawing:clicked',
+        polygon.clickHandler, this);
+      polygon.on('dragend editable:dragend editable:vertex:dragend editable:vertex:deleted editable:drawing:commit',
+        polygon.dragHandler, this);
+    }
+    el = polygon.getElement();
+    el.style['pointer-events'] = 'auto';
+    el.style['cursor'] = 'pointer';
+    this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
+      this.@com.google.appinventor.client.editor.simple.components.MockPolygon::getTooltip()()
+    );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polygon);
+    }
+  }-*/;
+
+  private native void preserveLayerData()/*-{
+    var polygon = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    if (polygon) {
+      var latlngs = polygon.getLatLngs();
+      var resultJson = [];
+      var holesJson = [];
+      if (latlngs[0][0] instanceof top.L.LatLng) {
+        for (var i = 0; i &lt; latlngs[0].length; i++) {
+          resultJson.push([latlngs[0][i].lat, latlngs[0][i].lng]);
+        }
+        for (var i = 1; i &lt; latlngs.length; i++) {
+          var hole = [];
+          for (var j = 0; j &lt; latlngs[i].length; j++) {
+            hole.push([latlngs[i][j].lat, latlngs[i][j].lng]);
+          }
+          holesJson.push(hole);
+        }
+      } else {
+        for (var i = 0; i &lt; latlngs.length; i++) {
+          // process polygon body
+          var part = [];
+          for (var j = 0; j &lt; latlngs[i][0].length; j++) {
+            part.push([latlngs[i][0][j].lat, latlngs[i][0][j].lng]);
+          }
+          resultJson.push(part);
+
+          // process polygon holes
+          var holes = [];
+          var canSimplify = true;
+          for (var j = 1; j &lt; latlngs[i].length; j++) {
+            var hole = [];
+            for (var k = 0; k &lt; latlngs[i][j].length; k++) {
+              hole.push([latlngs[i][j][k].lat, latlngs[i][j][k].lng]);
+            }
+            holes.push(hole);
+          }
+          if (holes.length &gt; 0) {
+            canSimplify = false;
+          }
+          holesJson.push(holes);
+        }
+        if (canSimplify) {
+          holesJson = '';
+        }
+      }
+      this.@com.google.appinventor.client.editor.simple.components.MockPolygon::updatePointsStr(*)(JSON.stringify(resultJson));
+      this.@com.google.appinventor.client.editor.simple.components.MockPolygon::updateHolePointsStr(*)(JSON.stringify(holesJson));
+    }
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

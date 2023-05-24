@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AddFormCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer.commands</a> &gt; <span class="el_source">AddFormCommand.java</span></div><h1>AddFormCommand.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer.commands;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * A command that creates a new form.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class AddFormCommand extends ChainableCommand {
+
+
+  private static final int MAX_FORM_COUNT = 10;
+
+  /**
+   * Creates a new command for creating a new form
+   */
+<span class="nc" id="L53">  public AddFormCommand() {</span>
+<span class="nc" id="L54">  }</span>
+
+  @Override
+  public boolean willCallExecuteNextCommand() {
+<span class="nc" id="L58">    return true;</span>
+  }
+
+  @Override
+  public void execute(ProjectNode node) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    if (node instanceof YoungAndroidProjectNode) {</span>
+<span class="nc" id="L64">      new NewFormDialog((YoungAndroidProjectNode) node).center();</span>
+    } else {
+<span class="nc" id="L66">      executionFailedOrCanceled();</span>
+<span class="nc" id="L67">      throw new IllegalArgumentException(&quot;node must be a YoungAndroidProjectNode&quot;);</span>
+    }
+<span class="nc" id="L69">  }</span>
+
+  /**
+   * Dialog for getting the name for the new form.
+   */
+  private class NewFormDialog extends DialogBox {
+    // UI elements
+    private final LabeledTextBox newNameTextBox;
+
+    private final Set&lt;String&gt; otherFormNames;
+
+<span class="nc" id="L80">    NewFormDialog(final YoungAndroidProjectNode projectRootNode) {</span>
+<span class="nc" id="L81">      super(false, true);</span>
+
+<span class="nc" id="L83">      setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L84">      setText(MESSAGES.newFormTitle());</span>
+<span class="nc" id="L85">      VerticalPanel contentPanel = new VerticalPanel();</span>
+
+<span class="nc" id="L87">      final String prefix = &quot;Screen&quot;;</span>
+<span class="nc" id="L88">      final int prefixLength = prefix.length();</span>
+<span class="nc" id="L89">      int highIndex = 0;</span>
+      // Collect the existing form names so we can prevent duplicate form names.
+<span class="nc" id="L91">      otherFormNames = new HashSet&lt;String&gt;();</span>
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      for (ProjectNode source : projectRootNode.getAllSourceNodes()) {</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (source instanceof YoungAndroidFormNode) {</span>
+<span class="nc" id="L95">          String formName = ((YoungAndroidFormNode) source).getFormName();</span>
+<span class="nc" id="L96">          otherFormNames.add(formName);</span>
+
+<span class="nc bnc" id="L98" title="All 2 branches missed.">          if (formName.startsWith(prefix)) {</span>
+            try {
+<span class="nc" id="L100">              highIndex = Math.max(highIndex, Integer.parseInt(formName.substring(prefixLength)));</span>
+<span class="nc" id="L101">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L102">              continue;</span>
+<span class="nc" id="L103">            }</span>
+          }
+        }
+<span class="nc" id="L106">      }</span>
+
+<span class="nc" id="L108">      String defaultFormName = prefix + (highIndex + 1);</span>
+
+<span class="nc" id="L110">      newNameTextBox = new LabeledTextBox(MESSAGES.formNameLabel());</span>
+<span class="nc" id="L111">      newNameTextBox.setText(defaultFormName);</span>
+<span class="nc" id="L112">      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {</span>
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+<span class="nc" id="L115">          int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">          if (keyCode == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L117">            handleOkClick(projectRootNode);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">          } else if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L119">            hide();</span>
+<span class="nc" id="L120">            executionFailedOrCanceled();</span>
+          }
+<span class="nc" id="L122">        }</span>
+      });
+<span class="nc" id="L124">      contentPanel.add(newNameTextBox);</span>
+
+<span class="nc" id="L126">      String cancelText = MESSAGES.cancelButton();</span>
+<span class="nc" id="L127">      String okText = MESSAGES.okButton();</span>
+
+      // Keeps track of the total number of screens.
+<span class="nc" id="L130">      int formCount = otherFormNames.size() + 1;</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (formCount &gt; MAX_FORM_COUNT) {</span>
+<span class="nc" id="L132">        HorizontalPanel errorPanel = new HorizontalPanel();</span>
+<span class="nc" id="L133">        HTML tooManyScreensLabel = new HTML(MESSAGES.formCountErrorLabel());</span>
+<span class="nc" id="L134">        errorPanel.add(tooManyScreensLabel);</span>
+<span class="nc" id="L135">        errorPanel.setSize(&quot;100%&quot;, &quot;24px&quot;);</span>
+<span class="nc" id="L136">        contentPanel.add(errorPanel);</span>
+
+<span class="nc" id="L138">        okText = MESSAGES.addScreenButton();</span>
+<span class="nc" id="L139">        cancelText = MESSAGES.cancelScreenButton();</span>
+
+        // okText = &quot;Add&quot;;
+        // cancelText = &quot;Don't Add&quot;;
+      }
+
+<span class="nc" id="L145">      Button cancelButton = new Button(cancelText);</span>
+<span class="nc" id="L146">      cancelButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L149">          hide();</span>
+<span class="nc" id="L150">          executionFailedOrCanceled();</span>
+<span class="nc" id="L151">        }</span>
+      });
+<span class="nc" id="L153">      Button okButton = new Button(okText);</span>
+<span class="nc" id="L154">      okButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L157">          handleOkClick(projectRootNode);</span>
+<span class="nc" id="L158">        }</span>
+      });
+<span class="nc" id="L160">      HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L161">      buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L162">      buttonPanel.add(okButton);</span>
+<span class="nc" id="L163">      buttonPanel.setSize(&quot;100%&quot;, &quot;24px&quot;);</span>
+<span class="nc" id="L164">      contentPanel.add(buttonPanel);</span>
+<span class="nc" id="L165">      contentPanel.setSize(&quot;320px&quot;, &quot;100%&quot;);</span>
+
+<span class="nc" id="L167">      add(contentPanel);</span>
+<span class="nc" id="L168">    }</span>
+
+    private void handleOkClick(YoungAndroidProjectNode projectRootNode) {
+<span class="nc" id="L171">      String newFormName = newNameTextBox.getText();</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">      if (validate(newFormName)) {</span>
+<span class="nc" id="L173">        hide();</span>
+<span class="nc" id="L174">        addFormAction(projectRootNode, newFormName);</span>
+      } else {
+<span class="nc" id="L176">        newNameTextBox.setFocus(true);</span>
+      }
+<span class="nc" id="L178">    }</span>
+
+    private boolean validate(String newFormName) {
+      // Check that it meets the formatting requirements.
+<span class="nc bnc" id="L182" title="All 2 branches missed.">      if (!TextValidators.isValidIdentifier(newFormName)) {</span>
+<span class="nc" id="L183">        Window.alert(MESSAGES.malformedFormNameError());</span>
+<span class="nc" id="L184">        return false;</span>
+      }
+
+      // Check for reserved words
+<span class="nc bnc" id="L188" title="All 2 branches missed.">      if(TextValidators.isReservedName(newFormName)) {</span>
+<span class="nc" id="L189">        Window.alert(MESSAGES.reservedNameError());</span>
+<span class="nc" id="L190">        return false;</span>
+      }
+
+      // Check that it's unique.
+<span class="nc bnc" id="L194" title="All 2 branches missed.">      if (otherFormNames.contains(newFormName)) {</span>
+<span class="nc" id="L195">        Window.alert(MESSAGES.duplicateFormNameError());</span>
+<span class="nc" id="L196">        return false;</span>
+      }
+
+<span class="nc" id="L199">      return true;</span>
+    }
+
+    /**
+     * Adds a new form to the project.
+     *
+     * @param formName the new form name
+     */
+    protected void addFormAction(final YoungAndroidProjectNode projectRootNode, 
+        final String formName) {
+<span class="nc" id="L209">      final Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L210">      final YoungAndroidPackageNode packageNode = projectRootNode.getPackageNode();</span>
+<span class="nc" id="L211">      String qualifiedFormName = packageNode.getPackageName() + '.' + formName;</span>
+<span class="nc" id="L212">      final String formFileId = YoungAndroidFormNode.getFormFileId(qualifiedFormName);</span>
+<span class="nc" id="L213">      final String blocksFileId = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);</span>
+
+<span class="nc" id="L215">      OdeAsyncCallback&lt;Long&gt; callback = new OdeAsyncCallback&lt;Long&gt;(</span>
+          // failure message
+<span class="nc" id="L217">          MESSAGES.addFormError()) {</span>
+        @Override
+        public void onSuccess(Long modDate) {
+<span class="nc" id="L220">          final Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L221">          ode.updateModificationDate(projectRootNode.getProjectId(), modDate);</span>
+
+          // Add the new form and blocks nodes to the project
+<span class="nc" id="L224">          final Project project = ode.getProjectManager().getProject(projectRootNode);</span>
+<span class="nc" id="L225">          project.addNode(packageNode, new YoungAndroidFormNode(formFileId));</span>
+<span class="nc" id="L226">          project.addNode(packageNode, new YoungAndroidBlocksNode(blocksFileId));</span>
+
+          // Add the screen to the DesignToolbar and select the new form editor. 
+          // We need to do this once the form editor and blocks editor have been
+          // added to the project editor (after the files are completely loaded).
+          //
+          // TODO(sharon): if we create YaProjectEditor.addScreen() and merge
+          // that with the current work done in YaProjectEditor.addFormEditor,
+          // consider moving this deferred work to the explicit command for
+          // after the form file is loaded.
+<span class="nc" id="L236">          Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {</span>
+            @Override
+            public void execute() {
+<span class="nc" id="L239">              ProjectEditor projectEditor = </span>
+<span class="nc" id="L240">                  ode.getEditorManager().getOpenProjectEditor(project.getProjectId());</span>
+<span class="nc" id="L241">              FileEditor formEditor = projectEditor.getFileEditor(formFileId);</span>
+<span class="nc" id="L242">              FileEditor blocksEditor = projectEditor.getFileEditor(blocksFileId);</span>
+<span class="nc bnc" id="L243" title="All 6 branches missed.">              if (formEditor != null &amp;&amp; blocksEditor != null &amp;&amp; !ode.screensLocked()) {</span>
+<span class="nc" id="L244">                DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();</span>
+<span class="nc" id="L245">                long projectId = formEditor.getProjectId();</span>
+<span class="nc" id="L246">                designToolbar.addScreen(projectId, formName, formEditor, </span>
+                    blocksEditor);
+<span class="nc" id="L248">                designToolbar.switchToScreen(projectId, formName, DesignToolbar.View.FORM);</span>
+<span class="nc" id="L249">                executeNextCommand(projectRootNode);</span>
+<span class="nc" id="L250">              } else {</span>
+                // The form editor and/or blocks editor is still not there. Try again later.
+<span class="nc" id="L252">                Scheduler.get().scheduleDeferred(this);</span>
+              }
+<span class="nc" id="L254">            }</span>
+          });
+
+<span class="nc" id="L257">        }</span>
+
+        @Override
+        public void onFailure(Throwable caught) {
+<span class="nc" id="L261">          super.onFailure(caught);</span>
+<span class="nc" id="L262">          executionFailedOrCanceled();</span>
+<span class="nc" id="L263">        }</span>
+      };
+
+      // Create the new form on the backend. The backend will create the form (.scm) and blocks
+      // (.blk) files.
+<span class="nc" id="L268">      ode.getProjectService().addFile(projectRootNode.getProjectId(), formFileId, callback);</span>
+<span class="nc" id="L269">    }</span>
+
+    @Override
+    public void show() {
+<span class="nc" id="L273">      super.show();</span>
+
+<span class="nc" id="L275">      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L278">          newNameTextBox.setFocus(true);</span>
+<span class="nc" id="L279">        }</span>
+      });
+<span class="nc" id="L281">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

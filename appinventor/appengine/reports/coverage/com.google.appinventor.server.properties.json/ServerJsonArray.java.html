@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServerJsonArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.properties.json</a> &gt; <span class="el_source">ServerJsonArray.java</span></div><h1>ServerJsonArray.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.properties.json;
+
+import com.google.common.collect.Lists;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONValue;
+
+import org.json.JSONException;
+
+import java.util.List;
+
+/**
+ * Implementation of {@link JSONArray} using the json.org JSON library.
+ *
+ */
+final class ServerJsonArray extends ServerJsonValue implements JSONArray {
+
+  private final List&lt;JSONValue&gt; elements;
+
+<span class="fc" id="L25">  public ServerJsonArray(org.json.JSONArray array) {</span>
+<span class="fc" id="L26">    int size = array.length();</span>
+<span class="fc" id="L27">    elements = Lists.newArrayListWithCapacity(size);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    for (int i = 0; i &lt; size; i++) {</span>
+      try {
+<span class="fc" id="L30">        elements.add(ServerJsonValue.convert(array.get(i)));</span>
+<span class="nc" id="L31">      } catch (JSONException e) {</span>
+        // Cannot happen
+<span class="nc" id="L33">        throw new AssertionError(e);</span>
+<span class="fc" id="L34">      }</span>
+    }
+<span class="fc" id="L36">  }</span>
+
+  @Override
+  public List&lt;JSONValue&gt; getElements() {
+<span class="fc" id="L40">    return elements;</span>
+  }
+
+  @Override
+  public int size() {
+<span class="fc" id="L45">    return elements.size();</span>
+  }
+
+  @Override
+  public JSONValue get(int index) {
+<span class="fc" id="L50">    return elements.get(index);</span>
+  }
+
+  @Override
+  public String toJson() {
+<span class="fc" id="L55">    StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L56">    sb.append(&quot;[&quot;);</span>
+<span class="fc" id="L57">    String separator = &quot;&quot;;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    for (JSONValue value : elements) {</span>
+<span class="fc" id="L59">      sb.append(separator).append(value.toJson());</span>
+<span class="fc" id="L60">      separator = &quot;,&quot;;</span>
+<span class="fc" id="L61">    }</span>
+<span class="fc" id="L62">    sb.append(&quot;]&quot;);</span>
+<span class="fc" id="L63">    return sb.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CountryChoicePropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">CountryChoicePropertyEditor.java</span></div><h1>CountryChoicePropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2015 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Property editor for text-to-speech countries.
+ *
+ */
+public class CountryChoicePropertyEditor extends ChoicePropertyEditor {
+
+  // countries supported by AppInventor's Android 2.2 emulator
+<span class="nc" id="L18">  private static final Choice[] countries = new Choice[] {</span>
+<span class="nc" id="L19">    new Choice(MESSAGES.defaultText(), &quot;&quot;),</span>
+    new Choice(&quot;AUS&quot;, &quot;AUS&quot;),
+    new Choice(&quot;AUT&quot;, &quot;AUT&quot;),
+    new Choice(&quot;BEL&quot;, &quot;BEL&quot;),
+    new Choice(&quot;BLZ&quot;, &quot;BLZ&quot;),
+    new Choice(&quot;BWA&quot;, &quot;BWA&quot;),
+    new Choice(&quot;CAN&quot;, &quot;CAN&quot;),
+    new Choice(&quot;CHE&quot;, &quot;CHE&quot;),
+    new Choice(&quot;DEU&quot;, &quot;DEU&quot;),
+    new Choice(&quot;ESP&quot;, &quot;ESP&quot;),
+    new Choice(&quot;FRA&quot;, &quot;FRA&quot;),
+    new Choice(&quot;GBR&quot;, &quot;GBR&quot;),
+    new Choice(&quot;HKG&quot;, &quot;HKG&quot;),
+    new Choice(&quot;IND&quot;, &quot;IND&quot;),
+    new Choice(&quot;IRL&quot;, &quot;IRL&quot;),
+    new Choice(&quot;ITA&quot;, &quot;ITA&quot;),
+    new Choice(&quot;JAM&quot;, &quot;JAM&quot;),
+    new Choice(&quot;LIE&quot;, &quot;LIE&quot;),
+    new Choice(&quot;LUX&quot;, &quot;LUX&quot;),
+    new Choice(&quot;MCO&quot;, &quot;MCO&quot;),
+    new Choice(&quot;MHL&quot;, &quot;MHL&quot;),
+    new Choice(&quot;MLT&quot;, &quot;MLT&quot;),
+    new Choice(&quot;NAM&quot;, &quot;NAM&quot;),
+    new Choice(&quot;NZL&quot;, &quot;NZL&quot;),
+    new Choice(&quot;PAK&quot;, &quot;PAK&quot;),
+    new Choice(&quot;PHL&quot;, &quot;PHL&quot;),
+    new Choice(&quot;SGP&quot;, &quot;SGP&quot;),
+    new Choice(&quot;TTO&quot;, &quot;TTO&quot;),
+    new Choice(&quot;USA&quot;, &quot;USA&quot;),
+    new Choice(&quot;VIR&quot;, &quot;VIR&quot;),
+    new Choice(&quot;ZAF&quot;, &quot;ZAF&quot;),
+    new Choice(&quot;ZWE&quot;, &quot;ZWE&quot;)
+  };
+
+  public CountryChoicePropertyEditor() {
+<span class="nc" id="L54">    super(countries);</span>
+<span class="nc" id="L55">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

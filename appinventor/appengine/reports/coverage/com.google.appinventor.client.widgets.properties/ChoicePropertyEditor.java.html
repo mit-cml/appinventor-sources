@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChoicePropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">ChoicePropertyEditor.java</span></div><h1>ChoicePropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Command;
+
+import java.util.List;
+
+/**
+ * Property editor for a list of values.
+ *
+ */
+public class ChoicePropertyEditor extends PropertyEditor {
+
+  /**
+   * Caption/value pair for display in {@link ChoicePropertyEditor}.
+   */
+  public static class Choice {
+
+    // Caption/value pair
+    private final String caption;
+    private final String value;
+
+    /**
+     * Creates a new caption/value pair.
+     *
+     * @param caption  text to be shown in choice editor list box
+     * @param value  value to assign to property if choice is selected
+     */
+<span class="nc" id="L39">    public Choice(String caption, String value) {</span>
+<span class="nc" id="L40">      this.caption = caption;</span>
+<span class="nc" id="L41">      this.value = value;</span>
+<span class="nc" id="L42">    }</span>
+
+    /**
+     * Extracts the captions from an array of choices.
+     *
+     * @param choices  array to extract captions from
+     * @return  array with extracted captions
+     */
+    public static String[] captions(Choice[] choices) {
+<span class="nc" id="L51">      String[] captions = new String[choices.length];</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">      for (int i = 0; i &lt; choices.length; i++) {</span>
+<span class="nc" id="L53">        captions[i] = choices[i].caption;</span>
+      }
+<span class="nc" id="L55">      return captions;</span>
+    }
+
+    /**
+     * Extracts the values from an array of choices.
+     *
+     * @param choices  array to extract values from
+     * @return  array with extracted values
+     */
+    public static String[] values(Choice[] choices) {
+<span class="nc" id="L65">      String[] values = new String[choices.length];</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      for (int i = 0; i &lt; choices.length; i++) {</span>
+<span class="nc" id="L67">        values[i] = choices[i].value;</span>
+      }
+<span class="nc" id="L69">      return values;</span>
+    }
+  }
+
+  // UI for the drop-down list of values will be represented by a DropDownButton
+  private final DropDownButton dropDownButton;
+
+  // Array of choices
+  private Choice[] choices;
+
+  /**
+   * Creates a new instance of the property editor.
+   *
+   * @param choices  array of values to choose from
+   */
+<span class="nc" id="L84">  public ChoicePropertyEditor(Choice[] choices) {</span>
+    // Initialize UI
+<span class="nc" id="L86">    this.choices = choices;</span>
+<span class="nc" id="L87">    List&lt;DropDownItem&gt; items = Lists.newArrayList();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    for(final Choice choice : choices) {</span>
+<span class="nc" id="L89">      items.add(new DropDownItem(&quot;Choice Property Editor&quot;, choice.caption, new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L92">          boolean multiple = isMultipleValues();</span>
+<span class="nc" id="L93">          setMultipleValues(false);</span>
+<span class="nc" id="L94">          property.setValue(choice.value, multiple);</span>
+<span class="nc" id="L95">        }</span>
+      }));
+    }
+<span class="nc" id="L98">    dropDownButton = new DropDownButton(&quot;Choice Property Editor&quot;, choices[0].caption, items, false);</span>
+<span class="nc" id="L99">    dropDownButton.setStylePrimaryName(&quot;ode-ChoicePropertyEditor&quot;);</span>
+
+<span class="nc" id="L101">    initWidget(dropDownButton);</span>
+<span class="nc" id="L102">  }</span>
+
+  /**
+   * Creates a new instance of the property editor with choice names.
+   * Each choice name is treated as both the caption and the value of a choice.
+   *
+   * @param choiceNames  array of choice names to choose from
+   */
+<span class="nc" id="L110">  public ChoicePropertyEditor(String[] choiceNames) {</span>
+<span class="nc" id="L111">    this.choices = new Choice[choiceNames.length];</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    for (int idx = 0; idx &lt; choiceNames.length; idx += 1)</span>
+<span class="nc" id="L113">      this.choices[idx] = new Choice(choiceNames[idx], choiceNames[idx]);</span>
+
+<span class="nc" id="L115">    List&lt;DropDownItem&gt; items = Lists.newArrayList();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    for(final Choice choice : choices) {</span>
+<span class="nc" id="L117">      items.add(new DropDownItem(&quot;Choice Property Editor&quot;, choice.caption, new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L120">          boolean multiple = isMultipleValues();</span>
+<span class="nc" id="L121">          setMultipleValues(false);</span>
+<span class="nc" id="L122">          property.setValue(choice.value, multiple);</span>
+<span class="nc" id="L123">        }</span>
+      }));
+    }
+<span class="nc" id="L126">    dropDownButton = new DropDownButton(&quot;Choice Property Editor&quot;, choices[0].caption, items, false);</span>
+<span class="nc" id="L127">    dropDownButton.setStylePrimaryName(&quot;ode-ChoicePropertyEditor&quot;);</span>
+
+<span class="nc" id="L129">    initWidget(dropDownButton);</span>
+<span class="nc" id="L130">  }</span>
+
+  @Override
+  protected void updateValue() {
+<span class="nc bnc" id="L134" title="All 2 branches missed.">    if (isMultipleValues()) {</span>
+<span class="nc" id="L135">      dropDownButton.setCaption(MESSAGES.multipleValues());</span>
+<span class="nc" id="L136">      return;</span>
+    }
+
+<span class="nc" id="L139">    String propertyValue = property.getValue();</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    for (Choice choice : choices) {</span>
+<span class="nc" id="L141">      String choiceValue = choice.value;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (choiceValue.equals(propertyValue)) {</span>
+<span class="nc" id="L143">        dropDownButton.setCaption(choice.caption);</span>
+      }
+    }
+<span class="nc" id="L146">  }</span>
+
+  /**
+   * Enables the dropdown selector for this property
+   */
+  public void enable() {
+<span class="nc bnc" id="L152" title="All 2 branches missed.">    for (Choice c : choices) {</span>
+<span class="nc" id="L153">      dropDownButton.setItemEnabled(c.caption, true);</span>
+    }
+<span class="nc" id="L155">  }</span>
+
+  /**
+   * Disables the dropdown selector for this property
+   */
+  public void disable() {
+<span class="nc" id="L161">    String currentValue = property.getValue();</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    for (Choice c : choices) {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      if(!c.value.equals(currentValue)) {</span>
+<span class="nc" id="L164">        dropDownButton.setItemEnabled(c.caption, false);</span>
+      } else {
+<span class="nc" id="L166">        dropDownButton.setItemEnabled(c.caption, true);</span>
+      }
+    }
+<span class="nc" id="L169">  }</span>
+
+  public void setVisible(boolean visible) {
+<span class="nc" id="L172">    dropDownButton.setVisible(visible);</span>
+<span class="nc" id="L173">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

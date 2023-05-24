@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Project.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer.project</a> &gt; <span class="el_source">Project.java</span></div><h1>Project.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer.project;
+
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.settings.project.ProjectSettings;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This class represents a project.
+ *
+ */
+public final class Project {
+  // Information about the project
+  private final UserProject projectInfo;
+
+  // List of listeners for any project changes.
+  private final List&lt;ProjectChangeListener&gt; projectChangeListeners;
+
+  private boolean loadingInProgress;
+
+  // Root project node
+  private ProjectRootNode projectRoot; // lazily and asynchronously initialized
+
+  // Project specific settings
+  private ProjectSettings settings; // lazily and asynchronously initialized
+
+  /**
+   * Creates a new project.
+   *
+   * @param projectInfo information about the project
+   */
+<span class="fc" id="L45">  Project(UserProject projectInfo) {</span>
+<span class="fc" id="L46">    this.projectInfo = projectInfo;</span>
+
+<span class="fc" id="L48">    projectChangeListeners = new ArrayList&lt;ProjectChangeListener&gt;();</span>
+<span class="fc" id="L49">  }</span>
+
+  /*
+   * Loads the project's nodes from the backend.
+   */
+  public void loadProjectNodes() {
+<span class="nc bnc" id="L55" title="All 4 branches missed.">    if (projectRoot == null &amp;&amp; !loadingInProgress) {</span>
+<span class="nc" id="L56">      loadingInProgress = true;</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">      if (settings == null) {</span>
+<span class="nc" id="L59">        settings = new ProjectSettings(Project.this);</span>
+<span class="nc" id="L60">        settings.loadSettings();</span>
+      }
+
+<span class="nc" id="L63">      Ode.getInstance().getProjectService().getProject(</span>
+<span class="nc" id="L64">          getProjectId(),</span>
+          new OdeAsyncCallback&lt;ProjectRootNode&gt;(
+              // failure message
+<span class="nc" id="L67">              MESSAGES.projectLoadError()) {</span>
+            @Override
+            public void onSuccess(ProjectRootNode result) {
+<span class="nc" id="L70">              projectRoot = result;</span>
+
+<span class="nc" id="L72">              loadingInProgress = false;</span>
+<span class="nc" id="L73">              fireProjectLoaded();</span>
+<span class="nc" id="L74">            }</span>
+
+            @Override
+            public void onFailure(Throwable caught) {
+<span class="nc" id="L78">              loadingInProgress = false;</span>
+<span class="nc" id="L79">              super.onFailure(caught);</span>
+<span class="nc" id="L80">            }</span>
+      });
+    }
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * Returns the id of this project.
+   *
+   * @return  project id
+   */
+  public long getProjectId() {
+<span class="nc" id="L91">    return projectInfo.getProjectId();</span>
+  }
+
+  /**
+   * Returns the name of this project.
+   *
+   * @return  project name
+   */
+  public String getProjectName() {
+<span class="fc" id="L100">    return projectInfo.getProjectName();</span>
+  }
+
+  /**
+   * Returns the type of this project.
+   *
+   * @return  project type
+   */
+  public String getProjectType() {
+<span class="nc" id="L109">    return projectInfo.getProjectType();</span>
+  }
+
+  /**
+   * Returns the date of when the project was created.
+   *
+   * @return  date created in milliseconds
+   */
+  public long getDateCreated() {
+<span class="fc" id="L118">    return projectInfo.getDateCreated();</span>
+  }
+
+  /**
+   * Returns the date of when the project was last modified.
+   *
+   * @return  date modified in milliseconds
+   */
+  public long getDateModified() {
+<span class="fc" id="L127">    return projectInfo.getDateModified();</span>
+  }
+
+  /**
+   * Sets the date of when the project was last modified.
+   *
+   */
+  public void setDateModified(long date) {
+<span class="nc" id="L135">    projectInfo.setDateModified(date);</span>
+<span class="nc" id="L136">  }</span>
+
+  /**
+   * Returns the project specific settings, or null if the settings haven't
+   * been loaded.
+   *
+   * @return  project settings
+   */
+  public ProjectSettings getSettings() {
+<span class="nc" id="L145">    return settings;</span>
+  }
+
+  /**
+   * Returns the project's root node, or null if the project nodes haven't
+   * been loaded.
+   *
+   * @return project root node
+   */
+  public ProjectRootNode getRootNode() {
+<span class="nc" id="L155">    return projectRoot;</span>
+  }
+
+  /**
+   * Adds the given node to the project.
+   *
+   * &lt;p/&gt;If a node with the same file id already exists, the node is not added
+   * and the existing node is returned. However, the 'project node added' event
+   * is still fired.
+   *
+   * @param parent  parent node of node to be added
+   * @param node  node to be added
+   * @return the node that was added, or the existing node with the same file id
+   */
+  public ProjectNode addNode(ProjectNode parent, ProjectNode node) {
+<span class="nc" id="L170">    boolean nodeAlreadyExists = false;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    for (ProjectNode child : parent.getChildren()) {</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">      if (child.getFileId().equals(node.getFileId())) {</span>
+<span class="nc" id="L173">        nodeAlreadyExists = true;</span>
+<span class="nc" id="L174">        node = child;</span>
+<span class="nc" id="L175">        break;</span>
+      }
+<span class="nc" id="L177">    }</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">    if (!nodeAlreadyExists) {</span>
+<span class="nc" id="L179">      parent.addChild(node);</span>
+    }
+
+    // Event if the node already exists, we still call fireProjectNodeAdded so that asset property
+    // editors can detect that an asset was updated.
+<span class="nc" id="L184">    fireProjectNodeAdded(node);</span>
+<span class="nc" id="L185">    return node;</span>
+  }
+
+  /**
+   * Deletes the given node from the project.
+   *
+   * @param node  node to be deleted
+   */
+  public void deleteNode(ProjectNode node) {
+<span class="nc" id="L194">    ProjectNode parent = node.getParent();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (parent != null) {</span>
+<span class="nc" id="L196">      parent.removeChild(node);</span>
+    }
+<span class="nc" id="L198">    fireProjectNodeRemoved(node);</span>
+<span class="nc" id="L199">  }</span>
+
+  public void moveToTrash() {
+<span class="nc" id="L202">    Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+<span class="nc" id="L203">        Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());</span>
+<span class="nc" id="L204">    Ode.getInstance().getProjectService().moveToTrash(getProjectId(),</span>
+        new OdeAsyncCallback&lt;UserProject&gt;(
+            // failure message
+<span class="nc" id="L207">            MESSAGES.moveToTrashProjectError()) {</span>
+          @Override
+          public void onSuccess(UserProject project) {
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (project.getProjectId() == projectInfo.getProjectId()) {</span>
+<span class="nc" id="L211">              projectInfo.moveToTrash();</span>
+<span class="nc" id="L212">              Ode.getInstance().getProjectManager().trashProject(getProjectId());</span>
+            }
+<span class="nc" id="L214">          }</span>
+        });
+<span class="nc" id="L216">  }</span>
+
+
+  public void restoreFromTrash() {
+<span class="nc" id="L220">    Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+<span class="nc" id="L221">            Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, getProjectName());</span>
+<span class="nc" id="L222">    Ode.getInstance().getProjectService().restoreProject(getProjectId(),</span>
+            new OdeAsyncCallback&lt;UserProject&gt;(
+                    // failure message
+<span class="nc" id="L225">                    MESSAGES.restoreProjectError()) {</span>
+              @Override
+              public void onSuccess(UserProject project) {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">                if (project.getProjectId() == projectInfo.getProjectId()) {</span>
+<span class="nc" id="L229">                  projectInfo.restoreFromTrash();</span>
+<span class="nc" id="L230">                  Ode.getInstance().getProjectManager().restoreTrashProject(getProjectId());</span>
+                }
+<span class="nc" id="L232">              }</span>
+            });
+<span class="nc" id="L234">  }</span>
+
+  public void deleteFromTrash() {
+<span class="nc" id="L237">    Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+<span class="nc" id="L238">        Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());</span>
+<span class="nc" id="L239">    final OdeAsyncCallback&lt;Void&gt; deleteCallback = new OdeAsyncCallback&lt;Void&gt;() {</span>
+      @Override
+      public void onSuccess(Void result) {
+<span class="nc" id="L242">        Ode.getInstance().getProjectManager().removeDeletedProject(getProjectId());</span>
+<span class="nc" id="L243">      }</span>
+    };
+<span class="nc" id="L245">    Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);</span>
+<span class="nc" id="L246">  }</span>
+
+  public boolean isInTrash() {
+<span class="nc" id="L249">    return projectInfo.isInTrash();</span>
+  }
+
+  /**
+   * Adds a {@link ProjectChangeListener} to the listener list.
+   *
+   * @param listener  the {@code ProjectChangeListener} to be added
+   */
+  public void addProjectChangeListener(ProjectChangeListener listener) {
+<span class="nc" id="L258">    projectChangeListeners.add(listener);</span>
+<span class="nc" id="L259">  }</span>
+
+  /**
+   * Removes a {@link ProjectChangeListener} from the listener list.
+   *
+   * @param listener  the {@code ProjectChangeListener} to be removed
+   */
+  public void removeProjectChangeListener(ProjectChangeListener listener) {
+<span class="nc" id="L267">    projectChangeListeners.remove(listener);</span>
+<span class="nc" id="L268">  }</span>
+
+  private List&lt;ProjectChangeListener&gt; copyProjectChangeListeners() {
+<span class="nc" id="L271">    return new ArrayList&lt;ProjectChangeListener&gt;(projectChangeListeners);</span>
+  }
+
+  /*
+   * Triggers a 'project loaded' event to be sent to the listener on the listener list.
+   */
+  private void fireProjectLoaded() {
+<span class="nc bnc" id="L278" title="All 2 branches missed.">    for (ProjectChangeListener listener : copyProjectChangeListeners()) {</span>
+<span class="nc" id="L279">      listener.onProjectLoaded(this);</span>
+<span class="nc" id="L280">    }</span>
+<span class="nc" id="L281">  }</span>
+
+  /*
+   * Triggers a 'project node added' event to be sent to the listener on the listener list.
+   */
+  private void fireProjectNodeAdded(ProjectNode node) {
+<span class="nc bnc" id="L287" title="All 2 branches missed.">    for (ProjectChangeListener listener : copyProjectChangeListeners()) {</span>
+<span class="nc" id="L288">      listener.onProjectNodeAdded(this, node);</span>
+<span class="nc" id="L289">    }</span>
+<span class="nc" id="L290">  }</span>
+
+  /*
+   * Triggers a 'project node removed' event to be sent to the listener on the listener list.
+   */
+  private void fireProjectNodeRemoved(ProjectNode node) {
+<span class="nc bnc" id="L296" title="All 2 branches missed.">    for (ProjectChangeListener listener : copyProjectChangeListeners()) {</span>
+<span class="nc" id="L297">      listener.onProjectNodeRemoved(this, node);</span>
+<span class="nc" id="L298">    }</span>
+<span class="nc" id="L299">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

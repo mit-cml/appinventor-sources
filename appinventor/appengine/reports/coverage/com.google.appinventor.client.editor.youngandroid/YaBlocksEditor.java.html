@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YaBlocksEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid</a> &gt; <span class="el_source">YaBlocksEditor.java</span></div><h1>YaBlocksEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright © 2009-2011 Google, All Rights reserved
+// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+package com.google.appinventor.client.editor.youngandroid;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.simple.components.FormChangeListener;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel.BlocklyWorkspaceChangeListener;
+import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
+import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
+import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Editor for Young Android Blocks (.blk) files.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ * @author sharon@google.com (Sharon Perl) added Blockly functionality
+ */
+public final class YaBlocksEditor extends FileEditor
+    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener,
+    BlocklyWorkspaceChangeListener, ProjectChangeListener {
+
+  // A constant to substract from the total height of the Viewer window, set through
+  // the computed height of the user's window (Window.getClientHeight())
+  // This is an approximation of the size of the header navigation panel
+  private static final int VIEWER_WINDOW_OFFSET = 170;
+
+  // Database of component type descriptions
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
+
+  // Keep a map from projectid_formname -&gt; YaBlocksEditor for handling blocks workspace changed
+  // callbacks from the BlocklyPanel objects. This has to be static because it is used by
+  // static methods that are called from the Javascript Blockly world.
+<span class="nc" id="L88">  private static final Map&lt;String, YaBlocksEditor&gt; formToBlocksEditor = Maps.newHashMap();</span>
+
+  // projectid_formname for this blocks editor. Our index into the static formToBlocksEditor map.
+  private String fullFormName;
+
+  private final YoungAndroidBlocksNode blocksNode;
+
+  // References to other panels that we need to control.
+  private final SourceStructureExplorer sourceStructureExplorer;
+
+  // Panel that is used as the content of the palette box
+  private final YoungAndroidPalettePanel palettePanel;
+
+  // Blocks area. Note that the blocks area is a part of the &quot;document&quot; in the
+  // browser (via the deckPanel in the ProjectEditor). So if the document changes (which happens
+  // when we switch projects) we will lose the blocks editor state, even though
+  // YaBlocksEditor objects are kept around when switching projects. If we come
+  // back to this blocks editor after having switched projects, the blocksArea
+  // will get reinitialized.
+  private final BlocklyPanel blocksArea;
+
+  // True once we've finished loading the current file.
+<span class="nc" id="L110">  private boolean loadComplete = false;</span>
+
+  // if selectedDrawer != null, it is either &quot;component_&quot; + instance name or
+  // &quot;builtin_&quot; + drawer name
+<span class="nc" id="L114">  private String selectedDrawer = null;</span>
+
+  // Keep a list of components that we know about. Need this to detect when a call to add a
+  // component is adding one that we already have (which can happen when a component gets
+  // moved from one container to another). In that case we do not want to add it to the
+  // blocks area again.
+<span class="nc" id="L120">  private Set&lt;String&gt; componentUuids = new HashSet&lt;String&gt;();</span>
+
+  // The form editor associated with this blocks editor.
+  private YaFormEditor myFormEditor;
+
+  // The project associated with this blocks editor.
+  private Project project;
+
+  YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
+<span class="nc" id="L129">    super(projectEditor, blocksNode);</span>
+
+<span class="nc" id="L131">    this.blocksNode = blocksNode;</span>
+<span class="nc" id="L132">    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());</span>
+
+<span class="nc" id="L134">    fullFormName = blocksNode.getProjectId() + &quot;_&quot; + blocksNode.getFormName();</span>
+<span class="nc" id="L135">    formToBlocksEditor.put(fullFormName, this);</span>
+<span class="nc" id="L136">    blocksArea = new BlocklyPanel(this, fullFormName); // [lyn, 2014/10/28] pass in editor so can extract form json from it</span>
+<span class="nc" id="L137">    blocksArea.setWidth(&quot;100%&quot;);</span>
+    // This code seems to be using a rather old layout, so we cannot simply pass 100% for height.
+    // Instead, it needs to be calculated from the client's window, and a listener added to Window
+    // We use VIEWER_WINDOW_OFFSET as an approximation of the size of the top navigation bar
+    // New layouts don't need all this messing; see comments on selected answer at:
+    // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
+<span class="nc" id="L143">    blocksArea.setHeight(Window.getClientHeight() - VIEWER_WINDOW_OFFSET + &quot;px&quot;);</span>
+<span class="nc" id="L144">    Window.addResizeHandler(new ResizeHandler() {</span>
+     public void onResize(ResizeEvent event) {
+<span class="nc" id="L146">       int height = event.getHeight();</span>
+<span class="nc" id="L147">       blocksArea.setHeight(height - VIEWER_WINDOW_OFFSET + &quot;px&quot;);</span>
+<span class="nc" id="L148">     }</span>
+    });
+<span class="nc" id="L150">    initWidget(blocksArea);</span>
+<span class="nc" id="L151">    blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());</span>
+
+    // Get references to the source structure explorer
+<span class="nc" id="L154">    sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();</span>
+
+    // Listen for selection events for built-in drawers
+<span class="nc" id="L157">    BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);</span>
+
+    // Create palettePanel, which will be used as the content of the PaletteBox.
+<span class="nc" id="L160">    myFormEditor = projectEditor.getFormFileEditor(blocksNode.getFormName());</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (myFormEditor != null) {</span>
+<span class="nc" id="L162">      palettePanel = new YoungAndroidPalettePanel(myFormEditor);</span>
+<span class="nc" id="L163">      palettePanel.loadComponents(new DropTargetProvider() {</span>
+        // TODO(sharon): make the tree in the BlockSelectorBox a drop target
+        @Override
+        public DropTarget[] getDropTargets() {
+<span class="nc" id="L167">          return new DropTarget[0];</span>
+        }
+      });
+<span class="nc" id="L170">      palettePanel.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+    } else {
+<span class="nc" id="L172">      palettePanel = null;</span>
+<span class="nc" id="L173">      OdeLog.wlog(&quot;Can't get form editor for blocks: &quot; + getFileId());</span>
+    }
+
+<span class="nc" id="L176">    project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());</span>
+<span class="nc" id="L177">    project.addProjectChangeListener(this);</span>
+<span class="nc" id="L178">    onProjectLoaded(project);</span>
+<span class="nc" id="L179">  }</span>
+
+  // FileEditor methods
+
+  @Override
+  public void loadFile(final Command afterFileLoaded) {
+<span class="nc" id="L185">    final long projectId = getProjectId();</span>
+<span class="nc" id="L186">    final String fileId = getFileId();</span>
+<span class="nc" id="L187">    OdeAsyncCallback&lt;ChecksumedLoadFile&gt; callback = new OdeAsyncCallback&lt;ChecksumedLoadFile&gt;(MESSAGES.loadError()) {</span>
+      @Override
+      public void onSuccess(ChecksumedLoadFile result) {
+        String blkFileContent;
+        try {
+<span class="nc" id="L192">          blkFileContent = result.getContent();</span>
+<span class="nc" id="L193">        } catch (ChecksumedFileException e) {</span>
+<span class="nc" id="L194">          this.onFailure(e);</span>
+<span class="nc" id="L195">          return;</span>
+<span class="nc" id="L196">        }</span>
+<span class="nc" id="L197">        String formJson = myFormEditor.preUpgradeJsonString(); // [lyn, 2014/10/27] added formJson for upgrading</span>
+        try {
+<span class="nc" id="L199">          blocksArea.loadBlocksContent(formJson, blkFileContent);</span>
+<span class="nc" id="L200">          blocksArea.addChangeListener(YaBlocksEditor.this);</span>
+<span class="nc" id="L201">        } catch(LoadBlocksException e) {</span>
+<span class="nc" id="L202">          setBlocksDamaged(fullFormName);</span>
+<span class="nc" id="L203">          ErrorReporter.reportError(MESSAGES.blocksNotSaved(fullFormName));</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">        loadComplete = true;</span>
+<span class="nc" id="L206">        selectedDrawer = null;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if (afterFileLoaded != null) {</span>
+<span class="nc" id="L208">          afterFileLoaded.execute();</span>
+        }
+<span class="nc" id="L210">      }</span>
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc bnc" id="L213" title="All 2 branches missed.">        if (caught instanceof ChecksumedFileException) {</span>
+<span class="nc" id="L214">          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());</span>
+        }
+<span class="nc" id="L216">        super.onFailure(caught);</span>
+<span class="nc" id="L217">      }</span>
+    };
+<span class="nc" id="L219">    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);</span>
+<span class="nc" id="L220">  }</span>
+
+  @Override
+  public String getTabText() {
+<span class="nc" id="L224">    return MESSAGES.blocksEditorTabName(blocksNode.getFormName());</span>
+  }
+
+  @Override
+  public void onShow() {
+<span class="nc" id="L229">    OdeLog.log(&quot;YaBlocksEditor: got onShow() for &quot; + getFileId());</span>
+<span class="nc" id="L230">    super.onShow();</span>
+<span class="nc" id="L231">    loadBlocksEditor();</span>
+<span class="nc" id="L232">    Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_BLOCKS);</span>
+<span class="nc" id="L233">    sendComponentData();  // Send Blockly the component information for generating Yail</span>
+<span class="nc" id="L234">  }</span>
+
+  /*
+   * Updates the the whole designer: form, palette, source structure explorer, assets list, and
+   * properties panel.
+   */
+  private void loadBlocksEditor() {
+
+    // Set the palette box's content.
+<span class="nc bnc" id="L243" title="All 2 branches missed.">    if (palettePanel != null) {</span>
+<span class="nc" id="L244">      PaletteBox paletteBox = PaletteBox.getPaletteBox();</span>
+<span class="nc" id="L245">      paletteBox.setContent(palettePanel);</span>
+    }
+<span class="nc" id="L247">    PaletteBox.getPaletteBox().setVisible(false);</span>
+
+    // Update the source structure explorer with the tree of this form's components.
+<span class="nc" id="L250">    MockForm form = getForm();</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (form != null) {</span>
+      // start with no component selected in sourceStructureExplorer. We
+      // don't want a component drawer open in the blocks editor when we
+      // come back to it.
+<span class="nc" id="L255">      updateBlocksTree(form, null);</span>
+
+<span class="nc" id="L257">      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()</span>
+<span class="nc" id="L258">          .getWidget(2));</span>
+<span class="nc" id="L259">      Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);</span>
+<span class="nc" id="L260">      Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);</span>
+<span class="nc" id="L261">      BlockSelectorBox.getBlockSelectorBox().setVisible(true);</span>
+<span class="nc" id="L262">      AssetListBox.getAssetListBox().setVisible(true);</span>
+<span class="nc" id="L263">      blocksArea.injectWorkspace();</span>
+<span class="nc" id="L264">      hideComponentBlocks();</span>
+    } else {
+<span class="nc" id="L266">      OdeLog.wlog(&quot;Can't get form editor for blocks: &quot; + getFileId());</span>
+    }
+<span class="nc" id="L268">  }</span>
+
+  @Override
+  public void onHide() {
+    // When an editor is detached, if we are the &quot;current&quot; editor,
+    // set the current editor to null and clean up the UI.
+    // Note: I'm not sure it is possible that we would not be the &quot;current&quot;
+    // editor when this is called, but we check just to be safe.
+<span class="nc" id="L276">    OdeLog.log(&quot;YaBlocksEditor: got onHide() for &quot; + getFileId());</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">    if (Ode.getInstance().getCurrentFileEditor() == this) {</span>
+<span class="nc" id="L278">      super.onHide();</span>
+<span class="nc" id="L279">      unloadBlocksEditor();</span>
+    } else {
+<span class="nc" id="L281">      OdeLog.wlog(&quot;YaBlocksEditor.onHide: Not doing anything since we're not the &quot;</span>
+          + &quot;current file editor!&quot;);
+    }
+<span class="nc" id="L284">  }</span>
+
+  @Override
+  public void onClose() {
+    // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
+<span class="nc" id="L289">    getForm().removeFormChangeListener(this);</span>
+<span class="nc" id="L290">    project.removeProjectChangeListener(this);</span>
+<span class="nc" id="L291">    BlockSelectorBox.getBlockSelectorBox().removeBlockDrawerSelectionListener(this);</span>
+<span class="nc" id="L292">    formToBlocksEditor.remove(fullFormName);</span>
+
+<span class="nc" id="L294">  }</span>
+
+  public static void toggleWarning() {
+<span class="nc" id="L297">    BlocklyPanel.switchWarningVisibility();</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">    for(YaBlocksEditor editor : formToBlocksEditor.values()){</span>
+<span class="nc" id="L299">      editor.blocksArea.toggleWarning();</span>
+<span class="nc" id="L300">    }</span>
+<span class="nc" id="L301">  }</span>
+
+  private void unloadBlocksEditor() {
+    // TODO(sharon): do something about form change listener?
+
+    // Clear the palette box.
+<span class="nc" id="L307">    PaletteBox paletteBox = PaletteBox.getPaletteBox();</span>
+<span class="nc" id="L308">    paletteBox.clear();</span>
+<span class="nc" id="L309">    paletteBox.setVisible(true);</span>
+
+<span class="nc" id="L311">    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));</span>
+<span class="nc" id="L312">    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);</span>
+<span class="nc" id="L313">    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);</span>
+<span class="nc" id="L314">    BlockSelectorBox.getBlockSelectorBox().setVisible(false);</span>
+<span class="nc" id="L315">    AssetListBox.getAssetListBox().setVisible(true);</span>
+
+    // Clear and hide the blocks selector tree
+<span class="nc" id="L318">    sourceStructureExplorer.clearTree();</span>
+<span class="nc" id="L319">    hideComponentBlocks();</span>
+<span class="nc" id="L320">    blocksArea.hideChaff();</span>
+<span class="nc" id="L321">  }</span>
+
+  @Override
+  public void onWorkspaceChange(BlocklyPanel panel, JavaScriptObject event) {
+<span class="nc bnc" id="L325" title="All 2 branches missed.">    if (!EventHelper.isTransient(event)) {</span>
+<span class="nc" id="L326">      Ode.getInstance().getEditorManager().scheduleAutoSave(this);</span>
+    }
+<span class="nc bnc" id="L328" title="All 2 branches missed.">    if (!EventHelper.isUi(event)) {</span>
+<span class="nc" id="L329">      sendComponentData();</span>
+    }
+<span class="nc" id="L331">  }</span>
+
+  @Override
+  public void getBlocksImage(Callback&lt;String, String&gt; callback) {
+<span class="nc" id="L335">    blocksArea.getBlocksImage(callback);</span>
+<span class="nc" id="L336">  }</span>
+
+  public synchronized void sendComponentData() {
+<span class="nc" id="L339">    sendComponentData(false);</span>
+<span class="nc" id="L340">  }</span>
+
+  public synchronized void sendComponentData(boolean force) {
+    try {
+<span class="nc" id="L344">      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true), packageNameFromPath(getFileId()), force);</span>
+<span class="nc" id="L345">    } catch (YailGenerationException e) {</span>
+<span class="nc" id="L346">      e.printStackTrace();</span>
+<span class="nc" id="L347">    }</span>
+<span class="nc" id="L348">  }</span>
+
+  private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
+<span class="nc" id="L351">    TreeItem items[] = new TreeItem[3];</span>
+<span class="nc" id="L352">    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(form);</span>
+<span class="nc" id="L353">    items[1] = form.buildComponentsTree();</span>
+<span class="nc" id="L354">    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);</span>
+<span class="nc" id="L355">    sourceStructureExplorer.updateTree(items, itemToSelect);</span>
+<span class="nc" id="L356">  }</span>
+
+  // Do whatever is needed to save Blockly state when our project is about to be
+  // detached from the parent document. Note that this is not for saving the blocks file itself.
+  // We use EditorManager.scheduleAutoSave for that.
+  public void prepareForUnload() {
+<span class="nc" id="L362">    blocksArea.saveComponentsAndBlocks();</span>
+//    blocksArea.saveBackpackContents();
+<span class="nc" id="L364">  }</span>
+
+  @Override
+  public String getRawFileContent() {
+<span class="nc" id="L368">    return blocksArea.getBlocksContent();</span>
+  }
+
+  public Set&lt;String&gt; getBlockTypeSet() {
+<span class="nc" id="L372">    Set&lt;String&gt; blockTypes = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L373">    String xmlString = blocksArea.getBlocksContent();</span>
+<span class="nc" id="L374">    Document blockDoc = XMLParser.parse(xmlString);</span>
+<span class="nc" id="L375">    NodeList blockElements = blockDoc.getElementsByTagName(&quot;block&quot;);</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">    for (int i = 0; i &lt; blockElements.getLength(); ++i) {</span>
+<span class="nc" id="L377">      Element blockElem = (Element) blockElements.item(i);</span>
+<span class="nc" id="L378">      blockTypes.add(blockElem.getAttribute(&quot;type&quot;));</span>
+    }
+<span class="nc" id="L380">    return blockTypes;</span>
+  }
+
+  // This creates a hash of sets. The key is the name of a blocktype. The set is the names of
+  // component blocks (events, methods, and properties) that are used in the current project.
+  // The method takes the a hash of sets as an input so that it may be called multiple times
+  // for separate screens, creating the set of component blocks used through the entire project.
+  // TODO: Examine refactor with XPATH
+  public HashMap&lt;String, Set&lt;String&gt;&gt; getComponentBlockTypeSet(HashMap&lt;String, Set&lt;String&gt;&gt; componentBlocks) {
+<span class="nc" id="L389">    String xmlString = blocksArea.getBlocksContent();</span>
+<span class="nc" id="L390">    Document blockDoc = XMLParser.parse(xmlString);</span>
+<span class="nc" id="L391">    NodeList blockElements = blockDoc.getElementsByTagName(&quot;block&quot;);</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">    for (int i = 0; i &lt; blockElements.getLength(); ++i) {</span>
+<span class="nc" id="L393">      Element blockElem = (Element) blockElements.item(i);</span>
+<span class="nc" id="L394">      String blockType = blockElem.getAttribute(&quot;type&quot;);</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">      if (&quot;component_event&quot;.equals(blockType)) {</span>
+<span class="nc" id="L396">        Element mutElem = (Element) blockElem.getElementsByTagName(&quot;mutation&quot;).item(0);</span>
+<span class="nc" id="L397">        String component_type = mutElem.getAttribute(&quot;component_type&quot;);</span>
+<span class="nc" id="L398">        String event_name = mutElem.getAttribute(&quot;event_name&quot;);</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">        Set&lt;String&gt; blockTypes = componentBlocks.get(component_type) == null ? new HashSet&lt;String&gt;() : componentBlocks.get(component_type);</span>
+<span class="nc" id="L400">        blockTypes.add(event_name);</span>
+<span class="nc" id="L401">        componentBlocks.put(component_type, blockTypes);</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">      } else if (&quot;component_method&quot;.equals(blockType)) {</span>
+<span class="nc" id="L403">        Element mutElem = (Element) blockElem.getElementsByTagName(&quot;mutation&quot;).item(0);</span>
+<span class="nc" id="L404">        String component_type = mutElem.getAttribute(&quot;component_type&quot;);</span>
+<span class="nc" id="L405">        String method_name = mutElem.getAttribute(&quot;method_name&quot;);</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">        Set&lt;String&gt; blockTypes = componentBlocks.get(component_type) == null ? new HashSet&lt;String&gt;() : componentBlocks.get(component_type);</span>
+<span class="nc" id="L407">        blockTypes.add(method_name);</span>
+<span class="nc" id="L408">        componentBlocks.put(component_type, blockTypes);</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">      } else if (&quot;component_set_get&quot;.equals(blockType)) {</span>
+<span class="nc" id="L410">        Element mutElem = (Element) blockElem.getElementsByTagName(&quot;mutation&quot;).item(0);</span>
+<span class="nc" id="L411">        String component_type = mutElem.getAttribute(&quot;component_type&quot;);</span>
+<span class="nc" id="L412">        String property_name = mutElem.getAttribute(&quot;property_name&quot;);</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        Set&lt;String&gt; blockTypes = componentBlocks.get(component_type) == null ? new HashSet&lt;String&gt;() : componentBlocks.get(component_type);</span>
+<span class="nc" id="L414">        blockTypes.add(property_name);</span>
+<span class="nc" id="L415">        componentBlocks.put(component_type, blockTypes);</span>
+      }
+    }
+<span class="nc" id="L418">    return componentBlocks;</span>
+  }
+
+  public FileDescriptorWithContent getYail() throws YailGenerationException {
+<span class="nc" id="L422">    return new FileDescriptorWithContent(getProjectId(), yailFileName(),</span>
+<span class="nc" id="L423">        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(true),</span>
+<span class="nc" id="L424">            packageNameFromPath(getFileId())));</span>
+  }
+
+  /**
+   * Converts a source file path (e.g.,
+   * src/com/gmail/username/project1/Form.extension) into a package
+   * name (e.g., com.gmail.username.project1.Form)
+   * @param path the path to convert.
+   * @return a dot separated package name.
+   */
+  private static String packageNameFromPath(String path) {
+<span class="nc" id="L435">    path = path.replaceFirst(&quot;src/&quot;, &quot;&quot;);</span>
+<span class="nc" id="L436">    int extensionIndex = path.lastIndexOf(&quot;.&quot;);</span>
+<span class="nc bnc" id="L437" title="All 2 branches missed.">    if (extensionIndex != -1) {</span>
+<span class="nc" id="L438">      path = path.substring(0, extensionIndex);</span>
+    }
+<span class="nc" id="L440">    return path.replaceAll(&quot;/&quot;, &quot;.&quot;);</span>
+  }
+
+  @Override
+  public void onSave() {
+    // Nothing to do after blocks are saved.
+<span class="nc" id="L446">  }</span>
+
+  public static String getComponentInfo(String typeName) {
+<span class="nc" id="L449">    return SimpleComponentDatabase.getInstance().getTypeDescription(typeName);</span>
+  }
+
+  public static String getComponentsJSONString(long projectId) {
+<span class="nc" id="L453">    return SimpleComponentDatabase.getInstance(projectId).getComponentsJSONString();</span>
+  }
+
+  public static String getComponentInstanceTypeName(String formName, String instanceName) {
+      //use form name to get blocks editor
+<span class="nc" id="L458">      YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);</span>
+      //get type name from form editor
+<span class="nc" id="L460">      return blocksEditor.myFormEditor.getComponentInstanceTypeName(instanceName);</span>
+  }
+
+  public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName){
+      //use form name to get blocks editor
+<span class="nc" id="L465">      YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);</span>
+<span class="nc" id="L466">      Map&lt;String, MockComponent&gt; componentMap = blocksEditor.myFormEditor.getComponents();</span>
+<span class="nc bnc" id="L467" title="All 2 branches missed.">      for (String key : componentMap.keySet()) {</span>
+<span class="nc" id="L468">        OdeLog.log(key);</span>
+<span class="nc" id="L469">      }</span>
+<span class="nc" id="L470">      MockComponent mockComponent = componentMap.get(instanceName);</span>
+<span class="nc" id="L471">      return mockComponent.getPropertyValue(propertyName);</span>
+  }
+
+  public void addComponent(String typeName, String instanceName, String uuid) {
+<span class="nc bnc" id="L475" title="All 2 branches missed.">    if (componentUuids.add(uuid)) {</span>
+<span class="nc" id="L476">      blocksArea.addComponent(uuid, instanceName, typeName);</span>
+    }
+<span class="nc" id="L478">  }</span>
+
+  public void removeComponent(String typeName, String instanceName, String uuid) {
+<span class="nc bnc" id="L481" title="All 2 branches missed.">    if (componentUuids.remove(uuid)) {</span>
+<span class="nc" id="L482">      blocksArea.removeComponent(uuid);</span>
+    }
+<span class="nc" id="L484">  }</span>
+
+  public void renameComponent(String oldName, String newName, String uuid) {
+<span class="nc" id="L487">    blocksArea.renameComponent(uuid, oldName, newName);</span>
+<span class="nc" id="L488">  }</span>
+
+  public void showComponentBlocks(String instanceName) {
+<span class="nc" id="L491">    String instanceDrawer = &quot;component_&quot; + instanceName;</span>
+<span class="nc bnc" id="L492" title="All 4 branches missed.">    if (selectedDrawer == null || !blocksArea.drawerShowing()</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">        || !selectedDrawer.equals(instanceDrawer)) {</span>
+<span class="nc" id="L494">      blocksArea.showComponentBlocks(instanceName);</span>
+<span class="nc" id="L495">      selectedDrawer = instanceDrawer;</span>
+    } else {
+<span class="nc" id="L497">      blocksArea.hideDrawer();</span>
+<span class="nc" id="L498">      selectedDrawer = null;</span>
+    }
+<span class="nc" id="L500">  }</span>
+
+  public void hideComponentBlocks() {
+<span class="nc" id="L503">    blocksArea.hideDrawer();</span>
+<span class="nc" id="L504">    selectedDrawer = null;</span>
+<span class="nc" id="L505">  }</span>
+
+  public void showBuiltinBlocks(String drawerName) {
+<span class="nc" id="L508">    OdeLog.log(&quot;Showing built-in drawer &quot; + drawerName);</span>
+<span class="nc" id="L509">    String builtinDrawer = &quot;builtin_&quot; + drawerName;</span>
+<span class="nc bnc" id="L510" title="All 4 branches missed.">    if (selectedDrawer == null || !blocksArea.drawerShowing()</span>
+<span class="nc bnc" id="L511" title="All 2 branches missed.">        || !selectedDrawer.equals(builtinDrawer)) {</span>
+<span class="nc" id="L512">      blocksArea.showBuiltinBlocks(drawerName);</span>
+<span class="nc" id="L513">      selectedDrawer = builtinDrawer;</span>
+    } else {
+<span class="nc" id="L515">      blocksArea.hideDrawer();</span>
+<span class="nc" id="L516">      selectedDrawer = null;</span>
+    }
+<span class="nc" id="L518">  }</span>
+
+  public void showGenericBlocks(String drawerName) {
+<span class="nc" id="L521">    OdeLog.log(&quot;Showing generic drawer &quot; + drawerName);</span>
+<span class="nc" id="L522">    String genericDrawer = &quot;generic_&quot; + drawerName;</span>
+<span class="nc bnc" id="L523" title="All 4 branches missed.">    if (selectedDrawer == null || !blocksArea.drawerShowing()</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">        || !selectedDrawer.equals(genericDrawer)) {</span>
+<span class="nc" id="L525">      blocksArea.showGenericBlocks(drawerName);</span>
+<span class="nc" id="L526">      selectedDrawer = genericDrawer;</span>
+    } else {
+<span class="nc" id="L528">      blocksArea.hideDrawer();</span>
+<span class="nc" id="L529">      selectedDrawer = null;</span>
+    }
+<span class="nc" id="L531">  }</span>
+
+  public void hideBuiltinBlocks() {
+<span class="nc" id="L534">    blocksArea.hideDrawer();</span>
+<span class="nc" id="L535">  }</span>
+
+  public MockForm getForm() {
+<span class="nc" id="L538">    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;</span>
+<span class="nc" id="L539">    YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(blocksNode.getFormName());</span>
+<span class="nc bnc" id="L540" title="All 2 branches missed.">    if (myFormEditor != null) {</span>
+<span class="nc" id="L541">      return myFormEditor.getForm();</span>
+    } else {
+<span class="nc" id="L543">      return null;</span>
+    }
+  }
+
+  private String yailFileName() {
+<span class="nc" id="L548">    String fileId = getFileId();</span>
+<span class="nc" id="L549">    return fileId.replace(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION,</span>
+        YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION);
+  }
+
+  // FormChangeListener implementation
+  // Note: our companion YaFormEditor adds us as a listener on the form
+
+  /*
+   * @see com.google.appinventor.client.editor.simple.components.FormChangeListener#
+   * onComponentPropertyChanged
+   * (com.google.appinventor.client.editor.simple.components.MockComponent, java.lang.String,
+   * java.lang.String)
+   */
+  @Override
+  public void onComponentPropertyChanged(
+      MockComponent component, String propertyName, String propertyValue) {
+    // nothing to do here
+<span class="nc" id="L566">  }</span>
+
+  /*
+   * @see
+   * com.google.appinventor.client.editor.simple.components.FormChangeListener#onComponentRemoved
+   * (com.google.appinventor.client.editor.simple.components.MockComponent, boolean)
+   */
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+<span class="nc bnc" id="L575" title="All 2 branches missed.">    if (permanentlyDeleted) {</span>
+<span class="nc" id="L576">      removeComponent(component.getType(), component.getName(), component.getUuid());</span>
+<span class="nc bnc" id="L577" title="All 2 branches missed.">      if (loadComplete) {</span>
+<span class="nc" id="L578">        updateSourceStructureExplorer();</span>
+      }
+    }
+<span class="nc" id="L581">  }</span>
+
+  /*
+   * @see
+   * com.google.appinventor.client.editor.simple.components.FormChangeListener#onComponentAdded
+   * (com.google.appinventor.client.editor.simple.components.MockComponent)
+   */
+  @Override
+  public void onComponentAdded(MockComponent component) {
+<span class="nc" id="L590">    addComponent(component.getType(), component.getName(), component.getUuid());</span>
+<span class="nc bnc" id="L591" title="All 2 branches missed.">    if (loadComplete) {</span>
+      // Update source structure panel
+<span class="nc" id="L593">      updateSourceStructureExplorer();</span>
+    }
+<span class="nc" id="L595">  }</span>
+
+  /*
+   * @see
+   * com.google.appinventor.client.editor.simple.components.FormChangeListener#onComponentRenamed
+   * (com.google.appinventor.client.editor.simple.components.MockComponent, java.lang.String)
+   */
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+<span class="nc" id="L604">    renameComponent(oldName, component.getName(), component.getUuid());</span>
+<span class="nc bnc" id="L605" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc" id="L606">      updateSourceStructureExplorer();</span>
+      // renaming could potentially confuse an open drawer so close just in case
+<span class="nc" id="L608">      hideComponentBlocks();</span>
+<span class="nc" id="L609">      selectedDrawer = null;</span>
+    }
+<span class="nc" id="L611">  }</span>
+
+  private void updateSourceStructureExplorer() {
+<span class="nc" id="L614">    MockForm form = getForm();</span>
+<span class="nc bnc" id="L615" title="All 2 branches missed.">    if (form != null) {</span>
+<span class="nc" id="L616">      updateBlocksTree(form, form.getLastSelectedComponent().getSourceStructureExplorerItem());</span>
+    }
+<span class="nc" id="L618">  }</span>
+
+  /*
+   * @see com.google.appinventor.client.editor.simple.components.FormChangeListener#
+   * onComponentSelectionChange
+   * (com.google.appinventor.client.editor.simple.components.MockComponent, boolean)
+   */
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+    // not relevant for blocks editor - this happens on clicks in the mock form areas
+<span class="nc" id="L628">  }</span>
+
+  // BlockDrawerSelectionListener implementation
+
+  /*
+   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+   * onBlockDrawerSelected(java.lang.String)
+   */
+  @Override
+  public void onBuiltinDrawerSelected(String drawerName) {
+    // Only do something if we are the current file editor
+<span class="nc bnc" id="L639" title="All 2 branches missed.">    if (Ode.getInstance().getCurrentFileEditor() == this) {</span>
+<span class="nc" id="L640">      showBuiltinBlocks(drawerName);</span>
+    }
+<span class="nc" id="L642">  }</span>
+
+  /*
+   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+   * onBlockDrawerSelected(java.lang.String)
+   */
+  @Override
+  public void onGenericDrawerSelected(String drawerName) {
+    // Only do something if we are the current file editor
+<span class="nc bnc" id="L651" title="All 2 branches missed.">    if (Ode.getInstance().getCurrentFileEditor() == this) {</span>
+<span class="nc" id="L652">      showGenericBlocks(drawerName);</span>
+    }
+<span class="nc" id="L654">  }</span>
+
+  /*
+   * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
+   */
+  @Override
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+<span class="nc" id="L661">    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);</span>
+<span class="nc" id="L662">  }</span>
+
+  /*
+   * Perform a Hard Reset of the Emulator
+   */
+  public void hardReset() {
+<span class="nc" id="L668">    blocksArea.hardReset();</span>
+<span class="nc" id="L669">  }</span>
+
+  /*
+   * Perform a hideChaff of Blockly
+   */
+<span class="nc" id="L674">  public void hideChaff () {blocksArea.hideChaff();}</span>
+
+  @Override
+  public void resize() {
+<span class="nc" id="L678">    blocksArea.resize();</span>
+<span class="nc" id="L679">  }</span>
+
+  // Static Function. Find the associated editor for formName and
+  // set its &quot;damaged&quot; bit. This will cause the editor manager's scheduleAutoSave
+  // method to ignore this blocks file and not save it out.
+
+  public static void setBlocksDamaged(String formName) {
+<span class="nc" id="L686">    YaBlocksEditor editor = formToBlocksEditor.get(formName);</span>
+<span class="nc bnc" id="L687" title="All 2 branches missed.">    if (editor != null) {</span>
+<span class="nc" id="L688">      editor.setDamaged(true);</span>
+    }
+<span class="nc" id="L690">  }</span>
+
+  /*
+   * Trigger a Companion Update
+   */
+  @Override
+  public void updateCompanion() {
+<span class="nc" id="L697">    blocksArea.updateCompanion();</span>
+<span class="nc" id="L698">  }</span>
+
+  /*
+   * [lyn, 2014/10/28] Added for accessing current form json from BlocklyPanel
+   * Encodes the associated form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
+   * to send the form info to the blockly world during code generation.
+   */
+  protected String encodeFormAsJsonString(boolean forYail) {
+<span class="nc" id="L706">    return myFormEditor.encodeFormAsJsonString(forYail);</span>
+  }
+
+  @Override
+  public void onComponentTypeAdded(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L711">    blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());</span>
+<span class="nc" id="L712">    blocksArea.verifyAllBlocks();</span>
+<span class="nc" id="L713">  }</span>
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L717">    return true;</span>
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map&lt;String, String&gt; componentTypes) {
+<span class="nc" id="L722">    blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());</span>
+<span class="nc" id="L723">    blocksArea.verifyAllBlocks();</span>
+<span class="nc" id="L724">  }</span>
+
+  @Override
+  public void onResetDatabase() {
+<span class="nc" id="L728">    blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());</span>
+<span class="nc" id="L729">    blocksArea.verifyAllBlocks();</span>
+<span class="nc" id="L730">  }</span>
+
+  @Override
+  public void makeActiveWorkspace() {
+<span class="nc" id="L734">    blocksArea.makeActive();</span>
+<span class="nc" id="L735">  }</span>
+
+  @Override
+  public void onProjectLoaded(Project project) {
+<span class="nc bnc" id="L739" title="All 2 branches missed.">    for (ProjectNode node : project.getRootNode().getAllSourceNodes()) {</span>
+<span class="nc bnc" id="L740" title="All 2 branches missed.">      if (node instanceof YoungAndroidFormNode) {</span>
+<span class="nc" id="L741">        blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());</span>
+      }
+<span class="nc" id="L743">    }</span>
+<span class="nc" id="L744">    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode())</span>
+<span class="nc" id="L745">        .getAssetsFolder();</span>
+<span class="nc bnc" id="L746" title="All 2 branches missed.">    for (ProjectNode node : assetsFolder.getChildren()) {</span>
+<span class="nc" id="L747">      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());</span>
+<span class="nc" id="L748">    }</span>
+<span class="nc" id="L749">  }</span>
+
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+<span class="nc bnc" id="L753" title="All 2 branches missed.">    if (node instanceof YoungAndroidSourceNode) {</span>
+<span class="nc" id="L754">      blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());</span>
+<span class="nc bnc" id="L755" title="All 2 branches missed.">    } else if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L756">      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());</span>
+    }
+<span class="nc" id="L758">  }</span>
+
+
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+<span class="nc bnc" id="L763" title="All 2 branches missed.">    if (node instanceof YoungAndroidSourceNode) {</span>
+<span class="nc" id="L764">      blocksArea.removeScreen(((YoungAndroidSourceNode) node).getFormName());</span>
+<span class="nc bnc" id="L765" title="All 2 branches missed.">    } else if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L766">      blocksArea.removeAsset(((YoungAndroidAssetNode) node).getName());</span>
+    }
+<span class="nc" id="L768">  }</span>
+
+  private static native void set(JavaScriptObject jso, String key, String value)/*-{
+    jso[key] = value;
+  }-*/;
+
+  /**
+   * Converts a Java Map from String to String into a JSON object with the same contents.
+   * @param javaMap The source mapping in Java
+   * @return A JSON object with the same key-value mapping as {@code javaMap}
+   */
+  public static JavaScriptObject toJSO(Map&lt;String, String&gt; javaMap) {
+<span class="nc" id="L780">    JavaScriptObject jso = JavaScriptObject.createObject();</span>
+<span class="nc bnc" id="L781" title="All 2 branches missed.">    for (Map.Entry&lt;String, String&gt; entry : javaMap.entrySet()) {</span>
+<span class="nc" id="L782">      set(jso, entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L783">    }</span>
+<span class="nc" id="L784">    return jso;</span>
+  }
+
+  /**
+   *
+   * @param array
+   * @return
+   */
+  public static JsArrayString toJsArrayString(JSONArray array) {
+<span class="nc" id="L793">    JsArrayString result = (JsArrayString) JsArrayString.createArray();</span>
+<span class="nc bnc" id="L794" title="All 2 branches missed.">    for (JSONValue v : array.getElements()) {</span>
+<span class="nc" id="L795">      result.push(v.asString().getString());</span>
+<span class="nc" id="L796">    }</span>
+<span class="nc" id="L797">    return result;</span>
+  }
+
+  public native void pasteFromJSNI(JavaScriptObject componentSubstitutionMap, JsArrayString blocks)/*-{
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.setGroup(true);
+    }
+    blocks.forEach(function(blockXml) {
+      var dom = Blockly.Xml.textToDom(blockXml);
+      var mutations = dom.getElementsByTagName('mutation');
+      for (var i = 0; i &lt; mutations.length; i++) {
+        var mutation = mutations[i];
+        var instanceName = mutation.getAttribute('instance_name');
+        if (instanceName &amp;&amp; instanceName in componentSubstitutionMap) {
+          mutation.setAttribute('instance_name', componentSubstitutionMap[instanceName]);
+        }
+      }
+      var fields = dom.getElementsByTagName('field');
+      for (var i = 0; i &lt; fields.length; i++) {
+        var field = fields[i];
+        if (field.getAttribute('name') === 'COMPONENT_SELECTOR') {
+          if (field.textContent in componentSubstitutionMap) {
+            field.firstChild.nodeValue = componentSubstitutionMap[field.textContent];
+          }
+        }
+      }
+      try {
+        var block = Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
+        var blockX = parseInt(dom.firstElementChild.getAttribute('x'), 10);
+        var blockY = parseInt(dom.firstElementChild.getAttribute('y'), 10);
+        if (!isNaN(blockX) &amp;&amp; !isNaN(blockY)) {
+          if (workspace.RTL) {
+            blockX = -blockX;
+          }
+          // Offset block until not clobbering another block and not in connection
+          // distance with neighbouring blocks.
+          do {
+            var collide = false;
+            var allBlocks = workspace.getAllBlocks();
+            for (var i = 0, otherBlock; otherBlock = allBlocks[i]; i++) {
+              var otherXY = otherBlock.getRelativeToSurfaceXY();
+              if (Math.abs(blockX - otherXY.x) &lt;= 1 &amp;&amp;
+                Math.abs(blockY - otherXY.y) &lt;= 1) {
+                collide = true;
+                break;
+              }
+            }
+            if (!collide) {
+              // Check for blocks in snap range to any of its connections.
+              var connections = block.getConnections_(false);
+              for (var i = 0, connection; connection = connections[i]; i++) {
+                var neighbour = connection.closest(Blockly.SNAP_RADIUS,
+                  new goog.math.Coordinate(blockX, blockY));
+                if (neighbour.connection) {
+                  collide = true;
+                  break;
+                }
+              }
+            }
+            if (collide) {
+              if (workspace.RTL) {
+                blockX -= Blockly.SNAP_RADIUS;
+              } else {
+                blockX += Blockly.SNAP_RADIUS;
+              }
+              blockY += Blockly.SNAP_RADIUS * 2;
+            }
+          } while (collide);
+          block.moveBy(blockX, blockY);
+        }
+        if (workspace.rendered) {
+          block.initSvg();
+          workspace.requestRender(block);
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    });
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.setGroup(false);
+    }
+  }-*/;
+
+  public native JsArrayString getTopBlocksForComponentByName(String name)/*-{
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    var topBlocks = workspace.getTopBlocks();
+    var result = [];
+    for (var i = 0, block; block = topBlocks[i]; i++) {
+      if (block.instanceName === name) {
+        result.push('&lt;xml&gt;' + Blockly.Xml.domToText(Blockly.Xml.blockToDomWithXY(block)) + '&lt;/xml&gt;');
+      }
+    }
+    return result;
+  }-*/;
+
+  public static native void resendAssetsAndExtensions()/*-{
+    if (top.ReplState &amp;&amp; (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
+      Blockly.ReplMgr.resendAssetsAndExtensions();
+    }
+  }-*/;
+
+  public static native void resendExtensionsList()/*-{
+    if (top.ReplState &amp;&amp; top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
+      Blockly.ReplMgr.loadExtensions();
+    }
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidListViewAddDataPropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">YoungAndroidListViewAddDataPropertyEditor.java</span></div><h1>YoungAndroidListViewAddDataPropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
+
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+
+import com.google.appinventor.client.explorer.project.Project;
+
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
+
+import com.google.appinventor.components.common.ComponentConstants;
+
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+
+import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.SelectionCell;
+import com.google.gwt.cell.client.TextInputCell;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
+
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import com.google.gwt.view.client.ListDataProvider;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * AddData property in the ListView component. It is used to add/delete data
+ * for different layout types of ListView.
+ */
+
+public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
+
+  private Button addData;
+
+  private int layout;
+  private List&lt;JSONObject&gt; items;
+  private List&lt;JSONObject&gt; itemsCopy;
+
+  private YaFormEditor editor;
+
+<span class="nc" id="L69">  public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {</span>
+<span class="nc" id="L70">    items = new ArrayList&lt;JSONObject&gt;();</span>
+<span class="nc" id="L71">    itemsCopy = new ArrayList&lt;JSONObject&gt;();</span>
+<span class="nc" id="L72">    addData = new Button(&quot;Click to Add/Delete Data&quot;);</span>
+<span class="nc" id="L73">    this.editor = editor;</span>
+
+<span class="nc" id="L75">    createButton();</span>
+<span class="nc" id="L76">  }</span>
+
+  @Override
+  protected void updateValue() {
+<span class="nc" id="L80">    String value = property.getValue();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    JSONValue jsonValue = value.isEmpty() ? null : JSONParser.parseStrict(value);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">    if (jsonValue != null) {</span>
+<span class="nc" id="L83">      JSONArray array = jsonValue.isArray();</span>
+<span class="nc" id="L84">      items.clear();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      for (int i = 0; i &lt; array.size(); ++i) {</span>
+<span class="nc" id="L86">        items.add(i, array.get(i).isObject());</span>
+      }
+    }
+<span class="nc" id="L89">  }</span>
+
+  private void createButton() {
+<span class="nc" id="L92">    addData.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+<span class="nc" id="L95">        ClickHandle ch = new ClickHandle(layout);</span>
+<span class="nc" id="L96">        ch.center();</span>
+<span class="nc" id="L97">        ch.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L98">        ch.show();</span>
+<span class="nc" id="L99">      }</span>
+    });
+<span class="nc" id="L101">    initWidget(addData);</span>
+<span class="nc" id="L102">  }</span>
+
+  /**
+   * set layout type of ListView so as to display contents AddData dialog box accordingly
+   */
+  public void setLayout(int layout) {
+<span class="nc" id="L108">    this.layout = layout;</span>
+<span class="nc" id="L109">  }</span>
+
+  /**
+   * class to display data table and add/delete data for AddData property
+   */
+  class ClickHandle extends DialogBox {
+    VerticalPanel verticalPanel;
+    HorizontalPanel actionButtons;
+    Button add, save, cancel;
+    CellTable&lt;JSONObject&gt; table;
+    JSONArray rows;
+
+    ListDataProvider&lt;JSONObject&gt; model;
+
+    Column&lt;JSONObject, String&gt; createDeleteButton() {
+<span class="nc" id="L124">      Column&lt;JSONObject, String&gt; column = new Column&lt;JSONObject, String&gt;(new ButtonCell()) {</span>
+        @Override
+        public String getValue(JSONObject jsonObject) {
+<span class="nc" id="L127">          return &quot;DELETE&quot;;</span>
+        }
+      };
+<span class="nc" id="L130">      column.setFieldUpdater(new FieldUpdater&lt;JSONObject, String&gt;() {</span>
+        @Override
+        public void update(int i, JSONObject jsonObject, String s) {
+<span class="nc" id="L133">          itemsCopy.remove(i);</span>
+<span class="nc" id="L134">          model.refresh();</span>
+<span class="nc" id="L135">          table.setRowCount(0);</span>
+<span class="nc" id="L136">          table.setRowData(0, itemsCopy);</span>
+<span class="nc" id="L137">        }</span>
+      });
+<span class="nc" id="L139">      return column;</span>
+    }
+
+    Column&lt;JSONObject, String&gt; createTextBoxes(final String columnKey) {
+<span class="nc" id="L143">      Column&lt;JSONObject, String&gt; column = new Column&lt;JSONObject, String&gt;(new TextInputCell()) {</span>
+        @Override
+        public String getValue(JSONObject jsonObject) {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">          if (jsonObject.containsKey(columnKey)) {</span>
+<span class="nc" id="L147">            JSONString stringVal = (JSONString)jsonObject.get(columnKey);</span>
+<span class="nc" id="L148">            return (stringVal.stringValue());</span>
+          } else {
+<span class="nc" id="L150">            jsonObject.put(columnKey, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L151">            return &quot;&quot;;</span>
+          }
+        }
+      };
+<span class="nc" id="L155">      column.setFieldUpdater(new FieldUpdater&lt;JSONObject, String&gt;() {</span>
+        @Override
+        public void update(int i, JSONObject jsonObject, String s) {
+<span class="nc" id="L158">          jsonObject.put(columnKey, new JSONString(s));</span>
+<span class="nc" id="L159">        }</span>
+      });
+<span class="nc" id="L161">      return column;</span>
+    }
+
+    Column&lt;JSONObject, String&gt; createImageSelectionDropDown(final String columnKey) {
+<span class="nc" id="L165">      Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());</span>
+<span class="nc" id="L166">      YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();</span>
+<span class="nc" id="L167">      List&lt;String&gt; choices = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L168">      choices.add(0, &quot;None&quot;);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      if (assetsFolder != null) {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        for (ProjectNode node : assetsFolder.getChildren()) {</span>
+<span class="nc" id="L171">          choices.add(node.getName());</span>
+<span class="nc" id="L172">        }</span>
+      }
+<span class="nc" id="L174">      Column&lt;JSONObject, String&gt; column = new Column&lt;JSONObject, String&gt;(new SelectionCell(choices)) {</span>
+        @Override
+        public String getValue(JSONObject jsonObject) {
+<span class="nc bnc" id="L177" title="All 2 branches missed.">          if (jsonObject.containsKey(columnKey)) {</span>
+<span class="nc" id="L178">            JSONString stringVal = (JSONString)jsonObject.get(columnKey);</span>
+<span class="nc" id="L179">            return (stringVal.stringValue());</span>
+          } else {
+<span class="nc" id="L181">            jsonObject.put(columnKey, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L182">            return &quot;&quot;;</span>
+          }
+        }
+      };
+<span class="nc" id="L186">      column.setFieldUpdater(new FieldUpdater&lt;JSONObject, String&gt;() {</span>
+        @Override
+        public void update(int i, JSONObject jsonObject, String s) {
+<span class="nc" id="L189">          jsonObject.put(columnKey, new JSONString(s));</span>
+<span class="nc" id="L190">        }</span>
+      });
+<span class="nc" id="L192">      return column;</span>
+    }
+
+<span class="nc" id="L195">    ClickHandle(final int layoutValue) {</span>
+
+<span class="nc" id="L197">      verticalPanel = new VerticalPanel();</span>
+<span class="nc" id="L198">      actionButtons = new HorizontalPanel();</span>
+<span class="nc" id="L199">      itemsCopy = new ArrayList&lt;JSONObject&gt;();</span>
+<span class="nc" id="L200">      model = new ListDataProvider(itemsCopy);</span>
+<span class="nc" id="L201">      table = new CellTable&lt;JSONObject&gt;();</span>
+<span class="nc" id="L202">      rows = new JSONArray();</span>
+<span class="nc" id="L203">      add  = new Button(&quot;Click to Add Row Data&quot;);</span>
+<span class="nc" id="L204">      save = new Button(&quot;SAVE&quot;);</span>
+<span class="nc" id="L205">      cancel = new Button(&quot;CANCEL&quot;);</span>
+
+<span class="nc" id="L207">      setText(MESSAGES.listDataAddDataTitle());</span>
+
+<span class="nc bnc" id="L209" title="All 2 branches missed.">      for (int i = 0; i &lt; items.size(); ++i) {</span>
+<span class="nc" id="L210">        itemsCopy.add(i, items.get(i));</span>
+      }
+
+<span class="nc" id="L213">      table.setRowData(itemsCopy);</span>
+<span class="nc" id="L214">      table.setEmptyTableWidget(new Label(&quot;No row data available yet!&quot;));</span>
+<span class="nc" id="L215">      model.addDataDisplay(table);</span>
+
+      /*
+       * create table columns and type of each column according to the type of ListView layout
+       */
+<span class="nc bnc" id="L220" title="All 2 branches missed.">      if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {</span>
+<span class="nc" id="L221">        table.addColumn(createTextBoxes(&quot;Text1&quot;), MESSAGES.listDataMainTextHeader());</span>
+<span class="nc bnc" id="L222" title="All 4 branches missed.">      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||</span>
+            layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+<span class="nc" id="L224">        table.addColumn(createTextBoxes(&quot;Text1&quot;), MESSAGES.listDataMainTextHeader());</span>
+<span class="nc" id="L225">        table.addColumn(createTextBoxes(&quot;Text2&quot;), MESSAGES.listDataDetailTextHeader());</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {</span>
+<span class="nc" id="L227">        table.addColumn(createTextBoxes(&quot;Text1&quot;), MESSAGES.listDataMainTextHeader());</span>
+<span class="nc" id="L228">        table.addColumn(createImageSelectionDropDown(&quot;Image&quot;), MESSAGES.listDataImageHeader());</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {</span>
+<span class="nc" id="L230">        table.addColumn(createTextBoxes(&quot;Text1&quot;), MESSAGES.listDataMainTextHeader());</span>
+<span class="nc" id="L231">        table.addColumn(createTextBoxes(&quot;Text2&quot;), MESSAGES.listDataDetailTextHeader());</span>
+<span class="nc" id="L232">        table.addColumn(createImageSelectionDropDown(&quot;Image&quot;), MESSAGES.listDataImageHeader());</span>
+      }
+
+<span class="nc" id="L235">      table.addColumn(createDeleteButton());</span>
+
+<span class="nc" id="L237">      add.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent clickEvent) {
+          /*
+           * creates a row with default data for the corresponding layout type
+           */
+<span class="nc" id="L243">          JSONObject data = new JSONObject();</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">          if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {</span>
+<span class="nc" id="L245">            data.put(&quot;Text1&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc bnc" id="L246" title="All 4 branches missed.">          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||</span>
+                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+<span class="nc" id="L248">            data.put(&quot;Text1&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L249">            data.put(&quot;Text2&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {</span>
+<span class="nc" id="L251">            data.put(&quot;Text1&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L252">            data.put(&quot;Image&quot;, new JSONString(&quot;None&quot;));</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {</span>
+<span class="nc" id="L254">            data.put(&quot;Text1&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L255">            data.put(&quot;Text2&quot;, new JSONString(&quot;&quot;));</span>
+<span class="nc" id="L256">            data.put(&quot;Image&quot;, new JSONString(&quot;None&quot;));</span>
+          }
+<span class="nc" id="L258">          itemsCopy.add(data);</span>
+<span class="nc" id="L259">          table.setRowData(itemsCopy);</span>
+<span class="nc" id="L260">        }</span>
+      });
+
+      /*
+       * save the data for the corresponding layout type
+       */
+<span class="nc" id="L266">      save.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent clickEvent) {
+<span class="nc" id="L269">          items.clear();</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">          for (int i = 0; i &lt; itemsCopy.size(); ++i) {</span>
+<span class="nc" id="L271">            JSONObject obj = itemsCopy.get(i);</span>
+<span class="nc bnc" id="L272" title="All 4 branches missed.">            if ((layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT ||</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) &amp;&amp; obj.containsKey(&quot;Text2&quot;)) {</span>
+<span class="nc" id="L274">              obj.put(&quot;Text2&quot;, null);</span>
+            }
+<span class="nc bnc" id="L276" title="All 4 branches missed.">            if ((layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) &amp;&amp; obj.containsKey(&quot;Image&quot;)) {</span>
+<span class="nc" id="L278">              obj.put(&quot;Image&quot;, null);</span>
+            }
+<span class="nc" id="L280">            rows.set(i, obj);</span>
+<span class="nc" id="L281">            items.add(i, obj);</span>
+          }
+<span class="nc" id="L283">          property.setValue(rows.toString());</span>
+<span class="nc" id="L284">          ClickHandle.this.hide();</span>
+<span class="nc" id="L285">        }</span>
+      });
+
+      /*
+       * discards changes in the data for the corresponding layout type
+       */
+<span class="nc" id="L291">      cancel.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent clickEvent) {
+<span class="nc" id="L294">          final Cancel cancel = new Cancel();</span>
+<span class="nc" id="L295">          cancel.center();</span>
+<span class="nc" id="L296">          cancel.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L297">          cancel.show();</span>
+<span class="nc" id="L298">          cancel.yes.addClickHandler(new ClickHandler() {</span>
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+<span class="nc" id="L301">              itemsCopy.clear();</span>
+<span class="nc" id="L302">              cancel.hide();</span>
+<span class="nc" id="L303">              ClickHandle.this.hide();</span>
+<span class="nc" id="L304">            }</span>
+          });
+<span class="nc" id="L306">          cancel.no.addClickHandler(new ClickHandler() {</span>
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+<span class="nc" id="L309">              cancel.hide();</span>
+<span class="nc" id="L310">            }</span>
+          });
+<span class="nc" id="L312">        }</span>
+      });
+
+<span class="nc" id="L315">      verticalPanel.add(table);</span>
+<span class="nc" id="L316">      verticalPanel.add(add);</span>
+<span class="nc" id="L317">      actionButtons.add(save);</span>
+<span class="nc" id="L318">      actionButtons.add(cancel);</span>
+<span class="nc" id="L319">      actionButtons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);</span>
+<span class="nc" id="L320">      verticalPanel.add(actionButtons);</span>
+<span class="nc" id="L321">      setWidget(verticalPanel);</span>
+<span class="nc" id="L322">    }</span>
+  }
+
+  class Cancel extends DialogBox {
+    VerticalPanel verticalPanel;
+    HorizontalPanel buttonPanel;
+    Button yes, no;
+
+<span class="nc" id="L330">    Cancel(){</span>
+<span class="nc" id="L331">      verticalPanel = new VerticalPanel();</span>
+<span class="nc" id="L332">      buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L333">      setText(MESSAGES.cancelButton());</span>
+<span class="nc" id="L334">      verticalPanel.add(new Label(MESSAGES.listDataConcelConfirm()));</span>
+<span class="nc" id="L335">      yes = new Button(MESSAGES.okButton());</span>
+<span class="nc" id="L336">      no = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L337">      buttonPanel.add(yes);</span>
+<span class="nc" id="L338">      buttonPanel.add(no);</span>
+<span class="nc" id="L339">      buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);</span>
+<span class="nc" id="L340">      verticalPanel.add(buttonPanel);</span>
+<span class="nc" id="L341">      setWidget(verticalPanel);</span>
+<span class="nc" id="L342">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

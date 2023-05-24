@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Toolbar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets</a> &gt; <span class="el_source">Toolbar.java</span></div><h1>Toolbar.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A Toolbar is a horizontal arrangement of buttons (which can be a mixture
+ * of regular and drop-down buttons). There is a left-aligned group of buttons
+ * and a right-aligned group.
+ *
+ */
+public class Toolbar extends Composite {
+  /**
+   * A Toolbar item has a widgetName that is unique over all items in
+   * the toolbar, a caption (displayed to the user)
+   * and a command to run when the item is selected.
+   */
+  public static class ToolbarItem {
+    private final String widgetName;
+    private final String caption;
+    private final Command command;
+
+<span class="nc" id="L36">    public ToolbarItem(String widgetName, String caption, Command command) {</span>
+<span class="nc" id="L37">      this.widgetName = widgetName;</span>
+<span class="nc" id="L38">      this.caption = caption;</span>
+<span class="nc" id="L39">      this.command = command;</span>
+<span class="nc" id="L40">    }</span>
+  }
+  private static final String DROP_DOWN_TRIANGLE = &quot;\u25BE&quot;;
+
+  // All mappings are widget name to widget.
+  
+  // Regular button widgets
+  private final Map&lt;String, TextButton&gt; buttonMap;
+  // Drop-down button widgets
+  private final Map&lt;String, DropDownButton&gt; dropDownButtonMap;
+
+
+  private final HorizontalPanel leftButtons;
+  private final HorizontalPanel rightButtons;
+
+  /**
+   * Initializes and assembles all commands into buttons in the toolbar.
+   */
+<span class="nc" id="L58">  public Toolbar() {</span>
+<span class="nc" id="L59">    buttonMap = new HashMap&lt;String, TextButton&gt;();</span>
+<span class="nc" id="L60">    dropDownButtonMap = new HashMap&lt;String, DropDownButton&gt;();</span>
+
+<span class="nc" id="L62">    leftButtons = new HorizontalPanel();</span>
+<span class="nc" id="L63">    leftButtons.setSpacing(4);</span>
+
+<span class="nc" id="L65">    rightButtons = new HorizontalPanel();</span>
+<span class="nc" id="L66">    rightButtons.setSpacing(4);</span>
+<span class="nc" id="L67">    rightButtons.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);</span>
+
+<span class="nc" id="L69">    HorizontalPanel toolbar = new HorizontalPanel();</span>
+<span class="nc" id="L70">    toolbar.add(leftButtons);  // this nesting keeps buttons left aligned</span>
+<span class="nc" id="L71">    toolbar.add(rightButtons);</span>
+<span class="nc" id="L72">    toolbar.setCellHorizontalAlignment(rightButtons, HorizontalPanel.ALIGN_RIGHT);</span>
+<span class="nc" id="L73">    toolbar.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L74">    toolbar.setStylePrimaryName(&quot;ya-Toolbar&quot;);</span>
+
+<span class="nc" id="L76">    initWidget(toolbar);</span>
+<span class="nc" id="L77">  }</span>
+
+  /**
+   * Sets enabled for button
+   *
+   * @param widgetName name of button
+   * @param enabled enabled status
+   */
+  public void setButtonEnabled(String widgetName, boolean enabled) {
+<span class="nc" id="L86">    buttonMap.get(widgetName).setEnabled(enabled);</span>
+<span class="nc" id="L87">  }</span>
+
+  /**
+   * Sets text for button
+   *
+   * @param widgetName name of button
+   * @param text text of button
+   */
+  public void setButtonText(String widgetName, String text) {
+<span class="nc" id="L96">    buttonMap.get(widgetName).setText(text);</span>
+<span class="nc" id="L97">  }</span>
+
+  /**
+   * Sets button visibility
+   *
+   * @param widgetName name of button
+   * @param enabled enabled status
+   */
+  public void setButtonVisible(String widgetName, boolean enabled) {
+<span class="nc" id="L106">    buttonMap.get(widgetName).setVisible(enabled);</span>
+<span class="nc" id="L107">  }</span>
+
+  /**
+   * Sets enabled for drop down button
+   *
+   * @param widgetName name of button
+   * @param enabled enabled status
+   */
+  public void setDropDownButtonEnabled(String widgetName, boolean enabled) {
+<span class="nc" id="L116">    dropDownButtonMap.get(widgetName).setEnabled(enabled);</span>
+<span class="nc" id="L117">  }</span>
+
+  /**
+   * Sets drop down button visibility
+   *
+   * @param widgetName name of button
+   * @param enabled enabled status
+   */
+  public void setDropDownButtonVisible(String widgetName, boolean enabled) {
+<span class="nc" id="L126">    dropDownButtonMap.get(widgetName).setVisible(enabled);</span>
+<span class="nc" id="L127">  }</span>
+
+  /**
+   * Sets enabled for drop down item
+   *
+   * @param dropWidgetName name of drop-down widget
+   * @param itemName name of item within dropWidgetName
+   * @param enabled enabled status
+   */
+  public void setDropItemEnabled(String dropWidgetName, String itemName, boolean enabled) {
+<span class="nc" id="L137">    final DropDownButton button = dropDownButtonMap.get(dropWidgetName);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    if (button != null) {</span>
+<span class="nc" id="L139">      button.setItemEnabled(itemName, enabled);</span>
+    }
+<span class="nc" id="L141">  }</span>
+
+  /**
+   * Adds a button to the toolbar
+   *
+   * @param item button to add
+   * @param rightAlign {@code true} if the button should be right-aligned,
+   *                   {@code false} if left-aligned
+   */
+  protected void addButton(final ToolbarItem item, boolean rightAlign) {
+<span class="nc" id="L151">    TextButton button = new TextButton(item.caption);</span>
+<span class="nc" id="L152">    button.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L155">        item.command.execute();</span>
+<span class="nc" id="L156">      }</span>
+    });
+<span class="nc bnc" id="L158" title="All 2 branches missed.">    if (rightAlign) {</span>
+<span class="nc" id="L159">      rightButtons.add(button);</span>
+    } else {
+<span class="nc" id="L161">      leftButtons.add(button);</span>
+    }
+<span class="nc" id="L163">    buttonMap.put(item.widgetName, button);</span>
+<span class="nc" id="L164">  }</span>
+
+  /**
+   *
+   * @param item button to add
+   * @param rightAlign true if button is right-aligned, false if left
+   * @param top special styling if the button is on the top.
+   */
+  protected void addButton(final ToolbarItem item, boolean rightAlign, boolean top) {
+<span class="nc" id="L173">    TextButton button = new TextButton(item.caption);</span>
+<span class="nc" id="L174">    button.setStyleName(&quot;ode-TopPanelDropDownButton&quot;);</span>
+<span class="nc" id="L175">    button.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L178">        item.command.execute();</span>
+<span class="nc" id="L179">      }</span>
+    });
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    if (rightAlign) {</span>
+<span class="nc" id="L182">      rightButtons.add(button);</span>
+    } else {
+<span class="nc" id="L184">      leftButtons.add(button);</span>
+    }
+<span class="nc" id="L186">    buttonMap.put(item.widgetName, button);</span>
+<span class="nc" id="L187">  }</span>
+
+  /**
+   * Adds a (left-aligned) button to the toolbar
+   *
+   * @param item the button to add
+   */
+  protected void addButton(ToolbarItem item) {
+<span class="nc" id="L195">    addButton(item, false);</span>
+<span class="nc" id="L196">  }</span>
+
+  /**
+   * Adds a drop down button to the toolbar
+   *
+   * @param dropDownName name used for internal map
+   * @param caption name of button
+   * @param items list of items to add to drop down; null items indicate a separator should be
+   *        addded
+   * @param rightAlign button should be right aligned in toolbar
+   */
+  protected void addDropDownButton(String dropDownName, String caption, List&lt;DropDownButton.DropDownItem&gt; items,
+      final boolean rightAlign) {
+<span class="nc" id="L209">    final DropDownButton button = new DropDownButton(dropDownName, caption,</span>
+        items, rightAlign);
+<span class="nc bnc" id="L211" title="All 2 branches missed.">    if (rightAlign) {</span>
+<span class="nc" id="L212">      rightButtons.add(button);</span>
+    } else {
+<span class="nc" id="L214">      leftButtons.add(button);</span>
+    }
+<span class="nc" id="L216">    dropDownButtonMap.put(dropDownName, button);</span>
+<span class="nc" id="L217">  }</span>
+
+  /**
+   *
+   * @param dropDownName name used for internal map
+   * @param caption name of button
+   * @param items list of items to add to the drop down; null items indicate a separator
+   * @param rightAlign button should be right aligned in toolbar
+   * @param top special style if button is added to the topPanel
+   */
+  protected void addDropDownButton(String dropDownName, String caption, List&lt;DropDownButton.DropDownItem&gt; items,
+      final boolean rightAlign, final boolean top) {
+<span class="nc" id="L229">    final DropDownButton button = new DropDownButton(dropDownName, caption,</span>
+        items, rightAlign);
+<span class="nc" id="L231">    button.setStyleName(&quot;ode-TopPanelDropDownButton&quot;);</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">    if (rightAlign) {</span>
+<span class="nc" id="L233">      rightButtons.add(button);</span>
+    } else {
+<span class="nc" id="L235">      leftButtons.add(button);</span>
+    }
+<span class="nc" id="L237">    dropDownButtonMap.put(dropDownName, button);</span>
+<span class="nc" id="L238">  }</span>
+
+  /**
+   * Adds an item to a drop down button 
+   *
+   * @param dropDownName name used for internal map
+   * @param item item to add to drop down
+   */
+  protected void addDropDownButtonItem(String dropDownName, DropDownButton.DropDownItem item) {
+<span class="nc" id="L247">    final DropDownButton button = dropDownButtonMap.get(dropDownName);</span>
+<span class="nc bnc" id="L248" title="All 4 branches missed.">    if (button != null &amp;&amp; item != null) {</span>
+<span class="nc" id="L249">      button.addItem(item);</span>
+    }
+<span class="nc" id="L251">  }</span>
+
+  /**
+   * Removes an item from a drop down button if it exists.
+   *
+   * @param dropDownName name used for internal map
+   * @param itemName  name (text) of item to remove from drop down
+   */
+  protected void removeDropDownButtonItem(String dropDownName, String itemName) {
+<span class="nc" id="L260">    final DropDownButton button = dropDownButtonMap.get(dropDownName);</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    if (button != null) {</span>
+<span class="nc" id="L262">      button.removeItem(itemName);</span>
+    }
+<span class="nc" id="L264">  }</span>
+  
+  /**
+   * Clear all items from a drop-down button menu
+   * 
+   * @param dropDownName the name of the drop-down button whose menu should
+   *   be cleared
+   */
+  protected void clearDropDownMenu(String dropDownName) {
+<span class="nc" id="L273">    dropDownButtonMap.get(dropDownName).clearAllItems();</span>
+<span class="nc" id="L274">  }</span>
+  
+  /**
+   * Adds a (left-aligned) drop down button to the toolbar
+   *
+   * @param dropDownName name used for internal map
+   * @param caption name of button
+   * @param items list of items to add to drop down
+   */
+  protected void addDropDownButton(String dropDownName, String caption, List&lt;DropDownButton.DropDownItem&gt; items) {
+<span class="nc" id="L284">    addDropDownButton(dropDownName, caption, items, false);</span>
+<span class="nc" id="L285">  }</span>
+
+  /**
+   * Changes a button's caption
+   *
+   * @param widgetName name of button
+   * @param caption the new caption
+   */
+  protected void setButtonCaption(String widgetName, String caption) {
+<span class="nc" id="L294">    buttonMap.get(widgetName).setText(caption);</span>
+<span class="nc" id="L295">  }</span>
+
+  /**
+   * Changes a drop down button's caption
+   *
+   * @param widgetName name of button
+   * @param caption the new caption
+   */
+  protected void setDropDownButtonCaption(String widgetName, String caption) {
+<span class="nc" id="L304">    dropDownButtonMap.get(widgetName).setText(caption + &quot; &quot; + DROP_DOWN_TRIANGLE);</span>
+<span class="nc" id="L305">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

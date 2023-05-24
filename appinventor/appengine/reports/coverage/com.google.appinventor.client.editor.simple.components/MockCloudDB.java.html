@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockCloudDB.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockCloudDB.java</span></div><h1>MockCloudDB.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * Mock for the non-visible CloudDB component. This needs a separate mock
+ * from other non-visible components so that some of its properties can be
+ * given dynamic default values.
+ *
+ * @author natalie@csail.mit.edu (Natalie Lao)
+ */
+public class MockCloudDB extends MockNonVisibleComponent {
+
+  public static final String TYPE = &quot;CloudDB&quot;;
+  private static final String PROPERTY_NAME_PROJECT_ID = &quot;ProjectID&quot;;
+  private static final String PROPERTY_NAME_TOKEN = &quot;Token&quot;;
+  private static final String PROPERTY_NAME_REDIS_SERVER = &quot;RedisServer&quot;;
+  private static final String PROPERTY_NAME_DEFAULT_REDISSERVER = &quot;DefaultRedisServer&quot;;
+
+<span class="nc" id="L32">  private boolean persistToken = false;</span>
+
+  /**
+   * Creates a new instance of a non-visible component whose icon is
+   * loaded dynamically (not part of the icon image bundle)
+   *
+   * @param editor
+   * @param type
+   * @param iconImage
+   */
+  public MockCloudDB(SimpleEditor editor, String type, Image iconImage) {
+<span class="nc" id="L43">    super(editor, type, iconImage);</span>
+<span class="nc" id="L44">  }</span>
+
+  /**
+   * Initializes the &quot;ProjectID&quot; property dynamically.
+   *
+   * @param widget the iconImage for the MockCloudDB
+   */
+  @Override
+  public final void initComponent(Widget widget) {
+<span class="nc" id="L53">    super.initComponent(widget);</span>
+<span class="nc" id="L54">    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();</span>
+<span class="nc" id="L55">    String projectID = &quot;&quot;;</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">    if (currentProject != null) {</span>
+<span class="nc" id="L57">      projectID = currentProject.name;</span>
+    }
+
+<span class="nc" id="L60">    changeProperty(PROPERTY_NAME_PROJECT_ID, projectID);</span>
+<span class="nc" id="L61">    String defaultRedisServer = Ode.getInstance().getSystemConfig().getDefaultCloudDBserver();</span>
+<span class="nc" id="L62">    changeProperty(PROPERTY_NAME_DEFAULT_REDISSERVER, defaultRedisServer);</span>
+<span class="nc" id="L63">    getTokenFromServer();       // Get Token from the server</span>
+<span class="nc" id="L64">  }</span>
+
+  @Override
+  public boolean isPropertyforYail(String propertyName) {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    if ((propertyName.equals(PROPERTY_NAME_PROJECT_ID)) ||</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">      (propertyName.equals(PROPERTY_NAME_DEFAULT_REDISSERVER)) ||</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      (propertyName.equals(PROPERTY_NAME_TOKEN))) {</span>
+<span class="nc" id="L71">      return true;</span>
+    }
+<span class="nc" id="L73">    return super.isPropertyforYail(propertyName);</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    return !propertyName.equals(PROPERTY_NAME_DEFAULT_REDISSERVER)</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">      &amp;&amp; super.isPropertyVisible(propertyName);</span>
+  }
+
+  @Override
+  public boolean isPropertyPersisted(String propertyName) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_DEFAULT_REDISSERVER)) {</span>
+<span class="nc" id="L85">      return false;             // We don't persist the default server as it is really</span>
+                                // a property of the service, not the project per se
+<span class="nc bnc" id="L87" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TOKEN)) {</span>
+<span class="nc" id="L88">      return persistToken;</span>
+    } else {
+<span class="nc" id="L90">      return super.isPropertyPersisted(propertyName);</span>
+    }
+  }
+
+  // We provide our own onPropertyChange to catch the case where the
+  // RedisServer is changed to/from the DEFAULT value.  This effects
+  // the persistence of the Token property. If we are using a private
+  // redis server, we want to persist the Token. Otherwise we do not.
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_REDIS_SERVER)) {</span>
+      // If this is the default server, then make the Token property
+      // non-persistent, but output it in YAIL
+<span class="nc" id="L104">      EditableProperty token = properties.getProperty(PROPERTY_NAME_TOKEN);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">      if (token == null) {      // First pass through and &quot;Token&quot; isn't set yet</span>
+<span class="nc" id="L106">        super.onPropertyChange(propertyName, newValue);</span>
+<span class="nc" id="L107">        return;</span>
+      }
+<span class="nc" id="L109">      int tokenType = token.getType();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (newValue.equals(&quot;DEFAULT&quot;)) {</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">        if (token.getValue().isEmpty() || !(token.getValue().substring(0, 1).equals(&quot;%&quot;))) {</span>
+<span class="nc" id="L112">          token.setValue(&quot;&quot;);   // Set it to empty so getTokenFromServer will fill in</span>
+<span class="nc" id="L113">          persistToken = false;</span>
+<span class="nc" id="L114">          tokenType |= EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L115">          tokenType |= EditableProperty.TYPE_DOYAIL;</span>
+<span class="nc" id="L116">          getTokenFromServer(); // will fill it in.</span>
+        } else {
+<span class="nc" id="L118">          tokenType &amp;= ~EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L119">          persistToken = true;</span>
+        }
+      } else {
+<span class="nc" id="L122">        tokenType &amp;= ~EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L123">        persistToken = true;</span>
+      }
+<span class="nc" id="L125">      token.setType(tokenType);</span>
+<span class="nc" id="L126">      onPropertyChange(PROPERTY_NAME_TOKEN, token.getValue());</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TOKEN)) {</span>
+<span class="nc" id="L128">      EditableProperty serverProperty = properties.getProperty(PROPERTY_NAME_REDIS_SERVER);</span>
+<span class="nc" id="L129">      EditableProperty token = properties.getProperty(PROPERTY_NAME_TOKEN);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">      if (token == null) {      // First pass through and &quot;Token&quot; isn't set yet</span>
+<span class="nc" id="L131">        super.onPropertyChange(propertyName, newValue);</span>
+<span class="nc" id="L132">        return;</span>
+      }
+<span class="nc" id="L134">      int tokenType = token.getType();</span>
+      // if the Redis Server property is &quot;DEFAULT&quot; we don't persist the
+      // Token property
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      if (serverProperty == null) { // Nothing we can do here</span>
+<span class="nc" id="L138">        super.onPropertyChange(propertyName, newValue);</span>
+<span class="nc" id="L139">        return;</span>
+      }
+<span class="nc" id="L141">      String server = serverProperty.getValue();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (server.equals(&quot;DEFAULT&quot;)) {</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">        if (newValue == null || newValue.isEmpty() ||</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">          !(newValue.substring(0, 1).equals(&quot;%&quot;))) {</span>
+<span class="nc" id="L145">          persistToken = false; // Now that the auto-save is scheduled, we no longer want</span>
+                                // to persist the token
+<span class="nc" id="L147">          tokenType |= EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L148">          tokenType |= EditableProperty.TYPE_DOYAIL;</span>
+        } else {
+<span class="nc" id="L150">          tokenType &amp;= ~EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L151">          persistToken = true;</span>
+        }
+      } else {
+<span class="nc" id="L154">        tokenType &amp;= ~EditableProperty.TYPE_NONPERSISTED;</span>
+<span class="nc" id="L155">        persistToken = true;</span>
+      }
+<span class="nc" id="L157">      token.setType(tokenType);</span>
+    }
+<span class="nc" id="L159">    super.onPropertyChange(propertyName, newValue);</span>
+<span class="nc" id="L160">  }</span>
+
+  private void getTokenFromServer() {
+<span class="nc" id="L163">    Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback&lt;String&gt;() {</span>
+      @Override
+      public void onSuccess(String token) {
+<span class="nc" id="L166">        EditableProperty tokenProperty = MockCloudDB.this.properties.getProperty(PROPERTY_NAME_TOKEN);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (tokenProperty != null) {</span>
+<span class="nc" id="L168">          String existingToken = tokenProperty.getValue();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">          if (!existingToken.isEmpty()) {</span>
+<span class="nc" id="L170">            return;             // If we have a value, don't over-write it</span>
+          }
+        }
+<span class="nc" id="L173">        changeProperty(PROPERTY_NAME_TOKEN, token);</span>
+<span class="nc" id="L174">      }</span>
+      @Override
+      public void onFailure(Throwable t){
+<span class="nc" id="L177">        changeProperty(PROPERTY_NAME_TOKEN, &quot;ERROR : token not created&quot;);</span>
+<span class="nc" id="L178">        super.onFailure(t);</span>
+<span class="nc" id="L179">      }</span>
+    });
+<span class="nc" id="L181">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

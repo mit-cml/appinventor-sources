@@ -1174,7 +1174,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     final List<String> neededPermissions = new ArrayList<>();
 
     // Check if we need permission to read the postFile, if any
-    if (postFile != null && FileUtil.needsPermission(form, postFile) && !haveReadPermission) {
+    if (postFile != null && FileUtil.needsReadPermission(form, postFile) && !haveReadPermission) {
       neededPermissions.add(READ_EXTERNAL_STORAGE);
     }
 
@@ -1182,7 +1182,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     if (saveResponse) {
       String target = FileUtil.resolveFileName(form, webProps.responseFileName,
           form.DefaultFileScope());
-      if (FileUtil.needsPermission(form, target) && !haveWritePermission) {
+      if (FileUtil.needsWritePermission(form, target) && !haveWritePermission) {
         neededPermissions.add(WRITE_EXTERNAL_STORAGE);
       }
     }

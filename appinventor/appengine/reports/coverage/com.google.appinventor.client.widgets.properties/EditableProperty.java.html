@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditableProperty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">EditableProperty.java</span></div><h1>EditableProperty.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import com.google.appinventor.client.properties.Property;
+
+/**
+ * Property for display in a {@link PropertiesPanel}.
+ *
+ * &lt;p&gt;Such properties have an associated {@link PropertyEditor},
+ * hence the name of this class.
+ *
+ */
+public final class EditableProperty extends Property {
+
+  /**
+   * Properties of this type will be persisted to the source file upon saving
+   * and will be displayed in the properties panel.
+   */
+  public static final int TYPE_NORMAL = 0;
+
+  /**
+   * Properties of this type will not be persisted to the source file upon saving.
+   */
+  public static final int TYPE_NONPERSISTED = 0x01;
+
+  /**
+   * Properties of this type will not be displayed in the properties panel.
+   */
+  public static final int TYPE_INVISIBLE = 0x02;
+
+  /**
+   * Properties of this type will be included in a yail generation
+   * even if they are not persisted. This is used for computed properties
+   * which aren't stored, but which must be passed to a component both
+   * in the Companion and when built. Example: The FirebaseToken and
+   * deveoperId which are computed on the fly by MockFirebaseDB but
+   * which are not persisted for security reasons. Yet we still need
+   * to output them in the Yail.
+   */
+
+  public static final int TYPE_DOYAIL = 0x04;
+
+  // EditableProperties that contains this EditableProperty
+  private final EditableProperties properties;
+
+  // Type of property
+  private int type;
+
+  // Property editor for use in properties panel
+  private final PropertyEditor editor;
+
+  // Property caption for use in properties panel
+  private final String caption;
+
+  // Editor type of the property (for creating new editors)
+  private final String editorType;
+
+  // Additional arguments for the editor
+  private final String[] editorArgs;
+
+  /**
+   * Creates a new property.
+   *
+   * @param properties  the EditableProperties that contains this
+   *                    EditableProperty
+   * @param name  property's name
+   * @param defaultValue property's default value
+   *                     (will also be its initial current value)
+   * @param caption  property's caption for use in the UI
+   * @param editor  property editor
+   * @param type  type of property; see {@code TYPE_*} constants
+   */
+  public EditableProperty(EditableProperties properties, String name, String defaultValue,
+      String caption, PropertyEditor editor, int type, String editorType, String[] editorArgs) {
+<span class="nc" id="L80">    super(name, defaultValue);</span>
+
+<span class="nc" id="L82">    this.properties = properties;</span>
+<span class="nc" id="L83">    this.type = type;</span>
+<span class="nc" id="L84">    this.editor = editor;</span>
+<span class="nc" id="L85">    this.caption = caption;</span>
+<span class="nc" id="L86">    this.editorType = editorType;</span>
+<span class="nc" id="L87">    this.editorArgs = editorArgs;</span>
+
+<span class="nc" id="L89">    editor.setProperty(this);</span>
+<span class="nc" id="L90">  }</span>
+
+  public EditableProperty(EditableProperties properties, String name, String defaultValue,
+      int type) {
+<span class="nc" id="L94">    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, &quot;&quot;, null);</span>
+<span class="nc" id="L95">  }</span>
+
+  /**
+   * Creates a new property.
+   *
+   * @param properties  the EditableProperties that contains this
+   *                    EditableProperty
+   * @param name  property's name (also used as the caption in the UI)
+   * @param defaultValue property's default value
+   *                     (will also be its initial current value)
+   * @param type  type of property; see {@code TYPE_*} constants
+   */
+  public EditableProperty(EditableProperties properties, String name, String defaultValue,
+      int type, String editorType, String[] editorArgs) {
+<span class="nc" id="L109">    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, editorType, editorArgs);</span>
+<span class="nc" id="L110">  }</span>
+
+  /**
+   * Returns whether this property is persisted.
+   */
+  @Override
+  protected final boolean isPersisted() {
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    return (type &amp; TYPE_NONPERSISTED) == 0;</span>
+  }
+
+  /**
+   * Returns whether this property is displayed in the properties panel.
+   */
+  final boolean isVisible() {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    return (type &amp; TYPE_INVISIBLE) == 0;</span>
+  }
+
+  @Override
+  protected final boolean isYail() {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    return (type &amp; TYPE_DOYAIL) != 0;</span>
+  }
+
+  /**
+   * Sets the value of the property, optionally forcing the property to reset its value.
+   *
+   * @param value the value to set
+   * @param force true if the property change should be forced, otherwise false
+   * @see #setValue(String)
+   */
+  public void setValue(String value, boolean force) {
+<span class="nc bnc" id="L140" title="All 4 branches missed.">    if (!value.equals(getValue()) || force) {</span>
+<span class="nc" id="L141">      super.setValue(value);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (properties != null) {</span>
+<span class="nc" id="L143">        properties.firePropertyChangeEvent(getName(), value);</span>
+      }
+<span class="nc" id="L145">      editor.updateValue();</span>
+    }
+<span class="nc" id="L147">  }</span>
+
+  /**
+   * {@inheritDoc}
+   *
+   * Also notifies any property listeners of the change.
+   */
+  @Override
+  public void setValue(String value) {
+<span class="nc" id="L156">    setValue(value, false);</span>
+<span class="nc" id="L157">  }</span>
+
+  /**
+   * Returns the property editor widget for this property.
+   *
+   * @return  property editor
+   */
+  public final PropertyEditor getEditor() {
+<span class="nc" id="L165">    return editor;</span>
+  }
+
+  /**
+   * Returns the caption for this property.
+   *
+   * @return  property caption
+   */
+  public String getCaption() {
+<span class="nc" id="L174">    return caption;</span>
+  }
+
+  public String getEditorType() {
+<span class="nc" id="L178">    return editorType;</span>
+  }
+
+  public String[] getEditorArgs() {
+<span class="nc" id="L182">    return editorArgs;</span>
+  }
+
+
+  /**
+   * Called when this property is being orphaned.
+   */
+  final void orphan() {
+<span class="nc" id="L190">    editor.orphan();</span>
+<span class="nc" id="L191">  }</span>
+
+  public int getType() {
+<span class="nc" id="L194">    return type;</span>
+  }
+
+  public void setType(int aType) {
+<span class="nc" id="L198">    this.type = aType;</span>
+<span class="nc" id="L199">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

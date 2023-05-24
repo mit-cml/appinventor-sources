@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidGeoJSONPropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">YoungAndroidGeoJSONPropertyEditor.java</span></div><h1>YoungAndroidGeoJSONPropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+import com.google.appinventor.client.wizards.FileUploadWizard;
+import com.google.appinventor.client.wizards.FileUploadWizard.FileUploadedCallback;
+import com.google.appinventor.client.wizards.UrlImportWizard;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.FolderNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.Collections;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyEditor
+    implements ProjectChangeListener {
+  private final ListBox assetsList;
+  private final ListWithNone choices;
+  private final YoungAndroidAssetsFolder assetsFolder;
+
+<span class="nc" id="L42">  public YoungAndroidGeoJSONPropertyEditor(final YaFormEditor editor) {</span>
+<span class="nc" id="L43">    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());</span>
+<span class="nc" id="L44">    assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();</span>
+<span class="nc" id="L45">    project.addProjectChangeListener(this);</span>
+
+<span class="nc" id="L47">    VerticalPanel selectorPanel = new VerticalPanel();</span>
+<span class="nc" id="L48">    assetsList = new ListBox();</span>
+<span class="nc" id="L49">    assetsList.setVisibleItemCount(10);</span>
+<span class="nc" id="L50">    assetsList.addChangeHandler(new ChangeHandler() {</span>
+      @Override
+      public void onChange(ChangeEvent event) {
+<span class="nc" id="L53">        setOkButtonEnabled(true);</span>
+<span class="nc" id="L54">      }</span>
+    });
+<span class="nc" id="L56">    assetsList.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L57">    selectorPanel.add(assetsList);</span>
+
+<span class="nc" id="L59">    choices = new ListWithNone(MESSAGES.noneCaption(), new ListWithNone.ListBoxWrapper() {</span>
+      @Override
+      public void setSelectedIndex(int index) {
+<span class="nc" id="L62">        assetsList.setSelectedIndex(index);</span>
+<span class="nc" id="L63">      }</span>
+
+      @Override
+      public void removeItem(int index) {
+<span class="nc" id="L67">        assetsList.removeItem(index);</span>
+<span class="nc" id="L68">      }</span>
+
+      @Override
+      public String getItem(int index) {
+<span class="nc" id="L72">        return assetsList.getItemText(index);</span>
+      }
+
+      @Override
+      public void addItem(String item) {
+<span class="nc" id="L77">        assetsList.addItem(item);</span>
+<span class="nc" id="L78">      }</span>
+    });
+
+    // Fill choices with assets.
+<span class="nc bnc" id="L82" title="All 2 branches missed.">    if (assetsFolder != null) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      for (ProjectNode node : assetsFolder.getChildren()) {</span>
+<span class="nc" id="L84">        String lowerCaseName = node.getName();</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">        if (lowerCaseName.endsWith(&quot;.json&quot;) || lowerCaseName.endsWith(&quot;.geojson&quot;)) {</span>
+<span class="nc" id="L86">          choices.addItem(node.getName());</span>
+        }
+<span class="nc" id="L88">      }</span>
+    }
+
+<span class="nc" id="L91">    Button addButton = new Button(MESSAGES.addButton());</span>
+<span class="nc" id="L92">    addButton.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L93">    addButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L96">        FileUploadedCallback callback = new FileUploadedCallback() {</span>
+          @Override
+          public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
+<span class="nc" id="L99">            choices.selectValue(fileNode.getName());</span>
+<span class="nc" id="L100">            closeAdditionalChoiceDialog(true);</span>
+<span class="nc" id="L101">          }</span>
+        };
+<span class="nc" id="L103">        FileUploadWizard uploader = new FileUploadWizard(assetsFolder,</span>
+<span class="nc" id="L104">            Collections.singleton(&quot;.geojson&quot;), callback);</span>
+<span class="nc" id="L105">        uploader.show();</span>
+<span class="nc" id="L106">      }</span>
+    });
+<span class="nc" id="L108">    Button urlButton = new Button(MESSAGES.fromUrlButton());</span>
+<span class="nc" id="L109">    urlButton.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L110">    urlButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L113">        UrlImportWizard.OnImportListener callback = new UrlImportWizard.OnImportListener() {</span>
+          @Override
+          public void onSuccess(byte[] content) {
+            
+<span class="nc" id="L117">          }</span>
+        };
+<span class="nc" id="L119">        UrlImportWizard wizard = new UrlImportWizard(assetsFolder, callback);</span>
+<span class="nc" id="L120">        wizard.center();</span>
+<span class="nc" id="L121">        wizard.show();</span>
+<span class="nc" id="L122">      }</span>
+    });
+<span class="nc" id="L124">    selectorPanel.add(addButton);</span>
+<span class="nc" id="L125">    selectorPanel.add(urlButton);</span>
+<span class="nc" id="L126">    selectorPanel.setWidth(&quot;100%&quot;);</span>
+
+<span class="nc" id="L128">    DeferredCommand.addCommand(new Command() {</span>
+      @Override
+      public void execute() {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (editor.isLoadComplete()) {</span>
+<span class="nc" id="L132">          finishInitialization();</span>
+        } else {
+<span class="nc" id="L134">          DeferredCommand.addCommand(this);</span>
+        }
+<span class="nc" id="L136">      }</span>
+    });
+
+<span class="nc" id="L139">    initAdditionalChoicePanel(selectorPanel);</span>
+<span class="nc" id="L140">  }</span>
+
+  private void finishInitialization() {
+<span class="nc" id="L143">    String value = property.getValue();</span>
+<span class="nc bnc" id="L144" title="All 4 branches missed.">    if (value.equals(&quot;None&quot;) &amp;&amp; !choices.containsValue(value)) {</span>
+<span class="nc" id="L145">      property.setValue(&quot;&quot;);</span>
+    }
+<span class="nc" id="L147">  }</span>
+
+  @Override
+  public void orphan() {
+<span class="nc" id="L151">    Project project = Ode.getInstance().getProjectManager().getProject(assetsFolder.getProjectId());</span>
+<span class="nc" id="L152">    project.removeProjectChangeListener(this);</span>
+<span class="nc" id="L153">    super.orphan();</span>
+<span class="nc" id="L154">  }</span>
+
+  @Override
+  protected void openAdditionalChoiceDialog() {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">    if (!isMultipleValues()) {</span>
+<span class="nc" id="L159">      choices.selectValue(property.getValue());</span>
+    } else {
+<span class="nc" id="L161">      setOkButtonEnabled(false);</span>
+    }
+<span class="nc" id="L163">    super.openAdditionalChoiceDialog();</span>
+<span class="nc" id="L164">    assetsList.setFocus(true);</span>
+<span class="nc" id="L165">  }</span>
+
+  @Override
+  protected String getPropertyValueSummary() {
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (isMultipleValues()) {</span>
+<span class="nc" id="L170">      return MESSAGES.multipleValues();</span>
+    }
+<span class="nc" id="L172">    String value = property.getValue();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    if (choices.containsValue(value)) {</span>
+<span class="nc" id="L174">      return choices.getDisplayItemForValue(value);</span>
+    }
+<span class="nc" id="L176">    return value;</span>
+  }
+
+  @Override
+  protected boolean okAction() {
+<span class="nc" id="L181">    int selected = assetsList.getSelectedIndex();</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">    if (selected == -1) {</span>
+<span class="nc" id="L183">      Window.alert(MESSAGES.noAssetSelected());</span>
+<span class="nc" id="L184">      return false;</span>
+    }
+<span class="nc" id="L186">    boolean multiple = isMultipleValues();</span>
+<span class="nc" id="L187">    setMultipleValues(false);</span>
+<span class="nc" id="L188">    property.setValue(choices.getValueAtIndex(selected), multiple);</span>
+<span class="nc" id="L189">    return true;</span>
+  }
+
+  // ProjectChangeListener implementation
+
+  @Override
+  public void onProjectLoaded(Project project) {
+<span class="nc" id="L196">  }</span>
+
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+<span class="nc bnc" id="L200" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L201">      String assetName = node.getName();</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">      if (!choices.containsValue(assetName)) {</span>
+<span class="nc" id="L203">        choices.addItem(assetName);;</span>
+      }
+<span class="nc" id="L205">      String currentValue = property.getValue();</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">      if (assetName.equals(currentValue)) {</span>
+<span class="nc" id="L207">        property.setValue(&quot;&quot;);</span>
+<span class="nc" id="L208">        property.setValue(currentValue);</span>
+      }
+    }
+<span class="nc" id="L211">  }</span>
+
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L216">      String assetName = node.getName();</span>
+<span class="nc" id="L217">      String currentValue = property.getValue();</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">      if (node.getName().equals(currentValue)) {</span>
+<span class="nc" id="L219">        property.setValue(&quot;&quot;);</span>
+      }
+<span class="nc" id="L221">      choices.removeValue(assetName);</span>
+    }
+<span class="nc" id="L223">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

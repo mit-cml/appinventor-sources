@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectRootNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.rpc.project</a> &gt; <span class="el_source">ProjectRootNode.java</span></div><h1>ProjectRootNode.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.shared.rpc.project;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * All projects have a subclass of this project node at their root.
+ *
+ */
+public abstract class ProjectRootNode extends ProjectNode {
+
+  // For serialization
+  private static final long serialVersionUID = 770074523523022847L;
+
+  // Project id
+  private long projectId;
+
+  // Type of project
+  private String type;
+
+  /**
+   * Default constructor (for serialization only). Unfortunately this will
+   * prevent any fields from being marked as final!
+   */
+<span class="nc" id="L31">  public ProjectRootNode() {</span>
+<span class="nc" id="L32">  }</span>
+
+  /**
+   * Creates a new project root node.
+   *
+   * @param name project node name (can be different from file or folder
+   *        represented by this node)
+   * @param projectId project ID
+   * @param type project type
+   */
+  public ProjectRootNode(String name, long projectId, String type) {
+<span class="fc" id="L43">    super(name, Long.toString(projectId));</span>
+
+<span class="fc" id="L45">    this.projectId = projectId;</span>
+<span class="fc" id="L46">    this.type = type;</span>
+<span class="fc" id="L47">  }</span>
+
+  /**
+   * Returns a list of all source nodes of the project.
+   *
+   * @return list of source project nodes
+   */
+  public List&lt;ProjectNode&gt; getAllSourceNodes() {
+<span class="nc" id="L55">    List&lt;ProjectNode&gt; sourceNodes = new ArrayList&lt;ProjectNode&gt;();</span>
+<span class="nc" id="L56">    findSourceNodes(sourceNodes);</span>
+<span class="nc" id="L57">    return sourceNodes;</span>
+  }
+
+  /**
+   * Returns the source node with the given fileId, or null if there is no source node with the
+   * given fileId.
+   */
+  public ProjectNode getSourceNode(String fileId) {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    for (ProjectNode node : getAllSourceNodes()) {</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      if (node.getFileId().equals(fileId)) {</span>
+<span class="nc" id="L67">        return node;</span>
+      }
+<span class="nc" id="L69">    }</span>
+<span class="nc" id="L70">    return null;</span>
+  }
+
+  @Override
+  public ProjectRootNode getProjectRoot() {
+<span class="nc" id="L75">    return this;</span>
+  }
+
+  @Override
+  public long getProjectId() {
+<span class="nc" id="L80">    return projectId;</span>
+  }
+
+//  /**
+//   * Returns the ID for this project node.
+//   *
+//   * @return ID to identify the file/folder represented by the project node on
+//   *         the backend (can be {@code null} for 'virtual' folders)
+//   */
+//  @Override
+//  public String getFileId() {
+//    throw new UnsupportedOperationException(&quot;getFileId is not supported for ProjectRootNode&quot;);
+//  }
+
+  @Override
+  public String getProjectType() {
+<span class="nc" id="L96">    return type;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

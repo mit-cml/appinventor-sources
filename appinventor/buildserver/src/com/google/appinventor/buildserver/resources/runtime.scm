@@ -136,6 +136,13 @@
     ((_ component-name)
      (lookup-in-current-form-environment 'component-name))))
 
+;;; (get-all-components comptype)
+;;; ==> (filter-type-in-current-form-environment 'comptype)
+(define-syntax get-all-components
+  (syntax-rules ()
+    ((_ component-type)
+     (filter-type-in-current-form-environment 'component-type))))
+
 ;; We'd like to do something like the following which could re-use existing components
 ;; and thereore avoid overriding property changes that the user might have made via
 ;; the REPL but it just didn't work.  Some components just wouldn't show up.  It seemed
@@ -815,6 +822,14 @@
         (gnu.mapping.Environment:get env name)
         default-value)))
 
+(define (filter-type-in-current-form-environment type :: gnu.mapping.Symbol)
+  (define-alias ComponentUtil <com.google.appinventor.components.runtime.util.ComponentUtil>)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (*:.form-environment *this-form*)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+                 *test-environment*)))
+  (sanitize-component-data (ComponentUtil:filterComponentsOfType env type))))
+
 (define (delete-from-current-form-environment name :: gnu.mapping.Symbol)
   (if (not (eq? *this-form* #!null))
       (gnu.mapping.Environment:remove (*:.form-environment *this-form*) name)
@@ -943,6 +958,42 @@
   ;;      )
   ;;  '(100 200 17 300))
 
+(define-syntax map_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-map (lambda (lambda-arg-name) body-form) list))))
+
+
+(define-syntax filter_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-filter (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax reduceovereach
+  (syntax-rules ()
+    ((_ initialAnswer lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-reduce initialAnswer (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortcomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax mincomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-min-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax maxcomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-max-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortkey_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+      (yail-list-sort-key (lambda (lambda-arg-name) body-form) list))))
+
 (define-syntax forrange-with-break
   (syntax-rules ()
     ((_ escapename lambda-arg-name body-form start end step)
@@ -979,6 +1030,7 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias Matcher <java.util.regex.Matcher>)
 (define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
 (define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
@@ -1430,6 +1482,7 @@
      ((equal? type 'text) (coerce-to-text arg))
      ((equal? type 'boolean) (coerce-to-boolean arg))
      ((equal? type 'list) (coerce-to-yail-list arg))
+     ((equal? type 'list-of-number) (coerce-to-number-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
      ((equal? type 'pair) (coerce-to-pair arg))
@@ -1438,6 +1491,16 @@
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+
+(define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
+  (cond
+    ((yail-list? l)
+      (let ((coerced (map coerce-to-number (yail-list-contents l))))
+        (if (all-coercible? coerced)
+          (apply make-yail-list coerced)
+          non-coercible-value)))
+    (else *non-coercible-value*)))
 
 (define (enum-type? type)
   (string-contains (symbol->string type) "Enum"))
@@ -2141,6 +2204,122 @@
                            (internal-binary-convert (remainder x 2))))))
 
 
+;;; MATH OPERATIONS ON LIST ;;;;
+
+;;; Calculate the average of the list
+(define (avg l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content )
+      0
+    (yail-divide (apply + l-content) (length l-content)))))
+
+;;; Multiplies all of the number inside a list
+(define (yail-mul yail-list-contents)
+  (if (null? yail-list-contents)
+    0
+  (apply * yail-list-contents)))
+
+;;; Calculate the Geometric mean of the list
+(define (gm l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content)
+      0
+    (expt (yail-mul l-content) (yail-divide 1 (length l-content))))))
+
+;;; Find the mode of the list
+(define (mode l)
+  (let ((l-content (yail-list-contents l)))
+    (let count-all-elements ((l-content l-content) (counters '()))
+      (if (null? l-content)
+          (let find-max-count ((counters counters) (best -1) (modes '() ))
+            (if (null? counters)
+                modes
+                (find-max-count
+                  (cdr counters)
+                  (let* ((counter (car counters)) (count (cdr counter)))
+                     (if (and (> count 0)  (or (= best -1) (> count best)))
+                         count
+                         best))
+                  (let* ((counter (car counters)) (count (cdr counter)) (element (car counter)))
+                     (cond  ((= count best)
+                              (append modes (list element)))
+                            ((> count best)
+                              (list element))
+                            (else modes))))))
+          (count-all-elements
+           (cdr l-content)
+           (let* ((x (car l-content))
+                  (counter (assoc x counters)))
+             (if (not counter)
+                 (cons (cons x 1) counters)
+                 (begin (set-cdr! counter (+ (cdr counter) 1))
+                        counters))))))))
+
+;;; Getting the largest element in a list
+(define (maxl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      -1/0             ; default is negative infinity
+      (apply max l-content))))
+
+
+;; Finding the minimum value of a list
+(define (minl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      1/0             ; default is positive infinity   
+      (apply min l-content))))
+
+(define (mean l-content)
+    (yail-divide (apply + l-content) (length l-content))
+)
+
+(define (sum-mean-square-diff lst av)
+  (if (null? lst)
+      0
+      (+  (* (- (car lst) av)
+             (- (car lst) av))
+          (sum-mean-square-diff (cdr lst) av)))
+)
+
+;;; Calculate the standard deviation
+(define (std-dev l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+      (sqrt
+          (yail-divide  
+            (sum-mean-square-diff lst (mean lst))
+            (length lst)))))
+)
+
+;;; Calculate the sample standard deviation
+(define (sample-std-dev lst)
+    (sqrt
+        (yail-divide
+            (sum-mean-square-diff lst (mean lst))
+            (- (length lst) 1)))
+)
+
+;;; Calculate standard error
+(define (std-err l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+
+      (yail-divide  
+          (sample-std-dev lst)
+          (sqrt (length lst)))))
+)
+
+;;; END of MATH OPERATIONS ON LIST ;;;;
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2506,6 +2685,334 @@ list, use the make-yail-list constructor with no arguments.
           (for-each proc (yail-list-contents verified-list))
           *the-null-value*))))
 
+(define (yail-list-map proc yail-list)
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to map is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to map")
+         (kawa-list->yail-list (map proc (yail-list-contents verified-list))))))
+
+;; Throws "unbound location filter", hence defined own filter_ function
+(define (yail-list-filter pred yail-list)
+  (define filter_
+    (lambda (pred lst)
+      (cond ((null? lst) '())
+        ((pred (car lst)) (cons (car lst) (filter_ pred (cdr lst))))
+        (else (filter_ pred (cdr lst))))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to filter is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to filter")
+        (kawa-list->yail-list (filter_ pred (yail-list-contents verified-list))))))
+
+(define (yail-list-reduce ans binop yail-list)
+  (define (reduce accum func lst)
+    (cond ((null? lst) accum)
+      (else (reduce (func accum (car lst)) func (cdr lst)))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+      (signal-runtime-error
+        (format #f
+          "The second argument to reduce is not a list.  The second argument is: ~A"
+          (get-display-representation yail-list))
+        "Bad list argument to reduce")
+      (kawa-list->yail-list (reduce ans binop (yail-list-contents verified-list))))))
+
+;;Implements a generic sorting procedure that works on lists of any type.
+
+(define typeordering '(boolean number text list component))
+
+(define (typeof val)
+  (cond ((boolean? val) 'boolean)
+    ((number? val) 'number)
+    ((string? val) 'text)
+    ((yail-list? val) 'list)
+    ((instance? val com.google.appinventor.components.runtime.Component) 'component)
+    (else (signal-runtime-error
+            (format #f
+              "typeof called with unexpected value: ~A"
+              (get-display-representation val))
+            "Bad arguement to typeof"))))
+
+(define (indexof element lst)
+  (yail-list-index object lst))
+
+(define (type-lt? type1 type2)
+  (< (indexof type1 typeordering)
+    (indexof type2 typeordering)))
+
+(define (is-lt? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-lt? val1 val2))
+          ((eq? type1 'number) (< val1 val2))
+          ((eq? type1 'text) (string<? val1 val2))
+          ((eq? type1 'list) (list-lt? val1 val2))
+          ((eq? type1 'component) (component-lt? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(islt? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+(define (is-eq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (and (eq? type1 type2)
+      (cond ((eq? type1 'boolean) (boolean-eq? val1 val2))
+        ((eq? type1 'number) (= val1 val2))
+        ((eq? type1 'text) (string=? val1 val2))
+        ((eq? type1 'list) (list-eq? val1 val2))
+        ((eq? type1 'component) (component-eq? val1 val2))
+        (else (signal-runtime-error
+                (format #f
+                  "(islt? ~A ~A)"
+                  (get-display-representation val1)
+                  (get-display-representation val2))
+                "Shouldn't happen"))))))
+
+(define (is-leq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-leq? val1 val2))
+          ((eq? type1 'number) (<= val1 val2))
+          ((eq? type1 'text) (string<=? val1 val2))
+          ((eq? type1 'list) (list-leq? val1 val2))
+          ((eq? type1 'component) (component-leq? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(isleq? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+;;false is less than true
+(define (boolean-lt? val1 val2)
+  (and (not val1) val2))
+
+(define (boolean-eq? val1 val2)
+  (or (and val1 val2)
+    (and (not val1) (not val2))))
+
+(define (boolean-leq? val1 val2)
+  (not (and val1 (not val2))))
+
+(define (list-lt? y1 y2)
+  (define (helper-list-lt? lst1 lst2)
+    (cond ((null? lst1) (not (null? lst2)))
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-lt? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-lt? (yail-list-contents y1) (yail-list-contents y2)))
+
+(define (list-eq? y1 y2)
+  (define (helper-list-eq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-eq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-eq? (yail-list-contents y1) (yail-list-contents y2)))
+
+;;throw exception is not yail-list
+(define (yail-list-necessary y1)
+  (cond ((yail-list? y1) (yail-list-contents y1))
+    (else y1)))
+
+(define (list-leq? y1 y2)
+  (define (helper-list-leq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((null? lst1) #t)
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-leq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-leq? (yail-list-necessary y1) (yail-list-necessary y2)))
+
+;;Component are first compared using their class names. If they are instances of the same class,
+;;then they are compared using their hashcodes.
+(define (component-lt? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (< (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+(define (component-eq? comp1 comp2)
+  (and (string=? (*:getSimpleName (*:getClass comp1))
+         (*:getSimpleName (*:getClass comp2)))
+    (= (*:hashCode comp1)
+      (*:hashCode comp2))))
+
+(define (component-leq? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (<= (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+;; take function returns a list containing the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (take n xs)
+  (let loop ((n n) (xs xs) (zs '()))
+    (if (or (= n 0) (null? xs))
+      (reverse zs)
+      (loop (- n 1) (cdr xs)
+        (cons (car xs) zs)))))
+
+;; drop function returns a list drops the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (drop n xs)
+  (if (or (= n 0) (null? xs))
+    xs
+    (drop (- n 1) (cdr xs))))
+
+;; Merge sort
+(define (merge lessthan? lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (car lst1) (car lst2)) (cons (car lst1) (merge lessthan? (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge lessthan? lst1 (cdr lst2))))))
+
+(define (mergesort lessthan? lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge lessthan? (mergesort lessthan? (take (quotient (length lst) 2) lst))
+            (mergesort lessthan? (drop (quotient (length lst) 2) lst))))))
+
+(define (yail-list-sort y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort is-leq? (yail-list-contents y1))))))
+
+(define (yail-list-sort-comparator lessthan? y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1))))))
+
+(define (merge-key lessthan? key lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (key (car lst1)) (key (car lst2))) (cons (car lst1) (merge-key lessthan? key (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge-key lessthan? key lst1 (cdr lst2))))))
+
+(define (mergesort-key lessthan? key lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge-key lessthan? key (mergesort-key lessthan? key (take (quotient (length lst) 2) lst))
+            (mergesort-key lessthan? key (drop (quotient (length lst) 2) lst))))))
+
+(define (yail-list-sort-key key y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort-key is-leq? key (yail-list-contents y1))))))
+
+(define (list-number-only lst)
+  (cond ((null? lst) '())
+    ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
+    (else (list-number-only (cdr lst)))))
+
+(define (list-min lessthan? min lst)
+  (if (null? lst)
+      min
+      (list-min lessthan?
+                (if (lessthan? min (car lst))
+                    min (car lst))
+                    (cdr lst))))
+
+(define (yail-list-min-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-min lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
+
+(define (list-max lessthan? max lst)
+  (if (null? lst)
+      max
+      (list-max lessthan?
+                (if (lessthan? max (car lst))
+                    (car lst) max)
+                    (cdr lst))))
+
+(define (yail-list-max-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-max lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
+
+(define (yail-list-but-first yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-first"))
+      ((null? (cdr contents)) (make-yail-list))
+      (else (kawa-list->yail-list (cdr contents))))))
+
+(define (but-last lst)
+  (cond ((null? lst) '())
+    ((null? (cdr lst)) '())
+    (else (cons (car lst) (but-last (cdr lst))))))
+
+(define (yail-list-but-last yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-last"))
+      (else  (kawa-list->yail-list (but-last (yail-list-contents yail-list)))))))
+
+(define (front lst n)
+  (cond ((= n 1) lst)
+    (else (front (cdr lst) (- n 1)))))
+
+(define (back lst n1 n2)
+  (cond ((= n1 (- n2 1)) '())
+    (else (cons (car lst) (back (cdr lst) (+ n1 1) n2)))))
+
+(define (yail-list-slice yail-list index1 index2)
+  (let ((verified-index1 (coerce-to-number index1))
+         (verified-index2 (coerce-to-number index2)))
+    (if (eq? verified-index1 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index1))
+        "Bad list verified-index1"))
+    (if (eq? verified-index2 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index2))
+        "Bad list verified-index2"))
+    (if (< verified-index1 1)
+      (signal-runtime-error
+        (format #f
+          "Slice list: Attempt to slice list ~A at index ~A. The minimum valid index number is 1."
+          (get-display-representation yail-list)
+          verified-index2)
+        "List index smaller than 1"))
+    (let ((len+1 (+ (yail-list-length yail-list) 1)))
+      (if (> verified-index2 len+1)
+        (signal-runtime-error
+          (format #f
+            "Slice list: Attempt to slice list ~A at index ~A.  The maximum valid index number is ~A."
+            (get-display-representation yail-list)
+            verified-index2
+            len+1)
+          "List index too large"))
+      (kawa-list->yail-list (take (- verified-index2 verified-index1) (drop (- verified-index1 1) (yail-list-contents yail-list)))))))
+
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
 (define (yail-for-range proc start end step)
@@ -2765,9 +3272,8 @@ Dictionary implementation.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at))))
+(define (string-split text at) 
+  (JavaStringUtils:split text (Pattern:quote at))) 
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
@@ -2803,7 +3309,7 @@ Dictionary implementation.
 ;;; It seems simpler for users to not use regexp patterns here, even though
 ;;; some people might want that feature.
 (define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (Matcher:quoteReplacement (replacement:toString))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeyczarEncryptor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.encryption</a> &gt; <span class="el_source">KeyczarEncryptor.java</span></div><h1>KeyczarEncryptor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.encryption;
+
+import com.google.appinventor.server.flags.Flag;
+import com.google.common.annotations.VisibleForTesting;
+
+import org.keyczar.Crypter;
+import org.keyczar.exceptions.KeyczarException;
+
+/*
+ * We currently use only one key for development and production.  The
+ * expectation is that this key will be generated in directory called
+ * keystore (commands for doing this are described in the README in
+ * the keyczar directory).  The key directory should be placed in the
+ * war directory (at the same level as WEB-INF), so it can be accessed
+ * as a resource, and the appengine-web.xml file will need to have the
+ * following in it:
+ *    &lt;static-files&gt;
+ *        &lt;exclude path=&quot;/keystore/**&quot; /&gt;
+ *    &lt;/static-files&gt;
+ * to prevent it from being accessed as a static file (so that it
+ * cannot be downloaded by random users referencing it as a url.
+ */
+
+/**
+ * Encrypts/decrypts byte arrays using Keyczar
+ *
+ * @author kerr@google.com (Debby Wallach)
+ */
+@VisibleForTesting
+<span class="fc" id="L36">public class KeyczarEncryptor implements Encryptor {</span>
+
+  // When running on appengine, the application is running in a way that
+  // the rootPath should not be set to anything.  This flag needs to be
+  // set for testing.
+  @VisibleForTesting
+<span class="fc" id="L42">  public static final Flag&lt;String&gt; rootPath = Flag.createFlag(&quot;root.path&quot;, &quot;&quot;);</span>
+
+<span class="fc" id="L44">  private Crypter crypter = null;  // accessed through getCrypter only</span>
+<span class="fc" id="L45">  private static final Object crypterSync = new Object();</span>
+
+  /**
+   * {@inheritDoc}
+   *
+   * &lt;p&gt;Uses Keyczar client to encrypt the byte array.
+   *
+   * @throws EncryptionException if any underlying component fails
+   */
+  @Override
+  public byte[] encrypt(byte[] plain) throws EncryptionException {
+    try {
+<span class="fc" id="L57">      Crypter crypter = getCrypter();</span>
+<span class="fc" id="L58">      return crypter.encrypt(plain);</span>
+<span class="nc" id="L59">    } catch (KeyczarException e) {</span>
+<span class="nc" id="L60">      throw new EncryptionException(e);</span>
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * &lt;p&gt;Uses local Keyczar client to decrypt the byte array.
+   *
+   * @throws EncryptionException if any underlying component fails
+   */
+  @Override
+  public byte[] decrypt(byte[] encrypted) throws EncryptionException {
+    try {
+<span class="fc" id="L74">      Crypter crypter = getCrypter();</span>
+<span class="fc" id="L75">      return crypter.decrypt(encrypted);</span>
+<span class="fc" id="L76">    } catch (KeyczarException e) {</span>
+<span class="fc" id="L77">      throw new EncryptionException(e);</span>
+    }
+  }
+
+  /* Currently uses the same key for development and deployment.
+   */
+  private Crypter getCrypter() throws EncryptionException {
+<span class="fc" id="L84">    synchronized (crypterSync) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">      if (crypter != null) {</span>
+<span class="fc" id="L86">        return crypter;</span>
+      }
+      try {
+        // TODO(user): Should we use a different key for development vs deployment?
+<span class="fc" id="L90">        String pathToKeys = rootPath.get() + &quot;WEB-INF/keystore&quot;;</span>
+<span class="fc" id="L91">        crypter = new Crypter(pathToKeys);</span>
+<span class="fc" id="L92">        return crypter;</span>
+<span class="nc" id="L93">      } catch (KeyczarException e) {</span>
+<span class="nc" id="L94">        throw new EncryptionException(e);</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

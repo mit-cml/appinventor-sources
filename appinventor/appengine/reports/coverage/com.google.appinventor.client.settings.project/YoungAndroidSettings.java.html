@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidSettings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.settings.project</a> &gt; <span class="el_source">YoungAndroidSettings.java</span></div><h1>YoungAndroidSettings.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.settings.project;
+
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.settings.Settings;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.shared.settings.SettingsConstants;
+
+/**
+ * Young Android project settings.
+ *
+ */
+public final class YoungAndroidSettings extends Settings {
+
+  /**
+   * Creates a new instance of Young Android project settings.
+   *
+   * @param project  associated project
+   */
+  public YoungAndroidSettings(Project project) {
+<span class="nc" id="L26">    super(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);</span>
+
+<span class="nc" id="L28">    addProperty(new EditableProperty(this, SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON,</span>
+        &quot;&quot;, EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L30">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
+        &quot;False&quot;, EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L33">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+        &quot;&quot;, EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L36">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET,
+        &quot;False&quot;, EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L39">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, &quot;1&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L42">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, &quot;1.0&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L45">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, &quot;false&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L48">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, &quot;&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L51">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, &quot;Fixed&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L54">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, &quot;false&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L57">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, &quot;&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L60">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, &quot;&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L63">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, &quot;false&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L66">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME, &quot;AppTheme.Light.DarkActionBar&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L69">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, &quot;Classic&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L72">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, &quot;&amp;HFFA5CF47&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L75">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, &quot;&amp;HFF41521C&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L78">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, &quot;&amp;HFF00728A&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L81">    addProperty(new EditableProperty(this,</span>
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, &quot;App&quot;,
+        EditableProperty.TYPE_INVISIBLE));
+<span class="nc" id="L84">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

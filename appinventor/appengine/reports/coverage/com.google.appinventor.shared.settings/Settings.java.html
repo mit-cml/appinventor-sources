@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Settings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.settings</a> &gt; <span class="el_source">Settings.java</span></div><h1>Settings.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.shared.settings;
+
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONValue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+/**
+ * Read-only settings.
+ *
+ */
+public final class Settings {
+
+  // Mapping of settings category name to settings (which map a settings name to a settings value)
+  private final Map&lt;String, Map&lt;String, String&gt;&gt; settings;
+
+  /**
+   * Creates new read-only settings initialized with encoded settings.
+   *
+   * @param parser  JSON parser to be used for decoding
+   * @param encodedSettings  JSON encoded settings
+   */
+<span class="fc" id="L32">  public Settings(JSONParser parser, String encodedSettings) {</span>
+<span class="fc" id="L33">    settings = new HashMap&lt;String, Map&lt;String,String&gt;&gt;();</span>
+
+<span class="fc" id="L35">    parseCategory(parser.parse(encodedSettings).asObject());</span>
+<span class="fc" id="L36">  }</span>
+
+  /**
+   * Parses the categories of the JSON encoded settings.
+   */
+  private void parseCategory(JSONObject categories) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">    for (Entry&lt;String, JSONValue&gt; category : categories.getProperties().entrySet()) {</span>
+<span class="fc" id="L43">      parseSettings(category.getKey(), category.getValue().asObject());</span>
+<span class="fc" id="L44">    }</span>
+<span class="fc" id="L45">  }</span>
+
+  /**
+   * Parses the actual settings of the JSON encoded settings.
+   */
+  private void parseSettings(String categoryName, JSONObject category) {
+<span class="fc" id="L51">    Map&lt;String, String&gt; categorySettings = new HashMap&lt;String, String&gt;();</span>
+<span class="fc" id="L52">    settings.put(categoryName, categorySettings);</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    for (Entry&lt;String, JSONValue&gt; categorySetting : category.getProperties().entrySet()) {</span>
+<span class="fc" id="L55">      categorySettings.put(categorySetting.getKey(),</span>
+<span class="fc" id="L56">          categorySetting.getValue().asString().getString());</span>
+<span class="fc" id="L57">    }</span>
+<span class="fc" id="L58">  }</span>
+
+  /**
+   * Returns the settings value for a given settings category and settings
+   * name.
+   *
+   * @param category  settings category
+   * @param name  settings name
+   * @return  settings value or null if either {@code category} or
+   *          {@code name} are not found
+   * @throws IllegalArgumentException  if either {@code category} or
+   *                                   {@code name} are null
+   */
+  public String getSetting(String category, String name) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    if (category == null ) {</span>
+<span class="fc" id="L73">      throw new IllegalArgumentException(&quot;Null settings category &quot; + category);</span>
+    }
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (name == null ) {</span>
+<span class="fc" id="L76">      throw new IllegalArgumentException(&quot;Null settings name &quot; + name);</span>
+    }
+<span class="fc" id="L78">    Map&lt;String, String&gt; categorySettings = settings.get(category);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">    if (categorySettings != null) {</span>
+<span class="fc" id="L80">      return categorySettings.get(name);</span>
+    }
+
+<span class="fc" id="L83">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

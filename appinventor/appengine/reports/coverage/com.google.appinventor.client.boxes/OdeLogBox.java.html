@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OdeLogBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.boxes</a> &gt; <span class="el_source">OdeLogBox.java</span></div><h1>OdeLogBox.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.boxes;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.boxes.Box;
+
+/**
+ * Box implementation for OdeLog output.
+ *
+ * &lt;p&gt;Used by developers on the ODE team only - not intended for production.
+ *
+ * @see OdeLog
+ *
+ */
+public final class OdeLogBox extends Box {
+
+  // Singleton log box instance
+<span class="nc" id="L24">  private static final OdeLogBox INSTANCE = new OdeLogBox();</span>
+
+  /**
+   * Return the singleton ODE log box.
+   *
+   * @return  log box
+   */
+  public static OdeLogBox getOdeLogBox() {
+<span class="nc" id="L32">    return INSTANCE;</span>
+  }
+
+  /**
+   * Creates new ODE log box.
+   */
+  private OdeLogBox() {
+<span class="nc" id="L39">    super(MESSAGES.odeLogBoxCaption(), 500,</span>
+        true,   // minimizable
+        false,  // removable
+        false); // startMinimized
+<span class="nc" id="L43">    setContent(OdeLog.getOdeLog());</span>
+<span class="nc" id="L44">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

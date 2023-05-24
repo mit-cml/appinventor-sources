@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssetList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer.youngandroid</a> &gt; <span class="el_source">AssetList.java</span></div><h1>AssetList.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer.youngandroid;
+
+import com.google.appinventor.client.Images;
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.TextButton;
+import com.google.appinventor.client.wizards.FileUploadWizard;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * The asset list shows all the project's assets, and lets the
+ * user delete assets.
+ *
+ */
+
+public class AssetList extends Composite implements ProjectChangeListener {
+
+  // The asset &quot;list&quot; is represented as a tree and follows the same GWT conventions.
+  private Tree assetList;
+  private final VerticalPanel panel;
+
+  private long projectId;
+  private Project project;
+  private YoungAndroidAssetsFolder assetsFolder;
+  private int clientX;
+  private int clientY;
+
+  /**
+   * Creates a new AssetList
+   */
+<span class="nc" id="L59">  public AssetList() {</span>
+
+<span class="nc" id="L61">    assetList = new Tree();</span>
+<span class="nc" id="L62">    assetList.setWidth(&quot;100%&quot;);</span>
+
+<span class="nc" id="L64">    panel = new VerticalPanel();</span>
+<span class="nc" id="L65">    panel.setWidth(&quot;100%&quot;);</span>
+
+<span class="nc" id="L67">    panel.add(assetList);</span>
+
+<span class="nc" id="L69">    TextButton addButton = new TextButton(MESSAGES.addButton());</span>
+<span class="nc" id="L70">    addButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (assetsFolder != null) {</span>
+<span class="nc" id="L74">          FileUploadWizard uploader = new FileUploadWizard(assetsFolder);</span>
+<span class="nc" id="L75">          uploader.show();</span>
+        }
+<span class="nc" id="L77">      }</span>
+    });
+
+<span class="nc" id="L80">    SimplePanel buttonPanel = new SimplePanel();</span>
+<span class="nc" id="L81">    buttonPanel.setStyleName(&quot;ode-PanelButtons&quot;);</span>
+<span class="nc" id="L82">    buttonPanel.add(addButton);</span>
+
+<span class="nc" id="L84">    panel.add(buttonPanel);</span>
+<span class="nc" id="L85">    panel.setCellHorizontalAlignment(buttonPanel, VerticalPanel.ALIGN_CENTER);</span>
+
+<span class="nc" id="L87">    initWidget(panel);</span>
+
+<span class="nc" id="L89">    assetList.setScrollOnSelectEnabled(false);</span>
+<span class="nc" id="L90">    assetList.sinkEvents(Event.ONMOUSEMOVE);</span>
+<span class="nc" id="L91">    assetList.addMouseMoveHandler(new MouseMoveHandler() {</span>
+      @Override
+      public void onMouseMove(MouseMoveEvent event) {
+<span class="nc" id="L94">        clientX = event.getClientX();</span>
+<span class="nc" id="L95">        clientY = event.getClientY();</span>
+<span class="nc" id="L96">      }</span>
+    });
+<span class="nc" id="L98">    assetList.addSelectionHandler(new SelectionHandler&lt;TreeItem&gt;() {</span>
+      @Override
+      public void onSelection(SelectionEvent&lt;TreeItem&gt; event) {
+<span class="nc" id="L101">        TreeItem selected = event.getSelectedItem();</span>
+<span class="nc" id="L102">        ProjectNode node = (ProjectNode) selected.getUserObject();</span>
+        // The actual menu is determined by what is registered for the filenode
+        // type in CommandRegistry.java
+<span class="nc" id="L105">        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);</span>
+<span class="nc" id="L106">      }});</span>
+<span class="nc" id="L107">  }</span>
+
+  /*
+   * Populate the asset tree with files from the project's assets folder.
+   */
+  private void refreshAssetList() {
+<span class="nc" id="L113">    final Images images = Ode.getImageBundle();</span>
+<span class="nc" id="L114">    OdeLog.log(&quot;AssetList: refreshing for project &quot; + projectId);</span>
+<span class="nc" id="L115">    assetList.clear();</span>
+
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (assetsFolder != null) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">      for (ProjectNode node : assetsFolder.getChildren()) {</span>
+        // Add the name to the tree. We need to enclose it in a span
+        // because the CSS style for selection specifies a span.
+<span class="nc" id="L121">        String nodeName = node.getName();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (nodeName.length() &gt; 20)</span>
+<span class="nc" id="L123">          nodeName = nodeName.substring(0, 8) + &quot;...&quot; + nodeName.substring(nodeName.length() - 9,</span>
+<span class="nc" id="L124">              nodeName.length());</span>
+
+<span class="nc" id="L126">        String fileSuffix = node.getProjectId() + &quot;/&quot; + node.getFileId();</span>
+<span class="nc" id="L127">        String treeItemText = &quot;&lt;span style='cursor: pointer'&gt;&quot;;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (StorageUtil.isImageFile(fileSuffix)) {</span>
+<span class="nc" id="L129">          treeItemText += new Image(images.mediaIconImg());</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        } else if (StorageUtil.isAudioFile(fileSuffix )) {</span>
+<span class="nc" id="L131">          treeItemText += new Image(images.mediaIconAudio());</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        } else if (StorageUtil.isVideoFile(fileSuffix )) {</span>
+<span class="nc" id="L133">          treeItemText += new Image(images.mediaIconVideo());</span>
+        }
+<span class="nc" id="L135">        treeItemText += nodeName + &quot;&lt;/span&gt;&quot;;</span>
+<span class="nc" id="L136">        TreeItem treeItem = new TreeItem(new HTML(treeItemText));</span>
+        // keep a pointer from the tree item back to the actual node
+<span class="nc" id="L138">        treeItem.setUserObject(node);</span>
+<span class="nc" id="L139">        assetList.addItem(treeItem);</span>
+<span class="nc" id="L140">      }</span>
+    }
+<span class="nc" id="L142">  }</span>
+
+  public void refreshAssetList(long projectId) {
+<span class="nc" id="L145">    OdeLog.log(&quot;AssetList: switching projects from  &quot; + this.projectId +</span>
+        &quot; to &quot; + projectId);
+
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    if (project != null) {</span>
+<span class="nc" id="L149">      project.removeProjectChangeListener(this);</span>
+    }
+
+<span class="nc" id="L152">    this.projectId = projectId;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    if (projectId != 0) {</span>
+<span class="nc" id="L154">      project = Ode.getInstance().getProjectManager().getProject(projectId);</span>
+<span class="nc" id="L155">      assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();</span>
+<span class="nc" id="L156">      project.addProjectChangeListener(this);</span>
+    } else {
+<span class="nc" id="L158">      project = null;</span>
+<span class="nc" id="L159">      assetsFolder = null;</span>
+    }
+
+<span class="nc" id="L162">    refreshAssetList();</span>
+<span class="nc" id="L163">  }</span>
+
+  // ProjectChangeListener implementation
+  @Override
+  public void onProjectLoaded(Project project) {
+<span class="nc" id="L168">    OdeLog.log(&quot;AssetList: got onProjectLoaded for &quot; + project.getProjectId() + </span>
+        &quot;, current project is &quot; + projectId);
+<span class="nc" id="L170">    refreshAssetList();</span>
+<span class="nc" id="L171">  }</span>
+
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+<span class="nc" id="L175">    OdeLog.log(&quot;AssetList: got projectNodeAdded for node &quot; + node.getFileId() </span>
+<span class="nc" id="L176">        + &quot; and project &quot;  + project.getProjectId() + &quot;, current project is &quot; + projectId);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L178">      refreshAssetList();</span>
+    }
+<span class="nc" id="L180">  }</span>
+
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+<span class="nc" id="L184">    OdeLog.log(&quot;AssetLIst: got onProjectNodeRemoved for node &quot; + node.getFileId() </span>
+<span class="nc" id="L185">        + &quot; and project &quot;  + project.getProjectId() + &quot;, current project is &quot; + projectId);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L187">      refreshAssetList();</span>
+    }
+<span class="nc" id="L189">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

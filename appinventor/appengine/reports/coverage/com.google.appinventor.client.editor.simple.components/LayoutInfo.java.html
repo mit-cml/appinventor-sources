@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LayoutInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">LayoutInfo.java</span></div><h1>LayoutInfo.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * The layout information for a component.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+abstract class LayoutInfo {
+  Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap;
+  MockComponent component;
+  List&lt;MockComponent&gt; visibleChildren;
+  int width;   // Does not include the MockComponent's CSS border
+  int height;  // Does not include the MockComponent's CSS border
+
+<span class="nc" id="L24">  protected LayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap, MockComponent component) {</span>
+<span class="nc" id="L25">    this.layoutInfoMap = layoutInfoMap;</span>
+<span class="nc" id="L26">    this.component = component;</span>
+<span class="nc" id="L27">    visibleChildren = component.getShowingVisibleChildren();</span>
+<span class="nc" id="L28">    width = component.getWidthHint();</span>
+<span class="nc" id="L29">    height = component.getHeightHint();</span>
+<span class="nc" id="L30">    layoutInfoMap.put(component, this);</span>
+<span class="nc" id="L31">  }</span>
+
+  final void gatherDimensions() {
+<span class="nc" id="L34">    prepareToGatherDimensions();</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    if (width == MockVisibleComponent.LENGTH_PREFERRED) {</span>
+<span class="nc" id="L37">      calculateAndStoreAutomaticWidth();</span>
+    }
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (height == MockVisibleComponent.LENGTH_PREFERRED) {</span>
+<span class="nc" id="L40">      calculateAndStoreAutomaticHeight();</span>
+    }
+<span class="nc" id="L42">  }</span>
+
+  protected void prepareToGatherDimensions() {
+<span class="nc" id="L45">  }</span>
+
+  void calculateAndStoreAutomaticWidth() {
+<span class="nc" id="L48">    width = calculateAutomaticWidth();</span>
+<span class="nc" id="L49">  }</span>
+
+  void calculateAndStoreAutomaticHeight() {
+<span class="nc" id="L52">    height = calculateAutomaticHeight();</span>
+<span class="nc" id="L53">  }</span>
+
+  abstract int calculateAutomaticWidth();
+
+  abstract int calculateAutomaticHeight();
+
+  void cleanUp() {
+<span class="nc" id="L60">    layoutInfoMap = null;</span>
+<span class="nc" id="L61">    component = null;</span>
+<span class="nc" id="L62">    visibleChildren = null;</span>
+<span class="nc" id="L63">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

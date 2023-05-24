@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Layout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.boxes</a> &gt; <span class="el_source">Layout.java</span></div><h1>Layout.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.boxes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Superclass of layouts for boxes on a work area panel.
+ *
+ */
+public abstract class Layout {
+
+  // List of listeners for any changes in an editor.
+  private final List&lt;LayoutChangeListener&gt; layoutChangeListeners;
+
+  // Name of layout
+  private String name;
+
+  /**
+   * Creates a new layout.
+   */
+<span class="nc" id="L27">  protected Layout(String name) {</span>
+<span class="nc" id="L28">    layoutChangeListeners = new ArrayList&lt;LayoutChangeListener&gt;();</span>
+
+<span class="nc" id="L30">    this.name = name;</span>
+<span class="nc" id="L31">  }</span>
+
+  public String getName() {
+<span class="nc" id="L34">    return name;</span>
+  }
+
+  /**
+   * Applies the given layout to the work area.
+   *
+   * @param workArea  work area to apply layout to
+   */
+  public abstract void apply(WorkAreaPanel workArea);
+
+  /**
+   * Invoked upon resizing of the work area panel.
+   *
+   * @param width  new work width in pixel
+   * @param height  new work height in pixel
+   */
+  public abstract void onResize(int width, int height);
+
+  /**
+   * Return layout converted into JSON format.
+   *
+   * @return  layout in JSON format
+   */
+  public abstract String toJson();
+
+  /**
+   * Adds an {@link LayoutChangeListener} to the listener list.
+   *
+   * @param listener  the {@code LayoutChangeListener} to be added
+   */
+  public void addLayoutChangeListener(LayoutChangeListener listener) {
+<span class="nc" id="L65">    layoutChangeListeners.add(listener);</span>
+<span class="nc" id="L66">  }</span>
+
+  /**
+   * Removes an {@link LayoutChangeListener} from the listener list.
+   *
+   * @param listener  the {@code LayoutChangeListener} to be removed
+   */
+  public void removeLayoutChangeListener(LayoutChangeListener listener) {
+<span class="nc" id="L74">    layoutChangeListeners.remove(listener);</span>
+<span class="nc" id="L75">  }</span>
+
+  /**
+   * Triggers a change event to be sent to the listener on the listener list.
+   */
+  protected void fireLayoutChange() {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    for (LayoutChangeListener listener : layoutChangeListeners) {</span>
+<span class="nc" id="L82">      listener.onLayoutChange(this);</span>
+<span class="nc" id="L83">    }</span>
+<span class="nc" id="L84">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

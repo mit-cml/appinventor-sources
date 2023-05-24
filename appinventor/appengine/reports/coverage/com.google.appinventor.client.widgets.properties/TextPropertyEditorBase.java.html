@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextPropertyEditorBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">TextPropertyEditorBase.java</span></div><h1>TextPropertyEditorBase.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.TextBoxBase;
+
+/**
+ * Property editor base for text box editors.
+ *
+ */
+public class TextPropertyEditorBase extends PropertyEditor {
+
+  /**
+   * Thrown to indicate that text input is invalid.
+   */
+  public static class InvalidTextException extends Exception {
+    public InvalidTextException(String message) {
+<span class="nc" id="L38">      super(message);</span>
+<span class="nc" id="L39">    }</span>
+  }
+
+  // This is the GWT object that supports the property editor
+  // It can be TextBoxBase object, currently in App Inventor only
+  // TextBox and TextArea
+  protected TextBoxBase textEdit;
+
+  private boolean hasFocus;
+
+  /**
+   * Creates a new instance of the property editor.
+   */
+<span class="nc" id="L52">  public TextPropertyEditorBase(final TextBoxBase widget) {</span>
+
+<span class="nc" id="L54">    textEdit = widget;</span>
+
+<span class="nc" id="L56">    textEdit.addKeyPressHandler(new KeyPressHandler() {</span>
+      @Override
+      public void onKeyPress(KeyPressEvent event) {
+<span class="nc" id="L59">        handleKeyPress(event.getCharCode());</span>
+<span class="nc" id="L60">      }</span>
+    });
+<span class="nc" id="L62">    textEdit.addKeyUpHandler(new KeyUpHandler() {</span>
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+<span class="nc" id="L65">        handleKeyUp(event.getNativeKeyCode());</span>
+<span class="nc" id="L66">      }</span>
+    });
+<span class="nc" id="L68">    textEdit.addValueChangeHandler(new ValueChangeHandler() {</span>
+      @Override
+      public void onValueChange(ValueChangeEvent event) {
+<span class="nc" id="L71">        validateText();</span>
+<span class="nc" id="L72">      }</span>
+    });
+
+    // NOTE(lizlooney) - The following handlers for focus, blur, and click are needed to workaround
+    // a bug with WebKit browsers (chrome and safari) where clicking in the TextBox causes it to
+    // gain focus, but then immediately lose focus (blur). To work around the problem, we keep
+    // track of whether the TextBox has focus using a FocusHandler and a BlurHandler. Then, we use
+    // a ClickHandler and if we get a ClickEvent and the TextBox does not have focus, we explicitly
+    // call setFocus.
+<span class="nc" id="L81">    textEdit.addFocusHandler(new FocusHandler() {</span>
+      @Override
+      public void onFocus(FocusEvent event) {
+<span class="nc" id="L84">        hasFocus = true;</span>
+<span class="nc" id="L85">      }</span>
+    });
+<span class="nc" id="L87">    textEdit.addBlurHandler(new BlurHandler() {</span>
+      @Override
+      public void onBlur(BlurEvent event) {
+<span class="nc" id="L90">        hasFocus = false;</span>
+        // Calling validateText here means that we will save the changed property value (if it is
+        // valid) when this property editor loses focus (for example, when the user clicks on
+        // another property editor).
+<span class="nc" id="L94">        validateText();</span>
+<span class="nc" id="L95">      }</span>
+    });
+<span class="nc" id="L97">    textEdit.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (!hasFocus) {</span>
+<span class="nc" id="L101">          textEdit.setFocus(true);</span>
+        }
+<span class="nc" id="L103">      }</span>
+    });
+
+<span class="nc" id="L106">    initWidget(textEdit); //kludge for now fix this with instanceOf?</span>
+
+<span class="nc" id="L108">    setHeight(&quot;2em&quot;);</span>
+<span class="nc" id="L109">  }</span>
+
+  @Override
+  protected void onUnload() {
+    // onUnload is called immediately before a widget becomes detached from the browser's document.
+    // Calling validateText here means that we will save the changed property value (if it is
+    // valid) when the user clicks on another component.
+<span class="nc" id="L116">    validateText();</span>
+<span class="nc" id="L117">    super.onUnload();</span>
+<span class="nc" id="L118">  }</span>
+
+  @Override
+  protected void updateValue() {
+<span class="nc" id="L122">    textEdit.setText(property.getValue());</span>
+<span class="nc" id="L123">  }</span>
+
+  private void handleKeyPress(char keyCode) {
+<span class="nc bnc" id="L126" title="All 4 branches missed.">    if (keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_TAB) {</span>
+      // Pressing &lt;tab&gt;, &lt;enter&gt; or &lt;return&gt; will surrender focus.
+<span class="nc" id="L128">      textEdit.cancelKey();</span>
+<span class="nc" id="L129">      textEdit.setFocus(false);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    } else if (!validateKeyCode(keyCode)) {</span>
+<span class="nc" id="L131">      textEdit.cancelKey();</span>
+    }
+<span class="nc" id="L133">  }</span>
+
+  private void handleKeyUp(int keyCode) {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">    if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+      // Pressing &lt;esc&gt; will reset the content of the editor to the previous property value as well
+      // as surrender focus.
+<span class="nc" id="L139">      updateValue();  // Restore previous property value.</span>
+<span class="nc" id="L140">      textEdit.cancelKey();</span>
+<span class="nc" id="L141">      textEdit.setFocus(false);</span>
+    }
+<span class="nc" id="L143">  }</span>
+
+  /*
+   * Validates the text in the textEdit and if it is valid, sets the property
+   * value to the text.
+   */
+  private void validateText() {
+<span class="nc" id="L150">    String text = textEdit.getText();</span>
+    try {
+<span class="nc" id="L152">      validate(text);</span>
+<span class="nc" id="L153">      property.setValue(text);</span>
+<span class="nc" id="L154">    } catch (InvalidTextException e) {</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (!inMultiselectMode()) {</span>
+<span class="nc" id="L156">        String error = e.getMessage();</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">        if (error == null || error.isEmpty()) {</span>
+<span class="nc" id="L158">          error = MESSAGES.malformedInputError();</span>
+        }
+<span class="nc" id="L160">        Window.alert(error);</span>
+      }
+<span class="nc" id="L162">      updateValue();  // Restore previous property value.</span>
+<span class="nc" id="L163">    }</span>
+<span class="nc" id="L164">  }</span>
+
+  /**
+   * Validates the given key code.
+   *
+   * &lt;p/&gt;The implementation here does no validation. Subclasses may override
+   * this method to provide actual validation.
+   *
+   * @param keyCode  key code to validate
+   * @return true if the keycode is allowed, false if it is not allowed.
+   */
+  protected boolean validateKeyCode(char keyCode) {
+<span class="nc" id="L176">    return true;</span>
+  }
+
+  /**
+   * Validates the given text. Throw an InvalidTextException if the text is
+   * invalid.
+   *
+   * &lt;p/&gt;The implementation here does no validation. Subclasses may override
+   * this method to provide actual validation.
+   *
+   * @param text  input string to validate
+   * @throws InvalidTextException if the text is invalid
+   */
+  protected void validate(String text) throws InvalidTextException {
+<span class="nc" id="L190">  }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

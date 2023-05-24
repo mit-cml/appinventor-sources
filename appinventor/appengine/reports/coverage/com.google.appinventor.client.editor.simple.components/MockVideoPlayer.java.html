@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockVideoPlayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockVideoPlayer.java</span></div><h1>MockVideoPlayer.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.user.client.ui.SimplePanel;
+
+/**
+ * Mock VideoPlayer component.
+ *
+ * @author halabelson@google.com (Hal Abelson)
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class MockVideoPlayer extends MockVisibleComponent {
+
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = &quot;VideoPlayer&quot;;
+  public static final String PROPERTY_NAME_SOURCE = &quot;Source&quot;;
+
+  // GWT panel widget used to mock a Simple VideoPlayer
+  private final SimplePanel videoPlayerWidget;
+
+  /**
+   * Creates a new MockVideoPlayer component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  public MockVideoPlayer(SimpleEditor editor) {
+<span class="nc" id="L37">    super(editor, TYPE, images.videoplayer());</span>
+
+    // Initialize mock video UI
+<span class="nc" id="L40">    videoPlayerWidget = new SimplePanel();</span>
+<span class="nc" id="L41">    videoPlayerWidget.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+<span class="nc" id="L42">    videoPlayerWidget.setWidget(getIconImage());</span>
+<span class="nc" id="L43">    initComponent(videoPlayerWidget);</span>
+<span class="nc" id="L44">  }</span>
+
+  /**
+   * Sets the videoPlayer's Source property to a new value.
+   */
+  private void setSourceProperty(String text) {
+    // TODO:
+    // we should do something here to set the correct size and
+    // show an appropriate image in the designer
+    //ProjectNode asset = getAssetNode(text);
+<span class="nc" id="L54">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+    // The superclass uses getOffsetWidth, which won't work for us.
+<span class="nc" id="L59">    return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+    // The superclass uses getOffsetHeight, which won't work for us.
+<span class="nc" id="L65">    return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;</span>
+  }
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L72">    super.onPropertyChange(propertyName, newValue);</span>
+
+    // Apply changed properties to the mock component
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_SOURCE)) {</span>
+<span class="nc" id="L76">      setSourceProperty(newValue);</span>
+      // TODO(lizlooney) - If we ever add code to setSourceProperty to show an appropriate image,
+      // we'll need to call refreshForm() here.
+      //refreshForm();
+    }
+<span class="nc" id="L81">  }</span>
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc" id="L85">    return super.isPropertyVisible(propertyName);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

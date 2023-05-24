@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockLayout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockLayout.java</span></div><h1>MockLayout.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import java.util.Map;
+
+/**
+ * Defines the abstract base class for classes that control the layout of mock
+ * containers.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+<span class="nc" id="L17">abstract class MockLayout {</span>
+  static final int BORDER_SIZE = MockComponent.BORDER_SIZE;
+
+  protected int layoutWidth;
+  protected int layoutHeight;
+
+  protected MockContainer container;
+
+  /**
+   * Sets the container for this layout.
+   */
+  final void setContainer(MockContainer container) {
+<span class="nc" id="L29">    this.container = container;</span>
+<span class="nc" id="L30">  }</span>
+
+  /*
+   * Return the width of the layout
+   */
+  final int getLayoutWidth() {
+<span class="nc" id="L36">    return layoutWidth;</span>
+  }
+
+  /*
+   * Return the height of the layout
+   */
+  final int getLayoutHeight() {
+<span class="nc" id="L43">    return layoutHeight;</span>
+  }
+
+  /**
+   * Create LayoutInfo to hold information needed during layout.
+   */
+  abstract LayoutInfo createContainerLayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap);
+
+  /**
+   * Lays out the children of the container.
+   */
+  abstract void layoutChildren(LayoutInfo containerLayoutInfo);
+
+  /**
+   * @see com.google.appinventor.client.widgets.dnd.DropTarget#
+   *      onDragEnter(com.google.appinventor.client.widgets.dnd.DragSource, int, int)
+   */
+  void onDragEnter(int x, int y) {
+<span class="nc" id="L61">  }</span>
+
+  /**
+   * @see com.google.appinventor.client.widgets.dnd.DropTarget#
+   *      onDragContinue(com.google.appinventor.client.widgets.dnd.DragSource, int, int)
+   */
+  void onDragContinue(int x, int y) {
+<span class="nc" id="L68">  }</span>
+
+  /**
+   * @see com.google.appinventor.client.widgets.dnd.DropTarget#
+   *      onDragLeave(com.google.appinventor.client.widgets.dnd.DragSource)
+   */
+  void onDragLeave() {
+<span class="nc" id="L75">  }</span>
+
+  /**
+   * @param source  the component that was dropped on the layout's container
+   * @see com.google.appinventor.client.widgets.dnd.DropTarget#
+   *      onDrop(com.google.appinventor.client.widgets.dnd.DragSource, int, int, int, int)
+   * @return true if the source component was added to the layout's container,
+   *         false otherwise
+   */
+  boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L85">    return false;</span>
+  }
+
+  /**
+   * Disposes of this layout and any resources it has acquired (especially any
+   * DOM nodes attached to the associated container).
+   */
+  void dispose() {
+<span class="nc" id="L93">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

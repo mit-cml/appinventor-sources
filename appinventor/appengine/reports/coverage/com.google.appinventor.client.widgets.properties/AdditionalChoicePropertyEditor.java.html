@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdditionalChoicePropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">AdditionalChoicePropertyEditor.java</span></div><h1>AdditionalChoicePropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * Property editor for situations where a property involves additional choices,
+ * e.g. when choosing a layout, the choice of layout requires other dependent
+ * properties to be set (e.g. table layout - number of rows and columns).
+ *
+ */
+public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
+  // a little padding to keep the panel from hitting the
+  // edge of the screen
+  private static final int ADDITIONAL_CHOICE_ONSCREEN_PADDING = 10;
+
+  // UI elements
+  private final TextBox summary;
+  protected PopupPanel popup;
+  private Button okButton;
+
+  /**
+   * Creates a new additional choice dialog.
+   */
+<span class="nc" id="L39">  protected AdditionalChoicePropertyEditor() {</span>
+<span class="nc" id="L40">    summary = new TextBox();</span>
+<span class="nc" id="L41">    summary.setReadOnly(true);</span>
+<span class="nc" id="L42">    summary.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L45">        openAdditionalChoiceDialog();</span>
+<span class="nc" id="L46">      }</span>
+    });
+
+<span class="nc" id="L49">    initWidget(summary);</span>
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * Initializes the additional choice panel.
+   *
+   * &lt;p&gt;This method must be called from any implementor's constructor.
+   *
+   * @param panel  panel containing additional choices
+   */
+  protected void initAdditionalChoicePanel(Panel panel) {
+<span class="nc" id="L60">    Button cancelButton = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L61">    cancelButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L64">        closeAdditionalChoiceDialog(false);</span>
+<span class="nc" id="L65">      }</span>
+    });
+<span class="nc" id="L67">    okButton = new Button(MESSAGES.okButton());</span>
+<span class="nc" id="L68">    okButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L71">        closeAdditionalChoiceDialog(true);</span>
+<span class="nc" id="L72">      }</span>
+    });
+
+<span class="nc" id="L75">    HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L76">    buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L77">    buttonPanel.add(okButton);</span>
+<span class="nc" id="L78">    buttonPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L79">    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);</span>
+<span class="nc" id="L80">    buttonPanel.setVerticalAlignment(HorizontalPanel.ALIGN_BOTTOM);</span>
+
+<span class="nc" id="L82">    VerticalPanel contentPanel = new VerticalPanel();</span>
+<span class="nc" id="L83">    panel.setHeight(&quot;100%&quot;);</span>
+<span class="nc" id="L84">    contentPanel.add(panel);</span>
+<span class="nc" id="L85">    contentPanel.add(buttonPanel);</span>
+<span class="nc" id="L86">    contentPanel.setCellHeight(buttonPanel, (cancelButton.getOffsetHeight() + 10) + &quot;px&quot;);</span>
+
+<span class="nc" id="L88">    popup = new PopupPanel(false, true);</span>
+<span class="nc" id="L89">    popup.setAutoHideEnabled(true);</span>
+<span class="nc" id="L90">    popup.setWidget(contentPanel);</span>
+<span class="nc" id="L91">    popup.setStylePrimaryName(&quot;ode-MultipleChoicePropertyEditor&quot;);</span>
+<span class="nc" id="L92">  }</span>
+
+  @Override
+  protected void updateValue() {
+<span class="nc" id="L96">    summary.setText(getPropertyValueSummary() + &quot;...&quot;);</span>
+<span class="nc" id="L97">  }</span>
+
+  /**
+   * Returns a textual summary of the edited property's current value.
+   *
+   * &lt;p&gt;This is displayed to the user in the property editor pane before the
+   * user decides to actually modify the property.
+   */
+  protected String getPropertyValueSummary() {
+<span class="nc" id="L106">    return property.getValue();</span>
+  }
+
+  /**
+   * Sets the number of visible characters in the text box for the summary.
+   *
+   * @param length the number of visible characters
+   */
+  protected void setSummaryVisibleLength(int length) {
+<span class="nc" id="L115">    summary.setVisibleLength(length);</span>
+<span class="nc" id="L116">  }</span>
+
+  /**
+   * Opens the additional choice dialog.
+   */
+  protected void openAdditionalChoiceDialog() {
+<span class="nc" id="L122">    popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {</span>
+      public void setPosition(int offsetWidth, int offsetHeight){
+        // adjust the x and y positions so that the entire panel
+        // is on-screen
+<span class="nc" id="L126">        int xPosition = getAbsoluteLeft();</span>
+<span class="nc" id="L127">        int yPosition = getAbsoluteTop();</span>
+<span class="nc" id="L128">        int xExtrude =</span>
+<span class="nc" id="L129">          xPosition + offsetWidth - Window.getClientWidth() - Window.getScrollLeft();</span>
+<span class="nc" id="L130">        int yExtrude =</span>
+<span class="nc" id="L131">          yPosition + offsetHeight - Window.getClientHeight() - Window.getScrollTop();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (xExtrude &gt; 0) {</span>
+<span class="nc" id="L133">          xPosition -= (xExtrude + ADDITIONAL_CHOICE_ONSCREEN_PADDING);</span>
+        }
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (yExtrude &gt; 0) {</span>
+<span class="nc" id="L136">          yPosition -= (yExtrude + ADDITIONAL_CHOICE_ONSCREEN_PADDING);</span>
+        }
+<span class="nc" id="L138">        popup.setPopupPosition(xPosition, yPosition);</span>
+<span class="nc" id="L139">      }</span>
+    });
+<span class="nc" id="L141">  }</span>
+
+  protected final boolean isOpen() {
+<span class="nc bnc" id="L144" title="All 4 branches missed.">    return popup != null &amp;&amp; popup.isShowing();</span>
+  }
+
+  protected final void closeAdditionalChoiceDialog(boolean ok) {
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    if (ok) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">      if (!okAction()) {</span>
+        // Dialog is not allowed to close.
+<span class="nc" id="L151">        return;</span>
+      }
+    } else {
+<span class="nc" id="L154">      updateValue(); // Restore previous property value</span>
+    }
+<span class="nc" id="L156">    popup.hide();</span>
+<span class="nc" id="L157">  }</span>
+
+  /**
+   * Invoked when the additional choice dialog was exited by pressing the OK
+   * button, or because closeAdditionalChoiceDialog was called with true.
+   *
+   * @return true if the dialog is allowed to close
+   */
+  protected abstract boolean okAction();
+
+  protected void setOkButtonEnabled(boolean enabled) {
+<span class="nc" id="L168">    okButton.setEnabled(enabled);</span>
+<span class="nc" id="L169">  }</span>
+
+  @Override
+  public void setMultipleValues(boolean multiple) {
+<span class="nc" id="L173">    super.setMultipleValues(multiple);</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">    if (multiple) {</span>
+<span class="nc" id="L175">      updateValue();</span>
+    }
+<span class="nc" id="L177">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

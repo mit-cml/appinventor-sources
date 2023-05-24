@@ -1,0 +1,1491 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockForm.java</span></div><h1>MockForm.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.BadPropertyEditorException;
+import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TreeItem;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Mock Form component. This implementation provides two main preview sizes corresponding to
+ * 'normal' and 'large' buckets (http://developer.android.com/guide/practices/screens_support.html).
+ * Normal size is a 1:1 with pixels on a device with dpi:160. We use that as the baseline for the
+ * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
+ */
+public final class MockForm extends MockContainer {
+
+  /*
+   * Widget for the mock form title bar.
+   */
+  private class TitleBar extends Composite {
+    private static final int TITLEBAR_HEIGHT = 24;
+    private static final int ACTIONBAR_HEIGHT = 56;
+    private static final int NAVBAR_HEIGHT = 44;
+
+    // UI elements
+    private Label title;
+    private Button menuButton;
+    private AbsolutePanel bar;
+    private Image bookIconWhite;
+    private Image bookIconBlack;
+    private boolean actionBar;
+    private boolean navBar;
+    private String backgroundColor;
+
+    public String getTitle() {
+<span class="nc" id="L74">      return title.getText();</span>
+    }
+
+    /*
+     * Creates a new title bar.
+     */
+<span class="nc" id="L80">    TitleBar() {</span>
+<span class="nc" id="L81">      title = new Label();</span>
+<span class="nc" id="L82">      title.setStylePrimaryName(&quot;ode-SimpleMockFormTitle&quot;);</span>
+
+<span class="nc" id="L84">      menuButton = new Button();</span>
+<span class="nc" id="L85">      menuButton.setText(&quot;\u22ee&quot;);</span>
+<span class="nc" id="L86">      menuButton.setStylePrimaryName(&quot;ode-SimpleMockFormMenuButton&quot;);</span>
+
+<span class="nc" id="L88">      bookIconWhite = new Image(images.bookIconWhite());</span>
+<span class="nc" id="L89">      bookIconWhite.setStylePrimaryName(&quot;ode-SimpleMockFormIconIOSWhite&quot;);</span>
+<span class="nc" id="L90">      bookIconBlack = new Image(images.bookIconBlack());</span>
+<span class="nc" id="L91">      bookIconBlack.setStylePrimaryName(&quot;ode-SimpleMockFormIconIOSBlack&quot;);</span>
+
+<span class="nc" id="L93">      bar = new AbsolutePanel();</span>
+<span class="nc" id="L94">      bar.add(title);</span>
+<span class="nc" id="L95">      bar.add(menuButton);</span>
+
+<span class="nc" id="L97">      initWidget(bar);</span>
+
+<span class="nc" id="L99">      setStylePrimaryName(&quot;ode-SimpleMockFormTitleBar&quot;);</span>
+<span class="nc" id="L100">      setSize(&quot;100%&quot;, TITLEBAR_HEIGHT + &quot;px&quot;);</span>
+<span class="nc" id="L101">    }</span>
+
+    /*
+     * Changes the title in the title bar.
+     */
+    void changeTitle(String newTitle) {
+<span class="nc" id="L107">      title.setText(newTitle);</span>
+<span class="nc" id="L108">    }</span>
+
+    void setActionBar(boolean actionBar , boolean navBar) {
+<span class="nc" id="L111">      this.actionBar = actionBar;</span>
+<span class="nc" id="L112">      this.navBar = navBar;</span>
+<span class="nc bnc" id="L113" title="All 4 branches missed.">      setSize(&quot;100%&quot;, (navBar ? NAVBAR_HEIGHT : (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT)) + &quot;px&quot;);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      if (actionBar) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (navBar) {</span>
+<span class="nc" id="L116">          removeStyleDependentName(&quot;ActionBar&quot;);</span>
+<span class="nc" id="L117">          addStyleDependentName(&quot;NavBar&quot;);</span>
+        } else {
+<span class="nc" id="L119">          removeStyleDependentName(&quot;NavBar&quot;);</span>
+<span class="nc" id="L120">          addStyleDependentName(&quot;ActionBar&quot;);</span>
+        }
+<span class="nc" id="L122">        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, backgroundColor);</span>
+
+      } else {
+<span class="nc" id="L125">        removeStyleDependentName(&quot;ActionBar&quot;);</span>
+<span class="nc" id="L126">        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, &quot;&amp;HFF696969&quot;);</span>
+      }
+<span class="nc" id="L128">    }</span>
+
+    void changeBookmarkIcon(boolean black) {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      bar.remove(black ? bookIconWhite : bookIconBlack);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">      bar.add(black ? bookIconBlack : bookIconWhite);</span>
+<span class="nc" id="L133">    }</span>
+
+    void setBackgroundColor(String color) {
+<span class="nc" id="L136">      this.backgroundColor = color;</span>
+<span class="nc bnc" id="L137" title="All 4 branches missed.">      if (actionBar || navBar) {</span>
+<span class="nc" id="L138">        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, color);</span>
+      }
+<span class="nc" id="L140">    }</span>
+
+    int getHeight() {
+<span class="nc bnc" id="L143" title="All 4 branches missed.">      return navBar ? NAVBAR_HEIGHT : (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT);</span>
+    }
+  }
+
+  /*
+   * Widget for a mock phone status bar.
+   */
+  private class PhoneBar extends Composite {
+    private static final int HEIGHT = 24;
+    private static final int IPAD_HEIGHT = 20;
+    private static final int IPHONEX_HEIGHT = 44;
+
+    // UI elements
+    private DockPanel bar;
+
+    private HorizontalPanel phoneBarLeftPanel;
+    private HorizontalPanel phoneBarRightPanel;
+    private HorizontalPanel iPadPhoneBarLeftPanel;
+    private HorizontalPanel iPadPhoneBarRightPanel;
+    private Image blackIconsLeft;
+    private Image blackIconsRight;
+    private Image whiteIconsLeft;
+    private Image whiteIconsRight;
+    private Image iPadWhiteIconsLeft;
+    private Image iPadWhiteIconsRight;
+    private Image iPadBlackIconsLeft;
+    private Image iPadBlackIconsRight;
+    private boolean visible;
+
+    /*
+     * Creates a new phone status bar.
+     */
+<span class="nc" id="L175">    PhoneBar() {</span>
+<span class="nc" id="L176">      Image phoneBarImage = new Image(images.phonebar());</span>
+<span class="nc" id="L177">      bar = new DockPanel();</span>
+<span class="nc" id="L178">      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);</span>
+<span class="nc" id="L179">      bar.add(phoneBarImage, DockPanel.EAST);</span>
+
+<span class="nc" id="L181">      initWidget(bar);</span>
+<span class="nc" id="L182">      setStylePrimaryName(&quot;ode-SimpleMockFormPhoneBarAndroidHolo&quot;);</span>
+<span class="nc" id="L183">      setSize(&quot;100%&quot;, HEIGHT + &quot;px&quot;);</span>
+<span class="nc" id="L184">    }</span>
+
+<span class="nc" id="L186">    PhoneBar(String color) {</span>
+<span class="nc" id="L187">      Image phoneBarAndroidMaterial = new Image(images.phonebarAndroidMaterial());</span>
+
+<span class="nc" id="L189">      bar = new DockPanel();</span>
+<span class="nc" id="L190">      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);</span>
+<span class="nc" id="L191">      bar.add(phoneBarAndroidMaterial, DockPanel.EAST);</span>
+
+<span class="nc" id="L193">      initWidget(bar);</span>
+<span class="nc" id="L194">      MockComponentsUtil.setWidgetBackgroundColor(bar, color);</span>
+<span class="nc" id="L195">      setStylePrimaryName(&quot;ode-SimpleMockFormPhoneBarAndroidMaterial&quot;);</span>
+<span class="nc" id="L196">      setSize(&quot;100%&quot;, HEIGHT + &quot;px&quot;);</span>
+<span class="nc" id="L197">    }</span>
+
+<span class="nc" id="L199">    PhoneBar(boolean blackIcons, int size, String color) {</span>
+      // icons for iPhone
+<span class="nc" id="L201">      blackIconsLeft = new Image(images.phonebariPhoneLeftBlack());</span>
+<span class="nc" id="L202">      blackIconsRight = new Image(images.phonebariPhoneRightBlack());</span>
+<span class="nc" id="L203">      whiteIconsLeft = new Image(images.phonebariPhoneLeftWhite());</span>
+<span class="nc" id="L204">      whiteIconsRight = new Image(images.phonebariPhoneRightWhite());</span>
+
+<span class="nc" id="L206">      phoneBarLeftPanel = new HorizontalPanel();</span>
+<span class="nc" id="L207">      phoneBarLeftPanel.setStylePrimaryName(&quot;ode-SimpleMockFormLeft&quot;);</span>
+<span class="nc" id="L208">      phoneBarRightPanel = new HorizontalPanel();</span>
+<span class="nc" id="L209">      phoneBarRightPanel.setStylePrimaryName(&quot;ode-SimpleMockFormRight&quot;);</span>
+
+      //icons for iPad
+<span class="nc" id="L212">      iPadWhiteIconsLeft = new Image(images.phonebariPadLeftWhite());</span>
+<span class="nc" id="L213">      iPadWhiteIconsRight = new Image(images.phonebariPadRightWhite());</span>
+<span class="nc" id="L214">      iPadBlackIconsLeft = new Image(images.phonebariPadLeftBlack());</span>
+<span class="nc" id="L215">      iPadBlackIconsRight = new Image(images.phonebariPadRightBlack());</span>
+
+<span class="nc" id="L217">      iPadPhoneBarLeftPanel = new HorizontalPanel();</span>
+<span class="nc" id="L218">      iPadPhoneBarLeftPanel.setStylePrimaryName(&quot;ode-SimpleMockFormLeftIPad&quot;);</span>
+<span class="nc" id="L219">      iPadPhoneBarRightPanel = new HorizontalPanel();</span>
+<span class="nc" id="L220">      iPadPhoneBarRightPanel.setStylePrimaryName(&quot;ode-SimpleMockFormRightIPad&quot;);</span>
+
+<span class="nc" id="L222">      bar = new DockPanel();</span>
+<span class="nc" id="L223">      setIconColor(blackIcons, size);</span>
+<span class="nc" id="L224">      bar.add(phoneBarLeftPanel, DockPanel.WEST);</span>
+<span class="nc" id="L225">      bar.add(phoneBarRightPanel, DockPanel.EAST);</span>
+<span class="nc" id="L226">      bar.add(iPadPhoneBarLeftPanel, DockPanel.WEST);</span>
+<span class="nc" id="L227">      bar.add(iPadPhoneBarRightPanel, DockPanel.EAST);</span>
+<span class="nc" id="L228">      initWidget(bar);</span>
+<span class="nc" id="L229">      MockComponentsUtil.setWidgetBackgroundColor(bar, color);</span>
+<span class="nc" id="L230">      setStylePrimaryName(&quot;ode-SimpleMockFormPhoneBariOS&quot;);</span>
+<span class="nc" id="L231">      setSize(size);</span>
+<span class="nc" id="L232">    }</span>
+
+    // changing Icons in Device Default and Black Title Text
+    void setIconColor(boolean blackIcons, int size) {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">      if (size == 0) {</span>
+<span class="nc" id="L237">        bar.removeStyleDependentName(&quot;iPad&quot;);</span>
+<span class="nc" id="L238">        bar.addStyleDependentName(&quot;iPhone&quot;);</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        phoneBarLeftPanel.remove(blackIcons ? whiteIconsLeft : blackIconsLeft);</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">        phoneBarRightPanel.remove(blackIcons ? whiteIconsRight : blackIconsRight);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        phoneBarLeftPanel.add(blackIcons ? blackIconsLeft : whiteIconsLeft);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        phoneBarRightPanel.add(blackIcons ? blackIconsRight : whiteIconsRight);</span>
+      } else {
+<span class="nc" id="L244">        bar.removeStyleDependentName(&quot;iPhone&quot;);</span>
+<span class="nc" id="L245">        bar.addStyleDependentName(&quot;iPad&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        iPadPhoneBarLeftPanel.remove(blackIcons? iPadWhiteIconsLeft : iPadBlackIconsLeft);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        iPadPhoneBarRightPanel.remove(blackIcons ? iPadWhiteIconsRight : iPadBlackIconsRight);</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">        iPadPhoneBarLeftPanel.add(blackIcons ? iPadBlackIconsLeft : iPadWhiteIconsLeft);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        iPadPhoneBarRightPanel.add(blackIcons? iPadBlackIconsRight : iPadWhiteIconsRight);</span>
+      }
+<span class="nc" id="L251">    }</span>
+
+    //set status bar size for the iOS theme
+    void setSize(int size) {
+<span class="nc bnc" id="L255" title="All 2 branches missed.">      setSize(&quot;100%&quot;, (size == 0 ? IPHONEX_HEIGHT : IPAD_HEIGHT) + &quot;px&quot;);</span>
+<span class="nc" id="L256">    }</span>
+
+    void setVisibility(boolean visible) {
+<span class="nc" id="L259">      this.visible = visible;</span>
+<span class="nc" id="L260">    }</span>
+
+    int getHeight() {
+      // Adjust for CSS borders, which are not included in the height value
+<span class="nc bnc" id="L264" title="All 2 branches missed.">      return visible ? PhoneBar.HEIGHT + 3 : 0;</span>
+    }
+  }
+
+  /*
+   *
+   * Widget for a mock phone navigation bar; Shows at the bottom of the viewer
+   */
+  private class NavigationBar extends Composite {
+    private static final int HEIGHT = 44;
+
+    // UI elements
+    private AbsolutePanel bar;
+
+    /*
+     * Creates a new phone navigation bar; Shows at the bottom of the viewer.
+     */
+<span class="nc" id="L281">    NavigationBar() {</span>
+<span class="nc" id="L282">      bar = new AbsolutePanel();</span>
+<span class="nc" id="L283">      initWidget(bar);</span>
+
+<span class="nc" id="L285">      setStylePrimaryName(&quot;ode-SimpleMockFormNavigationBarPortrait&quot;);</span>
+<span class="nc" id="L286">    }</span>
+
+    public int getHeight() {
+<span class="nc" id="L289">      return HEIGHT;</span>
+    }
+  }
+
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = &quot;Form&quot;;
+
+  private static final String VISIBLE_TYPE = &quot;Screen&quot;;
+
+  // Currently App Inventor provides two main sizes that correspond to 'normal' and 'large'
+  // screens. We use phone=normal (470 x 320 DP) and tablet=large (640 x 480 DP).
+  // More information about 'bucket' sizes at:
+  // http://developer.android.com/guide/practices/screens_support.html
+  // The values for Phone and Tablet were decided by trial and error. The main reason is that in
+  // the designer we use sizes of GWT widgets, and not the sizes of the actual Android widgets.
+
+  private static final int PHONE_PORTRAIT_WIDTH = 320;
+  private static final int PHONE_PORTRAIT_HEIGHT = 470 + 35; // Adds 35 for the navigation bar
+  private static final int PHONE_LANDSCAPE_WIDTH = PHONE_PORTRAIT_HEIGHT;
+  private static final int PHONE_LANDSCAPE_HEIGHT = PHONE_PORTRAIT_WIDTH;
+
+  private static final int TABLET_PORTRAIT_WIDTH = 480;
+  private static final int TABLET_PORTRAIT_HEIGHT = 640 + 35; // Adds 35 for the navigation bar
+  private static final int TABLET_LANDSCAPE_WIDTH = TABLET_PORTRAIT_HEIGHT;
+  private static final int TABLET_LANDSCAPE_HEIGHT = TABLET_PORTRAIT_WIDTH;
+
+  private static final int PHONE_PORTRAIT_WIDTH_iPHONE = 320;
+  private static final int PHONE_PORTRAIT_HEIGHT_iPHONE= 650;
+  private static final int PHONE_LANDSCAPE_WIDTH_iPHONE = PHONE_PORTRAIT_HEIGHT_iPHONE;
+  private static final int PHONE_LANDSCAPE_HEIGHT_iPHONE= PHONE_PORTRAIT_WIDTH_iPHONE;
+
+  // These are default values but they can be changed in the changePreviewSize method
+<span class="nc" id="L323">  private int PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;</span>
+<span class="nc" id="L324">  private int PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;</span>
+<span class="nc" id="L325">  private int LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;</span>
+<span class="nc" id="L326">  private int LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;</span>
+<span class="nc" id="L327">  private boolean landscape = false;</span>
+<span class="nc" id="L328">  private int idxPhoneSize = 0;</span>
+
+  //Default values for theme style
+<span class="nc" id="L331">  private boolean changePreviewFlag = false;</span>
+<span class="nc" id="L332">  private boolean blackIcons = false ;</span>
+<span class="nc" id="L333">  private int idxPhonePreviewStyle = -1;</span>
+<span class="nc" id="L334">  private String primaryDarkColor=&quot;&amp;HFF41521C&quot;;</span>
+<span class="nc" id="L335">  private String primaryColor=&quot;&amp;HFFA5CF47&quot;;</span>
+<span class="nc" id="L336">  private boolean actionBar = false;</span>
+<span class="nc" id="L337">  private boolean showStatusBar = true;</span>
+
+  // Property names
+  private static final String PROPERTY_NAME_TITLE = &quot;Title&quot;;
+  private static final String PROPERTY_NAME_SCREEN_ORIENTATION = &quot;ScreenOrientation&quot;;
+  private static final String PROPERTY_NAME_SCROLLABLE = &quot;Scrollable&quot;;
+  private static final String PROPERTY_NAME_ICON = &quot;Icon&quot;;
+  private static final String PROPERTY_NAME_VCODE = &quot;VersionCode&quot;;
+  private static final String PROPERTY_NAME_VNAME = &quot;VersionName&quot;;
+  private static final String PROPERTY_NAME_ANAME = &quot;AppName&quot;;
+  private static final String PROPERTY_NAME_SIZING = &quot;Sizing&quot;; // Don't show except on screen1
+  private static final String PROPERTY_NAME_TITLEVISIBLE = &quot;TitleVisible&quot;;
+  private static final String PROPERTY_NAME_SHOW_STATUS_BAR = &quot;ShowStatusBar&quot;;
+  // Don't show except on screen1
+  private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = &quot;ShowListsAsJson&quot;;
+  private static final String PROPERTY_NAME_TUTORIAL_URL = &quot;TutorialURL&quot;;
+  private static final String PROPERTY_NAME_BLOCK_SUBSET = &quot;BlocksToolkit&quot;;
+  private static final String PROPERTY_NAME_ACTIONBAR = &quot;ActionBar&quot;;
+  private static final String PROPERTY_NAME_PRIMARY_COLOR = &quot;PrimaryColor&quot;;
+  private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = &quot;PrimaryColorDark&quot;;
+  private static final String PROPERTY_NAME_ACCENT_COLOR = &quot;AccentColor&quot;;
+  private static final String PROPERTY_NAME_THEME = &quot;Theme&quot;;
+  private static final String PROPERTY_NAME_DEFAULTFILESCOPE = &quot;DefaultFileScope&quot;;
+
+  // Form UI components
+  AbsolutePanel formWidget;
+  AbsolutePanel phoneWidget;
+  AbsolutePanel responsivePanel;
+  AbsolutePanel notchPanel;
+
+  ScrollPanel scrollPanel;
+  private TitleBar titleBar;
+  private PhoneBar phoneBar;
+  private NavigationBar navigationBar;
+<span class="nc" id="L371">  private List&lt;MockComponent&gt; selectedComponents = new ArrayList&lt;MockComponent&gt;(Collections.singleton(this));</span>
+<span class="nc" id="L372">  private MockContainer pasteTarget = this;</span>
+
+  int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
+  private int screenHeight;
+  int usableScreenHeight;       // TEMP: Make package visible so we can use it MockHVLayoutBase
+  int usableScreenWidth;
+
+  // Set of listeners for any changes of the form
+<span class="nc" id="L380">  final HashSet&lt;FormChangeListener&gt; formChangeListeners = new HashSet&lt;FormChangeListener&gt;();</span>
+
+  // Set of listeners for DesignPreviewChanges
+<span class="nc" id="L383">  final HashSet&lt;DesignPreviewChangeListener&gt; designPreviewChangeListeners = new HashSet&lt;DesignPreviewChangeListener&gt;();</span>
+
+  // Don't access the verticalScrollbarWidth field directly. Use getVerticalScrollbarWidth().
+  private static int verticalScrollbarWidth;
+
+  private MockFormLayout myLayout;
+
+  // flag to control attempting to enable/disable vertical
+  // alignment when scrollable property is changed
+<span class="nc" id="L392">  private boolean initialized = false;</span>
+
+  private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
+
+  public static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = &quot;AlignHorizontal&quot;;
+  public static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = &quot;AlignVertical&quot;;
+
+  /**
+   * Creates a new MockForm component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  public MockForm(SimpleEditor editor) {
+    // Note(Hal): This helper thing is a kludge because I really want to write:
+    // myLayout = new MockHVLayout(orientation);
+    // super(editor, type, icon, myLayout);
+    // but Java won't let me do that.
+
+<span class="nc" id="L410">    super(editor, TYPE, images.form(), MockFormHelper.makeLayout());</span>
+    // Note(hal): There better not be any calls to MockFormHelper before the
+    // next instruction.  Note that the Helper methods are synchronized to avoid possible
+    // future problems if we ever have threads creating forms in parallel.
+<span class="nc" id="L414">    myLayout = MockFormHelper.getLayout();</span>
+
+<span class="nc" id="L416">    phoneWidget = new AbsolutePanel();</span>
+<span class="nc" id="L417">    phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhonePortrait&quot;);</span>
+<span class="nc" id="L418">    formWidget = new AbsolutePanel();</span>
+<span class="nc" id="L419">    formWidget.setStylePrimaryName(&quot;ode-SimpleMockForm&quot;);</span>
+<span class="nc" id="L420">    notchPanel = new AbsolutePanel();</span>
+<span class="nc" id="L421">    notchPanel.setStylePrimaryName(&quot;ode-SimpleMockFormNotch&quot;);</span>
+<span class="nc" id="L422">    notchPanel.getElement().getStyle().clearPosition();</span>
+<span class="nc" id="L423">    notchPanel.getElement().getStyle().clearOverflow();</span>
+<span class="nc" id="L424">    responsivePanel = new AbsolutePanel();</span>
+
+    // Initialize mock form UI by adding the phone bar and title bar.
+<span class="nc" id="L427">    changePreview();</span>
+<span class="nc" id="L428">    responsivePanel.add(phoneBar);</span>
+<span class="nc" id="L429">    titleBar = new TitleBar();</span>
+<span class="nc" id="L430">    responsivePanel.add(titleBar);</span>
+
+    // Put a ScrollPanel around the rootPanel.
+<span class="nc" id="L433">    scrollPanel = new ScrollPanel(rootPanel);</span>
+<span class="nc" id="L434">    responsivePanel.add(scrollPanel);</span>
+
+<span class="nc" id="L436">    formWidget.add(responsivePanel);</span>
+
+    //Add navigation bar at the bottom of the viewer.
+<span class="nc" id="L439">    navigationBar = new NavigationBar();</span>
+<span class="nc" id="L440">    formWidget.add(navigationBar);</span>
+
+<span class="nc" id="L442">    phoneWidget.add(formWidget);</span>
+<span class="nc" id="L443">    phoneWidget.add(notchPanel);</span>
+<span class="nc" id="L444">    initComponent(phoneWidget);</span>
+
+    // Set up the initial state of the vertical alignment property editor and its dropdowns
+    try {
+<span class="nc" id="L448">      myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);</span>
+<span class="nc" id="L449">    } catch (BadPropertyEditorException e) {</span>
+<span class="nc" id="L450">      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());</span>
+<span class="nc" id="L451">      return;</span>
+<span class="nc" id="L452">    }</span>
+<span class="nc" id="L453">    enableAndDisableDropdowns();</span>
+<span class="nc" id="L454">    initialized = true;</span>
+    // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
+<span class="nc" id="L456">    setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));</span>
+<span class="nc" id="L457">  }</span>
+
+  public void changePreviewSize(int width, int height, int idx) {
+    // It will definitely be modified in the future to add more options.
+<span class="nc" id="L461">    PORTRAIT_WIDTH = width;</span>
+<span class="nc" id="L462">    PORTRAIT_HEIGHT = height;</span>
+<span class="nc" id="L463">    LANDSCAPE_WIDTH = height;</span>
+<span class="nc" id="L464">    LANDSCAPE_HEIGHT = width;</span>
+
+<span class="nc" id="L466">    idxPhoneSize = idx;</span>
+<span class="nc" id="L467">    setPhoneStyle();</span>
+<span class="nc" id="L468">    updateScreenSize();</span>
+<span class="nc" id="L469">  }</span>
+
+  private void updateScreenSize() {
+<span class="nc bnc" id="L472" title="All 2 branches missed.">    if (landscape) {</span>
+<span class="nc bnc" id="L473" title="All 4 branches missed.">      if (idxPhoneSize == 0 &amp;&amp; idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L474">        resizePanel(PHONE_LANDSCAPE_WIDTH_iPHONE, PHONE_LANDSCAPE_HEIGHT_iPHONE);</span>
+      } else {
+<span class="nc" id="L476">        resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);</span>
+      }
+    } else {
+<span class="nc bnc" id="L479" title="All 4 branches missed.">      if (idxPhoneSize == 0 &amp;&amp; idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L480">        resizePanel(PHONE_PORTRAIT_WIDTH_iPHONE, PHONE_PORTRAIT_HEIGHT_iPHONE);</span>
+      } else {
+<span class="nc" id="L482">        resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);</span>
+      }
+    }
+<span class="nc" id="L485">  }</span>
+
+  public void changePhonePreview(int idx, String previewName ) {
+    // storing the new preview style in the user settings
+<span class="nc" id="L489">    editor.getProjectEditor().changeProjectSettingsProperty(</span>
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, previewName);
+
+<span class="nc" id="L493">    idxPhonePreviewStyle = idx;</span>
+<span class="nc" id="L494">    changePreviewFlag = true;</span>
+<span class="nc" id="L495">    changePreview();</span>
+<span class="nc" id="L496">    setPhoneStyle();</span>
+<span class="nc" id="L497">    updateScreenSize();</span>
+<span class="nc" id="L498">  }</span>
+
+  private void setPhoneStyle() {
+<span class="nc bnc" id="L501" title="All 2 branches missed.">    if (landscape) {</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhoneLandscape&quot;);</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhoneLandscapeTablet&quot;);</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhoneLandscapeMonitor&quot;);</span>
+<span class="nc" id="L505">      navigationBar.setStylePrimaryName(&quot;ode-SimpleMockFormNavigationBarLandscape&quot;);</span>
+    } else {
+<span class="nc bnc" id="L507" title="All 2 branches missed.">      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhonePortrait&quot;);</span>
+<span class="nc bnc" id="L508" title="All 2 branches missed.">      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhonePortraitTablet&quot;);</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName(&quot;ode-SimpleMockFormPhonePortraitMonitor&quot;);</span>
+<span class="nc" id="L510">      navigationBar.setStylePrimaryName(&quot;ode-SimpleMockFormNavigationBarPortrait&quot;);</span>
+    }
+<span class="nc bnc" id="L512" title="All 2 branches missed.">    if (idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L513">      setIOSPhoneStyle();</span>
+    }
+<span class="nc" id="L515">    fireDesignPreviewChange();</span>
+<span class="nc" id="L516">  }</span>
+
+<span class="nc" id="L518">  private static String[] iosSizesLandscape = {</span>
+      &quot;ode-SimpleMockFormIOSLandscape&quot;,
+      &quot;ode-SimpleMockFormIOSLandscapeTablet&quot;,
+      &quot;ode-SimpleMockFormIOSLandscapeMonitor&quot;
+  };
+
+<span class="nc" id="L524">  private static String[] iosSizesPortrait = {</span>
+      &quot;ode-SimpleMockFormIOSPortrait&quot;,
+      &quot;ode-SimpleMockFormIOSPortraitTablet&quot;,
+      &quot;ode-SimpleMockFormIOSPortraitMonitor&quot;
+  };
+
+  private void setIOSPhoneStyle() {
+<span class="nc bnc" id="L531" title="All 2 branches missed.">    if (landscape) {</span>
+<span class="nc" id="L532">      phoneWidget.setStylePrimaryName(iosSizesLandscape[idxPhoneSize]);</span>
+    } else {
+<span class="nc" id="L534">      phoneWidget.setStylePrimaryName(iosSizesPortrait[idxPhoneSize]);</span>
+    }
+<span class="nc" id="L536">    navigationBar.setStylePrimaryName(&quot;ode-SimpleMockFormNavigationBarIOS&quot;);</span>
+<span class="nc" id="L537">    phoneBar.setIconColor(blackIcons, idxPhoneSize);</span>
+<span class="nc" id="L538">    phoneBar.setSize(idxPhoneSize);</span>
+<span class="nc" id="L539">  }</span>
+
+  /*
+   * Resizes the scrollPanel, responsivePanel, and formWidget based on the screen size.
+   */
+  private void resizePanel(int newWidth, int newHeight){
+<span class="nc" id="L545">    screenWidth = newWidth;</span>
+<span class="nc" id="L546">    screenHeight = newHeight;</span>
+
+<span class="nc bnc" id="L548" title="All 2 branches missed.">    if (landscape) {</span>
+<span class="nc" id="L549">      String val = editor.getProjectEditor().getProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+<span class="nc bnc" id="L552" title="All 2 branches missed.">      if (val.equals(&quot;iOS&quot;)) {</span>
+<span class="nc" id="L553">        usableScreenWidth = screenWidth;</span>
+      } else {
+<span class="nc" id="L555">        usableScreenWidth = screenWidth - navigationBar.getHeight();</span>
+      }
+<span class="nc" id="L557">      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();</span>
+<span class="nc" id="L558">    } else {</span>
+<span class="nc" id="L559">      usableScreenWidth = screenWidth;</span>
+<span class="nc" id="L560">      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();</span>
+    }
+<span class="nc" id="L562">    rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);</span>
+<span class="nc" id="L563">    scrollPanel.setPixelSize(usableScreenWidth + getVerticalScrollbarWidth(), usableScreenHeight);</span>
+<span class="nc" id="L564">    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);</span>
+    // Store properties
+<span class="nc" id="L566">    changeProperty(PROPERTY_NAME_WIDTH, &quot;&quot; + usableScreenWidth);</span>
+<span class="nc" id="L567">    boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));</span>
+<span class="nc bnc" id="L568" title="All 2 branches missed.">    if (!scrollable) {</span>
+<span class="nc" id="L569">      changeProperty(PROPERTY_NAME_HEIGHT, &quot;&quot; + usableScreenHeight);</span>
+    }
+<span class="nc" id="L571">  }</span>
+
+  /*
+   * Changes the preview of MockForm based on Android Holo, Android Material and iOS styles
+   */
+  private void changePreview() {
+    // this condition prevents adding multiple phoneBars and titleBars
+<span class="nc bnc" id="L578" title="All 2 branches missed.">    if (changePreviewFlag)  {</span>
+<span class="nc" id="L579">      responsivePanel.remove(phoneBar);</span>
+<span class="nc" id="L580">      responsivePanel.remove(titleBar);</span>
+    }
+
+<span class="nc bnc" id="L583" title="All 2 branches missed.">    if (idxPhonePreviewStyle == -1) {</span>
+<span class="nc" id="L584">      phoneBar = new PhoneBar();</span>
+<span class="nc" id="L585">      formWidget.removeStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc" id="L586">      formWidget.removeStyleDependentName(&quot;iOS&quot;);</span>
+<span class="nc" id="L587">      formWidget.removeStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">    } else if (idxPhonePreviewStyle == 0) {</span>
+<span class="nc" id="L589">      phoneBar = new PhoneBar(primaryDarkColor);</span>
+<span class="nc" id="L590">      formWidget.removeStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc" id="L591">      formWidget.removeStyleDependentName(&quot;iOS&quot;);</span>
+<span class="nc" id="L592">      formWidget.addStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc bnc" id="L593" title="All 2 branches missed.">    } else if (idxPhonePreviewStyle == 1) {</span>
+<span class="nc" id="L594">      phoneBar = new PhoneBar();</span>
+<span class="nc" id="L595">      formWidget.removeStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc" id="L596">      formWidget.removeStyleDependentName(&quot;iOS&quot;);</span>
+<span class="nc" id="L597">      formWidget.addStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc bnc" id="L598" title="All 2 branches missed.">    } else if (idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L599">      phoneBar = new PhoneBar(blackIcons, idxPhoneSize, primaryColor);</span>
+<span class="nc" id="L600">      formWidget.removeStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc" id="L601">      formWidget.removeStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc" id="L602">      formWidget.addStyleDependentName(&quot;iOS&quot;);</span>
+    }
+
+    // updating changes to the MockForm
+<span class="nc bnc" id="L606" title="All 2 branches missed.">    if (changePreviewFlag) {</span>
+<span class="nc" id="L607">      formWidget.remove(responsivePanel);</span>
+<span class="nc" id="L608">      formWidget.remove(navigationBar);</span>
+
+      ///////////////////////////////////////////////////////////////////
+      // Always need to add the phoneBar to the designer, then set the /
+      // visibility accordingly!                                       /
+      ///////////////////////////////////////////////////////////////////
+
+<span class="nc" id="L615">      responsivePanel.add(phoneBar);</span>
+<span class="nc" id="L616">      phoneBar.setVisible(showStatusBar);</span>
+<span class="nc" id="L617">      phoneBar.setVisibility(showStatusBar);</span>
+<span class="nc" id="L618">      responsivePanel.add(titleBar);</span>
+<span class="nc" id="L619">      responsivePanel.add(scrollPanel);</span>
+<span class="nc" id="L620">      formWidget.add(responsivePanel);</span>
+<span class="nc" id="L621">      formWidget.add(navigationBar);</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">      if (idxPhonePreviewStyle != 2) {</span>
+<span class="nc" id="L623">        titleBar.setActionBar(actionBar, false);</span>
+      } else {
+<span class="nc" id="L625">        titleBar.setActionBar(true, true);</span>
+<span class="nc" id="L626">        titleBar.changeBookmarkIcon(blackIcons);</span>
+      }
+    }
+<span class="nc" id="L629">    changePreviewFlag = false;</span>
+<span class="nc" id="L630">  }</span>
+
+  /*
+   * Returns the width of a vertical scroll bar, calculating it if necessary.
+   */
+  private static int getVerticalScrollbarWidth() {
+    // We only calculate the vertical scroll bar width once, then we store it in the static field
+    // verticalScrollbarWidth. If the field is non-zero, we don't need to calculate it again.
+<span class="nc bnc" id="L638" title="All 2 branches missed.">    if (verticalScrollbarWidth == 0) {</span>
+      // The following code will calculate (on the fly) the width of a vertical scroll bar.
+      // We'll create two divs, one inside the other and add the outer div to the document body,
+      // but off-screen where the user won't see it.
+      // We'll measure the width of the inner div twice: (first) when the outer div's vertical
+      // scrollbar is hidden and (second) when the outer div's vertical scrollbar is visible.
+      // The width of inner div will be smaller when outer div's vertical scrollbar is visible.
+      // By subtracting the two measurements, we can calculate the width of the vertical scrollbar.
+
+      // I used code from the following websites as reference material:
+      // http://jdsharp.us/jQuery/minute/calculate-scrollbar-width.php
+      // http://www.fleegix.org/articles/2006-05-30-getting-the-scrollbar-width-in-pixels
+
+<span class="nc" id="L651">      Document document = Document.get();</span>
+
+      // Create an outer div.
+<span class="nc" id="L654">      DivElement outerDiv = document.createDivElement();</span>
+<span class="nc" id="L655">      Style outerDivStyle = outerDiv.getStyle();</span>
+      // Use absolute positioning and set the top/left so that it is off-screen.
+      // We don't want the user to see anything while we do this calculation.
+<span class="nc" id="L658">      outerDivStyle.setProperty(&quot;position&quot;, &quot;absolute&quot;);</span>
+<span class="nc" id="L659">      outerDivStyle.setProperty(&quot;top&quot;, &quot;-1000px&quot;);</span>
+<span class="nc" id="L660">      outerDivStyle.setProperty(&quot;left&quot;, &quot;-1000px&quot;);</span>
+      // Set the width and height of the outer div to a fixed size in pixels.
+<span class="nc" id="L662">      outerDivStyle.setProperty(&quot;width&quot;, &quot;100px&quot;);</span>
+<span class="nc" id="L663">      outerDivStyle.setProperty(&quot;height&quot;, &quot;50px&quot;);</span>
+      // Hide the outer div's scrollbar by setting the &quot;overflow&quot; property to &quot;hidden&quot;.
+<span class="nc" id="L665">      outerDivStyle.setProperty(&quot;overflow&quot;, &quot;hidden&quot;);</span>
+
+      // Create an inner div and put it inside the outer div.
+<span class="nc" id="L668">      DivElement innerDiv = document.createDivElement();</span>
+<span class="nc" id="L669">      Style innerDivStyle = innerDiv.getStyle();</span>
+      // Set the height of the inner div to be 4 times the height of the outer div so that a
+      // vertical scrollbar will be necessary (but hidden for now) on the outer div.
+<span class="nc" id="L672">      innerDivStyle.setProperty(&quot;height&quot;, &quot;200px&quot;);</span>
+<span class="nc" id="L673">      outerDiv.appendChild(innerDiv);</span>
+
+      // Temporarily add the outer div to the document body. It's off-screen so the user won't
+      // actually see anything.
+<span class="nc" id="L677">      Element bodyElement = document.getElementsByTagName(&quot;body&quot;).getItem(0);</span>
+<span class="nc" id="L678">      bodyElement.appendChild(outerDiv);</span>
+
+      // Get the width of the inner div while the outer div's vertical scrollbar is hidden.
+<span class="nc" id="L681">      int widthWithoutScrollbar = innerDiv.getOffsetWidth();</span>
+      // Show the outer div's vertical scrollbar by setting the &quot;overflow&quot; property to &quot;auto&quot;.
+<span class="nc" id="L683">      outerDivStyle.setProperty(&quot;overflow&quot;, &quot;auto&quot;);</span>
+      // Now, get the width of the inner div while the vertical scrollbar is visible.
+<span class="nc" id="L685">      int widthWithScrollbar = innerDiv.getOffsetWidth();</span>
+
+      // Remove the outer div from the document body.
+<span class="nc" id="L688">      bodyElement.removeChild(outerDiv);</span>
+
+      // Calculate the width of the vertical scrollbar by subtracting the two widths.
+<span class="nc" id="L691">      verticalScrollbarWidth = widthWithoutScrollbar - widthWithScrollbar;</span>
+    }
+
+<span class="nc" id="L694">    return verticalScrollbarWidth;</span>
+  }
+
+  @Override
+  public final MockForm getForm() {
+<span class="nc" id="L699">    return this;</span>
+  }
+
+  @Override
+  public boolean isForm() {
+<span class="nc" id="L704">    return true;</span>
+  }
+
+
+  @Override
+  public String getVisibleTypeName() {
+<span class="nc" id="L710">    return VISIBLE_TYPE;</span>
+  }
+
+  @Override
+  protected void addWidthHeightProperties() {
+<span class="nc" id="L715">    addProperty(PROPERTY_NAME_WIDTH, &quot;&quot; + PORTRAIT_WIDTH, null,</span>
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        new YoungAndroidLengthPropertyEditor());
+<span class="nc" id="L718">    addProperty(PROPERTY_NAME_HEIGHT, &quot;&quot; + LENGTH_PREFERRED, null,</span>
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        new YoungAndroidLengthPropertyEditor());
+<span class="nc" id="L721">  }</span>
+
+  @Override
+  public boolean isPropertyPersisted(String propertyName) {
+    // We use the Width and Height properties to make the form appear correctly in the designer,
+    // but they aren't actually persisted to the .scm file.
+<span class="nc bnc" id="L727" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L729">      return false;</span>
+    }
+<span class="nc" id="L731">    return super.isPropertyPersisted(propertyName);</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L736" title="All 3 branches missed.">    switch (propertyName) {</span>
+      case PROPERTY_NAME_WIDTH:
+      case PROPERTY_NAME_HEIGHT:
+      case PROPERTY_NAME_ACTIONBAR: {
+<span class="nc" id="L740">        return false;</span>
+      }
+
+      // The Icon property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_ICON:
+      // The VersionName property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_VNAME:
+      // The VersionCode property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_VCODE:
+      // The Sizing property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_SIZING:
+      // The AppName property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_ANAME:
+      // The ShowListsAsJson property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
+      // The TutorialURL property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_TUTORIAL_URL:
+      case PROPERTY_NAME_BLOCK_SUBSET:
+      case PROPERTY_NAME_PRIMARY_COLOR:
+      case PROPERTY_NAME_PRIMARY_COLOR_DARK:
+      case PROPERTY_NAME_ACCENT_COLOR:
+      case PROPERTY_NAME_THEME:
+      case PROPERTY_NAME_DEFAULTFILESCOPE: {
+<span class="nc" id="L763">        return editor.isScreen1();</span>
+      }
+
+      default: {
+<span class="nc" id="L767">        return super.isPropertyVisible(propertyName);</span>
+      }
+    }
+  }
+
+  /*
+   * Sets the form's BackgroundColor property to a new value.
+   */
+  private void setBackgroundColorProperty(String text) {
+<span class="nc bnc" id="L776" title="All 2 branches missed.">    if (MockComponentsUtil.isNoneColor(text)) {</span>
+<span class="nc" id="L777">      text = &quot;&amp;HFF000000&quot;;  // black</span>
+<span class="nc bnc" id="L778" title="All 2 branches missed.">    } else if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L779">      text = &quot;&amp;HFFFFFFFF&quot;;  // white</span>
+    }
+<span class="nc" id="L781">    MockComponentsUtil.setWidgetBackgroundColor(rootPanel, text);</span>
+<span class="nc" id="L782">  }</span>
+
+  /*
+   * Sets the form's BackgroundImage property to a new value.
+   */
+  private void setBackgroundImageProperty(String text) {
+<span class="nc" id="L788">    String url = convertImagePropertyValueToUrl(text);</span>
+<span class="nc bnc" id="L789" title="All 2 branches missed.">    if (url == null) {</span>
+      // text was not recognized as an asset.
+<span class="nc" id="L791">      url = &quot;&quot;;</span>
+    }
+<span class="nc" id="L793">    MockComponentsUtil.setWidgetBackgroundImage(rootPanel, url);</span>
+<span class="nc" id="L794">  }</span>
+
+  private void setScreenOrientationProperty(String text) {
+<span class="nc" id="L797">    String val = editor.getProjectEditor().getProjectSettingsProperty(</span>
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+<span class="nc bnc" id="L800" title="All 4 branches missed.">    if (hasProperty(PROPERTY_NAME_WIDTH) &amp;&amp; hasProperty(PROPERTY_NAME_HEIGHT)</span>
+<span class="nc bnc" id="L801" title="All 2 branches missed.">        &amp;&amp; hasProperty(PROPERTY_NAME_SCROLLABLE)) {</span>
+<span class="nc bnc" id="L802" title="All 2 branches missed.">      if (text.equalsIgnoreCase(&quot;landscape&quot;)) {</span>
+<span class="nc bnc" id="L803" title="All 4 branches missed.">        if (val.equals(&quot;iOS&quot;) &amp;&amp; idxPhoneSize == 0) {</span>
+<span class="nc" id="L804">          screenWidth = PHONE_LANDSCAPE_WIDTH_iPHONE;</span>
+<span class="nc" id="L805">          screenHeight = PHONE_LANDSCAPE_HEIGHT_iPHONE;</span>
+        } else {
+<span class="nc" id="L807">          screenWidth = LANDSCAPE_WIDTH;</span>
+<span class="nc" id="L808">          screenHeight = LANDSCAPE_HEIGHT;</span>
+        }
+<span class="nc" id="L810">        landscape = true;</span>
+      } else {
+<span class="nc bnc" id="L812" title="All 4 branches missed.">        if (val.equals(&quot;iOS&quot;) &amp;&amp; idxPhoneSize == 0) {</span>
+<span class="nc" id="L813">          screenWidth = PHONE_PORTRAIT_WIDTH_iPHONE;</span>
+<span class="nc" id="L814">          screenHeight = PHONE_PORTRAIT_HEIGHT_iPHONE;</span>
+        } else {
+<span class="nc" id="L816">          screenWidth = PORTRAIT_WIDTH;</span>
+<span class="nc" id="L817">          screenHeight = PORTRAIT_HEIGHT;</span>
+        }
+<span class="nc" id="L819">        landscape = false;</span>
+      }
+<span class="nc" id="L821">      setPhoneStyle();</span>
+<span class="nc bnc" id="L822" title="All 2 branches missed.">      if (landscape) {</span>
+<span class="nc bnc" id="L823" title="All 2 branches missed.">        if (val.equals(&quot;iOS&quot;)) {</span>
+<span class="nc" id="L824">          usableScreenWidth = screenWidth;</span>
+        } else {
+<span class="nc" id="L826">          usableScreenWidth = screenWidth - navigationBar.getHeight();</span>
+        }
+<span class="nc" id="L828">        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();</span>
+      } else {
+<span class="nc" id="L830">        usableScreenWidth = screenWidth;</span>
+<span class="nc" id="L831">        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();</span>
+      }
+<span class="nc" id="L833">      resizePanel(screenWidth, screenHeight);</span>
+
+<span class="nc" id="L835">      changeProperty(PROPERTY_NAME_WIDTH, &quot;&quot; + usableScreenWidth);</span>
+<span class="nc" id="L836">      boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));</span>
+<span class="nc bnc" id="L837" title="All 2 branches missed.">      if (!scrollable) {</span>
+<span class="nc" id="L838">        changeProperty(PROPERTY_NAME_HEIGHT, &quot;&quot; + usableScreenHeight);</span>
+      }
+    }
+<span class="nc" id="L841">  }</span>
+
+  private void setScrollableProperty(String text) {
+<span class="nc bnc" id="L844" title="All 2 branches missed.">    if (hasProperty(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L845">      final boolean scrollable = Boolean.parseBoolean(text);</span>
+<span class="nc bnc" id="L846" title="All 2 branches missed.">      int heightHint = scrollable ? LENGTH_PREFERRED : usableScreenHeight;</span>
+<span class="nc" id="L847">      changeProperty(PROPERTY_NAME_HEIGHT, &quot;&quot; + heightHint);</span>
+    }
+<span class="nc" id="L849">  }</span>
+
+  private void setIconProperty(String icon) {
+    // The Icon property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for icon (empty string). We need to ignore that.
+<span class="nc bnc" id="L855" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L856">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
+    }
+<span class="nc" id="L860">  }</span>
+
+  private void setVCodeProperty(String vcode) {
+    // The VersionCode property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for VersionCode (1). We need to ignore that.
+<span class="nc bnc" id="L866" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L867">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, vcode);
+    }
+<span class="nc" id="L871">  }</span>
+
+  private void setVNameProperty(String vname) {
+    // The VersionName property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for VersionName (1.0). We need to ignore that.
+<span class="nc bnc" id="L877" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L878">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, vname);
+    }
+<span class="nc" id="L882">  }</span>
+
+  private void setSizingProperty(String sizingProperty) {
+    // The Compatibility property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for CompatibilityProperty (false). We need to ignore that.
+<span class="nc bnc" id="L888" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L889">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, sizingProperty);
+    }
+<span class="nc" id="L893">  }</span>
+
+  private void setShowListsAsJsonProperty(String asJson) {
+    // This property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for ShowListsAsJsonProperty (false). We need to ignore that.
+<span class="nc bnc" id="L899" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L900">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, asJson);
+    }
+<span class="nc" id="L904">  }</span>
+
+  private void setShowStatusBarProperty(String text) {
+<span class="nc" id="L907">    showStatusBar = Boolean.parseBoolean(text);</span>
+<span class="nc" id="L908">    phoneBar.setVisible(showStatusBar);</span>
+<span class="nc" id="L909">    phoneBar.setVisibility(showStatusBar);</span>
+<span class="nc bnc" id="L910" title="All 4 branches missed.">    if (screenWidth == 0 || screenHeight == 0) { // This happens when a project is loaded</span>
+<span class="nc" id="L911">      return;                                    // so don't attempt to resize to 0,0</span>
+    }
+<span class="nc" id="L913">    resizePanel(screenWidth,screenHeight); // update the MockForm size</span>
+<span class="nc" id="L914">  }</span>
+
+  private void setTutorialURLProperty(String asJson) {
+    // This property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for TutorialURL (&quot;&quot;). We need to ignore that.
+<span class="nc bnc" id="L920" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L921">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, asJson);
+    }
+<span class="nc" id="L925">  }</span>
+
+  private void setBlockSubsetProperty(String asJson) {
+    //This property applies to the application and is only visible on Screen1. When we load a form that is
+    //not Screen1, this method will be called with the default value for SubsetJson (&quot;&quot;). We need to ignore that.
+<span class="nc bnc" id="L930" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L931">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
+<span class="nc bnc" id="L934" title="All 2 branches missed.">      if (editor.isLoadComplete()) {</span>
+<span class="nc" id="L935">        ((YaFormEditor)editor).reloadComponentPalette(asJson);</span>
+      }
+    }
+<span class="nc" id="L938">  }</span>
+
+  private void setANameProperty(String aname) {
+    // The AppName property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+<span class="nc bnc" id="L943" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L944">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aname);
+    }
+<span class="nc" id="L948">  }</span>
+
+  private void setTitleVisibleProperty(String text) {
+<span class="nc" id="L951">    boolean visible = Boolean.parseBoolean(text);</span>
+<span class="nc" id="L952">    titleBar.setVisible(visible);</span>
+<span class="nc" id="L953">  }</span>
+
+  private void setActionBarProperty(String actionBar) {
+<span class="nc" id="L956">    this.actionBar = Boolean.parseBoolean(actionBar);</span>
+<span class="nc bnc" id="L957" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L958">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, actionBar);
+    }
+<span class="nc" id="L962">    titleBar.setActionBar(this.actionBar, false);</span>
+<span class="nc bnc" id="L963" title="All 2 branches missed.">    if (initialized) {</span>
+<span class="nc" id="L964">      resizePanel(screenWidth, screenHeight);  // update screen due to titlebar size change.</span>
+    }
+<span class="nc" id="L966">  }</span>
+
+  private void setPrimaryColor(String color) {
+<span class="nc bnc" id="L969" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L970">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, color);
+    }
+<span class="nc bnc" id="L974" title="All 2 branches missed.">    if (color.equals(&quot;&amp;H00000000&quot;)) {</span>
+      // Replace Default with actual default color
+<span class="nc" id="L976">      color = ComponentConstants.DEFAULT_PRIMARY_COLOR;</span>
+    }
+<span class="nc" id="L978">    titleBar.setBackgroundColor(color);</span>
+<span class="nc" id="L979">    primaryColor = color;</span>
+<span class="nc" id="L980">  }</span>
+
+  private void setPrimaryColorDark(String color) {
+<span class="nc bnc" id="L983" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L984">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, color);
+    }
+<span class="nc" id="L988">    primaryDarkColor= color;</span>
+<span class="nc" id="L989">  }</span>
+
+  private void setAccentColor(String color) {
+<span class="nc bnc" id="L992" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L993">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, color);
+    }
+<span class="nc" id="L997">  }</span>
+
+  private void setTheme(String theme) {
+<span class="nc bnc" id="L1000" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L1001">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME, theme);
+    }
+<span class="nc bnc" id="L1005" title="All 2 branches missed.">    if (theme.equals(&quot;AppTheme.Light&quot;)) {</span>
+<span class="nc" id="L1006">      final String newColor = &quot;&amp;HFF000000&quot;;</span>
+<span class="nc" id="L1007">      blackIcons = true;</span>
+<span class="nc" id="L1008">      MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);</span>
+<span class="nc" id="L1009">      MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);</span>
+<span class="nc" id="L1010">      MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);</span>
+<span class="nc" id="L1011">    } else {</span>
+<span class="nc" id="L1012">      final String newColor = &quot;&amp;HFFFFFFFF&quot;;</span>
+<span class="nc" id="L1013">      blackIcons = false;</span>
+<span class="nc" id="L1014">      MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);</span>
+<span class="nc" id="L1015">      MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);</span>
+<span class="nc" id="L1016">      MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);</span>
+    }
+<span class="nc bnc" id="L1018" title="All 2 branches missed.">    if (theme.equals(&quot;AppTheme&quot;)) {</span>
+<span class="nc" id="L1019">      blackIcons = false;</span>
+<span class="nc" id="L1020">      formWidget.setStylePrimaryName(&quot;ode-SimpleMockFormDark&quot;);</span>
+    } else {
+<span class="nc" id="L1022">      formWidget.setStylePrimaryName(&quot;ode-SimpleMockForm&quot;);</span>
+    }
+
+    // Resetting the MockForm with new preview styles
+<span class="nc bnc" id="L1026" title="All 2 branches missed.">    if (idxPhonePreviewStyle == 0) {</span>
+<span class="nc" id="L1027">      formWidget.removeStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc" id="L1028">      formWidget.removeStyleDependentName(&quot;iOS&quot;);</span>
+<span class="nc" id="L1029">      formWidget.addStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc bnc" id="L1030" title="All 2 branches missed.">    } else if (idxPhonePreviewStyle == 1) {</span>
+<span class="nc" id="L1031">      formWidget.removeStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc" id="L1032">      formWidget.removeStyleDependentName(&quot;iOS&quot;);</span>
+<span class="nc" id="L1033">      formWidget.addStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc bnc" id="L1034" title="All 2 branches missed.">    } else if (idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L1035">      formWidget.removeStyleDependentName(&quot;AndroidMaterial&quot;);</span>
+<span class="nc" id="L1036">      formWidget.removeStyleDependentName(&quot;AndroidHolo&quot;);</span>
+<span class="nc" id="L1037">      formWidget.addStyleDependentName(&quot;iOS&quot;);</span>
+    }
+
+<span class="nc bnc" id="L1040" title="All 2 branches missed.">    if (idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L1041">      phoneBar.setIconColor(blackIcons, idxPhoneSize);</span>
+<span class="nc" id="L1042">      titleBar.changeBookmarkIcon(blackIcons);</span>
+    }
+
+<span class="nc" id="L1045">  }</span>
+
+  private void setDefaultFileScope(String defaultFileScope) {
+<span class="nc bnc" id="L1048" title="All 2 branches missed.">    if (editor.isScreen1()) {</span>
+<span class="nc" id="L1049">      editor.getProjectEditor().changeProjectSettingsProperty(</span>
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    }
+<span class="nc" id="L1053">  }</span>
+
+  /**
+   * Forces a re-layout of the child components of the container.
+   *
+   * Each components onPropertyChange listener calls us. This is
+   * reasonable during interactive editing because we have to make
+   * sure the screen reflects what the user is doing.  However during
+   * project load we will be called many times, when really we should
+   * only be called after the project's UI is really finished loading.
+   *
+   * We could add a bunch of complicated code to inhibit refreshes
+   * until we know the project's UI is loaded and stable. However that
+   * is a change that will be spread over several modules, making it
+   * hard to understand what is going on.
+   *
+   * Instead, I am opting to keep this change self contained within
+   * this module. The idea is to see how quickly we are being
+   * called. If we receive a call which is close in time (within
+   * seconds) of a previous call, we set a timer to fire in the
+   * reasonable future (say 2 seconds). While this timer is counting
+   * down, we ignore any other calls to refresh. Whatever refreshing
+   * they would do will be handled by the call done when the timer
+   * fires. This approach does not reduce the number of calls to
+   * refresh during project loading to 1. But it significantly reduces
+   * the number of calls and gets us out of the exponential explosion
+   * in time and memory that we see with projects with hundreds of
+   * design elements (yes, people do that, and I have seen at least
+   * one project that was this big and reasonable!).  -Jeff Schiller
+   * (jis@mit.edu).
+   *
+   */
+
+<span class="nc" id="L1086">  private Timer refreshTimer = null;</span>
+  public final void refresh() {
+<span class="nc bnc" id="L1088" title="All 2 branches missed.">    if (refreshTimer != null) return;</span>
+<span class="nc" id="L1089">    refreshTimer = new Timer() {</span>
+      @Override
+      public void run() {
+<span class="nc" id="L1092">        doRefresh();</span>
+<span class="nc" id="L1093">        refreshTimer = null;</span>
+<span class="nc" id="L1094">      }</span>
+    };
+<span class="nc" id="L1096">    refreshTimer.schedule(0);</span>
+<span class="nc" id="L1097">  }</span>
+
+  /*
+   * Do the actual refresh.
+   *
+   * This method is public because it is called directly from MockComponent for refreshes
+   * which bypass throttling.
+   *
+   */
+
+  public final void doRefresh() {
+<span class="nc" id="L1108">    Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap = new HashMap&lt;MockComponent, LayoutInfo&gt;();</span>
+
+<span class="nc" id="L1110">    collectLayoutInfos(layoutInfoMap, this);</span>
+
+<span class="nc" id="L1112">    LayoutInfo formLayoutInfo = layoutInfoMap.get(this);</span>
+<span class="nc" id="L1113">    layout.layoutChildren(formLayoutInfo);</span>
+<span class="nc" id="L1114">    rootPanel.setPixelSize(formLayoutInfo.width,</span>
+<span class="nc" id="L1115">        Math.max(formLayoutInfo.height, usableScreenHeight));</span>
+
+<span class="nc bnc" id="L1117" title="All 2 branches missed.">    for (LayoutInfo layoutInfo : layoutInfoMap.values()) {</span>
+<span class="nc" id="L1118">      layoutInfo.cleanUp();</span>
+<span class="nc" id="L1119">    }</span>
+<span class="nc" id="L1120">    layoutInfoMap.clear();</span>
+<span class="nc" id="L1121">  }</span>
+
+  /*
+   * Collects the LayoutInfo of the given component and, recursively, all of
+   * its children.
+   *
+   * If a component's width/height hint is automatic, the corresponding
+   * LayoutInfo's width/height will be set to the calculated width/height.
+   * If a component's width/height hint is fill parent, the corresponding
+   * LayoutInfo's width/height may be set to fill parent. This will be resolved
+   * when layoutChildren is called.
+   */
+  private static void collectLayoutInfos(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap,
+      MockComponent component) {
+
+<span class="nc" id="L1136">    LayoutInfo layoutInfo = component.createLayoutInfo(layoutInfoMap);</span>
+
+    // If this component is a container, collect the LayoutInfos of its children.
+<span class="nc bnc" id="L1139" title="All 2 branches missed.">    if (component instanceof MockContainer) {</span>
+<span class="nc bnc" id="L1140" title="All 2 branches missed.">      if (!layoutInfo.visibleChildren.isEmpty()) {</span>
+        // We resize the container to be very large so that we get accurate
+        // results when we ask for a child's size using getOffsetWidth/getOffsetHeight.
+        // If the container is its normal size (or perhaps the default empty
+        // size), then the browser won't give us anything bigger than that
+        // when we ask for a child's size.
+<span class="nc bnc" id="L1146" title="All 2 branches missed.">        if (component.isForm()) {</span>
+<span class="nc" id="L1147">          ((MockForm) component).rootPanel.setPixelSize(1000, 1000);</span>
+        } else {
+<span class="nc" id="L1149">          component.setPixelSize(1000, 1000);</span>
+        }
+
+        // Show children that should be shown and collect their layoutInfos.
+        // Note that some MockLayout implementations may hide children that are in the
+        // visibleChildren list. For example, in MockTableLayout, if two or more children occupy
+        // the same cell in the table, all but one of the children are hidden.
+<span class="nc bnc" id="L1156" title="All 2 branches missed.">        for (MockComponent child : layoutInfo.visibleChildren) {</span>
+<span class="nc" id="L1157">          child.setVisible(true);</span>
+<span class="nc" id="L1158">          collectLayoutInfos(layoutInfoMap, child);</span>
+<span class="nc" id="L1159">        }</span>
+      }
+
+      // Hide children that should be hidden.
+<span class="nc bnc" id="L1163" title="All 2 branches missed.">      for (MockComponent child : component.getHiddenVisibleChildren()) {</span>
+<span class="nc" id="L1164">        child.setVisible(false);</span>
+<span class="nc" id="L1165">      }</span>
+    }
+
+<span class="nc" id="L1168">    layoutInfo.gatherDimensions();</span>
+<span class="nc" id="L1169">  }</span>
+
+  /**
+   * Adds an {@link FormChangeListener} to the listener set if it isn't already in there.
+   *
+   * @param listener  the {@code FormChangeListener} to be added
+   */
+  public void addFormChangeListener(FormChangeListener listener) {
+<span class="nc" id="L1177">    formChangeListeners.add(listener);</span>
+<span class="nc" id="L1178">  }</span>
+
+  /**
+   * Removes an {@link FormChangeListener} from the listener list.
+   *
+   * @param listener  the {@code FormChangeListener} to be removed
+   */
+  public void removeFormChangeListener(FormChangeListener listener) {
+<span class="nc" id="L1186">    formChangeListeners.remove(listener);</span>
+<span class="nc" id="L1187">  }</span>
+
+  /**
+   * Adds an {@link DesignPreviewChangeListener} to the listener set if it isn't already
+   * there.
+   *
+   * @param listener the {@code DesignPreviewChangeListener} to be added
+   */
+  public void addDesignPreviewChangeListener(DesignPreviewChangeListener listener) {
+<span class="nc" id="L1196">    designPreviewChangeListeners.add(listener);</span>
+<span class="nc" id="L1197">  }</span>
+
+  /**
+   * Removes an {@link DesignPreviewChangeListener} from the listener list.
+   *
+   * @param listener the {@code DesignPreviewChangeListener} to be removed.
+   */
+
+  public void removeDesignPreviewChangeListener(DesignPreviewChangeListener listener) {
+<span class="nc" id="L1206">    designPreviewChangeListeners.remove(listener);</span>
+<span class="nc" id="L1207">  }</span>
+
+  /**
+   * Triggers a component property change event to be sent to the listener on the listener list.
+   */
+  protected void fireComponentPropertyChanged(MockComponent component, String propertyName,
+      String propertyValue) {
+<span class="nc bnc" id="L1214" title="All 2 branches missed.">    for (FormChangeListener listener : formChangeListeners) {</span>
+<span class="nc" id="L1215">      listener.onComponentPropertyChanged(component, propertyName, propertyValue);</span>
+<span class="nc" id="L1216">    }</span>
+<span class="nc" id="L1217">  }</span>
+
+  /**
+   * Triggers a component removed event to be sent to the listener on the listener list.
+   */
+  protected void fireComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+<span class="nc bnc" id="L1223" title="All 2 branches missed.">    for (FormChangeListener listener : formChangeListeners) {</span>
+<span class="nc" id="L1224">      listener.onComponentRemoved(component, permanentlyDeleted);</span>
+<span class="nc" id="L1225">    }</span>
+<span class="nc" id="L1226">  }</span>
+
+  /**
+   * Triggers a component added event to be sent to the listener on the listener list.
+   */
+  protected void fireComponentAdded(MockComponent component) {
+<span class="nc bnc" id="L1232" title="All 2 branches missed.">    for (FormChangeListener listener : formChangeListeners) {</span>
+<span class="nc" id="L1233">      listener.onComponentAdded(component);</span>
+<span class="nc" id="L1234">    }</span>
+<span class="nc" id="L1235">  }</span>
+
+  /**
+   * Triggers a component renamed event to be sent to the listener on the listener list.
+   */
+  protected void fireComponentRenamed(MockComponent component, String oldName) {
+<span class="nc bnc" id="L1241" title="All 2 branches missed.">    for (FormChangeListener listener : formChangeListeners) {</span>
+<span class="nc" id="L1242">      listener.onComponentRenamed(component, oldName);</span>
+<span class="nc" id="L1243">    }</span>
+<span class="nc" id="L1244">  }</span>
+
+  /**
+   * Triggers a component selection change event to be sent to the listener on the listener list.
+   */
+  protected void fireComponentSelectionChange(MockComponent component, boolean selected) {
+<span class="nc bnc" id="L1250" title="All 2 branches missed.">    for (FormChangeListener listener : formChangeListeners) {</span>
+<span class="nc" id="L1251">      listener.onComponentSelectionChange(component, selected);</span>
+<span class="nc" id="L1252">    }</span>
+<span class="nc" id="L1253">  }</span>
+
+  /**
+   * Triggers the DesignChangePreviewChange listeners
+   */
+  protected void fireDesignPreviewChange() {
+<span class="nc bnc" id="L1259" title="All 2 branches missed.">    for (DesignPreviewChangeListener listener : designPreviewChangeListeners) {</span>
+<span class="nc" id="L1260">      listener.onDesignPreviewChanged();</span>
+<span class="nc" id="L1261">    }</span>
+<span class="nc" id="L1262">  }</span>
+
+  private boolean shouldSelectMultipleComponents(NativeEvent e) {
+<span class="nc bnc" id="L1265" title="All 2 branches missed.">    if (e == null) {</span>
+<span class="nc" id="L1266">      return false;</span>
+    }
+<span class="nc bnc" id="L1268" title="All 2 branches missed.">    if (Window.Navigator.getPlatform().toLowerCase().startsWith(&quot;mac&quot;)) {</span>
+<span class="nc" id="L1269">      return e.getMetaKey();</span>
+    } else {
+<span class="nc" id="L1271">      return e.getCtrlKey();</span>
+    }
+  }
+
+  /**
+   * Changes the component that is currently selected in the form.
+   * &lt;p&gt;
+   * There will always be exactly one component selected in a form
+   * at any given time.
+   */
+  public final void setSelectedComponent(MockComponent newSelectedComponent, NativeEvent event) {
+<span class="nc bnc" id="L1282" title="All 2 branches missed.">    if (newSelectedComponent == null) {</span>
+<span class="nc" id="L1283">      throw new IllegalArgumentException(&quot;at least one component must always be selected&quot;);</span>
+    }
+<span class="nc" id="L1285">    boolean shouldSelectMultipleComponents = shouldSelectMultipleComponents(event);</span>
+<span class="nc bnc" id="L1286" title="All 4 branches missed.">    if (selectedComponents.size() == 1 &amp;&amp; selectedComponents.contains(newSelectedComponent)) {</span>
+      // Attempting to change the selection from old to new when they are the same breaks
+      // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
+<span class="nc" id="L1289">      return;</span>
+    }
+
+    // Remove an previously selected component from the list of selected components, but only if
+    // there would still be something selected.
+<span class="nc bnc" id="L1294" title="All 4 branches missed.">    if (shouldSelectMultipleComponents &amp;&amp; selectedComponents.contains(newSelectedComponent)</span>
+<span class="nc bnc" id="L1295" title="All 2 branches missed.">        &amp;&amp; selectedComponents.size() &gt; 1) {</span>
+<span class="nc" id="L1296">      selectedComponents.remove(newSelectedComponent);</span>
+<span class="nc" id="L1297">      newSelectedComponent.onSelectedChange(false);</span>
+<span class="nc" id="L1298">      return;</span>
+    }
+<span class="nc bnc" id="L1300" title="All 2 branches missed.">    if (newSelectedComponent instanceof MockContainer) {</span>
+<span class="nc" id="L1301">      pasteTarget = (MockContainer) newSelectedComponent;</span>
+    } else {
+<span class="nc" id="L1303">      pasteTarget = newSelectedComponent.getContainer();</span>
+    }
+
+<span class="nc bnc" id="L1306" title="All 2 branches missed.">    if (!shouldSelectMultipleComponents) {</span>
+<span class="nc bnc" id="L1307" title="All 2 branches missed.">      for (MockComponent component : selectedComponents) {</span>
+<span class="nc bnc" id="L1308" title="All 2 branches missed.">        if (component != newSelectedComponent) {</span>
+<span class="nc" id="L1309">          component.onSelectedChange(false);</span>
+        }
+<span class="nc" id="L1311">      }</span>
+<span class="nc" id="L1312">      selectedComponents.clear();</span>
+    }
+<span class="nc" id="L1314">    selectedComponents.add(newSelectedComponent);</span>
+<span class="nc" id="L1315">    newSelectedComponent.onSelectedChange(true);</span>
+<span class="nc" id="L1316">  }</span>
+
+  public final List&lt;MockComponent&gt; getSelectedComponents() {
+<span class="nc" id="L1319">    return selectedComponents;</span>
+  }
+
+  public final MockComponent getLastSelectedComponent() {
+<span class="nc" id="L1323">    return selectedComponents.get(selectedComponents.size() - 1);</span>
+  }
+
+  public final MockContainer getPasteTarget() {
+<span class="nc" id="L1327">    return pasteTarget;</span>
+  }
+
+  public final void setPasteTarget(MockContainer target) {
+<span class="nc" id="L1331">    this.pasteTarget = target;</span>
+<span class="nc" id="L1332">  }</span>
+
+  /**
+   * Builds a tree of the component hierarchy of the form for display in the
+   * {@code SourceStructureExplorer}.
+   *
+   * @return  tree showing the component hierarchy of the form
+   */
+  public TreeItem buildComponentsTree() {
+<span class="nc" id="L1341">    return buildTree();</span>
+  }
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L1348">    super.onPropertyChange(propertyName, newValue);</span>
+
+    // Apply changed properties to the mock component
+<span class="nc bnc" id="L1351" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {</span>
+<span class="nc" id="L1352">      setBackgroundColorProperty(newValue);</span>
+<span class="nc bnc" id="L1353" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDIMAGE)) {</span>
+<span class="nc" id="L1354">      setBackgroundImageProperty(newValue);</span>
+<span class="nc bnc" id="L1355" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SCREEN_ORIENTATION)) {</span>
+<span class="nc" id="L1356">      setScreenOrientationProperty(newValue);</span>
+<span class="nc bnc" id="L1357" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SCROLLABLE)) {</span>
+<span class="nc" id="L1358">      setScrollableProperty(newValue);</span>
+<span class="nc" id="L1359">      adjustAlignmentDropdowns();</span>
+<span class="nc bnc" id="L1360" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TITLE)) {</span>
+<span class="nc" id="L1361">      titleBar.changeTitle(newValue);</span>
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SIZING)) {</span>
+<span class="nc bnc" id="L1363" title="All 2 branches missed.">      if (newValue.equals(&quot;Fixed&quot;)){ // Disable Tablet Preview</span>
+<span class="nc" id="L1364">        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);</span>
+      }
+      else {
+<span class="nc" id="L1367">        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);</span>
+      }
+<span class="nc" id="L1369">      setSizingProperty(newValue);</span>
+<span class="nc bnc" id="L1370" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ICON)) {</span>
+<span class="nc" id="L1371">      setIconProperty(newValue);</span>
+<span class="nc bnc" id="L1372" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_VCODE)) {</span>
+<span class="nc" id="L1373">      setVCodeProperty(newValue);</span>
+<span class="nc bnc" id="L1374" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_VNAME)) {</span>
+<span class="nc" id="L1375">      setVNameProperty(newValue);</span>
+<span class="nc bnc" id="L1376" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ANAME)) {</span>
+<span class="nc" id="L1377">      setANameProperty(newValue);</span>
+<span class="nc bnc" id="L1378" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {</span>
+<span class="nc" id="L1379">      setShowListsAsJsonProperty(newValue);</span>
+<span class="nc bnc" id="L1380" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_SHOW_STATUS_BAR)) {</span>
+<span class="nc" id="L1381">      setShowStatusBarProperty(newValue);</span>
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {</span>
+<span class="nc" id="L1383">      setTutorialURLProperty(newValue);</span>
+<span class="nc bnc" id="L1384" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {</span>
+<span class="nc" id="L1385">      setBlockSubsetProperty(newValue);</span>
+<span class="nc bnc" id="L1386" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {</span>
+<span class="nc" id="L1387">      setActionBarProperty(newValue);</span>
+<span class="nc bnc" id="L1388" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_THEME)) {</span>
+<span class="nc bnc" id="L1389" title="All 2 branches missed.">      if (&quot;Classic&quot;.equals(newValue)) {</span>
+<span class="nc" id="L1390">        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(false);</span>
+<span class="nc" id="L1391">        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue(&quot;False&quot;);</span>
+      } else {
+<span class="nc" id="L1393">        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(true);</span>
+<span class="nc" id="L1394">        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue(&quot;True&quot;);</span>
+      }
+<span class="nc" id="L1396">      setTheme(newValue);</span>
+<span class="nc bnc" id="L1397" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_DEFAULTFILESCOPE)) {</span>
+<span class="nc" id="L1398">      setDefaultFileScope(newValue);</span>
+<span class="nc bnc" id="L1399" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {</span>
+<span class="nc" id="L1400">      setPrimaryColor(newValue);</span>
+<span class="nc bnc" id="L1401" title="All 2 branches missed.">      if (idxPhonePreviewStyle == 2) {</span>
+<span class="nc" id="L1402">        MockComponentsUtil.setWidgetBackgroundColor(phoneBar, newValue);</span>
+      }
+<span class="nc bnc" id="L1404" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {</span>
+<span class="nc" id="L1405">      setPrimaryColorDark(newValue);</span>
+<span class="nc bnc" id="L1406" title="All 2 branches missed.">      if (idxPhonePreviewStyle == 0) {</span>
+<span class="nc" id="L1407">        MockComponentsUtil.setWidgetBackgroundColor(phoneBar, newValue);</span>
+      }
+<span class="nc bnc" id="L1409" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {</span>
+<span class="nc" id="L1410">      setAccentColor(newValue);</span>
+<span class="nc" id="L1411">      fireDesignPreviewChange();</span>
+<span class="nc bnc" id="L1412" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {</span>
+<span class="nc" id="L1413">      myLayout.setHAlignmentFlags(newValue);</span>
+<span class="nc" id="L1414">      refreshForm();</span>
+<span class="nc bnc" id="L1415" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {</span>
+<span class="nc" id="L1416">      myLayout.setVAlignmentFlags(newValue);</span>
+<span class="nc" id="L1417">      refreshForm();</span>
+<span class="nc bnc" id="L1418" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {</span>
+<span class="nc" id="L1419">      setTitleVisibleProperty(newValue);</span>
+<span class="nc" id="L1420">      refreshForm();</span>
+    }
+<span class="nc" id="L1422">  }</span>
+
+  // enableAndDisable It should not be called until the component is initialized.
+  // Otherwise, we'll get NPEs in trying to use myAlignmentPropertyEditor.
+  private void adjustAlignmentDropdowns() {
+<span class="nc bnc" id="L1427" title="All 2 branches missed.">    if (initialized) enableAndDisableDropdowns();</span>
+<span class="nc" id="L1428">  }</span>
+
+  // Don't forget to call this on initialization!!!
+  // If scrollable is True, the selector for vertical alignment should be disabled.
+  private void enableAndDisableDropdowns() {
+<span class="nc" id="L1433">    String scrollable = properties.getProperty(PROPERTY_NAME_SCROLLABLE).getValue();</span>
+<span class="nc bnc" id="L1434" title="All 2 branches missed.">    if (scrollable.equals(&quot;True&quot;)) {</span>
+<span class="nc" id="L1435">      myVAlignmentPropertyEditor.disable();</span>
+    } else {
+<span class="nc" id="L1437">      myVAlignmentPropertyEditor.enable();</span>
+    }
+<span class="nc" id="L1439">  }</span>
+
+  @Override
+  public EditableProperties getProperties() {
+    // Before we return the Properties object, we make sure that the
+    // Sizing, ShowListsAsJson and TutorialURL properties have the
+    // value from the project's properties this is because these are
+    // per project, not per Screen(Form) We only have to do this on
+    // screens other then screen1 because screen1's value is
+    // definitive.
+<span class="nc bnc" id="L1449" title="All 2 branches missed.">    if (!editor.isScreen1()) {</span>
+<span class="nc" id="L1450">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,</span>
+<span class="nc" id="L1451">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
+<span class="nc" id="L1454">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON,</span>
+<span class="nc" id="L1455">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON));
+<span class="nc" id="L1458">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL,</span>
+<span class="nc" id="L1459">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+<span class="nc" id="L1462">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET,</span>
+<span class="nc" id="L1463">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
+<span class="nc" id="L1466">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR,</span>
+<span class="nc" id="L1467">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR));
+<span class="nc" id="L1470">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME,</span>
+<span class="nc" id="L1471">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME));
+<span class="nc" id="L1474">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR,</span>
+<span class="nc" id="L1475">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR));
+<span class="nc" id="L1478">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK,</span>
+<span class="nc" id="L1479">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK));
+<span class="nc" id="L1482">      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR,</span>
+<span class="nc" id="L1483">          editor.getProjectEditor().getProjectSettingsProperty(</span>
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    }
+<span class="nc" id="L1487">    return properties;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

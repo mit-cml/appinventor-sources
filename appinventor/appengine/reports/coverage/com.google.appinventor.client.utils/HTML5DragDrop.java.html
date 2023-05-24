@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HTML5DragDrop.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.utils</a> &gt; <span class="el_source">HTML5DragDrop.java</span></div><h1>HTML5DragDrop.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2017-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.utils;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.wizards.ComponentImportWizard.ImportComponentCallback;
+import com.google.appinventor.client.wizards.RequestNewProjectNameWizard;
+import com.google.appinventor.client.wizards.RequestProjectNewNameInterface;
+import com.google.appinventor.client.youngandroid.TextValidators;
+
+import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+
+import com.google.gwt.core.client.GWT;
+
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+
+import com.google.gwt.query.client.builders.JsniBundle;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import jsinterop.annotations.JsFunction;
+
+/**
+ * HTML5DragDrop implements support for dragging projects/extensions/assets from the developer's
+ * computer into the browser and dropping them onto the workspace. Depending on the extension of
+ * the file, one of uploadProject(), uploadExtension(), or uploadMedia() is called to trigger an
+ * import of the dropped entity.
+ *
+ * Compatibility
+ * -------------
+ *
+ * According to Mozilla, HTML5 Drag and Drop support is available starting in the following
+ * browser versions:
+ *
+ *     Chrome: 4
+ *     Edge: (always)
+ *     Firefox: 3.5
+ *     IE: 10
+ *     Opera: 12
+ *     Safari: 3.1
+ */
+@SuppressWarnings(&quot;checkstyle:JavadocParagraph&quot;)
+<span class="nc" id="L69">public final class HTML5DragDrop {</span>
+  interface HTML5DragDropSupport extends JsniBundle {
+    @LibrarySource(&quot;html5dnd.js&quot;)
+    void init();
+  }
+
+  @JsFunction
+  public interface ConfirmCallback {
+    void run();
+  }
+  
+  @JsFunction
+  public interface StringCallback {
+    void run(String name);
+  }
+
+  public static void init() {
+<span class="nc" id="L86">    ((HTML5DragDropSupport) GWT.create(HTML5DragDropSupport.class)).init();</span>
+<span class="nc" id="L87">    initJsni();</span>
+<span class="nc" id="L88">  }</span>
+
+  private static native void initJsni()/*-{
+    top.HTML5DragDrop_isProjectEditorOpen =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::isProjectEditorOpen());
+    top.HTML5DragDrop_getOpenProjectId =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::getOpenProjectId());
+    top.HTML5DragDrop_handleUploadResponse =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::handleUploadResponse(*));
+    top.HTML5DragDrop_reportError =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::reportError(*));
+    top.HTML5DragDrop_confirmOverwriteKey =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteKey(*));
+    top.HTML5DragDrop_getNewProjectName =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::getNewProjectName(*));
+    top.HTML5DragDrop_confirmOverwriteAsset =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteAsset(*));
+    top.HTML5DragDrop_isBlocksEditorOpen =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::isBlocksEditorOpen());
+    top.HTML5DragDrop_checkProjectNameForCollision =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::checkProjectNameForCollision(*));
+    top.HTML5DragDrop_shouldShowDropTarget =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::shouldShowDropTarget(*));
+  }-*/;
+
+  public static boolean isProjectEditorOpen() {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    return Ode.getInstance().getCurrentView() == 0;</span>
+  }
+
+  public static boolean isBlocksEditorOpen() {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">    return isProjectEditorOpen()</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        &amp;&amp; Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor;</span>
+  }
+
+  public static String getOpenProjectId() {
+<span class="nc" id="L123">    return Long.toString(Ode.getInstance().getCurrentYoungAndroidProjectId());</span>
+  }
+
+  protected static void reportError(int errorCode) {
+<span class="nc bnc" id="L127" title="All 3 branches missed.">    switch (errorCode) {</span>
+      case 1:
+<span class="nc" id="L129">        Window.alert(&quot;No project open to receive upload.&quot;);</span>
+<span class="nc" id="L130">        break;</span>
+      case 2:
+<span class="nc" id="L132">        Window.alert(&quot;Uploading of APK files is not supported.&quot;);</span>
+<span class="nc" id="L133">        break;</span>
+      default:
+<span class="nc" id="L135">        Window.alert(&quot;Unexpected HTTP error code: &quot; + errorCode);</span>
+    }
+<span class="nc" id="L137">  }</span>
+
+  protected static void confirmOverwriteKey(final ConfirmCallback callback) {
+<span class="nc" id="L140">    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+<span class="nc" id="L141">        new OdeAsyncCallback&lt;Boolean&gt;(MESSAGES.uploadKeystoreError()) {</span>
+          @Override
+          public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            if (keystoreFileExists) {</span>
+<span class="nc" id="L145">              final DialogBox dialog = new DialogBox(false, true);</span>
+<span class="nc" id="L146">              dialog.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L147">              dialog.setText(&quot;Confirm Overwrite...&quot;);</span>
+<span class="nc" id="L148">              Button cancelButton = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L149">              Button deleteButton = new Button(MESSAGES.overwriteButton());</span>
+<span class="nc" id="L150">              DockPanel buttonPanel = new DockPanel();</span>
+<span class="nc" id="L151">              buttonPanel.add(cancelButton, DockPanel.WEST);</span>
+<span class="nc" id="L152">              buttonPanel.add(deleteButton, DockPanel.EAST);</span>
+<span class="nc" id="L153">              VerticalPanel panel = new VerticalPanel();</span>
+<span class="nc" id="L154">              Label label = new Label();</span>
+<span class="nc" id="L155">              label.setText(MESSAGES.confirmOverwriteKeystore());</span>
+<span class="nc" id="L156">              panel.add(label);</span>
+<span class="nc" id="L157">              panel.add(buttonPanel);</span>
+<span class="nc" id="L158">              dialog.add(panel);</span>
+<span class="nc" id="L159">              cancelButton.addClickHandler(new ClickHandler() {</span>
+                @Override
+                public void onClick(ClickEvent event) {
+<span class="nc" id="L162">                  dialog.hide();</span>
+<span class="nc" id="L163">                }</span>
+              });
+<span class="nc" id="L165">              deleteButton.addClickHandler(new ClickHandler() {</span>
+                @Override
+                public void onClick(ClickEvent event) {
+<span class="nc" id="L168">                  dialog.hide();</span>
+<span class="nc" id="L169">                  callback.run();</span>
+<span class="nc" id="L170">                }</span>
+              });
+<span class="nc" id="L172">              dialog.center();</span>
+<span class="nc" id="L173">              dialog.show();</span>
+<span class="nc" id="L174">            } else {</span>
+<span class="nc" id="L175">              callback.run();</span>
+            }
+<span class="nc" id="L177">          }</span>
+        });
+<span class="nc" id="L179">  }</span>
+
+  protected static void confirmOverwriteAsset(String _projectId, String name, final ConfirmCallback callback) {
+    // Get the target project
+<span class="nc" id="L183">    long projectId = Long.parseLong(_projectId);</span>
+<span class="nc" id="L184">    Project project = Ode.getInstance().getProjectManager().getProject(projectId);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">    if (project == null) {</span>
+      // Project not open so we have nothing to do.
+<span class="nc" id="L187">      return;</span>
+    }
+
+    // Check if an asset already exists with the given name
+<span class="nc" id="L191">    YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();</span>
+<span class="nc" id="L192">    YoungAndroidAssetNode node = (YoungAndroidAssetNode) projectNode.getAssetsFolder().findNode(&quot;assets/&quot; + name);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">    if (node == null) {</span>
+      // No asset exists by that name so it is safe to upload.
+<span class="nc" id="L195">      callback.run();</span>
+<span class="nc" id="L196">      return;</span>
+    }
+
+    // Ask user to confirm overwriting the asset
+    // This currently uses the same mechanism as FileUploadWizard, but should be rewritten to use a
+    // dialog at some point.
+<span class="nc bnc" id="L202" title="All 2 branches missed.">    if (Window.confirm(MESSAGES.confirmOverwrite(name, name))) {</span>
+<span class="nc" id="L203">      callback.run();</span>
+    }
+<span class="nc" id="L205">  }</span>
+
+  /**
+   * Checks the project name using the standard set of project name validators. If the project name
+   * isn't valid, the drop will be aborted. It doesn't show an alert on invalid project name.
+   *
+   * @param projectName the project name based on the dropped file's name
+   * @return true if the project name is allowed, otherwise false
+   */
+  protected static boolean checkProjectNameForCollision(String projectName) {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">    return TextValidators.checkNewProjectName(projectName, true) </span>
+            == TextValidators.ProjectNameStatus.SUCCESS;
+  }
+  
+  /**
+   * Shows dialog box to enter new project name when user tries
+   * to upload a project with invalid Name.
+   * 
+   * @param filename initial filename of project , used to suggest a new name
+   * @param callback callback to upload after user enters a valid name
+   */
+  protected static void getNewProjectName(String filename, final StringCallback callback) {  
+<span class="nc" id="L227">    filename = filename.substring(0, filename.length() - 4);</span>
+
+<span class="nc" id="L229">    new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {</span>
+        @Override
+        public void getNewName(String name) {
+<span class="nc" id="L232">          callback.run(name);</span>
+<span class="nc" id="L233">        }</span>
+    }, filename, true);
+<span class="nc" id="L235">  }</span>
+
+  protected static void handleUploadResponse(String projectIdStr, String type, String name,
+      String body) {
+<span class="nc" id="L239">    Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L240">    UploadResponse response = UploadResponse.extractUploadResponse(body);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">    if (response != null) {</span>
+<span class="nc bnc" id="L242" title="All 4 branches missed.">      switch (response.getStatus()) {</span>
+        case SUCCESS:
+<span class="nc" id="L244">          ErrorReporter.hide();</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">          if (&quot;project&quot;.equals(type)) {</span>
+<span class="nc" id="L246">            String info = response.getInfo();</span>
+<span class="nc" id="L247">            UserProject userProject = UserProject.valueOf(info);</span>
+<span class="nc" id="L248">            Project uploadedProject = ode.getProjectManager().addProject(userProject);</span>
+<span class="nc" id="L249">            ode.openYoungAndroidProjectInDesigner(uploadedProject);</span>
+<span class="nc" id="L250">            NoProjectDialogBox.closeIfOpen();</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">          } else if (&quot;extension&quot;.equals(type)) {</span>
+<span class="nc" id="L252">            long projectId = Long.parseLong(projectIdStr);</span>
+<span class="nc" id="L253">            YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) ode.getProjectManager()</span>
+<span class="nc" id="L254">                .getProject(projectId).getRootNode();</span>
+<span class="nc" id="L255">            ode.getComponentService().importComponentToProject(response.getInfo(), projectId,</span>
+<span class="nc" id="L256">                projectNode.getAssetsFolder().getFileId(), new ImportComponentCallback());</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">          } else if (&quot;asset&quot;.equals(type)) {</span>
+<span class="nc" id="L258">            long projectId = Long.parseLong(projectIdStr);</span>
+<span class="nc" id="L259">            ode.updateModificationDate(projectId, response.getModificationDate());</span>
+<span class="nc" id="L260">            Project project = ode.getProjectManager().getProject(projectId);</span>
+<span class="nc" id="L261">            YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();</span>
+<span class="nc" id="L262">            YoungAndroidAssetNode node = new YoungAndroidAssetNode(name,</span>
+<span class="nc" id="L263">                projectNode.getAssetsFolder().getFileId() + &quot;/&quot; + name);</span>
+<span class="nc" id="L264">            project.addNode(projectNode.getAssetsFolder(), node);</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">          } else if (&quot;keystore&quot;.equals(type)) {</span>
+<span class="nc" id="L266">            Ode.getInstance().getTopToolbar().updateKeystoreFileMenuButtons();</span>
+          }
+          break;
+        case FILE_TOO_LARGE:
+<span class="nc" id="L270">          ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());</span>
+<span class="nc" id="L271">          break;</span>
+        case NOT_PROJECT_ARCHIVE:
+<span class="nc" id="L273">          ErrorReporter.reportInfo(MESSAGES.notProjectArchiveError());</span>
+<span class="nc" id="L274">          break;</span>
+        default:
+<span class="nc" id="L276">          ErrorReporter.reportError(MESSAGES.fileUploadError());</span>
+      }
+    } else {
+<span class="nc" id="L279">      ErrorReporter.reportError(MESSAGES.fileUploadError());</span>
+    }
+<span class="nc" id="L281">  }</span>
+
+  /**
+   * Determines whether the given element or an ancestor constitutes a drop target. If so, it will
+   * return the Element that should be used for the bounds of the drop rectangle.
+   *
+   * NB: For security reasons, the browser does not share any information about the thing to be
+   * dropped until it is actually dropped. This means we can't selectively show a drop target based
+   * on what is being dragged. Ideally, we would only show the drop target for the project list if
+   * the dragged item were an AIA and the drop target for the palette if the dragged item were an
+   * AIX.
+   *
+   * @param target The source element for the drag/drop event
+   * @return the element to use if the drop is valid, otherwise null
+   */
+  protected static Element shouldShowDropTarget(Element target) {
+<span class="nc bnc" id="L297" title="All 2 branches missed.">    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {</span>
+<span class="nc" id="L298">      boolean noProjects = 0 == ProjectListBox.getProjectListBox()</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">          .getProjectList().getMyProjectsCount();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">      while (target != Document.get().getBody()) {</span>
+<span class="nc bnc" id="L301" title="All 4 branches missed.">        if (noProjects &amp;&amp; target == Ode.getInstance().getOverDeckPanel().getElement()) {</span>
+          // If there aren't any projects, then we want to support dropping into the empty space
+<span class="nc" id="L303">          return Ode.getInstance().getOverDeckPanel().getElement();</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        } else if (target == ProjectListBox.getProjectListBox().getElement()) {</span>
+          // Allow dropping into the project list
+<span class="nc" id="L306">          return target;</span>
+        }
+<span class="nc" id="L308">        target = target.getParentElement();</span>
+      }
+<span class="nc bnc" id="L310" title="All 2 branches missed.">    } else if (Ode.getInstance().getCurrentView() == Ode.DESIGNER) {</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">      while (target != Document.get().getBody()) {</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">        if (target == AssetListBox.getAssetListBox().getElement()) {</span>
+<span class="nc" id="L313">          return target;  // Media list is a drop target</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        } else if (target == PaletteBox.getPaletteBox().getElement()) {</span>
+<span class="nc" id="L315">          return target;  // Palette panel is a drop target (for extensions)</span>
+        }
+<span class="nc" id="L317">        target = target.getParentElement();</span>
+      }
+    }
+<span class="nc" id="L320">    return null;  // No valid drop target</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

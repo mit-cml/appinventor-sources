@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentImportResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.rpc.component</a> &gt; <span class="el_source">ComponentImportResponse.java</span></div><h1>ComponentImportResponse.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2015 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.shared.rpc.component;
+
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Component Import Response to Send Failure Reasons
+ */
+public class ComponentImportResponse implements IsSerializable{
+
+<span class="fc" id="L21">  public enum Status {</span>
+<span class="fc" id="L22">    IMPORTED,</span>
+<span class="fc" id="L23">    UPGRADED, //when the old component files were replaced with newer ones</span>
+<span class="fc" id="L24">    NOT_GCS,</span>
+<span class="fc" id="L25">    UNKNOWN_URL,</span>
+<span class="fc" id="L26">    FAILED,</span>
+
+    /**
+     * BUNDLE_DOWNGRADE is a special failure case when the user attempts to upload an extension
+     * that would be an upgrade but the set of extensions in the new bundle is not a superset of
+     * the set of extensions in the old bundle.
+     *
+     * For example, the currently loaded bundle has classes A, B, C and the newly uploaded bundle
+     * contains B, C, D. This is an error state because we don't want to trigger a delete of all
+     * of the user's blocks associated with class A.
+     */
+<span class="fc" id="L37">    BUNDLE_DOWNGRADE</span>
+  }
+
+  private Status status;
+  private long projectId; // necessary to ensure right project
+  private List&lt;ProjectNode&gt; nodes; // Added Nodes
+  private Map&lt;String, String&gt; types;
+  private String message;
+
+<span class="fc" id="L46">  public ComponentImportResponse(Status status, long projectId, Map&lt;String, String&gt; types, List&lt;ProjectNode&gt; nodes) {</span>
+<span class="fc" id="L47">    this.status = status;</span>
+<span class="fc" id="L48">    this.projectId = projectId;</span>
+<span class="fc" id="L49">    this.nodes = nodes;</span>
+<span class="fc" id="L50">    this.types = types;</span>
+<span class="fc" id="L51">  }</span>
+
+  public ComponentImportResponse(Status status) {
+<span class="fc" id="L54">    this(status, 0, new HashMap&lt;String, String&gt;(), null);</span>
+<span class="fc" id="L55">  }</span>
+
+  private ComponentImportResponse() {
+  }
+
+  public Status getStatus() {
+<span class="fc" id="L61">    return status;</span>
+  }
+
+  public void setStatus(Status status) {
+<span class="fc" id="L65">    this.status = status;</span>
+<span class="fc" id="L66">  }</span>
+
+  public long getProjectId() {
+<span class="nc" id="L69">    return projectId;</span>
+  }
+
+  public void setProjectId(long projectId){
+<span class="fc" id="L73">    this.projectId = projectId;</span>
+<span class="fc" id="L74">  }</span>
+
+  /**
+   * Use {@link #getComponentTypes()} instead.
+   * @return
+   */
+  @Deprecated
+  public String getComponentType() {
+<span class="nc" id="L82">    return types.keySet().iterator().next();</span>
+  }
+
+  public Map&lt;String, String&gt; getComponentTypes() {
+<span class="fc" id="L86">    return types;</span>
+  }
+
+  public void setComponentTypes(Map&lt;String, String&gt; types) {
+<span class="fc" id="L90">    this.types = types;</span>
+<span class="fc" id="L91">  }</span>
+
+  public List&lt;ProjectNode&gt; getNodes() {
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    if (nodes == null) {</span>
+<span class="nc" id="L95">      nodes = new ArrayList&lt;ProjectNode&gt;();</span>
+    }
+<span class="fc" id="L97">    return nodes;</span>
+  }
+
+  public void setNodes(List&lt;ProjectNode&gt; nodes) {
+<span class="fc" id="L101">    this.nodes = nodes;</span>
+<span class="fc" id="L102">  }</span>
+
+  public String getMessage() {
+<span class="fc" id="L105">    return message;</span>
+  }
+
+  public void setMessage(String message) {
+<span class="fc" id="L109">    this.message = message;</span>
+<span class="fc" id="L110">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

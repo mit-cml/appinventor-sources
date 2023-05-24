@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Base58Util.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.util</a> &gt; <span class="el_source">Base58Util.java</span></div><h1>Base58Util.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2011 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.google.appinventor.shared.util;
+import java.math.BigInteger;
+import java.util.Arrays;
+
+/**
+ * Base58 is a way to encode Bitcoin addresses (or arbitrary data) as alphanumeric strings.
+ * &lt;p&gt;
+ * Note that this is not the same base58 as used by Flickr, which you may find referenced around the Internet.
+ * &lt;p&gt;
+ * You may want to consider working with {@link VersionedChecksummedBytes} instead, which
+ * adds support for testing the prefix and suffix bytes commonly found in addresses.
+ * &lt;p&gt;
+ * Satoshi explains: why base-58 instead of standard base-64 encoding?
+ * &lt;ul&gt;
+ * &lt;li&gt;Don't want 0OIl characters that look the same in some fonts and
+ *     could be used to create visually identical looking account numbers.&lt;/li&gt;
+ * &lt;li&gt;A string with non-alphanumeric characters is not as easily accepted as an account number.&lt;/li&gt;
+ * &lt;li&gt;E-mail usually won't line-break if there's no punctuation to break at.&lt;/li&gt;
+ * &lt;li&gt;Doubleclicking selects the whole number as one word if it's all alphanumeric.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * However, note that the encoding/decoding runs in O(n&amp;sup2;) time, so it is not useful for large data.
+ * &lt;p&gt;
+ * The basic idea of the encoding is to treat the data bytes as a large number represented using
+ * base-256 digits, convert the number to be represented using base-58 digits, preserve the exact
+ * number of leading zeros (which are otherwise lost during the mathematical operations on the
+ * numbers), and finally represent the resulting base-58 digits as alphanumeric ASCII characters.
+ */
+<span class="nc" id="L45">public class Base58Util {</span>
+<span class="nc" id="L46">    public static final char[] ALPHABET = &quot;123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz&quot;.toCharArray();</span>
+<span class="nc" id="L47">    private static final char ENCODED_ZERO = ALPHABET[0];</span>
+<span class="nc" id="L48">    private static final int[] INDEXES = new int[128];</span>
+    static {
+<span class="nc" id="L50">        Arrays.fill(INDEXES, -1);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (int i = 0; i &lt; ALPHABET.length; i++) {</span>
+<span class="nc" id="L52">            INDEXES[ALPHABET[i]] = i;</span>
+        }
+<span class="nc" id="L54">    }</span>
+
+    /**
+     * Encodes the given bytes as a base58 string (no checksum is appended).
+     *
+     * @param input the bytes to encode
+     * @return the base58-encoded string
+     */
+    public static String encode(byte[] input) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (input.length == 0) {</span>
+<span class="nc" id="L64">            return &quot;&quot;;</span>
+        }
+        // Count leading zeros.
+<span class="nc" id="L67">        int zeros = 0;</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        while (zeros &lt; input.length &amp;&amp; input[zeros] == 0) {</span>
+<span class="nc" id="L69">            ++zeros;</span>
+        }
+        // Convert base-256 digits to base-58 digits (plus conversion to ASCII characters)
+<span class="nc" id="L72">        input = Arrays.copyOf(input, input.length); // since we modify it in-place</span>
+<span class="nc" id="L73">        char[] encoded = new char[input.length * 2]; // upper bound</span>
+<span class="nc" id="L74">        int outputStart = encoded.length;</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (int inputStart = zeros; inputStart &lt; input.length; ) {</span>
+<span class="nc" id="L76">            encoded[--outputStart] = ALPHABET[divmod(input, inputStart, 256, 58)];</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (input[inputStart] == 0) {</span>
+<span class="nc" id="L78">                ++inputStart; // optimization - skip leading zeros</span>
+            }
+        }
+        // Preserve exactly as many leading encoded zeros in output as there were leading zeros in input.
+<span class="nc bnc" id="L82" title="All 4 branches missed.">        while (outputStart &lt; encoded.length &amp;&amp; encoded[outputStart] == ENCODED_ZERO) {</span>
+<span class="nc" id="L83">            ++outputStart;</span>
+        }
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        while (--zeros &gt;= 0) {</span>
+<span class="nc" id="L86">            encoded[--outputStart] = ENCODED_ZERO;</span>
+        }
+        // Return encoded string (including encoded leading zeros).
+<span class="nc" id="L89">        return new String(encoded, outputStart, encoded.length - outputStart);</span>
+    }
+
+    /**
+     * Decodes the given base58 string into the original data bytes.
+     *
+     * @param input the base58-encoded string to decode
+     * @return the decoded data bytes
+     * @throws AddressFormatException if the given string is not a valid base58 string
+     */
+    public static byte[] decode(String input) throws AddressFormatException {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (input.length() == 0) {</span>
+<span class="nc" id="L101">            return new byte[0];</span>
+        }
+        // Convert the base58-encoded ASCII chars to a base58 byte sequence (base58 digits).
+<span class="nc" id="L104">        byte[] input58 = new byte[input.length()];</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        for (int i = 0; i &lt; input.length(); ++i) {</span>
+<span class="nc" id="L106">            char c = input.charAt(i);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            int digit = c &lt; 128 ? INDEXES[c] : -1;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            if (digit &lt; 0) {</span>
+<span class="nc" id="L109">                throw new AddressFormatException(&quot;Illegal character &quot; + c + &quot; at position &quot; + i);</span>
+            }
+<span class="nc" id="L111">            input58[i] = (byte) digit;</span>
+        }
+        // Count leading zeros.
+<span class="nc" id="L114">        int zeros = 0;</span>
+<span class="nc bnc" id="L115" title="All 4 branches missed.">        while (zeros &lt; input58.length &amp;&amp; input58[zeros] == 0) {</span>
+<span class="nc" id="L116">            ++zeros;</span>
+        }
+        // Convert base-58 digits to base-256 digits.
+<span class="nc" id="L119">        byte[] decoded = new byte[input.length()];</span>
+<span class="nc" id="L120">        int outputStart = decoded.length;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        for (int inputStart = zeros; inputStart &lt; input58.length; ) {</span>
+<span class="nc" id="L122">            decoded[--outputStart] = divmod(input58, inputStart, 58, 256);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            if (input58[inputStart] == 0) {</span>
+<span class="nc" id="L124">                ++inputStart; // optimization - skip leading zeros</span>
+            }
+        }
+        // Ignore extra leading zeroes that were added during the calculation.
+<span class="nc bnc" id="L128" title="All 4 branches missed.">        while (outputStart &lt; decoded.length &amp;&amp; decoded[outputStart] == 0) {</span>
+<span class="nc" id="L129">            ++outputStart;</span>
+        }
+        // Return decoded data (including original number of leading zeros).
+<span class="nc" id="L132">        return Arrays.copyOfRange(decoded, outputStart - zeros, decoded.length);</span>
+    }
+
+    public static BigInteger decodeToBigInteger(String input) throws AddressFormatException {
+<span class="nc" id="L136">        return new BigInteger(1, decode(input));</span>
+    }
+
+
+
+    /**
+     * Divides a number, represented as an array of bytes each containing a single digit
+     * in the specified base, by the given divisor. The given number is modified in-place
+     * to contain the quotient, and the return value is the remainder.
+     *
+     * @param number the number to divide
+     * @param firstDigit the index within the array of the first non-zero digit
+     *        (this is used for optimization by skipping the leading zeros)
+     * @param base the base in which the number's digits are represented (up to 256)
+     * @param divisor the number to divide by (up to 256)
+     * @return the remainder of the division operation
+     */
+    private static byte divmod(byte[] number, int firstDigit, int base, int divisor) {
+        // this is just long division which accounts for the base of the input digits
+<span class="nc" id="L155">        int remainder = 0;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        for (int i = firstDigit; i &lt; number.length; i++) {</span>
+<span class="nc" id="L157">            int digit = (int) number[i] &amp; 0xFF;</span>
+<span class="nc" id="L158">            int temp = remainder * base + digit;</span>
+<span class="nc" id="L159">            number[i] = (byte) (temp / divisor);</span>
+<span class="nc" id="L160">            remainder = temp % divisor;</span>
+        }
+<span class="nc" id="L162">        return (byte) remainder;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

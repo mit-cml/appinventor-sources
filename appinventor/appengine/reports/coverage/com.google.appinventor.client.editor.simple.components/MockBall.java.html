@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockBall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockBall.java</span></div><h1>MockBall.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.widgetideas.graphics.client.Color;
+import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+
+/**
+ * Mock Ball component.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class MockBall extends MockVisibleComponent implements MockSprite {
+
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = &quot;Ball&quot;;
+
+  private static final String PROPERTY_NAME_RADIUS = &quot;Radius&quot;;
+  private static final String PROPERTY_NAME_PAINTCOLOR = &quot;PaintColor&quot;;
+  private static final String PROPERTY_NAME_ORIGIN_AT_CENTER = &quot;OriginAtCenter&quot;;
+
+  private static final int DEFAULT_RADIUS = 5;
+
+  // Widget for showing the mock ball
+  private final SimplePanel ballWidget;
+  private final GWTCanvas canvas;
+
+<span class="nc" id="L36">  private int radius = DEFAULT_RADIUS;</span>
+<span class="nc" id="L37">  private int diameter = 2 * radius;</span>
+<span class="nc" id="L38">  private Color color = Color.BLACK;</span>
+<span class="nc" id="L39">  private boolean originAtCenter = false;</span>
+
+  int x;
+  int y;
+
+  /**
+   * Creates a new MockBall component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  public MockBall(SimpleEditor editor) {
+<span class="nc" id="L50">    super(editor, TYPE, images.ball());</span>
+
+    // Initialize mock ball UI
+<span class="nc" id="L53">    ballWidget = new SimplePanel();</span>
+<span class="nc" id="L54">    ballWidget.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+
+    // Create an appropriately sized ball
+<span class="nc" id="L57">    canvas = new GWTCanvas(diameter, diameter);</span>
+<span class="nc" id="L58">    canvas.setPixelSize(diameter, diameter);</span>
+<span class="nc" id="L59">    canvas.setBackgroundColor(GWTCanvas.TRANSPARENT);</span>
+<span class="nc" id="L60">    fillCircle();</span>
+<span class="nc" id="L61">    ballWidget.setWidget(canvas);</span>
+
+<span class="nc" id="L63">    initComponent(ballWidget);</span>
+<span class="nc" id="L64">  }</span>
+
+  // Drawing
+
+  private void fillCircle() {
+<span class="nc" id="L69">    canvas.clear();</span>
+<span class="nc" id="L70">    canvas.setFillStyle(color);</span>
+<span class="nc" id="L71">    canvas.beginPath();</span>
+<span class="nc" id="L72">    canvas.arc(radius, radius, radius, 0, Math.PI * 2, true);</span>
+<span class="nc" id="L73">    canvas.fill();</span>
+<span class="nc" id="L74">  }</span>
+
+  // Handling property changes
+
+  private void setRadiusProperty(String text) {
+    try {
+<span class="nc" id="L80">      radius = Integer.parseInt(text);</span>
+<span class="nc" id="L81">      diameter = 2 * radius;</span>
+<span class="nc" id="L82">      canvas.setCoordSize(diameter, diameter);</span>
+<span class="nc" id="L83">      canvas.setPixelSize(diameter, diameter);</span>
+<span class="nc" id="L84">      fillCircle();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      if (originAtCenter) {</span>
+        // Force the position of the ballWidget to be adjusted relative
+        // to the parent canvas.
+<span class="nc" id="L88">        refreshCanvas();</span>
+      }
+<span class="nc" id="L90">    } catch (NumberFormatException e) {</span>
+      // Ignore this. If we throw an exception here, the project is unrecoverable.
+<span class="nc" id="L92">    }</span>
+<span class="nc" id="L93">  }</span>
+
+  private void setColorProperty(String text) {
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L97">      text = &quot;&amp;HFF000000&quot;;  // black</span>
+    }
+<span class="nc" id="L99">    color = MockComponentsUtil.getColor(text);</span>
+<span class="nc" id="L100">    fillCircle();</span>
+<span class="nc" id="L101">  }</span>
+
+  private void refreshCanvas() {
+<span class="nc" id="L104">    MockCanvas mockCanvas = (MockCanvas) getContainer();</span>
+    // mockCanvas will be null for the MockBall on the palette
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    if (mockCanvas != null) {</span>
+<span class="nc" id="L107">      mockCanvas.reorderComponents(this); //refreshForm();</span>
+    }
+<span class="nc" id="L109">  }</span>
+
+  private void setXProperty(String text) {
+    try {
+<span class="nc" id="L113">      x = (int) Math.round(Double.parseDouble(text));</span>
+<span class="nc" id="L114">    } catch (NumberFormatException e) {</span>
+      // Don't change value if unparseable (should not happen).
+<span class="nc" id="L116">    }</span>
+<span class="nc" id="L117">    refreshCanvas();</span>
+<span class="nc" id="L118">  }</span>
+  
+  private void setYProperty(String text) {
+    try {
+<span class="nc" id="L122">      y = (int) Math.round(Double.parseDouble(text));</span>
+<span class="nc" id="L123">    } catch (NumberFormatException e) {</span>
+      // Don't change value if unparseable (should not happen).
+<span class="nc" id="L125">    }</span>
+<span class="nc" id="L126">    refreshCanvas();</span>
+<span class="nc" id="L127">  }</span>
+
+  private void setZProperty(String text) {
+<span class="nc" id="L130">    MockCanvas mockCanvas = (MockCanvas) getContainer();</span>
+    // mockCanvas will be null for the MockBall on the palette
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (mockCanvas != null) {</span>
+<span class="nc" id="L133">      mockCanvas.reorderComponents(this);</span>
+    }
+<span class="nc" id="L135">  }</span>
+
+  private void setOriginAtCenterProperty(String text) {
+<span class="nc" id="L138">    originAtCenter = Boolean.valueOf(text);</span>
+<span class="nc" id="L139">    refreshCanvas();</span>
+<span class="nc" id="L140">  }</span>
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L146">      return false;</span>
+    }
+<span class="nc" id="L148">    return super.isPropertyVisible(propertyName);</span>
+  }
+
+  @Override
+  public int getPreferredWidth() {
+    // The superclass uses getOffsetWidth, which won't work for us.
+<span class="nc" id="L154">    return diameter;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+    // The superclass uses getOffsetHeight, which won't work for us.
+<span class="nc" id="L160">    return diameter;</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L165">    super.onPropertyChange(propertyName, newValue);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_RADIUS)) {</span>
+<span class="nc" id="L167">      setRadiusProperty(newValue);</span>
+<span class="nc" id="L168">      refreshForm();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_PAINTCOLOR)) {</span>
+<span class="nc" id="L170">      setColorProperty(newValue);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_Z)) {</span>
+<span class="nc" id="L172">      setZProperty(newValue);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_X)) {</span>
+<span class="nc" id="L174">      setXProperty(newValue);</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_Y)) {</span>
+<span class="nc" id="L176">      setYProperty(newValue);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_ORIGIN_AT_CENTER)) {</span>
+<span class="nc" id="L178">      setOriginAtCenterProperty(newValue);</span>
+    }
+<span class="nc" id="L180">  }</span>
+
+  @Override
+  public int getLeftX() {
+<span class="nc" id="L184">    return x - getXOffset();</span>
+  }
+
+  @Override
+  public int getTopY() {
+<span class="nc" id="L189">    return y - getYOffset();</span>
+  }
+
+  @Override
+  public int getXOffset() {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">    return originAtCenter ? radius : 0;</span>
+  }
+
+  @Override
+  public int getYOffset() {
+<span class="nc bnc" id="L199" title="All 2 branches missed.">    return originAtCenter ? radius : 0;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

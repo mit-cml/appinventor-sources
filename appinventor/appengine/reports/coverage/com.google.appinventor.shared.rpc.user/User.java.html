@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.shared.rpc.user</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.shared.rpc.user;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
+
+/**
+ * Data Transfer Object representing user data.
+ *
+ */
+public class User implements IsSerializable, UserInfoProvider, Serializable {
+  // Unique identifier for the user
+  private String id;
+
+  // user email address
+  private String email;
+
+  // whether user has accepted terms of service
+  private boolean tosAccepted;
+
+  // whether the user has admin priviledges
+  private boolean isAdmin;
+
+  // If set, we inform the client side to go into read only mode
+  // NOTE: isReadOnly is *not* enforced on the server. This is because
+  // only privileged users can assert isReadOnly and we assume that they
+  // are sufficiently trustworthy that they will not attempt to abuse the
+  // system by unsetting it on their client to cause mischief
+  private boolean isReadOnly;
+
+  private String sessionId;        // Used to ensure only one account active at a time
+
+  private String password;      // Hashed password (if using local login system)
+
+<span class="pc" id="L40">  private String backPackId = null; // If non-null we have a shared backpack</span>
+
+  public final static String usercachekey = &quot;f682688a-1065-4cda-8515-a8bd70200ac9&quot;; // UUID
+  // This UUID is prepended to any key lookup for User objects. Memcache is a common
+  // key/value store for the entire application. By prepending a unique value, we ensure
+  // that other modules that use Memcache will not collide with us. By using a UUID,
+  // properly generated, we don't have to worry about allocating specific prefixes and
+  // ensuring that they are unique.
+
+  /**
+   * Creates a new user data transfer object.
+   *
+   * @param id unique user id (from {@link com.google.appengine.api.users.User#getUserId()}
+   * @param email user email address
+   * @param tosAccepted TOS accepted?
+   * @param sessionId client session Id
+   */
+<span class="fc" id="L57">  public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId) {</span>
+<span class="fc" id="L58">    this.id = id;</span>
+<span class="fc" id="L59">    this.email = email;</span>
+<span class="fc" id="L60">    this.tosAccepted = tosAccepted;</span>
+<span class="fc" id="L61">    this.isAdmin = isAdmin;</span>
+<span class="fc" id="L62">    this.sessionId = sessionId;</span>
+<span class="fc" id="L63">  }</span>
+
+  /**
+   * Default constructor. This constructor is required by GWT.
+   */
+  @SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L69">  private User() {</span>
+<span class="nc" id="L70">  }</span>
+
+  /**
+   * Returns the user's unique id.
+   *
+   * @return user id
+   */
+  @Override
+  public String getUserId() {
+<span class="fc" id="L79">    return id;</span>
+  }
+
+  /*
+   * Sets the userId. This is needed in the case where the stored
+   * id in userData is different from what Google is now providing.
+   */
+  public void setUserId(String id) {
+<span class="nc" id="L87">    this.id = id;</span>
+<span class="nc" id="L88">  }</span>
+
+  /**
+   * Returns the user's email address.
+   *
+   * @return user email address
+   */
+  @Override
+  public String getUserEmail() {
+<span class="fc" id="L97">    return email;</span>
+  }
+
+  /**
+   * Sets the user's email address.
+   */
+  public void setUserEmail(String email) {
+<span class="fc" id="L104">    this.email = email;</span>
+<span class="fc" id="L105">  }</span>
+
+  /**
+   * fetch the hashed password
+   *
+   * @return hashed password
+   */
+  public String getPassword() {
+<span class="nc" id="L113">    return password;</span>
+  }
+
+
+  /**
+   * sets the hashed password.
+   *
+   * @param hashed password
+   */
+  public void setPassword(String hashedpassword) {
+<span class="fc" id="L123">    this.password = hashedpassword;</span>
+<span class="fc" id="L124">  }</span>
+
+  /**
+   * Sets whether the user has accepted the terms of service.
+   *
+   * @param tos {@code true} if the user has accepted the terms of service,
+   *            {@code false} otherwise
+   */
+  public void setUserTosAccepted(boolean tos) {
+<span class="fc" id="L133">    tosAccepted = tos;</span>
+<span class="fc" id="L134">  }</span>
+
+  /**
+   * Returns whether the user has accepted the terms of service.
+   *
+   * @return {@code true} if the user has accepted the terms of service,
+   *         {@code false} otherwise
+   */
+  @Override
+  public boolean getUserTosAccepted() {
+<span class="fc" id="L144">    return tosAccepted;</span>
+  }
+
+  @Override
+  public boolean getIsAdmin() {
+<span class="nc" id="L149">    return isAdmin;</span>
+  }
+
+  /**
+   * Sets whether the user has admin priviledges.
+   *
+   * @param admin {@code true} if the user has admin priviledges,
+   *              {@code false} otherwise
+   */
+  public void setIsAdmin(boolean admin) {
+<span class="fc" id="L159">    isAdmin = admin;</span>
+<span class="fc" id="L160">  }</span>
+
+
+  /**
+   * Returns this object.
+   *
+   * @return user
+   */
+  @Override
+  public User getUser() {
+<span class="nc" id="L170">    return this;</span>
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L175" title="2 of 4 branches missed.">    return obj instanceof User &amp;&amp; id.equals(((User) obj).id);</span>
+  }
+
+  @Override
+  public int hashCode() {
+<span class="fc" id="L180">    return id.hashCode();</span>
+  }
+
+  /**
+   * Get the unique session id associated with this user
+   * This is used to ensure that only one session is opened
+   * per uers. Old sessions are invalidated.
+   *
+   * @return sessionId
+   */
+  @Override
+  public String getSessionId() {
+<span class="nc" id="L192">    return sessionId;</span>
+  }
+
+  @Override
+  public void setSessionId(String sessionId) {
+<span class="fc" id="L197">    this.sessionId = sessionId;</span>
+<span class="fc" id="L198">  }</span>
+
+  @Override
+  public void setReadOnly(boolean value) {
+<span class="nc" id="L202">    isReadOnly = value;</span>
+<span class="nc" id="L203">  }</span>
+
+  public boolean isReadOnly() {
+<span class="nc" id="L206">    return isReadOnly;</span>
+  }
+
+
+  public String getBackpackId() {
+<span class="nc" id="L211">    return backPackId;</span>
+  }
+
+  public void setBackpackId(String backPackId) {
+<span class="nc" id="L215">    this.backPackId = backPackId;</span>
+<span class="nc" id="L216">  }</span>
+
+  public User copy() {
+    // We set the isReadOnly flag in the copy in this fashion so we do not have to
+    // modify all the places in the source where we create a &quot;User&quot; object. There are
+    // only a few places where we assert or read the isReadOnly flag, so we want to
+    // limit the places where we have to have knowledge of it to just those places that care
+<span class="nc" id="L223">    User retval =  new User(id, email, tosAccepted, isAdmin, sessionId);</span>
+<span class="nc" id="L224">    retval.setReadOnly(isReadOnly);</span>
+<span class="nc" id="L225">    retval.setBackpackId(this.backPackId);</span>
+<span class="nc" id="L226">    return retval;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ListWithNone.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">ListWithNone.java</span></div><h1>ListWithNone.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * List where item 0 represents the empty string, but it is displayed as
+ * &quot;None&quot; (configurable). Item 0 is always present.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+final class ListWithNone {
+  interface ListBoxWrapper {
+    void addItem(String item);
+    String getItem(int index);
+    void removeItem(int index);
+    void setSelectedIndex(int index);
+  }
+
+  private final ListBoxWrapper listBoxWrapper;
+  private final String noneDisplayItem;
+  private final List&lt;String&gt; values;
+
+  /**
+   * Creates a ListWithNone instance with the given &quot;None&quot; display item.
+   * After construction, the list contains just the &quot;None&quot; item.
+   *
+   * @param noneDisplayItem the display item for &quot;None&quot;
+   * @param listBoxWrapper a wrapper around the list box
+   */
+<span class="fc" id="L37">  ListWithNone(String noneDisplayItem, ListBoxWrapper listBoxWrapper) {</span>
+<span class="fc" id="L38">    this.noneDisplayItem = noneDisplayItem;</span>
+<span class="fc" id="L39">    this.listBoxWrapper = listBoxWrapper;</span>
+<span class="fc" id="L40">    values = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc" id="L42">    values.add(&quot;&quot;);</span>
+<span class="fc" id="L43">    listBoxWrapper.addItem(noneDisplayItem);</span>
+<span class="fc" id="L44">  }</span>
+
+  /**
+   * Adds a value to the list. The display item will be the same as the value.
+   *
+   * @param value the value to add to the list
+   */
+  void addItem(String value) {
+<span class="fc" id="L52">    addItem(value, value);</span>
+<span class="fc" id="L53">  }</span>
+
+  /**
+   * Adds a value and its corresponding display item to the list.
+   *
+   * @param value the value to add to the list
+   * @param displayItem the item to be displayed
+   */
+  void addItem(String value, String displayItem) {
+<span class="fc" id="L62">    values.add(value);</span>
+<span class="fc" id="L63">    listBoxWrapper.addItem(displayItem);</span>
+<span class="fc" id="L64">  }</span>
+
+  /**
+   * Selects the item in the list that corresponds to the given value.
+   *
+   * @param value the value to select.
+   */
+  void selectValue(String value) {
+<span class="fc" id="L72">    int index = values.indexOf(value);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">    if (index != -1) {</span>
+<span class="fc" id="L74">      listBoxWrapper.setSelectedIndex(index);</span>
+    }
+<span class="fc" id="L76">  }</span>
+
+  /**
+   * Removes a value and its corresponding display item from the list
+   *
+   * @param value the value to remove from the list
+   */
+  void removeValue(String value) {
+<span class="fc" id="L84">    int index = values.indexOf(value);</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    if (index != -1) {</span>
+<span class="fc" id="L86">      values.remove(index);</span>
+<span class="fc" id="L87">      listBoxWrapper.removeItem(index);</span>
+    }
+<span class="fc" id="L89">  }</span>
+
+  /**
+   * Returns the value at the given index.
+   *
+   * @param index the index
+   * @return the value at the given index
+   * @throws IndexOutOfBoundsException if the index is out of range
+   */
+  String getValueAtIndex(int index) throws IndexOutOfBoundsException {
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">    if (index &gt;= 0 &amp;&amp; index &lt; values.size()) {</span>
+<span class="fc" id="L100">      return values.get(index);</span>
+    }
+<span class="fc" id="L102">    throw new IndexOutOfBoundsException(&quot;&quot; + index);</span>
+  }
+
+  /**
+   * Returns the index of the given value or -1 if the value isn't in the list.
+   *
+   * @param value the value
+   * @return the index of the given value or -1 if the value isn't in the list
+   */
+  int indexOfValue(String value) {
+<span class="fc" id="L112">    return values.indexOf(value);</span>
+  }
+
+  /**
+   * Returns true if the given value is in the list
+   *
+   * @param value the value
+   * @return true if the given value is in the list, false otherwise
+   */
+  boolean containsValue(String value) {
+<span class="fc" id="L122">    return values.contains(value);</span>
+  }
+
+  /**
+   * Returns the display item for the given value.
+   *
+   * @param value the value
+   * @return the display item for the given value
+   * @throws IllegalArgumentException if the given value is not in the list
+   */
+  String getDisplayItemForValue(String value) {
+<span class="fc" id="L133">    int index = values.indexOf(value);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">    if (index != -1) {</span>
+<span class="fc" id="L135">      return listBoxWrapper.getItem(index);</span>
+    }
+<span class="fc" id="L137">    throw new IllegalArgumentException(&quot;Illegal value: &quot; + value);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

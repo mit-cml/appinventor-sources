@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentNotFoundException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple</a> &gt; <span class="el_source">ComponentNotFoundException.java</span></div><h1>ComponentNotFoundException.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2;
+// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple;
+
+/**
+ * An exception that is thrown when an operation attempts to retrieve a component by name that
+ * does not exist in the project.
+ */
+public class ComponentNotFoundException extends IllegalArgumentException {
+  private final String componentName;
+
+  protected ComponentNotFoundException() {
+<span class="nc" id="L16">    super();</span>
+<span class="nc" id="L17">    componentName = &quot;unknown&quot;;</span>
+<span class="nc" id="L18">  }</span>
+
+  public ComponentNotFoundException(String componentName) {
+<span class="nc" id="L21">    super(&quot;Component not found: &quot; + componentName);</span>
+<span class="nc" id="L22">    this.componentName = componentName;</span>
+<span class="nc" id="L23">  }</span>
+
+  public final String getComponentName() {
+<span class="nc" id="L26">    return componentName;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

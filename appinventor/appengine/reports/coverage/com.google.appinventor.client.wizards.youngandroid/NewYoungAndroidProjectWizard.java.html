@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NewYoungAndroidProjectWizard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.wizards.youngandroid</a> &gt; <span class="el_source">NewYoungAndroidProjectWizard.java</span></div><h1>NewYoungAndroidProjectWizard.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.wizards.youngandroid;
+
+
+import com.google.appinventor.client.Ode;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.widgets.Validator;
+import com.google.appinventor.client.wizards.NewProjectWizard;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+
+/**
+ * Wizard for creating new Young Android projects.
+ *
+ * @author markf@google.com (Mark Friedman)
+ */
+public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
+  // UI element for project name
+  private LabeledTextBox projectNameTextBox;
+
+  /**
+   * Creates a new YoungAndroid project wizard.
+   */
+  public NewYoungAndroidProjectWizard(final ProjectToolbar toolbar) {
+<span class="nc" id="L48">    super(MESSAGES.newYoungAndroidProjectWizardCaption());</span>
+
+    // Initialize the UI
+<span class="nc" id="L51">    setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+
+<span class="nc" id="L53">    projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {</span>
+      @Override
+      public boolean validate(String value) {
+<span class="nc" id="L56">        errorMessage = TextValidators.getErrorMessage(value);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (errorMessage.length()&gt;0){</span>
+<span class="nc" id="L58">          disableOkButton();</span>
+<span class="nc" id="L59">          return false;</span>
+        }
+<span class="nc" id="L61">          errorMessage = TextValidators.getWarningMessages(value);</span>
+<span class="nc" id="L62">          enableOkButton();</span>
+<span class="nc" id="L63">          return true;</span>
+      }
+
+      @Override
+      public String getErrorMessage() {
+<span class="nc" id="L68">        return errorMessage;</span>
+      }
+    });
+
+<span class="nc" id="L72">    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {</span>
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+<span class="nc" id="L75">        int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (keyCode == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L77">          handleOkClick();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        } else if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L79">          handleCancelClick();</span>
+        }
+<span class="nc" id="L81">      }</span>
+    });
+
+<span class="nc" id="L84">    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {</span>
+      @Override
+      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
+<span class="nc" id="L87">        projectNameTextBox.validate();</span>
+<span class="nc" id="L88">      }</span>
+    });
+
+<span class="nc" id="L91">    VerticalPanel page = new VerticalPanel();</span>
+
+<span class="nc" id="L93">    page.add(projectNameTextBox);</span>
+<span class="nc" id="L94">    addPage(page);</span>
+
+    // Create cancel command handler. This handler
+    // arranges to re-enable the project start button
+    // Note that toolbar will be null if we are called
+    // from the Project menu instead of the Start button
+    // on the project toolbar
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (toolbar != null) {</span>
+<span class="nc" id="L103">      initCancelCommand(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L106">          toolbar.enableStartButton();</span>
+<span class="nc" id="L107">        }</span>
+      });
+    }
+
+    // Create finish command (create a new Young Android project)
+<span class="nc" id="L112">    initFinishCommand(new Command() {</span>
+      @Override
+      public void execute() {
+<span class="nc" id="L115">        String projectName = projectNameTextBox.getText().trim();</span>
+<span class="nc" id="L116">        projectName = projectName.replaceAll(&quot;( )+&quot;, &quot; &quot;).replace(&quot; &quot;, &quot;_&quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (TextValidators.checkNewProjectName(projectName) </span>
+              == TextValidators.ProjectNameStatus.SUCCESS) {
+<span class="nc" id="L119">          String packageName = StringUtils.getProjectPackage(</span>
+<span class="nc" id="L120">              Ode.getInstance().getUser().getUserEmail(), projectName);</span>
+<span class="nc" id="L121">          NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(</span>
+              packageName);
+<span class="nc" id="L123">          NewProjectCommand callbackCommand = new NewProjectCommand() {</span>
+              @Override
+              public void execute(final Project project) {
+<span class="nc" id="L126">                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {</span>
+                    @Override
+                    public void execute() {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                      if (Ode.getInstance().screensLocked()) { // Wait until I/O finished</span>
+<span class="nc" id="L130">                        Scheduler.get().scheduleDeferred(this); // on other project</span>
+                      } else {
+<span class="nc" id="L132">                        Ode.getInstance().openYoungAndroidProjectInDesigner(project);</span>
+                      }
+<span class="nc" id="L134">                    }</span>
+                  });
+<span class="nc" id="L136">              }</span>
+            };
+
+<span class="nc" id="L139">          createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,</span>
+              parameters, callbackCommand);
+<span class="nc" id="L141">          Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);</span>
+<span class="nc" id="L142">        } else {</span>
+<span class="nc" id="L143">          show();</span>
+<span class="nc" id="L144">          center();</span>
+<span class="nc" id="L145">          return;</span>
+        }
+<span class="nc" id="L147">      }</span>
+    });
+<span class="nc" id="L149">  }</span>
+
+  @Override
+  public void show() {
+<span class="nc" id="L153">    super.show();</span>
+    // Wizard size (having it resize between page changes is quite annoying)
+<span class="nc" id="L155">    int width = 340;</span>
+<span class="nc" id="L156">    int height = 40;</span>
+<span class="nc" id="L157">    this.center();</span>
+
+<span class="nc" id="L159">    setPixelSize(width, height);</span>
+<span class="nc" id="L160">    super.setPagePanelHeight(85);</span>
+
+<span class="nc" id="L162">    DeferredCommand.addCommand(new Command() {</span>
+      public void execute() {
+<span class="nc" id="L164">        projectNameTextBox.setFocus(true);</span>
+<span class="nc" id="L165">        projectNameTextBox.selectAll();</span>
+<span class="nc" id="L166">      }</span>
+    });
+<span class="nc" id="L168">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

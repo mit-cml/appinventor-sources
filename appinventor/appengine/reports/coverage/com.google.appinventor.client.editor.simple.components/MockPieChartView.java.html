@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPieChartView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockPieChartView.java</span></div><h1>MockPieChartView.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.pepstock.charba.client.IsChart;
+import org.pepstock.charba.client.PieChart;
+
+import org.pepstock.charba.client.callbacks.LegendLabelsCallback;
+import org.pepstock.charba.client.callbacks.TooltipLabelCallback;
+
+import org.pepstock.charba.client.colors.ColorBuilder;
+import org.pepstock.charba.client.colors.IsColor;
+
+import org.pepstock.charba.client.data.PieDataset;
+
+import org.pepstock.charba.client.events.LegendClickEvent;
+import org.pepstock.charba.client.events.LegendClickEventHandler;
+
+import org.pepstock.charba.client.items.LegendLabelItem;
+import org.pepstock.charba.client.items.TooltipItem;
+import org.pepstock.charba.client.items.TooltipLabelColor;
+
+/**
+ * Chart View for the Pie Chart. Responsible for the GUI of the Pie Chart.
+ * @see com.google.appinventor.client.editor.simple.components.MockChartView
+ */
+public class MockPieChartView extends MockChartView&lt;PieDataset, PieChart, MockPieChartView&gt; {
+  // A local List of attached Data Models has to be kept to
+  // construct Legend entries
+<span class="nc" id="L36">  private final List&lt;MockPieChartDataModel&gt; dataModels = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * Creates a new Mock Pie Chart View instance.
+   */
+<span class="nc" id="L41">  public MockPieChartView() {</span>
+<span class="nc" id="L42">    chartWidget = new PieChart();</span>
+<span class="nc" id="L43">    initializeDefaultSettings();</span>
+<span class="nc" id="L44">  }</span>
+
+  @Override
+  protected void initializeDefaultSettings() {
+<span class="nc" id="L48">    super.initializeDefaultSettings();</span>
+
+    // Change the default handling &amp; rendering of the Pie Chart view
+<span class="nc" id="L51">    changeTooltipRendering();</span>
+<span class="nc" id="L52">    changeLegendClickHandling();</span>
+<span class="nc" id="L53">    changeLegendLabelHandling();</span>
+<span class="nc" id="L54">  }</span>
+
+  /**
+   * Changes the way the tooltips are rendered.
+   *
+   * &lt;p&gt;The default option is to show the same x label
+   * for all the Data Series, however, labels are
+   * defined on a per-entry basis.
+   *
+   * &lt;p&gt;This method changes the Tooltip rendering to
+   * render in &quot;x: y&quot; format for each entry.
+   */
+  private void changeTooltipRendering() {
+<span class="nc" id="L67">    chartWidget.getOptions().getTooltips().getCallbacks()</span>
+<span class="nc" id="L68">        .setLabelCallback(new TooltipLabelCallback() {</span>
+          @Override
+          public String onBeforeLabel(IsChart chart, TooltipItem item) {
+<span class="nc" id="L71">            return &quot;&quot;;</span>
+          }
+
+          @Override
+          public String onLabel(IsChart chart, TooltipItem item) {
+            // Get the Data Series &amp; entry indexes
+<span class="nc" id="L77">            int seriesIndex = item.getDatasetIndex();</span>
+<span class="nc" id="L78">            int entryIndex = item.getIndex();</span>
+
+            // Get the corresponding MockPieChartDataModel
+<span class="nc" id="L81">            MockPieChartDataModel model = dataModels.get(seriesIndex);</span>
+
+            // The x value can be found in the labels List, while the
+            // y value can be found in the Data List of the Data Series
+<span class="nc" id="L85">            String x = model.getLabels().get(entryIndex);</span>
+<span class="nc" id="L86">            double y = model.getDataSeries().getData().get(entryIndex);</span>
+
+            // Format the label String which displays the x and the y values
+<span class="nc" id="L89">            return x + &quot;: &quot; + y;</span>
+          }
+
+          @Override
+          public TooltipLabelColor onLabelColor(IsChart chart, TooltipItem item) {
+<span class="nc" id="L94">            TooltipLabelColor color = new TooltipLabelColor();</span>
+
+            // Get the Data Series &amp; entry indexes
+<span class="nc" id="L97">            int seriesIndex = item.getDatasetIndex();</span>
+<span class="nc" id="L98">            int entryIndex = item.getIndex();</span>
+
+            // Get the corresponding Data Series &amp; retrieve the color of
+            // the corresponding entry
+<span class="nc" id="L102">            PieDataset dataSeries = dataModels.get(seriesIndex).dataSeries;</span>
+<span class="nc" id="L103">            IsColor colorValue = dataSeries.getBackgroundColor().get(entryIndex);</span>
+
+            // Set the color value of the constructed TooltipLabelColor object and
+            // return it
+<span class="nc" id="L107">            color.setBackgroundColor(colorValue);</span>
+<span class="nc" id="L108">            return color;</span>
+          }
+
+          @Override
+          public IsColor onLabelTextColor(IsChart chart, TooltipItem item) {
+            // Label text should always be white
+<span class="nc" id="L114">            return ColorBuilder.build(255, 255, 255);</span>
+          }
+
+          @Override
+          public String onAfterLabel(IsChart chart, TooltipItem item) {
+<span class="nc" id="L119">            return &quot;&quot;;</span>
+          }
+        });
+<span class="nc" id="L122">  }</span>
+
+  /**
+   * Changes the onClick handler for the Legend labels.
+   *
+   * &lt;p&gt;This method makes it so that nothing happens upon
+   * clicking a Legend label. The reason why this is
+   * done is because the default click handler hides
+   * values for all data series (and not just for
+   * the one being clicked on)
+   *
+   * &lt;p&gt;TODO: In the future, perhaps a solution could be devised to implement
+   * TODO: altered logic to hide individual values (e.g. set them to 0).
+   * TODO: Alternatively, this feature could be disabled on all Charts for consistency,
+   * TODO: or simply kept as is.
+   */
+  private void changeLegendClickHandling() {
+<span class="nc" id="L139">    chartWidget.addHandler(new LegendClickEventHandler() {</span>
+      @Override
+      public void onClick(LegendClickEvent event) {
+        // Do nothing
+<span class="nc" id="L143">      }</span>
+    }, LegendClickEvent.TYPE);
+<span class="nc" id="L145">  }</span>
+
+  /**
+   * Changes the way the Legend Labels are created.
+   *
+   * &lt;p&gt;By default, the same x label is applied to all the
+   * Data Series. This method changes it so that for
+   * each individual entry, a label is created and
+   * constructed according to the entry.
+   */
+  private void changeLegendLabelHandling() {
+    // Create a custom Legend generator for the Pie Chart
+<span class="nc" id="L157">    chartWidget.getOptions().getLegend()</span>
+<span class="nc" id="L158">        .getLabels().setLabelsCallback(new LegendLabelsCallback() {</span>
+          @Override
+          public LegendLabelItem[] generateLegendLabels(IsChart chart) {
+            // Create a List to store Legend Items to add to the Char
+<span class="nc" id="L162">            List&lt;LegendLabelItem&gt; legendItems = new ArrayList&lt;&gt;();</span>
+
+            // Create a List to store all the labels across all the Data Series
+<span class="nc" id="L165">            List&lt;String&gt; dataLabels = new ArrayList&lt;&gt;();</span>
+
+            // Iterate over all attached Data Models
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            for (int i = 0; i &lt; dataModels.size(); ++i) {</span>
+<span class="nc" id="L169">              MockPieChartDataModel model = dataModels.get(i);</span>
+<span class="nc" id="L170">              PieDataset dataset = model.getDataSeries();</span>
+
+              // Get the labels of the model and add them to the
+              // data labels list storing all the labels
+<span class="nc" id="L174">              List&lt;String&gt; labels = model.getLabels();</span>
+<span class="nc" id="L175">              dataLabels.addAll(labels);</span>
+
+              // Iterate over all the labels
+<span class="nc bnc" id="L178" title="All 2 branches missed.">              for (int j = 0; j &lt; labels.size(); ++j) {</span>
+                // For each label, create a new legend item
+<span class="nc" id="L180">                LegendLabelItem legendItem = new LegendLabelItem();</span>
+<span class="nc" id="L181">                legendItem.setDatasetIndex(i); // Set the dataset reference index</span>
+<span class="nc" id="L182">                legendItem.setIndex(j); // Set the entry index reference (deos not work as expected)</span>
+<span class="nc" id="L183">                legendItem.setText(labels.get(j)); // Set the text of the required label</span>
+                // Set the representative fill style
+<span class="nc" id="L185">                legendItem.setFillStyle(dataset.getBackgroundColor().get(j));</span>
+
+                // Add the legend item to the resulting Legend Items list
+<span class="nc" id="L188">                legendItems.add(legendItem);</span>
+              }
+            }
+
+            // setLabels accepts varargs as a parameter. Data Labels result must
+            // be cast to an array.
+<span class="nc" id="L194">            chartWidget.getData().setLabels(dataLabels.toArray(new String[0]));</span>
+
+            // Cast result to array
+<span class="nc" id="L197">            return legendItems.toArray(new LegendLabelItem[0]);</span>
+          }
+        });
+<span class="nc" id="L200">  }</span>
+
+  @Override
+  public MockChartDataModel&lt;PieDataset, MockPieChartView&gt; createDataModel() {
+    // Create a new MockPieChartDataModel
+<span class="nc" id="L205">    MockPieChartDataModel model = new MockPieChartDataModel(this);</span>
+
+    // Add the Data Model to the local List of Data Models
+<span class="nc" id="L208">    dataModels.add(model);</span>
+
+<span class="nc" id="L210">    return model;</span>
+  }
+
+  /**
+   * Unlinks the specified Data Model from the Mock Pie Chart View.
+   *
+   * @param model model to unlink
+   */
+  public void removeDataModel(MockPieChartDataModel model) {
+<span class="nc" id="L219">    dataModels.remove(model);</span>
+<span class="nc" id="L220">  }</span>
+
+  /**
+   * Changes the radius of the Pie Chart View.
+   *
+   * @param percent Percentage of the radius to fill in the Pie Chart
+   */
+  public void setPieRadius(int percent) {
+    // Calculate &amp; set hole radius
+<span class="nc" id="L229">    int cutoutPercentage = 100 - percent;</span>
+<span class="nc" id="L230">    chartWidget.getOptions().setCutoutPercentage(cutoutPercentage);</span>
+<span class="nc" id="L231">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

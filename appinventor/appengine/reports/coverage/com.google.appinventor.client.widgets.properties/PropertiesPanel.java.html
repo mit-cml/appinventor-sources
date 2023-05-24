@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PropertiesPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets.properties</a> &gt; <span class="el_source">PropertiesPanel.java</span></div><h1>PropertiesPanel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets.properties;
+
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Panel to display properties.
+ *
+ */
+public class PropertiesPanel extends Composite implements ComponentDatabaseChangeListener {
+
+  // UI elements
+  private final VerticalPanel panel;
+  private final Label componentName;
+
+  /**
+   * Creates a new properties panel.
+   */
+<span class="nc" id="L31">  public PropertiesPanel() {</span>
+    // Initialize UI
+<span class="nc" id="L33">    VerticalPanel outerPanel = new VerticalPanel();</span>
+<span class="nc" id="L34">    outerPanel.setWidth(&quot;100%&quot;);</span>
+
+<span class="nc" id="L36">    componentName = new Label(&quot;&quot;);</span>
+<span class="nc" id="L37">    componentName.setStyleName(&quot;ode-PropertiesComponentName&quot;);</span>
+<span class="nc" id="L38">    outerPanel.add(componentName);</span>
+
+<span class="nc" id="L40">    panel = new VerticalPanel();</span>
+<span class="nc" id="L41">    panel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L42">    panel.setStylePrimaryName(&quot;ode-PropertiesPanel&quot;);</span>
+<span class="nc" id="L43">    outerPanel.add(panel);</span>
+
+<span class="nc" id="L45">    initWidget(outerPanel);</span>
+<span class="nc" id="L46">  }</span>
+
+  /**
+   * Adds a new property to be displayed in the UI.
+   *
+   * @param property  new property to be shown
+   */
+  void addProperty(EditableProperty property) {
+<span class="nc" id="L54">    Label label = new Label(property.getCaption());</span>
+<span class="nc" id="L55">    label.setStyleName(&quot;ode-PropertyLabel&quot;);</span>
+<span class="nc" id="L56">    panel.add(label);</span>
+<span class="nc" id="L57">    PropertyEditor editor = property.getEditor();</span>
+    // Since UIObject#setStyleName(String) clears existing styles, only
+    // style the editor if it hasn't already been styled during instantiation.
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    if(!editor.getStyleName().contains(&quot;PropertyEditor&quot;)) {</span>
+<span class="nc" id="L61">      editor.setStyleName(&quot;ode-PropertyEditor&quot;);</span>
+    }
+<span class="nc" id="L63">    panel.add(editor);</span>
+<span class="nc" id="L64">  }</span>
+
+  /**
+   * Removes all properties from the properties panel.
+   */
+  public void clear() {
+<span class="nc" id="L70">    panel.clear();</span>
+<span class="nc" id="L71">    componentName.setText(&quot;&quot;);</span>
+<span class="nc" id="L72">  }</span>
+
+  /**
+   * Shows a set of properties in the panel. Any previous content will be
+   * removed.
+   *
+   * @param properties  properties to be shown
+   */
+  public void setProperties(EditableProperties properties) {
+<span class="nc" id="L81">    clear();</span>
+<span class="nc" id="L82">    properties.addToPropertiesPanel(this);</span>
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * Set the label at the top of the properties panel. Note that you have
+   * to do this after calling setProperties because it clears the label!
+   * @param name
+   */
+  public void setPropertiesCaption(String name) {
+<span class="nc" id="L91">    componentName.setText(name);</span>
+<span class="nc" id="L92">  }</span>
+
+  @Override
+  public void onComponentTypeAdded(List&lt;String&gt; componentTypes) {
+
+<span class="nc" id="L97">  }</span>
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L101">    return true;</span>
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map&lt;String, String&gt; componentTypes) {
+
+<span class="nc" id="L107">  }</span>
+
+  @Override
+  public void onResetDatabase() {
+
+<span class="nc" id="L112">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

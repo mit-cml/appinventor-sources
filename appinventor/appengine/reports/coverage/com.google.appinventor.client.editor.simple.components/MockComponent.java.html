@@ -1,0 +1,1272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockComponent.java</span></div><h1>MockComponent.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Images;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.ClonedWidget;
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
+import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.HasAllTouchHandlers;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.MouseListenerCollection;
+import com.google.gwt.user.client.ui.SourcesMouseEvents;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ComponentDefinition;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Abstract superclass for all components in the visual designer.
+ *
+ * &lt;p&gt;Since the actual component implementation are for a target platform
+ * that is different from the platform used to implement the development
+ * environment, we need to mock them.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public abstract class MockComponent extends Composite implements PropertyChangeListener,
+    SourcesMouseEvents, DragSource, HasAllTouchHandlers, DesignPreviewChangeListener {
+  // Common property names (not all components support all properties).
+  public static final String PROPERTY_NAME_NAME = &quot;Name&quot;;
+  public static final String PROPERTY_NAME_UUID = &quot;Uuid&quot;;
+  private static final int ICON_IMAGE_WIDTH = 16;
+  private static final int ICON_IMAGE_HEIGHT = 16;
+  public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
+  public String currentPreview;
+
+  /**
+   * This class defines the dialog box for renaming a component.
+   */
+  private class RenameDialog extends DialogBox {
+    // UI elements
+    private final LabeledTextBox newNameTextBox;
+
+<span class="nc" id="L111">    RenameDialog(String oldName) {</span>
+<span class="nc" id="L112">      super(false, true);</span>
+
+<span class="nc" id="L114">      setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L115">      setText(MESSAGES.renameTitle());</span>
+<span class="nc" id="L116">      VerticalPanel contentPanel = new VerticalPanel();</span>
+
+<span class="nc" id="L118">      LabeledTextBox oldNameTextBox = new LabeledTextBox(MESSAGES.oldNameLabel());</span>
+<span class="nc" id="L119">      oldNameTextBox.setText(getName());</span>
+<span class="nc" id="L120">      oldNameTextBox.setEnabled(false);</span>
+<span class="nc" id="L121">      contentPanel.add(oldNameTextBox);</span>
+
+<span class="nc" id="L123">      newNameTextBox = new LabeledTextBox(MESSAGES.newNameLabel());</span>
+<span class="nc" id="L124">      newNameTextBox.setText(oldName);</span>
+<span class="nc" id="L125">      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {</span>
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+<span class="nc" id="L128">          int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">          if (keyCode == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L130">            handleOkClick();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">          } else if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L132">            hide();</span>
+          }
+<span class="nc" id="L134">        }</span>
+      });
+<span class="nc" id="L136">      contentPanel.add(newNameTextBox);</span>
+
+<span class="nc" id="L138">      Button cancelButton = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L139">      cancelButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L142">          hide();</span>
+<span class="nc" id="L143">        }</span>
+      });
+<span class="nc" id="L145">      Button okButton = new Button(MESSAGES.okButton());</span>
+<span class="nc" id="L146">      okButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L149">          handleOkClick();</span>
+<span class="nc" id="L150">        }</span>
+      });
+<span class="nc" id="L152">      HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L153">      buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L154">      buttonPanel.add(okButton);</span>
+<span class="nc" id="L155">      buttonPanel.setSize(&quot;100%&quot;, &quot;24px&quot;);</span>
+<span class="nc" id="L156">      contentPanel.add(buttonPanel);</span>
+<span class="nc" id="L157">      contentPanel.setSize(&quot;320px&quot;, &quot;100%&quot;);</span>
+
+<span class="nc" id="L159">      add(contentPanel);</span>
+<span class="nc" id="L160">    }</span>
+
+    private void handleOkClick() {
+<span class="nc" id="L163">      String newName = newNameTextBox.getText();</span>
+      // Remove leading and trailing whitespace
+      // Replace nonempty sequences of internal spaces by underscores
+<span class="nc" id="L166">      newName = newName.trim().replaceAll(&quot;[\\s\\xa0]+&quot;, &quot;_&quot;);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">      if (newName.equals(getName())) {</span>
+<span class="nc" id="L168">        hide();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      } else if (validate(newName)) {</span>
+<span class="nc" id="L170">        hide();</span>
+<span class="nc" id="L171">        String oldName = getName();</span>
+<span class="nc" id="L172">        changeProperty(PROPERTY_NAME_NAME, newName);</span>
+<span class="nc" id="L173">        getForm().fireComponentRenamed(MockComponent.this, oldName);</span>
+<span class="nc" id="L174">      } else {</span>
+<span class="nc" id="L175">        newNameTextBox.setFocus(true);</span>
+<span class="nc" id="L176">        newNameTextBox.selectAll();</span>
+      }
+<span class="nc" id="L178">    }</span>
+
+    private boolean validate(String newName) {
+
+      // Check that it meets the formatting requirements.
+<span class="nc bnc" id="L183" title="All 2 branches missed.">      if (!TextValidators.isValidComponentIdentifier(newName)) {</span>
+<span class="nc" id="L184">        Window.alert(MESSAGES.malformedComponentNameError());</span>
+<span class="nc" id="L185">        return false;</span>
+      }
+
+      // Check that it's unique.
+<span class="nc" id="L189">      final List&lt;String&gt; names = editor.getComponentNames();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">      if (names.contains(newName)) {</span>
+<span class="nc" id="L191">        Window.alert(MESSAGES.duplicateComponentNameError());</span>
+<span class="nc" id="L192">        return false;</span>
+      }
+
+      // Check that it is a variable name used in the Yail code
+<span class="nc bnc" id="L196" title="All 2 branches missed.">      if (TextValidators.isReservedName(newName)) {</span>
+<span class="nc" id="L197">        Window.alert(MESSAGES.reservedNameError());</span>
+<span class="nc" id="L198">        return false;</span>
+      }
+
+      //Check that it is not a Component type name, as this is bad for generics
+<span class="nc" id="L202">      SimpleComponentDatabase COMPONENT_DATABASE = SimpleComponentDatabase.getInstance();</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">      if (COMPONENT_DATABASE.isComponent(newName)) {</span>
+<span class="nc" id="L204">        Window.alert(MESSAGES.sameAsComponentTypeNameError());</span>
+<span class="nc" id="L205">        return false;</span>
+      }
+
+<span class="nc" id="L208">      return true;</span>
+    }
+
+    @Override
+    public void show() {
+<span class="nc" id="L213">      super.show();</span>
+
+<span class="nc" id="L215">      DeferredCommand.addCommand(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L218">          newNameTextBox.setFocus(true);</span>
+<span class="nc" id="L219">          newNameTextBox.selectAll();</span>
+<span class="nc" id="L220">        }</span>
+      });
+<span class="nc" id="L222">    }</span>
+  }
+
+  /**
+   * This class defines the dialog box for deleting a component.
+   */
+  private class DeleteDialog extends DialogBox {
+<span class="nc" id="L229">    DeleteDialog() {</span>
+<span class="nc" id="L230">      super(false, true);</span>
+
+<span class="nc" id="L232">      setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L233">      setText(MESSAGES.deleteComponentButton());</span>
+<span class="nc" id="L234">      VerticalPanel contentPanel = new VerticalPanel();</span>
+
+<span class="nc" id="L236">      contentPanel.add(new HTML(MESSAGES.reallyDeleteComponent()));</span>
+<span class="nc" id="L237">      Button cancelButton = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L238">      cancelButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L241">          hide();</span>
+<span class="nc" id="L242">        }</span>
+      });
+<span class="nc" id="L244">      Button deleteButton = new Button(MESSAGES.deleteButton());</span>
+<span class="nc" id="L245">      deleteButton.addStyleName(&quot;destructive-action&quot;);</span>
+<span class="nc" id="L246">      deleteButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L249">          hide();</span>
+<span class="nc" id="L250">          MockComponent.this.delete();</span>
+<span class="nc" id="L251">        }</span>
+      });
+<span class="nc" id="L253">      HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L254">      buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L255">      buttonPanel.add(deleteButton);</span>
+<span class="nc" id="L256">      buttonPanel.setSize(&quot;100%&quot;, &quot;24px&quot;);</span>
+<span class="nc" id="L257">      contentPanel.add(buttonPanel);</span>
+<span class="nc" id="L258">      contentPanel.setSize(&quot;320px&quot;, &quot;100%&quot;);</span>
+
+<span class="nc" id="L260">      add(contentPanel);</span>
+<span class="nc" id="L261">    }</span>
+    @Override
+    protected void onPreviewNativeEvent(NativePreviewEvent event) {
+<span class="nc" id="L264">      super.onPreviewNativeEvent(event);</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">      switch (event.getTypeInt()) {</span>
+        case Event.ONKEYDOWN:
+<span class="nc bnc" id="L267" title="All 2 branches missed.">          if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L268">            hide();</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L270">            hide();</span>
+<span class="nc" id="L271">            MockComponent.this.delete();</span>
+          }
+          break;
+      }
+<span class="nc" id="L275">    }</span>
+  }
+
+  // Component database: information about components (including their properties and events)
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
+
+  // Image bundle
+<span class="nc" id="L282">  protected static final Images images = Ode.getImageBundle();</span>
+
+  // Empty component children array so that we don't have to special case and test for null in
+  // case of no children
+<span class="nc" id="L286">  private static final List&lt;MockComponent&gt; NO_CHILDREN = Collections.emptyList();</span>
+
+  // Editor of Simple form source file the component belongs to
+  protected final SimpleEditor editor;
+
+  private final String type;
+  private ComponentDefinition componentDefinition;
+  private Image iconImage;
+
+  private final SourceStructureExplorerItem sourceStructureExplorerItem;
+  /**
+   * The state of the branch in the components tree corresponding to this component.
+   */
+  protected boolean expanded;
+
+  // Properties of the component
+  // Expose these to individual component subclasses, which might need to
+  // check properties fpr UI manipulation.  One example is MockHorizontalArrangement
+  protected final EditableProperties properties;
+
+  private DragSourceSupport dragSourceSupport;
+
+  // Component container the component belongs to (this will be null for the root component aka the
+  // form)
+  private MockContainer container;
+
+<span class="nc" id="L312">  private MouseListenerCollection mouseListeners = new MouseListenerCollection();</span>
+  private HandlerManager handlers;
+
+  /**
+   * Creates a new instance of the component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+<span class="nc" id="L320">  MockComponent(SimpleEditor editor, String type, Image iconImage) {</span>
+<span class="nc" id="L321">    this.editor = editor;</span>
+<span class="nc" id="L322">    this.type = type;</span>
+<span class="nc" id="L323">    this.iconImage = iconImage;</span>
+<span class="nc" id="L324">    this.handlers = new HandlerManager(this);</span>
+<span class="nc" id="L325">    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());</span>
+<span class="nc" id="L326">    componentDefinition = COMPONENT_DATABASE.getComponentDefinition(type);</span>
+
+<span class="nc" id="L328">    sourceStructureExplorerItem = new SourceStructureExplorerItem() {</span>
+      @Override
+      public void onSelected(NativeEvent source) {
+        // are we showing the blocks editor? if so, toggle the component drawer
+<span class="nc bnc" id="L332" title="All 2 branches missed.">        if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {</span>
+          YaBlocksEditor blocksEditor =
+<span class="nc" id="L334">              (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();</span>
+<span class="nc" id="L335">          OdeLog.log(&quot;Showing item &quot; + getName());</span>
+<span class="nc" id="L336">          blocksEditor.showComponentBlocks(getName());</span>
+<span class="nc" id="L337">        } else {</span>
+<span class="nc" id="L338">          select(source);</span>
+        }
+<span class="nc" id="L340">      }</span>
+
+      @Override
+      public void onStateChange(boolean open) {
+        // The user has expanded or collapsed the branch in the components tree corresponding to
+        // this component. Remember that by setting the expanded field so that when we re-build
+        // the tree, we will keep the branch in the same state.
+<span class="nc" id="L347">        expanded = open;</span>
+<span class="nc" id="L348">      }</span>
+
+      @Override
+      public boolean canRename() {
+<span class="nc bnc" id="L352" title="All 2 branches missed.">        return !isForm();</span>
+      }
+
+      @Override
+      public void rename() {
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        if (!isForm()) {</span>
+<span class="nc" id="L358">          new RenameDialog(getName()).center();</span>
+        }
+<span class="nc" id="L360">      }</span>
+
+      @Override
+      public boolean canDelete() {
+<span class="nc bnc" id="L364" title="All 2 branches missed.">        return !isForm();</span>
+      }
+
+      @Override
+      public void delete() {
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        if (!isForm()) {</span>
+<span class="nc" id="L370">          new DeleteDialog().center();</span>
+        }
+<span class="nc" id="L372">      }</span>
+    };
+<span class="nc" id="L374">    expanded = true;</span>
+
+    // Create a default property set for the component
+<span class="nc" id="L377">    properties = new EditableProperties(true);</span>
+
+    // Add the mock component itself as a property change listener so that it can update its
+    // visual aspects according to changes of its properties
+<span class="nc" id="L381">    properties.addPropertyChangeListener(this);</span>
+
+    // Allow dragging this component in a drag-and-drop action if this is not the root form
+<span class="nc bnc" id="L384" title="All 2 branches missed.">    if (!isForm()) {</span>
+<span class="nc" id="L385">      dragSourceSupport = new DragSourceSupport(this);</span>
+<span class="nc" id="L386">      addMouseListener(dragSourceSupport);</span>
+<span class="nc" id="L387">      addTouchStartHandler(dragSourceSupport);</span>
+<span class="nc" id="L388">      addTouchMoveHandler(dragSourceSupport);</span>
+<span class="nc" id="L389">      addTouchEndHandler(dragSourceSupport);</span>
+<span class="nc" id="L390">      addTouchCancelHandler(dragSourceSupport);</span>
+    }
+<span class="nc" id="L392">  }</span>
+
+  /**
+   * Sets the components widget representation and initializes its properties.
+   *
+   * &lt;p&gt;To be called from implementing constructor.
+   *
+   * @param widget  components visual representation in designer
+   */
+  void initComponent(Widget widget) {
+    // Widget needs to be initialized before the component itself so that the component properties
+    // can be reflected by the widget
+<span class="nc" id="L404">    initWidget(widget);</span>
+
+    // Capture mouse and click events in onBrowserEvent(Event)
+<span class="nc" id="L407">    sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.TOUCHEVENTS);</span>
+
+    // Add the special name property and set the tooltip
+<span class="nc" id="L410">    String name = componentName();</span>
+<span class="nc" id="L411">    setTitle(name);</span>
+<span class="nc" id="L412">    addProperty(PROPERTY_NAME_NAME, name, null, new TextPropertyEditor());</span>
+
+    // TODO(user): Ensure this value is unique within the project using a list of
+    // already used UUIDs
+    // Set the component's UUID
+    // The default value here can be anything except 0, because YoungAndroidProjectService
+    // creates forms with an initial Uuid of 0, and Properties.java doesn't encode
+    // default values when it generates JSON for a component.
+<span class="nc" id="L420">    addProperty(PROPERTY_NAME_UUID, &quot;-1&quot;, null, new TextPropertyEditor());</span>
+<span class="nc" id="L421">    changeProperty(PROPERTY_NAME_UUID, &quot;&quot; + Random.nextInt());</span>
+
+<span class="nc" id="L423">    editor.getComponentPalettePanel().configureComponent(this);</span>
+<span class="nc" id="L424">  }</span>
+
+  public boolean isPropertyPersisted(String propertyName) {
+<span class="nc bnc" id="L427" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_NAME)) {</span>
+<span class="nc" id="L428">      return false;</span>
+    }
+<span class="nc" id="L430">    return true;</span>
+  }
+
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L434" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_NAME) ||</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_UUID)) {</span>
+<span class="nc" id="L436">      return false;</span>
+    }
+<span class="nc" id="L438">    return true;</span>
+  }
+
+  protected boolean isPropertyforYail(String propertyName) {
+    // By default we use the same criterion as persistance
+    // This method can then be overridden by the individual
+    // component Mocks
+<span class="nc" id="L445">    return isPropertyPersisted(propertyName);</span>
+  }
+
+  /**
+   * Invoked after a component is created from the palette.
+   *
+   * &lt;p&gt;Some subclasses may wish to override this method to initialize
+   * properties of the newly created component. For example, a component with a
+   * caption may want to initialize the caption to match the component's name.
+   */
+  public void onCreateFromPalette() {
+<span class="nc" id="L456">  }</span>
+
+  /**
+   * Returns a unique default component name.
+   */
+  private String componentName() {
+<span class="nc" id="L462">    String compType = ComponentsTranslation.getComponentName(getType());</span>
+<span class="nc" id="L463">    compType = compType.replace(&quot; &quot;, &quot;_&quot;).replace(&quot;'&quot;, &quot;_&quot;); // Make sure it doesn't have any spaces in it</span>
+<span class="nc" id="L464">    return compType + getNextComponentIndex();</span>
+  }
+
+  /**
+   * All components have default names for new component instantiations,
+   * usually consisting of the type name and an index. This method
+   * returns the next available component index for this component's type.
+   *
+   * We lower case the typeName and cName so we don't wind up with
+   * components of the names 'fooComponent1' and 'FooComponent1' where
+   * the only difference is the case of the first (or other)
+   * letters. Ultimately the case does matter but when gensyming new
+   * component names components whose only difference is in case will
+   * still result in an incremented index. So if 'fooComponent1' exist
+   * the new component will be 'FooComponent2' instead of
+   * 'FooComponent1'. Hopefully this will be less confusing.
+   *
+   */
+  private int getNextComponentIndex() {
+<span class="nc" id="L483">    int highIndex = 0;</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">    if (editor != null) {</span>
+<span class="nc" id="L485">      final String typeName = ComponentsTranslation.getComponentName(getType())</span>
+<span class="nc" id="L486">        .toLowerCase()</span>
+<span class="nc" id="L487">        .replace(&quot; &quot;, &quot;_&quot;)</span>
+<span class="nc" id="L488">        .replace(&quot;'&quot;, &quot;_&quot;);</span>
+<span class="nc" id="L489">      final int nameLength = typeName.length();</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">      for (String cName : editor.getComponentNames()) {</span>
+<span class="nc" id="L491">        cName = cName.toLowerCase();</span>
+        try {
+<span class="nc bnc" id="L493" title="All 2 branches missed.">          if (cName.startsWith(typeName)) {</span>
+<span class="nc" id="L494">            highIndex = Math.max(highIndex, Integer.parseInt(cName.substring(nameLength)));</span>
+          }
+<span class="nc" id="L496">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L497">          continue;</span>
+<span class="nc" id="L498">        }</span>
+<span class="nc" id="L499">      }</span>
+    }
+<span class="nc" id="L501">    return highIndex + 1;</span>
+  }
+
+  /**
+   * Adds a new property for the component.
+   *
+   * @param name  property name
+   * @param defaultValue  default value of property
+   * @param caption property's caption for use in the ui
+   * @param editor  property editor
+   */
+  public final void addProperty(String name, String defaultValue, String caption,
+      PropertyEditor editor) {
+
+<span class="nc" id="L515">    int type = EditableProperty.TYPE_NORMAL;</span>
+<span class="nc bnc" id="L516" title="All 2 branches missed.">    if (!isPropertyPersisted(name)) {</span>
+<span class="nc" id="L517">      type |= EditableProperty.TYPE_NONPERSISTED;</span>
+    }
+<span class="nc bnc" id="L519" title="All 2 branches missed.">    if (!isPropertyVisible(name)) {</span>
+<span class="nc" id="L520">      type |= EditableProperty.TYPE_INVISIBLE;</span>
+    }
+<span class="nc bnc" id="L522" title="All 2 branches missed.">    if (isPropertyforYail(name)) {</span>
+<span class="nc" id="L523">      type |= EditableProperty.TYPE_DOYAIL;</span>
+    }
+<span class="nc" id="L525">    properties.addProperty(name, defaultValue, caption, editor, type, &quot;&quot;, null);</span>
+<span class="nc" id="L526">  }</span>
+
+  /**
+   * Adds a new property for the component.
+   *
+   * @param name  property name
+   * @param defaultValue  default value of property
+   * @param caption  property's caption for use in the ui
+   * @param editorType  editor type for the property
+   * @param editorArgs  additional editor arguments
+   * @param editor  property editor
+   */
+  public final void addProperty(String name, String defaultValue, String caption,
+      String editorType, String[] editorArgs, PropertyEditor editor) {
+
+<span class="nc" id="L541">    int type = EditableProperty.TYPE_NORMAL;</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">    if (!isPropertyPersisted(name)) {</span>
+<span class="nc" id="L543">      type |= EditableProperty.TYPE_NONPERSISTED;</span>
+    }
+<span class="nc bnc" id="L545" title="All 2 branches missed.">    if (!isPropertyVisible(name)) {</span>
+<span class="nc" id="L546">      type |= EditableProperty.TYPE_INVISIBLE;</span>
+    }
+<span class="nc bnc" id="L548" title="All 2 branches missed.">    if (isPropertyforYail(name)) {</span>
+<span class="nc" id="L549">      type |= EditableProperty.TYPE_DOYAIL;</span>
+    }
+<span class="nc" id="L551">    properties.addProperty(name, defaultValue, caption, editor, type, editorType, editorArgs);</span>
+<span class="nc" id="L552">  }</span>
+
+  /**
+   * Returns the component name.
+   * &lt;p&gt;
+   * This should not be called prior to {@link #initComponent(Widget)}.
+   *
+   * @return  component name
+   */
+  public String getName() {
+<span class="nc" id="L562">    return properties.getPropertyValue(PROPERTY_NAME_NAME);</span>
+  }
+
+  /**
+   * Returns true if there is a property with the given name.
+   *
+   * @param name  property name
+   * @return  true if the property exists
+   */
+  public boolean hasProperty(String name) {
+<span class="nc bnc" id="L572" title="All 2 branches missed.">    return properties.getProperty(name) != null;</span>
+  }
+
+  /**
+   * Returns the property's value.
+   *
+   * @param name  property name
+   * @return  property value
+   */
+  public String getPropertyValue(String name) {
+<span class="nc" id="L582">    return properties.getPropertyValue(name);</span>
+  }
+
+  /**
+   * Changes the value of a component property.
+   *
+   * @param name  property name
+   * @param value  new property value
+   */
+  public void changeProperty(String name, String value) {
+<span class="nc" id="L592">    properties.changePropertyValue(name, value);</span>
+<span class="nc" id="L593">  }</span>
+
+  /**
+   * Renames the component to {@code newName}.
+   * @param newName The new name for the component.
+   */
+  public void rename(String newName) {
+<span class="nc" id="L600">    String oldName = getPropertyValue(PROPERTY_NAME_NAME);</span>
+<span class="nc" id="L601">    properties.changePropertyValue(PROPERTY_NAME_NAME, newName);</span>
+<span class="nc" id="L602">    getForm().fireComponentRenamed(this, oldName);</span>
+<span class="nc" id="L603">  }</span>
+
+  /**
+   * Returns the properties set for the component.
+   *
+   * @return  properties
+   */
+  public EditableProperties getProperties() {
+<span class="nc" id="L611">    return properties;</span>
+  }
+
+  /**
+   * Returns the children of this component. Note that the return value will
+   * never be {@code null} but rather an empty array for components without
+   * children.
+   * &lt;p&gt;
+   * The returned list should not be modified.
+   *
+   * @return  children of the component
+   */
+  public List&lt;MockComponent&gt; getChildren() {
+<span class="nc" id="L624">    return NO_CHILDREN;</span>
+  }
+
+  /**
+   * Returns the visible children of this component that should be showing.
+   * &lt;p&gt;
+   * The returned list should not be modified.
+   */
+  public final List&lt;MockComponent&gt; getShowingVisibleChildren() {
+<span class="nc" id="L633">    List&lt;MockComponent&gt; allChildren = getChildren();</span>
+<span class="nc bnc" id="L634" title="All 2 branches missed.">    if (allChildren.size() == 0) {</span>
+<span class="nc" id="L635">      return NO_CHILDREN;</span>
+    }
+
+<span class="nc" id="L638">    List&lt;MockComponent&gt; showingVisibleChildren = new ArrayList&lt;MockComponent&gt;();</span>
+<span class="nc bnc" id="L639" title="All 2 branches missed.">    for (MockComponent child : allChildren) {</span>
+<span class="nc bnc" id="L640" title="All 4 branches missed.">      if (child.isVisibleComponent() &amp;&amp; child.showComponentInDesigner()) {</span>
+<span class="nc" id="L641">        showingVisibleChildren.add(child);</span>
+      }
+<span class="nc" id="L643">    }</span>
+<span class="nc" id="L644">    return showingVisibleChildren;</span>
+  }
+
+  /**
+   * Returns the visible children of this component that should be hidden.
+   * &lt;p&gt;
+   * The returned list should not be modified.
+   */
+  public final List&lt;MockComponent&gt; getHiddenVisibleChildren() {
+<span class="nc" id="L653">    List&lt;MockComponent&gt; allChildren = getChildren();</span>
+<span class="nc bnc" id="L654" title="All 2 branches missed.">    if (allChildren.size() == 0) {</span>
+<span class="nc" id="L655">      return NO_CHILDREN;</span>
+    }
+
+<span class="nc" id="L658">    List&lt;MockComponent&gt; hiddenVisibleChildren = new ArrayList&lt;MockComponent&gt;();</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">    for (MockComponent child : allChildren) {</span>
+<span class="nc bnc" id="L660" title="All 4 branches missed.">      if (child.isVisibleComponent() &amp;&amp; !child.showComponentInDesigner()) {</span>
+<span class="nc" id="L661">        hiddenVisibleChildren.add(child);</span>
+      }
+<span class="nc" id="L663">    }</span>
+<span class="nc" id="L664">    return hiddenVisibleChildren;</span>
+  }
+
+  /**
+   * Returns the form containing this component.
+   *
+   * @return  containing form
+   */
+  public MockForm getForm() {
+<span class="nc" id="L673">    return getContainer().getForm();</span>
+  }
+
+  public boolean isForm() {
+<span class="nc" id="L677">    return false;</span>
+  }
+
+  /**
+   * Indicates whether a component has a visible representation.
+   * &lt;p&gt;
+   * The return value of this method will not change upon successive invocations.
+   *
+   * @return  {@code true} if there is a visible representation for the
+   *          component, otherwise {@code false}
+   */
+  public abstract boolean isVisibleComponent();
+
+  /**
+   * Selects this component in the visual editor.
+   */
+  public final void select(NativeEvent event) {
+<span class="nc" id="L694">    getForm().setSelectedComponent(this, event);</span>
+<span class="nc" id="L695">  }</span>
+
+  /**
+   * Invoked when the selection state of this component changes.
+   * &lt;p&gt;
+   * Implementations may override this method to perform additional
+   * alterations to their appearance based on their new selection state.
+   * Overriders must call {@code super.onSelectedChange(selected)}
+   * before performing their own alterations.
+   */
+  protected void onSelectedChange(boolean selected) {
+<span class="nc bnc" id="L706" title="All 2 branches missed.">    if (selected) {</span>
+<span class="nc" id="L707">      addStyleDependentName(&quot;selected&quot;);</span>
+    } else {
+<span class="nc" id="L709">      removeStyleDependentName(&quot;selected&quot;);</span>
+    }
+<span class="nc" id="L711">    getForm().fireComponentSelectionChange(this, selected);</span>
+<span class="nc" id="L712">  }</span>
+
+  /**
+   * Returns whether this component is selected.
+   */
+  public boolean isSelected() {
+<span class="nc bnc" id="L718" title="All 2 branches missed.">    return (getForm().getSelectedComponents() == this);</span>
+  }
+
+  /**
+   * Returns the type of the component.
+   * The return value must not change between invocations.
+   * &lt;p&gt;
+   * This is used in the serialization format of the component.
+   *
+   * @return  component type
+   */
+  public final String getType() {
+<span class="nc" id="L730">    return type;</span>
+  }
+
+  /**
+   * Returns the user-visible type name of the component.
+   * By default this is the internal type string.
+   *
+   * @return  component type name
+   */
+  public String getVisibleTypeName() {
+<span class="nc" id="L740">    return getType();</span>
+  }
+
+  /**
+   * Returns the icon's image for the component (e.g. to be used on the component palette).
+   * The return value must not change between invocations.
+   *
+   * @return  icon for the component
+   */
+  public final Image getIconImage() {
+<span class="nc" id="L750">    return iconImage;</span>
+  }
+
+  /**
+   * Returns the unique id for the component
+   *
+   * @return  uuid for the component
+   */
+  public final String getUuid() {
+<span class="nc" id="L759">    return getPropertyValue(PROPERTY_NAME_UUID);</span>
+  }
+
+  /**
+   * Sets the component container to which the component belongs.
+   *
+   * @param container  owning component container for this component
+   */
+  protected void setContainer(MockContainer container) {
+<span class="nc" id="L768">    this.container = container;</span>
+<span class="nc" id="L769">  }</span>
+
+  /**
+   * Returns the component container to which the component belongs.
+   *
+   * @return  owning component container for this component
+   */
+  public final MockContainer getContainer() {
+<span class="nc" id="L777">    return container;</span>
+  }
+
+<span class="nc" id="L780">  private final Focusable nullFocusable = new Focusable() {</span>
+    @Override
+    public int getTabIndex() {
+<span class="nc" id="L783">      return 0;</span>
+    }
+
+    @Override
+    public void setAccessKey(char key) {
+
+<span class="nc" id="L789">    }</span>
+
+    @Override
+    public void setFocus(boolean focused) {
+
+<span class="nc" id="L794">    }</span>
+
+    @Override
+    public void setTabIndex(int index) {
+
+<span class="nc" id="L799">    }</span>
+  };
+
+  /**
+   * Constructs a tree item for the component which will be displayed in the
+   * source structure explorer.
+   *
+   * @return  tree item for this component
+   */
+  protected TreeItem buildTree() {
+    // Instantiate new tree item for this component
+    // Note: We create a ClippedImagePrototype because we need something that can be
+    // used to get HTML for the iconImage. AbstractImagePrototype requires
+    // an ImageResource, which we don't necessarily have.
+<span class="nc" id="L813">    TreeItem itemNode = new TreeItem(</span>
+<span class="nc" id="L814">        new HTML(&quot;&lt;span&gt;&quot; + iconImage.getElement().getString() + SafeHtmlUtils.htmlEscapeAllowEntities(getName()) + &quot;&lt;/span&gt;&quot;)) {</span>
+      @Override
+      protected Focusable getFocusable() {
+<span class="nc" id="L817">        return nullFocusable;</span>
+      }
+    };
+<span class="nc" id="L820">    itemNode.setUserObject(sourceStructureExplorerItem);</span>
+<span class="nc" id="L821">    return itemNode;</span>
+  }
+
+  /**
+   * If this component isn't a Form, and this component's type isn't already in typesAndIcons,
+   * adds this component's type name as a key to typesAndIcons, mapped to the HTML string used
+   * to display the component type's icon. Subclasses that contain components should override
+   * this to add their own info as well as that for their contained components.
+   * @param typesAndIcons
+   */
+  public void collectTypesAndIcons(Map&lt;String, String&gt; typesAndIcons) {
+<span class="nc" id="L832">    String name = getVisibleTypeName();</span>
+<span class="nc bnc" id="L833" title="All 4 branches missed.">    if (!isForm() &amp;&amp; !typesAndIcons.containsKey(name)) {</span>
+<span class="nc" id="L834">      typesAndIcons.put(name, iconImage.getElement().getString());</span>
+    }
+<span class="nc" id="L836">  }</span>
+
+  /**
+   * Returns the source structure explorer item for this component.
+   */
+  public final SourceStructureExplorerItem getSourceStructureExplorerItem() {
+<span class="nc" id="L842">    return sourceStructureExplorerItem;</span>
+  }
+
+  /**
+   * Returns the asset node with the given name.
+   *
+   * @param name  asset name
+   * @return  asset node found or {@code null}
+   */
+  protected ProjectNode getAssetNode(String name) {
+<span class="nc" id="L852">    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());</span>
+<span class="nc bnc" id="L853" title="All 2 branches missed.">    if (project != null) {</span>
+<span class="nc" id="L854">      HasAssetsFolder&lt;YoungAndroidAssetsFolder&gt; hasAssetsFolder =</span>
+<span class="nc" id="L855">          (YoungAndroidProjectNode) project.getRootNode();</span>
+<span class="nc bnc" id="L856" title="All 2 branches missed.">      for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {</span>
+<span class="nc bnc" id="L857" title="All 2 branches missed.">        if (asset.getName().equals(name)) {</span>
+<span class="nc" id="L858">          return asset;</span>
+        }
+<span class="nc" id="L860">      }</span>
+    }
+<span class="nc" id="L862">    return null;</span>
+  }
+
+  /**
+   * Converts the given image property value to an image url.
+   * Returns null if the image property value is blank or not recognized as an
+   * asset.
+   */
+  protected String convertImagePropertyValueToUrl(String text) {
+<span class="nc bnc" id="L871" title="All 2 branches missed.">    if (text.length() &gt; 0) {</span>
+<span class="nc" id="L872">      ProjectNode asset = getAssetNode(text);</span>
+<span class="nc bnc" id="L873" title="All 2 branches missed.">      if (asset != null) {</span>
+<span class="nc" id="L874">        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());</span>
+      }
+    }
+<span class="nc" id="L877">    return null;</span>
+  }
+
+  // For debugging purposes only
+  private String describeElement(com.google.gwt.dom.client.Element element) {
+<span class="nc bnc" id="L882" title="All 2 branches missed.">    if (element == null) {</span>
+<span class="nc" id="L883">      return &quot;null&quot;;</span>
+    }
+<span class="nc bnc" id="L885" title="All 2 branches missed.">    if (element == getElement()) {</span>
+<span class="nc" id="L886">      return &quot;this&quot;;</span>
+    }
+    try {
+<span class="nc" id="L889">      return element.getTagName();</span>
+<span class="nc" id="L890">    } catch (com.google.gwt.core.client.JavaScriptException e) {</span>
+      // Can get here if the browser throws a permission denied error
+<span class="nc" id="L892">      return &quot;????&quot;;</span>
+    }
+  }
+
+  /**
+   * Invoked by GWT whenever a browser event is dispatched to this component.
+   */
+  @Override
+  public void onBrowserEvent(Event event) {
+<span class="nc bnc" id="L901" title="All 2 branches missed.">    if (!shouldCancel(event)) return;</span>
+<span class="nc bnc" id="L902" title="All 5 branches missed.">    switch (event.getTypeInt()) {</span>
+      case Event.ONTOUCHSTART:
+      case Event.ONTOUCHEND:
+<span class="nc bnc" id="L905" title="All 2 branches missed.">        if (isForm()) {</span>
+<span class="nc" id="L906">          select(event);</span>
+        }
+      case Event.ONTOUCHMOVE:
+      case Event.ONTOUCHCANCEL:
+<span class="nc" id="L910">        cancelBrowserEvent(event);</span>
+<span class="nc" id="L911">        DomEvent.fireNativeEvent(event, handlers);</span>
+<span class="nc" id="L912">        break;</span>
+
+      case Event.ONMOUSEDOWN:
+      case Event.ONMOUSEUP:
+      case Event.ONMOUSEMOVE:
+      case Event.ONMOUSEOVER:
+      case Event.ONMOUSEOUT:
+<span class="nc" id="L919">        cancelBrowserEvent(event);</span>
+<span class="nc" id="L920">        mouseListeners.fireMouseEvent(this, event);</span>
+<span class="nc" id="L921">        break;</span>
+
+      case Event.ONCLICK:
+<span class="nc" id="L924">        cancelBrowserEvent(event);</span>
+<span class="nc" id="L925">        select(event);</span>
+<span class="nc" id="L926">        break;</span>
+
+      default:
+        // Ignore unexpected events
+        break;
+    }
+<span class="nc" id="L932">  }</span>
+
+  /*
+   * Prevent browser from doing its own event handling and consume event
+   */
+  private static void cancelBrowserEvent(Event event) {
+<span class="nc" id="L938">    DOM.eventPreventDefault(event);</span>
+<span class="nc" id="L939">    DOM.eventCancelBubble(event, true);</span>
+<span class="nc" id="L940">  }</span>
+
+  // SourcesMouseEvents implementation
+
+  /**
+   * Adds the specified mouse-listener to this component's widget.
+   * The listener will be notified of mouse events.
+   */
+  @Override
+  public final void addMouseListener(MouseListener listener) {
+<span class="nc" id="L950">    mouseListeners.add(listener);</span>
+<span class="nc" id="L951">  }</span>
+
+  /**
+   * Removes the specified mouse-listener from this component's widget.
+   */
+  @Override
+  public final void removeMouseListener(MouseListener listener) {
+<span class="nc" id="L958">    mouseListeners.remove(listener);</span>
+<span class="nc" id="L959">  }</span>
+
+  @Override
+  public final HandlerRegistration addTouchStartHandler(TouchStartHandler handler) {
+<span class="nc" id="L963">    return handlers.addHandler(TouchStartEvent.getType(), handler);</span>
+  }
+
+  @Override
+  public final HandlerRegistration addTouchMoveHandler(TouchMoveHandler handler) {
+<span class="nc" id="L968">    return handlers.addHandler(TouchMoveEvent.getType(), handler);</span>
+  }
+
+  @Override
+  public final HandlerRegistration addTouchEndHandler(TouchEndHandler handler) {
+<span class="nc" id="L973">    return handlers.addHandler(TouchEndEvent.getType(), handler);</span>
+  }
+
+  @Override
+  public final HandlerRegistration addTouchCancelHandler(TouchCancelHandler handler) {
+<span class="nc" id="L978">    return handlers.addHandler(TouchCancelEvent.getType(), handler);</span>
+  }
+
+  // DragSource implementation
+
+  @Override
+  public final void onDragStart() {
+    // no action until createDragWidget() is called
+<span class="nc" id="L986">  }</span>
+
+  @Override
+  public final Widget createDragWidget(int x, int y) {
+    // TODO(user): Make sure the cloned widget does NOT appear in the
+    //                    selected state, even if the original widget is in
+    //                    the selected state.
+<span class="nc" id="L993">    Widget w = new ClonedWidget(this);</span>
+<span class="nc" id="L994">    DragSourceSupport.configureDragWidgetToAppearWithCursorAt(w, x, y);</span>
+
+    // Hide this element, but keep taking up space in the UI.
+    // This must be done after the drag-widget is created so that
+    // the drag widget itself isn't hidden.
+<span class="nc" id="L999">    setVisible(false);</span>
+
+<span class="nc" id="L1001">    return w;</span>
+  }
+
+  @Override
+  public Widget getDragWidget() {
+<span class="nc" id="L1006">    return dragSourceSupport.getDragWidget();</span>
+  }
+
+  @Override
+  public DropTarget[] getDropTargets() {
+<span class="nc" id="L1011">    final List&lt;DropTarget&gt; targetsWithinForm = getForm().getDropTargetsWithin();</span>
+<span class="nc" id="L1012">    return targetsWithinForm.toArray(new DropTarget[targetsWithinForm.size()]);</span>
+  }
+
+  @Override
+  public final void onDragEnd() {
+    // Reshow this element
+<span class="nc" id="L1018">    setVisible(true);</span>
+<span class="nc" id="L1019">  }</span>
+
+  /**
+   * Returns the preferred width of the component if there was no layout restriction,
+   * including the CSS border.
+   * &lt;p&gt;
+   * Callers should be aware that most components cannot calculate their
+   * preferred size correctly until they are attached to the UI; see {@link #isAttached()}.
+   * Unattached components are liable to return {@code 0} for any query about their preferred size.
+   *
+   * @return  preferred width
+   */
+  // TODO(user): see getPreferredHeight()!
+  public int getPreferredWidth() {
+<span class="nc" id="L1033">    return MockComponentsUtil.getPreferredWidth(this);</span>
+  }
+
+  /**
+   * Returns the preferred height of the component if there was no layout restriction,
+   * including the CSS border.
+   * &lt;p&gt;
+   * Callers should be aware that most components cannot calculate their
+   * preferred size correctly until they are attached to the UI; see {@link #isAttached()}.
+   * Unattached components are liable to return {@code 0} for any query about their preferred size.
+   *
+   * @return  preferred height
+   */
+  // TODO(user): The concept of preferred height/width is implemented completely wrong.
+  //                 Currently we are taking the default size of GWT components. This should be
+  //                 implemented to match the behavior of the Android components being mocked.
+  public int getPreferredHeight() {
+<span class="nc" id="L1050">    return MockComponentsUtil.getPreferredHeight(this);</span>
+  }
+
+  /*
+   * Returns true if this component should be shown in the designer.
+   */
+  private boolean showComponentInDesigner() {
+<span class="nc bnc" id="L1057" title="All 2 branches missed.">    if (hasProperty(MockVisibleComponent.PROPERTY_NAME_VISIBLE)) {</span>
+<span class="nc" id="L1058">      boolean visible = Boolean.parseBoolean(getPropertyValue(</span>
+          MockVisibleComponent.PROPERTY_NAME_VISIBLE));
+      // If this component's visible property is false, we need to check whether to show hidden
+      // components.
+<span class="nc bnc" id="L1062" title="All 2 branches missed.">      if (!visible) {</span>
+<span class="nc" id="L1063">        YaFormEditor formEditor = (YaFormEditor) editor;</span>
+<span class="nc" id="L1064">        return formEditor.shouldDisplayHiddenComponents();</span>
+      }
+    }
+<span class="nc" id="L1067">    return true;</span>
+  }
+
+  int getWidthHint() {
+<span class="nc" id="L1071">    return Integer.parseInt(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_WIDTH));</span>
+  }
+
+  int getHeightHint() {
+<span class="nc" id="L1075">    return Integer.parseInt(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_HEIGHT));</span>
+  }
+
+  /**
+   * Refreshes the form.
+   *
+   * &lt;p&gt;This method should be called whenever a property that affects the size
+   * of the component is changed. It calls refreshForm(false) which permits
+   * throttling.
+   */
+  final void refreshForm() {
+<span class="nc" id="L1086">    refreshForm(false);</span>
+<span class="nc" id="L1087">  }</span>
+
+  /*
+   * Refresh the current form. If force is true, we bypass the
+   * throttling code. This is needed by MockImageBase because it
+   * *must* refresh the form before resizing loaded images.
+   *
+   */
+  final void refreshForm(boolean force) {
+<span class="nc bnc" id="L1096" title="All 2 branches missed.">    if (isAttached()) {</span>
+<span class="nc bnc" id="L1097" title="All 4 branches missed.">      if (getContainer() != null || isForm()) {</span>
+<span class="nc bnc" id="L1098" title="All 2 branches missed.">        if (force) {</span>
+<span class="nc" id="L1099">          getForm().doRefresh();</span>
+        } else {
+<span class="nc" id="L1101">          getForm().refresh();</span>
+        }
+      }
+    }
+<span class="nc" id="L1105">  }</span>
+
+  // Null onDesignPreviewChange implementation
+
+  @Override
+  public void onDesignPreviewChanged() {
+<span class="nc" id="L1111">  }</span>
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc bnc" id="L1117" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_NAME)) {</span>
+<span class="nc" id="L1118">      setTitle(newValue);</span>
+<span class="nc bnc" id="L1119" title="All 4 branches missed.">    } else if (getContainer() != null || isForm()) {</span>
+      /* If we've already placed the component onto a Form (and therefore
+       * into a container) then call fireComponentPropertyChanged().
+       * It's not really an instantiated component until its been added to
+       * a container. If we don't make this test then we end up calling
+       * fireComponentPropertyChanged when we start dragging the component from
+       * the palette. We need to explicitly trigger on Form here, because forms
+       * are not in containers.
+       */
+<span class="nc" id="L1128">      getForm().fireComponentPropertyChanged(this, propertyName, newValue);</span>
+    }
+<span class="nc" id="L1130">  }</span>
+
+  public void onRemoved()
+  {
+
+<span class="nc" id="L1135">  }</span>
+
+  public void delete() {
+<span class="nc" id="L1138">    this.editor.getProjectEditor().clearLocation(getName());</span>
+<span class="nc" id="L1139">    getForm().select(null);</span>
+    // Pass true to indicate that the component is being permanently deleted.
+<span class="nc" id="L1141">    getContainer().removeComponent(this, true);</span>
+    // tell the component its been removed, so it can remove children's blocks
+<span class="nc" id="L1143">    onRemoved();</span>
+<span class="nc" id="L1144">    properties.removePropertyChangeListener(this);</span>
+<span class="nc" id="L1145">    properties.clear();</span>
+<span class="nc" id="L1146">  }</span>
+
+  // Layout
+
+  LayoutInfo createLayoutInfo(Map&lt;MockComponent, LayoutInfo&gt; layoutInfoMap) {
+<span class="nc" id="L1151">    return new LayoutInfo(layoutInfoMap, this) {</span>
+      @Override
+      int calculateAutomaticWidth() {
+<span class="nc" id="L1154">        return getPreferredWidth();</span>
+      }
+
+      @Override
+      int calculateAutomaticHeight() {
+<span class="nc" id="L1159">        return getPreferredHeight();</span>
+      }
+    };
+  }
+
+  /** Upgrading MockComponent
+   *
+   * When extensions are upgraded, the MockComponents might need to undergo changes.
+   * These changes can be produced inside this function.
+   * All subclasses overriding this method must call super.upgrade()!
+   */
+  public void upgrade() {
+    //Upgrade Icon
+
+    //We copy all compatible properties values
+<span class="nc" id="L1174">    List&lt;PropertyDefinition&gt; newProperties = COMPONENT_DATABASE.getPropertyDefinitions(this.type);</span>
+<span class="nc" id="L1175">    List&lt;PropertyDefinition&gt; oldProperties = componentDefinition.getProperties();</span>
+<span class="nc" id="L1176">    EditableProperties currentProperties = getProperties();</span>
+    //Operations
+<span class="nc" id="L1178">    List&lt;String&gt; toBeRemoved = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L1179">    List&lt;String&gt; toBeAdded = new ArrayList&lt;String&gt;();</span>
+    //Plan operations
+<span class="nc bnc" id="L1181" title="All 2 branches missed.">    for (EditableProperty property : currentProperties) {</span>
+<span class="nc" id="L1182">      boolean presentInNewProperties = false;</span>
+<span class="nc" id="L1183">      boolean presentInOldProperties = false;</span>
+<span class="nc" id="L1184">      String oldType = &quot;&quot;;</span>
+<span class="nc" id="L1185">      String newType = &quot;&quot;;</span>
+<span class="nc bnc" id="L1186" title="All 2 branches missed.">      for (PropertyDefinition prop : newProperties) {</span>
+<span class="nc bnc" id="L1187" title="All 2 branches missed.">        if (prop.getName().equals(property.getName())) {</span>
+<span class="nc" id="L1188">          presentInNewProperties = true;</span>
+<span class="nc" id="L1189">          newType = prop.getEditorType();</span>
+        }
+<span class="nc" id="L1191">      }</span>
+<span class="nc bnc" id="L1192" title="All 2 branches missed.">      for (PropertyDefinition prop : oldProperties) {</span>
+<span class="nc bnc" id="L1193" title="All 2 branches missed.">        if (prop.getName().equals(property.getName())) {</span>
+<span class="nc" id="L1194">          presentInOldProperties = true;</span>
+<span class="nc" id="L1195">          oldType = prop.getEditorType();</span>
+        }
+<span class="nc" id="L1197">      }</span>
+      // deprecated property
+<span class="nc bnc" id="L1199" title="All 4 branches missed.">      if (!presentInNewProperties &amp;&amp; presentInOldProperties) {</span>
+<span class="nc" id="L1200">        toBeRemoved.add(property.getName());</span>
+      }
+      // new property, less likely to happen here
+<span class="nc bnc" id="L1203" title="All 4 branches missed.">      else if (presentInNewProperties &amp;&amp; !presentInOldProperties) {</span>
+<span class="nc" id="L1204">        toBeAdded.add(property.getName());</span>
+      }
+      // existing property
+<span class="nc bnc" id="L1207" title="All 4 branches missed.">      else if (presentInNewProperties &amp;&amp; presentInOldProperties) {</span>
+<span class="nc bnc" id="L1208" title="All 2 branches missed.">        if (newType != oldType) { // type change detected</span>
+<span class="nc" id="L1209">          toBeRemoved.add(property.getName());</span>
+<span class="nc" id="L1210">          toBeAdded.add(property.getName());</span>
+        }
+      }
+<span class="nc" id="L1213">    }</span>
+    //New property
+<span class="nc bnc" id="L1215" title="All 2 branches missed.">    for (PropertyDefinition property : newProperties) {</span>
+<span class="nc bnc" id="L1216" title="All 4 branches missed.">      if (!toBeAdded.contains(property.getName()) &amp;&amp; !currentProperties.hasProperty(property.getName())) {</span>
+<span class="nc" id="L1217">        toBeAdded.add(property.getName());</span>
+      }
+<span class="nc" id="L1219">    }</span>
+    //Execute operations
+<span class="nc bnc" id="L1221" title="All 2 branches missed.">    for (String prop : toBeRemoved) {</span>
+<span class="nc" id="L1222">      currentProperties.removeProperty(prop);</span>
+<span class="nc" id="L1223">    }</span>
+<span class="nc bnc" id="L1224" title="All 2 branches missed.">    for (PropertyDefinition property : newProperties) {</span>
+<span class="nc bnc" id="L1225" title="All 2 branches missed.">      if (toBeAdded.contains(property.getName())) {</span>
+<span class="nc" id="L1226">        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());</span>
+<span class="nc" id="L1227">        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), property.getEditorType(), property.getEditorArgs(), propertyEditor);</span>
+      }
+<span class="nc" id="L1229">    }</span>
+
+<span class="nc" id="L1231">  }</span>
+
+  /**
+   * upgradeComplete()
+   * Mark a MockComponent upgrade complete.
+   * This MUST be called manually after calling upgrade()!
+   * All subclasses overriding this method must call super.upgradeComplete()!
+   */
+  public void upgradeComplete() {
+<span class="nc" id="L1240">    this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition</span>
+<span class="nc" id="L1241">  }</span>
+
+  /**
+   * Hides or shows the specified property of the Component.
+   *
+   * @param property  Property key
+   * @param show  will show the property if set to true, will hide it otherwise
+   */
+  protected void showProperty(String property, boolean show) {
+    // Get the current type flags of the Property
+<span class="nc" id="L1251">    int type = properties.getProperty(property).getType();</span>
+
+<span class="nc bnc" id="L1253" title="All 2 branches missed.">    if (show) {</span>
+<span class="nc" id="L1254">      type &amp;= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag</span>
+    } else {
+<span class="nc" id="L1256">      type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility</span>
+    }
+
+    // Set the new type
+<span class="nc" id="L1260">    properties.getProperty(property).setType(type);</span>
+<span class="nc" id="L1261">  }</span>
+
+  public native void setShouldCancel(Event event, boolean cancelable)/*-{
+    event.shouldNotCancel = !cancelable;
+  }-*/;
+
+  public native boolean shouldCancel(Event event)/*-{
+    return !event.shouldNotCancel;
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

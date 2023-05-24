@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockLineString.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockLineString.java</span></div><h1>MockLineString.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+
+public class MockLineString extends MockMapFeatureBase {
+  public static final String TYPE = &quot;LineString&quot;;
+  private static final String PROPERTY_NAME_POINTS = &quot;PointsFromString&quot;;
+<span class="nc" id="L17">  private JavaScriptObject svgContent = null;</span>
+
+  public MockLineString(SimpleEditor editor) {
+<span class="nc" id="L20">    super(editor, TYPE, images.linestring());</span>
+
+<span class="nc" id="L22">    SVGPanel svgpanel = new SVGPanel();</span>
+<span class="nc" id="L23">    svgpanel.setPixelSize(42, 42);</span>
+<span class="nc" id="L24">    svgpanel.setInnerSVG(&quot;&lt;path d=\&quot;M0 0L42.4264 42.4624\&quot; stroke-width=\&quot;3\&quot; stroke=\&quot;black\&quot; /&gt;&quot;);</span>
+<span class="nc" id="L25">    panel.setWidget(svgpanel);</span>
+<span class="nc" id="L26">    panel.setWidth(&quot;42px&quot;);</span>
+<span class="nc" id="L27">    panel.setHeight(&quot;42px&quot;);</span>
+
+<span class="nc" id="L29">    initLine();</span>
+<span class="nc" id="L30">  }</span>
+
+  static MockLineString fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
+<span class="nc" id="L33">    MockLineString line = new MockLineString(parent.editor);</span>
+<span class="nc" id="L34">    line.feature = layer;</span>
+<span class="nc" id="L35">    line.preserveLayerData();</span>
+<span class="nc" id="L36">    line.processFromGeoJSON(parent, properties);</span>
+<span class="nc" id="L37">    return line;</span>
+  }
+
+  @Override
+  public boolean onDrop(MockMap map, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L42">    MockMap.LatLng nw = map.projectFromXY(x - offsetX, y - offsetY);</span>
+<span class="nc" id="L43">    MockMap.LatLng se = map.projectFromXY(x - offsetX + 42, y - offsetY + 42);</span>
+<span class="nc" id="L44">    setPoints2(nw.toNative(), se.toNative());</span>
+<span class="nc" id="L45">    String pointstr = &quot;[[&quot; + nw.latitude + &quot;,&quot; + nw.longitude + &quot;],[&quot; + se.latitude + &quot;,&quot; + se.longitude + &quot;]]&quot;;</span>
+<span class="nc" id="L46">    getProperties().changePropertyValue(PROPERTY_NAME_POINTS, pointstr);</span>
+<span class="nc" id="L47">    super.onPropertyChange(PROPERTY_NAME_POINTS, pointstr);</span>
+<span class="nc" id="L48">    return true;</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L53">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_POINTS)) {</span>
+<span class="nc" id="L56">      setPointsStr(newValue);</span>
+    }
+<span class="nc" id="L58">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+<span class="nc" id="L62">    return 42;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+<span class="nc" id="L67">    return 42;</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L74">      return false;</span>
+    }
+<span class="nc" id="L76">    return super.isPropertyVisible(propertyName);</span>
+  }
+
+  private void updatePointsStr(String points) {
+<span class="nc" id="L80">    getProperties().changePropertyValue(PROPERTY_NAME_POINTS, points);</span>
+<span class="nc" id="L81">    super.onPropertyChange(PROPERTY_NAME_POINTS, points);</span>
+<span class="nc" id="L82">  }</span>
+
+  // JSNI methods
+  private native void initLine()/*-{
+    this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature =
+      top.L.polyline([], {
+        className: 'leaflet-interactive',
+        weight: 3,
+        color: '#000',
+        draggable: true,
+        pointerEvents: 'auto'
+      });
+  }-*/;
+
+  private native void setPoints2(JavaScriptObject nw, JavaScriptObject se)/*-{
+    var polyline = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    polyline.setLatLngs([nw, se]);
+  }-*/;
+
+  private native void setPointsStr(String values)/*-{
+    try {
+      if (values != '') {
+        var points = JSON.parse(values);
+        var polyline = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+        polyline.setLatLngs(points);
+        if (polyline.editor) polyline.editor.reset();  // reset vertices of the editor
+      }
+    } catch(e) {
+      // pass
+    }
+  }-*/;
+
+  protected native void addToMap(JavaScriptObject map)/*-{
+    var el = this.@com.google.appinventor.client.editor.simple.components.MockLineString::getElement()();
+    var polyline = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    map.addLayer(polyline);
+    if (!polyline.clickHandler) {
+      while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
+      polyline.clickHandler = function(e) {
+        this.@com.google.appinventor.client.editor.simple.components.MockLineString::select(*)(e);
+        if (e.originalEvent) e.originalEvent.stopPropagation();
+      };
+      polyline.dragHandler = function() {
+        var points = polyline.getLatLngs();
+        var str = '[';
+        for (var i = 0; i &lt; points.length; i++) {
+          if (i &gt; 0) str += ',';
+          str += '[' + points[i].lat + ',' + points[i].lng + ']';
+        }
+        str += ']';
+        if (str == '[]') str = '';
+        this.@com.google.appinventor.client.editor.simple.components.MockLineString::updatePointsStr(*)(str);
+      };
+      polyline.on('click dragstart editable:dragstart editable:vertex:dragstart editable:vertex:clicked',
+        polyline.clickHandler, this);
+      polyline.on('dragend editable:dragend editable:vertex:dragend editable:vertex:deleted',
+        polyline.dragHandler, this);
+    }
+    el = polyline.getElement();
+    el.style['pointer-events'] = 'auto';
+    el.style['cursor'] = 'pointer';
+    this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
+      this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getTooltip()()
+    );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polyline);
+    }
+  }-*/;
+
+  private native void preserveLayerData()/*-{
+    var line = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
+    if (line) {
+      var latlngs = line.getLatLngs();
+      var resultJson = [];
+      if (latlngs[0] instanceof top.L.LatLng) {
+        for (var i = 0; i &lt; latlngs.length; i++) {
+          resultJson.push([latlngs[i].lat, latlngs[i].lng]);
+        }
+      } else if (latlngs[0][0] instanceof top.L.LatLng) {
+        for (var i = 0; i &lt; latlngs[0].length; i++) {
+          resultJson.push([latlngs[0][i].lat, latlngs[0][i].lng]);
+        }
+      } else {
+        for (var i = 0; i &lt; latlngs.length; i++) {
+          var part = [];
+          for (var j = 0; j &lt; latlngs[i].length; j++) {
+            part.push([latlngs[i][j].lat, latlngs[i][j].lng]);
+          }
+          resultJson.push(part);
+        }
+      }
+    }
+    this.@com.google.appinventor.client.editor.simple.components.MockLineString::updatePointsStr(*)(JSON.stringify(resultJson));
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

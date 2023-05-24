@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidDataColumnSelectorProperty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">YoungAndroidDataColumnSelectorProperty.java</span></div><h1>YoungAndroidDataColumnSelectorProperty.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.components.DataFileChangeListener;
+import com.google.appinventor.client.editor.simple.components.MockDataFile;
+
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+
+import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Property setter for selecting columns in Chart Data components
+ * for the attached DataFile sources.
+ *
+ * &lt;p&gt;TODO: Reduce redundancy (a lot of reuse from ComponentSelector)
+ */
+public class YoungAndroidDataColumnSelectorProperty
+    extends AdditionalChoicePropertyEditor implements DataFileChangeListener {
+
+  protected ListWithNone choices;
+
+  // UI elements
+  private final ListBox columnsList;
+
+  private MockDataFile dataFile; // Associated source MockDataFile
+
+  /**
+   * Creates a new property editor for selecting a column.
+   *
+   * @param editor the editor that this property editor belongs to
+   */
+<span class="nc" id="L48">  public YoungAndroidDataColumnSelectorProperty(final YaFormEditor editor) {</span>
+
+<span class="nc" id="L50">    final VerticalPanel selectorPanel = new VerticalPanel();</span>
+<span class="nc" id="L51">    columnsList = new ListBox();</span>
+<span class="nc" id="L52">    columnsList.setVisibleItemCount(10);</span>
+<span class="nc" id="L53">    columnsList.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L54">    selectorPanel.add(columnsList);</span>
+<span class="nc" id="L55">    selectorPanel.setWidth(&quot;100%&quot;);</span>
+
+    // Initializes the choices list
+<span class="nc" id="L58">    initializeChoices();</span>
+
+    // At this point, the editor hasn't finished loading.
+    // Use a DeferredCommand to finish the initialization after the editor has finished loading.
+<span class="nc" id="L62">    DeferredCommand.addCommand(new Command() {</span>
+      @Override
+      public void execute() {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (editor.isLoadComplete()) {</span>
+<span class="nc" id="L66">          finishInitialization();</span>
+        } else {
+          // Editor still hasn't finished loading.
+<span class="nc" id="L69">          DeferredCommand.addCommand(this);</span>
+        }
+<span class="nc" id="L71">      }</span>
+    });
+
+<span class="nc" id="L74">    initAdditionalChoicePanel(selectorPanel);</span>
+<span class="nc" id="L75">  }</span>
+
+  private void finishInitialization() {
+    // Previous version had a bug where the value could be accidentally saved as &quot;None&quot;.
+    // If the property value is &quot;None&quot; and choices doesn't contain the value &quot;None&quot;, set the
+    // property value to &quot;&quot;.
+<span class="nc" id="L81">    String value = property.getValue();</span>
+
+    // Check if the current value is exactly the None value
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    if (Objects.equals(value, choices.getValueAtIndex(0))) {</span>
+<span class="nc" id="L85">      property.setValue(&quot;&quot;);</span>
+    }
+<span class="nc" id="L87">  }</span>
+
+  @Override
+  protected void openAdditionalChoiceDialog() {
+<span class="nc" id="L91">    choices.selectValue(property.getValue());</span>
+<span class="nc" id="L92">    super.openAdditionalChoiceDialog();</span>
+<span class="nc" id="L93">    columnsList.setFocus(true);</span>
+<span class="nc" id="L94">  }</span>
+
+  @Override
+  protected String getPropertyValueSummary() {
+<span class="nc" id="L98">    String value = property.getValue();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">    if (choices.containsValue(value)) {</span>
+<span class="nc" id="L100">      return choices.getDisplayItemForValue(value);</span>
+    }
+<span class="nc" id="L102">    return value;</span>
+  }
+
+  @Override
+  protected boolean okAction() {
+<span class="nc" id="L107">    int selected = columnsList.getSelectedIndex();</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    if (selected == -1) {</span>
+<span class="nc" id="L109">      Window.alert(MESSAGES.noColumnSelected());</span>
+<span class="nc" id="L110">      return false;</span>
+    }
+<span class="nc" id="L112">    property.setValue(choices.getValueAtIndex(selected));</span>
+<span class="nc" id="L113">    return true;</span>
+  }
+
+  /**
+   * Clears the current columns and reinitializes the choices list.
+   *
+   * &lt;p&gt;Re-initialization is needed to clear old entries of the list.
+   * Used when updating the DataFile source.
+   */
+  private void initializeChoices() {
+<span class="nc" id="L123">    columnsList.clear();</span>
+
+<span class="nc" id="L125">    choices = new ListWithNone(MESSAGES.noneCaption(), new ListWithNone.ListBoxWrapper() {</span>
+      @Override
+      public void addItem(String item) {
+<span class="nc" id="L128">        columnsList.addItem(item);</span>
+<span class="nc" id="L129">      }</span>
+
+      @Override
+      public String getItem(int index) {
+<span class="nc" id="L133">        return columnsList.getItemText(index);</span>
+      }
+
+      @Override
+      public void removeItem(int index) {
+<span class="nc" id="L138">        columnsList.removeItem(index);</span>
+<span class="nc" id="L139">      }</span>
+
+      @Override
+      public void setSelectedIndex(int index) {
+<span class="nc" id="L143">        columnsList.setSelectedIndex(index);</span>
+<span class="nc" id="L144">      }</span>
+    });
+<span class="nc" id="L146">  }</span>
+
+  /**
+   * Changes the MockDataFile source of the Data column selector.
+   *
+   * @param source new MockDataFile source
+   */
+  public void changeSource(MockDataFile source) {
+    // Source is equal to DataFile; No need
+    // to change anything.
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    if (source == dataFile) {</span>
+<span class="nc" id="L157">      return;</span>
+    }
+
+    // Check if a DataFile source is currently referenced by the
+    // selector, and if it is, de-attach this selector from it.
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (dataFile != null) {</span>
+<span class="nc" id="L163">      dataFile.removeDataFileChangeListener(this);</span>
+    }
+
+    // Update the dataFile source
+<span class="nc" id="L167">    dataFile = source;</span>
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (dataFile != null) {</span>
+      // Register to listen for the DataFile column change events
+<span class="nc" id="L171">      dataFile.addDataFileChangeListener(this);</span>
+
+      // Update the columns of the selector
+<span class="nc" id="L174">      updateColumns();</span>
+    }
+<span class="nc" id="L176">  }</span>
+
+  /**
+   * Updates the columns from the local DataFile source.
+   */
+  public void updateColumns() {
+<span class="nc" id="L182">    List&lt;String&gt; columns = dataFile.getColumnNames();</span>
+
+<span class="nc" id="L184">    initializeChoices(); // Re-initialize choices list</span>
+
+    // If columns are null or empty, no action is done.
+    // This allows to change the Source property (in MockChartDatA)
+    // and still retain the same columns (if they match)
+<span class="nc bnc" id="L189" title="All 4 branches missed.">    if (columns == null || columns.isEmpty()) {</span>
+<span class="nc" id="L190">      return;</span>
+    }
+
+    // Keep track whether the current property value matches any of
+    // the newly added column entries.
+<span class="nc" id="L195">    boolean found = false;</span>
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">    for (String column : columns) {</span>
+      // Matching value not yet found
+<span class="nc bnc" id="L199" title="All 2 branches missed.">      if (!found) {</span>
+        // Check if current column matches property
+<span class="nc" id="L201">        found = property.getValue().equals(column);</span>
+      }
+
+      // Add the column to the choices list
+<span class="nc" id="L205">      choices.addItem(column);</span>
+<span class="nc" id="L206">    }</span>
+
+    // Current property value not found in the new columns, set to None
+<span class="nc bnc" id="L209" title="All 2 branches missed.">    if (!found) {</span>
+<span class="nc" id="L210">      property.setValue(&quot;&quot;);</span>
+    }
+<span class="nc" id="L212">  }</span>
+
+  @Override
+  public void onColumnsChange(MockDataFile dataFile) {
+    // Edge case: Event originates from the wrong MockDataFile source
+<span class="nc bnc" id="L217" title="All 2 branches missed.">    if (this.dataFile != dataFile) {</span>
+<span class="nc" id="L218">      return;</span>
+    }
+
+    // Update the column entries
+<span class="nc" id="L222">    updateColumns();</span>
+<span class="nc" id="L223">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

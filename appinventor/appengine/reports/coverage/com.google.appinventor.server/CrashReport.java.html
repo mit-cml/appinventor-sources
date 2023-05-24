@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CrashReport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">CrashReport.java</span></div><h1>CrashReport.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.common.version.GitBuildId;
+import com.google.appinventor.server.util.BuildData;
+
+import com.google.appengine.api.utils.SystemProperty;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+
+public final class CrashReport {
+
+  /**
+   * Constant for 'information not available'
+   */
+  public static final String NOT_AVAILABLE = &quot;n/a&quot;;
+
+  // Build information
+<span class="fc" id="L27">  private static String buildData = BuildData.getTimestampAsString();</span>
+
+  private CrashReport() {
+  }
+
+  /**
+   * Wraps the given exception into a runtime error and logs an error.
+   *
+   * @param log  logger for to log error
+   * @param req HTTP request (may be {@code null})
+   * @param extraInfo  additional information about the context of the crash
+   *                   (may be {@code null}), preferably formatted as
+   *                   'key1=value1[\n char]key2=value2'
+   * @param exception  exception to log
+   * @return  runtime exception wrapping the original exception
+   */
+  public static RuntimeException createAndLogError(Logger log, HttpServletRequest req,
+    String extraInfo, Throwable exception) {
+<span class="fc" id="L45">    log.log(Level.SEVERE, exception.getMessage() + &quot;: &quot; + extraInfo + &quot;\n&quot; + extraExtraInfo(req),</span>
+      exception);
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    return (exception instanceof RuntimeException) ?</span>
+      (RuntimeException) exception :
+      new RuntimeException(exception);
+  }
+
+  /**
+   * Gets extra system information to add to logs.
+   *
+   * @param req HTTP request (may be {@code null})
+   */
+  private static String extraExtraInfo(HttpServletRequest req) {
+<span class="fc" id="L58">    StringBuilder s = new StringBuilder();</span>
+
+    // If the app is running on App Engine...
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">    if (Server.isProductionServer()) {</span>
+      // the version ID of the runtime environment
+<span class="nc" id="L63">      String version = SystemProperty.version.get();</span>
+<span class="nc" id="L64">      s.append(&quot;runtime.version&quot;).append(&quot;=&quot;).append(version).append(&quot;\n&quot;);</span>
+      // the application major version number + deploy timestamp
+<span class="nc" id="L66">      version = SystemProperty.applicationVersion.get();</span>
+<span class="nc" id="L67">      s.append(&quot;application.version&quot;).append(&quot;=&quot;).append(version).append(&quot;\n&quot;);</span>
+    }
+<span class="fc" id="L69">    s.append(&quot;build.version&quot;).append(&quot;=&quot;).append(buildData).append(&quot;\n&quot;);</span>
+<span class="fc" id="L70">    s.append(&quot;git.build.version&quot;).append(&quot;=&quot;).append(GitBuildId.getVersion()).append(&quot;\n&quot;);</span>
+<span class="fc" id="L71">    s.append(&quot;git.build.fingerprint&quot;).append(&quot;=&quot;).append(GitBuildId.getFingerprint()).append(&quot;\n&quot;);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    if (req != null) {</span>
+<span class="fc" id="L73">      s.append(&quot;request.details&quot;).append(&quot;=&quot;).append(req.toString()).append(&quot;\n&quot;);</span>
+    }
+<span class="fc" id="L75">    return new String(s);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

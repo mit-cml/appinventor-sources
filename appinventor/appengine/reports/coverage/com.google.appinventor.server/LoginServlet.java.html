@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">LoginServlet.java</span></div><h1>LoginServlet.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
+package com.google.appinventor.server;
+
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+
+import com.google.appinventor.server.flags.Flag;
+
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData.PWData;
+
+import com.google.appinventor.server.tokens.Token;
+import com.google.appinventor.server.tokens.TokenException;
+import com.google.appinventor.server.tokens.TokenProto;
+
+import com.google.appinventor.server.util.PasswordHash;
+import com.google.appinventor.server.util.UriBuilder;
+
+import com.google.appinventor.shared.rpc.user.User;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import java.util.logging.Logger;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+
+/**
+ * LoginServlet -- Handle logging someone in using an email address for a login
+ * name and a password, which is stored hashed (and salted). Facilities are
+ * provided to e-mail a password to an e-mail address both to set one up the
+ * first time and to recover a lost password.
+ *
+ * This implementation uses a helper server to send mail. It does a webservices
+ * transaction (REST/POST) to the server with the email address and reset url.
+ * The helper server then formats the e-mail message and sends it. The source
+ * code is in misc/passwordmail/...
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ */
+@SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L73">public class LoginServlet extends HttpServlet {</span>
+
+<span class="nc" id="L75">  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();</span>
+<span class="nc" id="L76">  private static final Logger LOG = Logger.getLogger(LoginServlet.class.getName());</span>
+<span class="nc" id="L77">  private static final Flag&lt;String&gt; mailServer = Flag.createFlag(&quot;localauth.mailserver&quot;, &quot;&quot;);</span>
+<span class="nc" id="L78">  private static final Flag&lt;String&gt; password = Flag.createFlag(&quot;localauth.mailserver.password&quot;, &quot;&quot;);</span>
+<span class="nc" id="L79">  private static final Flag&lt;Boolean&gt; useGoogle = Flag.createFlag(&quot;auth.usegoogle&quot;, true);</span>
+<span class="nc" id="L80">  private static final Flag&lt;Boolean&gt; useLocal = Flag.createFlag(&quot;auth.uselocal&quot;, false);</span>
+<span class="nc" id="L81">  private static final String loginUrl = Flag.createFlag(&quot;login.url&quot;, &quot;&quot;).get();</span>
+
+<span class="nc" id="L83">  private static final UserService userService = UserServiceFactory.getUserService();</span>
+<span class="nc" id="L84">  private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements(&quot;p&quot;).toFactory();</span>
+<span class="nc" id="L85">  private static final boolean DEBUG = Flag.createFlag(&quot;appinventor.debugging&quot;, false).get();</span>
+
+<span class="nc" id="L87">  private static final Set&lt;LoginListener&gt; loginListeners = new HashSet&lt;&gt;();</span>
+
+  public interface LoginListener {
+    void onLogin(User user, TokenProto.token token);
+  }
+
+  public static void addLoginListener(LoginListener listener) {
+<span class="nc" id="L94">    loginListeners.add(listener);</span>
+<span class="nc" id="L95">  }</span>
+
+  public static void removeLoginListener(LoginListener listener) {
+<span class="nc" id="L98">    loginListeners.remove(listener);</span>
+<span class="nc" id="L99">  }</span>
+
+  public void init(ServletConfig config) throws ServletException {
+<span class="nc" id="L102">    super.init(config);</span>
+<span class="nc" id="L103">  }</span>
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+<span class="nc" id="L106">    resp.setContentType(&quot;text/html; charset=utf-8&quot;);</span>
+
+    PrintWriter out;
+<span class="nc" id="L109">    String [] components = req.getRequestURI().split(&quot;/&quot;);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L111">      LOG.info(&quot;requestURI = &quot; + req.getRequestURI());</span>
+    }
+<span class="nc" id="L113">    String page = getPage(req);</span>
+
+<span class="nc" id="L115">    OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);</span>
+
+<span class="nc" id="L117">    String queryString = req.getQueryString();</span>
+<span class="nc" id="L118">    HashMap&lt;String, String&gt; params = getQueryMap(queryString);</span>
+    // These params are passed around so they can take effect even if we
+    // were not logged in.
+<span class="nc" id="L121">    String locale = params.get(&quot;locale&quot;);</span>
+<span class="nc" id="L122">    String repo = params.get(&quot;repo&quot;);</span>
+<span class="nc" id="L123">    String galleryId = params.get(&quot;galleryId&quot;);</span>
+<span class="nc" id="L124">    String redirect = params.get(&quot;redirect&quot;);</span>
+<span class="nc" id="L125">    String autoload = params.get(&quot;autoload&quot;);</span>
+<span class="nc" id="L126">    String newGalleryId = params.get(&quot;ng&quot;);</span>
+
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L129">      LOG.info(&quot;locale = &quot; + locale + &quot; bundle: &quot; + new Locale(locale));</span>
+    }
+    ResourceBundle bundle;
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (locale == null) {</span>
+<span class="nc" id="L133">      bundle = ResourceBundle.getBundle(&quot;com/google/appinventor/server/loginmessages&quot;, new Locale(&quot;en&quot;));</span>
+    } else {
+<span class="nc" id="L135">      bundle = ResourceBundle.getBundle(&quot;com/google/appinventor/server/loginmessages&quot;, new Locale(locale));</span>
+    }
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    if (page.equals(&quot;google&quot;)) {</span>
+      // We get here after we have gone through the Google Login page
+      // This is arranged via a security-constraint setup in web.xml
+<span class="nc" id="L141">      com.google.appengine.api.users.User apiUser = userService.getCurrentUser();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (apiUser == null) {  // Hmmm. I don't think this should happen</span>
+<span class="nc" id="L143">        fail(req, resp, &quot;Google Authentication Failed&quot;, locale); // Not sure what else to do</span>
+<span class="nc" id="L144">        return;</span>
+      }
+<span class="nc" id="L146">      String email = apiUser.getEmail();</span>
+<span class="nc" id="L147">      String userId = apiUser.getUserId();</span>
+<span class="nc" id="L148">      User user = storageIo.getUser(userId, email);</span>
+
+<span class="nc" id="L150">      userInfo = new OdeAuthFilter.UserInfo(); // Create a new userInfo object</span>
+
+<span class="nc" id="L152">      userInfo.setUserId(user.getUserId()); // This effectively logs us in!</span>
+<span class="nc" id="L153">      userInfo.setIsAdmin(user.getIsAdmin());</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">      if (userService.isUserAdmin()) { // If we are a developer, we are always an admin</span>
+<span class="nc" id="L155">        userInfo.setIsAdmin(true);</span>
+      }
+
+<span class="nc" id="L158">      String newCookie = userInfo.buildCookie(false);</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">      if (DEBUG) {</span>
+<span class="nc" id="L160">        LOG.info(&quot;newCookie = &quot; + newCookie);</span>
+      }
+<span class="nc bnc" id="L162" title="All 2 branches missed.">      if (newCookie != null) {</span>
+<span class="nc" id="L163">        Cookie cook = new Cookie(&quot;AppInventor&quot;, newCookie);</span>
+<span class="nc" id="L164">        cook.setPath(&quot;/&quot;);</span>
+<span class="nc" id="L165">        resp.addCookie(cook);</span>
+      }
+      // Remove the ACSID Cookie used by Google for Authentication
+<span class="nc" id="L168">      Cookie cook = new Cookie(&quot;ACSID&quot;, null);</span>
+<span class="nc" id="L169">      cook.setPath(&quot;/&quot;);</span>
+<span class="nc" id="L170">      cook.setMaxAge(0);</span>
+<span class="nc" id="L171">      resp.addCookie(cook);</span>
+<span class="nc" id="L172">      String uri = &quot;/&quot;;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      if (redirect != null) {</span>
+<span class="nc" id="L174">        uri = redirect;</span>
+      }
+<span class="nc" id="L176">      uri = new UriBuilder(uri)</span>
+<span class="nc" id="L177">        .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L178">        .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L179">        .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L180">        .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L181">        .add(&quot;galleryId&quot;, galleryId).build();</span>
+<span class="nc" id="L182">      resp.sendRedirect(uri);</span>
+<span class="nc" id="L183">      return;</span>
+    } else {
+<span class="nc bnc" id="L185" title="All 4 branches missed.">      if (!loginUrl.isEmpty() &amp;&amp; !page.equals(&quot;token&quot;)) {</span>
+        /* If we have an external login URL specified, then redirect to it. */
+<span class="nc" id="L187">        String uri = new UriBuilder(loginUrl)</span>
+<span class="nc" id="L188">          .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L189">          .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L190">          .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L191">          .add(&quot;galleryId&quot;, galleryId)</span>
+<span class="nc" id="L192">          .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L193">          .add(&quot;redirect&quot;, redirect).build();</span>
+<span class="nc" id="L194">        resp.sendRedirect(uri);</span>
+<span class="nc" id="L195">        return;</span>
+      }
+<span class="nc bnc" id="L197" title="All 2 branches missed.">      if (useLocal.get() == false) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (useGoogle.get() == false) {</span>
+<span class="nc" id="L199">          out = setCookieOutput(userInfo, resp);</span>
+<span class="nc" id="L200">          out.println(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Error&lt;/title&gt;&lt;/head&gt;\n&quot;);</span>
+<span class="nc" id="L201">          out.println(&quot;&lt;body&gt;&lt;h1&gt;App Inventor is Mis-Configured&lt;/h1&gt;\n&quot;);</span>
+<span class="nc" id="L202">          out.println(&quot;&lt;p&gt;This instance of App Inventor has no authentication mechanism configured.&lt;/p&gt;\n&quot;);</span>
+<span class="nc" id="L203">          out.println(&quot;&lt;/body&gt;\n&quot;);</span>
+<span class="nc" id="L204">          out.println(&quot;&lt;/html&gt;\n&quot;);</span>
+<span class="nc" id="L205">          return;</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        } else if (!page.equals(&quot;token&quot;)) {</span>
+<span class="nc" id="L207">            String uri = new UriBuilder(&quot;/login/google&quot;)</span>
+<span class="nc" id="L208">              .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L209">              .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L210">              .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L211">              .add(&quot;galleryId&quot;, galleryId)</span>
+<span class="nc" id="L212">              .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L213">              .add(&quot;redirect&quot;, redirect).build();</span>
+<span class="nc" id="L214">            resp.sendRedirect(uri);</span>
+<span class="nc" id="L215">            return;</span>
+        }
+      }
+    }
+
+    // If we get here, local accounts are supported
+    // or we are the &quot;token&quot; page
+
+<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (page.equals(&quot;setpw&quot;)) {</span>
+<span class="nc" id="L224">      String uid = getParam(req);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">      if (uid == null) {</span>
+<span class="nc" id="L226">        fail(req, resp, &quot;Invalid Set Password Link&quot;, locale);</span>
+<span class="nc" id="L227">        return;</span>
+      }
+<span class="nc" id="L229">      PWData data = storageIo.findPWData(uid);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">      if (data == null) {</span>
+<span class="nc" id="L231">        fail(req, resp, &quot;Invalid Set Password Link&quot;, locale);</span>
+<span class="nc" id="L232">        return;</span>
+      }
+<span class="nc bnc" id="L234" title="All 2 branches missed.">      if (DEBUG) {</span>
+<span class="nc" id="L235">        LOG.info(&quot;setpw email = &quot; + data.email);</span>
+      }
+<span class="nc" id="L237">      User user = storageIo.getUserFromEmail(data.email);</span>
+<span class="nc" id="L238">      userInfo = new OdeAuthFilter.UserInfo(); // Create new userInfo object</span>
+<span class="nc" id="L239">      userInfo.setUserId(user.getUserId()); // This effectively logs us in!</span>
+<span class="nc" id="L240">      out = setCookieOutput(userInfo, resp);</span>
+//      req.getSession().setAttribute(&quot;userid&quot;, user.getUserId()); // This effectively logs us in!
+<span class="nc" id="L242">      out.println(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Set Your Password&lt;/title&gt;\n&quot;);</span>
+<span class="nc" id="L243">      out.println(&quot;&lt;/head&gt;\n&lt;body&gt;\n&quot;);</span>
+<span class="nc" id="L244">      out.println(&quot;&lt;h1&gt;&quot; + bundle.getString(&quot;setyourpassword&quot;) + &quot;&lt;/h1&gt;\n&quot;);</span>
+<span class="nc" id="L245">      out.println(&quot;&lt;form method=POST action=\&quot;&quot; + req.getRequestURI() + &quot;\&quot;&gt;&quot;);</span>
+<span class="nc" id="L246">      out.println(&quot;&lt;input type=password name=password value=\&quot;\&quot; size=\&quot;35\&quot;&gt;&lt;br /&gt;\n&quot;);</span>
+<span class="nc" id="L247">      out.println(&quot;&lt;p&gt;&lt;/p&gt;&quot;);</span>
+<span class="nc" id="L248">      out.println(&quot;&lt;input type=Submit value=\&quot;&quot; + bundle.getString(&quot;setpassword&quot;) + &quot;\&quot; style=\&quot;font-size: 300%;\&quot;&gt;\n&quot;);</span>
+<span class="nc" id="L249">      out.println(&quot;&lt;/form&gt;\n&quot;);</span>
+<span class="nc" id="L250">      storageIo.cleanuppwdata();</span>
+<span class="nc" id="L251">      return;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    } else if (page.equals(&quot;linksent&quot;)) {</span>
+<span class="nc" id="L253">      out = setCookieOutput(userInfo, resp);</span>
+<span class="nc" id="L254">      out.println(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;&quot; + bundle.getString(&quot;linksent&quot;) + &quot;&lt;/title&gt;&lt;/head&gt;\n&quot;);</span>
+<span class="nc" id="L255">      out.println(&quot;&lt;body&gt;\n&quot;);</span>
+<span class="nc" id="L256">      out.println(&quot;&lt;h1&gt;&quot; + bundle.getString(&quot;linksent&quot;) + &quot;&lt;/h1&gt;\n&quot;);</span>
+<span class="nc" id="L257">      out.println(&quot;&lt;p&gt;&quot; + bundle.getString(&quot;checkemail&quot;) + &quot;&lt;/p&gt;\n&quot;);</span>
+<span class="nc" id="L258">      return;</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">    } else if (page.equals(&quot;sendlink&quot;)) {</span>
+<span class="nc" id="L260">      out = setCookieOutput(userInfo, resp);</span>
+<span class="nc" id="L261">      out.println(&quot;&lt;head&gt;&lt;title&gt;&quot; + bundle.getString(&quot;requestreset&quot;) + &quot;&lt;/title&gt;&lt;/head&gt;\n&quot;);</span>
+<span class="nc" id="L262">      out.println(&quot;&lt;body&gt;\n&quot;);</span>
+<span class="nc" id="L263">      out.println(&quot;&lt;h1&gt;&quot; + bundle.getString(&quot;requestlink&quot;) + &quot;&lt;/h1&gt;\n&quot;);</span>
+<span class="nc" id="L264">      out.println(&quot;&lt;p&gt;&quot; + bundle.getString(&quot;requestinstructions&quot;) + &quot;&lt;/p&gt;\n&quot;);</span>
+<span class="nc" id="L265">      out.println(&quot;&lt;form method=POST action=\&quot;&quot; + req.getRequestURI() + &quot;\&quot;&gt;\n&quot;);</span>
+<span class="nc" id="L266">      out.println(bundle.getString(&quot;enteremailaddress&quot;) + &quot;:&amp;nbsp;&lt;input type=text name=email value=\&quot;\&quot; size=\&quot;35\&quot;&gt;&lt;br /&gt;\n&quot;);</span>
+<span class="nc" id="L267">      out.println(&quot;&lt;input type=hidden name=locale value=\&quot;&quot; + locale + &quot;\&quot;&gt;&quot;);</span>
+<span class="nc" id="L268">      out.println(&quot;&lt;p&gt;&lt;/p&gt;&quot;);</span>
+<span class="nc" id="L269">      out.println(&quot;&lt;input type=submit value=\&quot;&quot; + bundle.getString(&quot;sendlink&quot;) + &quot;\&quot; style=\&quot;font-size: 300%;\&quot;&gt;\n&quot;);</span>
+<span class="nc" id="L270">      out.println(&quot;&lt;/form&gt;\n&quot;);</span>
+<span class="nc" id="L271">      return;</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">    } else if (page.equals(&quot;token&quot;)) {</span>
+<span class="nc" id="L273">      String encodedToken = params.get(&quot;token&quot;);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">      if (encodedToken == null) {</span>
+<span class="nc" id="L275">        fail(req, resp, &quot;No Authentication Token Provided&quot;, locale);</span>
+<span class="nc" id="L276">        return;</span>
+      }
+<span class="nc" id="L278">      TokenProto.token token = null;</span>
+      try {
+<span class="nc" id="L280">        token = Token.verifyToken(encodedToken);</span>
+<span class="nc" id="L281">      } catch (TokenException e) {</span>
+<span class="nc" id="L282">        fail(req, resp, e.getMessage(), locale);</span>
+<span class="nc" id="L283">        return;</span>
+<span class="nc" id="L284">      }</span>
+      // At this point we have a valid token, so use it to login!
+      // need to make sure it is a SSOLOGIN token
+<span class="nc bnc" id="L287" title="All 2 branches missed.">      if (token.getCommand() != TokenProto.token.CommandType.SSOLOGIN &amp;&amp;</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">          token.getCommand() != TokenProto.token.CommandType.SSOLOGIN2 &amp;&amp;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">          token.getCommand() != TokenProto.token.CommandType.SSOLOGIN3) {</span>
+<span class="nc" id="L290">        fail(req, resp, &quot;Token Valid, but not a SSOLOGIN token.&quot;, locale);</span>
+<span class="nc" id="L291">        return;</span>
+      }
+<span class="nc" id="L293">      long offset = System.currentTimeMillis() - token.getTs();</span>
+<span class="nc" id="L294">      offset /= 1000;  // Convert to seconds</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">      if (offset &gt; 120) {       // Two minutes</span>
+<span class="nc" id="L296">        fail(req, resp, &quot;Token Expired. Was valid until &quot; +</span>
+<span class="nc" id="L297">          new Date(token.getTs()), locale);</span>
+<span class="nc" id="L298">        return;</span>
+      }
+      // At this point we have a valid SSOLOGIN token
+
+<span class="nc" id="L302">      userInfo = new OdeAuthFilter.UserInfo();</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">      if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN) {</span>
+<span class="nc" id="L304">        userInfo.setReadOnly(token.getReadOnly());</span>
+<span class="nc" id="L305">        userInfo.setUserId(token.getUuid());</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">      } else if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN2) { // SSOLOGIN2</span>
+<span class="nc" id="L307">        String email = token.getName();</span>
+<span class="nc bnc" id="L308" title="All 4 branches missed.">        if (email == null || email.isEmpty()) {</span>
+<span class="nc" id="L309">          fail(req, resp, &quot;Failed to provide an Email Address for login.&quot;, locale);</span>
+<span class="nc" id="L310">          return;</span>
+        }
+<span class="nc" id="L312">        User user = storageIo.getUserFromEmail(email);</span>
+<span class="nc" id="L313">        userInfo.setUserId(user.getUserId());</span>
+<span class="nc" id="L314">      } else {                  // SSOLOGIN3</span>
+<span class="nc" id="L315">        String uuid = token.getUuid();</span>
+<span class="nc" id="L316">        String email = token.getName();</span>
+<span class="nc bnc" id="L317" title="All 8 branches missed.">        if (email == null || email.isEmpty() || uuid == null || uuid.isEmpty()) {</span>
+<span class="nc" id="L318">          fail(req, resp, &quot;Failed to provide email and uuid, shouldn't happen!&quot;, locale);</span>
+<span class="nc" id="L319">          return;</span>
+        }
+<span class="nc" id="L321">        User user = storageIo.getUser(uuid, email);</span>
+<span class="nc" id="L322">        userInfo.setUserId(user.getUserId());</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">        for (LoginListener listener : loginListeners) {</span>
+<span class="nc" id="L324">          listener.onLogin(user, token);</span>
+<span class="nc" id="L325">        }</span>
+      }
+
+<span class="nc" id="L328">      String newCookie = userInfo.buildCookie(false);</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">      if (newCookie != null) {</span>
+<span class="nc" id="L330">        Cookie cook = new Cookie(&quot;AppInventor&quot;, newCookie);</span>
+<span class="nc" id="L331">        cook.setPath(&quot;/&quot;);</span>
+<span class="nc" id="L332">        resp.addCookie(cook);</span>
+      }
+
+<span class="nc" id="L335">      String uri = new UriBuilder(&quot;/&quot;)</span>
+<span class="nc" id="L336">        .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L337">        .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L338">        .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L339">        .add(&quot;galleryId&quot;, galleryId)</span>
+<span class="nc" id="L340">        .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L341">        .add(&quot;redirect&quot;, redirect).build();</span>
+<span class="nc" id="L342">      resp.sendRedirect(uri);   // This should bring up App Inventor</span>
+<span class="nc" id="L343">      return;</span>
+    }
+
+<span class="nc" id="L346">    String emailAddress = bundle.getString(&quot;emailaddress&quot;);</span>
+<span class="nc" id="L347">    String password = bundle.getString(&quot;password&quot;);</span>
+<span class="nc" id="L348">    String login = bundle.getString(&quot;login&quot;);</span>
+<span class="nc" id="L349">    String passwordclickhere = bundle.getString(&quot;passwordclickhere&quot;);</span>
+
+<span class="nc" id="L351">    req.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">    if (useGoogle.get()) {</span>
+<span class="nc" id="L353">      req.setAttribute(&quot;useGoogleLabel&quot;, &quot;true&quot;);</span>
+    } else {
+<span class="nc" id="L355">      req.setAttribute(&quot;useGoogleLabel&quot;, &quot;false&quot;);</span>
+    }
+<span class="nc" id="L357">    req.setAttribute(&quot;emailAddressLabel&quot;, emailAddress);</span>
+<span class="nc" id="L358">    req.setAttribute(&quot;passwordLabel&quot;, password);</span>
+<span class="nc" id="L359">    req.setAttribute(&quot;loginLabel&quot;, login);</span>
+<span class="nc" id="L360">    req.setAttribute(&quot;passwordclickhereLabel&quot;, passwordclickhere);</span>
+<span class="nc" id="L361">    req.setAttribute(&quot;localeLabel&quot;, locale);</span>
+<span class="nc" id="L362">    req.setAttribute(&quot;pleaselogin&quot;, bundle.getString(&quot;pleaselogin&quot;));</span>
+<span class="nc" id="L363">    req.setAttribute(&quot;login&quot;, bundle.getString(&quot;login&quot;));</span>
+<span class="nc" id="L364">    req.setAttribute(&quot;autoload&quot;, autoload);</span>
+<span class="nc" id="L365">    req.setAttribute(&quot;repo&quot;, repo);</span>
+<span class="nc" id="L366">    req.setAttribute(&quot;locale&quot;, locale);</span>
+<span class="nc" id="L367">    req.setAttribute(&quot;ng&quot;, newGalleryId);</span>
+<span class="nc" id="L368">    req.setAttribute(&quot;galleryId&quot;, galleryId);</span>
+    try {
+<span class="nc" id="L370">      req.getRequestDispatcher(&quot;/login.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L371">    } catch (ServletException e) {</span>
+<span class="nc" id="L372">      throw new IOException(e);</span>
+<span class="nc" id="L373">    }</span>
+<span class="nc" id="L374">  }</span>
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+<span class="nc" id="L377">    BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));</span>
+<span class="nc" id="L378">    String queryString = input.readLine();</span>
+
+    PrintWriter out;
+
+<span class="nc" id="L382">    OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);</span>
+
+<span class="nc bnc" id="L384" title="All 2 branches missed.">    if (userInfo == null) {</span>
+<span class="nc" id="L385">      userInfo = new OdeAuthFilter.UserInfo();</span>
+    }
+
+<span class="nc bnc" id="L388" title="All 2 branches missed.">    if (queryString == null) {</span>
+<span class="nc" id="L389">      out = setCookieOutput(userInfo, resp);</span>
+<span class="nc" id="L390">      out.println(&quot;queryString is null&quot;);</span>
+<span class="nc" id="L391">      return;</span>
+    }
+
+<span class="nc" id="L394">    HashMap&lt;String, String&gt; params = getQueryMap(queryString);</span>
+<span class="nc" id="L395">    String page = getPage(req);</span>
+<span class="nc" id="L396">    String locale = params.get(&quot;locale&quot;);</span>
+<span class="nc" id="L397">    String repo = params.get(&quot;repo&quot;);</span>
+<span class="nc" id="L398">    String galleryId = params.get(&quot;galleryId&quot;);</span>
+<span class="nc" id="L399">    String newGalleryId = params.get(&quot;ng&quot;);</span>
+<span class="nc" id="L400">    String redirect = params.get(&quot;redirect&quot;);</span>
+<span class="nc" id="L401">    String autoload = params.get(&quot;autoload&quot;);</span>
+
+<span class="nc bnc" id="L403" title="All 2 branches missed.">    if (locale == null) {</span>
+<span class="nc" id="L404">      locale = &quot;en&quot;;</span>
+    }
+
+<span class="nc" id="L407">    ResourceBundle bundle = ResourceBundle.getBundle(&quot;com/google/appinventor/server/loginmessages&quot;, new Locale(locale));</span>
+
+<span class="nc bnc" id="L409" title="All 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L410">      LOG.info(&quot;locale = &quot; + locale + &quot; bundle: &quot; + new Locale(locale));</span>
+    }
+<span class="nc bnc" id="L412" title="All 2 branches missed.">    if (page.equals(&quot;sendlink&quot;)) {</span>
+<span class="nc" id="L413">      String email = params.get(&quot;email&quot;);</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">      if (email == null) {</span>
+<span class="nc" id="L415">        fail(req, resp, &quot;No Email Address Provided&quot;, locale);</span>
+<span class="nc" id="L416">        return;</span>
+      }
+      // Send email here, for now we put it in the error string and redirect
+<span class="nc" id="L419">      PWData pwData = storageIo.createPWData(email);</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">      if (pwData == null) {</span>
+<span class="nc" id="L421">        fail(req, resp, &quot;Internal Error&quot;, locale);</span>
+<span class="nc" id="L422">        return;</span>
+      }
+<span class="nc" id="L424">      String link = trimPage(req) + pwData.id + &quot;/setpw&quot;;</span>
+<span class="nc" id="L425">      sendmail(email, link, locale);</span>
+<span class="nc" id="L426">      resp.sendRedirect(&quot;/login/linksent/&quot;);</span>
+<span class="nc" id="L427">      storageIo.cleanuppwdata();</span>
+<span class="nc" id="L428">      return;</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">    } else if (page.equals(&quot;setpw&quot;)) {</span>
+<span class="nc bnc" id="L430" title="All 4 branches missed.">      if (userInfo == null || userInfo.getUserId().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L431">        fail(req, resp, &quot;Session Timed Out&quot;, locale);</span>
+<span class="nc" id="L432">        return;</span>
+      }
+<span class="nc" id="L434">      User user = storageIo.getUser(userInfo.getUserId());</span>
+<span class="nc" id="L435">      String password = params.get(&quot;password&quot;);</span>
+<span class="nc bnc" id="L436" title="All 4 branches missed.">      if (password == null || password.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L437">        fail(req, resp, bundle.getString(&quot;nopassword&quot;), locale);</span>
+<span class="nc" id="L438">        return;</span>
+      }
+      String hashedPassword;
+      try {
+<span class="nc" id="L442">        hashedPassword = PasswordHash.createHash(password);</span>
+<span class="nc" id="L443">      } catch (NoSuchAlgorithmException e) {</span>
+<span class="nc" id="L444">        fail(req, resp, &quot;System Error hashing password&quot;, locale);</span>
+<span class="nc" id="L445">        return;</span>
+<span class="nc" id="L446">      } catch (InvalidKeySpecException e) {</span>
+<span class="nc" id="L447">        fail(req, resp, &quot;System Error hashing password&quot;, locale);</span>
+<span class="nc" id="L448">        return;</span>
+<span class="nc" id="L449">      }</span>
+
+<span class="nc" id="L451">      storageIo.setUserPassword(user.getUserId(),  hashedPassword);</span>
+<span class="nc" id="L452">      String uri = new UriBuilder(&quot;/&quot;)</span>
+<span class="nc" id="L453">        .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L454">        .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L455">        .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L456">        .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L457">        .add(&quot;galleryId&quot;, galleryId).build();</span>
+<span class="nc" id="L458">      resp.sendRedirect(uri);   // Logged in, go to service</span>
+<span class="nc" id="L459">      return;</span>
+    }
+
+<span class="nc" id="L462">    String email = params.get(&quot;email&quot;);</span>
+<span class="nc" id="L463">    String password = params.get(&quot;password&quot;); // We don't check it now</span>
+<span class="nc" id="L464">    User user = storageIo.getUserFromEmail(email);</span>
+<span class="nc" id="L465">    boolean validLogin = false;</span>
+
+<span class="nc" id="L467">    String hash = user.getPassword();</span>
+<span class="nc bnc" id="L468" title="All 4 branches missed.">    if ((hash == null) || hash.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L469">      fail(req, resp, &quot;No Password Set for User&quot;, locale);</span>
+<span class="nc" id="L470">      return;</span>
+    }
+
+    try {
+<span class="nc" id="L474">      validLogin = PasswordHash.validatePassword(password, hash);</span>
+<span class="nc" id="L475">    } catch (NoSuchAlgorithmException e) {</span>
+<span class="nc" id="L476">    } catch (InvalidKeySpecException e) {</span>
+<span class="nc" id="L477">    }</span>
+
+<span class="nc bnc" id="L479" title="All 2 branches missed.">    if (!validLogin) {</span>
+<span class="nc" id="L480">      fail(req, resp, bundle.getString(&quot;invalidpassword&quot;), locale);</span>
+<span class="nc" id="L481">      return;</span>
+    }
+
+<span class="nc bnc" id="L484" title="All 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L485">      LOG.info(&quot;userInfo = &quot; + userInfo + &quot; user = &quot; + user);</span>
+    }
+<span class="nc" id="L487">    userInfo.setUserId(user.getUserId());</span>
+<span class="nc" id="L488">    userInfo.setIsAdmin(user.getIsAdmin());</span>
+<span class="nc" id="L489">    String newCookie = userInfo.buildCookie(false);</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">    if (DEBUG) {</span>
+<span class="nc" id="L491">      LOG.info(&quot;newCookie = &quot; + newCookie);</span>
+    }
+<span class="nc bnc" id="L493" title="All 2 branches missed.">    if (newCookie != null) {</span>
+<span class="nc" id="L494">      Cookie cook = new Cookie(&quot;AppInventor&quot;, newCookie);</span>
+<span class="nc" id="L495">      cook.setPath(&quot;/&quot;);</span>
+<span class="nc" id="L496">      resp.addCookie(cook);</span>
+    }
+
+<span class="nc" id="L499">    String uri = &quot;/&quot;;</span>
+<span class="nc bnc" id="L500" title="All 4 branches missed.">    if (redirect != null &amp;&amp; !redirect.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L501">      uri = redirect;</span>
+    }
+<span class="nc" id="L503">    uri = new UriBuilder(uri)</span>
+<span class="nc" id="L504">      .add(&quot;locale&quot;, locale)</span>
+<span class="nc" id="L505">      .add(&quot;autoload&quot;, autoload)</span>
+<span class="nc" id="L506">      .add(&quot;repo&quot;, repo)</span>
+<span class="nc" id="L507">      .add(&quot;ng&quot;, newGalleryId)</span>
+<span class="nc" id="L508">      .add(&quot;galleryId&quot;, galleryId).build();</span>
+<span class="nc" id="L509">    resp.sendRedirect(uri);</span>
+<span class="nc" id="L510">  }</span>
+
+  public void destroy() {
+<span class="nc" id="L513">    super.destroy();</span>
+<span class="nc" id="L514">  }</span>
+
+  private static HashMap&lt;String, String&gt; getQueryMap(String query)  {
+<span class="nc" id="L517">    HashMap&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();</span>
+<span class="nc bnc" id="L518" title="All 4 branches missed.">    if (query == null || query.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L519">      return map;               // Empty map</span>
+    }
+<span class="nc" id="L521">    String[] params = query.split(&quot;&amp;&quot;);</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">    for (String param : params)  {</span>
+<span class="nc" id="L523">      String [] nvpair = param.split(&quot;=&quot;);</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">      if (nvpair.length &lt;= 1) {</span>
+<span class="nc" id="L525">        map.put(nvpair[0], &quot;&quot;);</span>
+      } else
+<span class="nc" id="L527">        map.put(nvpair[0], URLDecoder.decode(nvpair[1]));</span>
+    }
+<span class="nc" id="L529">    return map;</span>
+  }
+
+  // Note: Urls in this servlet are of the form /login/&lt;param&gt;/&lt;page&gt;
+  // The page identifier is *after* the parameter, if there is one.
+
+  private String getPage(HttpServletRequest req) {
+<span class="nc" id="L536">    String [] components = req.getRequestURI().split(&quot;/&quot;);</span>
+<span class="nc" id="L537">    return components[components.length-1];</span>
+  }
+
+  private String getParam(HttpServletRequest req) {
+<span class="nc" id="L541">    String [] components = req.getRequestURI().split(&quot;/&quot;);</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">    if (components.length &lt; 2)</span>
+<span class="nc" id="L543">      return null;</span>
+<span class="nc" id="L544">    return components[components.length-2];</span>
+  }
+
+  private String trimPage(HttpServletRequest req) {
+<span class="nc" id="L548">    String [] components = req.getRequestURL().toString().split(&quot;/&quot;);</span>
+<span class="nc" id="L549">    StringBuffer sb = new StringBuffer();</span>
+<span class="nc bnc" id="L550" title="All 2 branches missed.">    for (int i = 0; i &lt; components.length-1; i++)</span>
+<span class="nc" id="L551">      sb.append(components[i] + &quot;/&quot;);</span>
+<span class="nc" id="L552">    return sb.toString();</span>
+  }
+
+  private void fail(HttpServletRequest req, HttpServletResponse resp, String error, String locale) throws IOException {
+<span class="nc" id="L556">    resp.sendRedirect(&quot;/login/?locale=&quot; + sanitizer.sanitize(locale) + &quot;&amp;error=&quot; + sanitizer.sanitize(error));</span>
+<span class="nc" id="L557">    return;</span>
+  }
+
+  private void sendmail(String email, String url, String locale) {
+    try {
+<span class="nc" id="L562">      String tmailServer = mailServer.get();</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">      if (tmailServer.equals(&quot;&quot;)) { // No mailserver = no mail!</span>
+<span class="nc" id="L564">        return;</span>
+      }
+<span class="nc" id="L566">      URL mailServerUrl = new URL(tmailServer);</span>
+<span class="nc" id="L567">      HttpURLConnection connection = (HttpURLConnection) mailServerUrl.openConnection();</span>
+<span class="nc" id="L568">      connection.setDoOutput(true);</span>
+<span class="nc" id="L569">      connection.setRequestMethod(&quot;POST&quot;);</span>
+<span class="nc" id="L570">      PrintWriter stream = new PrintWriter(connection.getOutputStream());</span>
+<span class="nc" id="L571">      stream.write(&quot;email=&quot; + URLEncoder.encode(email) + &quot;&amp;url=&quot; + URLEncoder.encode(url) +</span>
+<span class="nc" id="L572">          &quot;&amp;pass=&quot; + password.get() + &quot;&amp;locale=&quot; + locale);</span>
+<span class="nc" id="L573">      stream.flush();</span>
+<span class="nc" id="L574">      stream.close();</span>
+<span class="nc" id="L575">      int responseCode = 0;</span>
+<span class="nc" id="L576">      responseCode = connection.getResponseCode();</span>
+<span class="nc bnc" id="L577" title="All 2 branches missed.">      if (responseCode != HttpURLConnection.HTTP_OK) {</span>
+<span class="nc" id="L578">        LOG.warning(&quot;mailserver responded with code = &quot; + responseCode);</span>
+        // Nothing else we can do here...
+      }
+<span class="nc" id="L581">    } catch (MalformedURLException e) {</span>
+<span class="nc" id="L582">    } catch (IOException e) {</span>
+<span class="nc" id="L583">    }</span>
+<span class="nc" id="L584">  }</span>
+
+  private PrintWriter setCookieOutput(OdeAuthFilter.UserInfo userInfo, HttpServletResponse resp)
+    throws IOException {
+<span class="nc bnc" id="L588" title="All 2 branches missed.">    if (userInfo != null) {     // if we never had logged in, this will be null!</span>
+<span class="nc" id="L589">      String newCookie = userInfo.buildCookie(true);</span>
+<span class="nc bnc" id="L590" title="All 2 branches missed.">      if (newCookie != null) {</span>
+<span class="nc" id="L591">        Cookie cook = new Cookie(&quot;AppInventor&quot;, newCookie);</span>
+<span class="nc" id="L592">        cook.setPath(&quot;/&quot;);</span>
+<span class="nc" id="L593">        resp.addCookie(cook);</span>
+      }
+    }
+<span class="nc" id="L596">    resp.setContentType(&quot;text/html; charset=utf-8&quot;);</span>
+<span class="nc" id="L597">    PrintWriter out = resp.getWriter();</span>
+<span class="nc" id="L598">    return out;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

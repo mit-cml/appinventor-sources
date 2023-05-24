@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="ubuntu-Lenovo-IdeaPad-S540-15IWL-D" name="com.google.appinventor.client.OdeTest" skipped="0" tests="1" time="113.259" timestamp="2023-05-22T18:46:20">
+  <properties>
+    <property name="java.vendor" value="Private Build"></property>
+    <property name="lib.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib"></property>
+    <property name="ant.file.appengine" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml"></property>
+    <property name="sun.java.launcher" value="SUN_STANDARD"></property>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"></property>
+    <property name="docs.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/docs"></property>
+    <property name="AiServerLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiServerLib"></property>
+    <property name="os.name" value="Linux"></property>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/classes"></property>
+    <property name="gwt.sdk" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched"></property>
+    <property name="sun.desktop" value="gnome"></property>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"></property>
+    <property name="ant.home" value="/usr/share/ant"></property>
+    <property name="java.runtime.version" value="1.8.0_362-8u372-ga~us1-0ubuntu1~20.04-b09"></property>
+    <property name="client.module" value="com.google.appinventor.YaClient-dev"></property>
+    <property name="user.name" value="ubuntu"></property>
+    <property name="public.build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build/appengine"></property>
+    <property name="debug" value="true"></property>
+    <property name="ant.file.type.appengine" value="file"></property>
+    <property name="build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build"></property>
+    <property name="appinventor.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor"></property>
+    <property name="user.language" value="en"></property>
+    <property name="class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes"></property>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64"></property>
+    <property name="reports.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports"></property>
+    <property name="ant.project.default-target" value="all"></property>
+    <property name="build.war.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war"></property>
+    <property name="ant.project.name" value="appengine"></property>
+    <property name="java.version" value="1.8.0_362"></property>
+    <property name="user.timezone" value=""></property>
+    <property name="client.flags" value="-style pretty"></property>
+    <property name="sun.arch.data.model" value="64"></property>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/endorsed"></property>
+    <property name="sun.cpu.isalist" value=""></property>
+    <property name="sun.jnu.encoding" value="UTF-8"></property>
+    <property name="file.encoding.pkg" value="sun.io"></property>
+    <property name="AiSharedLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiSharedLib"></property>
+    <property name="appengine.sdk" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46"></property>
+    <property name="file.separator" value="/"></property>
+    <property name="java.specification.name" value="Java Platform API Specification"></property>
+    <property name="java.class.version" value="52.0"></property>
+    <property name="user.country" value="IN"></property>
+    <property name="java.home" value="/usr/lib/jvm/java-8-openjdk-amd64/jre"></property>
+    <property name="ant.file.AllProjects" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build.xml"></property>
+    <property name="java.vm.info" value="mixed mode"></property>
+    <property name="ant.file" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml"></property>
+    <property name="os.version" value="5.15.0-71-generic"></property>
+    <property name="path.separator" value=":"></property>
+    <property name="java.vm.version" value="25.362-b09"></property>
+    <property name="release" value="false"></property>
+    <property name="ant.library.dir" value="/usr/share/ant/lib"></property>
+    <property name="ant.file.type.AllProjects" value="file"></property>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"></property>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"></property>
+    <property name="java.specification.maintenance.version" value="4"></property>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"></property>
+    <property name="_jacoco.agentFile" value="/tmp/jacocoagent1108506997062565969.jar"></property>
+    <property name="debug.compile" value="true"></property>
+    <property name="build.static.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/static"></property>
+    <property name="coverage.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/coverage"></property>
+    <property name="user.home" value="/home/ubuntu"></property>
+    <property name="appinventor.pkg" value="com/google/appinventor"></property>
+    <property name="java.specification.vendor" value="Oracle Corporation"></property>
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"></property>
+    <property name="java.vendor.url" value="http://java.oracle.com/"></property>
+    <property name="java.vm.vendor" value="Private Build"></property>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"></property>
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner testsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junittestcases741096246428821874.properties skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/raw/IGNORETHIS.xml crashfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junitvmwatcher7606596155594140888.properties propsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junit7771455760755041311.properties"></property>
+    <property name="java.class.path" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/classes:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiServerLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiRebindLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonTestUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/components/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/components/CommonConstants-gwt.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonUtils-gwt.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonVersion-gwt.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/error_prone_annotations-2.0.12.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/j2objc-annotations-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt_query/gwtquery-1.5-beta1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt_incubator/gwt-incubator-20101117-r1766.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/guava-gwt-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/json/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit/junit-4.8.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/charba/charba-2.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-dev.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA-sources.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/components/ComponentTranslation/src:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/src:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/tests:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit-addons/junit-addons-1.4.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/keyczar/KeyczarTool.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/objectify-3.1/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/cglib-nodep-2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/easymock-3.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/javassist-3.18.0-GA.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/objenesis-1.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/responder-iq/responderiq-test.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/protobuf/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-1.0-sdk-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-labs-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-jsr107cache-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-codec-1.7.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-fileupload-1.2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-lang3-3.10.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-appengine-1.0.10.final.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-core-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-jpa-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/firebase-token-generator-2.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-jackson2-1.20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gson-2.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet-deps.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jdo2-api-2.3-eb.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr107cache-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr305.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/keyczar-0.66-080111-java-1.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/libservice.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/log4j-1.2.16.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/owasp-java-html-sanitizer-20160628.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiClientLibTests.jar:/usr/share/java/ant-launcher-1.10.7.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar:/usr/share/ant/lib/ant-junit4.jar:/tmp/jacocoagent1108506997062565969.jar"></property>
+    <property name="ant.version" value="Apache Ant(TM) version 1.10.7 compiled on October 24 2019"></property>
+    <property name="ant.file.type.CommonDefinitions" value="file"></property>
+    <property name="ant.file.CommonDefinitions" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build-common.xml"></property>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+    <property name="ant.file.type" value="file"></property>
+    <property name="java.vm.specification.version" value="1.8"></property>
+    <property name="sun.os.patch.level" value="unknown"></property>
+    <property name="sun.cpu.endian" value="little"></property>
+    <property name="test_name.class" value="${test_name}"></property>
+    <property name="java.awt.headless" value="true"></property>
+    <property name="java.io.tmpdir" value="/tmp"></property>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"></property>
+    <property name="AiClientLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiClientLib"></property>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"></property>
+    <property name="os.arch" value="amd64"></property>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext:/usr/java/packages/lib/ext"></property>
+    <property name="tests.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/tests"></property>
+    <property name="user.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine"></property>
+    <property name="line.separator" value="
+"></property>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"></property>
+    <property name="basedir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine"></property>
+    <property name="local.build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build"></property>
+    <property name="gwt.args" value="-prod -gen /home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/gen -war /home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/build/war"></property>
+    <property name="ant.java.version" value="1.8"></property>
+    <property name="ant.core.lib" value="/usr/share/ant/lib/ant.jar"></property>
+    <property name="file.encoding" value="UTF-8"></property>
+    <property name="XstartOnFirstThread" value=""></property>
+    <property name="build.extra.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/extra"></property>
+    <property name="java.specification.version" value="1.8"></property>
+    <property name="src.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/src"></property>
+    <property name="ant.project.invoked-targets" value="tests"></property>
+  </properties>
+  <testcase classname="com.google.appinventor.client.OdeTest" name="testCompareLocales" time="113.248"></testcase>
+  <system-out><![CDATA[Compiling module com.google.appinventor.YaClient.JUnit
+   Computing all possible rebind results for 'com.google.gwt.logging.shared.RemoteLoggingService'
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+      Rebinding com.google.gwt.logging.shared.RemoteLoggingService
+         Invoking generator com.google.appinventor.rebind.ExtendedServiceProxyGenerator
+            Generating client proxy for remote service interface 'com.google.gwt.logging.shared.RemoteLoggingService'
+               Analyzing 'com.google.gwt.logging.shared.RemoteLoggingService' for serializable types
+                  Analyzing methods:
+                     public abstract java.lang.String logOnServer(java.util.logging.LogRecord record)
+                        Parameter: java.util.logging.LogRecord record
+                           java.util.logging.LogRecord
+                              Verifying instantiability
+                                 java.util.logging.LogRecord
+                                    Analyzing the fields of type 'java.util.logging.LogRecord' that qualify for serialization
+                                       private java.lang.Throwable thrown
+                                          java.lang.Throwable
+                                             Verifying instantiability
+                                                com.google.appinventor.client.editor.simple.ComponentNotFoundException
+                                                   Analyzing the fields of type 'com.google.appinventor.client.editor.simple.ComponentNotFoundException' that qualify for serialization
+                                                      [WARN] Field 'private final java.lang.String componentName' will not be serialized because it is final
+]]></system-out>
+  <system-err><![CDATA[log4j:WARN No appenders could be found for logger (com.gargoylesoftware.htmlunit.WebClient).
+log4j:WARN Please initialize the log4j system properly.
+]]></system-err>
+</testsuite>

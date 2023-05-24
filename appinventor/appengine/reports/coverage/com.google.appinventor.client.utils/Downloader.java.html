@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Downloader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.utils</a> &gt; <span class="el_source">Downloader.java</span></div><h1>Downloader.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.utils;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.RootPanel;
+
+/**
+ * Utility class to download files from the server.
+ *
+ * &lt;p&gt;Implementation note (by herbertc): I would have loved to give this action
+ * a callback parameter, but it is impossible to detect a successful download.
+ * After a browser saves the downloaded file, it will not generate any further
+ * events.
+ *
+ */
+public class Downloader extends Frame {
+  // Singleton Downloader instance
+<span class="nc" id="L26">  private static final Downloader INSTANCE = new Downloader();</span>
+
+  /**
+   * Creates a new downloader.
+   */
+<span class="nc" id="L31">  private Downloader() {</span>
+    // We need to trick the browser into downloading a file by adding an
+    // invisible frame to our application. That's the only way to open the
+    // browser download dialog box.
+<span class="nc" id="L35">    setSize(&quot;0px&quot;, &quot;0px&quot;);</span>
+<span class="nc" id="L36">    setVisible(false);</span>
+<span class="nc" id="L37">    sinkEvents(Event.ONLOAD);</span>
+<span class="nc" id="L38">    RootPanel.get().add(this);</span>
+<span class="nc" id="L39">  }</span>
+
+  /**
+   * Downloads content for the given path.
+   *
+   * @param path a relative path within the GWT module
+   */
+  public final void download(String path) {
+<span class="nc" id="L47">    ErrorReporter.hide();</span>
+<span class="nc" id="L48">    setUrl(GWT.getModuleBaseURL() + path);</span>
+<span class="nc" id="L49">  }</span>
+
+  /**
+   * Returns the downloader.
+   *
+   * @return the downloader.
+   */
+  public static Downloader getInstance() {
+<span class="nc" id="L57">    return INSTANCE;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

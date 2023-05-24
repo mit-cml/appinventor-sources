@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CopyYoungAndroidProjectCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer.commands</a> &gt; <span class="el_source">CopyYoungAndroidProjectCommand.java</span></div><h1>CopyYoungAndroidProjectCommand.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer.commands;
+
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectComparators;
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.widgets.Validator;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * A command that brings up a wizard to copy a Young Android project.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
+  private boolean checkpoint;
+
+  /**
+   * Creates a new command for copying a project.
+   *
+   * @param checkpoint whether the copy is a checkpoint
+   */
+<span class="nc" id="L54">  public CopyYoungAndroidProjectCommand(boolean checkpoint) {</span>
+<span class="nc" id="L55">    this.checkpoint = checkpoint;</span>
+<span class="nc" id="L56">  }</span>
+
+  @Override
+  public boolean willCallExecuteNextCommand() {
+<span class="nc" id="L60">    return false;  // Is there a way to do this for this command?</span>
+  }
+
+  @Override
+  public void execute(final ProjectNode node) {
+<span class="nc" id="L65">    new CopyProjectDialog(node.getProjectRoot()).center();</span>
+<span class="nc" id="L66">  }</span>
+
+  /**
+   * Dialog for getting the new name for saving.
+   */
+  private class CopyProjectDialog extends DialogBox {
+
+    // UI elements
+    private final LabeledTextBox newNameTextBox;
+
+    /**
+     * Creates a new dialog to get new project name.
+     *
+     * @param oldProjectNode  old project to copy
+     */
+<span class="nc" id="L81">    public CopyProjectDialog(final ProjectRootNode oldProjectNode) {</span>
+<span class="nc" id="L82">      super(false, true);</span>
+<span class="nc" id="L83">      setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+
+<span class="nc" id="L85">      String oldName = oldProjectNode.getName();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">      setText(checkpoint ? MESSAGES.checkpointTitle(oldName) : MESSAGES.saveAsTitle(oldName));</span>
+
+<span class="nc" id="L88">      VerticalPanel contentPanel = new VerticalPanel();</span>
+<span class="nc" id="L89">      contentPanel.setSpacing(10);</span>
+
+      String defaultNewName;
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      if (checkpoint) {</span>
+<span class="nc" id="L94">        String prefix = MESSAGES.defaultCheckpointProjectName(oldName, &quot;&quot;);</span>
+        List&lt;Project&gt; checkpointProjects =
+<span class="nc" id="L96">            Ode.getInstance().getProjectManager().getProjects(prefix);</span>
+
+        String nextSuffix;
+
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (checkpointProjects.isEmpty()) {</span>
+<span class="nc" id="L101">          nextSuffix = &quot;1&quot;;</span>
+        } else {
+          // Sort the checkpoints project by the date they were last modified, in descending order.
+<span class="nc" id="L104">          Collections.sort(checkpointProjects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING);</span>
+
+<span class="nc" id="L106">          VerticalPanel previousCheckpointsPanel = new VerticalPanel();</span>
+<span class="nc" id="L107">          previousCheckpointsPanel.setSpacing(0);</span>
+<span class="nc" id="L108">          previousCheckpointsPanel.add(new Label(MESSAGES.previousCheckpointsLabel()));</span>
+<span class="nc" id="L109">          Widget previousCheckpointsTable = createPreviousCheckpointsTable(checkpointProjects);</span>
+<span class="nc" id="L110">          previousCheckpointsTable.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+<span class="nc" id="L111">          ScrollPanel scrollPanel = new ScrollPanel(previousCheckpointsTable);</span>
+<span class="nc" id="L112">          scrollPanel.addStyleName(&quot;ode-CheckpointProjectTable&quot;);</span>
+<span class="nc" id="L113">          scrollPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">          if (checkpointProjects.size() &gt; 5) {</span>
+<span class="nc" id="L115">            scrollPanel.setHeight(&quot;121px&quot;);</span>
+          }
+<span class="nc" id="L117">          previousCheckpointsPanel.add(scrollPanel);</span>
+<span class="nc" id="L118">          previousCheckpointsPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L119">          contentPanel.add(previousCheckpointsPanel);</span>
+
+          // Find the highest number in the checkpoint projects' names.
+<span class="nc" id="L122">          int highestNumber = 0;</span>
+<span class="nc" id="L123">          int prefixLength = prefix.length();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">          for (Project checkpointProject : checkpointProjects) {</span>
+<span class="nc" id="L125">            String checkpointName = checkpointProject.getProjectName();</span>
+            try {
+<span class="nc" id="L127">              highestNumber = Math.max(highestNumber,</span>
+<span class="nc" id="L128">                  Integer.parseInt(checkpointName.substring(prefixLength)));</span>
+<span class="nc" id="L129">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L130">              continue;</span>
+<span class="nc" id="L131">            }</span>
+<span class="nc" id="L132">          }</span>
+<span class="nc" id="L133">          nextSuffix = Integer.toString(highestNumber + 1);</span>
+        }
+
+<span class="nc" id="L136">        defaultNewName = MESSAGES.defaultCheckpointProjectName(oldName, nextSuffix);</span>
+
+<span class="nc" id="L138">      } else {</span>
+        // Save As
+<span class="nc" id="L140">        defaultNewName = MESSAGES.defaultSaveAsProjectName(oldName);</span>
+      }
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">      newNameTextBox = new LabeledTextBox(checkpoint ? MESSAGES.checkpointNameLabel()</span>
+<span class="nc" id="L144">          : MESSAGES.newNameLabel(), new Validator(){</span>
+        @Override
+        public boolean validate(String value) {
+<span class="nc" id="L147">          errorMessage = TextValidators.getErrorMessage(value);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">          return !(errorMessage.length()&gt;0);</span>
+        }
+
+        @Override
+        public String getErrorMessage() {
+<span class="nc" id="L153">          return errorMessage;</span>
+        }
+      });
+<span class="nc" id="L156">      newNameTextBox.setText(defaultNewName);</span>
+<span class="nc" id="L157">      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {</span>
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+<span class="nc" id="L160">          int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">          if (keyCode == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L162">            handleOkClick(oldProjectNode);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">          } else if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L164">            hide();</span>
+          } else {
+<span class="nc" id="L166">            newNameTextBox.validate();</span>
+          }
+<span class="nc" id="L168">        }</span>
+      });
+<span class="nc" id="L170">      contentPanel.add(newNameTextBox);</span>
+
+<span class="nc" id="L172">      HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L173">      Button cancelButton = new Button(MESSAGES.cancelButton());</span>
+<span class="nc" id="L174">      cancelButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L177">          hide();</span>
+<span class="nc" id="L178">        }</span>
+      });
+<span class="nc" id="L180">      buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L181">      Button okButton = new Button(MESSAGES.okButton());</span>
+<span class="nc" id="L182">      okButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc" id="L185">          handleOkClick(oldProjectNode);</span>
+<span class="nc" id="L186">        }</span>
+      });
+<span class="nc" id="L188">      buttonPanel.add(okButton);</span>
+<span class="nc" id="L189">      buttonPanel.setSize(&quot;100%&quot;, &quot;24px&quot;);</span>
+<span class="nc" id="L190">      contentPanel.add(buttonPanel);</span>
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">      contentPanel.setSize(checkpoint ? &quot;400px&quot; : &quot;320px&quot;, &quot;100%&quot;);</span>
+
+<span class="nc" id="L194">      add(contentPanel);</span>
+<span class="nc" id="L195">    }</span>
+
+    private void handleOkClick(ProjectRootNode oldProjectNode) {
+<span class="nc" id="L198">      String newProjectName = newNameTextBox.getText();</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">      if (TextValidators.checkNewProjectName(newProjectName) </span>
+            == TextValidators.ProjectNameStatus.SUCCESS) {
+<span class="nc" id="L201">        hide();</span>
+<span class="nc" id="L202">        copyProjectAction(oldProjectNode, newProjectName);</span>
+      } else {
+<span class="nc" id="L204">        newNameTextBox.setFocus(true);</span>
+<span class="nc" id="L205">        newNameTextBox.selectAll();</span>
+      }
+<span class="nc" id="L207">    }</span>
+
+    private Widget createPreviousCheckpointsTable(List&lt;Project&gt; checkpointProjects) {
+<span class="nc" id="L210">      Grid table = new Grid(1 + checkpointProjects.size(), 3);</span>
+<span class="nc" id="L211">      table.addStyleName(&quot;ode-ProjectTable&quot;);</span>
+
+      // Set the widgets for the header row.
+<span class="nc" id="L214">      table.getRowFormatter().setStyleName(0, &quot;ode-ProjectHeaderRow&quot;);</span>
+<span class="nc" id="L215">      table.setWidget(0, 0, new Label(MESSAGES.projectNameHeader()));</span>
+<span class="nc" id="L216">      table.setWidget(0, 1, new Label(MESSAGES.projectDateCreatedHeader()));</span>
+<span class="nc" id="L217">      table.setWidget(0, 2, new Label(MESSAGES.projectDateModifiedHeader()));</span>
+
+      // Set the widgets for the rows representing previous checkpoints
+<span class="nc" id="L220">      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();</span>
+<span class="nc" id="L221">      int row = 1;</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">      for (Project checkpointProject : checkpointProjects) {</span>
+<span class="nc" id="L223">        table.getRowFormatter().setStyleName(row, &quot;ode-ProjectRowUnHighlighted&quot;);</span>
+<span class="nc" id="L224">        Label nameLabel = new Label(checkpointProject.getProjectName());</span>
+<span class="nc" id="L225">        table.setWidget(row, 0, nameLabel);</span>
+
+<span class="nc" id="L227">        Date dateCreated = new Date(checkpointProject.getDateCreated());</span>
+<span class="nc" id="L228">        table.setWidget(row, 1, new Label(dateTimeFormat.format(dateCreated)));</span>
+
+<span class="nc" id="L230">        Date dateModified = new Date(checkpointProject.getDateModified());</span>
+<span class="nc" id="L231">        table.setWidget(row, 2, new Label(dateTimeFormat.format(dateModified)));</span>
+<span class="nc" id="L232">        row++;</span>
+<span class="nc" id="L233">      }</span>
+
+<span class="nc" id="L235">      return table;</span>
+    }
+
+    /**
+     * Copies a project and gives it a new name.
+     *
+     * @param newName the new project name
+     */
+    protected void copyProjectAction(ProjectRootNode oldProjectNode, String newName) {
+<span class="nc" id="L244">      final Ode ode = Ode.getInstance();</span>
+
+<span class="nc" id="L246">      OdeAsyncCallback&lt;UserProject&gt; callback = new OdeAsyncCallback&lt;UserProject&gt;(</span>
+          // failure message
+<span class="nc" id="L248">          MESSAGES.copyProjectError()) {</span>
+        @Override
+        public void onSuccess(UserProject newProjectInfo) {
+          // Update project list
+<span class="nc" id="L252">          Project newProject = ode.getProjectManager().addProject(newProjectInfo);</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">          if (!checkpoint) {</span>
+<span class="nc" id="L254">            ode.openYoungAndroidProjectInDesigner(newProject);</span>
+          }
+<span class="nc" id="L256">        }</span>
+      };
+
+      // Create new copy on the backend
+<span class="nc" id="L260">      ode.getProjectService().copyProject(oldProjectNode.getProjectId(), newName, callback);</span>
+<span class="nc" id="L261">    }</span>
+
+    @Override
+    public void show() {
+<span class="nc" id="L265">      super.show();</span>
+
+<span class="nc" id="L267">      DeferredCommand.addCommand(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L270">          newNameTextBox.setFocus(true);</span>
+<span class="nc" id="L271">          newNameTextBox.selectAll();</span>
+<span class="nc" id="L272">        }</span>
+      });
+<span class="nc" id="L274">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

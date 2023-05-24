@@ -1,0 +1,1246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopToolbar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client</a> &gt; <span class="el_source">TopToolbar.java</span></div><h1>TopToolbar.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2013 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client;
+
+import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
+import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.Downloader;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
+import com.google.appinventor.client.wizards.KeystoreUploadWizard;
+import com.google.appinventor.client.wizards.ProjectUploadWizard;
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.ComponentImportWizard;
+import com.google.appinventor.client.wizards.ComponentUploadWizard;
+import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.common.version.GitBuildId;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.Config;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+
+/**
+ * TopToolbar lives in the TopPanel, to create functionality in the designer.
+ */
+public class TopToolbar extends Composite {
+  private static final String WIDGET_NAME_NEW = &quot;New&quot;;
+  private static final String WIDGET_NAME_DELETE = &quot;Delete&quot;;
+  private static final String WIDGET_NAME_DELETE_TRASH = &quot;Delete Trash&quot;;
+  private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = &quot;DownloadKeystore&quot;;
+  private static final String WIDGET_NAME_UPLOAD_KEYSTORE = &quot;UploadKeystore&quot;;
+  private static final String WIDGET_NAME_DELETE_KEYSTORE = &quot;DeleteKeystore&quot;;
+  private static final String WIDGET_NAME_SAVE = &quot;Save&quot;;
+  private static final String WIDGET_NAME_SAVE_AS = &quot;SaveAs&quot;;
+  private static final String WIDGET_NAME_CHECKPOINT = &quot;Checkpoint&quot;;
+  private static final String WIDGET_NAME_MY_PROJECTS = &quot;MyProjects&quot;;
+  private static final String WIDGET_NAME_BUILD = &quot;Build&quot;;
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK = &quot;BuildApk&quot;;
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB = &quot;BuildAab&quot;;
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK2 = &quot;BuildApk2&quot;;
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB2 = &quot;BuildAab2&quot;;
+  private static final String WIDGET_NAME_BUILD_YAIL = &quot;Yail&quot;;
+  private static final String WIDGET_NAME_CONNECT_TO = &quot;ConnectTo&quot;;
+  private static final String WIDGET_NAME_WIRELESS_BUTTON = &quot;Wireless&quot;;
+  private static final String WIDGET_NAME_CHROMEBOOK = &quot;Chromebook&quot;;
+  private static final String WIDGET_NAME_EMULATOR_BUTTON = &quot;Emulator&quot;;
+  private static final String WIDGET_NAME_USB_BUTTON = &quot;Usb&quot;;
+  private static final String WIDGET_NAME_RESET_BUTTON = &quot;Reset&quot;;
+  private static final String WIDGET_NAME_HARDRESET_BUTTON = &quot;HardReset&quot;;
+  private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = &quot;RefreshCompanion&quot;;
+  private static final String WIDGET_NAME_PROJECT = &quot;Project&quot;;
+  private static final String WIDGET_NAME_SETTINGS = &quot;Settings&quot;;
+  private static final String WIDGET_NAME_AUTOLOAD = &quot;Autoload Last Project&quot;;
+  private static final String WIDGET_NAME_DYSLEXIC_FONT = &quot;DyslexicFont&quot;;
+  private static final String WIDGET_NAME_HELP = &quot;Help&quot;;
+  private static final String WIDGET_NAME_ABOUT = &quot;About&quot;;
+  private static final String WIDGET_NAME_LIBRARY = &quot;Library&quot;;
+  private static final String WIDGET_NAME_GETSTARTED = &quot;GetStarted&quot;;
+  private static final String WIDGET_NAME_TUTORIALS = &quot;Tutorials&quot;;
+  private static final String WIDGET_NAME_EXTENSIONS = &quot;Extensions&quot;;
+  private static final String WIDGET_NAME_SHOWSPLASH = &quot;ShowSplash&quot;;
+  private static final String WIDGET_NAME_TROUBLESHOOTING = &quot;Troubleshooting&quot;;
+  private static final String WIDGET_NAME_FORUMS = &quot;Forums&quot;;
+  private static final String WIDGET_NAME_FEEDBACK = &quot;ReportIssue&quot;;
+  private static final String WIDGET_NAME_COMPANIONINFO = &quot;CompanionInformation&quot;;
+  private static final String WIDGET_NAME_COMPANIONUPDATE = &quot;CompanionUpdate&quot;;
+  private static final String WIDGET_NAME_IMPORTPROJECT = &quot;ImportProject&quot;;
+  private static final String WIDGET_NAME_IMPORTTEMPLATE = &quot;ImportTemplate&quot;;
+  private static final String WIDGET_NAME_EXPORTALLPROJECTS = &quot;ExportAllProjects&quot;;
+  private static final String WIDGET_NAME_EXPORTPROJECT = &quot;ExportProject&quot;;
+
+  private static final String WIDGET_NAME_ADMIN = &quot;Admin&quot;;
+  private static final String WIDGET_NAME_USER_ADMIN = &quot;UserAdmin&quot;;
+  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = &quot;DownloadUserSource&quot;;
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = &quot;SwitchToDebugPane&quot;;
+  private static final String WINDOW_OPEN_FEATURES = &quot;menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes&quot;;
+  private static final String WINDOW_OPEN_LOCATION = &quot;_blank&quot;;
+
+<span class="nc" id="L120">  private static final boolean iamChromebook = isChromeBook();</span>
+
+  private DropDownButton fileDropDown;
+  private DropDownButton connectDropDown;
+  private DropDownButton buildDropDown;
+  private DropDownButton helpDropDown;
+  private DropDownButton adminDropDown;
+  private DropDownButton settingsDropDown;
+
+  private boolean isReadOnly;
+  /**
+   * This flag is set to true when a check for the android.keystore file is in progress.
+   */
+<span class="nc" id="L133">  private volatile boolean isKeystoreCheckPending = false;</span>
+  /**
+   * This flag is set to true when a call to {@link #updateKeystoreFileMenuButtons(boolean)} has
+   * returned and the value was cached.
+   */
+<span class="nc" id="L138">  private volatile boolean isKeystoreCached = false;</span>
+  /**
+   * This flag is the cached result of an earlier check for android.keystore.
+   */
+<span class="nc" id="L142">  private volatile boolean isKeystorePresent = false;</span>
+
+<span class="nc" id="L144">  public TopToolbar() {</span>
+    /*
+     * Layout is as follows:
+     * +----------------------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾ | Settings ▾ | Help ▾| Admin ▾ |
+     * +----------------------------------------------------------------+
+     */
+<span class="nc" id="L151">    HorizontalPanel toolbar = new HorizontalPanel();</span>
+<span class="nc" id="L152">    toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);</span>
+
+    // Should the UI be in read only mode?
+<span class="nc" id="L155">    isReadOnly = Ode.getInstance().isReadOnly();</span>
+
+    // Create the TopToolbar drop down menus.
+<span class="nc" id="L158">    fileDropDown = makeButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName());</span>
+<span class="nc" id="L159">    connectDropDown = makeButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectTabName());</span>
+<span class="nc" id="L160">    buildDropDown = makeButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName());</span>
+<span class="nc" id="L161">    settingsDropDown = makeButton(WIDGET_NAME_SETTINGS, MESSAGES.settingsTabName());</span>
+<span class="nc" id="L162">    helpDropDown = makeButton(WIDGET_NAME_HELP, MESSAGES.helpTabName());</span>
+
+<span class="nc" id="L164">    createProjectsMenu();</span>
+<span class="nc" id="L165">    createConnectMenu();</span>
+<span class="nc" id="L166">    createBuildMenu();</span>
+<span class="nc" id="L167">    createSettingsMenu();</span>
+<span class="nc" id="L168">    createHelpMenu();</span>
+
+    // Add the Buttons to the Toolbar.
+<span class="nc" id="L171">    toolbar.add(fileDropDown);</span>
+<span class="nc" id="L172">    toolbar.add(connectDropDown);</span>
+<span class="nc" id="L173">    toolbar.add(buildDropDown);</span>
+<span class="nc" id="L174">    toolbar.add(settingsDropDown);</span>
+<span class="nc" id="L175">    toolbar.add(helpDropDown);</span>
+
+    //Only if logged in as an admin, add the Admin Button
+<span class="nc bnc" id="L178" title="All 2 branches missed.">    if (Ode.getInstance().getUser().getIsAdmin()) {</span>
+<span class="nc" id="L179">      adminDropDown = makeButton(WIDGET_NAME_ADMIN, MESSAGES.adminTabName());</span>
+<span class="nc" id="L180">      createAdminMenu();</span>
+<span class="nc" id="L181">      toolbar.add(adminDropDown);</span>
+    }
+
+<span class="nc" id="L184">    initWidget(toolbar);</span>
+<span class="nc" id="L185">  }</span>
+
+  public void updateMoveToTrash(String menu_item){
+<span class="nc bnc" id="L188" title="All 2 branches missed.">    if(menu_item.equals(&quot;Move To Trash&quot;)){</span>
+<span class="nc" id="L189">      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);</span>
+<span class="nc" id="L190">      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);</span>
+    }
+    else{
+<span class="nc" id="L193">      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);</span>
+<span class="nc" id="L194">      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);</span>
+    }
+<span class="nc" id="L196">  }</span>
+
+  public void updateMenuState(int numSelectedProjects, int numProjects) {
+<span class="nc bnc" id="L199" title="All 4 branches missed.">    boolean allowDelete = !isReadOnly &amp;&amp; numSelectedProjects &gt; 0;</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">    boolean allowExport = numSelectedProjects &gt; 0;</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">    boolean allowExportAll = numProjects &gt; 0;</span>
+<span class="nc" id="L202">    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);</span>
+<span class="nc" id="L203">    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">    String exportProjectLabel = numSelectedProjects &gt; 1 ?</span>
+<span class="nc" id="L205">        MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();</span>
+<span class="nc" id="L206">    fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);</span>
+<span class="nc" id="L207">    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);</span>
+<span class="nc" id="L208">    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);</span>
+<span class="nc" id="L209">  }</span>
+
+  private DropDownButton makeButton(String id, String text) {
+<span class="nc" id="L212">    DropDownButton button = new DropDownButton(id, text, new ArrayList&lt;DropDownItem&gt;(), false);</span>
+<span class="nc" id="L213">    button.setStyleName(&quot;ode-TopPanelButton&quot;);</span>
+<span class="nc" id="L214">    return button;</span>
+  }
+
+  private void refreshMenu(DropDownButton menu, List&lt;DropDownItem&gt; items) {
+<span class="nc" id="L218">    menu.clearAllItems();  // ensure we start with a clean slate</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">    for (DropDownItem i : items) {</span>
+<span class="nc" id="L220">      menu.addItem(i);</span>
+<span class="nc" id="L221">    }</span>
+<span class="nc" id="L222">    fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);</span>
+<span class="nc" id="L223">  }</span>
+
+  private void createProjectsMenu() {
+<span class="nc" id="L226">    List&lt;DropDownItem&gt; fileItems = Lists.newArrayList();</span>
+<span class="nc" id="L227">    fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.projectMenuItem(),</span>
+        new SwitchToProjectAction()));
+<span class="nc" id="L229">    fileItems.add(null);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">    if (!isReadOnly) {</span>
+<span class="nc" id="L231">      fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),</span>
+          new NewAction()));
+<span class="nc" id="L233">      fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),</span>
+          new ImportProjectAction()));
+<span class="nc" id="L235">      fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),</span>
+          new ImportTemplateAction()));
+<span class="nc" id="L237">      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),</span>
+          new DeleteAction()));
+<span class="nc" id="L239">      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_TRASH, MESSAGES.deleteFromTrashButton(),</span>
+          new DeleteForeverProjectAction()));
+<span class="nc" id="L241">      fileItems.add(null);</span>
+<span class="nc" id="L242">      fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),</span>
+          new SaveAction()));
+<span class="nc" id="L244">      fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),</span>
+          new SaveAsAction()));
+<span class="nc" id="L246">      fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointMenuItem(),</span>
+          new CheckpointAction()));
+<span class="nc" id="L248">      fileItems.add(null);</span>
+    }
+<span class="nc" id="L250">    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),</span>
+        new ExportProjectAction()));
+<span class="nc" id="L252">    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),</span>
+        new ExportAllProjectsAction()));
+<span class="nc" id="L254">    fileItems.add(null);</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">    if (!isReadOnly) {</span>
+<span class="nc" id="L256">      fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),</span>
+          new UploadKeystoreAction()));
+    }
+<span class="nc" id="L259">    fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),</span>
+        new DownloadKeystoreAction()));
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    if (!isReadOnly) {</span>
+<span class="nc" id="L262">      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),</span>
+          new DeleteKeystoreAction()));
+    }
+<span class="nc" id="L265">    refreshMenu(fileDropDown, fileItems);</span>
+<span class="nc" id="L266">  }</span>
+
+  private void createConnectMenu() {
+<span class="nc" id="L269">    List&lt;DropDownItem&gt; connectItems = Lists.newArrayList();</span>
+<span class="nc" id="L270">    connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,</span>
+<span class="nc" id="L271">        MESSAGES.AICompanionMenuItem(), new WirelessAction()));</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">    if (iamChromebook) {</span>
+<span class="nc" id="L273">      connectItems.add(new DropDownItem(WIDGET_NAME_CHROMEBOOK,</span>
+<span class="nc" id="L274">          MESSAGES.chromebookMenuItem(), new ChromebookAction()));</span>
+    } else {
+<span class="nc" id="L276">      connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,</span>
+<span class="nc" id="L277">          MESSAGES.emulatorMenuItem(), new EmulatorAction()));</span>
+<span class="nc" id="L278">      connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),</span>
+          new UsbAction()));
+    }
+<span class="nc" id="L281">    connectItems.add(null);</span>
+<span class="nc" id="L282">    connectItems.add(new DropDownItem(WIDGET_NAME_REFRESHCOMPANION_BUTTON, MESSAGES.refreshCompanionMenuItem(),</span>
+            new RefreshCompanionAction()));
+<span class="nc" id="L284">    connectItems.add(null);</span>
+<span class="nc" id="L285">    connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnectionsMenuItem(),</span>
+        new ResetAction()));
+<span class="nc bnc" id="L287" title="All 2 branches missed.">    if (!iamChromebook) {</span>
+<span class="nc" id="L288">      connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),</span>
+          new HardResetAction()));
+    }
+<span class="nc" id="L291">    refreshMenu(connectDropDown, connectItems);</span>
+<span class="nc" id="L292">  }</span>
+
+  private void createBuildMenu() {
+<span class="nc" id="L295">    List&lt;DropDownItem&gt; buildItems = Lists.newArrayList();</span>
+<span class="nc" id="L296">    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK, MESSAGES.showExportAndroidApk(),</span>
+        new BarcodeAction(false, false)));
+<span class="nc" id="L298">    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB, MESSAGES.showExportAndroidAab(),</span>
+        new BarcodeAction(false, true)));
+
+    // Second Buildserver Menu Items
+    //
+    // We may have a second buildserver which if present permits us to build applications
+    // using different components. This was added primarily to support the &quot;target 26 SDK&quot;
+    // effort where we needed a way for people to package applications against SDK 26 in
+    // order for them to be available in Google's Play Store (Google Requirement as of
+    // 8/1/2018). However such applications have a minSdk of 14 (Ice Cream Sandwich).
+    //
+    // To support the creation of packages for older devices, we leave the buildserver
+    // (as of 8/1/2018) generating minSdk 7 packages (no target SDK) which will run on
+    // much older devices. The second buildserver will package applications with a target
+    // SDK of 26 for those MIT App Inventor users who wish to put their applications in
+    // the Play Store after 8/1/2018.
+
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    if (Ode.getInstance().hasSecondBuildserver()) {</span>
+<span class="nc" id="L316">      buildItems.add(null);</span>
+<span class="nc" id="L317">      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK2, MESSAGES.showExportAndroidApk2(),</span>
+          new BarcodeAction(true, false)));
+<span class="nc" id="L319">      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB2, MESSAGES.showExportAndroidAab2(),</span>
+          new BarcodeAction(true, true)));
+    }
+
+<span class="nc bnc" id="L323" title="All 4 branches missed.">    if (AppInventorFeatures.hasYailGenerationOption() &amp;&amp; Ode.getInstance().getUser().getIsAdmin()) {</span>
+<span class="nc" id="L324">      buildItems.add(null);</span>
+<span class="nc" id="L325">      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),</span>
+          new GenerateYailAction()));
+    }
+<span class="nc" id="L328">    refreshMenu(buildDropDown, buildItems);</span>
+<span class="nc" id="L329">  }</span>
+
+  private void createSettingsMenu() {
+<span class="nc" id="L332">    List&lt;DropDownItem&gt; settingsItems = Lists.newArrayList();</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">    if (Ode.getUserAutoloadProject()) {</span>
+<span class="nc" id="L334">      settingsItems.add(new DropDownItem(WIDGET_NAME_AUTOLOAD, MESSAGES.disableAutoload(),</span>
+          new DisableAutoloadAction()));
+    } else {
+<span class="nc" id="L337">      settingsItems.add(new DropDownItem(WIDGET_NAME_AUTOLOAD, MESSAGES.enableAutoload(),</span>
+          new EnableAutoloadAction()));
+    }
+<span class="nc bnc" id="L340" title="All 2 branches missed.">    if (Ode.getUserDyslexicFont()) {</span>
+<span class="nc" id="L341">      settingsItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.disableOpenDyslexic(),</span>
+          new SetFontRegularAction()));
+    } else {
+<span class="nc" id="L344">      settingsItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT,  MESSAGES.enableOpenDyslexic(),</span>
+          new SetFontDyslexicAction()));
+    }
+<span class="nc" id="L347">    refreshMenu(settingsDropDown, settingsItems);</span>
+<span class="nc" id="L348">  }</span>
+
+  private void createHelpMenu() {
+<span class="nc" id="L351">    List&lt;DropDownItem&gt; helpItems = Lists.newArrayList();</span>
+<span class="nc" id="L352">    helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),</span>
+        new AboutAction()));
+<span class="nc" id="L354">    helpItems.add(null);</span>
+<span class="nc" id="L355">    Config config = Ode.getSystemConfig();</span>
+<span class="nc" id="L356">    String libraryUrl = config.getLibraryUrl();</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(libraryUrl)) {</span>
+<span class="nc" id="L358">      helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),</span>
+          new WindowOpenAction(libraryUrl)));
+    }
+<span class="nc" id="L361">    String getStartedUrl = config.getGetStartedUrl();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(getStartedUrl)) {</span>
+<span class="nc" id="L363">      helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),</span>
+          new WindowOpenAction(getStartedUrl)));
+    }
+<span class="nc" id="L366">    String extensionsUrl = config.getExtensionsUrl();</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(extensionsUrl)) {</span>
+<span class="nc" id="L368">      helpItems.add(new DropDownItem(WIDGET_NAME_EXTENSIONS, MESSAGES.extensionsMenuItem(),</span>
+          new WindowOpenAction(extensionsUrl)));
+    }
+<span class="nc" id="L371">    String tutorialsUrl = config.getTutorialsUrl();</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(tutorialsUrl)) {</span>
+<span class="nc" id="L373">      helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),</span>
+          new WindowOpenAction(tutorialsUrl)));
+    }
+<span class="nc" id="L376">    String troubleshootingUrl = config.getTroubleshootingUrl();</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(troubleshootingUrl)) {</span>
+<span class="nc" id="L378">      helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),</span>
+          new WindowOpenAction(troubleshootingUrl)));
+    }
+<span class="nc" id="L381">    String forumsUrl = config.getForumsUrl();</span>
+<span class="nc bnc" id="L382" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(forumsUrl)) {</span>
+<span class="nc" id="L383">      helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),</span>
+          new WindowOpenAction(forumsUrl)));
+    }
+<span class="nc" id="L386">    helpItems.add(null);</span>
+<span class="nc" id="L387">    String feedbackUrl = config.getFeedbackUrl();</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">    if (!Strings.isNullOrEmpty(feedbackUrl)) {</span>
+<span class="nc" id="L389">      helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),</span>
+          new WindowOpenAction(feedbackUrl)));
+<span class="nc" id="L391">      helpItems.add(null);</span>
+    }
+<span class="nc" id="L393">    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),</span>
+        new AboutCompanionAction()));
+<span class="nc" id="L395">    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),</span>
+        new CompanionUpdateAction()));
+<span class="nc" id="L397">    helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),</span>
+        new ShowSplashAction()));
+<span class="nc" id="L399">    refreshMenu(helpDropDown, helpItems);</span>
+<span class="nc" id="L400">  }</span>
+
+  private void createAdminMenu() {
+<span class="nc bnc" id="L403" title="All 2 branches missed.">    if (adminDropDown == null) {</span>
+<span class="nc" id="L404">      return;  // the button won't exist if the user isn't an admin</span>
+    }
+<span class="nc" id="L406">    List&lt;DropDownItem&gt; adminItems = Lists.newArrayList();</span>
+<span class="nc" id="L407">    adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,</span>
+<span class="nc" id="L408">        MESSAGES.downloadUserSourceMenuItem(), new DownloadUserSourceAction()));</span>
+<span class="nc" id="L409">    adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,</span>
+<span class="nc" id="L410">        MESSAGES.switchToDebugMenuItem(), new SwitchToDebugAction()));</span>
+<span class="nc" id="L411">    adminItems.add(new DropDownItem(WIDGET_NAME_USER_ADMIN,</span>
+        &quot;User Admin&quot;, new SwitchToUserAdminAction()));
+<span class="nc" id="L413">    refreshMenu(adminDropDown, adminItems);</span>
+<span class="nc" id="L414">  }</span>
+
+  // -----------------------------
+  // List of Commands for use in Drop-Down Menus
+  // -----------------------------
+
+  private static class NewAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L423">      new NewYoungAndroidProjectWizard(null).center();</span>
+      // The wizard will switch to the design view when the new
+      // project is created.
+<span class="nc" id="L426">    }</span>
+  }
+
+<span class="nc" id="L429">  private class SaveAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L432">      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L434">        ChainableCommand cmd = new SaveAllEditorsCommand(null);</span>
+<span class="nc" id="L435">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);</span>
+      }
+<span class="nc" id="L437">    }</span>
+  }
+
+<span class="nc" id="L440">  private class SaveAsAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L443">      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L445">        ChainableCommand cmd = new SaveAllEditorsCommand(</span>
+            new CopyYoungAndroidProjectCommand(false));
+<span class="nc" id="L447">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_AS_YA, projectRootNode);</span>
+      }
+<span class="nc" id="L449">    }</span>
+  }
+
+<span class="nc" id="L452">  private class CheckpointAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L455">      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L457">        ChainableCommand cmd = new SaveAllEditorsCommand(</span>
+            new CopyYoungAndroidProjectCommand(true));
+<span class="nc" id="L459">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_CHECKPOINT_YA, projectRootNode);</span>
+      }
+<span class="nc" id="L461">    }</span>
+  }
+
+  private static class SwitchToProjectAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L467">      Ode.getInstance().getTopToolbar().updateMoveToTrash(&quot;Move To Trash&quot;);</span>
+<span class="nc" id="L468">      Ode.getInstance().switchToProjectsView();</span>
+<span class="nc" id="L469">      Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);</span>
+<span class="nc" id="L470">    }</span>
+  }
+
+<span class="nc" id="L473">  private class WirelessAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L476" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L477">        startRepl(true, false, false, false); // false means we are</span>
+                                              // *not* the emulator
+<span class="nc" id="L479">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_WIFI);</span>
+      }
+<span class="nc" id="L481">    }</span>
+  }
+
+<span class="nc" id="L484">  private class ChromebookAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L487" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L488">        startRepl(true, true, false, false);</span>
+<span class="nc" id="L489">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_CHROMEBOOK);</span>
+      }
+<span class="nc" id="L491">    }</span>
+  }
+
+<span class="nc" id="L494">  private class EmulatorAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L497" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L498">        startRepl(true, false, true, false); // true means we are the</span>
+                                             // emulator
+<span class="nc" id="L500">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_EMULATOR);</span>
+      }
+<span class="nc" id="L502">    }</span>
+  }
+
+<span class="nc" id="L505">  private class UsbAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L508" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L509">        startRepl(true, false, false, true);</span>
+<span class="nc" id="L510">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_USB);</span>
+      }
+<span class="nc" id="L512">    }</span>
+  }
+
+<span class="nc" id="L515">  private class ResetAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L518" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L519">        startRepl(false, false, false, false); // We are really stopping the repl here</span>
+<span class="nc" id="L520">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_RESET);</span>
+      }
+<span class="nc" id="L522">    }</span>
+  }
+
+<span class="nc" id="L525">  private class HardResetAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L528" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L529">        replHardReset();</span>
+<span class="nc" id="L530">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_HARD_RESET);</span>
+      }
+<span class="nc" id="L532">    }</span>
+  }
+
+<span class="nc" id="L535">  private class RefreshCompanionAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L538" title="All 2 branches missed.">      if (Ode.getInstance().okToConnect()) {</span>
+<span class="nc" id="L539">        replUpdate();</span>
+<span class="nc" id="L540">        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_RESEND);</span>
+      }
+<span class="nc" id="L542">    }</span>
+  }
+
+  private class BarcodeAction implements Command {
+
+<span class="nc" id="L547">    private boolean secondBuildserver = false;</span>
+    private boolean isAab;
+
+<span class="nc" id="L550">    public BarcodeAction(boolean secondBuildserver, boolean isAab) {</span>
+<span class="nc" id="L551">      this.secondBuildserver = secondBuildserver;</span>
+<span class="nc" id="L552">      this.isAab = isAab;</span>
+<span class="nc" id="L553">    }</span>
+
+    @Override
+    public void execute() {
+<span class="nc" id="L557">      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L559">        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;</span>
+<span class="nc" id="L560">        ChainableCommand cmd = new SaveAllEditorsCommand(</span>
+            new GenerateYailCommand(
+                new BuildCommand(target, secondBuildserver, isAab,
+                  new ShowProgressBarCommand(target,
+                    new WaitForBuildResultCommand(target,
+                      new ShowBarcodeCommand(target, isAab)), &quot;BarcodeAction&quot;))));
+<span class="nc bnc" id="L566" title="All 2 branches missed.">        if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {</span>
+<span class="nc" id="L567">          cmd = new WarningDialogCommand(target, secondBuildserver, cmd);</span>
+<span class="nc" id="L568">          Ode.getInstance().setWarnBuild(secondBuildserver, true);</span>
+        }
+<span class="nc" id="L570">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,</span>
+<span class="nc" id="L571">            new Command() {</span>
+              @Override
+              public void execute() {
+<span class="nc" id="L574">              }</span>
+            });
+      }
+<span class="nc" id="L577">    }</span>
+  }
+
+  private static class ExportProjectAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L583" title="All 2 branches missed.">      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {</span>
+        List&lt;Project&gt; selectedProjects =
+<span class="nc" id="L585">          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();</span>
+        //If we are in the projects view
+<span class="nc bnc" id="L587" title="All 2 branches missed.">        if (selectedProjects.size() == 1) {</span>
+<span class="nc" id="L588">          exportProject(selectedProjects.get(0));</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">        } else if (selectedProjects.size() &gt; 1) {</span>
+<span class="nc" id="L590">          exportSelectedProjects(selectedProjects);</span>
+        } else {
+          // The user needs to select only one project.
+<span class="nc" id="L593">          ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());</span>
+        }
+<span class="nc" id="L595">      } else {</span>
+        //If we are in the designer view.
+<span class="nc" id="L597">        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + &quot;/&quot; + Ode.getInstance().getCurrentYoungAndroidProjectId());</span>
+      }
+<span class="nc" id="L599">    }</span>
+
+    private void exportProject(Project project) {
+<span class="nc" id="L602">      Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+<span class="nc" id="L603">        Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());</span>
+
+<span class="nc" id="L605">      Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +</span>
+<span class="nc" id="L606">        ServerLayout.DOWNLOAD_PROJECT_SOURCE + &quot;/&quot; + project.getProjectId());</span>
+<span class="nc" id="L607">    }</span>
+
+    private void exportSelectedProjects(List&lt;Project&gt; projects) {
+<span class="nc" id="L610">      Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+              Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
+
+<span class="nc" id="L613">      String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +</span>
+              ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + &quot;/&quot;;
+
+<span class="nc bnc" id="L616" title="All 2 branches missed.">      for (Project project : projects) {</span>
+<span class="nc" id="L617">        selectedProjPath += project.getProjectId() + &quot;-&quot;;</span>
+<span class="nc" id="L618">      }</span>
+
+<span class="nc" id="L620">      Downloader.getInstance().download(selectedProjPath);</span>
+<span class="nc" id="L621">    }</span>
+  }
+
+  private static class ExportAllProjectsAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L627">      Tracking.trackEvent(Tracking.PROJECT_EVENT,</span>
+          Tracking.PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA);
+
+      // Is there a way to disable the Download All button until this completes?
+<span class="nc bnc" id="L631" title="All 2 branches missed.">      if (Window.confirm(MESSAGES.downloadAllAlert())) {</span>
+
+<span class="nc" id="L633">        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +</span>
+            ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+      }
+<span class="nc" id="L636">    }</span>
+  }
+
+  private static class ImportProjectAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L642">      new ProjectUploadWizard().center();</span>
+<span class="nc" id="L643">    }</span>
+  }
+
+  private static class ImportTemplateAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L649">      new TemplateUploadWizard().center();</span>
+<span class="nc" id="L650">    }</span>
+  }
+
+  private static class DeleteAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L656">      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc bnc" id="L659" title="All 2 branches missed.">          if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {</span>
+            List&lt;Project&gt; selectedProjects =
+<span class="nc" id="L661">                ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">            if (selectedProjects.size() &gt; 0) {</span>
+              // Show one confirmation window for selected projects.
+<span class="nc bnc" id="L664" title="All 2 branches missed.">              if (deleteConfirmation(selectedProjects)) {</span>
+<span class="nc bnc" id="L665" title="All 2 branches missed.">                for (Project project : selectedProjects) {</span>
+<span class="nc" id="L666">                  project.moveToTrash();</span>
+<span class="nc" id="L667">                }</span>
+              }
+            } else {
+              // The user can select a project to resolve the
+              // error.
+<span class="nc" id="L672">              ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());</span>
+            }
+<span class="nc" id="L674">          } else { //We are deleting a project in the designer view</span>
+<span class="nc" id="L675">            List&lt;Project&gt; selectedProjects = new ArrayList&lt;Project&gt;();</span>
+<span class="nc" id="L676">            Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());</span>
+<span class="nc" id="L677">            selectedProjects.add(currentProject);</span>
+<span class="nc bnc" id="L678" title="All 2 branches missed.">            if (deleteConfirmation(selectedProjects)) {</span>
+<span class="nc" id="L679">              currentProject.moveToTrash();</span>
+              //Add the command to stop this current project from saving
+            }
+          }
+<span class="nc" id="L683">          Ode.getInstance().switchToProjectsView();</span>
+<span class="nc" id="L684">        }</span>
+      });
+<span class="nc" id="L686">    }</span>
+
+
+    private boolean deleteConfirmation(List&lt;Project&gt; projects) {
+      String message;
+<span class="nc bnc" id="L691" title="All 2 branches missed.">      if (projects.size() == 1) {</span>
+<span class="nc" id="L692">        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());</span>
+      } else {
+<span class="nc" id="L694">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L695">        String separator = &quot;&quot;;</span>
+<span class="nc bnc" id="L696" title="All 2 branches missed.">        for (Project project : projects) {</span>
+<span class="nc" id="L697">          sb.append(separator).append(project.getProjectName());</span>
+<span class="nc" id="L698">          separator = &quot;, &quot;;</span>
+<span class="nc" id="L699">        }</span>
+<span class="nc" id="L700">        String projectNames = sb.toString();</span>
+<span class="nc" id="L701">        message = MESSAGES.confirmMoveToTrash(projectNames);</span>
+      }
+<span class="nc" id="L703">      return Window.confirm(message);</span>
+    }
+  }
+
+  private static class DownloadKeystoreAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L710">      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+<span class="nc" id="L711">          new OdeAsyncCallback&lt;Boolean&gt;(MESSAGES.downloadKeystoreError()) {</span>
+            @Override
+            public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc bnc" id="L714" title="All 2 branches missed.">              if (keystoreFileExists) {</span>
+<span class="nc" id="L715">                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DOWNLOAD_KEYSTORE);</span>
+<span class="nc" id="L716">                Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +</span>
+                    ServerLayout.DOWNLOAD_USERFILE + &quot;/&quot; + StorageUtil.ANDROID_KEYSTORE_FILENAME);
+              } else {
+<span class="nc" id="L719">                Window.alert(MESSAGES.noKeystoreToDownload());</span>
+              }
+<span class="nc" id="L721">            }</span>
+          });
+<span class="nc" id="L723">    }</span>
+  }
+
+<span class="nc" id="L726">  private class UploadKeystoreAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L729">      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+<span class="nc" id="L730">          new OdeAsyncCallback&lt;Boolean&gt;(MESSAGES.uploadKeystoreError()) {</span>
+            @Override
+            public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc bnc" id="L733" title="All 4 branches missed.">              if (!keystoreFileExists || Window.confirm(MESSAGES.confirmOverwriteKeystore())) {</span>
+<span class="nc" id="L734">                KeystoreUploadWizard wizard = new KeystoreUploadWizard(new Command() {</span>
+                  @Override
+                  public void execute() {
+<span class="nc" id="L737">                    Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_UPLOAD_KEYSTORE);</span>
+<span class="nc" id="L738">                    updateKeystoreFileMenuButtons();</span>
+<span class="nc" id="L739">                  }</span>
+                });
+<span class="nc" id="L741">                wizard.center();</span>
+              }
+<span class="nc" id="L743">            }</span>
+          });
+<span class="nc" id="L745">    }</span>
+  }
+
+<span class="nc" id="L748">  private class DeleteKeystoreAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L751">      final String errorMessage = MESSAGES.deleteKeystoreError();</span>
+<span class="nc" id="L752">      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+<span class="nc" id="L753">          new OdeAsyncCallback&lt;Boolean&gt;(errorMessage) {</span>
+            @Override
+            public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc bnc" id="L756" title="All 4 branches missed.">              if (keystoreFileExists &amp;&amp; Window.confirm(MESSAGES.confirmDeleteKeystore())) {</span>
+<span class="nc" id="L757">                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DELETE_KEYSTORE);</span>
+<span class="nc" id="L758">                Ode.getInstance().getUserInfoService().deleteUserFile(</span>
+                    StorageUtil.ANDROID_KEYSTORE_FILENAME,
+<span class="nc" id="L760">                    new OdeAsyncCallback&lt;Void&gt;(errorMessage) {</span>
+                      @Override
+                      public void onSuccess(Void result) {
+                        // The android.keystore shouldn't exist at this point, so reset cached values.
+<span class="nc" id="L764">                        isKeystoreCached = true;</span>
+<span class="nc" id="L765">                        isKeystorePresent = false;</span>
+<span class="nc" id="L766">                        isKeystoreCheckPending = false;</span>
+<span class="nc" id="L767">                        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), false);</span>
+<span class="nc" id="L768">                        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), false);</span>
+<span class="nc" id="L769">                      }</span>
+                    });
+              }
+<span class="nc" id="L772">            }</span>
+          });
+<span class="nc" id="L774">    }</span>
+  }
+
+  /**
+   *  Made changes to the now Projects menu made name changes to the menu items
+   * Implements the action to generate the &quot;.yail&quot; file for each screen in the current project.
+   * It does not build the entire project. The intention is that this will be helpful for
+   * debugging during development, and will most likely be disabled in the production system.
+   */
+<span class="nc" id="L783">  private class GenerateYailAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L786">      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L787" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L788">        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;</span>
+<span class="nc" id="L789">        ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateYailCommand(null));</span>
+        //updateBuildButton(true);
+<span class="nc" id="L791">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,</span>
+<span class="nc" id="L792">            new Command() {</span>
+              @Override
+              public void execute() {
+                //updateBuildButton(false);
+<span class="nc" id="L796">              }</span>
+            });
+      }
+<span class="nc" id="L799">    }</span>
+  }
+
+<span class="nc" id="L802">  private class EnableAutoloadAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L805">      Ode.getInstance().setUserAutoloadProject(true);</span>
+<span class="nc" id="L806">      createSettingsMenu();</span>
+<span class="nc" id="L807">    }</span>
+  }
+
+<span class="nc" id="L810">  private class DisableAutoloadAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L813">      Ode.getInstance().setUserAutoloadProject(false);</span>
+<span class="nc" id="L814">      createSettingsMenu();</span>
+<span class="nc" id="L815">    }</span>
+  }
+
+  private static class SetFontDyslexicAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L821">      Ode.getInstance().setUserDyslexicFont(true);</span>
+      // Window.Location.reload();
+      // Note: We used to reload here, but this causes
+      // a race condition with the saving of the user
+      // settings. So we now reload in the callback to
+      // saveSettings (in Ode.java)
+<span class="nc" id="L827">    }</span>
+  }
+
+  private static class SetFontRegularAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L833">      Ode.getInstance().setUserDyslexicFont(false);</span>
+      // Window.Location.reload();
+      // Not: See above comment
+<span class="nc" id="L836">    }</span>
+  }
+
+  private static class AboutAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L842">      final DialogBox db = new DialogBox(false, true);</span>
+<span class="nc" id="L843">      db.setText(&quot;About MIT App Inventor&quot;);</span>
+<span class="nc" id="L844">      db.setStyleName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L845">      db.setHeight(&quot;200px&quot;);</span>
+<span class="nc" id="L846">      db.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L847">      db.setGlassEnabled(true);</span>
+<span class="nc" id="L848">      db.setAnimationEnabled(true);</span>
+<span class="nc" id="L849">      db.center();</span>
+
+<span class="nc" id="L851">      VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L852">      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +</span>
+<span class="nc" id="L853">          &quot;&lt;BR/&gt;&quot; + MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + &quot;u&quot;) +</span>
+<span class="nc" id="L854">          &quot;&lt;BR/&gt;&quot; + MESSAGES.targetSdkVersion(YaVersion.TARGET_SDK_VERSION, YaVersion.TARGET_ANDROID_VERSION);</span>
+<span class="nc" id="L855">      Config config = Ode.getInstance().getSystemConfig();</span>
+<span class="nc" id="L856">      String releaseNotesUrl = config.getReleaseNotesUrl();</span>
+<span class="nc bnc" id="L857" title="All 2 branches missed.">      if (!Strings.isNullOrEmpty(releaseNotesUrl)) {</span>
+<span class="nc" id="L858">        html += &quot;&lt;BR/&gt;&lt;BR/&gt;Please see &lt;a href=\&quot;&quot; + releaseNotesUrl +</span>
+            &quot;\&quot; target=\&quot;_blank\&quot;&gt;release notes&lt;/a&gt;&quot;;
+      }
+<span class="nc" id="L861">      String tosUrl = config.getTosUrl();</span>
+<span class="nc bnc" id="L862" title="All 2 branches missed.">      if (!Strings.isNullOrEmpty(tosUrl)) {</span>
+<span class="nc" id="L863">        html += &quot;&lt;BR/&gt;&lt;BR/&gt;&lt;a href=\&quot;&quot; + tosUrl +</span>
+<span class="nc" id="L864">            &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot; + MESSAGES.privacyTermsLink() + &quot;&lt;/a&gt;&quot;;</span>
+      }
+<span class="nc" id="L866">      HTML message = new HTML(html);</span>
+
+<span class="nc" id="L868">      SimplePanel holder = new SimplePanel();</span>
+<span class="nc" id="L869">      Button ok = new Button(&quot;Close&quot;);</span>
+<span class="nc" id="L870">      ok.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L872">          db.hide();</span>
+<span class="nc" id="L873">        }</span>
+      });
+<span class="nc" id="L875">      holder.add(ok);</span>
+<span class="nc" id="L876">      DialogBoxContents.add(message);</span>
+<span class="nc" id="L877">      DialogBoxContents.add(holder);</span>
+<span class="nc" id="L878">      db.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L879">      db.show();</span>
+<span class="nc" id="L880">    }</span>
+  }
+
+  private static class AboutCompanionAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L886">      final DialogBox db = new DialogBox(false, true);</span>
+<span class="nc" id="L887">      db.setText(&quot;About The Companion&quot;);</span>
+<span class="nc" id="L888">      db.setStyleName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L889">      db.setHeight(&quot;200px&quot;);</span>
+<span class="nc" id="L890">      db.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L891">      db.setGlassEnabled(true);</span>
+<span class="nc" id="L892">      db.setAnimationEnabled(true);</span>
+<span class="nc" id="L893">      db.center();</span>
+
+<span class="nc" id="L895">      String downloadinfo = &quot;&quot;;</span>
+<span class="nc bnc" id="L896" title="All 2 branches missed.">      if (!YaVersion.COMPANION_UPDATE_URL1.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L897">        String url = Window.Location.getProtocol() + &quot;//&quot; + Window.Location.getHost()</span>
+            + YaVersion.COMPANION_UPDATE_URL1;
+<span class="nc" id="L899">        downloadinfo = &quot;&lt;br/&gt;\n&lt;a href=&quot; + url + &quot;&gt;Download URL: &quot; + url + &quot;&lt;/a&gt;&lt;br/&gt;\n&quot;;</span>
+<span class="nc" id="L900">        downloadinfo += BlocklyPanel.getQRCode(url);</span>
+      }
+
+<span class="nc" id="L903">      VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L904">      HTML message = new HTML(</span>
+<span class="nc" id="L905">          &quot;Companion Version &quot; + BlocklyPanel.getCompVersion() + downloadinfo</span>
+      );
+
+<span class="nc" id="L908">      SimplePanel holder = new SimplePanel();</span>
+<span class="nc" id="L909">      Button ok = new Button(&quot;Close&quot;);</span>
+<span class="nc" id="L910">      ok.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L912">          db.hide();</span>
+<span class="nc" id="L913">        }</span>
+      });
+<span class="nc" id="L915">      holder.add(ok);</span>
+<span class="nc" id="L916">      DialogBoxContents.add(message);</span>
+<span class="nc" id="L917">      DialogBoxContents.add(holder);</span>
+<span class="nc" id="L918">      db.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L919">      db.show();</span>
+<span class="nc" id="L920">    }</span>
+  }
+
+  private static class CompanionUpdateAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L926">      DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();</span>
+<span class="nc bnc" id="L927" title="All 2 branches missed.">      if (currentProject == null) {</span>
+<span class="nc" id="L928">        Window.alert(MESSAGES.companionUpdateMustHaveProject());</span>
+<span class="nc" id="L929">        return;</span>
+      }
+<span class="nc" id="L931">      DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);</span>
+<span class="nc" id="L932">      screen.blocksEditor.updateCompanion();</span>
+<span class="nc" id="L933">    }</span>
+  }
+
+  private static class ShowSplashAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L939">      Ode.getInstance().showWelcomeDialog();</span>
+<span class="nc" id="L940">    }</span>
+  }
+
+  private static class WindowOpenAction implements Command {
+    private final String url;
+
+<span class="nc" id="L946">    WindowOpenAction(String url) {</span>
+<span class="nc" id="L947">      this.url = url;</span>
+<span class="nc" id="L948">    }</span>
+
+    @Override
+    public void execute() {
+<span class="nc" id="L952">      Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);</span>
+<span class="nc" id="L953">    }</span>
+  }
+
+  private static class ImportComponentAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L959">      new ComponentImportWizard().center();</span>
+<span class="nc" id="L960">    }</span>
+  }
+
+  private static class BuildComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+<span class="nc" id="L967">    }</span>
+  }
+
+  private static class UploadComponentAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L973">      new ComponentUploadWizard().show();</span>
+<span class="nc" id="L974">    }</span>
+  }
+
+  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
+<span class="nc bnc" id="L978" title="All 6 branches missed.">    if (!isEmulatorRunning &amp;&amp; !isCompanionRunning &amp;&amp; !isUsbRunning) {</span>
+<span class="nc" id="L979">      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);</span>
+<span class="nc bnc" id="L980" title="All 2 branches missed.">      if (iamChromebook) {</span>
+<span class="nc" id="L981">        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);</span>
+      } else {
+<span class="nc" id="L983">        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);</span>
+<span class="nc" id="L984">        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);</span>
+      }
+<span class="nc" id="L986">      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);</span>
+    } else {
+<span class="nc" id="L988">      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);</span>
+<span class="nc bnc" id="L989" title="All 2 branches missed.">      if (iamChromebook) {</span>
+<span class="nc" id="L990">        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);</span>
+      } else {
+<span class="nc" id="L992">        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);</span>
+<span class="nc" id="L993">        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);</span>
+      }
+<span class="nc" id="L995">      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);</span>
+    }
+<span class="nc" id="L997">  }</span>
+
+  /**
+   * Indicate that we are no longer connected to the Companion, adjust
+   * buttons accordingly. Called from BlocklyPanel
+   */
+  public static void indicateDisconnect() {
+<span class="nc" id="L1004">    TopToolbar instance = Ode.getInstance().getTopToolbar();</span>
+<span class="nc" id="L1005">    instance.updateConnectToDropDownButton(false, false, false);</span>
+<span class="nc" id="L1006">  }</span>
+
+  /**
+   * startRepl -- Start/Stop the connection to the companion.
+   * If both forEmulator and forUsb are false, then we are connecting
+   * via Wireless.
+   *
+   * @param start -- true to start the repl, false to stop it.
+   * @param forChromebook -- true if we are connecting to a chromebook.
+   * @param forEmulator -- true if we are connecting to the emulator.
+   * @param forUsb -- true if this is a USB connection.
+   */
+
+  private void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+<span class="nc" id="L1020">    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();</span>
+<span class="nc bnc" id="L1021" title="All 2 branches missed.">    if (currentProject == null) {</span>
+<span class="nc" id="L1022">      OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+            + &quot;Ignoring attempt to start the repl.&quot;);
+<span class="nc" id="L1024">      return;</span>
+    }
+<span class="nc" id="L1026">    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);</span>
+<span class="nc bnc" id="L1027" title="All 2 branches missed.">    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);</span>
+<span class="nc bnc" id="L1028" title="All 2 branches missed.">    if (start) {</span>
+<span class="nc bnc" id="L1029" title="All 2 branches missed.">      if (forEmulator) {        // We are starting the emulator...</span>
+<span class="nc" id="L1030">        updateConnectToDropDownButton(true, false, false);</span>
+<span class="nc bnc" id="L1031" title="All 2 branches missed.">      } else if (forUsb) {      // We are starting the usb connection</span>
+<span class="nc" id="L1032">        updateConnectToDropDownButton(false, false, true);</span>
+      } else {                  // We are connecting via wifi to a Companion
+<span class="nc" id="L1034">        updateConnectToDropDownButton(false, true, false);</span>
+      }
+    } else {
+<span class="nc" id="L1037">      updateConnectToDropDownButton(false, false, false);</span>
+    }
+<span class="nc" id="L1039">  }</span>
+
+  private void replHardReset() {
+<span class="nc" id="L1042">    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">    if (currentProject == null) {</span>
+<span class="nc" id="L1044">      OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+            + &quot;Ignoring attempt to do hard reset.&quot;);
+<span class="nc" id="L1046">      return;</span>
+    }
+<span class="nc" id="L1048">    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);</span>
+<span class="nc" id="L1049">    ((YaBlocksEditor)screen.blocksEditor).hardReset();</span>
+<span class="nc" id="L1050">    updateConnectToDropDownButton(false, false, false);</span>
+<span class="nc" id="L1051">  }</span>
+
+  private void replUpdate() {
+<span class="nc" id="L1054">    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();</span>
+<span class="nc bnc" id="L1055" title="All 2 branches missed.">    if (currentProject == null) {</span>
+<span class="nc" id="L1056">      OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+              + &quot;Ignoring attempt to refresh companion screen.&quot;);
+<span class="nc" id="L1058">      return;</span>
+    }
+<span class="nc" id="L1060">    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);</span>
+<span class="nc" id="L1061">    ((YaBlocksEditor)screen.blocksEditor).sendComponentData(true);</span>
+<span class="nc" id="L1062">  }</span>
+
+  /**
+   * Enables and/or disables buttons based on how many projects exist
+   * (in the case of &quot;Download All Projects&quot;) or are selected (in the case
+   * of &quot;Delete&quot; and &quot;Download Source&quot;).
+   */
+  public void updateFileMenuButtons(int view) {
+<span class="nc bnc" id="L1070" title="All 2 branches missed.">    if (isReadOnly) {</span>
+      // This may be too simple
+<span class="nc" id="L1072">      return;</span>
+    }
+<span class="nc bnc" id="L1074" title="All 2 branches missed.">    if (view == 0) {  // We are in the Projects view</span>
+<span class="nc" id="L1075">      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);</span>
+<span class="nc" id="L1076">      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);</span>
+<span class="nc" id="L1077">      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),</span>
+<span class="nc bnc" id="L1078" title="All 2 branches missed.">          ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);</span>
+<span class="nc" id="L1079">      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),</span>
+<span class="nc bnc" id="L1080" title="All 2 branches missed.">      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() &gt; 0);</span>
+<span class="nc" id="L1081">      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);</span>
+<span class="nc" id="L1082">      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);</span>
+<span class="nc" id="L1083">      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);</span>
+<span class="nc" id="L1084">      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);</span>
+<span class="nc" id="L1085">      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);</span>
+<span class="nc" id="L1086">      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);</span>
+<span class="nc bnc" id="L1087" title="All 2 branches missed.">      if (Ode.getInstance().hasSecondBuildserver()) {</span>
+<span class="nc" id="L1088">        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), false);</span>
+<span class="nc" id="L1089">        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);</span>
+      }
+    } else { // We have to be in the Designer/Blocks view
+<span class="nc" id="L1092">      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);</span>
+<span class="nc" id="L1093">      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);</span>
+<span class="nc" id="L1094">      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),</span>
+<span class="nc bnc" id="L1095" title="All 2 branches missed.">      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() &gt; 0);</span>
+<span class="nc" id="L1096">      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);</span>
+<span class="nc" id="L1097">      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);</span>
+<span class="nc" id="L1098">      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);</span>
+<span class="nc" id="L1099">      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);</span>
+<span class="nc" id="L1100">      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), true);</span>
+<span class="nc" id="L1101">      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), true);</span>
+<span class="nc bnc" id="L1102" title="All 2 branches missed.">      if (Ode.getInstance().hasSecondBuildserver()) {</span>
+<span class="nc" id="L1103">        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), true);</span>
+<span class="nc" id="L1104">        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), true);</span>
+      }
+    }
+<span class="nc" id="L1107">    updateKeystoreFileMenuButtons(true);</span>
+<span class="nc" id="L1108">  }</span>
+
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file.
+   */
+  public void updateKeystoreFileMenuButtons() {
+<span class="nc" id="L1114">    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+<span class="nc" id="L1115">        new AsyncCallback&lt;Boolean&gt;() {</span>
+          @Override
+          public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc" id="L1118">            isKeystoreCached = true;</span>
+<span class="nc" id="L1119">            isKeystorePresent = keystoreFileExists;</span>
+<span class="nc" id="L1120">            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);</span>
+<span class="nc" id="L1121">            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);</span>
+<span class="nc" id="L1122">          }</span>
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+<span class="nc" id="L1127">            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);</span>
+<span class="nc" id="L1128">            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);</span>
+<span class="nc" id="L1129">          }</span>
+        });
+<span class="nc" id="L1131">  }</span>
+
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file. If the
+   * useCache parameter is true, then the last value returned from the UserInfoService is used.
+   * Otherwise, the behavior is identical to {@link #updateKeystoreFileMenuButtons()}.
+   *
+   * @param useCache true if a cached value of a previous call is acceptable.
+   */
+  public void updateKeystoreFileMenuButtons(boolean useCache) {
+<span class="nc bnc" id="L1141" title="All 4 branches missed.">    if (useCache &amp;&amp; isKeystoreCheckPending) {</span>
+<span class="nc" id="L1142">      return;</span>
+    }
+<span class="nc" id="L1144">    AsyncCallback&lt;Boolean&gt; callback = new AsyncCallback&lt;Boolean&gt;() {</span>
+      @Override
+      public void onSuccess(Boolean keystoreFileExists) {
+<span class="nc" id="L1147">        isKeystoreCached = true;</span>
+<span class="nc" id="L1148">        isKeystorePresent = keystoreFileExists;</span>
+<span class="nc" id="L1149">        isKeystoreCheckPending = false;</span>
+<span class="nc" id="L1150">        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);</span>
+<span class="nc" id="L1151">        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);</span>
+<span class="nc" id="L1152">      }</span>
+
+      @Override
+      public void onFailure(Throwable caught) {
+        // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+<span class="nc" id="L1157">        isKeystoreCached = false;</span>
+<span class="nc" id="L1158">        isKeystorePresent = true;</span>
+<span class="nc" id="L1159">        isKeystoreCheckPending = false;</span>
+<span class="nc" id="L1160">        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);</span>
+<span class="nc" id="L1161">        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);</span>
+<span class="nc" id="L1162">      }</span>
+    };
+<span class="nc bnc" id="L1164" title="All 4 branches missed.">    if (useCache &amp;&amp; isKeystoreCached) {</span>
+<span class="nc" id="L1165">      callback.onSuccess(isKeystorePresent);</span>
+    } else {
+<span class="nc" id="L1167">      isKeystoreCheckPending = true;</span>
+<span class="nc" id="L1168">      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,</span>
+          callback);
+    }
+<span class="nc" id="L1171">  }</span>
+
+  //Admin commands
+  private static class DownloadUserSourceAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L1177">      new DownloadUserSourceWizard().center();</span>
+<span class="nc" id="L1178">    }</span>
+  }
+
+  private static class SwitchToDebugAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L1184">      Ode.getInstance().switchToDebuggingView();</span>
+<span class="nc" id="L1185">    }</span>
+  }
+
+  private static class SwitchToUserAdminAction implements Command {
+    @Override
+    public void execute() {
+<span class="nc" id="L1191">      Ode.getInstance().switchToUserAdminPanel();</span>
+<span class="nc" id="L1192">    }</span>
+  }
+
+<span class="nc" id="L1195">  public static class DeleteForeverProjectAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L1198">      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L1201">          List&lt;Project&gt; deletedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();</span>
+<span class="nc bnc" id="L1202" title="All 2 branches missed.">          if (deletedProjects.size() &gt; 0) {</span>
+            // Show one confirmation window for selected projects.
+<span class="nc bnc" id="L1204" title="All 2 branches missed.">            if (deleteConfirmation(deletedProjects)) {</span>
+<span class="nc bnc" id="L1205" title="All 2 branches missed.">              for (Project project : deletedProjects) {</span>
+<span class="nc" id="L1206">                project.deleteFromTrash();</span>
+<span class="nc" id="L1207">              }</span>
+            }
+<span class="nc" id="L1209">            Ode.getInstance().switchToTrash();</span>
+          } else {
+            // The user can select a project to resolve the
+            // error.
+<span class="nc" id="L1213">            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());</span>
+          }
+<span class="nc" id="L1215">        }</span>
+      });
+<span class="nc" id="L1217">    }</span>
+
+    private boolean deleteConfirmation(List&lt;Project&gt; projects) {
+      String message;
+<span class="nc bnc" id="L1221" title="All 2 branches missed.">      if (projects.size() == 1) {</span>
+<span class="nc" id="L1222">        message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());</span>
+      } else {
+<span class="nc" id="L1224">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L1225">        String separator = &quot;&quot;;</span>
+<span class="nc bnc" id="L1226" title="All 2 branches missed.">        for (Project project : projects) {</span>
+<span class="nc" id="L1227">          sb.append(separator).append(project.getProjectName());</span>
+<span class="nc" id="L1228">          separator = &quot;, &quot;;</span>
+<span class="nc" id="L1229">        }</span>
+<span class="nc" id="L1230">        String projectNames = sb.toString();</span>
+<span class="nc" id="L1231">        message = MESSAGES.confirmDeleteManyProjects(projectNames);</span>
+      }
+<span class="nc" id="L1233">      return Window.confirm(message);</span>
+    }
+  }
+
+  private static native boolean isChromeBook() /*-{
+    if (/\bCrOS\b/.test(navigator.userAgent)) {
+      return true;
+    } else {
+      return false;
+    }
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

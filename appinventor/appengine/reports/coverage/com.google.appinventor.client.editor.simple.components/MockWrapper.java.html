@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockWrapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockWrapper.java</span></div><h1>MockWrapper.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * Base class for mock components that need a wrapper around them so that the
+ * real component's border is not overridden by our CSS border (see
+ * ode-SimpleMockComponent in Ya.css)
+ *
+ * &lt;p/&gt;For example, this class is extended by MockButtonBase, MockTextBoxBase,
+ * and MockPasswordTextBoxBase, so that the 3D border of those components is not
+ * replaced by the border specified in the CSS style ode-SimpleMockComponent.
+ * We need both the component's 3D border as well as the 2 pixel outline border
+ * (red when selected) that comes from the ode-SimpleMockComponent style.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+abstract class MockWrapper extends MockVisibleComponent {
+  private final SimplePanel wrapper;
+  protected int[] preferredSize;
+
+  MockWrapper(SimpleEditor editor, String type, ImageResource icon) {
+<span class="nc" id="L32">    super(editor, type, icon);</span>
+
+    // Initialize wrapper UI
+<span class="nc" id="L35">    wrapper = new SimplePanel();</span>
+<span class="nc" id="L36">    wrapper.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+<span class="nc" id="L37">  }</span>
+
+  /**
+   * Sets the widget that is wrapped by the wrapper.
+   */
+  protected final void initWrapper(Widget wrappedWidget) {
+    // The wrapped widget should always fill up the wrapper.
+<span class="nc" id="L44">    wrappedWidget.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+<span class="nc" id="L45">    wrapper.setWidget(wrappedWidget);</span>
+<span class="nc" id="L46">    initComponent(wrapper);</span>
+<span class="nc" id="L47">  }</span>
+
+  /**
+   * Subclasses must implement createClonedWidget.
+   *
+   * &lt;p/&gt;It should return a clone of the widget being wrapped that will be used
+   * to determine the preferred size, without having the size constrained by
+   * its parent, since the cloned widget won't have a parent.
+   */
+  protected abstract Widget createClonedWidget();
+
+  protected void updatePreferredSize() {
+<span class="nc" id="L59">    preferredSize = MockComponentsUtil.getPreferredSizeOfDetachedWidget(createClonedWidget());</span>
+<span class="nc" id="L60">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+    // The superclass uses getOffsetWidth, which won't work for us.
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (preferredSize == null) {</span>
+<span class="nc" id="L66">      updatePreferredSize();</span>
+    }
+<span class="nc" id="L68">    return preferredSize[0];</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+    // The superclass uses getOffsetHeight, which won't work for us.
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    if (preferredSize == null) {</span>
+<span class="nc" id="L75">      updatePreferredSize();</span>
+    }
+<span class="nc" id="L77">    return preferredSize[1];</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

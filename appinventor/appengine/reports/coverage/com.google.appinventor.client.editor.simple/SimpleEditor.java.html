@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple</a> &gt; <span class="el_source">SimpleEditor.java</span></div><h1>SimpleEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple;
+
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+/**
+ * Abstract editor for files containing Simple components.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public abstract class SimpleEditor extends FileEditor {
+
+  protected SimpleEditor(ProjectEditor projectEditor, FileNode fileNode) {
+<span class="nc" id="L32">    super(projectEditor, fileNode);</span>
+<span class="nc" id="L33">  }</span>
+
+  /**
+   * Returns true if the loading of the source file is complete, false otherwise.
+   */
+  public abstract boolean isLoadComplete();
+
+  /**
+   * Gets a map of the component instances. The caller can modify the map
+   * without affecting the actual components.
+   *
+   * @return a map of the names and component instances
+   */
+  public abstract Map&lt;String, MockComponent&gt; getComponents();
+
+  /*
+   * Gets a list of the names of component instances. The caller can modify the
+   * list without affecting the actual properties.
+   *
+   * @return a list of the names of component instances
+   */
+  public abstract List&lt;String&gt; getComponentNames();
+
+  /**
+   * Returns the component palette panel
+   *
+   * @return  component palette panel
+   */
+  public abstract SimplePalettePanel getComponentPalettePanel();
+
+  /**
+   * Returns the non-visible components panel
+   *
+   * @return  non-visible components panel
+   */
+  public abstract SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel();
+
+  /**
+   * Returns the visible components panel
+   *
+   * @return  visible components panel
+   */
+  public abstract SimpleVisibleComponentsPanel getVisibleComponentsPanel();
+
+  /**
+   * Returns true if this editor is for Screen1.
+   */
+  public abstract boolean isScreen1();
+
+  /**
+   * Refresh the properties panel in the event the set of visible properties has changed.
+   */
+  public abstract void refreshPropertiesPanel();
+
+  /**
+   * Returns a new, unique component name based on the set of names returned by
+   * {@link #getComponentNames()}. If hint is given it will be used as the base
+   * for the new name. Otherwise, the type will be used.
+   *
+   * Examples:
+   *
+   * &lt;code&gt;gensymName(&quot;Button&quot;, null)&lt;/code&gt;
+   * &lt;em&gt;=&gt; &quot;Button1&quot;&lt;/em&gt;
+   *
+   * &lt;code&gt;gensymName(&quot;Button&quot;, &quot;Information1&quot;)&lt;/code&gt;
+   * &lt;em&gt;=&gt; &quot;Information2&quot;&lt;/em&gt;
+   *
+   * @param type the type of the component
+   * @param hint an optional hint for the component name. pass null if not needed
+   * @return a new unique name that does not occur in the list of component names
+   * returned by {@link #getComponentNames()}
+   */
+  public String gensymName(String type, String hint) {
+<span class="nc" id="L106">    RegExp regexp = RegExp.compile(&quot;(.*?)([0-9]+)$&quot;);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">    if (hint != null) {</span>
+<span class="nc" id="L108">      Set&lt;String&gt; names = new HashSet&lt;String&gt;(getComponentNames());</span>
+<span class="nc" id="L109">      String base = hint;</span>
+<span class="nc" id="L110">      int number = 1;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">      if (regexp.test(hint)) {</span>
+<span class="nc" id="L112">        MatchResult result = regexp.exec(hint);</span>
+<span class="nc" id="L113">        base = result.getGroup(1);</span>
+<span class="nc" id="L114">        number = Integer.parseInt(result.getGroup(2));</span>
+      }
+<span class="nc" id="L116">      number++;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">      while (names.contains(base + number)) number++;</span>
+<span class="nc" id="L118">      return base + number;</span>
+    }
+<span class="nc" id="L120">    int highIndex = 0;</span>
+<span class="nc" id="L121">    final String typeName = ComponentsTranslation.getComponentName(type)</span>
+<span class="nc" id="L122">        .toLowerCase()</span>
+<span class="nc" id="L123">        .replace(&quot; &quot;, &quot;_&quot;)</span>
+<span class="nc" id="L124">        .replace(&quot;'&quot;, &quot;_&quot;);</span>
+<span class="nc" id="L125">    final int nameLength = typeName.length();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    for (String cName : this.getComponentNames()) {</span>
+<span class="nc" id="L127">      cName = cName.toLowerCase();</span>
+      try {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (cName.startsWith(typeName)) {</span>
+<span class="nc" id="L130">          highIndex = Math.max(highIndex, Integer.parseInt(cName.substring(nameLength)));</span>
+        }
+<span class="nc" id="L132">      } catch (NumberFormatException e) {</span>
+<span class="nc" id="L133">        continue;</span>
+<span class="nc" id="L134">      }</span>
+<span class="nc" id="L135">    }</span>
+<span class="nc" id="L136">    return type + (highIndex + 1);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

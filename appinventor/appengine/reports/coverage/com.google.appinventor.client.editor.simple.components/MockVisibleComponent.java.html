@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockVisibleComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockVisibleComponent.java</span></div><h1>MockVisibleComponent.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * Abstract superclass for components with a visual representation.
+ *
+ */
+public abstract class MockVisibleComponent extends MockComponent {
+
+  // Common property names (not all components support all properties).
+  protected static final String PROPERTY_NAME_TEXTALIGNMENT = &quot;TextAlignment&quot;;
+  protected static final String PROPERTY_NAME_BUTTONSHAPE= &quot;Shape&quot;;
+  protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = &quot;BackgroundColor&quot;;
+  protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = &quot;BackgroundImage&quot;;
+  protected static final String PROPERTY_NAME_THUMBCOLORACTIVE = &quot;ThumbColorActive&quot;;
+  protected static final String PROPERTY_NAME_THUMBCOLORINACTIVE = &quot;ThumbColorInactive&quot;;
+  protected static final String PROPERTY_NAME_TRACKCOLORACTIVE = &quot;TrackColorActive&quot;;
+  protected static final String PROPERTY_NAME_TRACKCOLORINACTIVE = &quot;TrackColorInactive&quot;;
+  protected static final String PROPERTY_NAME_ENABLED = &quot;Enabled&quot;;
+  protected static final String PROPERTY_NAME_FONTBOLD = &quot;FontBold&quot;;
+  protected static final String PROPERTY_NAME_FONTITALIC = &quot;FontItalic&quot;;
+  protected static final String PROPERTY_NAME_FONTSIZE = &quot;FontSize&quot;;
+  protected static final String PROPERTY_NAME_FONTTYPEFACE = &quot;FontTypeface&quot;;
+  protected static final String PROPERTY_NAME_TEXT = &quot;Text&quot;;
+  protected static final String PROPERTY_NAME_LISTVIEW = &quot;ElementsFromString&quot;;
+  protected static final String PROPERTY_NAME_LISTVIEW_IMAGES = &quot;Picture&quot;;
+  protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = &quot;ShowFilterBar&quot;;
+  protected static final String PROPERTY_NAME_TEXTCOLOR = &quot;TextColor&quot;;
+  // to set color for secondary text of listview items
+  protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = &quot;TextColorDetail&quot;;
+  protected static final String PROPERTY_NAME_CHECKED = &quot;Checked&quot;; // checkbox and radio button
+  protected static final String PROPERTY_NAME_ON = &quot;On&quot;; // toggle switch
+  protected static final String PROPERTY_NAME_HINT = &quot;Hint&quot;;
+  protected static final String PROPERTY_NAME_HTMLFORMAT = &quot;HTMLFormat&quot;;
+  protected static final String PROPERTY_NAME_VISIBLE = &quot;Visible&quot;;
+  protected static final String PROPERTY_NAME_WIDTH = &quot;Width&quot;;
+  protected static final String PROPERTY_NAME_HEIGHT = &quot;Height&quot;;
+  public static final String PROPERTY_NAME_COLUMN = &quot;Column&quot;;
+  public static final String PROPERTY_NAME_ROW = &quot;Row&quot;;
+  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = &quot;ListData&quot;;
+  protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = &quot;ListViewLayout&quot;;
+
+  // Note: the values below are duplicated in Component.java
+  // If you change them here, change them there!
+
+  // Length values for width and height
+  // A value &gt;= 0 specifies an explicit size.
+  public static final int LENGTH_PREFERRED = -1;
+  public static final int LENGTH_FILL_PARENT = -2;
+  // If the length is &lt;= -1000 then add 1000 and change the sign to
+  // get the length is percent of Screen1
+  public static final int LENGTH_PERCENT_TAG = -1000;
+
+  public static final int FONT_DEFAULT_SIZE = 14;
+
+  // Useful colors
+  protected static final String COLOR_NONE = &quot;00FFFFFF&quot;;
+  protected static final String COLOR_DEFAULT = &quot;00000000&quot;;
+
+  // Stored Settings
+<span class="nc" id="L78">  protected String phonePreview = editor.getProjectEditor().getProjectSettingsProperty(</span>
+      SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+      SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+<span class="nc" id="L81">  protected String colorAccent = editor.getProjectEditor().getProjectSettingsProperty(</span>
+      SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+      SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+
+  /**
+   * Creates a new instance of a visible component.
+   *
+   * @param editor  editor of source file the component belongs to
+   */
+  MockVisibleComponent(SimpleEditor editor, String type, ImageResource icon) {
+<span class="nc" id="L91">    super(editor, type, new Image(icon));</span>
+<span class="nc" id="L92">  }</span>
+
+  @Override
+  public final void initComponent(Widget widget) {
+<span class="nc" id="L96">    super.initComponent(widget);</span>
+
+    // Add standard per-child layout properties
+    // NOTE: Not all layouts use these properties
+<span class="nc" id="L100">    addProperty(PROPERTY_NAME_COLUMN, &quot;&quot; + ComponentConstants.DEFAULT_ROW_COLUMN, null,</span>
+        new TextPropertyEditor());
+<span class="nc" id="L102">    addProperty(PROPERTY_NAME_ROW, &quot;&quot; + ComponentConstants.DEFAULT_ROW_COLUMN, null,</span>
+        new TextPropertyEditor());
+<span class="nc" id="L104">    addWidthHeightProperties();</span>
+<span class="nc" id="L105">  }</span>
+
+  protected void addWidthHeightProperties() {
+<span class="nc" id="L108">    addProperty(PROPERTY_NAME_WIDTH, &quot;&quot; + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),</span>
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        new YoungAndroidLengthPropertyEditor());
+<span class="nc" id="L111">    addProperty(PROPERTY_NAME_HEIGHT, &quot;&quot; + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),</span>
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        new YoungAndroidLengthPropertyEditor());
+<span class="nc" id="L114">  }</span>
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_COLUMN) ||</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        propertyName.equals(PROPERTY_NAME_ROW)) {</span>
+<span class="nc" id="L120">      return false;</span>
+    }
+<span class="nc" id="L122">    return super.isPropertyVisible(propertyName);</span>
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * This is always {@code true} for subclasses of this class.
+   */
+  @Override
+  public final boolean isVisibleComponent() {
+<span class="nc" id="L132">    return true;</span>
+  }
+
+  private void setVisibleProperty(String text) {
+<span class="nc" id="L136">    boolean visible = Boolean.parseBoolean(text);</span>
+<span class="nc bnc" id="L137" title="All 4 branches missed.">    if (!visible &amp;&amp; !editor.isLoadComplete()) {</span>
+      // As we are loading the scm file and encounter a visble property being set to false, set the
+      // expanded field to false. This will make that branch of the components tree initially
+      // collapsed.
+<span class="nc" id="L141">      expanded = false;</span>
+    }
+<span class="nc" id="L143">  }</span>
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L149">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L151" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_WIDTH)) {</span>
+<span class="nc" id="L152">      refreshForm();</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {</span>
+<span class="nc" id="L154">      refreshForm();</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {</span>
+<span class="nc" id="L156">      setVisibleProperty(newValue);</span>
+<span class="nc" id="L157">      refreshForm();</span>
+    }
+<span class="nc" id="L159">  }</span>
+
+  @Override
+  public void onDesignPreviewChanged() {
+<span class="nc" id="L163">    super.onDesignPreviewChanged();</span>
+<span class="nc" id="L164">    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(</span>
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+<span class="nc" id="L167">    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(</span>
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+<span class="nc" id="L170">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

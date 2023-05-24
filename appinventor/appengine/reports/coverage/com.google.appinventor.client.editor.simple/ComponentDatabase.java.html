@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentDatabase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple</a> &gt; <span class="el_source">ComponentDatabase.java</span></div><h1>ComponentDatabase.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple;
+
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Database holding information of Simple components and their properties.
+ *
+ */
+class ComponentDatabase implements ComponentDatabaseInterface {
+
+
+
+  // Maps component names to component descriptors
+  private final Map&lt;String, ComponentDefinition&gt; components;
+
+  // Components in JSON String generated from internal components
+  private final String internalComponentsJSONString;
+  // Components in JSON String generated from components
+  private String componentsJSONString;
+
+<span class="fc" id="L40">  private final List&lt;ComponentDatabaseChangeListener&gt; componentDatabaseChangeListeners =</span>
+      new ArrayList&lt;ComponentDatabaseChangeListener&gt;();
+
+  /**
+   * Creates a new component database.
+   *
+   * @param array
+   *          a JSONArray of components
+   */
+<span class="fc" id="L49">  ComponentDatabase(JSONArray array) {</span>
+<span class="fc" id="L50">    components = new HashMap&lt;String, ComponentDefinition&gt;();</span>
+<span class="fc" id="L51">    List&lt;String&gt; newComponents = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    for (JSONValue component : array.getElements()) {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">      if (component.asObject().get(&quot;external&quot;).asString().getString().equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L54">        continue;</span>
+      }
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">      if (initComponent(component.asObject())) {</span>
+<span class="fc" id="L57">        newComponents.add(component.asObject().get(&quot;name&quot;).asString().getString());</span>
+      }
+<span class="fc" id="L59">    }</span>
+<span class="fc" id="L60">    internalComponentsJSONString = generateComponentsJSON();</span>
+<span class="fc" id="L61">    componentsJSONString = internalComponentsJSONString;</span>
+<span class="fc" id="L62">    fireComponentsAdded(newComponents);</span>
+<span class="fc" id="L63">  }</span>
+
+  public boolean addComponent(JSONValue component) {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (!initComponent(component.asObject())) return false;</span>
+<span class="nc" id="L67">    List&lt;String&gt; newComponents = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L68">    newComponents.add(component.asObject().get(&quot;name&quot;).asString().getString());</span>
+<span class="nc" id="L69">    componentsJSONString = generateComponentsJSON();</span>
+<span class="nc" id="L70">    fireComponentsAdded(newComponents);</span>
+<span class="nc" id="L71">    return true;</span>
+  }
+
+  public int addComponents(JSONArray array) {
+<span class="nc" id="L75">    int compsAdded = 0;</span>
+<span class="nc" id="L76">    List&lt;String&gt; newComponents = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">    for ( JSONValue component : array.getElements()) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">      if(initComponent(component.asObject())) {</span>
+<span class="nc" id="L79">        newComponents.add(component.asObject().get(&quot;name&quot;).asString().getString());</span>
+<span class="nc" id="L80">        ++compsAdded;</span>
+      }
+<span class="nc" id="L82">    }</span>
+<span class="nc" id="L83">    componentsJSONString = generateComponentsJSON();</span>
+<span class="nc" id="L84">    fireComponentsAdded(newComponents);</span>
+<span class="nc" id="L85">    return compsAdded;</span>
+  }
+
+  public boolean removeComponent(String componentName) {
+<span class="nc" id="L89">    List&lt;String&gt; removedComponents = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L90">    removedComponents.add(componentName);</span>
+<span class="nc" id="L91">    Map&lt;String, String&gt; removedComponentsMap = new HashMap&lt;String, String&gt;();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">    for (String componentType : removedComponents) {</span>
+<span class="nc" id="L93">      removedComponentsMap.put(componentType, getComponentType(componentType));</span>
+<span class="nc" id="L94">    }</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (!fireBeforeComponentsRemoved(removedComponents)) {</span>
+<span class="nc" id="L96">      throw new IllegalStateException(&quot;Failed to remove Component!&quot;);</span>
+    }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    if (components.remove(componentName) != null) {</span>
+<span class="nc" id="L99">      componentsJSONString = generateComponentsJSON();</span>
+<span class="nc" id="L100">      fireComponentsRemoved(removedComponentsMap);</span>
+<span class="nc" id="L101">      return true;</span>
+    }
+<span class="nc" id="L103">    return false;</span>
+  }
+  /**
+   * Resets the Component Database to include only Internal Components
+   */
+  public void resetDatabase() {
+<span class="nc" id="L109">    components.clear();</span>
+<span class="nc" id="L110">    componentsJSONString = &quot;&quot;;</span>
+<span class="nc" id="L111">    addComponents(new ClientJsonParser().parse(internalComponentsJSONString).asArray());</span>
+<span class="nc" id="L112">    fireResetDatabase();</span>
+<span class="nc" id="L113">  }</span>
+
+  @Override
+  public Set&lt;String&gt; getComponentNames() {
+<span class="fc" id="L117">    return components.keySet();</span>
+  }
+
+  public ComponentDefinition getComponentDefinition(String componentName) {
+<span class="nc" id="L121">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L123">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L126">    return component;</span>
+  }
+
+  @Override
+  public int getComponentVersion(String componentName) {
+<span class="nc" id="L131">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L133">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L136">    return component.getVersion();</span>
+  }
+
+  @Override
+  public String getComponentVersionName(String componentName) {
+<span class="nc" id="L141">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L143">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L146">    return component.getVersionName();</span>
+  }
+
+  @Override
+  public String getComponentBuildDate(String componentName) {
+<span class="nc" id="L151">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L153">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L156">    return component.getDateBuilt();</span>
+  }
+
+  @Override
+  public String getComponentType(String componentName){
+<span class="nc" id="L161">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if(component == null){</span>
+<span class="nc" id="L163">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L166">    return component.getType();</span>
+  }
+
+  @Override
+  public String getComponentName(String componentType) {
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    for (String componentName : components.keySet()) {</span>
+<span class="nc" id="L172">      ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      if (componentType.equals(component.getType())) {</span>
+<span class="nc" id="L174">        return componentName;</span>
+      }
+<span class="nc" id="L176">    }</span>
+<span class="nc" id="L177">    return &quot;&quot;;</span>
+  }
+
+  @Override
+  public boolean getComponentExternal(String componentName){
+<span class="nc" id="L182">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">    if(component == null){</span>
+<span class="nc" id="L184">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L187">    return component.isExternal();</span>
+  }
+
+  @Override
+  public String getCategoryString(String componentName) {
+<span class="nc" id="L192">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L194">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L197">    return component.getCategoryString();</span>
+  }
+
+  @Override
+  public String getCategoryDocUrlString(String componentName) {
+<span class="nc" id="L202">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L204">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L207">    return component.getCategoryDocUrlString();</span>
+  }
+
+  @Override
+  public String getHelpString(String componentName) {
+<span class="nc" id="L212">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L214">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L217">    return component.getHelpString();</span>
+  }
+
+  @Override
+  public String getHelpUrl(String componentName) {
+<span class="nc" id="L222">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L224">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L227">    return component.getHelpUrl();</span>
+  }
+
+  @Override
+  public boolean getShowOnPalette(String componentName) {
+<span class="nc" id="L232">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L234">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L237">    return component.isShowOnPalette();</span>
+  }
+
+  @Override
+  public boolean getNonVisible(String componentName) {
+<span class="nc" id="L242">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L244">      throw new ComponentNotFoundException(componentName);</span>
+    }
+<span class="nc" id="L246">    return component.isNonVisible();</span>
+  }
+
+  @Override
+  public String getIconName(String componentName) {
+<span class="nc" id="L251">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L253">      throw new ComponentNotFoundException(componentName);</span>
+    }
+<span class="nc" id="L255">    return component.getIconName();</span>
+  }
+
+  @Override
+  public String getLicenseName(String componentName) {
+<span class="nc" id="L260">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L262">      throw new ComponentNotFoundException(componentName);</span>
+    }
+<span class="nc" id="L264">    return component.getLicenseName();</span>
+  }
+
+  @Override
+  public List&lt;PropertyDefinition&gt; getPropertyDefinitions(String componentName) {
+<span class="fc" id="L269">    ComponentDefinition component = components.get(componentName);</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L271">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="fc" id="L274">    return component.getProperties();</span>
+  }
+
+  @Override
+  public List&lt;BlockPropertyDefinition&gt; getBlockPropertyDefinitions(String componentName) {
+<span class="nc" id="L279">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L281">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L284">    return component.getBlockProperties();</span>
+  }
+
+  @Override
+  public List&lt;EventDefinition&gt; getEventDefinitions(String componentName) {
+<span class="nc" id="L289">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L291">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L294">    return component.getEvents();</span>
+  }
+
+  @Override
+  public List&lt;MethodDefinition&gt; getMethodDefinitions(String componentName) {
+<span class="nc" id="L299">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L301">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L304">    return component.getMethods();</span>
+  }
+
+  @Override
+  public Map&lt;String, String&gt; getPropertyTypesByName(String componentName) {
+<span class="nc" id="L309">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L311">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L314">    return component.getPropertiesTypesByName();</span>
+  }
+
+  @Override
+  public String getTypeDescription(String componentName) {
+<span class="nc" id="L319">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L321">      throw new ComponentNotFoundException(componentName);</span>
+    }
+
+<span class="nc" id="L324">    return component.getTypeDescription();</span>
+  }
+
+  public String getComponentsJSONString() {
+<span class="nc" id="L328">    return componentsJSONString;</span>
+  }
+
+  /*
+   * Creates a component descriptor from the contents of the JSON file and puts
+   * it in the components map.
+   */
+  private boolean initComponent(JSONObject componentNode) {
+<span class="fc" id="L336">    Map&lt;String, JSONValue&gt; properties = componentNode.getProperties();</span>
+<span class="fc" id="L337">    String name = properties.get(&quot;name&quot;).asString().getString();</span>
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">    if(components.containsKey(name)) {</span>
+      // This must be a component upgrade! We remove existing entry
+<span class="nc" id="L340">      components.remove(name);</span>
+    }
+<span class="fc" id="L342">    ComponentDefinition component = new ComponentDefinition(name,</span>
+<span class="fc" id="L343">        Integer.parseInt(properties.get(&quot;version&quot;).asString().getString()),</span>
+<span class="fc" id="L344">        optString(properties.get(&quot;versionName&quot;), &quot;&quot;),</span>
+<span class="fc" id="L345">        optString(properties.get(&quot;dateBuilt&quot;), &quot;&quot;),</span>
+<span class="fc" id="L346">        properties.get(&quot;type&quot;).asString().getString(),</span>
+<span class="fc" id="L347">        Boolean.valueOf(properties.get(&quot;external&quot;).asString().getString()),</span>
+<span class="fc" id="L348">        properties.get(&quot;categoryString&quot;).asString().getString(),</span>
+<span class="fc" id="L349">        properties.get(&quot;helpString&quot;).asString().getString(),</span>
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">        properties.containsKey(&quot;helpUrl&quot;) ? properties.get(&quot;helpUrl&quot;).asString().getString() : &quot;&quot;,</span>
+<span class="fc" id="L351">        Boolean.valueOf(properties.get(&quot;showOnPalette&quot;).asString().getString()),</span>
+<span class="fc" id="L352">        Boolean.valueOf(properties.get(&quot;nonVisible&quot;).asString().getString()),</span>
+<span class="fc" id="L353">        properties.get(&quot;iconName&quot;).asString().getString(),</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">        properties.containsKey(&quot;licenseName&quot;) ? properties.get(&quot;licenseName&quot;).asString().getString() : &quot;&quot;,</span>
+<span class="fc" id="L355">        componentNode.toJson());</span>
+<span class="fc" id="L356">    findComponentProperties(component, properties.get(&quot;properties&quot;).asArray());</span>
+<span class="fc" id="L357">    findComponentBlockProperties(component, properties.get(&quot;blockProperties&quot;).asArray());</span>
+<span class="fc" id="L358">    findComponentEvents(component, properties.get(&quot;events&quot;).asArray());</span>
+<span class="fc" id="L359">    findComponentMethods(component, properties.get(&quot;methods&quot;).asArray());</span>
+<span class="fc" id="L360">    components.put(component.getName(), component);</span>
+<span class="fc" id="L361">    return true;</span>
+  }
+
+  /**
+   * Extracts a string from the given value. If value is null, returns the defaultValue.
+   * @param value JSON value to process
+   * @param defaultValue Alternative value if {@code value} is not valid
+   * @return A non-null String containing either the String version of {@code value} or
+   * {@code defaultValue}
+   */
+  private String optString(JSONValue value, String defaultValue) {
+<span class="fc bfc" id="L372" title="All 2 branches covered.">    if (value == null) {</span>
+<span class="fc" id="L373">      return defaultValue;</span>
+    }
+<span class="fc" id="L375">    return value.asString().getString();</span>
+  }
+
+  /*
+   * Enters property information into the component descriptor.
+   */
+  private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
+<span class="fc bfc" id="L382" title="All 2 branches covered.">    for (JSONValue propertyValue : propertiesArray.getElements()) {</span>
+<span class="fc" id="L383">      Map&lt;String, JSONValue&gt; properties = propertyValue.asObject().getProperties();</span>
+
+      // TODO Since older versions of extensions do not have the &quot;editorArgs&quot; key,
+      // we check if &quot;editorArgs&quot; exists before parsing as a workaround. We may
+      // need better approaches in future versions.
+<span class="fc" id="L388">      List&lt;String&gt; editorArgsList = new ArrayList&lt;String&gt;();</span>
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">      if (properties.containsKey(&quot;editorArgs&quot;)) {</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">        for (JSONValue val : properties.get(&quot;editorArgs&quot;).asArray().getElements())</span>
+<span class="nc" id="L391">          editorArgsList.add(val.asString().getString());</span>
+      }
+
+<span class="fc" id="L394">      component.add(new PropertyDefinition(properties.get(&quot;name&quot;).asString().getString(),</span>
+<span class="fc" id="L395">          properties.get(&quot;defaultValue&quot;).asString().getString(),</span>
+<span class="fc" id="L396">          properties.get(&quot;editorType&quot;).asString().getString(),</span>
+<span class="fc" id="L397">          editorArgsList.toArray(new String[0])));</span>
+<span class="fc" id="L398">    }</span>
+<span class="fc" id="L399">  }</span>
+
+  /*
+   * Enters block property information into the component descriptor.
+   */
+  private void findComponentBlockProperties(ComponentDefinition component, JSONArray blockPropertiesArray) {
+<span class="fc bfc" id="L405" title="All 2 branches covered.">    for (JSONValue blockPropertyValue : blockPropertiesArray.getElements()) {</span>
+<span class="fc" id="L406">      Map&lt;String, JSONValue&gt; blockProperties = blockPropertyValue.asObject().getProperties();</span>
+<span class="fc" id="L407">      component.add(new BlockPropertyDefinition(blockProperties.get(&quot;name&quot;).asString().getString(),</span>
+<span class="fc" id="L408">          blockProperties.get(&quot;description&quot;).asString().getString(), blockProperties.get(&quot;type&quot;)</span>
+<span class="fc" id="L409">              .asString().getString(), blockProperties.get(&quot;rw&quot;).asString().getString()));</span>
+<span class="fc" id="L410">    }</span>
+<span class="fc" id="L411">  }</span>
+
+  /*
+   * Enters event information into the component descriptor.
+   */
+  private void findComponentEvents(ComponentDefinition component, JSONArray eventsArray) {
+<span class="fc bfc" id="L417" title="All 2 branches covered.">    for (JSONValue eventValue : eventsArray.getElements()) {</span>
+<span class="fc" id="L418">      Map&lt;String, JSONValue&gt; event = eventValue.asObject().getProperties();</span>
+
+<span class="fc" id="L420">      List&lt;ParameterDefinition&gt; paramList = new ArrayList&lt;ParameterDefinition&gt;();</span>
+<span class="fc" id="L421">      List&lt;JSONValue&gt; params = event.get(&quot;params&quot;).asArray().getElements();</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">      for (int i = 0; i &lt; params.size(); ++i) {</span>
+<span class="fc" id="L423">        JSONValue paramValue = params.get(i);</span>
+<span class="fc" id="L424">        Map&lt;String, JSONValue&gt; param = paramValue.asObject().getProperties();</span>
+<span class="fc" id="L425">        paramList.add(new ParameterDefinition(param.get(&quot;name&quot;).asString().getString(), param</span>
+<span class="fc" id="L426">            .get(&quot;type&quot;).asString().getString()));</span>
+      }
+<span class="fc" id="L428">      component.add(</span>
+          new EventDefinition(
+<span class="fc" id="L430">              event.get(&quot;name&quot;).asString().getString(),</span>
+<span class="fc" id="L431">              event.get(&quot;description&quot;).asString().getString(),</span>
+<span class="fc" id="L432">              new Boolean(event.get(&quot;deprecated&quot;).asString().getString()),</span>
+              paramList));
+<span class="fc" id="L434">    }</span>
+<span class="fc" id="L435">  }</span>
+
+  /*
+   * Enters method information into the component descriptor.
+   */
+  private void findComponentMethods(ComponentDefinition component, JSONArray methodsArray) {
+<span class="fc bfc" id="L441" title="All 2 branches covered.">    for (JSONValue blockPropertyValue : methodsArray.getElements()) {</span>
+<span class="fc" id="L442">      Map&lt;String, JSONValue&gt; method = blockPropertyValue.asObject().getProperties();</span>
+
+<span class="fc" id="L444">      List&lt;ParameterDefinition&gt; paramList = new ArrayList&lt;ParameterDefinition&gt;();</span>
+<span class="fc" id="L445">      List&lt;JSONValue&gt; params = method.get(&quot;params&quot;).asArray().getElements();</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">      for (int i = 0; i &lt; params.size(); ++i) {</span>
+<span class="fc" id="L447">        JSONValue paramValue = params.get(i);</span>
+<span class="fc" id="L448">        Map&lt;String, JSONValue&gt; param = paramValue.asObject().getProperties();</span>
+<span class="fc" id="L449">        paramList.add(new ParameterDefinition(param.get(&quot;name&quot;).asString().getString(), param</span>
+<span class="fc" id="L450">            .get(&quot;type&quot;).asString().getString()));</span>
+      }
+<span class="fc" id="L452">      component.add(</span>
+          new MethodDefinition(
+<span class="fc" id="L454">              method.get(&quot;name&quot;).asString().getString(),</span>
+<span class="fc" id="L455">              method.get(&quot;description&quot;).asString().getString(),</span>
+<span class="fc" id="L456">              new Boolean(method.get(&quot;deprecated&quot;).asString().getString()),</span>
+              paramList));
+<span class="fc" id="L458">    }</span>
+<span class="fc" id="L459">  }</span>
+
+  private String generateComponentsJSON(){
+<span class="fc" id="L462">    StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L463">    sb.append(&quot;[&quot;);</span>
+<span class="fc" id="L464">    String separator = &quot;&quot;;</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">    for(Map.Entry&lt;String, ComponentDefinition&gt; comp : components.entrySet()){</span>
+<span class="fc" id="L466">      sb.append(separator).append(comp.getValue().getTypeDescription());</span>
+<span class="fc" id="L467">      separator=&quot;,&quot;;</span>
+<span class="fc" id="L468">    }</span>
+<span class="fc" id="L469">    sb.append(&quot;]&quot;);</span>
+<span class="fc" id="L470">    return sb.toString();</span>
+  }
+
+  @Override
+  public boolean isComponent(String componentName) {
+<span class="nc" id="L475">    ComponentDefinition component = components.get(componentName);</span>
+<span class="nc bnc" id="L476" title="All 2 branches missed.">    if (component == null) {</span>
+<span class="nc" id="L477">      return false;</span>
+    }
+
+<span class="nc" id="L480">    return true;</span>
+  }
+
+  public void addComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+<span class="nc" id="L484">    componentDatabaseChangeListeners.add(listener);</span>
+<span class="nc" id="L485">  }</span>
+
+  public void removeComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+<span class="nc" id="L488">    componentDatabaseChangeListeners.remove(listener);</span>
+<span class="nc" id="L489">  }</span>
+
+  private List&lt;ComponentDatabaseChangeListener&gt; copyComponentDatbaseChangeListeners() {
+<span class="fc" id="L492">    return new ArrayList&lt;ComponentDatabaseChangeListener&gt;(componentDatabaseChangeListeners);</span>
+  }
+
+  private void fireComponentsAdded(List&lt;String&gt; componentTypes) {
+<span class="pc bpc" id="L496" title="1 of 2 branches missed.">    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {</span>
+<span class="nc" id="L497">      listener.onComponentTypeAdded(componentTypes);</span>
+<span class="nc" id="L498">    }</span>
+<span class="fc" id="L499">  }</span>
+
+  private boolean fireBeforeComponentsRemoved(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L502">    boolean result = true;</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {</span>
+<span class="nc" id="L504">      result = result &amp; listener.beforeComponentTypeRemoved(componentTypes);</span>
+<span class="nc" id="L505">    }</span>
+<span class="nc" id="L506">    return result;</span>
+  }
+
+  private void fireComponentsRemoved(Map&lt;String, String&gt; componentTypes) {
+<span class="nc bnc" id="L510" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {</span>
+<span class="nc" id="L511">      listener.onComponentTypeRemoved(componentTypes);</span>
+<span class="nc" id="L512">    }</span>
+<span class="nc" id="L513">  }</span>
+
+  private void fireResetDatabase() {
+<span class="nc bnc" id="L516" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {</span>
+<span class="nc" id="L517">      listener.onResetDatabase();</span>
+<span class="nc" id="L518">    }</span>
+<span class="nc" id="L519">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

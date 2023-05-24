@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer.commands</a> &gt; <span class="el_source">BuildCommand.java</span></div><h1>BuildCommand.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer.commands;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.output.MessagesOutput;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.i18n.client.DateTimeFormat;
+
+import java.util.Date;
+
+/**
+ * Command for building a target in a project.
+ *
+ */
+public class BuildCommand extends ChainableCommand {
+  // The build target
+  private String target;
+
+  // Whether or not to use the second buildserver
+<span class="nc" id="L33">  private boolean secondBuildserver = false;</span>
+  private boolean isAab;
+
+  /**
+   * Creates a new build command.
+   *
+   * @param target the build target
+   */
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab) {
+<span class="nc" id="L42">    this(target, secondBuildserver, isAab, null);</span>
+<span class="nc" id="L43">  }</span>
+
+  /**
+   * Creates a new build command, with additional behavior provided by
+   * another ChainableCommand.
+   *
+   * @param target the build target
+   * @param nextCommand the command to execute after the build has finished
+   */
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab, ChainableCommand nextCommand) {
+<span class="nc" id="L53">    super(nextCommand);</span>
+<span class="nc" id="L54">    this.isAab = isAab;</span>
+<span class="nc" id="L55">    this.target = target;</span>
+<span class="nc" id="L56">    this.secondBuildserver = secondBuildserver;</span>
+<span class="nc" id="L57">  }</span>
+
+  @Override
+  public boolean willCallExecuteNextCommand() {
+<span class="nc" id="L61">    return true;</span>
+  }
+
+  @Override
+  public void execute(final ProjectNode node) {
+<span class="nc" id="L66">    final Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L67">    final MessagesOutput messagesOutput = MessagesOutput.getMessagesOutput();</span>
+<span class="nc" id="L68">    messagesOutput.clear();</span>
+<span class="nc" id="L69">    messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(),</span>
+<span class="nc" id="L70">        DateTimeFormat.getMediumDateTimeFormat().format(new Date())));</span>
+
+<span class="nc" id="L72">    OdeAsyncCallback&lt;RpcResult&gt; callback =</span>
+        new OdeAsyncCallback&lt;RpcResult&gt;(
+            // failure message
+<span class="nc" id="L75">            MESSAGES.buildError()) {</span>
+      @Override
+      public void onSuccess(RpcResult result) {
+<span class="nc" id="L78">        messagesOutput.addMessages(result.getOutput());</span>
+<span class="nc" id="L79">        messagesOutput.addMessages(result.getError());</span>
+<span class="nc" id="L80">        Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,</span>
+<span class="nc" id="L81">                            node.getName(), getElapsedMillis());</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (result.succeeded()) {</span>
+<span class="nc" id="L83">          executeNextCommand(node);</span>
+        } else {
+          // The result is the HTTP response code from the build server.
+<span class="nc" id="L86">          int responseCode = result.getResult();</span>
+<span class="nc bnc" id="L87" title="All 4 branches missed.">          switch (responseCode) {</span>
+            case Response.SC_SERVICE_UNAVAILABLE:
+              // SC_SERVICE_UNAVAILABLE (response code 503), means that the build server is too busy
+              // at this time to accept this build request.
+              // We use ErrorReporter.reportInfo so that the message has yellow background instead of
+              // red background.
+<span class="nc" id="L93">              ErrorReporter.reportInfo(MESSAGES.buildServerBusyError());</span>
+<span class="nc" id="L94">              break;</span>
+            case Response.SC_CONFLICT:
+              // SC_CONFLICT (response code 409), means that the build server is running a
+              // different version of the App Inventor code.
+              // We use ErrorReporter.reportInfo so that the message has yellow background instead
+              // of red background.
+<span class="nc" id="L100">              ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());</span>
+<span class="nc" id="L101">              break;</span>
+            case Response.SC_REQUEST_ENTITY_TOO_LARGE:
+              // SC_REQUEST_ENTITY_TOO_LARGE (response code 413) means that the project file was
+              // too large to be sent to the build server.
+<span class="nc" id="L105">              ClientJsonParser parser = new ClientJsonParser();</span>
+<span class="nc" id="L106">              JSONObject info = parser.parse(result.getError()).asObject();</span>
+<span class="nc" id="L107">              int maxSize = info.get(&quot;maxSize&quot;).asNumber().getInt();</span>
+<span class="nc" id="L108">              double appSize = info.get(&quot;aiaSize&quot;).asNumber().getDouble();</span>
+<span class="nc" id="L109">              ErrorReporter.reportError(MESSAGES.buildProjectTooLargeError(maxSize, appSize));</span>
+<span class="nc" id="L110">              break;</span>
+            default:
+<span class="nc" id="L112">              String errorMsg = result.getError();</span>
+              // This is not an internal App Inventor bug. The error is reported as info so that
+              // the red background is not shown.
+<span class="nc" id="L115">              ErrorReporter.reportInfo(MESSAGES.buildFailedError() +</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                  (errorMsg.isEmpty() ? &quot;&quot; : &quot; &quot; + errorMsg));</span>
+              break;
+          }
+<span class="nc" id="L119">          executionFailedOrCanceled();</span>
+        }
+<span class="nc" id="L121">      }</span>
+
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc" id="L125">        super.onFailure(caught);</span>
+<span class="nc" id="L126">        executionFailedOrCanceled();</span>
+<span class="nc" id="L127">      }</span>
+    };
+
+<span class="nc" id="L130">    String nonce = ode.generateNonce();</span>
+<span class="nc" id="L131">    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab, callback);</span>
+<span class="nc" id="L132">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

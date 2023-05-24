@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="ubuntu-Lenovo-IdeaPad-S540-15IWL-D" name="com.google.appinventor.server.ComponentServiceTest" skipped="0" tests="20" time="5.282" timestamp="2023-05-22T18:48:26">
+  <properties>
+    <property name="java.vendor" value="Private Build" />
+    <property name="lib.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib" />
+    <property name="ant.file.appengine" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="docs.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/docs" />
+    <property name="AiServerLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiServerLib" />
+    <property name="os.name" value="Linux" />
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-8-openjdk-amd64/jre/classes" />
+    <property name="gwt.sdk" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched" />
+    <property name="sun.desktop" value="gnome" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="/usr/share/ant" />
+    <property name="java.runtime.version" value="1.8.0_362-8u372-ga~us1-0ubuntu1~20.04-b09" />
+    <property name="client.module" value="com.google.appinventor.YaClient-dev" />
+    <property name="user.name" value="ubuntu" />
+    <property name="public.build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build/appengine" />
+    <property name="debug" value="true" />
+    <property name="ant.file.type.appengine" value="file" />
+    <property name="build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build" />
+    <property name="appinventor.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor" />
+    <property name="user.language" value="en" />
+    <property name="class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes" />
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64" />
+    <property name="reports.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports" />
+    <property name="ant.project.default-target" value="all" />
+    <property name="build.war.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war" />
+    <property name="ant.project.name" value="appengine" />
+    <property name="java.version" value="1.8.0_362" />
+    <property name="user.timezone" value="" />
+    <property name="client.flags" value="-style pretty" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/endorsed" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="sun.jnu.encoding" value="UTF-8" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="AiSharedLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiSharedLib" />
+    <property name="appengine.sdk" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="52.0" />
+    <property name="user.country" value="IN" />
+    <property name="java.home" value="/usr/lib/jvm/java-8-openjdk-amd64/jre" />
+    <property name="ant.file.AllProjects" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build.xml" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build.xml" />
+    <property name="os.version" value="5.15.0-71-generic" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="25.362-b09" />
+    <property name="release" value="false" />
+    <property name="ant.library.dir" value="/usr/share/ant/lib" />
+    <property name="ant.file.type.AllProjects" value="file" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="java.specification.maintenance.version" value="4" />
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit" />
+    <property name="_jacoco.agentFile" value="/tmp/jacocoagent1108506997062565969.jar" />
+    <property name="debug.compile" value="true" />
+    <property name="build.static.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/static" />
+    <property name="coverage.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/coverage" />
+    <property name="user.home" value="/home/ubuntu" />
+    <property name="appinventor.pkg" value="com/google/appinventor" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib" />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="java.vm.vendor" value="Private Build" />
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner testsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junittestcases1664461052465813715.properties skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/reports/raw/IGNORETHIS.xml crashfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junitvmwatcher8273386773775132230.properties propsfile=/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/junit3531896620058218012.properties" />
+    <property name="java.class.path" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiServerLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonTestUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/common/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/build/components/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/error_prone_annotations-2.0.12.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/guava/j2objc-annotations-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/json/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit/junit-4.8.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/junit-addons/junit-addons-1.4.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/keyczar/KeyczarTool.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/objectify-3.1/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/cglib-nodep-2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/easymock-3.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/javassist-3.18.0-GA.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/objenesis-1.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/responder-iq/responderiq-test.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gcs/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/protobuf/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/AiSharedLib.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonConstants.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonUtils.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/CommonVersion.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-1.0-sdk-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-api-labs-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-gcs-client-0.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/appengine-jsr107cache-1.9.46.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-codec-1.7.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-fileupload-1.2.2.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/commons-lang3-3.10.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-appengine-1.0.10.final.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-core-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/datanucleus-jpa-1.1.5.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/firebase-token-generator-2.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-client-jackson2-1.20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-api-services-storage-v1-rev91-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-appengine-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/google-http-client-jackson2-1.22.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gson-2.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/guava-20.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet-deps.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/gwt-servlet.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/httpclient-4.0.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jackson-core-2.1.3.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jdo2-api-2.3-eb.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/joda-time-2.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/json.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr107cache-1.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/jsr305.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/keyczar-0.66-080111-java-1.6.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/libservice.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/log4j-1.2.16.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/objectify-3.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/owasp-java-html-sanitizer-20160628.1.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/war/WEB-INF/lib/protobuf-java-3.0.0.jar:/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/AiServerLibTests.jar:/usr/share/java/ant-launcher-1.10.7.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar:/usr/share/ant/lib/ant-junit4.jar:/tmp/jacocoagent1108506997062565969.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.10.7 compiled on October 24 2019" />
+    <property name="keystore.present" value="true" />
+    <property name="ant.file.type.CommonDefinitions" value="file" />
+    <property name="ant.file.CommonDefinitions" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/build-common.xml" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.8" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="test_name.class" value="${test_name}" />
+    <property name="force.builddocs" value="false" />
+    <property name="java.awt.headless" value="true" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/" />
+    <property name="AiClientLib-class.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/classes/AiClientLib" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext:/usr/java/packages/lib/ext" />
+    <property name="tests.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/tests" />
+    <property name="user.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine" />
+    <property name="line.separator" value="&#xa;" />
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM" />
+    <property name="org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer1" value="/tmp/null1094864961" />
+    <property name="org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer0" value="/tmp/null1451506058" />
+    <property name="basedir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine" />
+    <property name="local.build.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build" />
+    <property name="gwt.args" value="-devMode -logLevel WARN -war /home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/build/war" />
+    <property name="ant.java.version" value="1.8" />
+    <property name="ant.core.lib" value="/usr/share/ant/lib/ant.jar" />
+    <property name="file.encoding" value="UTF-8" />
+    <property name="XstartOnFirstThread" value="" />
+    <property name="build.extra.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/build/extra" />
+    <property name="java.specification.version" value="1.8" />
+    <property name="src.dir" value="/home/ubuntu/mitapp/appinventor-sources/appinventor/appengine/src" />
+    <property name="ant.project.invoked-targets" value="tests" />
+  </properties>
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testLoadMultipleExtensionBundle" time="2.706" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testReversedFilesExtension" time="0.284" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeExtensionSingleToSingle" time="0.258" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeExtensionSingleToTransition" time="0.232" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testLoadExtensionBundle" time="0.097" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testLoadSingleExtension" time="0.086" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testEmptyComponentDescriptors" time="0.014" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeExtensionSingleToBundle" time="0.159" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testDowngradeExtensionBundleToOldExtension" time="0.08" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testDowngradeExtensionBundleToBundle" time="0.079" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeExtensionBundleToBundle" time="0.146" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeTransitionToTransition" time="0.154" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeTransitionExtensionToBundle" time="0.152" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeIfProjectMissingComponentsJson" time="0.152" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testOkayIfPackageCollisionButNoOverlappingTypes" time="0.196" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testFailIfPackageCollisionWithDifferingComponents" time="0.066" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testUpgradeManyOldExtensionsToOneBundle" time="0.258" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testNoComponentDescriptor" time="0.012" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testBadExtensionFile" time="0.01" />
+  <testcase classname="com.google.appinventor.server.ComponentServiceTest" name="testBadComponentJson" time="0.012" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[May 22, 2023 6:48:26 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:27 PM com.google.appinventor.server.storage.ObjectifyStorageIo <clinit>
+INFO: Default GCS Bucket Configured from App Identity: app_default_bucket
+May 22, 2023 6:48:28 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appinventor.server.storage.ObjectifyStorageIo$1 run
+INFO: Did not find userId 1
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appinventor.server.storage.ObjectifyStorageIo$1 run
+INFO: Did not find userId 1
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:29 PM com.google.appinventor.server.storage.ObjectifyStorageIo$1 run
+INFO: Did not find userId 1
+May 22, 2023 6:48:29 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appinventor.server.storage.ObjectifyStorageIo$1 run
+INFO: Did not find userId 1
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+An extension containing test already exists on the server but could not be upgraded. The new extension was not loaded.
+May 22, 2023 6:48:30 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:31 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:31 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+May 22, 2023 6:48:31 PM com.google.appengine.api.datastore.dev.LocalDatastoreService init
+INFO: Local Datastore initialized: 
+	Type: High Replication
+	Storage: In-memory
+]]></system-err>
+</testsuite>

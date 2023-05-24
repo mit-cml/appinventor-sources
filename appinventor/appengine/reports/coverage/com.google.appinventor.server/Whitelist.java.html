@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Whitelist.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">Whitelist.java</span></div><h1>Whitelist.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Note: This code is no longer used but is kept here as an example and in case we
+//       wish to switch back to a internal file based version of a whitelist
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.util.CsvParser;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Implementation of a whitelist.  Note that it uses email addresses
+ * (which can change), and not user ids (which are unique), because we
+ * do not expect that the people creating the whitelist have access to
+ * the user ids of users.
+ *
+ * @author kerr@google.com (Debby Wallach)
+ */
+public class Whitelist {
+  /**
+   * Class representing a case-insensitive email address.
+   */
+  private static class EmailAddress {
+    private final String email;
+
+<span class="fc" id="L41">    EmailAddress(String email) {</span>
+<span class="fc" id="L42">      Preconditions.checkNotNull(email);</span>
+<span class="fc" id="L43">      this.email = email;</span>
+<span class="fc" id="L44">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L48">      return email;</span>
+    }
+
+    @Override
+    public boolean equals(Object other) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">      boolean result = (other instanceof EmailAddress) &amp;&amp;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">          ((EmailAddress) other).email.equalsIgnoreCase(email);</span>
+<span class="fc" id="L55">      return result;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L60">      return email.toLowerCase().hashCode();</span>
+    }
+  }
+
+<span class="fc" id="L64">  private static final Logger LOG = Logger.getLogger(Whitelist.class.getName());</span>
+  private static final boolean DEBUG = false;
+
+  // When running on appengine, the application is running in a way that
+  // the rootPath should not be set to anything.  This flag needs to be
+  // set for testing.
+  @VisibleForTesting
+<span class="fc" id="L71">  public static final Flag&lt;String&gt; rootPath = Flag.createFlag(&quot;root.path&quot;, &quot;&quot;);</span>
+
+<span class="fc" id="L73">  private String pathToWhitelist = rootPath.get() + &quot;WEB-INF/whitelist&quot;;</span>
+  private boolean validWhitelist;
+
+<span class="fc" id="L76">  private final Set&lt;EmailAddress&gt; addresses = new HashSet&lt;EmailAddress&gt;();</span>
+
+<span class="fc" id="L78">  Whitelist() {</span>
+<span class="fc" id="L79">    validWhitelist = false;</span>
+    try {
+<span class="fc" id="L81">      parseToAddresses(new CsvParser(new FileInputStream(pathToWhitelist)));</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">      if (addresses.size() == 0) {</span>
+<span class="nc" id="L83">        LOG.severe(&quot;Whitelist file contained no entries.&quot;);</span>
+      } else {
+        if (DEBUG) {
+          logWhitelistContents();
+        }
+<span class="fc" id="L88">        validWhitelist = true;</span>
+      }
+<span class="fc" id="L90">    } catch (FileNotFoundException e) {</span>
+<span class="fc" id="L91">      LOG.severe(&quot;No whitelist found.&quot;);</span>
+<span class="nc" id="L92">    } catch (SecurityException e) {</span>
+<span class="nc" id="L93">      LOG.severe(&quot;Whitelist found, but wrong permission.&quot;);</span>
+<span class="fc" id="L94">    }</span>
+<span class="fc" id="L95">  }</span>
+
+  // should throw something if not valid whitelist?
+  public boolean isInWhitelist(LocalUser user) {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (! validWhitelist) {</span>
+      // If we have not loaded a valid whitelist, reject everyone.
+<span class="fc" id="L101">      return false;</span>
+    }
+
+<span class="fc" id="L104">    boolean found = addresses.contains(new EmailAddress(user.getUserEmail()));</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    if (!found) {</span>
+<span class="fc" id="L106">      LOG.info(&quot;User with email address &quot; + user.getUserEmail() +</span>
+          &quot; was not found in the whitelist&quot;);
+    }
+<span class="fc" id="L109">    return found;</span>
+  }
+
+  private void logWhitelistContents() {
+<span class="nc" id="L113">    LOG.info(&quot;Whitelist contains &quot; + addresses.size() + &quot; addresses.&quot;);</span>
+<span class="nc" id="L114">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L115">    String delimiter = &quot;&quot;;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    for (EmailAddress address : addresses) {</span>
+<span class="nc" id="L117">      sb.append(delimiter).append(address);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">      if (sb.length() &gt; 70) {</span>
+<span class="nc" id="L119">        LOG.info(&quot;On whitelist: &quot; + sb);</span>
+<span class="nc" id="L120">        sb = new StringBuilder();</span>
+<span class="nc" id="L121">        delimiter = &quot;&quot;;</span>
+      } else {
+<span class="nc" id="L123">        delimiter = &quot;,&quot;;</span>
+      }
+<span class="nc" id="L125">    }</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L127">      LOG.info(&quot;On whitelist: &quot; + sb);</span>
+    }
+<span class="nc" id="L129">  }</span>
+
+  private void parseToAddresses(CsvParser parser) {
+    /*
+     * expected file format:
+     * &quot;emailaddress1&quot;
+     * &quot;emailaddress2&quot;
+     *
+     */
+<span class="fc" id="L138">    Pattern patternPlus = Pattern.compile(&quot;([^+]*)(\\+[^@]*)(@.*)&quot;);</span>
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    while (parser.hasNext()) {</span>
+<span class="fc" id="L141">      List&lt;String&gt; line = parser.next();</span>
+<span class="fc" id="L142">      String address = line.get(0).trim();</span>
+
+      // Change foo+bar@gmail.com to foo@gmail.com
+<span class="fc" id="L145">      Matcher matcher = patternPlus.matcher(address);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">      if (matcher.matches()) {</span>
+<span class="fc" id="L147">        address = matcher.group(1) + matcher.group(3);</span>
+      }
+
+<span class="fc" id="L150">      addresses.add(new EmailAddress(address));</span>
+<span class="fc" id="L151">    }</span>
+<span class="fc" id="L152">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

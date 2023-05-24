@@ -1,0 +1,1247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YaFormEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid</a> &gt; <span class="el_source">YaFormEditor.java</span></div><h1>YaFormEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.components.FormChangeListener;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
+import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
+import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
+import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.properties.json.ClientJsonString;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertiesPanel;
+import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
+import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DockPanel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Editor for Young Android Form (.scm) files.
+ *
+ * &lt;p&gt;This editor shows a designer that provides support for visual design of
+ * forms.&lt;/p&gt;
+ *
+ * @author markf@google.com (Mark Friedman)
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
+
+  private static class FileContentHolder {
+    private String content;
+
+<span class="nc" id="L93">    FileContentHolder(String content) {</span>
+<span class="nc" id="L94">      this.content = content;</span>
+<span class="nc" id="L95">    }</span>
+
+    void setFileContent(String content) {
+<span class="nc" id="L98">      this.content = content;</span>
+<span class="nc" id="L99">    }</span>
+
+    String getFileContent() {
+<span class="nc" id="L102">      return content;</span>
+    }
+  }
+
+  private static final String ERROR_EXISTING_UUID = &quot;Component with UUID \&quot;%1$s\&quot; already exists.&quot;;
+  private static final String ERROR_NONEXISTENT_UUID = &quot;No component exists with UUID \&quot;%1$s\&quot;.&quot;;
+
+  // JSON parser
+<span class="nc" id="L110">  private static final JSONParser JSON_PARSER = new ClientJsonParser();</span>
+
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
+
+  private final YoungAndroidFormNode formNode;
+
+  // Flag to indicate when loading the file is completed. This is needed because building the mock
+  // form from the file properties fires events that need to be ignored, otherwise the file will be
+  // marked as being modified.
+  private boolean loadComplete;
+
+  // References to other panels that we need to control.
+  private final SourceStructureExplorer sourceStructureExplorer;
+
+  // Panels that are used as the content of the palette and properties boxes.
+  private final YoungAndroidPalettePanel palettePanel;
+  private final PropertiesPanel designProperties;
+
+  // UI elements
+  private final SimpleVisibleComponentsPanel visibleComponentsPanel;
+  private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
+
+  private MockForm form;  // initialized lazily after the file is loaded from the ODE server
+
+  // [lyn, 2014/10/13] Need to remember JSON initially loaded from .scm file *before* it is upgraded
+  // by YoungAndroidFormUpgrader within upgradeFile. This JSON contains pre-upgrade component
+  // version info that is needed by Blockly.SaveFile.load to perform upgrades in the Blocks Editor.
+  // This was unnecessary in AI Classic because the .blk file contained component version info
+  // as well as the .scm file. But in AI2, the .bky file contains no component version info,
+  // and we rely on the pre-upgraded .scm file for this info.
+  private String preUpgradeJsonString;
+
+<span class="nc" id="L142">  private final List&lt;ComponentDatabaseChangeListener&gt; componentDatabaseChangeListeners = new ArrayList&lt;ComponentDatabaseChangeListener&gt;();</span>
+  private JSONArray authURL;    // List of App Inventor versions we have been edited on.
+
+  /**
+   * A mapping of component UUIDs to mock components in the designer view.
+   */
+<span class="nc" id="L148">  private final Map&lt;String, MockComponent&gt; componentsDb = new HashMap&lt;String, MockComponent&gt;();</span>
+
+  private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
+
+<span class="nc" id="L152">  private EditableProperties selectedProperties = null;</span>
+
+  /**
+   * Creates a new YaFormEditor.
+   *
+   * @param projectEditor  the project editor that contains this file editor
+   * @param formNode the YoungAndroidFormNode associated with this YaFormEditor
+   */
+  YaFormEditor(ProjectEditor projectEditor, YoungAndroidFormNode formNode) {
+<span class="nc" id="L161">    super(projectEditor, formNode);</span>
+
+<span class="nc" id="L163">    this.formNode = formNode;</span>
+<span class="nc" id="L164">    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());</span>
+
+    // Get reference to the source structure explorer
+<span class="nc" id="L167">    sourceStructureExplorer =</span>
+<span class="nc" id="L168">        SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer();</span>
+
+    // Create UI elements for the designer panels.
+<span class="nc" id="L171">    nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();</span>
+<span class="nc" id="L172">    componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);</span>
+<span class="nc" id="L173">    visibleComponentsPanel = new SimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);</span>
+<span class="nc" id="L174">    componentDatabaseChangeListeners.add(visibleComponentsPanel);</span>
+<span class="nc" id="L175">    DockPanel componentsPanel = new DockPanel();</span>
+<span class="nc" id="L176">    componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);</span>
+<span class="nc" id="L177">    componentsPanel.add(visibleComponentsPanel, DockPanel.NORTH);</span>
+<span class="nc" id="L178">    componentsPanel.add(nonVisibleComponentsPanel, DockPanel.SOUTH);</span>
+<span class="nc" id="L179">    componentsPanel.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+
+    // Create designProperties, which will be used as the content of the PropertiesBox.
+<span class="nc" id="L182">    designProperties = new PropertiesPanel();</span>
+<span class="nc" id="L183">    designProperties.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+
+    // Create palettePanel, which will be used as the content of the PaletteBox.
+<span class="nc" id="L186">    palettePanel = new YoungAndroidPalettePanel(this);</span>
+<span class="nc" id="L187">    palettePanel.loadComponents(new DropTargetProvider() {</span>
+      @Override
+      public DropTarget[] getDropTargets() {
+        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+        // getDropTargets() doesn't get called for each component.
+        // NOTE: These targets must be specified in depth-first order.
+<span class="nc" id="L193">        List&lt;DropTarget&gt; dropTargets = form.getDropTargetsWithin();</span>
+<span class="nc" id="L194">        dropTargets.add(visibleComponentsPanel);</span>
+<span class="nc" id="L195">        dropTargets.add(nonVisibleComponentsPanel);</span>
+<span class="nc" id="L196">        return dropTargets.toArray(new DropTarget[dropTargets.size()]);</span>
+      }
+    });
+<span class="nc" id="L199">    palettePanel.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+<span class="nc" id="L200">    componentDatabaseChangeListeners.add(palettePanel);</span>
+
+<span class="nc" id="L202">    initWidget(componentsPanel);</span>
+<span class="nc" id="L203">    setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+<span class="nc" id="L204">    registerNativeListeners();</span>
+<span class="nc" id="L205">  }</span>
+
+  public boolean shouldDisplayHiddenComponents() {
+<span class="nc" id="L208">    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();</span>
+  }
+
+  // FileEditor methods
+
+  @Override
+  public void loadFile(final Command afterFileLoaded) {
+<span class="nc" id="L215">    final long projectId = getProjectId();</span>
+<span class="nc" id="L216">    final String fileId = getFileId();</span>
+<span class="nc" id="L217">    OdeAsyncCallback&lt;ChecksumedLoadFile&gt; callback = new OdeAsyncCallback&lt;ChecksumedLoadFile&gt;(MESSAGES.loadError()) {</span>
+      @Override
+      public void onSuccess(ChecksumedLoadFile result) {
+        String contents;
+        try {
+<span class="nc" id="L222">          contents = result.getContent();</span>
+<span class="nc" id="L223">        } catch (ChecksumedFileException e) {</span>
+<span class="nc" id="L224">          this.onFailure(e);</span>
+<span class="nc" id="L225">          return;</span>
+<span class="nc" id="L226">        }</span>
+<span class="nc" id="L227">        final FileContentHolder fileContentHolder = new FileContentHolder(contents);</span>
+<span class="nc" id="L228">        upgradeFile(fileContentHolder, new Command() {</span>
+          @Override
+          public void execute() {
+            try {
+<span class="nc" id="L232">              onFileLoaded(fileContentHolder.getFileContent());</span>
+<span class="nc" id="L233">            } catch(IllegalArgumentException e) {</span>
+<span class="nc" id="L234">              return;</span>
+<span class="nc" id="L235">            }</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if (afterFileLoaded != null) {</span>
+<span class="nc" id="L237">              afterFileLoaded.execute();</span>
+            }
+<span class="nc" id="L239">          }</span>
+        });
+<span class="nc" id="L241">      }</span>
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (caught instanceof ChecksumedFileException) {</span>
+<span class="nc" id="L245">          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());</span>
+        }
+<span class="nc" id="L247">        super.onFailure(caught);</span>
+<span class="nc" id="L248">      }</span>
+    };
+<span class="nc" id="L250">    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);</span>
+<span class="nc" id="L251">  }</span>
+
+  @Override
+  public String getTabText() {
+<span class="nc" id="L255">    return formNode.getFormName();</span>
+  }
+
+  @Override
+  public void onShow() {
+<span class="nc" id="L260">    OdeLog.log(&quot;YaFormEditor: got onShow() for &quot; + getFileId());</span>
+<span class="nc" id="L261">    super.onShow();</span>
+<span class="nc" id="L262">    loadDesigner();</span>
+<span class="nc" id="L263">    Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);</span>
+<span class="nc" id="L264">  }</span>
+
+  @Override
+  public void onHide() {
+<span class="nc" id="L268">    OdeLog.log(&quot;YaFormEditor: got onHide() for &quot; + getFileId());</span>
+    // When an editor is detached, if we are the &quot;current&quot; editor,
+    // set the current editor to null and clean up the UI.
+    // Note: I'm not sure it is possible that we would not be the &quot;current&quot;
+    // editor when this is called, but we check just to be safe.
+<span class="nc bnc" id="L273" title="All 2 branches missed.">    if (Ode.getInstance().getCurrentFileEditor() == this) {</span>
+<span class="nc" id="L274">      super.onHide();</span>
+<span class="nc" id="L275">      unloadDesigner();</span>
+    } else {
+<span class="nc" id="L277">      OdeLog.wlog(&quot;YaFormEditor.onHide: Not doing anything since we're not the &quot;</span>
+          + &quot;current file editor!&quot;);
+    }
+<span class="nc" id="L280">  }</span>
+
+  @Override
+  public void onClose() {
+<span class="nc" id="L284">    form.removeFormChangeListener(this);</span>
+    // Note: our partner YaBlocksEditor will remove itself as a FormChangeListener, even
+    // though we added it.
+<span class="nc" id="L287">  }</span>
+
+  @Override
+  public String getRawFileContent() {
+<span class="nc" id="L291">    String encodedProperties = encodeFormAsJsonString(false);</span>
+<span class="nc" id="L292">    JSONObject propertiesObject = JSON_PARSER.parse(encodedProperties).asObject();</span>
+<span class="nc" id="L293">    return YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);</span>
+  }
+
+  @Override
+  public void onSave() {
+<span class="nc" id="L298">  }</span>
+
+  // SimpleEditor methods
+
+  @Override
+  public boolean isLoadComplete() {
+<span class="nc" id="L304">    return loadComplete;</span>
+  }
+
+  @Override
+  public Map&lt;String, MockComponent&gt; getComponents() {
+<span class="nc" id="L309">    Map&lt;String, MockComponent&gt; map = Maps.newHashMap();</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc" id="L311">      populateComponentsMap(form, map);</span>
+    }
+<span class="nc" id="L313">    return map;</span>
+  }
+
+  @Override
+  public List&lt;String&gt; getComponentNames() {
+<span class="nc" id="L318">    return new ArrayList&lt;String&gt;(getComponents().keySet());</span>
+  }
+
+  @Override
+  public SimplePalettePanel getComponentPalettePanel() {
+<span class="nc" id="L323">    return palettePanel;</span>
+  }
+
+  @Override
+  public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
+<span class="nc" id="L328">    return nonVisibleComponentsPanel;</span>
+  }
+
+  public SimpleVisibleComponentsPanel getVisibleComponentsPanel() {
+<span class="nc" id="L332">    return visibleComponentsPanel;</span>
+  }
+
+  @Override
+  public boolean isScreen1() {
+<span class="nc" id="L337">    return formNode.isScreen1();</span>
+  }
+
+  @Override
+  public void refreshPropertiesPanel() {
+<span class="nc" id="L342">    designProperties.clear();</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">    if (selectedProperties != null) {</span>
+<span class="nc" id="L344">      designProperties.setProperties(selectedProperties);</span>
+    }
+<span class="nc" id="L346">  }</span>
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String propertyValue) {
+<span class="nc bnc" id="L352" title="All 2 branches missed.">    for (MockComponent selectedComponent : form.getSelectedComponents()) {</span>
+<span class="nc" id="L353">      selectedComponent.changeProperty(propertyName, propertyValue);</span>
+      // Ensure the editor matches (multiselect)
+<span class="nc" id="L355">      selectedComponent.getProperties().getExistingProperty(propertyName).getEditor().refresh();</span>
+<span class="nc" id="L356">    }</span>
+<span class="nc" id="L357">  }</span>
+
+  // FormChangeListener implementation
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component,
+      String propertyName, String propertyValue) {
+<span class="nc bnc" id="L364" title="All 2 branches missed.">    if (loadComplete) {</span>
+      // If the property isn't actually persisted to the .scm file, we don't need to do anything.
+<span class="nc bnc" id="L366" title="All 2 branches missed.">      if (component.isPropertyPersisted(propertyName)) {</span>
+<span class="nc" id="L367">        Ode.getInstance().getEditorManager().scheduleAutoSave(this);</span>
+<span class="nc" id="L368">        updatePhone();          // Push changes to the phone if it is connected</span>
+      }
+    } else {
+<span class="nc" id="L371">      OdeLog.elog(&quot;onComponentPropertyChanged called when loadComplete is false&quot;);</span>
+    }
+<span class="nc" id="L373">  }</span>
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">      if (permanentlyDeleted) {</span>
+<span class="nc" id="L379">        onFormStructureChange();</span>
+      }
+    } else {
+<span class="nc" id="L382">      OdeLog.elog(&quot;onComponentRemoved called when loadComplete is false&quot;);</span>
+    }
+<span class="nc" id="L384">  }</span>
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+<span class="nc bnc" id="L388" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc" id="L389">      selectedProperties = component.getProperties();</span>
+<span class="nc" id="L390">      onFormStructureChange();</span>
+    } else {
+<span class="nc" id="L392">      OdeLog.elog(&quot;onComponentAdded called when loadComplete is false&quot;);</span>
+    }
+<span class="nc" id="L394">  }</span>
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+<span class="nc bnc" id="L398" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc" id="L399">      onFormStructureChange();</span>
+<span class="nc" id="L400">      updatePropertiesPanel(form.getSelectedComponents(), true);</span>
+    } else {
+<span class="nc" id="L402">      OdeLog.elog(&quot;onComponentRenamed called when loadComplete is false&quot;);</span>
+    }
+<span class="nc" id="L404">  }</span>
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+<span class="nc bnc" id="L408" title="All 2 branches missed.">    if (loadComplete) {</span>
+<span class="nc" id="L409">      sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());</span>
+<span class="nc" id="L410">      updatePropertiesPanel(form.getSelectedComponents(), selected);</span>
+    } else {
+<span class="nc" id="L412">      OdeLog.elog(&quot;onComponentSelectionChange called when loadComplete is false&quot;);</span>
+    }
+<span class="nc" id="L414">  }</span>
+
+  // other public methods
+
+  /**
+   * Returns the form associated with this YaFormEditor.
+   *
+   * @return a MockForm
+   */
+  public MockForm getForm() {
+<span class="nc" id="L424">    return form;</span>
+  }
+
+  public String getComponentInstanceTypeName(String instanceName) {
+<span class="nc" id="L428">    return getComponents().get(instanceName).getType();</span>
+  }
+
+  // private methods
+
+  /*
+   * Upgrades the given file content, saves the upgraded content back to the
+   * ODE server, and calls the afterUpgradeComplete command after the save
+   * operation succeeds.
+   *
+   * If no upgrade is necessary, the afterSavingFiles command is called
+   * immediately.
+   *
+   * @param fileContentHolder  holds the file content
+   * @param afterUpgradeComplete  optional command to be executed after the
+   *                              file has upgraded and saved back to the ODE
+   *                              server
+   */
+  private void upgradeFile(FileContentHolder fileContentHolder,
+      final Command afterUpgradeComplete) {
+<span class="nc" id="L448">    JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(</span>
+<span class="nc" id="L449">        fileContentHolder.getFileContent(), JSON_PARSER);</span>
+
+    // BEGIN PROJECT TAGGING CODE
+
+    // |-------------------------------------------------------------------|
+    // | Project Tagging Code:                                             |
+    // | Because of the likely proliferation of various versions of App    |
+    // | Inventor, we want to mark a project with the history of which     |
+    // | versions have seen it. We do that with the &quot;authURL&quot; tag which we |
+    // | add to the Form files. It is a JSON array of versions identified  |
+    // | by the hostname portion of the URL of the service editing the     |
+    // | project. Older projects will not have this field, so if we detect |
+    // | an older project (YAV &lt; OLD_PROJECT_YAV) we create the list and   |
+    // | add ourselves. If we read in a project where YAV &gt;=               |
+    // | OLD_PROJECT_YAV *and* there is no authURL, we assume that it was  |
+    // | created on a version of App Inventor that doesn't support project |
+    // | tagging and we add an &quot;*UNKNOWN*&quot; tag to indicate this. So for    |
+    // | example if you examine a (newer) project and look in the          |
+    // | Screen1.scm file, you should just see an authURL that looks like  |
+    // | [&quot;ai2.appinventor.mit.edu&quot;]. This would indicate a project that   |
+    // | has only been edited on MIT App Inventor. If instead you see      |
+    // | something like [&quot;localhost&quot;, &quot;ai2.appinventor.mit.edu&quot;] it        |
+    // | implies that at some point in its history this project was edited |
+    // | using the local dev server on someone's own computer.             |
+    // |-------------------------------------------------------------------|
+
+<span class="nc" id="L475">    authURL = (JSONArray) propertiesObject.get(&quot;authURL&quot;);</span>
+<span class="nc" id="L476">    String ourHost = Window.Location.getHostName();</span>
+<span class="nc" id="L477">    JSONValue us = new ClientJsonString(ourHost);</span>
+<span class="nc bnc" id="L478" title="All 2 branches missed.">    if (authURL != null) {</span>
+<span class="nc" id="L479">      List&lt;JSONValue&gt; values = authURL.asArray().getElements();</span>
+<span class="nc" id="L480">      boolean foundUs = false;</span>
+<span class="nc bnc" id="L481" title="All 2 branches missed.">      for (JSONValue value : values) {</span>
+<span class="nc bnc" id="L482" title="All 2 branches missed.">        if (value.asString().getString().equals(ourHost)) {</span>
+<span class="nc" id="L483">          foundUs = true;</span>
+<span class="nc" id="L484">          break;</span>
+        }
+<span class="nc" id="L486">      }</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">      if (!foundUs) {</span>
+<span class="nc" id="L488">        authURL.asArray().getElements().add(us);</span>
+      }
+<span class="nc" id="L490">    } else {</span>
+      // Kludgey way to create an empty JSON array. But we cannot call ClientJsonArray ourselves
+      // because it is not a public class. So rather then make it public (and violate an abstraction
+      // barrier). We create the array this way. Sigh.
+<span class="nc" id="L494">      authURL = JSON_PARSER.parse(&quot;[]&quot;).asArray();</span>
+      // Warning: If YaVersion isn't present, we will get an NPF on
+      // the line below. But it should always be there...
+      // Note: YaVersion although a numeric value is stored as a Json String so we have
+      // to parse it as a string and then convert it to a number in Java.
+<span class="nc" id="L499">      int yav = Integer.parseInt(propertiesObject.get(&quot;YaVersion&quot;).asString().getString());</span>
+      // If yav is &gt; OLD_PROJECT_YAV, and we still don't have an
+      // authURL property then we likely originated from a non-MIT App
+      // Inventor instance so add an *Unknown* tag before our tag
+<span class="nc bnc" id="L503" title="All 2 branches missed.">      if (yav &gt; OLD_PROJECT_YAV) {</span>
+<span class="nc" id="L504">        authURL.asArray().getElements().add(new ClientJsonString(&quot;*UNKNOWN*&quot;));</span>
+      }
+<span class="nc" id="L506">      authURL.asArray().getElements().add(us);</span>
+    }
+
+    // END OF PROJECT TAGGING CODE
+
+<span class="nc" id="L511">    preUpgradeJsonString =  propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">    if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {</span>
+<span class="nc" id="L513">      String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);</span>
+<span class="nc" id="L514">      fileContentHolder.setFileContent(upgradedContent);</span>
+<span class="nc" id="L515">      Ode ode = Ode.getInstance();</span>
+<span class="nc bnc" id="L516" title="All 2 branches missed.">      if (ode.isReadOnly()) {   // Do not attempt to save out the project if we are in readonly mode</span>
+<span class="nc bnc" id="L517" title="All 2 branches missed.">        if (afterUpgradeComplete != null) {</span>
+<span class="nc" id="L518">          afterUpgradeComplete.execute(); // But do call the afterUpgradeComplete call</span>
+        }
+      } else {
+<span class="nc" id="L521">        Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),</span>
+<span class="nc" id="L522">          getProjectId(), getFileId(), upgradedContent,</span>
+<span class="nc" id="L523">          new OdeAsyncCallback&lt;Long&gt;(MESSAGES.saveError()) {</span>
+            @Override
+            public void onSuccess(Long result) {
+              // Execute the afterUpgradeComplete command if one was given.
+<span class="nc bnc" id="L527" title="All 2 branches missed.">              if (afterUpgradeComplete != null) {</span>
+<span class="nc" id="L528">                afterUpgradeComplete.execute();</span>
+              }
+<span class="nc" id="L530">            }</span>
+          });
+      }
+<span class="nc" id="L533">    } else {</span>
+      // No upgrade was necessary.
+      // Execute the afterUpgradeComplete command if one was given.
+<span class="nc bnc" id="L536" title="All 2 branches missed.">      if (afterUpgradeComplete != null) {</span>
+<span class="nc" id="L537">        afterUpgradeComplete.execute();</span>
+      }
+    }
+<span class="nc" id="L540">  }</span>
+
+  private void onFileLoaded(String content) {
+<span class="nc" id="L543">    JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(</span>
+        content, JSON_PARSER);
+    try {
+<span class="nc" id="L546">      form = createMockForm(propertiesObject.getProperties().get(&quot;Properties&quot;).asObject());</span>
+<span class="nc" id="L547">    } catch(ComponentNotFoundException e) {</span>
+<span class="nc" id="L548">      Ode.getInstance().recordCorruptProject(getProjectId(), getProjectRootNode().getName(),</span>
+<span class="nc" id="L549">          e.getMessage());</span>
+<span class="nc" id="L550">      ErrorReporter.reportError(MESSAGES.noComponentFound(e.getComponentName(),</span>
+<span class="nc" id="L551">          getProjectRootNode().getName()));</span>
+<span class="nc" id="L552">      throw e;</span>
+<span class="nc" id="L553">    }</span>
+
+    // Initialize the nonVisibleComponentsPanel and visibleComponentsPanel.
+<span class="nc" id="L556">    nonVisibleComponentsPanel.setForm(form);</span>
+<span class="nc" id="L557">    visibleComponentsPanel.setForm(form);</span>
+<span class="nc" id="L558">    form.select(null);</span>
+
+<span class="nc" id="L560">    String subsetjson = form.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);</span>
+<span class="nc bnc" id="L561" title="All 2 branches missed.">    if (subsetjson.length() &gt; 0) {</span>
+<span class="nc" id="L562">      reloadComponentPalette(subsetjson);</span>
+    }
+    // Set loadCompleted to true.
+    // From now on, all change events will be taken seriously.
+<span class="nc" id="L566">    loadComplete = true;</span>
+
+    // Originally this was done in loadDesigner. However, this resulted in
+    // the form and blocks editor not being registered for events until after
+    // they were opened. This became problematic if the user deleted an extension
+    // prior to opening the screen as they would never trigger a save, resulting
+    // in a corrupt project.
+
+    // Listen to changes on the form.
+<span class="nc" id="L575">    form.addFormChangeListener(this);</span>
+    // Also have the blocks editor listen to changes. Do this here instead
+    // of in the blocks editor so that we don't risk it missing any updates.
+<span class="nc" id="L578">    form.addFormChangeListener(((YaProjectEditor) projectEditor)</span>
+<span class="nc" id="L579">        .getBlocksFileEditor(form.getName()));</span>
+<span class="nc" id="L580">  }</span>
+
+  public void reloadComponentPalette(String subsetjson) {
+<span class="nc" id="L583">    OdeLog.log(subsetjson);</span>
+<span class="nc" id="L584">    Set&lt;String&gt; shownComponents = new HashSet&lt;String&gt;();</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">    if (subsetjson.length() &gt; 0) {</span>
+      try {
+<span class="nc" id="L587">        String shownComponentsStr = getShownComponents(subsetjson);</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        if (shownComponentsStr.length() &gt; 0) {</span>
+<span class="nc" id="L589">          shownComponents = new HashSet&lt;String&gt;(Arrays.asList(shownComponentsStr.split(&quot;,&quot;)));</span>
+        }
+<span class="nc" id="L591">      } catch (Exception e) {</span>
+<span class="nc" id="L592">        OdeLog.log(&quot;invalid subset string&quot;);</span>
+<span class="nc" id="L593">      }</span>
+      // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
+<span class="nc" id="L595">      palettePanel.clearComponentsExceptExtension();</span>
+    } else {
+<span class="nc" id="L597">      shownComponents = COMPONENT_DATABASE.getComponentNames();</span>
+<span class="nc" id="L598">      palettePanel.clearComponents();</span>
+    }
+<span class="nc bnc" id="L600" title="All 2 branches missed.">    for (String component : shownComponents) {</span>
+<span class="nc" id="L601">      palettePanel.addComponent(component);</span>
+<span class="nc" id="L602">    }</span>
+<span class="nc" id="L603">  }</span>
+
+  private native String getShownComponents(String subsetString)/*-{
+    var jsonObj = JSON.parse(subsetString);
+    var shownComponentTypes = jsonObj[&quot;shownComponentTypes&quot;];
+    var shownString = &quot;&quot;;
+    for (var category in shownComponentTypes) {
+      var categoryArr = shownComponentTypes[category];
+      for (var i = 0; i &lt; categoryArr.length; i++) {
+        shownString = shownString + &quot;,&quot; + categoryArr[i][&quot;type&quot;];
+        //console.log(categoryArr[i][&quot;type&quot;]);
+      }
+    }
+    var shownCompStr = shownString.substring(1);
+    //console.log(shownCompStr);
+    return shownCompStr;
+  }-*/;
+
+  /*
+   * Parses the JSON properties and creates the form and its component structure.
+   */
+  private MockForm createMockForm(JSONObject propertiesObject) {
+<span class="nc" id="L625">    return (MockForm) createMockComponent(propertiesObject, null);</span>
+  }
+
+  private MockComponent createMockComponent(JSONObject properties, MockContainer container) {
+<span class="nc" id="L629">    return createMockComponent(properties, container, null);</span>
+  }
+
+  /*
+   * Parses the JSON properties and creates the component structure. This method is called
+   * recursively for nested components. For the initial invocation parent shall be null.
+   */
+  private MockComponent createMockComponent(JSONObject propertiesObject, MockContainer parent, Map&lt;String, String&gt; substitution) {
+<span class="nc" id="L637">    Map&lt;String, JSONValue&gt; properties = propertiesObject.getProperties();</span>
+
+    // Component name and type
+<span class="nc" id="L640">    String componentType = properties.get(&quot;$Type&quot;).asString().getString();</span>
+
+    // Set the name of the component (on instantiation components are assigned a generated name)
+<span class="nc" id="L643">    boolean shouldRename = false;</span>
+<span class="nc" id="L644">    String componentName = properties.get(&quot;$Name&quot;).asString().getString();</span>
+
+    // Instantiate a mock component for the visual designer
+    MockComponent mockComponent;
+<span class="nc bnc" id="L648" title="All 2 branches missed.">    if (componentType.equals(MockForm.TYPE)) {</span>
+<span class="nc bnc" id="L649" title="All 2 branches missed.">      Preconditions.checkArgument(parent == null);</span>
+
+      // Instantiate new root component
+<span class="nc" id="L652">      mockComponent = new MockForm(this);</span>
+    } else {
+<span class="nc" id="L654">      mockComponent = SimpleComponentDescriptor.createMockComponent(componentType,</span>
+<span class="nc" id="L655">          COMPONENT_DATABASE.getComponentType(componentType), this);</span>
+
+      // Ensure unique name on paste
+<span class="nc bnc" id="L658" title="All 2 branches missed.">      if (substitution != null) {</span>
+<span class="nc" id="L659">        List&lt;String&gt; names = getComponentNames();</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">        if (names.contains(componentName)) {</span>
+<span class="nc" id="L661">          String oldName = componentName;</span>
+<span class="nc" id="L662">          componentName = gensymName(componentType, componentName);</span>
+<span class="nc" id="L663">          substitution.put(oldName, componentName);</span>
+<span class="nc" id="L664">          shouldRename = true;</span>
+<span class="nc bnc" id="L665" title="All 2 branches missed.">        } else if (!mockComponent.getPropertyValue(PROPERTY_NAME_NAME).equals(componentName)) {</span>
+          // If the SCD gensyms a name, but it is free, we rename it back.
+<span class="nc" id="L667">          shouldRename = true;</span>
+        }
+<span class="nc" id="L669">        properties.remove(MockComponent.PROPERTY_NAME_UUID);</span>
+      }
+
+      // Add the component to its parent component (and if it is non-visible, add it to the
+      // nonVisibleComponent panel).
+<span class="nc" id="L674">      parent.addComponent(mockComponent);</span>
+<span class="nc bnc" id="L675" title="All 2 branches missed.">      if (!mockComponent.isVisibleComponent()) {</span>
+<span class="nc" id="L676">        nonVisibleComponentsPanel.addComponent(mockComponent);</span>
+      }
+    }
+
+<span class="nc bnc" id="L680" title="All 2 branches missed.">    if (shouldRename) {</span>
+<span class="nc" id="L681">      mockComponent.rename(componentName);</span>
+    } else {
+<span class="nc" id="L683">      mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);</span>
+    }
+
+<span class="nc bnc" id="L686" title="All 2 branches missed.">    if (mockComponent instanceof MockForm) {</span>
+      // A bug in an early version of multiselect resulted in Form gaining Row and Column
+      // properties, which are reserved for visible components that can appear in TableArrangements.
+      // Form doesn't have these properties, so we need to clean up the properties. The remove
+      // call here is idempotent--if the property is present, it is removed. If not present, the
+      // map remains unchanged.
+<span class="nc" id="L692">      properties.remove(MockVisibleComponent.PROPERTY_NAME_ROW);</span>
+<span class="nc" id="L693">      properties.remove(MockVisibleComponent.PROPERTY_NAME_COLUMN);</span>
+    }
+
+    // Set component properties
+<span class="nc bnc" id="L697" title="All 2 branches missed.">    for (String name : properties.keySet()) {</span>
+<span class="nc bnc" id="L698" title="All 2 branches missed.">      if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)</span>
+<span class="nc" id="L699">        mockComponent.changeProperty(name, properties.get(name).asString().getString());</span>
+      }
+<span class="nc" id="L701">    }</span>
+
+
+
+    //This is for old project which doesn't have the AppName property
+<span class="nc bnc" id="L706" title="All 2 branches missed.">    if (mockComponent instanceof MockForm) {</span>
+<span class="nc bnc" id="L707" title="All 2 branches missed.">      if (!properties.keySet().contains(&quot;AppName&quot;)) {</span>
+<span class="nc" id="L708">        String fileId = getFileId();</span>
+<span class="nc" id="L709">        String projectName = fileId.split(&quot;/&quot;)[3];</span>
+<span class="nc" id="L710">        mockComponent.changeProperty(&quot;AppName&quot;, projectName);</span>
+      }
+    }
+
+    // Add component type to the blocks editor
+<span class="nc" id="L715">    getBlocksEditor().addComponent(mockComponent.getType(), mockComponent.getName(),</span>
+<span class="nc" id="L716">        mockComponent.getUuid());</span>
+
+    // Add nested components
+<span class="nc bnc" id="L719" title="All 2 branches missed.">    if (properties.containsKey(&quot;$Components&quot;)) {</span>
+<span class="nc bnc" id="L720" title="All 2 branches missed.">      for (JSONValue nestedComponent : properties.get(&quot;$Components&quot;).asArray().getElements()) {</span>
+<span class="nc" id="L721">        createMockComponent(nestedComponent.asObject(), (MockContainer) mockComponent, substitution);</span>
+<span class="nc" id="L722">      }</span>
+    }
+
+<span class="nc" id="L725">    return mockComponent;</span>
+  }
+
+  @Override
+  public void getBlocksImage(Callback&lt;String, String&gt; callback) {
+<span class="nc" id="L730">    getBlocksEditor().getBlocksImage(callback);</span>
+<span class="nc" id="L731">  }</span>
+
+  /*
+   * Updates the the whole designer: form, palette, source structure explorer,
+   * assets list, and properties panel.
+   */
+  private void loadDesigner() {
+<span class="nc" id="L738">    form.refresh();</span>
+<span class="nc" id="L739">    MockComponent selectedComponent = form.getLastSelectedComponent();</span>
+
+    // Set the palette box's content.
+<span class="nc" id="L742">    PaletteBox paletteBox = PaletteBox.getPaletteBox();</span>
+<span class="nc" id="L743">    paletteBox.setContent(palettePanel);</span>
+
+    // Update the source structure explorer with the tree of this form's components.
+<span class="nc" id="L746">    sourceStructureExplorer.updateTree(form.buildComponentsTree(),</span>
+<span class="nc" id="L747">        selectedComponent.getSourceStructureExplorerItem());</span>
+<span class="nc" id="L748">    SourceStructureBox.getSourceStructureBox().setVisible(true);</span>
+
+    // Show the assets box.
+<span class="nc" id="L751">    AssetListBox assetListBox = AssetListBox.getAssetListBox();</span>
+<span class="nc" id="L752">    assetListBox.setVisible(true);</span>
+
+    // Set the properties box's content.
+<span class="nc" id="L755">    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();</span>
+<span class="nc" id="L756">    propertiesBox.setContent(designProperties);</span>
+<span class="nc" id="L757">    updatePropertiesPanel(form.getSelectedComponents(), true);</span>
+<span class="nc" id="L758">    propertiesBox.setVisible(true);</span>
+<span class="nc" id="L759">  }</span>
+
+  /*
+   * Show the given component's properties in the properties panel.
+   */
+  private void updatePropertiesPanel(List&lt;MockComponent&gt; components, boolean selected) {
+<span class="nc bnc" id="L765" title="All 4 branches missed.">    if (components == null || components.size() == 0) {</span>
+<span class="nc" id="L766">      throw new IllegalArgumentException(&quot;components must be a list of at least 1&quot;);</span>
+    }
+<span class="nc bnc" id="L768" title="All 2 branches missed.">    if (selectedProperties != null) {</span>
+<span class="nc" id="L769">      selectedProperties.removePropertyChangeListener(this);</span>
+    }
+<span class="nc bnc" id="L771" title="All 2 branches missed.">    if (components.size() == 1) {</span>
+<span class="nc" id="L772">      selectedProperties = components.get(0).getProperties();</span>
+    } else {
+<span class="nc" id="L774">      EditableProperties newProperties = new EditableProperties(true);</span>
+<span class="nc" id="L775">      Map&lt;String, EditableProperty&gt; propertyMaps = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L776">      boolean first = true;</span>
+<span class="nc bnc" id="L777" title="All 2 branches missed.">      for (MockComponent component : components) {</span>
+<span class="nc" id="L778">        Set&lt;String&gt; properties = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L779" title="All 2 branches missed.">        for (EditableProperty property : component.getProperties()) {</span>
+<span class="nc" id="L780">          String propertyName = property.getName();</span>
+          // Ignore UUID and NAME properties (can't be edited and always unique)
+<span class="nc bnc" id="L782" title="All 4 branches missed.">          if (&quot;Uuid&quot;.equals(propertyName) || &quot;Name&quot;.equals(propertyName)) {</span>
+<span class="nc" id="L783">            continue;</span>
+          }
+<span class="nc bnc" id="L785" title="All 2 branches missed.">          if (first) {</span>
+<span class="nc" id="L786">            propertyMaps.put(propertyName + &quot;:&quot; + property.getType(), property);</span>
+          } else {
+<span class="nc" id="L788">            properties.add(propertyName + &quot;:&quot; + property.getType());</span>
+          }
+<span class="nc" id="L790">        }</span>
+<span class="nc bnc" id="L791" title="All 2 branches missed.">        if (properties.size() &gt; 0) {</span>
+<span class="nc" id="L792">          propertyMaps.keySet().retainAll(properties);</span>
+        }
+<span class="nc" id="L794">        first = false;</span>
+<span class="nc" id="L795">      }</span>
+<span class="nc bnc" id="L796" title="All 2 branches missed.">      for (EditableProperty property : propertyMaps.values()) {</span>
+<span class="nc" id="L797">        String name = property.getName();</span>
+<span class="nc" id="L798">        newProperties.addProperty(</span>
+            name,
+<span class="nc" id="L800">            property.getDefaultValue(),</span>
+<span class="nc" id="L801">            property.getCaption(),</span>
+<span class="nc" id="L802">            PropertiesUtil.createPropertyEditor(property.getEditorType(),</span>
+<span class="nc" id="L803">                property.getDefaultValue(), this, property.getEditorArgs()),</span>
+<span class="nc" id="L804">            property.getType(),</span>
+<span class="nc" id="L805">            property.getEditorType(),</span>
+<span class="nc" id="L806">            property.getEditorArgs()</span>
+        );
+
+        // Determine if all components have the same value and apply it
+<span class="nc" id="L810">        String sharedValue = components.get(0).getPropertyValue(name);</span>
+<span class="nc" id="L811">        boolean collision = false;</span>
+<span class="nc bnc" id="L812" title="All 2 branches missed.">        for (MockComponent component : components) {</span>
+<span class="nc" id="L813">          String propValue = component.getPropertyValue(name);</span>
+<span class="nc bnc" id="L814" title="All 2 branches missed.">          if (!sharedValue.equals(propValue)) {</span>
+<span class="nc" id="L815">            sharedValue = &quot;&quot;;</span>
+<span class="nc" id="L816">            collision = true;</span>
+<span class="nc" id="L817">            break;</span>
+          }
+<span class="nc" id="L819">        }</span>
+<span class="nc" id="L820">        newProperties.getProperty(name).getEditor().setMultipleValues(collision);</span>
+<span class="nc" id="L821">        newProperties.getProperty(name).getEditor().setMultiselectMode(true);</span>
+<span class="nc" id="L822">        newProperties.getProperty(name).setValue(sharedValue);</span>
+<span class="nc" id="L823">      }</span>
+<span class="nc" id="L824">      selectedProperties = newProperties;</span>
+    }
+<span class="nc bnc" id="L826" title="All 2 branches missed.">    if (selected) {</span>
+<span class="nc" id="L827">      selectedProperties.addPropertyChangeListener(this);</span>
+    }
+<span class="nc" id="L829">    designProperties.setProperties(selectedProperties);</span>
+<span class="nc bnc" id="L830" title="All 2 branches missed.">    if (components.size() &gt; 1) {</span>
+<span class="nc" id="L831">      designProperties.setPropertiesCaption(components.size() + &quot; components selected&quot;);</span>
+    } else {
+      // need to update the caption after the setProperties call, since
+      // setProperties clears the caption!
+<span class="nc" id="L835">      designProperties.setPropertiesCaption(components.get(0).getName());</span>
+    }
+<span class="nc" id="L837">  }</span>
+
+  private void onFormStructureChange() {
+<span class="nc" id="L840">    Ode.getInstance().getEditorManager().scheduleAutoSave(this);</span>
+
+    // Update source structure panel
+<span class="nc" id="L843">    sourceStructureExplorer.updateTree(form.buildComponentsTree(),</span>
+<span class="nc" id="L844">        form.getLastSelectedComponent().getSourceStructureExplorerItem());</span>
+<span class="nc" id="L845">    updatePhone();          // Push changes to the phone if it is connected</span>
+<span class="nc" id="L846">  }</span>
+
+  private void populateComponentsMap(MockComponent component, Map&lt;String, MockComponent&gt; map) {
+<span class="nc" id="L849">    EditableProperties properties = component.getProperties();</span>
+<span class="nc" id="L850">    map.put(properties.getPropertyValue(&quot;Name&quot;), component);</span>
+<span class="nc" id="L851">    List&lt;MockComponent&gt; children = component.getChildren();</span>
+<span class="nc bnc" id="L852" title="All 2 branches missed.">    for (MockComponent child : children) {</span>
+<span class="nc" id="L853">      populateComponentsMap(child, map);</span>
+<span class="nc" id="L854">    }</span>
+<span class="nc" id="L855">  }</span>
+
+  /*
+   * Encodes the form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
+   * to send the form info to the blockly world during code generation.
+   */
+  protected String encodeFormAsJsonString(boolean forYail) {
+<span class="nc" id="L862">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L863">    sb.append(&quot;{&quot;);</span>
+    // Include authURL in output if it is non-null
+<span class="nc bnc" id="L865" title="All 2 branches missed.">    if (authURL != null) {</span>
+<span class="nc" id="L866">      sb.append(&quot;\&quot;authURL\&quot;:&quot;).append(authURL.toJson()).append(&quot;,&quot;);</span>
+    }
+<span class="nc" id="L868">    sb.append(&quot;\&quot;YaVersion\&quot;:\&quot;&quot;).append(YaVersion.YOUNG_ANDROID_VERSION).append(&quot;\&quot;,&quot;);</span>
+<span class="nc" id="L869">    sb.append(&quot;\&quot;Source\&quot;:\&quot;Form\&quot;,&quot;);</span>
+<span class="nc" id="L870">    sb.append(&quot;\&quot;Properties\&quot;:&quot;);</span>
+<span class="nc" id="L871">    encodeComponentProperties(form, sb, forYail);</span>
+<span class="nc" id="L872">    sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L873">    return sb.toString();</span>
+  }
+
+  // [lyn, 2014/10/13] returns the *pre-upgraded* JSON for this form.
+  // needed to allow associated blocks editor to get this info.
+  protected String preUpgradeJsonString() {
+<span class="nc" id="L879">    return preUpgradeJsonString;</span>
+  }
+
+  /*
+   * Encodes a component and its properties into a JSON encoded string.
+   */
+  private void encodeComponentProperties(MockComponent component, StringBuilder sb, boolean forYail) {
+    // The component encoding starts with component name and type
+<span class="nc" id="L887">    String componentType = component.getType();</span>
+<span class="nc" id="L888">    EditableProperties properties = component.getProperties();</span>
+<span class="nc" id="L889">    sb.append(&quot;{\&quot;$Name\&quot;:\&quot;&quot;);</span>
+<span class="nc" id="L890">    sb.append(properties.getPropertyValue(&quot;Name&quot;));</span>
+<span class="nc" id="L891">    sb.append(&quot;\&quot;,\&quot;$Type\&quot;:\&quot;&quot;);</span>
+<span class="nc" id="L892">    sb.append(componentType);</span>
+<span class="nc" id="L893">    sb.append(&quot;\&quot;,\&quot;$Version\&quot;:\&quot;&quot;);</span>
+<span class="nc" id="L894">    sb.append(COMPONENT_DATABASE.getComponentVersion(componentType));</span>
+<span class="nc" id="L895">    sb.append('&quot;');</span>
+
+    // Next the actual component properties
+    //
+    // NOTE: It is important that these be encoded before any children components.
+<span class="nc" id="L900">    String propertiesString = properties.encodeAsPairs(forYail);</span>
+<span class="nc bnc" id="L901" title="All 2 branches missed.">    if (propertiesString.length() &gt; 0) {</span>
+<span class="nc" id="L902">      sb.append(',');</span>
+<span class="nc" id="L903">      sb.append(propertiesString);</span>
+    }
+
+    // Finally any children of the component
+<span class="nc" id="L907">    List&lt;MockComponent&gt; children = component.getChildren();</span>
+<span class="nc bnc" id="L908" title="All 2 branches missed.">    if (!children.isEmpty()) {</span>
+<span class="nc" id="L909">      sb.append(&quot;,\&quot;$Components\&quot;:[&quot;);</span>
+<span class="nc" id="L910">      String separator = &quot;&quot;;</span>
+<span class="nc bnc" id="L911" title="All 2 branches missed.">      for (MockComponent child : children) {</span>
+<span class="nc" id="L912">        sb.append(separator);</span>
+<span class="nc" id="L913">        encodeComponentProperties(child, sb, forYail);</span>
+<span class="nc" id="L914">        separator = &quot;,&quot;;</span>
+<span class="nc" id="L915">      }</span>
+<span class="nc" id="L916">      sb.append(']');</span>
+    }
+
+<span class="nc" id="L919">    sb.append('}');</span>
+<span class="nc" id="L920">  }</span>
+
+  /*
+   * Clears the palette, source structure explorer, and properties panel.
+   */
+  private void unloadDesigner() {
+    // The form can still potentially change if the blocks editor is displayed
+    // so don't remove the formChangeListener.
+
+    // Clear the palette box.
+<span class="nc" id="L930">    PaletteBox paletteBox = PaletteBox.getPaletteBox();</span>
+<span class="nc" id="L931">    paletteBox.clear();</span>
+
+    // Clear and hide the source structure explorer.
+<span class="nc" id="L934">    sourceStructureExplorer.clearTree();</span>
+<span class="nc" id="L935">    SourceStructureBox.getSourceStructureBox().setVisible(false);</span>
+
+    // Hide the assets box.
+<span class="nc" id="L938">    AssetListBox assetListBox = AssetListBox.getAssetListBox();</span>
+<span class="nc" id="L939">    assetListBox.setVisible(false);</span>
+
+    // Clear and hide the properties box.
+<span class="nc" id="L942">    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();</span>
+<span class="nc" id="L943">    propertiesBox.clear();</span>
+<span class="nc" id="L944">    propertiesBox.setVisible(false);</span>
+<span class="nc" id="L945">  }</span>
+
+  /**
+   * Runs through all the Mock Components and upgrades if its corresponding Component was Upgraded
+   * @param componentTypes the Component Types that got upgraded
+   */
+  private void updateMockComponents(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L952">    Map&lt;String, MockComponent&gt; componentMap = getComponents();</span>
+<span class="nc bnc" id="L953" title="All 2 branches missed.">    for (MockComponent mockComponent : componentMap.values()) {</span>
+<span class="nc bnc" id="L954" title="All 2 branches missed.">      if (componentTypes.contains(mockComponent.getType())) {</span>
+<span class="nc" id="L955">        mockComponent.upgrade();</span>
+<span class="nc" id="L956">        mockComponent.upgradeComplete();</span>
+      }
+<span class="nc" id="L958">    }</span>
+<span class="nc" id="L959">  }</span>
+
+  /*
+   * Push changes to a connected phone (or emulator).
+   */
+  private void updatePhone() {
+<span class="nc" id="L965">    getBlocksEditor().sendComponentData();</span>
+<span class="nc" id="L966">  }</span>
+
+  @Override
+  public void onComponentTypeAdded(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L970">    COMPONENT_DATABASE.removeComponentDatabaseListener(this);</span>
+<span class="nc bnc" id="L971" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {</span>
+<span class="nc" id="L972">      cdbChangeListener.onComponentTypeAdded(componentTypes);</span>
+<span class="nc" id="L973">    }</span>
+    //Update Mock Components
+<span class="nc" id="L975">    updateMockComponents(componentTypes);</span>
+    //Update the Properties Panel
+<span class="nc" id="L977">    updatePropertiesPanel(form.getSelectedComponents(), true);</span>
+<span class="nc" id="L978">  }</span>
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L982">    boolean result = true;</span>
+<span class="nc bnc" id="L983" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {</span>
+<span class="nc" id="L984">      result = result &amp; cdbChangeListener.beforeComponentTypeRemoved(componentTypes);</span>
+<span class="nc" id="L985">    }</span>
+<span class="nc" id="L986">    List&lt;MockComponent&gt; mockComponents = new ArrayList&lt;MockComponent&gt;(getForm().getChildren());</span>
+<span class="nc bnc" id="L987" title="All 2 branches missed.">    for (String compType : componentTypes) {</span>
+<span class="nc bnc" id="L988" title="All 2 branches missed.">      for (MockComponent mockComp : mockComponents) {</span>
+<span class="nc bnc" id="L989" title="All 2 branches missed.">        if (mockComp.getType().equals(compType)) {</span>
+<span class="nc" id="L990">          mockComp.delete();</span>
+        }
+<span class="nc" id="L992">      }</span>
+<span class="nc" id="L993">    }</span>
+<span class="nc" id="L994">    return result;</span>
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map&lt;String, String&gt; componentTypes) {
+<span class="nc" id="L999">    COMPONENT_DATABASE.removeComponentDatabaseListener(this);</span>
+<span class="nc bnc" id="L1000" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {</span>
+<span class="nc" id="L1001">      cdbChangeListener.onComponentTypeRemoved(componentTypes);</span>
+<span class="nc" id="L1002">    }</span>
+<span class="nc" id="L1003">  }</span>
+
+  @Override
+  public void onResetDatabase() {
+<span class="nc" id="L1007">    COMPONENT_DATABASE.removeComponentDatabaseListener(this);</span>
+<span class="nc bnc" id="L1008" title="All 2 branches missed.">    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {</span>
+<span class="nc" id="L1009">      cdbChangeListener.onResetDatabase();</span>
+<span class="nc" id="L1010">    }</span>
+<span class="nc" id="L1011">  }</span>
+
+  @SuppressWarnings(&quot;checkstyle:LineLength&quot;)
+  private native void registerNativeListeners()/*-{
+    var editor = this;
+
+    function copy(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // don't interfere with copy/pasting input
+        return false;
+      }
+      if ($wnd.getSelection &amp;&amp; $wnd.getSelection() &amp;&amp; $wnd.getSelection().toString() != '') {
+        // user is copying some other selection on the page
+        return false;
+      }
+      if (!editor.@com.google.appinventor.client.editor.FileEditor::isActiveEditor()()) {
+        // don't copy/paste in non-active editor
+        return false;
+      }
+      var data = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentJson()();
+      var xml = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentBlocks()();
+      data = JSON.parse(data);
+      if (data instanceof Array) {
+        data = {'$components': data, '$blocks': xml};
+      } else {
+        data = {'$components': [data], '$blocks': xml};
+      }
+      data = JSON.stringify(data);
+      e.clipboardData.setData(&quot;application/json&quot;, data);
+      e.clipboardData.setData(&quot;text/plain&quot;, data);
+      e.preventDefault();
+      return true;
+    }
+
+    $wnd.addEventListener('cut', function (e) {
+      if (copy(e)) {
+        editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::deleteSelectedComponent()();
+      }
+    });
+
+    $wnd.addEventListener('copy', function (e) {
+      copy(e);
+    });
+
+    $wnd.addEventListener('keydown', function(e) {
+      if (e.keyCode === 16) {
+        editor.shiftDown = true;
+      }
+    });
+
+    $wnd.addEventListener('keyup', function(e) {
+      if (e.keyCode === 16) {
+        editor.shiftDown = false;
+      }
+    });
+
+    $wnd.addEventListener('paste', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // don't interfere with copy/pasting input
+        return;
+      }
+      if (!editor.@com.google.appinventor.client.editor.FileEditor::isActiveEditor()()) {
+        // don't copy/paste in non-active editor
+        return;
+      }
+      var data = e.clipboardData.getData('application/json');
+      if (data === undefined || data === '') {
+        data = e.clipboardData.getData('text/plain');
+      }
+      try {
+        JSON.parse(data);
+        e.preventDefault();
+      } catch(e) {
+        return;  // not valid JSON to paste, abort!
+      }
+      editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJsni(*)(data, editor.shiftDown);
+    });
+  }-*/;
+
+  private void deleteSelectedComponent() {
+<span class="nc bnc" id="L1091" title="All 2 branches missed.">    if (form.getLastSelectedComponent() instanceof MockForm) {</span>
+<span class="nc" id="L1092">      return;  // Cannot delete MockForm</span>
+    }
+<span class="nc" id="L1094">    form.getLastSelectedComponent().delete();</span>
+<span class="nc" id="L1095">  }</span>
+
+  private native JsArrayString concat(JsArrayString first, JsArrayString second)/*-{
+    return first.concat(second);
+  }-*/;
+
+  private YaBlocksEditor getBlocksEditor() {
+<span class="nc" id="L1102">    return ((YaProjectEditor) projectEditor).getBlocksFileEditor(formNode.getFormName());</span>
+  }
+
+  private JsArrayString getSelectedComponentBlocks() {
+<span class="nc" id="L1106">    JsArrayString code = (JsArrayString) JsArrayString.createArray();</span>
+<span class="nc" id="L1107">    final YaBlocksEditor editor = getBlocksEditor();</span>
+<span class="nc bnc" id="L1108" title="All 2 branches missed.">    for (MockComponent component : form.getSelectedComponents()) {</span>
+<span class="nc" id="L1109">      code = concat(code, getSelectedComponentBlocks(component, editor));</span>
+<span class="nc" id="L1110">    }</span>
+<span class="nc" id="L1111">    return code;</span>
+  }
+
+  private JsArrayString getSelectedComponentBlocks(MockComponent component,
+      YaBlocksEditor blocksEditor) {
+<span class="nc" id="L1116">    JsArrayString blocks = blocksEditor.getTopBlocksForComponentByName(component.getName());</span>
+<span class="nc bnc" id="L1117" title="All 2 branches missed.">    if (component instanceof MockContainer) {</span>
+<span class="nc bnc" id="L1118" title="All 2 branches missed.">      for (MockComponent child : ((MockContainer) component).getChildren()) {</span>
+<span class="nc" id="L1119">        JsArrayString childBlocks = getSelectedComponentBlocks(child, blocksEditor);</span>
+<span class="nc bnc" id="L1120" title="All 2 branches missed.">        for (int i = 0; i &lt; childBlocks.length(); i++) {</span>
+<span class="nc" id="L1121">          blocks.push(childBlocks.get(i));</span>
+        }
+<span class="nc" id="L1123">      }</span>
+    }
+<span class="nc" id="L1125">    return blocks;</span>
+  }
+
+  private String getSelectedComponentJson() {
+<span class="nc" id="L1129">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L1130">    String sep = &quot;&quot;;</span>
+<span class="nc" id="L1131">    sb.append(&quot;[&quot;);</span>
+<span class="nc bnc" id="L1132" title="All 2 branches missed.">    if (form.getSelectedComponents().size() == 1</span>
+<span class="nc bnc" id="L1133" title="All 2 branches missed.">        &amp;&amp; form.getSelectedComponents().get(0) instanceof MockForm) {</span>
+<span class="nc" id="L1134">      encodeComponentProperties(form, sb, false);</span>
+    } else {
+<span class="nc bnc" id="L1136" title="All 2 branches missed.">      for (MockComponent component : form.getSelectedComponents()) {</span>
+<span class="nc bnc" id="L1137" title="All 2 branches missed.">        if (component instanceof MockForm) {</span>
+<span class="nc" id="L1138">          continue;</span>
+        }
+<span class="nc" id="L1140">        sb.append(sep);</span>
+<span class="nc" id="L1141">        encodeComponentProperties(component, sb, false);</span>
+<span class="nc" id="L1142">        sep = &quot;,&quot;;</span>
+<span class="nc" id="L1143">      }</span>
+    }
+<span class="nc" id="L1145">    sb.append(&quot;]&quot;);</span>
+<span class="nc bnc" id="L1146" title="All 2 branches missed.">    if (sb.length() == 2) {</span>
+<span class="nc" id="L1147">      return &quot;&quot;;  // Only had the MockForm selected and you can't copy a form.</span>
+    }
+<span class="nc bnc" id="L1149" title="All 2 branches missed.">    if (form.getLastSelectedComponent() instanceof MockForm) {</span>
+<span class="nc" id="L1150">      form.setPasteTarget(form);</span>
+    } else {
+<span class="nc" id="L1152">      form.setPasteTarget(form.getLastSelectedComponent().getContainer());</span>
+    }
+<span class="nc" id="L1154">    return sb.toString();</span>
+  }
+
+  private MockComponent pasteComponents(JSONArray components, MockContainer container,
+      Map&lt;String, String&gt; substitution) {
+<span class="nc" id="L1159">    MockComponent lastComponentCreated = null;</span>
+<span class="nc" id="L1160">    int insertBefore = -2;</span>
+<span class="nc bnc" id="L1161" title="All 2 branches missed.">    for (MockComponent component : form.getSelectedComponents()) {</span>
+<span class="nc bnc" id="L1162" title="All 2 branches missed.">      if (component.isVisibleComponent()) {</span>
+<span class="nc" id="L1163">        insertBefore = Math.max(insertBefore, container.getChildren().indexOf(component));</span>
+      }
+<span class="nc" id="L1165">    }</span>
+<span class="nc bnc" id="L1166" title="All 2 branches missed.">    if (insertBefore &lt; 0) {</span>
+<span class="nc" id="L1167">      insertBefore = container.getShowingVisibleChildren().size();</span>
+    } else {
+<span class="nc" id="L1169">      insertBefore++;</span>
+    }
+<span class="nc bnc" id="L1171" title="All 2 branches missed.">    for (JSONValue element : components.getElements()) {</span>
+<span class="nc" id="L1172">      JSONObject object = element.asObject();</span>
+<span class="nc" id="L1173">      String type = object.get(&quot;$Type&quot;).asString().getString();</span>
+<span class="nc bnc" id="L1174" title="All 2 branches missed.">      if (container.willAcceptComponentType(type)) {</span>
+<span class="nc" id="L1175">        MockComponent pasted = createMockComponent(object, container, substitution);</span>
+<span class="nc bnc" id="L1176" title="All 2 branches missed.">        if (pasted.isVisibleComponent()) {</span>
+<span class="nc" id="L1177">          container.removeComponent(pasted, false);</span>
+<span class="nc" id="L1178">          container.addVisibleComponent(pasted, insertBefore);</span>
+<span class="nc" id="L1179">          insertBefore = container.getChildren().indexOf(pasted) + 1;</span>
+        }
+<span class="nc" id="L1181">        lastComponentCreated = pasted;</span>
+      }
+<span class="nc" id="L1183">    }</span>
+<span class="nc" id="L1184">    return lastComponentCreated;</span>
+  }
+
+  private MockComponent pasteForm(JSONObject prototype, Map&lt;String, String&gt; substitution) {
+    // Copy the properties
+<span class="nc bnc" id="L1189" title="All 2 branches missed.">    for (Map.Entry&lt;String, JSONValue&gt; property : prototype.getProperties().entrySet()) {</span>
+<span class="nc bnc" id="L1190" title="All 2 branches missed.">      if (property.getKey().startsWith(&quot;$&quot;)</span>
+<span class="nc bnc" id="L1191" title="All 2 branches missed.">          || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {</span>
+<span class="nc" id="L1192">        continue;</span>
+      }
+<span class="nc" id="L1194">      form.getProperties().getExistingProperty(property.getKey())</span>
+<span class="nc" id="L1195">          .setValue(property.getValue().asString().getString());</span>
+<span class="nc" id="L1196">    }</span>
+
+    // Clone the children
+<span class="nc" id="L1199">    MockComponent lastPasted = pasteComponents(prototype.get(&quot;$Components&quot;).asArray(), form,</span>
+        substitution);
+<span class="nc bnc" id="L1201" title="All 2 branches missed.">    return lastPasted == null ? form : lastPasted;</span>
+  }
+
+  private void pasteFromJsni(String jso, boolean dropBlocks) {
+<span class="nc" id="L1205">    final MockContainer container = form.getPasteTarget();</span>
+<span class="nc" id="L1206">    MockComponent lastComponentCreated = null;</span>
+<span class="nc" id="L1207">    JSONObject value = new ClientJsonParser().parse(jso).asObject();</span>
+<span class="nc" id="L1208">    Map&lt;String, String&gt; substitution = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L1209">    JSONArray components = value.get(&quot;$components&quot;).asArray();</span>
+<span class="nc" id="L1210">    JSONArray blocks = value.get(&quot;$blocks&quot;).asArray();</span>
+
+    // First: Check to see if we are pasting a whole form
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">    for (JSONValue element : components.getElements()) {</span>
+<span class="nc" id="L1214">      JSONObject object = element.asObject();</span>
+<span class="nc bnc" id="L1215" title="All 2 branches missed.">      if (object.get(&quot;$Type&quot;).asString().getString().equals(MockForm.TYPE)) {</span>
+<span class="nc" id="L1216">        lastComponentCreated = pasteForm(object, substitution);</span>
+<span class="nc" id="L1217">        break;</span>
+      }
+<span class="nc" id="L1219">    }</span>
+
+    // Second: If we didn't paste a form, paste components
+<span class="nc bnc" id="L1222" title="All 2 branches missed.">    if (lastComponentCreated == null) {</span>
+<span class="nc" id="L1223">      lastComponentCreated = pasteComponents(components, form.getPasteTarget(), substitution);</span>
+    }
+
+    // Third: If we pasted anything and the user didn't hold shift, paste the associated blocks
+    // with optional substitutions.
+<span class="nc bnc" id="L1228" title="All 4 branches missed.">    if (lastComponentCreated != null &amp;&amp; !dropBlocks) {</span>
+<span class="nc" id="L1229">      getBlocksEditor().pasteFromJSNI(YaBlocksEditor.toJSO(substitution),</span>
+<span class="nc" id="L1230">          YaBlocksEditor.toJsArrayString(blocks));</span>
+    }
+<span class="nc" id="L1232">    form.doRefresh();</span>
+
+<span class="nc" id="L1234">    final MockComponent componentToSelect = lastComponentCreated;</span>
+<span class="nc" id="L1235">    Scheduler.get().scheduleDeferred(new ScheduledCommand() {</span>
+      @Override
+      public void execute() {
+<span class="nc bnc" id="L1238" title="All 2 branches missed.">        if (componentToSelect != null) {</span>
+<span class="nc" id="L1239">          form.setSelectedComponent(componentToSelect, null);</span>
+<span class="nc" id="L1240">          onComponentSelectionChange(componentToSelect, true);</span>
+        }
+<span class="nc" id="L1242">        form.setPasteTarget(container);</span>
+<span class="nc" id="L1243">      }</span>
+    });
+<span class="nc" id="L1245">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

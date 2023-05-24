@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LabeledTextBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.widgets</a> &gt; <span class="el_source">LabeledTextBox.java</span></div><h1>LabeledTextBox.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.widgets;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * A TextBox with a leading label.
+ *
+ */
+public class LabeledTextBox extends Composite {
+
+  // Backing TextBox
+  private final TextBox textbox;
+
+  private String defaultTextBoxColor;
+<span class="nc" id="L26">  private String errorMessage = &quot;&quot;;</span>
+  private Label errorLabel;
+  private Validator validator;
+
+  /**
+   * Creates a new TextBox with the given leading caption.
+   *
+   * @param caption  caption for leading label
+   */
+<span class="nc" id="L35">  public LabeledTextBox(String caption) {</span>
+<span class="nc" id="L36">    HorizontalPanel panel = new HorizontalPanel();</span>
+<span class="nc" id="L37">    Label label = new Label(caption);</span>
+<span class="nc" id="L38">    panel.add(label);</span>
+<span class="nc" id="L39">    panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);</span>
+<span class="nc" id="L40">    textbox = new TextBox();</span>
+<span class="nc" id="L41">    textbox.setStylePrimaryName(&quot;ode-LabeledTextBox&quot;);</span>
+<span class="nc" id="L42">    textbox.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L43">    panel.add(textbox);</span>
+<span class="nc" id="L44">    panel.setCellWidth(label, &quot;40%&quot;);</span>
+<span class="nc" id="L45">    panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);</span>
+
+<span class="nc" id="L47">    initWidget(panel);</span>
+
+<span class="nc" id="L49">    setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * Use this TextBox if you want to have text validation while a user is typing
+   *
+   * @param caption    caption for leading label
+   * @param validator  The validator to use for a specific textBox
+   */
+<span class="nc" id="L58">  public LabeledTextBox(String caption, Validator validator) {</span>
+<span class="nc" id="L59">    this.validator = validator;</span>
+
+<span class="nc" id="L61">    HorizontalPanel panel = new HorizontalPanel();</span>
+<span class="nc" id="L62">    Label label = new Label(caption);</span>
+<span class="nc" id="L63">    panel.add(label);</span>
+<span class="nc" id="L64">    panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);</span>
+<span class="nc" id="L65">    textbox = new TextBox();</span>
+<span class="nc" id="L66">    textbox.setStylePrimaryName(&quot;ode-LabeledTextBox&quot;);</span>
+<span class="nc" id="L67">    defaultTextBoxColor = textbox.getElement().getStyle().getBorderColor();</span>
+<span class="nc" id="L68">    textbox.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L69">    panel.add(textbox);</span>
+<span class="nc" id="L70">    panel.setCellWidth(label, &quot;40%&quot;);</span>
+<span class="nc" id="L71">    panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);</span>
+
+<span class="nc" id="L73">    HorizontalPanel errorPanel = new HorizontalPanel();</span>
+<span class="nc" id="L74">    errorLabel = new Label(&quot;&quot;);</span>
+<span class="nc" id="L75">    errorPanel.add(errorLabel);</span>
+
+<span class="nc" id="L77">    VerticalPanel vp = new VerticalPanel();</span>
+<span class="nc" id="L78">    vp.add(panel);</span>
+<span class="nc" id="L79">    vp.add(errorPanel);</span>
+<span class="nc" id="L80">    vp.setHeight(&quot;85px&quot;);</span>
+
+<span class="nc" id="L82">    initWidget(vp);</span>
+
+<span class="nc" id="L84">    setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L85">  }</span>
+
+  /**
+   * Sets the content of the TextBox.
+   *
+   * @param text  new TextBox content
+   */
+  public void setText(String text) {
+<span class="nc" id="L93">    textbox.setText(text);</span>
+<span class="nc" id="L94">  }</span>
+
+  /**
+   * Returns the current content of the TextBox.
+   *
+   * @return  current TextBox content
+   */
+  public String getText() {
+<span class="nc" id="L102">    return textbox.getText();</span>
+  }
+
+  /**
+   * Explicitly focus/unfocus this widget. Only one widget can have focus at a
+   * time, and the widget that does will receive all keyboard events.
+   *
+   * @param focused  whether this widget should take focus or release it
+   */
+  public void setFocus(boolean focused) {
+<span class="nc" id="L112">    textbox.setFocus(focused);</span>
+<span class="nc" id="L113">  }</span>
+
+  /**
+   *  Selects all of the text in the TextBox.
+   */
+  public void selectAll() {
+<span class="nc" id="L119">    textbox.selectAll();</span>
+<span class="nc" id="L120">  }</span>
+
+  /**
+   * Sets whether the textbox is enabled.
+   *
+   * @param enabled  {@code true} to enable the textbox, {@code false} to
+   *                 disable it
+   */
+  public void setEnabled(boolean enabled) {
+<span class="nc" id="L129">    textbox.setEnabled(enabled);</span>
+<span class="nc" id="L130">  }</span>
+
+  /**
+   * Returns the TextBox.
+   *
+   * @return  the TextBox
+   */
+  public TextBox getTextBox() {
+<span class="nc" id="L138">    return textbox;</span>
+  }
+
+  /**
+   * Returns the error message resulting from a specific validation error
+   *
+   * @return errorMessage
+   */
+  public String getErrorMessage() {
+<span class="nc" id="L147">    return errorMessage;</span>
+  }
+
+  /**
+   * Set the specific error message for invalid text in a textbox.
+   *
+   * @param errorMessage to use for textBox
+   */
+  public void setErrorMessage(String errorMessage) {
+<span class="nc" id="L156">    this.errorMessage = errorMessage;</span>
+<span class="nc" id="L157">  }</span>
+
+  public void setColor(String color) {
+<span class="nc" id="L160">    textbox.getElement().getStyle().setBorderColor(color);</span>
+<span class="nc" id="L161">  }</span>
+
+  /**
+   * Check to see if a textbox contains valid text. True if text is valid, false otherwise
+   *
+   * @return validationResult
+   */
+  public boolean validate() {
+<span class="nc" id="L169">    boolean validationResult = validator.validate(getTextBox().getValue());</span>
+<span class="nc" id="L170">    setErrorMessage(validator.getErrorMessage());</span>
+<span class="nc" id="L171">    setErrorStyles(validationResult);</span>
+<span class="nc" id="L172">    return validationResult;</span>
+  }
+
+  /**
+   * Set the style of the textbox depending on whether the text is currently valid or not
+   *
+   * @param validationResult
+   */
+  private void setErrorStyles(boolean validationResult) {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    if (validationResult) {</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">      if (errorMessage.length() &gt; 0) { // handling warnings</span>
+<span class="nc" id="L183">        String warningColor = &quot;yellow&quot;;</span>
+<span class="nc" id="L184">        textbox.getElement().getStyle().setBorderColor(warningColor);</span>
+<span class="nc" id="L185">        errorLabel.setText(errorMessage);</span>
+<span class="nc" id="L186">      } else {</span>
+<span class="nc" id="L187">        textbox.getElement().getStyle().setBorderColor(defaultTextBoxColor);</span>
+<span class="nc" id="L188">        errorLabel.setText(&quot;&quot;);</span>
+      }
+    } else {
+<span class="nc" id="L191">      String errorColor = &quot;red&quot;;</span>
+<span class="nc" id="L192">      textbox.getElement().getStyle().setBorderColor(errorColor);</span>
+<span class="nc" id="L193">      errorLabel.setText(errorMessage);</span>
+    }
+<span class="nc" id="L195">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

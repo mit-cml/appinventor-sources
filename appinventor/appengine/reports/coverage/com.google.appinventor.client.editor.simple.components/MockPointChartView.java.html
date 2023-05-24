@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPointChartView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockPointChartView.java</span></div><h1>MockPointChartView.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import java.util.List;
+
+import org.pepstock.charba.client.ScatterChart;
+import org.pepstock.charba.client.callbacks.TickCallback;
+import org.pepstock.charba.client.configuration.Axis;
+import org.pepstock.charba.client.data.ScatterDataset;
+
+/**
+ * Chart View for the Point-Based Charts for the Mock Chart component.
+ * Handles the UI of Point-based Charts (e.g. Line/Scatter)
+ */
+public abstract class MockPointChartView&lt;V extends MockPointChartView&lt;V&gt;&gt;
+    extends MockAxisChartView&lt;ScatterDataset, ScatterChart, V&gt; {
+  /**
+   * Creates a new MockPointChartView object instance.
+   */
+<span class="nc" id="L24">  protected MockPointChartView() {</span>
+    /* A ScatterChart widget is used both for the
+     * Line Chart based Charts as well as the Scatter Chart.
+     * The reason it is used for the Line Chart is because
+     * using a Scatter Chart with sorted data points and line
+     * showing produces a more accurate representation of the
+     * Android implemented Android Chart by automatically generating
+     * the appropriate labels and scaling the Chart properly (it behaves
+     * more like a Cartesian graph). Using Line Chart requires more
+     * manual handling. */
+<span class="nc" id="L34">    chartWidget = new ScatterChart();</span>
+<span class="nc" id="L35">    initializeDefaultSettings();</span>
+<span class="nc" id="L36">  }</span>
+
+  @Override
+  protected void initializeDefaultSettings() {
+<span class="nc" id="L40">    super.initializeDefaultSettings();</span>
+
+    // Set the custom x and y axis to the Chart
+<span class="nc" id="L43">    chartWidget.getOptions().getScales().setXAxes(xAxis);</span>
+<span class="nc" id="L44">    chartWidget.getOptions().getScales().setYAxes(yAxis);</span>
+
+<span class="nc" id="L46">    xAxis.getTicks().setCallback(new TickCallback() {</span>
+      @Override
+      public String onCallback(Axis axis, double value, int index, List&lt;Double&gt; values) {
+        // Round the double value to an integer to get the index representation of the value
+        // The reason we do not use the index parameter is due to the fact that the
+        // Chart X Axis is indexed with negative numbers. For example, if the minimum
+        // value is -5, then the index of 0 would apply to the -5 value. Due to
+        // limited support of this in the MPAndroidChart library, we use our own
+        // system of 0-value based indexing.
+        // int indexValue = (int) Math.round(value);
+
+        // Check if the index value is within the bound of the labels array.
+        // If that is the case, then use the value from the labels array.
+<span class="nc bnc" id="L59" title="All 4 branches missed.">        if (index &gt;= 0 &amp;&amp; index &lt; labels.length) {</span>
+<span class="nc" id="L60">          return labels[index];</span>
+        } else {
+          // Otherwise, use the value itself.
+<span class="nc" id="L63">          return value + &quot;&quot;;</span>
+        }
+      }
+    });
+<span class="nc" id="L67">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

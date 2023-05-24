@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DesignToolbar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client</a> &gt; <span class="el_source">DesignToolbar.java</span></div><h1>DesignToolbar.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client;
+
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+
+import com.google.appinventor.client.explorer.commands.AddFormCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
+
+import com.google.appinventor.client.output.OdeLog;
+
+import com.google.appinventor.client.tracking.Tracking;
+
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+
+import com.google.appinventor.client.widgets.Toolbar;
+
+import com.google.appinventor.common.version.AppInventorFeatures;
+
+import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import com.google.gwt.core.client.Scheduler;
+
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * The design toolbar houses command buttons in the Young Android Design
+ * tab (for the UI designer (a.k.a, Form Editor) and Blocks Editor).
+ *
+ */
+public class DesignToolbar extends Toolbar {
+
+  private boolean isReadOnly;   // If the UI is in read only mode
+<span class="nc" id="L56">  private volatile boolean lockPublishButton = false; // Used to prevent double-clicking the</span>
+                                                     // SendToGallery button
+
+  /*
+   * A Screen groups together the form editor and blocks editor for an
+   * application screen. Name is the name of the screen (form) displayed
+   * in the screens pull-down.
+   */
+  public static class Screen {
+    public final String screenName;
+    public final FileEditor formEditor;
+    public final FileEditor blocksEditor;
+
+<span class="nc" id="L69">    public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {</span>
+<span class="nc" id="L70">      this.screenName = name;</span>
+<span class="nc" id="L71">      this.formEditor = formEditor;</span>
+<span class="nc" id="L72">      this.blocksEditor = blocksEditor;</span>
+<span class="nc" id="L73">    }</span>
+  }
+
+  /*
+   * A project as represented in the DesignToolbar. Each project has a name
+   * (as displayed in the DesignToolbar on the left), a set of named screens,
+   * and an indication of which screen is currently being edited.
+   */
+  public static class DesignProject {
+    public final String name;
+    public final Map&lt;String, Screen&gt; screens; // screen name -&gt; Screen
+    public String currentScreen; // name of currently displayed screen
+    private long projectId;
+
+<span class="nc" id="L87">    public DesignProject(String name, long projectId) {</span>
+<span class="nc" id="L88">      this.name = name;</span>
+<span class="nc" id="L89">      this.projectId = projectId;</span>
+<span class="nc" id="L90">      screens = Maps.newHashMap();</span>
+      // Screen1 is initial screen by default
+<span class="nc" id="L92">      currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;</span>
+      // Let BlocklyPanel know which screen to send Yail for
+<span class="nc" id="L94">      BlocklyPanel.setCurrentForm(projectId + &quot;_&quot; + currentScreen);</span>
+<span class="nc" id="L95">    }</span>
+
+    // Returns true if we added the screen (it didn't previously exist), false otherwise.
+    public boolean addScreen(String name, FileEditor formEditor, FileEditor blocksEditor) {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      if (screens.containsKey(name)) {</span>
+<span class="nc" id="L100">        return false;</span>
+      }
+<span class="nc" id="L102">      screens.put(name, new Screen(name, formEditor, blocksEditor));</span>
+<span class="nc" id="L103">      return true;</span>
+    }
+
+    public void removeScreen(String name) {
+<span class="nc" id="L107">      screens.remove(name);</span>
+<span class="nc" id="L108">    }</span>
+
+    public void setCurrentScreen(String name) {
+<span class="nc" id="L111">      currentScreen = name;</span>
+<span class="nc" id="L112">    }</span>
+
+    public long getProjectId() {
+<span class="nc" id="L115">      return projectId;</span>
+    }
+
+  }
+
+  private static final String WIDGET_NAME_TUTORIAL_TOGGLE = &quot;TutorialToggle&quot;;
+  private static final String WIDGET_NAME_ADDFORM = &quot;AddForm&quot;;
+  private static final String WIDGET_NAME_REMOVEFORM = &quot;RemoveForm&quot;;
+  private static final String WIDGET_NAME_SCREENS_DROPDOWN = &quot;ScreensDropdown&quot;;
+  private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = &quot;SwitchToBlocksEditor&quot;;
+  private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = &quot;SwitchToFormEditor&quot;;
+  private static final String WIDGET_NAME_SENDTOGALLERY = &quot;SendToGallery&quot;;
+
+  // Switch language
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE = &quot;Language&quot;;
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH = &quot;English&quot;;
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = &quot;Simplified Chinese&quot;;
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_SPANISH_ES = &quot;Spanish-Spain&quot;;
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_PORTUGUESE = &quot;Portuguese&quot;;
+  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = &quot;German&quot;;
+  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = &quot;Vietnamese&quot;;
+
+  // Enum for type of view showing in the design tab
+<span class="nc" id="L138">  public enum View {</span>
+<span class="nc" id="L139">    FORM,   // Form editor view</span>
+<span class="nc" id="L140">    BLOCKS  // Blocks editor view</span>
+  }
+<span class="nc" id="L142">  public View currentView = View.FORM;</span>
+
+  public Label projectNameLabel;
+
+  // Project currently displayed in designer
+  private DesignProject currentProject;
+
+  // Map of project id to project info for all projects we've ever shown
+  // in the Designer in this session.
+<span class="nc" id="L151">  public Map&lt;Long, DesignProject&gt; projectMap = Maps.newHashMap();</span>
+
+  // Stack of screens switched to from the Companion
+  // We implement screen switching in the Companion by having it tell us
+  // to switch screens. We then load into the companion the new Screen
+  // We save where we were because the companion can have us return from
+  // a screen. If we switch projects in the browser UI, we clear this
+  // list of screens as we are effectively running a different application
+  // on the device.
+<span class="nc" id="L160">  public static LinkedList&lt;String&gt; pushedScreens = Lists.newLinkedList();</span>
+
+  // Is the Gallery Enabled (new gallery)?
+<span class="nc" id="L163">  private boolean galleryEnabled = false;</span>
+
+  /**
+   * Initializes and assembles all commands into buttons in the toolbar.
+   */
+  public DesignToolbar() {
+<span class="nc" id="L169">    super();</span>
+
+<span class="nc" id="L171">    isReadOnly = Ode.getInstance().isReadOnly();</span>
+<span class="nc" id="L172">    galleryEnabled = Ode.getInstance().getSystemConfig().getGalleryEnabled();</span>
+<span class="nc" id="L173">    projectNameLabel = new Label();</span>
+<span class="nc" id="L174">    projectNameLabel.setStyleName(&quot;ya-ProjectName&quot;);</span>
+<span class="nc" id="L175">    HorizontalPanel toolbar = (HorizontalPanel) getWidget();</span>
+<span class="nc" id="L176">    toolbar.insert(projectNameLabel, 0);</span>
+
+    // width of palette minus cellspacing/border of buttons
+<span class="nc" id="L179">    toolbar.setCellWidth(projectNameLabel, &quot;222px&quot;);</span>
+
+<span class="nc" id="L181">    addButton(new ToolbarItem(WIDGET_NAME_TUTORIAL_TOGGLE,</span>
+<span class="nc" id="L182">        MESSAGES.toggleTutorialButton(), new ToogleTutorialAction()));</span>
+<span class="nc" id="L183">    setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, false); // Don't show unless needed</span>
+
+<span class="nc" id="L185">    List&lt;DropDownItem&gt; screenItems = Lists.newArrayList();</span>
+<span class="nc" id="L186">    addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems);</span>
+
+<span class="nc bnc" id="L188" title="All 4 branches missed.">    if (AppInventorFeatures.allowMultiScreenApplications() &amp;&amp; !isReadOnly) {</span>
+<span class="nc" id="L189">      addButton(new ToolbarItem(WIDGET_NAME_ADDFORM, MESSAGES.addFormButton(),</span>
+          new AddFormAction()));
+<span class="nc" id="L191">      addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),</span>
+          new RemoveFormAction()));
+    }
+<span class="nc bnc" id="L194" title="All 4 branches missed.">    if (galleryEnabled &amp;&amp; !Ode.getInstance().getGalleryReadOnly()) {</span>
+<span class="nc" id="L195">      addButton(new ToolbarItem(WIDGET_NAME_SENDTOGALLERY,</span>
+<span class="nc" id="L196">          MESSAGES.publishToGalleryButton(), new SendToGalleryAction()));</span>
+    }
+
+<span class="nc" id="L199">    addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,</span>
+<span class="nc" id="L200">        MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);</span>
+<span class="nc" id="L201">    addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,</span>
+<span class="nc" id="L202">        MESSAGES.switchToBlocksEditorButton(), new SwitchToBlocksEditorAction()), true);</span>
+
+    // Gray out the Designer button and enable the blocks button
+<span class="nc" id="L205">    toggleEditor(false);</span>
+<span class="nc" id="L206">    Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);</span>
+<span class="nc" id="L207">  }</span>
+
+<span class="nc" id="L209">  private class ToogleTutorialAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L212">      Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L213">      boolean visible = ode.isTutorialVisible();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">      if (visible) {</span>
+<span class="nc" id="L215">        ode.setTutorialVisible(false);</span>
+      } else {
+<span class="nc" id="L217">        ode.setTutorialVisible(true);</span>
+      }
+<span class="nc" id="L219">    }</span>
+  }
+
+<span class="nc" id="L222">  private class AddFormAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L225">      Ode ode = Ode.getInstance();</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">      if (ode.screensLocked()) {</span>
+<span class="nc" id="L227">        return;                 // Don't permit this if we are locked out (saving files)</span>
+      }
+<span class="nc" id="L229">      final ProjectRootNode projectRootNode = ode.getCurrentYoungAndroidProjectRootNode();</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">      if (projectRootNode != null) {</span>
+<span class="nc" id="L231">        Runnable doSwitch = new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="nc" id="L234">              ChainableCommand cmd = new AddFormCommand();</span>
+<span class="nc" id="L235">              cmd.startExecuteChain(Tracking.PROJECT_ACTION_ADDFORM_YA, projectRootNode);</span>
+<span class="nc" id="L236">            }</span>
+          };
+        // take a screenshot of the current blocks if we are in the blocks editor
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (currentView == View.BLOCKS) {</span>
+<span class="nc" id="L240">          Ode.getInstance().screenShotMaybe(doSwitch, false);</span>
+        } else {
+<span class="nc" id="L242">          doSwitch.run();</span>
+        }
+      }
+<span class="nc" id="L245">    }</span>
+  }
+
+<span class="nc" id="L248">  private class RemoveFormAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc" id="L251">      Ode ode = Ode.getInstance();</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">      if (ode.screensLocked()) {</span>
+<span class="nc" id="L253">        return;                 // Don't permit this if we are locked out (saving files)</span>
+      }
+<span class="nc" id="L255">      YoungAndroidSourceNode sourceNode = ode.getCurrentYoungAndroidSourceNode();</span>
+<span class="nc bnc" id="L256" title="All 4 branches missed.">      if (sourceNode != null &amp;&amp; !sourceNode.isScreen1()) {</span>
+        // DeleteFileCommand handles the whole operation, including displaying the confirmation
+        // message dialog, closing the form editor and the blocks editor,
+        // deleting the files in the server's storage, and deleting the
+        // corresponding client-side nodes (which will ultimately trigger the
+        // screen deletion in the DesignToolbar).
+<span class="nc" id="L262">        final String deleteConfirmationMessage = MESSAGES.reallyDeleteForm(</span>
+<span class="nc" id="L263">            sourceNode.getFormName());</span>
+<span class="nc" id="L264">        ChainableCommand cmd = new DeleteFileCommand() {</span>
+          @Override
+          protected boolean deleteConfirmation() {
+<span class="nc" id="L267">            return Window.confirm(deleteConfirmationMessage);</span>
+          }
+        };
+<span class="nc" id="L270">        cmd.startExecuteChain(Tracking.PROJECT_ACTION_REMOVEFORM_YA, sourceNode);</span>
+      }
+<span class="nc" id="L272">    }</span>
+  }
+
+  private class SwitchScreenAction implements Command {
+    private final long projectId;
+    private final String name;  // screen name
+
+<span class="nc" id="L279">    public SwitchScreenAction(long projectId, String screenName) {</span>
+<span class="nc" id="L280">      this.projectId = projectId;</span>
+<span class="nc" id="L281">      this.name = screenName;</span>
+<span class="nc" id="L282">    }</span>
+
+    @Override
+    public void execute() {
+      // If we are in the blocks view, we should take a screenshot
+      // of the blocks as we swtich to a different screen
+<span class="nc bnc" id="L288" title="All 2 branches missed.">      if (currentView == View.BLOCKS) {</span>
+<span class="nc" id="L289">        Ode.getInstance().screenShotMaybe(new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="nc" id="L292">              doSwitchScreen(projectId, name, currentView);</span>
+<span class="nc" id="L293">            }</span>
+          }, false);
+      } else {
+<span class="nc" id="L296">        doSwitchScreen(projectId, name, currentView);</span>
+      }
+<span class="nc" id="L298">    }</span>
+  }
+
+  private void doSwitchScreen(final long projectId, final String screenName, final View view) {
+<span class="nc" id="L302">    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {</span>
+        @Override
+        public void execute() {
+<span class="nc bnc" id="L305" title="All 2 branches missed.">          if (Ode.getInstance().screensLocked()) { // Wait until I/O complete</span>
+<span class="nc" id="L306">            Scheduler.get().scheduleDeferred(this);</span>
+          } else {
+<span class="nc" id="L308">            doSwitchScreen1(projectId, screenName, view);</span>
+          }
+<span class="nc" id="L310">        }</span>
+      });
+<span class="nc" id="L312">  }</span>
+
+  private void doSwitchScreen1(long projectId, String screenName, View view) {
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    if (!projectMap.containsKey(projectId)) {</span>
+<span class="nc" id="L316">      OdeLog.wlog(&quot;DesignToolbar: no project with id &quot; + projectId</span>
+          + &quot;. Ignoring SwitchScreenAction.execute().&quot;);
+<span class="nc" id="L318">      return;</span>
+    }
+<span class="nc" id="L320">    DesignProject project = projectMap.get(projectId);</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">    if (currentProject != project) {</span>
+      // need to switch projects first. this will not switch screens.
+<span class="nc bnc" id="L323" title="All 2 branches missed.">      if (!switchToProject(projectId, project.name)) {</span>
+<span class="nc" id="L324">        return;</span>
+      }
+    }
+<span class="nc" id="L327">    String newScreenName = screenName;</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">    if (!currentProject.screens.containsKey(newScreenName)) {</span>
+      // Can't find the requested screen in this project. This shouldn't happen, but if it does
+      // for some reason, try switching to Screen1 instead.
+<span class="nc" id="L331">      OdeLog.wlog(&quot;Trying to switch to non-existent screen &quot; + newScreenName +</span>
+          &quot; in project &quot; + currentProject.name + &quot;. Trying Screen1 instead.&quot;);
+<span class="nc bnc" id="L333" title="All 2 branches missed.">      if (currentProject.screens.containsKey(YoungAndroidSourceNode.SCREEN1_FORM_NAME)) {</span>
+<span class="nc" id="L334">        newScreenName = YoungAndroidSourceNode.SCREEN1_FORM_NAME;</span>
+      } else {
+        // something went seriously wrong!
+<span class="nc" id="L337">        ErrorReporter.reportError(&quot;Something is wrong. Can't find Screen1 for project &quot;</span>
+            + currentProject.name);
+<span class="nc" id="L339">        return;</span>
+      }
+    }
+<span class="nc" id="L342">    currentView = view;</span>
+<span class="nc" id="L343">    Screen screen = currentProject.screens.get(newScreenName);</span>
+<span class="nc" id="L344">    ProjectEditor projectEditor = screen.formEditor.getProjectEditor();</span>
+<span class="nc" id="L345">    currentProject.setCurrentScreen(newScreenName);</span>
+<span class="nc" id="L346">    setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, newScreenName);</span>
+<span class="nc" id="L347">    OdeLog.log(&quot;Setting currentScreen to &quot; + newScreenName);</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    if (currentView == View.FORM) {</span>
+<span class="nc" id="L349">      projectEditor.selectFileEditor(screen.formEditor);</span>
+<span class="nc" id="L350">      toggleEditor(false);</span>
+<span class="nc" id="L351">      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);</span>
+    } else {  // must be View.BLOCKS
+<span class="nc" id="L353">      projectEditor.selectFileEditor(screen.blocksEditor);</span>
+<span class="nc" id="L354">      toggleEditor(true);</span>
+<span class="nc" id="L355">      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);</span>
+    }
+    // Inform the Blockly Panel which project/screen (aka form) we are working on
+<span class="nc" id="L358">    BlocklyPanel.setCurrentForm(projectId + &quot;_&quot; + newScreenName);</span>
+<span class="nc" id="L359">    screen.blocksEditor.makeActiveWorkspace();</span>
+<span class="nc" id="L360">  }</span>
+
+<span class="nc" id="L362">  private class SwitchToBlocksEditorAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L365" title="All 2 branches missed.">      if (currentProject == null) {</span>
+<span class="nc" id="L366">        OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+            + &quot;Ignoring SwitchToBlocksEditorAction.execute().&quot;);
+<span class="nc" id="L368">        return;</span>
+      }
+<span class="nc bnc" id="L370" title="All 2 branches missed.">      if (currentView != View.BLOCKS) {</span>
+<span class="nc" id="L371">        long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();</span>
+<span class="nc" id="L372">        switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);</span>
+<span class="nc" id="L373">        toggleEditor(true);       // Gray out the blocks button and enable the designer button</span>
+<span class="nc" id="L374">        Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);</span>
+      }
+<span class="nc" id="L376">    }</span>
+  }
+
+<span class="nc" id="L379">  private class SendToGalleryAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L382" title="All 2 branches missed.">      if (currentProject == null) {</span>
+<span class="nc" id="L383">        OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+            + &quot;Ignoring SendToGalleryAction.execute().&quot;);
+<span class="nc" id="L385">        return;</span>
+      }
+      // Only do something if we aren't already doing it!
+<span class="nc bnc" id="L388" title="All 2 branches missed.">      if (!lockPublishButton) {</span>
+<span class="nc" id="L389">        lockPublishButton = true;</span>
+<span class="nc" id="L390">        Ode.getInstance().getProjectService().sendToGallery(currentProject.getProjectId(),</span>
+          new OdeAsyncCallback&lt;RpcResult&gt;(
+<span class="nc" id="L392">            MESSAGES.GallerySendingError()) {</span>
+            @Override
+            public void onSuccess(RpcResult result) {
+<span class="nc" id="L395">              lockPublishButton = false;</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">              if (result.getResult() == RpcResult.SUCCESS) {</span>
+<span class="nc" id="L397">                Window.open(result.getOutput(), &quot;_blank&quot;, &quot;&quot;);</span>
+              } else {
+<span class="nc" id="L399">                ErrorReporter.reportError(result.getError());</span>
+              }
+<span class="nc" id="L401">            }</span>
+            @Override
+            public void onFailure(Throwable t) {
+<span class="nc" id="L404">              lockPublishButton = false;</span>
+<span class="nc" id="L405">              super.onFailure(t);</span>
+<span class="nc" id="L406">            }</span>
+          });
+      }
+<span class="nc" id="L409">    }</span>
+  }
+
+<span class="nc" id="L412">  private class SwitchToFormEditorAction implements Command {</span>
+    @Override
+    public void execute() {
+<span class="nc bnc" id="L415" title="All 2 branches missed.">      if (currentProject == null) {</span>
+<span class="nc" id="L416">        OdeLog.wlog(&quot;DesignToolbar.currentProject is null. &quot;</span>
+            + &quot;Ignoring SwitchToFormEditorAction.execute().&quot;);
+<span class="nc" id="L418">        return;</span>
+      }
+<span class="nc bnc" id="L420" title="All 2 branches missed.">      if (currentView != View.FORM) {</span>
+        // We are leaving a blocks editor, so take a screenshot
+<span class="nc" id="L422">        Ode.getInstance().screenShotMaybe(new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="nc" id="L425">              long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();</span>
+<span class="nc" id="L426">              switchToScreen(projectId, currentProject.currentScreen, View.FORM);</span>
+<span class="nc" id="L427">              toggleEditor(false);      // Gray out the Designer button and enable the blocks button</span>
+<span class="nc" id="L428">              Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);</span>
+<span class="nc" id="L429">            }</span>
+          }, false);
+      }
+<span class="nc" id="L432">    }</span>
+  }
+
+  public void addProject(long projectId, String projectName) {
+<span class="nc bnc" id="L436" title="All 2 branches missed.">    if (!projectMap.containsKey(projectId)) {</span>
+<span class="nc" id="L437">      projectMap.put(projectId, new DesignProject(projectName, projectId));</span>
+<span class="nc" id="L438">      OdeLog.log(&quot;DesignToolbar added project &quot; + projectName + &quot; with id &quot; + projectId);</span>
+    } else {
+<span class="nc" id="L440">      OdeLog.wlog(&quot;DesignToolbar ignoring addProject for existing project &quot; + projectName</span>
+          + &quot; with id &quot; + projectId);
+    }
+<span class="nc" id="L443">  }</span>
+
+  // Switch to an existing project. Note that this does not switch screens.
+  // TODO(sharon): it might be better to throw an exception if the
+  // project doesn't exist.
+  private boolean switchToProject(long projectId, String projectName) {
+<span class="nc bnc" id="L449" title="All 2 branches missed.">    if (projectMap.containsKey(projectId)) {</span>
+<span class="nc" id="L450">      DesignProject project = projectMap.get(projectId);</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">      if (project == currentProject) {</span>
+<span class="nc" id="L452">        OdeLog.wlog(&quot;DesignToolbar: ignoring call to switchToProject for current project&quot;);</span>
+<span class="nc" id="L453">        return true;</span>
+      }
+<span class="nc" id="L455">      pushedScreens.clear();  // Effectively switching applications; clear stack of screens.</span>
+<span class="nc" id="L456">      clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);</span>
+<span class="nc" id="L457">      OdeLog.log(&quot;DesignToolbar: switching to existing project &quot; + projectName + &quot; with id &quot;</span>
+          + projectId);
+<span class="nc" id="L459">      currentProject = project;</span>
+
+      // TODO(sharon): add screens to drop-down menu in the right order
+<span class="nc bnc" id="L462" title="All 2 branches missed.">      for (Screen screen : currentProject.screens.values()) {</span>
+<span class="nc" id="L463">        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,</span>
+            screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
+<span class="nc" id="L465">      }</span>
+<span class="nc" id="L466">      projectNameLabel.setText(projectName);</span>
+<span class="nc" id="L467">      YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project</span>
+<span class="nc" id="L468">    } else {</span>
+<span class="nc" id="L469">      ErrorReporter.reportError(&quot;Design toolbar doesn't know about project &quot; + projectName +</span>
+          &quot; with id &quot; + projectId);
+<span class="nc" id="L471">      OdeLog.wlog(&quot;Design toolbar doesn't know about project &quot; + projectName + &quot; with id &quot;</span>
+          + projectId);
+<span class="nc" id="L473">      return false;</span>
+    }
+<span class="nc" id="L475">    return true;</span>
+  }
+
+  /*
+   * Add a screen name to the drop-down for the project with id projectId.
+   * name is the form name, formEditor is the file editor for the form UI,
+   * and blocksEditor is the file editor for the form's blocks.
+   */
+  public void addScreen(long projectId, String name, FileEditor formEditor,
+      FileEditor blocksEditor) {
+<span class="nc bnc" id="L485" title="All 2 branches missed.">    if (!projectMap.containsKey(projectId)) {</span>
+<span class="nc" id="L486">      OdeLog.wlog(&quot;DesignToolbar can't find project &quot; + name + &quot; with id &quot; + projectId</span>
+          + &quot;. Ignoring addScreen().&quot;);
+<span class="nc" id="L488">      return;</span>
+    }
+<span class="nc" id="L490">    DesignProject project = projectMap.get(projectId);</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">    if (project.addScreen(name, formEditor, blocksEditor)) {</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">      if (currentProject == project) {</span>
+<span class="nc" id="L493">        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(name,</span>
+            name, new SwitchScreenAction(projectId, name)));
+      }
+    }
+<span class="nc" id="L497">  }</span>
+
+/*
+ * PushScreen -- Static method called by Blockly when the Companion requests
+ * That we switch to a new screen. We keep track of the Screen we were on
+ * and push that onto a stack of Screens which we pop when requested by the
+ * Companion.
+ */
+  public static boolean pushScreen(String screenName) {
+<span class="nc" id="L506">    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();</span>
+<span class="nc" id="L507">    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();</span>
+<span class="nc" id="L508">    String currentScreen = designToolbar.currentProject.currentScreen;</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">    if (!designToolbar.currentProject.screens.containsKey(screenName)) // No such screen -- can happen</span>
+<span class="nc" id="L510">      return false;                                                    // because screen is user entered here.</span>
+<span class="nc" id="L511">    pushedScreens.addFirst(currentScreen);</span>
+<span class="nc" id="L512">    designToolbar.doSwitchScreen(projectId, screenName, View.BLOCKS);</span>
+<span class="nc" id="L513">    return true;</span>
+  }
+
+  public static void popScreen() {
+<span class="nc" id="L517">    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();</span>
+<span class="nc" id="L518">    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();</span>
+    String newScreen;
+<span class="nc bnc" id="L520" title="All 2 branches missed.">    if (pushedScreens.isEmpty()) {</span>
+<span class="nc" id="L521">      return;                   // Nothing to do really</span>
+    }
+<span class="nc" id="L523">    newScreen = pushedScreens.removeFirst();</span>
+<span class="nc" id="L524">    designToolbar.doSwitchScreen(projectId, newScreen, View.BLOCKS);</span>
+<span class="nc" id="L525">  }</span>
+
+  // Called from Javascript when Companion is disconnected
+  public static void clearScreens() {
+<span class="nc" id="L529">    pushedScreens.clear();</span>
+<span class="nc" id="L530">  }</span>
+
+  /*
+   * Switch to screen name in project projectId. Also switches projects if
+   * necessary.
+   */
+  public void switchToScreen(long projectId, String screenName, View view) {
+<span class="nc" id="L537">    doSwitchScreen(projectId, screenName, view);</span>
+<span class="nc" id="L538">  }</span>
+
+  /*
+   * Remove screen name (if it exists) from project projectId
+   */
+  public void removeScreen(long projectId, String name) {
+<span class="nc bnc" id="L544" title="All 2 branches missed.">    if (!projectMap.containsKey(projectId)) {</span>
+<span class="nc" id="L545">      OdeLog.wlog(&quot;DesignToolbar can't find project &quot; + name + &quot; with id &quot; + projectId</span>
+          + &quot; Ignoring removeScreen().&quot;);
+<span class="nc" id="L547">      return;</span>
+    }
+<span class="nc" id="L549">    OdeLog.log(&quot;DesignToolbar: got removeScreen for project &quot; + projectId</span>
+        + &quot;, screen &quot; + name);
+<span class="nc" id="L551">    DesignProject project = projectMap.get(projectId);</span>
+<span class="nc bnc" id="L552" title="All 2 branches missed.">    if (!project.screens.containsKey(name)) {</span>
+      // already removed this screen
+<span class="nc" id="L554">      return;</span>
+    }
+<span class="nc bnc" id="L556" title="All 2 branches missed.">    if (currentProject == project) {</span>
+      // if removing current screen, choose a new screen to show
+<span class="nc bnc" id="L558" title="All 2 branches missed.">      if (currentProject.currentScreen.equals(name)) {</span>
+        // TODO(sharon): maybe make a better choice than screen1, but for now
+        // switch to screen1 because we know it is always there
+<span class="nc" id="L561">        switchToScreen(projectId, YoungAndroidSourceNode.SCREEN1_FORM_NAME, View.FORM);</span>
+      }
+<span class="nc" id="L563">      removeDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, name);</span>
+    }
+<span class="nc" id="L565">    project.removeScreen(name);</span>
+<span class="nc" id="L566">  }</span>
+
+  private void toggleEditor(boolean blocks) {
+<span class="nc bnc" id="L569" title="All 2 branches missed.">    setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);</span>
+<span class="nc" id="L570">    setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);</span>
+
+<span class="nc bnc" id="L572" title="All 4 branches missed.">    if (AppInventorFeatures.allowMultiScreenApplications() &amp;&amp; !isReadOnly) {</span>
+<span class="nc bnc" id="L573" title="All 4 branches missed.">      if (getCurrentProject() == null || &quot;Screen1&quot;.equals(getCurrentProject().currentScreen)) {</span>
+<span class="nc" id="L574">        setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);</span>
+      } else {
+<span class="nc" id="L576">        setButtonEnabled(WIDGET_NAME_REMOVEFORM, true);</span>
+      }
+    }
+<span class="nc" id="L579">  }</span>
+
+  public DesignProject getCurrentProject() {
+<span class="nc" id="L582">    return currentProject;</span>
+  }
+
+  public View getCurrentView() {
+<span class="nc" id="L586">    return currentView;</span>
+  }
+
+  public void setTutorialToggleVisible(boolean value) {
+<span class="nc bnc" id="L590" title="All 2 branches missed.">    if (value) {</span>
+<span class="nc" id="L591">      setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, true);</span>
+    } else {
+<span class="nc" id="L593">      setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, false);</span>
+    }
+<span class="nc" id="L595">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

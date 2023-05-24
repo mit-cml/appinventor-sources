@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentHelpWidget.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.palette</a> &gt; <span class="el_source">ComponentHelpWidget.java</span></div><h1>ComponentHelpWidget.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.palette;
+
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.common.base.Strings;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Defines a widget that has the appearance of a question mark and
+ * creates a popup with information about a component when it is clicked on.
+ *
+ */
+public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
+<span class="nc" id="L30">  private static final ImageResource imageResource = Ode.getImageBundle().help();</span>
+
+  // Keep track of the last time (in milliseconds) of the last closure
+  // so we don't reopen a popup too soon after closing it.  Specifically,
+  // if a user clicks on the question-mark icon to close a popup, we
+  // don't want the question-mark click to reopen it.
+<span class="nc" id="L36">  private long lastClosureTime = 0;</span>
+
+  private class ComponentHelpPopup extends PopupPanel {
+
+<span class="nc" id="L40">    private ComponentHelpPopup() {</span>
+      // Create popup panel.
+<span class="nc" id="L42">      super(true);</span>
+<span class="nc" id="L43">      setStyleName(&quot;ode-ComponentHelpPopup&quot;);</span>
+<span class="nc" id="L44">      setTitle(scd.getName());</span>
+
+      // Create title from component name.
+<span class="nc" id="L47">      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));</span>
+<span class="nc" id="L48">      setTitle(scd.getName());</span>
+<span class="nc" id="L49">      titleBar.setStyleName(&quot;ode-ComponentHelpPopup-TitleBar&quot;);</span>
+
+      // Create content from help string.
+<span class="nc bnc" id="L52" title="All 2 branches missed.">      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();</span>
+<span class="nc" id="L53">      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));</span>
+<span class="nc" id="L54">      helpText.setStyleName(&quot;ode-ComponentHelpPopup-Body&quot;);</span>
+
+      // Create panel to hold the above three widgets and act as the
+      // popup's widget.
+<span class="nc" id="L58">      VerticalPanel inner = new VerticalPanel();</span>
+<span class="nc" id="L59">      inner.add(titleBar);</span>
+<span class="nc" id="L60">      inner.add(helpText);</span>
+
+      // Create link to more information.  This would be cleaner if
+      // GWT supported String.format.
+<span class="nc" id="L64">      String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();</span>
+<span class="nc" id="L65">      String url = null;</span>
+<span class="nc" id="L66">      int version = -1;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">      if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (url != null) {</span>
+<span class="nc bnc" id="L70" title="All 4 branches missed.">          if (!url.startsWith(&quot;http:&quot;) &amp;&amp; !url.startsWith(&quot;https:&quot;)) {</span>
+<span class="nc" id="L71">            url = null;</span>
+          } else {
+            // prevent embedded HTML tags, e.g. &lt;script&gt; in the URL
+<span class="nc" id="L74">            url = url.replaceAll(&quot;&lt;&quot;, &quot;%3C&quot;)</span>
+<span class="nc" id="L75">                .replaceAll(&quot;&gt;&quot;, &quot;%3E&quot;)</span>
+<span class="nc" id="L76">                .replaceAll(&quot;\&quot;&quot;, &quot;%22&quot;);</span>
+          }
+        }
+<span class="nc" id="L79">        version = scd.getVersion();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">      } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (!referenceComponentsUrl.endsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L82">          referenceComponentsUrl += &quot;/&quot;;</span>
+        }
+<span class="nc" id="L84">        String categoryDocUrlString = scd.getCategoryDocUrlString();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        url = (categoryDocUrlString == null)</span>
+            ? referenceComponentsUrl + &quot;index.html&quot;
+<span class="nc" id="L87">            : referenceComponentsUrl + categoryDocUrlString + &quot;.html#&quot; + scd.getName();</span>
+      }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">      if (!scd.getVersionName().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L90">        HTML html = new HTML(&quot;&lt;b&gt;&quot; + MESSAGES.externalComponentVersion() + &quot;&lt;/b&gt; &quot; +</span>
+<span class="nc" id="L91">            scd.getVersionName());</span>
+<span class="nc" id="L92">        html.setStyleName(&quot;ode-ComponentHelpPopup-Body&quot;);</span>
+<span class="nc" id="L93">        inner.add(html);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      } else if (version &gt; 0) {</span>
+<span class="nc" id="L95">        HTML html = new HTML(&quot;&lt;b&gt;&quot; + MESSAGES.externalComponentVersion() + &quot;&lt;/b&gt; &quot; + version);</span>
+<span class="nc" id="L96">        html.setStyleName(&quot;ode-ComponentHelpPopup-Body&quot;);</span>
+<span class="nc" id="L97">        inner.add(html);</span>
+      }
+<span class="nc bnc" id="L99" title="All 6 branches missed.">      if (scd.getExternal() &amp;&amp; scd.getDateBuilt() != null &amp;&amp; !scd.getDateBuilt().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L100">        String date = scd.getDateBuilt().split(&quot;T&quot;)[0];</span>
+<span class="nc" id="L101">        HTML dateCreatedHtml = new HTML(&quot;&lt;b&gt;&quot; + MESSAGES.dateBuilt() + &quot;&lt;/b&gt; &lt;time datetime=\&quot;&quot; + scd.getDateBuilt() + &quot;\&quot;&gt;&quot; + date + &quot;&lt;/time&gt;&quot;);</span>
+<span class="nc" id="L102">        dateCreatedHtml.setStyleName(&quot;ode-ComponentHelpPopup-Body&quot;);</span>
+<span class="nc" id="L103">        inner.add(dateCreatedHtml);</span>
+      }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">      if (url != null) {  // only show if there is a relevant URL</span>
+<span class="nc" id="L106">        HTML link = new HTML(&quot;&lt;a href=\&quot;&quot; + url + &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot; +</span>
+<span class="nc" id="L107">            MESSAGES.moreInformation() + &quot;&lt;/a&gt;&quot;);</span>
+<span class="nc" id="L108">        link.setStyleName(&quot;ode-ComponentHelpPopup-Link&quot;);</span>
+<span class="nc" id="L109">        inner.add(link);</span>
+      }
+<span class="nc bnc" id="L111" title="All 4 branches missed.">      if (scd.getExternal() &amp;&amp; !&quot;&quot;.equals(scd.getLicense())) {</span>
+<span class="nc" id="L112">        String license = scd.getLicense();</span>
+<span class="nc" id="L113">        HTML viewLicenseHTML = new HTML(&quot;&lt;a href=\&quot;&quot; + license + &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot; +</span>
+<span class="nc" id="L114">            MESSAGES.viewLicense() + &quot;&lt;/a&gt;&quot;);</span>
+<span class="nc" id="L115">        viewLicenseHTML.setStyleName(&quot;ode-ComponentHelpPopup-Link&quot;);</span>
+<span class="nc" id="L116">        inner.add(viewLicenseHTML);</span>
+      }
+
+<span class="nc" id="L119">      setWidget(inner);</span>
+
+      // When the panel is closed, save the time in milliseconds.
+      // This will help us avoid immediately reopening it if the user
+      // closed it by clicking on the question-mark icon.
+<span class="nc" id="L124">      addCloseHandler(new CloseHandler&lt;PopupPanel&gt;() {</span>
+          @Override
+          public void onClose(CloseEvent&lt;PopupPanel&gt; event) {
+<span class="nc" id="L127">            lastClosureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L128">          }</span>
+        });
+
+      // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
+      // avoid the Google Chrome Pinch Zoom bug.
+<span class="nc" id="L133">      setPopupPositionAndShow(new PZAwarePositionCallback(ComponentHelpWidget.this.getElement()) {</span>
+        @Override
+        public void setPosition(int offsetWidth, int offsetHeight) {
+          // Position the upper-left of the panel just to the right of the
+          // question-mark icon, unless that would make it too low.
+<span class="nc" id="L138">          final int X_OFFSET = 20;</span>
+<span class="nc" id="L139">          final int Y_OFFSET = -5;</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">          if(Window.Navigator.getUserAgent().contains(&quot;Chrome&quot;) &amp;&amp; isPinchZoomed()) {</span>
+<span class="nc" id="L141">            setPopupPosition(getTrueAbsoluteLeft() + 1 + X_OFFSET,</span>
+<span class="nc" id="L142">                Math.min(getTrueAbsoluteTop() + 1 + Y_OFFSET,</span>
+<span class="nc" id="L143">                    Math.max(0, Window.getClientHeight()</span>
+                        - offsetHeight + Y_OFFSET)));
+          } else {
+<span class="nc" id="L146">            setPopupPosition(ComponentHelpWidget.this.getAbsoluteLeft() + X_OFFSET,</span>
+<span class="nc" id="L147">                Math.min(ComponentHelpWidget.this.getAbsoluteTop() + Y_OFFSET,</span>
+<span class="nc" id="L148">                    Math.max(0, Window.getClientHeight()</span>
+                        - offsetHeight + Y_OFFSET)));
+          }
+<span class="nc" id="L151">        }</span>
+      });
+<span class="nc" id="L153">    }</span>
+  }
+
+  public ComponentHelpWidget(final SimpleComponentDescriptor scd) {
+<span class="nc" id="L157">    super(scd, imageResource);</span>
+<span class="nc" id="L158">  }</span>
+
+  @Override
+  protected void handleClick() {
+<span class="nc" id="L162">    final long MINIMUM_MS_BETWEEN_SHOWS = 250;  // .25 seconds</span>
+
+<span class="nc bnc" id="L164" title="All 2 branches missed.">    if (System.currentTimeMillis() - lastClosureTime &gt;=</span>
+        MINIMUM_MS_BETWEEN_SHOWS) {
+<span class="nc" id="L166">      new ComponentHelpPopup();</span>
+    }
+<span class="nc" id="L168">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

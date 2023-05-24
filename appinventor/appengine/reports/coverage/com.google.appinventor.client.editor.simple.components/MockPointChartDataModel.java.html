@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPointChartDataModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockPointChartDataModel.java</span></div><h1>MockPointChartDataModel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+
+import com.google.appinventor.components.common.PointStyle;
+
+import java.util.Comparator;
+import java.util.Optional;
+
+import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.data.ScatterDataset;
+
+/**
+ * Data Model class for Point-based Charts for the Mock Chart component.
+ * The class is used in extensions of the Point Charts whenever the specified
+ * class type is selected in the Mock Chart (e.g. Line/Scatter Chart)
+ *
+ * &lt;p&gt;Extensions should minimally only provide a constructor. The class handles
+ * 2D data operations.
+ */
+public abstract class MockPointChartDataModel&lt;V extends MockPointChartView&lt;V&gt;&gt;
+    extends MockChartDataModel&lt;ScatterDataset, V&gt; {
+
+  /**
+   * Creates a new Mock Point Chart Data Model object instance, linking it with
+   * the specified Point Chart View.
+   *
+   * @param view Chart View to link model to.
+   */
+  protected MockPointChartDataModel(V view) {
+<span class="nc" id="L38">    super(view);</span>
+
+    // Create the Data Series object
+<span class="nc" id="L41">    dataSeries = new ScatterDataset();</span>
+
+    // Set the default style properties for the Data Series
+<span class="nc" id="L44">    setDefaultStylingProperties();</span>
+
+    // Adds the Data Series to the Chart.
+<span class="nc" id="L47">    addDataSeriesToChart();</span>
+<span class="nc" id="L48">  }</span>
+
+  @Override
+  public void changeColor(String color) {
+<span class="nc" id="L52">    color = getHexColor(color);</span>
+<span class="nc" id="L53">    dataSeries.setBackgroundColor(color);</span>
+<span class="nc" id="L54">    dataSeries.setPointBackgroundColor(color);</span>
+<span class="nc" id="L55">    dataSeries.setBorderColor(color);</span>
+<span class="nc" id="L56">  }</span>
+
+  @Override
+  protected void setDefaultElements() {
+<span class="nc" id="L60">    final int points = 4; // Number of points to add</span>
+
+    // TBD: Might change this in the future.
+    // Generally, this should not cause performance issues because typically there are not
+    // that many data points.
+<span class="nc" id="L65">    Optional&lt;DataPoint&gt; maxYPoint = chartData.getDatasets() // Get all the data sets</span>
+<span class="nc" id="L66">        .stream() // Create a stream</span>
+<span class="nc" id="L67">        .flatMap(l -&gt; ((ScatterDataset) l).getDataPoints().stream()) // Flatten the nested lists</span>
+<span class="nc" id="L68">        .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value</span>
+
+    // Get the maximum data point Y value. We take the maximum to ensure
+    // that our newly added default data does not overlap existing lines.
+<span class="nc" id="L72">    double maxY = maxYPoint.map(DataPoint::getY).orElse(0.0);</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    for (int i = 0; i &lt; points; ++i) {</span>
+      // Construct the x and y values based on the index
+<span class="nc" id="L76">      double x = i + 1;</span>
+<span class="nc" id="L77">      double y = maxY + i;</span>
+
+      // Add an entry based on the constructed values
+<span class="nc" id="L80">      addEntryFromTuple(x, y);</span>
+    }
+<span class="nc" id="L82">  }</span>
+
+  @Override
+  public void addEntryFromTuple(String... tuple) {
+    try {
+      // Parse x and y values
+<span class="nc" id="L88">      double x = Double.parseDouble(tuple[0]);</span>
+<span class="nc" id="L89">      double y = Double.parseDouble(tuple[1]);</span>
+
+      // Add an entry from the parsed values
+<span class="nc" id="L92">      addEntryFromTuple(x, y);</span>
+<span class="nc" id="L93">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L94">      ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());</span>
+<span class="nc" id="L95">    }</span>
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * Adds an entry to the Data Series from the specified tuple.
+   *
+   * &lt;p&gt;The tuple is expected to have at least 2 entries. All subsequent
+   * values are ignored.
+   *
+   * @param tuple tuple (array of doubles)
+   */
+  public void addEntryFromTuple(Double... tuple) {
+    // Construct the data point
+<span class="nc" id="L108">    DataPoint dataPoint = new DataPoint();</span>
+<span class="nc" id="L109">    dataPoint.setX(tuple[0]);</span>
+<span class="nc" id="L110">    dataPoint.setY(tuple[1]);</span>
+
+    // Due to the nature of the library used, if the data points
+    // list is empty, the data point has to be set to the Data Series.
+    // Accessing it directly will return a copy (rather than a reference)
+    // of the data points list. However, once a data point is set, the
+    // getDataPoints method will return the reference, which can then be
+    // altered.
+<span class="nc bnc" id="L118" title="All 2 branches missed.">    if (dataSeries.getDataPoints().size() == 0) {</span>
+<span class="nc" id="L119">      dataSeries.setDataPoints(dataPoint);</span>
+    } else {
+<span class="nc" id="L121">      dataSeries.getDataPoints().add(dataPoint);</span>
+    }
+<span class="nc" id="L123">  }</span>
+
+  @Override
+  public String getDefaultTupleEntry(int index) {
+    // For Point-based Charts, the default tuple entry is simply the
+    // current index.
+<span class="nc" id="L129">    return index + &quot;&quot;;</span>
+  }
+
+  @Override
+  protected int getTupleSize() {
+<span class="nc" id="L134">    return 2;</span>
+  }
+
+  @Override
+  public void clearEntries() {
+<span class="nc" id="L139">    dataSeries.getDataPoints().clear();</span>
+<span class="nc" id="L140">  }</span>
+
+  /**
+   * Changes the Point Shape of the Data Series.
+   * @param shape new Point Shape value (integer)
+   */
+  public void changePointShape(PointStyle shape) {
+    /*
+     * By default, no functionality should happen because not all
+     * Point Chart Data Models can yet support this functionality.
+     * Namely, the Line Chart Data Model cannot support it because
+     * the Android library does not yet support different point
+     * shapes for Line Charts.
+     */
+<span class="nc" id="L154">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

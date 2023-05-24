@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockCanvas.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockCanvas.java</span></div><h1>MockCanvas.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.common.collect.Sets;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+/**
+ * Mock Canvas component.
+ *
+ */
+public final class MockCanvas extends MockContainer {
+
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = &quot;Canvas&quot;;
+
+<span class="nc" id="L33">  public static final Set&lt;String&gt; ACCEPTABLE_TYPES = Collections.unmodifiableSet(Sets.newHashSet(MockBall.TYPE, MockImageSprite.TYPE));</span>
+
+  // UI components
+  private final AbsolutePanel canvasWidget;
+
+  /**
+   * Creates a new MockCanvas component.
+   *
+   * @param editor editor of source file the component belongs to
+   */
+  public MockCanvas(SimpleEditor editor) {
+<span class="nc" id="L44">    super(editor, TYPE, images.canvas(), new MockCanvasLayout());</span>
+
+<span class="nc" id="L46">    rootPanel.setHeight(&quot;100%&quot;);</span>
+
+<span class="nc" id="L48">    canvasWidget = new AbsolutePanel();</span>
+<span class="nc" id="L49">    canvasWidget.setStylePrimaryName(&quot;ode-SimpleMockContainer&quot;);</span>
+<span class="nc" id="L50">    canvasWidget.add(rootPanel);</span>
+
+<span class="nc" id="L52">    initComponent(canvasWidget);</span>
+<span class="nc" id="L53">  }</span>
+
+  @Override
+  protected boolean acceptableSource(DragSource source) {
+<span class="nc" id="L57">    MockComponent component = null;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (source instanceof MockComponent) {</span>
+<span class="nc" id="L59">      component = (MockComponent) source;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    } else if (source instanceof SimplePaletteItem) {</span>
+<span class="nc" id="L61">      component = (MockComponent) source.getDragWidget();</span>
+    }
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    if (component instanceof MockSprite) {</span>
+<span class="nc" id="L64">      return true;</span>
+    }
+<span class="nc" id="L66">    return false;</span>
+  }
+
+  @Override
+  public boolean willAcceptComponentType(String type) {
+<span class="nc" id="L71">    return ACCEPTABLE_TYPES.contains(type);</span>
+  }
+
+  /*
+   * Sets the canvas's BackgroundColor property to a new value.
+   */
+  private void setBackgroundColorProperty(String text) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (MockComponentsUtil.isDefaultColor(text)) {</span>
+<span class="nc" id="L79">      text = &quot;&amp;HFFFFFFFF&quot;;  // white</span>
+    }
+<span class="nc" id="L81">    MockComponentsUtil.setWidgetBackgroundColor(canvasWidget, text);</span>
+<span class="nc" id="L82">  }</span>
+
+  /**
+   * Sets the canvas's BackgroundImage property to a new value.
+   */
+  private void setBackgroundImageProperty(String text) {
+<span class="nc" id="L88">    String url = convertImagePropertyValueToUrl(text);</span>
+
+    // We tell the layout (which is a MockCanvasLayout) that there is (or is not) a background
+    // image so it can adjust the &quot;layout width/height&quot;. The &quot;layout width/height&quot; is used when the
+    // preferred width/height of a MockContainer is requested. See MockContainer.getPreferredWidth
+    // and getPreferredHeight, as well as MockLayout.getPreferredWidth and getPreferredHeight.
+<span class="nc bnc" id="L94" title="All 2 branches missed.">    if (url == null) {</span>
+      // text was not recognized as an asset.
+<span class="nc" id="L96">      ((MockCanvasLayout) layout).setBackgroundImageUrl(&quot;&quot;);</span>
+<span class="nc" id="L97">      url = &quot;static/images/canvas.png&quot;;</span>
+      // We set the background image of the canvasWidget so it displays the image. We do it inside
+      // the if because we need to override the background-size property only for this case
+<span class="nc" id="L100">      MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);</span>
+<span class="nc" id="L101">      DOM.setStyleAttribute(canvasWidget.getElement(), &quot;backgroundSize&quot;, &quot;&quot;);</span>
+    } else {
+<span class="nc" id="L103">      ((MockCanvasLayout) layout).setBackgroundImageUrl(url);</span>
+      // We set the background image of the canvasWidget so it displays the image.
+<span class="nc" id="L105">      MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);</span>
+    }
+<span class="nc" id="L107">  }</span>
+
+  private static class MockSpriteWithCoordinates {
+    final MockComponent mockComponent;
+    final int left;
+    final int top;
+
+<span class="nc" id="L114">    MockSpriteWithCoordinates(MockComponent mockComponent, int left, int top) {</span>
+<span class="nc" id="L115">      this.mockComponent = mockComponent;</span>
+<span class="nc" id="L116">      this.left = left;</span>
+<span class="nc" id="L117">      this.top = top;</span>
+<span class="nc" id="L118">    }</span>
+  }
+
+  /**
+   * &lt;p&gt;Sorts the children of {@link #rootPanel} such that sprites are
+   * earlier than ones that may be drawn over them.  Specifically, sprites
+   * are sorted first on Z property, then on their order in the designer's
+   * component tree.  The latter is to make the behavior the same as
+   * before Z layers were added.&lt;/p&gt;
+   */
+  private void sortSprites() {
+    // Create a temporary set for the existing sprites.
+<span class="nc" id="L130">    SortedSet&lt;MockSpriteWithCoordinates&gt; sprites =</span>
+        new TreeSet&lt;MockSpriteWithCoordinates&gt;(
+<span class="nc" id="L132">            new Comparator&lt;MockSpriteWithCoordinates&gt;() {</span>
+              @Override
+              public int compare(MockSpriteWithCoordinates s1,
+                                 MockSpriteWithCoordinates s2) {
+<span class="nc" id="L136">                double z1 = getZProperty(s1.mockComponent);</span>
+<span class="nc" id="L137">                double z2 = getZProperty(s2.mockComponent);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                if (z1 != z2) {</span>
+<span class="nc" id="L139">                  return (int) Math.signum(z1 - z2);</span>
+                } else {
+                  // Both sprites have the same Z property value,
+                  // so put first whichever one is earlier in the
+                  // component tree.
+<span class="nc" id="L144">                  return Integer.signum(children.indexOf(s1.mockComponent) -</span>
+<span class="nc" id="L145">                                        children.indexOf(s2.mockComponent));</span>
+                }
+              }
+            });
+
+    // Remove all sprites from the container's list, transferring them to our
+    // temporary set.
+<span class="nc bnc" id="L152" title="All 2 branches missed.">    while (rootPanel.getWidgetCount() &gt; 0) {</span>
+<span class="nc" id="L153">      MockComponent sprite = (MockComponent) rootPanel.getWidget(0);</span>
+<span class="nc" id="L154">      sprites.add(new MockSpriteWithCoordinates(</span>
+          sprite,
+<span class="nc" id="L156">          rootPanel.getWidgetLeft(sprite),</span>
+<span class="nc" id="L157">          rootPanel.getWidgetTop(sprite)));</span>
+<span class="nc" id="L158">      rootPanel.remove(sprite);</span>
+<span class="nc" id="L159">    }</span>
+
+    // Add them into the rootPanel in proper order.
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    for (MockSpriteWithCoordinates sprite : sprites) {</span>
+<span class="nc" id="L163">      rootPanel.add(sprite.mockComponent, sprite.left, sprite.top);</span>
+<span class="nc" id="L164">    }</span>
+<span class="nc" id="L165">  }</span>
+
+  /**
+   * &lt;p&gt;Reorders the children in {@link #rootPanel} so they are sorted by
+   * Z layer value without changing their order in the component tree.
+   * We assume that the list is already in the correct order except for
+   * the changed sprite.&lt;/p&gt;
+   *
+   * @param changedSprite the sprite whose Z layer value has changed; it
+   *                      should already be a child of {@link #rootPanel}
+   */
+  void reorderComponents(MockSprite changedSprite) {
+    // Since it has already been added to rootPanel, we do not need to pass it,
+    // just to re-sort the list of rootPanel's children.
+<span class="nc" id="L179">    sortSprites();</span>
+
+    // Redraw.
+<span class="nc" id="L182">    refreshForm();</span>
+<span class="nc" id="L183">  }</span>
+
+  private static double getZProperty(MockComponent sprite) {
+    try {
+<span class="nc" id="L187">      return Double.parseDouble(</span>
+<span class="nc" id="L188">          sprite.getPropertyValue(MockSprite.PROPERTY_NAME_Z));</span>
+<span class="nc" id="L189">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L190">      return MockSprite.DEFAULT_Z_LAYER;</span>
+    }
+  }
+
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L198">    super.onPropertyChange(propertyName, newValue);</span>
+
+    // Apply changed properties to the mock component
+<span class="nc bnc" id="L201" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {</span>
+<span class="nc" id="L202">      setBackgroundColorProperty(newValue);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDIMAGE)) {</span>
+<span class="nc" id="L204">      setBackgroundImageProperty(newValue);</span>
+<span class="nc" id="L205">      refreshForm();</span>
+    }
+<span class="nc" id="L207">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

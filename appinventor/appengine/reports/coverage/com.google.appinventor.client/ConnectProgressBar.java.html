@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConnectProgressBar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client</a> &gt; <span class="el_source">ConnectProgressBar.java</span></div><h1>ConnectProgressBar.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client;
+
+import com.google.appinventor.client.explorer.dialogs.ProgressBarDialogBox;
+
+import com.google.appinventor.client.explorer.project.Project;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Show a Progress Bar during connection from the Browser to the Companion.
+ * We are designed by be used from a static context. This facilitates calls
+ * from both the Java (GWT) side of things and the Javascript (blockly) side
+ * of things.
+ *
+ * Javascript starts the progress bar when we learn the connection information
+ * we need from the Rendezvous server. After a connection to the Companion is complete
+ * we hand control over to the AssetManager (in GWT land).
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ *
+ */
+
+
+public final class ConnectProgressBar {
+
+<span class="nc" id="L31">  private static ConnectProgressBar INSTANCE = new ConnectProgressBar();</span>
+  private ProgressBarDialogBox progressBar;
+<span class="nc" id="L33">  private boolean shouldShow = false;</span>
+
+<span class="nc" id="L35">  private ConnectProgressBar() {</span>
+<span class="nc" id="L36">    exportMethodsToJavascript();</span>
+<span class="nc" id="L37">  }</span>
+
+  public static ConnectProgressBar getInstance() {
+<span class="nc" id="L40">    return INSTANCE;</span>
+  }
+
+  public static void start() {
+<span class="nc" id="L44">    INSTANCE.start1();</span>
+<span class="nc" id="L45">  }</span>
+
+  private void start1() {
+<span class="nc" id="L48">    Ode ode = Ode.getInstance();</span>
+<span class="nc" id="L49">    Project currentProject = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    if (progressBar == null) {</span>
+<span class="nc" id="L51">      progressBar = new ProgressBarDialogBox(&quot;ConnectProgressBar&quot;, currentProject.getRootNode());</span>
+<span class="nc" id="L52">      progressBar.show();</span>
+<span class="nc" id="L53">      progressBar.center();</span>
+<span class="nc" id="L54">      progressBar.setProgress(0, MESSAGES.startingConnectionDialog());</span>
+<span class="nc" id="L55">      progressBar.showDismissButton();</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">    } else if (!progressBar.isShowing() &amp;&amp; progressBar.getProgressBarShow() &lt; 2) {</span>
+<span class="nc" id="L57">      progressBar.show();</span>
+<span class="nc" id="L58">      progressBar.center();</span>
+    }
+<span class="nc" id="L60">  }</span>
+
+  public static void setProgress(int progress, String message) {
+<span class="nc" id="L63">    INSTANCE.setProgress1(progress, message);</span>
+<span class="nc" id="L64">  }</span>
+
+  private void setProgress1(int progress, String message) {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">    if (progressBar != null &amp;&amp; progressBar.isShowing()) {</span>
+<span class="nc" id="L68">      progressBar.setProgress(progress, message);</span>
+    }
+<span class="nc" id="L70">  }</span>
+
+  public static void hide() {
+<span class="nc" id="L73">    INSTANCE.hide1();</span>
+<span class="nc" id="L74">  }</span>
+
+  private void hide1() {
+<span class="nc bnc" id="L77" title="All 4 branches missed.">    if (progressBar != null &amp;&amp; progressBar.isShowing()) {</span>
+<span class="nc" id="L78">      progressBar.hide(true);</span>
+    }
+<span class="nc" id="L80">    progressBar = null;</span>
+<span class="nc" id="L81">  }</span>
+
+  public static void tempHide(boolean hide) {
+<span class="nc" id="L84">    INSTANCE.tempHide1(hide);</span>
+<span class="nc" id="L85">  }</span>
+
+  private void tempHide1(boolean hide) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    if (progressBar == null) {</span>
+<span class="nc" id="L89">      return;                 // Nothing to do</span>
+    }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (hide) {</span>
+<span class="nc" id="L92">      shouldShow = progressBar.isShowing();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      if (shouldShow) {</span>
+<span class="nc" id="L94">        progressBar.hide(true);</span>
+      }
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    } else if (shouldShow) {</span>
+<span class="nc" id="L97">      progressBar.show();</span>
+<span class="nc" id="L98">      progressBar.center();</span>
+    }
+<span class="nc" id="L100">  }</span>
+
+  private static native void exportMethodsToJavascript() /*-{
+    $wnd.ConnectProgressBar_start =
+      $entry(@com.google.appinventor.client.ConnectProgressBar::start());
+    $wnd.ConnectProgressBar_setProgress =
+      $entry(@com.google.appinventor.client.ConnectProgressBar::setProgress(ILjava/lang/String;));
+    $wnd.ConnectProgressBar_hide =
+      $entry(@com.google.appinventor.client.ConnectProgressBar::hide());
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

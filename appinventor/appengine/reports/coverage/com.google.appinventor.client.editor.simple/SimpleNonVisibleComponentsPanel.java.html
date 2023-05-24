@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleNonVisibleComponentsPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple</a> &gt; <span class="el_source">SimpleNonVisibleComponentsPanel.java</span></div><h1>SimpleNonVisibleComponentsPanel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Panel in the Simple design editor holding non-visible Simple components.
+ *
+ */
+public final class SimpleNonVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
+
+  // UI elements
+  private final Label heading;
+  private final FlowPanel componentsPanel;
+
+  // Backing mocked Simple form component
+  private MockForm form;
+
+  /**
+   * Creates new component design panel for non-visible components.
+   */
+<span class="nc" id="L41">  public SimpleNonVisibleComponentsPanel() {</span>
+    // Initialize UI
+<span class="nc" id="L43">    VerticalPanel panel = new VerticalPanel();</span>
+<span class="nc" id="L44">    panel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);</span>
+
+<span class="nc" id="L46">    heading = new Label(&quot;&quot;);</span>
+<span class="nc" id="L47">    heading.setStyleName(&quot;ya-NonVisibleComponentsHeader&quot;);</span>
+<span class="nc" id="L48">    panel.add(heading);</span>
+
+<span class="nc" id="L50">    componentsPanel = new FlowPanel();</span>
+<span class="nc" id="L51">    componentsPanel.setStyleName(&quot;ode-SimpleUiDesignerNonVisibleComponents&quot;);</span>
+<span class="nc" id="L52">    panel.add(componentsPanel);</span>
+
+<span class="nc" id="L54">    initWidget(panel);</span>
+<span class="nc" id="L55">  }</span>
+
+  /**
+   * Associates a Simple form component with this panel.
+   *
+   * @param form  backing mocked form component
+   */
+  public void setForm(MockForm form) {
+<span class="nc" id="L63">    this.form = form;</span>
+<span class="nc" id="L64">  }</span>
+
+  /**
+   * Adds a new non-visible component to this panel. Note that this method
+   * will not add the component to the form component! This needs to be done
+   * separately.
+   *
+   * @param component  Simple mock component to be added
+   */
+  public void addComponent(MockComponent component) {
+<span class="nc" id="L74">    componentsPanel.add(component);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (componentsPanel.getWidgetCount() &gt; 0) {</span>
+<span class="nc" id="L76">      heading.setText(MESSAGES.nonVisibleComponentsHeader());</span>
+    }
+<span class="nc" id="L78">  }</span>
+
+  /**
+   * Removes a new non-visible component from this panel. Note that this method
+   * will not remove the component from the form component! This needs to be
+   * done separately.
+   *
+   * @param component  Simple mock component to be removed
+   */
+  public void removeComponent(MockComponent component) {
+<span class="nc" id="L88">    componentsPanel.remove(component);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    if (componentsPanel.getWidgetCount() == 0) {</span>
+<span class="nc" id="L90">      heading.setText(&quot;&quot;);</span>
+    }
+<span class="nc" id="L92">  }</span>
+
+  // DropTarget implementation
+
+  @Override
+  public Widget getDropTargetWidget() {
+<span class="nc" id="L98">    return this;</span>
+  }
+
+  // TODO(user): Draw a colored border around the edges of the non-visible component
+  //                    area while an eligible component is hovering over it.
+  @Override
+  public boolean onDragEnter(DragSource source, int x, int y) {
+    // Accept palette items corresponding to non-visible components only
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    return (source instanceof SimplePaletteItem) &amp;&amp;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        !((SimplePaletteItem) source).isVisibleComponent();</span>
+  }
+
+  @Override
+  public void onDragContinue(DragSource source, int x, int y) {
+    // no action
+<span class="nc" id="L113">  }</span>
+
+  @Override
+  public void onDragLeave(DragSource source) {
+    // no action
+<span class="nc" id="L118">  }</span>
+
+  @Override
+  public void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
+<span class="nc" id="L122">    MockComponent sourceComponent = ((SimplePaletteItem) source).createMockComponent();</span>
+
+    // Add component to the form
+<span class="nc" id="L125">    form.addComponent(sourceComponent);</span>
+
+    // Add component to this panel
+<span class="nc" id="L128">    addComponent(sourceComponent);</span>
+<span class="nc" id="L129">    sourceComponent.select(null);</span>
+<span class="nc" id="L130">  }</span>
+
+  @Override
+  public void onComponentTypeAdded(List&lt;String&gt; componentTypes) {
+
+<span class="nc" id="L135">  }</span>
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List&lt;String&gt; componentTypes) {
+<span class="nc" id="L139">    return true;</span>
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map&lt;String, String&gt; componentTypes) {
+
+<span class="nc" id="L145">  }</span>
+
+  @Override
+  public void onResetDatabase() {
+
+<span class="nc" id="L150">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentRenameWizard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.wizards</a> &gt; <span class="el_source">ComponentRenameWizard.java</span></div><h1>ComponentRenameWizard.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2015 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.wizards;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+
+public class ComponentRenameWizard extends Wizard{
+
+<span class="nc" id="L33">    private final static Ode ode = Ode.getInstance();</span>
+
+    private LabeledTextBox renameTextBox;
+    private final List&lt;ProjectNode&gt; nodes;
+
+    private String defaultTypeName;
+    private String defaultName;
+    private long destinationProjectId;
+
+<span class="nc" id="L42">    private class RenameComponentCallback extends OdeAsyncCallback&lt;Void&gt; {</span>
+        @Override
+        public void onSuccess(Void result) {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            if (nodes.isEmpty())  return;</span>
+<span class="nc" id="L46">            Project project = ode.getProjectManager().getProject(destinationProjectId);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (project == null) {</span>
+<span class="nc" id="L48">                return;</span>
+            }
+<span class="nc" id="L50">            YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();</span>
+<span class="nc" id="L51">            YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(destinationProjectId);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (projectEditor == null) {</span>
+<span class="nc" id="L53">                return;</span>
+            }
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            for (ProjectNode node : nodes) {</span>
+<span class="nc" id="L56">                project.addNode(componentsFolder, node);</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">                if (node.getName().equals(&quot;component.json&quot;) &amp;&amp; StringUtils.countMatches(node.getFileId(), &quot;/&quot;) == 3) {</span>
+<span class="nc" id="L58">                    projectEditor.addComponent(node, null);</span>
+                }
+<span class="nc" id="L60">            }</span>
+<span class="nc" id="L61">        }</span>
+    }
+
+
+
+
+    protected ComponentRenameWizard(final String defaultTypeName, long projectId, final List&lt;ProjectNode&gt; compNodes) {
+<span class="nc" id="L68">        super(MESSAGES.componentRenameWizardCaption(), true, false);</span>
+
+<span class="nc" id="L70">        this.defaultTypeName = defaultTypeName;</span>
+<span class="nc" id="L71">        this.defaultName = getDefaultName(defaultTypeName);</span>
+<span class="nc" id="L72">        this.destinationProjectId = projectId;</span>
+<span class="nc" id="L73">        this.nodes = compNodes;</span>
+
+<span class="nc" id="L75">        setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+
+<span class="nc" id="L77">        renameTextBox = new LabeledTextBox(MESSAGES.componentNameLabel());</span>
+<span class="nc" id="L78">        renameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {</span>
+            @Override
+            public void onKeyDown(KeyDownEvent event) {
+<span class="nc" id="L81">                int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                if (keyCode == KeyCodes.KEY_ENTER) {</span>
+<span class="nc" id="L83">                    handleOkClick();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                } else if (keyCode == KeyCodes.KEY_ESCAPE) {</span>
+<span class="nc" id="L85">                    handleCancelClick();</span>
+                }
+<span class="nc" id="L87">            }</span>
+        });
+
+<span class="nc" id="L90">        renameTextBox.setText(defaultName);</span>
+
+<span class="nc" id="L92">        VerticalPanel page = new VerticalPanel();</span>
+
+<span class="nc" id="L94">        page.add(renameTextBox);</span>
+<span class="nc" id="L95">        addPage(page);</span>
+
+        // Create finish command (rename Extension)
+<span class="nc" id="L98">        initFinishCommand(new Command() {</span>
+            @Override
+            public void execute() {
+<span class="nc" id="L101">                String newName = renameTextBox.getText();</span>
+
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                if (TextValidators.checkNewComponentName(newName)) {</span>
+<span class="nc" id="L104">                    ode.getComponentService().renameImportedComponent(defaultTypeName, newName, destinationProjectId, new RenameComponentCallback());</span>
+
+                } else {
+<span class="nc" id="L107">                    show();</span>
+<span class="nc" id="L108">                    center();</span>
+<span class="nc" id="L109">                    renameTextBox.setFocus(true);</span>
+<span class="nc" id="L110">                    renameTextBox.selectAll();</span>
+<span class="nc" id="L111">                    return;</span>
+                }
+<span class="nc" id="L113">            }</span>
+        });
+        // Create cancel command (delete component files)
+<span class="nc" id="L116">        initCancelCommand(new Command() {</span>
+            @Override
+            public void execute() {
+<span class="nc" id="L119">                ode.getComponentService().deleteImportedComponent(defaultTypeName, destinationProjectId, new AsyncCallback&lt;Void&gt;() {</span>
+                    @Override
+                    public void onFailure(Throwable throwable) {
+
+<span class="nc" id="L123">                    }</span>
+
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+<span class="nc" id="L128">                    }</span>
+                });
+<span class="nc" id="L130">            }</span>
+        });
+<span class="nc" id="L132">    }</span>
+
+    private static String getDefaultName(String defaultTypeName) {
+<span class="nc" id="L135">        return defaultTypeName.substring(defaultTypeName.lastIndexOf('.') + 1);</span>
+    }
+
+
+
+    @Override
+    public void show() {
+<span class="nc" id="L142">        super.show();</span>
+<span class="nc" id="L143">        int width = 320;</span>
+<span class="nc" id="L144">        int height = 40;</span>
+<span class="nc" id="L145">        this.center();</span>
+
+<span class="nc" id="L147">        setPixelSize(width, height);</span>
+<span class="nc" id="L148">        super.setPagePanelHeight(40);</span>
+
+<span class="nc" id="L150">        DeferredCommand.addCommand(new Command() {</span>
+            public void execute() {
+<span class="nc" id="L152">                renameTextBox.setFocus(true);</span>
+<span class="nc" id="L153">            }</span>
+        });
+<span class="nc" id="L155">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

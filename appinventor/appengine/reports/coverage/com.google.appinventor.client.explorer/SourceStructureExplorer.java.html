@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SourceStructureExplorer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.explorer</a> &gt; <span class="el_source">SourceStructureExplorer.java</span></div><h1>SourceStructureExplorer.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.explorer;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.widgets.TextButton;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.user.client.Event;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Label;
+
+import java.util.Iterator;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * This explorer is used to outline the structure of a source file. Note that
+ * this explorer is shared by all it's clients. That means that clients (most
+ * likely editors) need to update its content upon activation.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public class SourceStructureExplorer extends Composite {
+  // UI elements
+  private final EventCaptureTree tree;
+  private final TextButton renameButton;
+  private final TextButton deleteButton;
+
+  /**
+   * This is a hack to work around the fact that for multiselect we need to have
+   * access to the state of the meta/ctrl key but the SelectionHandler doesn't
+   * provide access to the original event that caused the selection. We capture
+   * the most recent event before the selection event is triggered and then
+   * reset once the selection has been updated.
+   */
+  static class EventCaptureTree extends Tree {
+
+<span class="nc" id="L58">    Event lastEvent = null;</span>
+
+    public EventCaptureTree(Resources resources) {
+<span class="nc" id="L61">      super(resources);</span>
+<span class="nc" id="L62">    }</span>
+
+    @Override
+    public void onBrowserEvent(Event event) {
+<span class="nc" id="L66">      lastEvent = event;</span>
+<span class="nc" id="L67">      super.onBrowserEvent(event);</span>
+<span class="nc" id="L68">    }</span>
+  }
+
+  /**
+   * Creates a new source structure explorer.
+   */
+<span class="nc" id="L74">  public SourceStructureExplorer() {</span>
+    // Initialize UI elements
+<span class="nc" id="L76">    tree = new EventCaptureTree(Ode.getImageBundle());</span>
+<span class="nc" id="L77">    tree.setAnimationEnabled(true);</span>
+<span class="nc" id="L78">    tree.setScrollOnSelectEnabled(false);</span>
+<span class="nc" id="L79">    tree.addCloseHandler(new CloseHandler&lt;TreeItem&gt;() {</span>
+      @Override
+      public void onClose(CloseEvent&lt;TreeItem&gt; event) {
+<span class="nc" id="L82">        TreeItem treeItem = event.getTarget();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (treeItem != null) {</span>
+<span class="nc" id="L84">          Object userObject = treeItem.getUserObject();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">          if (userObject instanceof SourceStructureExplorerItem) {</span>
+<span class="nc" id="L86">            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;</span>
+<span class="nc" id="L87">            item.onStateChange(false);</span>
+          }
+        }
+<span class="nc" id="L90">      }</span>
+    });
+<span class="nc" id="L92">    tree.addOpenHandler(new OpenHandler&lt;TreeItem&gt;() {</span>
+      @Override
+      public void onOpen(OpenEvent&lt;TreeItem&gt; event) {
+<span class="nc" id="L95">        TreeItem treeItem = event.getTarget();</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (treeItem != null) {</span>
+<span class="nc" id="L97">          Object userObject = treeItem.getUserObject();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">          if (userObject instanceof SourceStructureExplorerItem) {</span>
+<span class="nc" id="L99">            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;</span>
+<span class="nc" id="L100">            item.onStateChange(true);</span>
+          }
+        }
+<span class="nc" id="L103">      }</span>
+    });
+<span class="nc" id="L105">    tree.addSelectionHandler(new SelectionHandler&lt;TreeItem&gt;() {</span>
+      @Override
+      public void onSelection(SelectionEvent&lt;TreeItem&gt; event) {
+<span class="nc" id="L108">        TreeItem treeItem = event.getSelectedItem();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (treeItem != null) {</span>
+<span class="nc" id="L110">          Object userObject = treeItem.getUserObject();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">          if (userObject instanceof SourceStructureExplorerItem) {</span>
+<span class="nc" id="L112">            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;</span>
+<span class="nc" id="L113">            enableButtons(item);</span>
+            //showBlocks(item);
+<span class="nc" id="L115">            item.onSelected(tree.lastEvent);</span>
+<span class="nc" id="L116">          } else {</span>
+<span class="nc" id="L117">            disableButtons();</span>
+            //hideComponent();
+          }
+<span class="nc" id="L120">        } else {</span>
+<span class="nc" id="L121">          disableButtons();</span>
+        }
+<span class="nc" id="L123">        tree.lastEvent = null;</span>
+<span class="nc" id="L124">      }</span>
+    });
+<span class="nc" id="L126">    tree.addKeyDownHandler(new KeyDownHandler() {</span>
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+<span class="nc" id="L129">        int keyCode = event.getNativeKeyCode();</span>
+<span class="nc bnc" id="L130" title="All 4 branches missed.">        if (keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_BACKSPACE) {</span>
+<span class="nc" id="L131">          event.preventDefault();</span>
+<span class="nc" id="L132">          deleteItemFromTree();</span>
+        }
+<span class="nc" id="L134">      }</span>
+    });
+
+    // Put a ScrollPanel around the tree.
+<span class="nc" id="L138">    ScrollPanel scrollPanel = new ScrollPanel(tree);</span>
+<span class="nc" id="L139">    scrollPanel.setWidth(&quot;200px&quot;);  // wide enough to avoid a horizontal scrollbar most of the time</span>
+<span class="nc" id="L140">    scrollPanel.setHeight(&quot;480px&quot;); // approximately the same height as the viewer</span>
+
+<span class="nc" id="L142">    HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L143">    buttonPanel.setStyleName(&quot;ode-PanelButtons&quot;);</span>
+<span class="nc" id="L144">    buttonPanel.setSpacing(4);</span>
+
+<span class="nc" id="L146">    renameButton = new TextButton(MESSAGES.renameButton());</span>
+<span class="nc" id="L147">    renameButton.setEnabled(false);</span>
+<span class="nc" id="L148">    renameButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L151">        TreeItem treeItem = tree.getSelectedItem();</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (treeItem != null) {</span>
+<span class="nc" id="L153">          Object userObject = treeItem.getUserObject();</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">          if (userObject instanceof SourceStructureExplorerItem) {</span>
+<span class="nc" id="L155">            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;</span>
+<span class="nc" id="L156">            item.rename();</span>
+          }
+        }
+<span class="nc" id="L159">      }</span>
+    });
+<span class="nc" id="L161">    buttonPanel.add(renameButton);</span>
+<span class="nc" id="L162">    buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);</span>
+
+<span class="nc" id="L164">    deleteButton = new TextButton(MESSAGES.deleteButton());</span>
+<span class="nc" id="L165">    deleteButton.setEnabled(false);</span>
+<span class="nc" id="L166">    deleteButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L169">        deleteItemFromTree();</span>
+<span class="nc" id="L170">      }</span>
+    });
+<span class="nc" id="L172">    buttonPanel.add(deleteButton);</span>
+<span class="nc" id="L173">    buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);</span>
+
+<span class="nc" id="L175">    VerticalPanel panel = new VerticalPanel();</span>
+<span class="nc" id="L176">    panel.add(scrollPanel);</span>
+<span class="nc" id="L177">    panel.add(new Label());</span>
+<span class="nc" id="L178">    panel.add(buttonPanel);</span>
+<span class="nc" id="L179">    panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);</span>
+<span class="nc" id="L180">    initWidget(panel);</span>
+<span class="nc" id="L181">  }</span>
+
+  private void deleteItemFromTree() {
+<span class="nc" id="L184">    TreeItem treeItem = tree.getSelectedItem();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">    if (treeItem != null) {</span>
+<span class="nc" id="L186">      Object userObject = treeItem.getUserObject();</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">      if (userObject instanceof SourceStructureExplorerItem) {</span>
+<span class="nc" id="L188">        SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;</span>
+<span class="nc" id="L189">        item.delete();</span>
+      }
+    }
+<span class="nc" id="L192">  }</span>
+
+  private void enableButtons(SourceStructureExplorerItem item) {
+<span class="nc" id="L195">    renameButton.setEnabled(item.canRename());</span>
+<span class="nc" id="L196">    deleteButton.setEnabled(item.canDelete());</span>
+<span class="nc" id="L197">  }</span>
+
+  private void disableButtons() {
+<span class="nc" id="L200">    renameButton.setEnabled(false);</span>
+<span class="nc" id="L201">    deleteButton.setEnabled(false);</span>
+<span class="nc" id="L202">  }</span>
+
+  
+  /* move this logic to declarations of SourceStructureExplorerItem subtypes
+  private void showBlocks(SourceStructureExplorerItem item) {
+    // are we showing the blocks editor?
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor = 
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log(&quot;Showing item &quot; + item.getItemName());
+      if (item.isComponent()) {
+        editor.showComponentBlocks(item.getItemName());
+      } else {
+        editor.showBuiltinBlocks(item.getItemName());
+      }
+    }
+  }
+
+  private void hideComponent() {
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor =
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log(&quot;Hiding selected item&quot;);
+      editor.hideComponentBlocks();
+    }  
+  }
+   */  
+
+  /**
+   * Clears the tree.
+   */
+  public void clearTree() {
+<span class="nc" id="L234">    tree.clear();</span>
+<span class="nc" id="L235">    disableButtons();</span>
+<span class="nc" id="L236">  }</span>
+
+  /**
+   * Updates the tree
+   *
+   * @param root the new root TreeItem
+   * @param itemToSelect item to select, or null for no selected item
+   */
+  public void updateTree(TreeItem root, SourceStructureExplorerItem itemToSelect) {
+<span class="nc" id="L245">    TreeItem items[] = new TreeItem[1];</span>
+<span class="nc" id="L246">    items[0] = root;</span>
+<span class="nc" id="L247">    updateTree(items, itemToSelect);</span>
+<span class="nc" id="L248">  }</span>
+
+  
+  /**
+   * Updates the tree
+   *
+   * @param roots An array of root items (all top level)
+   * @param itemToSelect item to select, or null for no selected item
+   */
+  public void updateTree(TreeItem[] roots, SourceStructureExplorerItem itemToSelect) {
+<span class="nc" id="L258">    tree.clear();</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">    for (TreeItem root : roots) {</span>
+<span class="nc" id="L260">      tree.addItem(root);</span>
+    }
+<span class="nc bnc" id="L262" title="All 2 branches missed.">    if (itemToSelect != null) {</span>
+<span class="nc" id="L263">      selectItem(itemToSelect, true);</span>
+    } else {
+<span class="nc" id="L265">      disableButtons();</span>
+    }
+<span class="nc" id="L267">  }</span>
+
+  /**
+   * Select or unselect an item in the tree
+   *
+   * @param item to select or unselect
+   * @param select true to select, false to unselect
+   */
+  private void selectItem(SourceStructureExplorerItem item, boolean select) {
+<span class="nc" id="L276">    Iterator&lt;TreeItem&gt; iter = tree.treeItemIterator();</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">    while (iter.hasNext()) {</span>
+<span class="nc" id="L278">      TreeItem treeItem = iter.next();</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">      if (item.equals(treeItem.getUserObject())) {</span>
+        // NOTE(lizlooney) - It turns out that calling TreeItem.setSelected(true) doesn't actually
+        // select the item in the tree. It looks selected, but Tree.getSelectedItem() will return
+        // null. Instead, we have to call Tree.setSelectedItem.
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        if (select) {</span>
+<span class="nc" id="L284">          tree.setSelectedItem(treeItem, false); // false means don't trigger a SelectionEvent</span>
+<span class="nc" id="L285">          enableButtons(item);</span>
+          //showBlocks(item);
+        } else {
+<span class="nc" id="L288">          tree.setSelectedItem(null, false); // false means don't trigger a SelectionEvent</span>
+<span class="nc" id="L289">          disableButtons();</span>
+          //hideComponent();
+        }
+<span class="nc" id="L292">        break;</span>
+      }
+<span class="nc" id="L294">    }</span>
+<span class="nc" id="L295">  }</span>
+
+  /**
+   * Select an item in the tree
+   *
+   * @param item item to select
+   */
+  public void selectItem(SourceStructureExplorerItem item) {
+<span class="nc" id="L303">    selectItem(item, true);</span>
+<span class="nc" id="L304">  }</span>
+
+  /**
+   * Select an item in the tree
+   *
+   * @param item item to unselect
+   */
+  public void unselectItem(SourceStructureExplorerItem item) {
+<span class="nc" id="L312">    selectItem(item, false);</span>
+<span class="nc" id="L313">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

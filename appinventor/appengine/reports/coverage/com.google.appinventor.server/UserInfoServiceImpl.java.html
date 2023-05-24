@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserInfoServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">UserInfoServiceImpl.java</span></div><h1>UserInfoServiceImpl.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.user.Config;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.UserInfoService;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.server.tokens.Token;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+/**
+ * Implementation of the user information service.
+ *
+ * &lt;p&gt;Note that this service must be state-less so that it can be run on
+ * multiple servers.
+ *
+ */
+<span class="nc" id="L32">public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements UserInfoService {</span>
+
+  // Storage of user settings
+<span class="nc" id="L35">  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();</span>
+
+  private static final long serialVersionUID = -7316312435338169166L;
+
+<span class="nc" id="L39">  private static final Logger LOG = Logger.getLogger(UserInfoServiceImpl.class.getName());</span>
+
+  @SuppressWarnings(&quot;SimpleDateFormat&quot;)
+<span class="nc" id="L42">  private static final DateFormat ISO8601 = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ssX&quot;);</span>
+
+<span class="nc" id="L44">  private static boolean deleteAccountAllowed = Flag.createFlag(&quot;auth.deleteaccountallowed&quot;, true).get();</span>
+
+  /**
+   * Returns System Config, including user information record
+   *
+   */
+
+  @Override
+  public Config getSystemConfig(String sessionId) {
+<span class="nc" id="L53">    Config config = new Config();</span>
+<span class="nc" id="L54">    User user = userInfoProvider.getUser();</span>
+<span class="nc" id="L55">    user.setSessionId(sessionId);</span>
+<span class="nc" id="L56">    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);</span>
+<span class="nc" id="L57">    Flag&lt;String&gt; rendezvousFlag = Flag.createFlag(&quot;use.rendezvousserver&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (!rendezvousFlag.get().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L59">      config.setRendezvousServer(rendezvousFlag.get());</span>
+    }
+<span class="nc" id="L61">    config.setUser(user);</span>
+
+    // Fetch the current splash screen version
+<span class="nc" id="L64">    config.setSplashConfig(storageIo.getSplashConfig());</span>
+
+<span class="nc" id="L66">    config.setLibraryUrl(Flag.createFlag(&quot;library.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L67">    config.setGetStartedUrl(Flag.createFlag(&quot;getstarted.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L68">    config.setExtensionsUrl(Flag.createFlag(&quot;extensions.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L69">    config.setTutorialsUrl(Flag.createFlag(&quot;tutorials.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L70">    config.setTroubleshootingUrl(Flag.createFlag(&quot;troubleshooting.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L71">    config.setForumsUrl(Flag.createFlag(&quot;forums.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L72">    config.setFeedbackUrl(Flag.createFlag(&quot;feedback.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L73">    config.setReleaseNotesUrl(Flag.createFlag(&quot;release.notes.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L74">    config.setTosUrl(Flag.createFlag(&quot;tos.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L75">    config.setLogoUrl(Flag.createFlag(&quot;logo.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L76">    config.setGuideUrl(Flag.createFlag(&quot;guide.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L77">    config.setReferenceComponentsUrl(Flag.createFlag(&quot;reference.components.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L78">    config.setFirebaseURL(Flag.createFlag(&quot;firebase.url&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L79">    config.setDefaultCloudDBserver(Flag.createFlag(&quot;clouddb.server&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L80">    config.setNoop(Flag.createFlag(&quot;session.noop&quot;, 0).get());</span>
+<span class="nc" id="L81">    config.setGalleryEnabled(Flag.createFlag(&quot;gallery.enabled&quot;, false).get());</span>
+<span class="nc" id="L82">    config.setGalleryReadOnly(Flag.createFlag(&quot;gallery.readonly&quot;, false).get());</span>
+<span class="nc" id="L83">    config.setGalleryLocation(Flag.createFlag(&quot;gallery.location&quot;, &quot;&quot;).get());</span>
+<span class="nc" id="L84">    config.setDeleteAccountAllowed(deleteAccountAllowed);</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    if (!Flag.createFlag(&quot;build2.server.host&quot;, &quot;&quot;).get().isEmpty()) {</span>
+<span class="nc" id="L87">      config.setSecondBuildserver(true);</span>
+    }
+
+<span class="nc" id="L90">    String expirationDate = Flag.createFlag(&quot;service.expires.time&quot;, &quot;&quot;).get();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (!expirationDate.isEmpty()) {</span>
+      try {
+<span class="nc" id="L93">        Date expires = ISO8601.parse(expirationDate);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (expires.before(new Date())) {</span>
+<span class="nc" id="L95">          config.setServerExpired(true);</span>
+        }
+<span class="nc" id="L97">      } catch (ParseException e) {</span>
+<span class="nc" id="L98">        throw CrashReport.createAndLogError(LOG, null, null, e);</span>
+<span class="nc" id="L99">      }</span>
+    }
+
+    // Fetch list of allowed tutorial prefixes from the data store
+<span class="nc" id="L103">    List&lt;String&gt; urls = storageIo.getTutorialsUrlAllowed();</span>
+<span class="nc" id="L104">    config.setTutorialUrlAllowed(urls);</span>
+
+<span class="nc" id="L106">    return config;</span>
+  }
+
+  /**
+   * Returns the user's backpack as an XML string.
+   *
+   * @return backpack
+   */
+  @Override
+  public String getUserBackpack() {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    if (!hasUserFile(StorageUtil.USER_BACKPACK_FILENAME)) {</span>
+<span class="nc" id="L117">      return &quot;[]&quot;;</span>
+    } else {
+<span class="nc" id="L119">      return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, &quot;UTF-8&quot;);</span>
+    }
+  }
+
+  /**
+   * Returns user information.
+   *
+   * (obsoleted by getSystemConfig())
+   *
+   * @return  user information record
+   */
+
+  @Override
+  public User getUserInformation(String sessionId) {
+    // This is a little evil here. We are fetching the User object
+    // *and* side effecting it by storing the sessionId
+    // A more pedagotically correct way would be to do the store
+    // in a separate RPC. But that would add another round trip.
+<span class="nc" id="L137">    User user = userInfoProvider.getUser();</span>
+<span class="nc" id="L138">    user.setSessionId(sessionId); // Store local copy</span>
+    // Store it in the data store
+<span class="nc" id="L140">    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);</span>
+<span class="nc" id="L141">    return user;</span>
+  }
+
+  /**
+   * Retrieves the user's settings.
+   *
+   * @return  user's settings
+   */
+  @Override
+  public String loadUserSettings() {
+<span class="nc" id="L151">    return storageIo.loadSettings(userInfoProvider.getUserId());</span>
+  }
+
+  /**
+   * Stores the user's backpack as an xml string
+   * @param backpack the xml string representing the backpack
+   */
+
+  @Override
+  public void storeUserBackpack(String backpack) {
+<span class="nc" id="L161">    storageIo.uploadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, backpack, &quot;UTF-8&quot;);</span>
+<span class="nc" id="L162">  }</span>
+
+  /**
+   * Stores the user's settings.
+   * @param settings  user's settings
+   */
+  @Override
+  public void storeUserSettings(String settings) {
+<span class="nc" id="L170">    storageIo.storeSettings(userInfoProvider.getUserId(), settings);</span>
+<span class="nc" id="L171">  }</span>
+
+  /**
+   * Returns true if the current user has a user file with the given file name
+   */
+  @Override
+  public boolean hasUserFile(String fileName) {
+<span class="nc" id="L178">    return storageIo.getUserFiles(userInfoProvider.getUserId()).contains(fileName);</span>
+  }
+
+  /**
+   * Deletes the user file with the given file name
+   */
+  @Override
+  public void deleteUserFile(String fileName) {
+<span class="nc" id="L186">    storageIo.deleteUserFile(userInfoProvider.getUserId(), fileName);</span>
+<span class="nc" id="L187">  }</span>
+
+  /**
+   * No-Op (No Operation). However because we are going through
+   * OdeAuthFilter to get this far, a session cookie due for renewal
+   * will be renewed.
+   */
+  @Override
+  public void noop() {
+<span class="nc" id="L196">  }</span>
+
+  /**
+   * fetch the contents of a shared backpack.
+   *
+   * @param BackPackId the uuid of the backpack
+   * @return the backpack's content as an XML string
+   */
+
+  @Override
+  public String getSharedBackpack(String backPackId) {
+<span class="nc" id="L207">    return storageIo.downloadBackpack(backPackId);</span>
+  }
+
+  /**
+   * store a shared backpack.
+   *
+   * Note: We overwrite any existing backpack. If merging of contents
+   * is desired, our caller has to take care of it.
+   *
+   * @param BackPackId the uuid of the shared backpack
+   * @param the new contents of the backpack
+   */
+
+  @Override
+  public void storeSharedBackpack(String backPackId, String content) {
+<span class="nc" id="L222">    storageIo.uploadBackpack(backPackId, content);</span>
+<span class="nc" id="L223">  }</span>
+
+  @Override
+  public String deleteAccount() {
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (!deleteAccountAllowed) {</span>
+<span class="nc" id="L228">      return (&quot;&quot;);</span>
+    }
+<span class="nc bnc" id="L230" title="All 2 branches missed.">    if (storageIo.deleteAccount(userInfoProvider.getUserId())) {</span>
+<span class="nc" id="L231">      String delAccountUrl = Flag.createFlag(&quot;deleteaccount.url&quot;, &quot;NONE&quot;).get();</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">      if (delAccountUrl.equals(&quot;NONE&quot;)) {</span>
+<span class="nc" id="L233">        return (delAccountUrl);</span>
+      } else {
+<span class="nc" id="L235">        String token = Token.makeAccountDeletionToken(userInfoProvider.getUserId(),</span>
+<span class="nc" id="L236">          userInfoProvider.getUserEmail());</span>
+<span class="nc" id="L237">        return (delAccountUrl + &quot;/?token=&quot; + token);</span>
+      }
+    } else {
+<span class="nc" id="L240">      return (&quot;&quot;);</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

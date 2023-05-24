@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">ComponentServiceImpl.java</span></div><h1>ComponentServiceImpl.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2015-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
+import com.google.appinventor.shared.rpc.component.ComponentImportResponse.Status;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+
+import com.google.common.io.ByteStreams;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L44">public class ComponentServiceImpl extends OdeRemoteServiceServlet</span>
+    implements ComponentService {
+
+  private static final String CANNOT_UPGRADE_MESSAGE = &quot;An extension containing %s already exists&quot; +
+      &quot; on the server but could not be upgraded. The new extension was not loaded.&quot;;
+<span class="fc" id="L49">  private static final Logger LOG =</span>
+<span class="fc" id="L50">      Logger.getLogger(ComponentServiceImpl.class.getName());</span>
+
+<span class="fc" id="L52">  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();</span>
+
+<span class="fc" id="L54">  private final FileImporter fileImporter = new FileImporterImpl();</span>
+
+  /**
+   * ExtensionDowngradeException is thrown when ComponentServiceImpl detects that an extension
+   * bundle upgrade may result in an existing component disappearing from the set of known
+   * components. The user should be warned when such a situation occurs and we will consider it
+   * the fault of the extension developer for deleting extensions from a previously published
+   * bundle.
+   */
+  public static class ExtensionDowngradeException extends Exception {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Construct a new ExtensionDowngradeException.
+     *
+     * @param typeName The typeName of the extension that caused the exception.
+     */
+    public ExtensionDowngradeException(String typeName) {
+<span class="fc" id="L72">      super(&quot;Cannot downgrade to extension missing previously defined type &quot; + typeName);</span>
+<span class="fc" id="L73">    }</span>
+  }
+
+  @Override
+  public ComponentImportResponse importComponentToProject(String fileOrUrl, long projectId,
+      String folderPath) {
+<span class="fc" id="L79">    ComponentImportResponse response = new ComponentImportResponse(ComponentImportResponse.Status.FAILED);</span>
+<span class="fc" id="L80">    response.setProjectId(projectId);</span>
+
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">    if (isUnknownSource(fileOrUrl)) {</span>
+<span class="nc" id="L83">      response.setStatus(ComponentImportResponse.Status.UNKNOWN_URL);</span>
+<span class="nc" id="L84">      return response;</span>
+    }
+
+    Map&lt;String, byte[]&gt; contents;
+<span class="fc" id="L88">    String fileNameToDelete = null;</span>
+    try {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">      if (fileOrUrl.startsWith(&quot;__TEMP__&quot;)) {</span>
+<span class="nc" id="L91">        fileNameToDelete = fileOrUrl;</span>
+<span class="nc" id="L92">        contents = extractContents(storageIo.openTempFile(fileOrUrl));</span>
+      } else {
+<span class="fc" id="L94">        URL compUrl = new URL(fileOrUrl);</span>
+<span class="fc" id="L95">        contents = extractContents(compUrl.openStream());</span>
+      }
+<span class="fc" id="L97">      importToProject(contents, projectId, folderPath, response);</span>
+<span class="fc" id="L98">      return response;</span>
+<span class="fc" id="L99">    } catch (FileImporterException | IOException | JSONException | IllegalArgumentException e) {</span>
+<span class="fc" id="L100">      response.setStatus(Status.FAILED);</span>
+<span class="fc" id="L101">      response.setMessage(e.getMessage());</span>
+<span class="fc" id="L102">      return response;</span>
+    } finally {
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">      if (fileNameToDelete != null) {</span>
+        try {
+<span class="nc" id="L106">          storageIo.deleteTempFile(fileNameToDelete);</span>
+<span class="nc" id="L107">        } catch (Exception e) {</span>
+<span class="nc" id="L108">          throw CrashReport.createAndLogError(LOG, null,</span>
+<span class="nc" id="L109">            collectImportErrorInfo(fileOrUrl, projectId), e);</span>
+<span class="nc" id="L110">        }</span>
+      }
+    }
+  }
+
+  @Override
+  public void renameImportedComponent(String fullyQualifiedName, String newName,
+      long projectId) {
+<span class="nc" id="L118">    String fileName = &quot;assets/external_comps/&quot; + fullyQualifiedName + &quot;/component.json&quot;;</span>
+
+<span class="nc" id="L120">    JSONObject compJson = new JSONObject(storageIo.downloadFile(</span>
+<span class="nc" id="L121">        userInfoProvider.getUserId(), projectId, fileName, StorageUtil.DEFAULT_CHARSET));</span>
+<span class="nc" id="L122">    compJson.put(&quot;name&quot;, newName);</span>
+
+    try {
+<span class="nc" id="L125">      storageIo.uploadFile(projectId, fileName, userInfoProvider.getUserId(),</span>
+<span class="nc" id="L126">          compJson.toString(2), StorageUtil.DEFAULT_CHARSET);</span>
+<span class="nc" id="L127">    } catch (BlocksTruncatedException e) {</span>
+<span class="nc" id="L128">      throw CrashReport.createAndLogError(LOG, null,</span>
+          &quot;Error renaming the short name of &quot; + fullyQualifiedName + &quot; to &quot; +
+          newName + &quot; in project &quot; + projectId, e);
+<span class="nc" id="L131">    }</span>
+<span class="nc" id="L132">  }</span>
+
+  @Override
+  public void deleteImportedComponent(String fullyQualifiedName, long projectId) {
+<span class="nc" id="L136">    String directory = &quot;assets/external_comps/&quot; + fullyQualifiedName + &quot;/&quot;;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    for (String fileId : storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId)) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">      if (fileId.startsWith(directory)) {</span>
+<span class="nc" id="L139">        storageIo.deleteFile(userInfoProvider.getUserId(), projectId, fileId);</span>
+<span class="nc" id="L140">        storageIo.removeSourceFilesFromProject(userInfoProvider.getUserId(), projectId, false, fileId);</span>
+      }
+<span class="nc" id="L142">    }</span>
+<span class="nc" id="L143">  }</span>
+
+  private Map&lt;String, byte[]&gt; extractContents(InputStream inputStream)
+      throws IOException {
+<span class="fc" id="L147">    Map&lt;String, byte[]&gt; contents = new HashMap&lt;String, byte[]&gt;();</span>
+
+    // assumption: the zip is non-empty
+<span class="fc" id="L150">    ZipInputStream zip = new ZipInputStream(inputStream);</span>
+    ZipEntry entry;
+<span class="fc bfc" id="L152" title="All 2 branches covered.">    while ((entry = zip.getNextEntry()) != null) {</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">      if (entry.isDirectory())  continue;</span>
+<span class="fc" id="L154">      ByteArrayOutputStream contentStream = new ByteArrayOutputStream();</span>
+<span class="fc" id="L155">      ByteStreams.copy(zip, contentStream);</span>
+<span class="fc" id="L156">      contents.put(entry.getName(), contentStream.toByteArray());</span>
+<span class="fc" id="L157">    }</span>
+<span class="fc" id="L158">    zip.close();</span>
+
+<span class="fc" id="L160">    return contents;</span>
+  }
+
+  private void importToProject(Map&lt;String, byte[]&gt; contents, long projectId,
+      String folderPath, ComponentImportResponse response) throws FileImporterException, IOException {
+<span class="fc" id="L165">    Status status = Status.IMPORTED;</span>
+<span class="fc" id="L166">    final String userId = userInfoProvider.getUserId();</span>
+<span class="fc" id="L167">    final String basepath = folderPath + &quot;/external_comps/&quot;;</span>
+<span class="fc" id="L168">    Set&lt;String&gt; sourceFiles = new HashSet&lt;&gt;(storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId));</span>
+<span class="fc" id="L169">    Map&lt;String, String&gt; nameMap = buildExtensionPathnameMap(contents.keySet());</span>
+
+    // Does the extension contain a file that could be a component descriptor file?
+<span class="fc bfc" id="L172" title="All 4 branches covered.">    if (!nameMap.containsKey(&quot;component.json&quot;) &amp;&amp; !nameMap.containsKey(&quot;components.json&quot;)) {</span>
+<span class="fc" id="L173">      response.setMessage(&quot;Uploaded file does not contain any component definition files.&quot;);</span>
+<span class="fc" id="L174">      return;</span>
+    }
+
+    // Rename/upgrade component.json to components.json
+<span class="fc" id="L178">    JSONArray newComponents = readExtensionComponents(contents, nameMap);</span>
+<span class="pc bpc" id="L179" title="1 of 4 branches missed.">    if (newComponents == null || newComponents.length() == 0) {</span>
+<span class="fc" id="L180">      response.setMessage(&quot;No valid component descriptors found in the extension.&quot;);</span>
+<span class="fc" id="L181">      return;</span>
+    }
+
+    // Upgrade old extensions, if any
+<span class="fc" id="L185">    NavigableMap&lt;String, Set&lt;String&gt;&gt; existingExtensions = findExtensions(basepath, sourceFiles);</span>
+<span class="fc" id="L186">    Set&lt;String&gt; oldTypes = matchExtensions(existingExtensions, getExtensionClasses(newComponents));</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    if (oldTypes.size() &gt; 0) {</span>
+      // upgrade of one or more existing extensions
+      try {
+<span class="fc" id="L190">        Map&lt;String, JSONObject&gt; componentMap = makeComponentMap(newComponents);</span>
+<span class="fc" id="L191">        boolean willCollide = sourceFiles.contains(basepath + nameMap.get(&quot;classes.jar&quot;));</span>
+<span class="fc" id="L192">        Iterator&lt;String&gt; i = oldTypes.iterator();</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        while (i.hasNext()) {</span>
+<span class="fc" id="L194">          String extension = i.next();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">          if (upgradeOldExtension(userId, projectId, basepath, extension,</span>
+<span class="fc" id="L196">              existingExtensions.get(extension), componentMap)) {</span>
+<span class="fc" id="L197">            status = Status.UPGRADED;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">          } else if (willCollide) {</span>
+            // collision but we are not upgrading an existing extension? abort!
+<span class="fc" id="L200">            response.setStatus(Status.FAILED);</span>
+<span class="fc" id="L201">            response.setMessage(String.format(CANNOT_UPGRADE_MESSAGE, extension));</span>
+<span class="fc" id="L202">            return;</span>
+          } else {
+            // no overlap between the old and new extensions, so don't delete!
+<span class="fc" id="L205">            i.remove();</span>
+          }
+<span class="fc" id="L207">        }</span>
+        // save extension renames
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (Status.UPGRADED.equals(status)) {</span>
+<span class="fc" id="L210">          contents.put(nameMap.get(&quot;components.json&quot;),</span>
+<span class="fc" id="L211">              newComponents.toString().getBytes(StorageUtil.DEFAULT_CHARSET));</span>
+        }
+<span class="fc" id="L213">      } catch(ExtensionDowngradeException e) {</span>
+<span class="fc" id="L214">        response.setStatus(Status.BUNDLE_DOWNGRADE);</span>
+<span class="fc" id="L215">        response.setMessage(e.getMessage());</span>
+<span class="fc" id="L216">        return;</span>
+<span class="fc" id="L217">      }</span>
+    }
+
+    // Write new extension files
+<span class="fc" id="L221">    List&lt;ProjectNode&gt; compNodes = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">    for (Map.Entry&lt;String, byte[]&gt; entry : contents.entrySet()) {</span>
+<span class="fc" id="L223">      String dest = basepath + entry.getKey();</span>
+<span class="fc" id="L224">      FileNode fileNode = new YoungAndroidComponentNode(StorageUtil.basename(entry.getKey()), dest);</span>
+<span class="fc" id="L225">      fileImporter.importFile(userId, projectId, dest, new ByteArrayInputStream(entry.getValue()));</span>
+<span class="fc" id="L226">      compNodes.add(fileNode);</span>
+<span class="fc" id="L227">    }</span>
+
+    // Delete old extension files
+    // NB: If an exception kills us here the project will be in an inconsistent state since Google
+    // doesn't guarantee atomicity of writes to both the data store and cloud store.
+<span class="fc bfc" id="L232" title="All 2 branches covered.">    for (String extension : oldTypes) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">      for (String file : existingExtensions.get(extension)) {</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (!contents.containsKey(file.replace(basepath, &quot;&quot;))) {  // don't delete new files</span>
+<span class="fc" id="L235">          storageIo.deleteFile(userId, projectId, file);</span>
+<span class="fc" id="L236">          storageIo.removeSourceFilesFromProject(userId, projectId, false, file);</span>
+        }
+<span class="fc" id="L238">      }</span>
+<span class="fc" id="L239">    }</span>
+
+    // Extract type map to send to clients
+<span class="fc" id="L242">    Map&lt;String, String&gt; types = new TreeMap&lt;&gt;();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">    for (int i = 0; i &lt; newComponents.length(); i++) {</span>
+<span class="fc" id="L244">      JSONObject desc = newComponents.getJSONObject(i);</span>
+<span class="fc" id="L245">      types.put(desc.getString(&quot;type&quot;), desc.getString(&quot;name&quot;));</span>
+    }
+
+<span class="fc" id="L248">    response.setStatus(status);</span>
+<span class="fc" id="L249">    response.setComponentTypes(types);</span>
+<span class="fc" id="L250">    response.setNodes(compNodes);</span>
+<span class="fc" id="L251">  }</span>
+
+  /**
+   * Upgrade an existing extension in the project with a new extension. If the old extension had a
+   * custom name the name will be copied to the new extension.
+   *
+   * @param userId The id of the user who owns the project.
+   * @param projectId The id of the project.
+   * @param basepath The base path of the extension components directory in the project assets.
+   * @param extension The type name or package name of the extension.
+   * @param files A set of files associated with the extension
+   * @param newExtensionDescriptors Descriptors read from the new extension bundle.
+   * @return true if this operation is going to result in an upgrade, otherwise false (new import)
+   * @throws UnsupportedEncodingException if the platform for some reason does not support UTF-8
+   * @throws ExtensionDowngradeException if the method detects that there is a possibility that an
+   * existing extension will collide with the new extension bundle. This indicates that the
+   * extension author did not properly maintain the extensions so some collision has occurred.
+   */
+  private boolean upgradeOldExtension(String userId, long projectId, String basepath,
+      String extension, Set&lt;String&gt; files, Map&lt;String, JSONObject&gt; newExtensionDescriptors)
+          throws UnsupportedEncodingException, ExtensionDowngradeException {
+<span class="fc" id="L272">    boolean result = false;</span>
+<span class="fc" id="L273">    String descriptorFilename = basepath + extension + &quot;/components.json&quot;;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">    if (!files.contains(descriptorFilename)) {</span>
+<span class="fc" id="L275">      descriptorFilename = basepath + extension + &quot;/component.json&quot;;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">      if (!files.contains(descriptorFilename)) {</span>
+        // missing component descriptors?
+        // assume an upgrade even though the project is in an illegal state or corrupted.
+<span class="fc" id="L279">        return true;</span>
+      }
+    }
+<span class="fc" id="L282">    JSONArray oldExtensionDescriptors = readComponents(storageIo.downloadRawFile(userId, projectId,</span>
+        descriptorFilename));
+<span class="fc" id="L284">    int overlapSize = 0;</span>
+<span class="fc" id="L285">    String potentialDowngrade = null;</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">    for (int i = 0; i &lt; oldExtensionDescriptors.length(); i++) {</span>
+<span class="fc" id="L287">      JSONObject oldDesc = oldExtensionDescriptors.getJSONObject(i);</span>
+<span class="fc" id="L288">      JSONObject newDesc = newExtensionDescriptors.get(oldDesc.getString(&quot;type&quot;));</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">      if (newDesc != null) {</span>
+<span class="fc" id="L290">        result = true;</span>
+<span class="fc" id="L291">        newDesc.put(&quot;name&quot;, oldDesc.getString(&quot;name&quot;));  // copy user-applied renaming</span>
+<span class="fc" id="L292">        overlapSize++;</span>
+      } else {
+<span class="fc" id="L294">        potentialDowngrade = oldDesc.getString(&quot;type&quot;);</span>
+      }
+    }
+<span class="fc bfc" id="L297" title="All 4 branches covered.">    if (overlapSize &gt; 0 &amp;&amp; potentialDowngrade != null) {</span>
+<span class="fc" id="L298">      throw new ExtensionDowngradeException(potentialDowngrade);</span>
+    }
+<span class="fc" id="L300">    return result;</span>
+  }
+
+  /**
+   * Finds extensions in the project sources and returns a mapping from the extension type name (for
+   * old style extensions) or package name (for new style extensions) to the set of file names
+   * included in that extension.
+   *
+   * @param extensionDir Extension asset directory in the project
+   * @param files Set of all file names in the project
+   * @return A map from the type name or package name of an extension to a set of all files in that
+   * extension. We return a NavigableMap to aid in searching for related extensions during an
+   * upgrade when the two extensions might share the same package but have been packaged by the
+   * old extension system, which was per-class rather than per-package.
+   */
+  private static NavigableMap&lt;String, Set&lt;String&gt;&gt; findExtensions(String extensionDir,
+      Set&lt;String&gt; files) {
+<span class="fc" id="L317">    NavigableMap&lt;String, Set&lt;String&gt;&gt; extensions = new TreeMap&lt;&gt;();</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">    for (String s : files) {</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">      if (s.startsWith(extensionDir)) {</span>
+<span class="fc" id="L320">        String[] parts = s.split(&quot;/&quot;);</span>
+<span class="fc" id="L321">        String extensionName = parts[2];</span>
+<span class="fc" id="L322">        Set&lt;String&gt; extFiles = extensions.get(extensionName);</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">        if (extFiles == null) {</span>
+<span class="fc" id="L324">          extFiles = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L325">          extensions.put(extensionName, extFiles);</span>
+        }
+<span class="fc" id="L327">        extFiles.add(s);</span>
+      }
+<span class="fc" id="L329">    }</span>
+<span class="fc" id="L330">    return extensions;</span>
+  }
+
+  private static JSONArray readComponents(String content) {
+<span class="fc" id="L334">    content = content.trim();  // remove extraneous whitespace</span>
+<span class="pc bpc" id="L335" title="1 of 4 branches missed.">    if (content.startsWith(&quot;{&quot;) &amp;&amp; content.endsWith(&quot;}&quot;)) {</span>
+<span class="fc" id="L336">      return new JSONArray(&quot;[&quot; + content + &quot;]&quot;);</span>
+<span class="pc bpc" id="L337" title="1 of 4 branches missed.">    } else if (content.startsWith(&quot;[&quot;) &amp;&amp; content.endsWith(&quot;]&quot;)) {</span>
+<span class="fc" id="L338">      return new JSONArray(content);</span>
+    } else {
+      // content is neither a JSONObject {...} nor a JSONArray [...]. This is an error state.
+<span class="fc" id="L341">      throw new IllegalArgumentException(&quot;Content was not a valid component descriptor file&quot;);</span>
+    }
+  }
+
+  /**
+   * Read the components from the new extension. This method also upgrades component.json and
+   * component_build_info.json so that they will be consistently named in the future using the
+   * plural versions and containing arrays of descriptors.
+   *
+   * @param contents Mapping of path names to file content from an extension.
+   * @param nameMap Mapping of file names to path names.
+   * @return A JSONArray of parsed component descriptors.
+   * @throws UnsupportedEncodingException if the platform for some reason doesn't support UTF-8
+   */
+  private static JSONArray readExtensionComponents(Map&lt;String, byte[]&gt; contents,
+      Map&lt;String, String&gt; nameMap) throws UnsupportedEncodingException {
+<span class="fc" id="L357">    upgradeAndRenameFile(contents, nameMap, &quot;component_build_info.json&quot;,</span>
+        &quot;component_build_infos.json&quot;);
+<span class="fc" id="L359">    return upgradeAndRenameFile(contents, nameMap, &quot;component.json&quot;, &quot;components.json&quot;);</span>
+  }
+
+  /**
+   * Upgrades a file containing a JSONObject or JSONArray serialization to a JSONArray serialization
+   * and renames the file from oldName to newName. This is used to handle the transitional files
+   * for extension bundles from a file containing a single component descriptor to one containing
+   * an array of one or more descriptors.
+   *
+   * @param contents The mapping of filenames to contents for the extension being imported
+   * @param nameMap A mapping of base names to full path names for files
+   * @param oldName The base name for the old version of the file, e.g. component.json
+   * @param newName The base name for the new version of the file, e.g. components.json
+   * @return The contents of the file as a JSONArray
+   * @throws UnsupportedEncodingException if the platform for some reason doesn't support UTF-8
+   */
+  private static JSONArray upgradeAndRenameFile(Map&lt;String, byte[]&gt; contents,
+      Map&lt;String, String&gt; nameMap, String oldName, String newName)
+          throws UnsupportedEncodingException {
+<span class="fc" id="L378">    JSONArray content = null;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">    if (nameMap.containsKey(newName)) {</span>
+      // remove transitional old file, if it exists
+<span class="fc bfc" id="L381" title="All 2 branches covered.">      if (nameMap.containsKey(oldName)) {</span>
+<span class="fc" id="L382">        contents.remove(nameMap.remove(oldName));</span>
+      }
+<span class="fc" id="L384">      content = readComponents(contents.get(nameMap.get(newName)));</span>
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">    } else if (nameMap.containsKey(oldName)) {</span>
+      // rename to new name
+<span class="fc" id="L387">      String oldPath = nameMap.remove(oldName);</span>
+<span class="fc" id="L388">      nameMap.put(newName, oldPath.replace(oldName, newName));</span>
+<span class="fc" id="L389">      content = readComponents(contents.remove(oldPath));</span>
+<span class="fc" id="L390">      contents.put(nameMap.get(newName), content.toString().getBytes(StorageUtil.DEFAULT_CHARSET));</span>
+    }
+<span class="fc" id="L392">    return content;</span>
+  }
+
+  /**
+   * Make a mapping between a fully qualified class name of an extension and its component
+   * descriptor.
+   *
+   * @param components An array of simple component descriptors in JSON format
+   * @return A mapping between the FQCN of each extension in components and its descriptor
+   */
+  private static Map&lt;String, JSONObject&gt; makeComponentMap(JSONArray components) {
+<span class="fc" id="L403">    Map&lt;String, JSONObject&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">    for (int i = 0; i &lt; components.length(); i++) {</span>
+<span class="fc" id="L405">      JSONObject desc = components.getJSONObject(i);</span>
+<span class="fc" id="L406">      result.put(desc.getString(&quot;type&quot;), desc);</span>
+    }
+<span class="fc" id="L408">    return result;</span>
+  }
+
+  private static Map&lt;String, String&gt; buildExtensionPathnameMap(Set&lt;String&gt; paths) {
+<span class="fc" id="L412">    Map&lt;String, String&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">    for (String name : paths) {</span>
+<span class="fc" id="L414">      result.put(StorageUtil.basename(name), name);</span>
+<span class="fc" id="L415">    }</span>
+<span class="fc" id="L416">    return result;</span>
+  }
+
+  private static Set&lt;String&gt; getExtensionClasses(JSONArray components) {
+<span class="fc" id="L420">    Set&lt;String&gt; types = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">    for (int i = 0; i &lt; components.length(); i++) {</span>
+<span class="fc" id="L422">      types.add(components.getJSONObject(i).getString(&quot;type&quot;));</span>
+    }
+<span class="fc" id="L424">    return types;</span>
+  }
+
+  /**
+   * Match a set of strings of new types to be imported against the set of existing extensions
+   * based on package names and type names. This method returns a set of old extensions that
+   * are a subset of the new types based on the type names. For example, if you have an old
+   * extension com.foo.Bar and you import a new extension that is package name com.foo, then we
+   * will need to check that com.foo.Bar is inside com.foo and, if so, perform an upgrade.
+   *
+   * @param existing Existing set of extensions in the project
+   * @param newTypes New type(s) defined by the extension being imported
+   * @return A subset of the existing extensions that will need to be checked against the new
+   * extension to determine whether we are performing an upgrade or adding a fresh extension.
+   */
+  private static Set&lt;String&gt; matchExtensions(NavigableMap&lt;String, Set&lt;String&gt;&gt; existing,
+      Set&lt;String&gt; newTypes) {
+<span class="fc" id="L441">    Set&lt;String&gt; results = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L442">    String packageName = getPackageName(newTypes.iterator().next());</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">    if (existing.containsKey(packageName)) {</span>
+<span class="fc" id="L444">      results.add(packageName);</span>
+    }
+<span class="fc" id="L446">    NavigableMap&lt;String, Set&lt;String&gt;&gt; related = existing.tailMap(packageName, true);</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">    for (String k : related.navigableKeySet()) {</span>
+<span class="pc bpc" id="L448" title="1 of 2 branches missed.">      if (!k.startsWith(packageName)) {</span>
+<span class="nc" id="L449">        break;  // no longer in the same package</span>
+      }
+<span class="fc" id="L451">      results.add(k);</span>
+<span class="fc" id="L452">    }</span>
+<span class="fc" id="L453">    return results;</span>
+  }
+
+  private static String getPackageName(String className) {
+<span class="fc" id="L457">    return className.substring(0, className.lastIndexOf('.'));</span>
+  }
+
+  private static JSONArray readComponents(byte[] content) throws UnsupportedEncodingException {
+<span class="fc" id="L461">    return readComponents(new String(content, StorageUtil.DEFAULT_CHARSET));</span>
+  }
+
+  private String collectImportErrorInfo(String path, long projectId) {
+<span class="nc" id="L465">    return &quot;Error importing &quot; + path + &quot; to project &quot; + projectId;</span>
+  }
+
+  private static boolean isUnknownSource(String url) {
+    // TODO: check if the url is from the market place
+<span class="fc" id="L470">    return false;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

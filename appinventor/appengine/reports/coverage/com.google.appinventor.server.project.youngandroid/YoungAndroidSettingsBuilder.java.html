@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidSettingsBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.project.youngandroid</a> &gt; <span class="el_source">YoungAndroidSettingsBuilder.java</span></div><h1>YoungAndroidSettingsBuilder.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright © 2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.project.youngandroid;
+
+import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
+import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.ASSETS_FOLDER;
+import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.SRC_FOLDER;
+
+import com.google.appinventor.shared.settings.Settings;
+import com.google.common.base.Strings;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+import org.json.JSONObject;
+
+public class YoungAndroidSettingsBuilder {
+<span class="fc" id="L35">  private String projectName = &quot;&quot;;</span>
+<span class="fc" id="L36">  private String qualifiedFormName = &quot;&quot;;</span>
+<span class="fc" id="L37">  private String icon = &quot;&quot;;</span>
+<span class="fc" id="L38">  private String versionCode = &quot;1&quot;;</span>
+<span class="fc" id="L39">  private String versionName = &quot;1.0&quot;;</span>
+<span class="fc" id="L40">  private String usesLocation = &quot;false&quot;;</span>
+<span class="fc" id="L41">  private String appName = &quot;&quot;;</span>
+<span class="fc" id="L42">  private String sizing = &quot;Fixed&quot;;</span>
+<span class="fc" id="L43">  private String showListsAsJson = &quot;false&quot;;</span>
+<span class="fc" id="L44">  private String tutorialUrl = &quot;&quot;;</span>
+<span class="fc" id="L45">  private String blockSubset = &quot;&quot;;</span>
+<span class="fc" id="L46">  private String actionBar = &quot;false&quot;;</span>
+<span class="fc" id="L47">  private String theme = &quot;AppTheme.Light.DarkActionBar&quot;;</span>
+<span class="fc" id="L48">  private String primaryColor = &quot;0&quot;;</span>
+<span class="fc" id="L49">  private String primaryColorDark = &quot;0&quot;;</span>
+<span class="fc" id="L50">  private String accentColor = &quot;0&quot;;</span>
+<span class="fc" id="L51">  private String defaultFileScope = &quot;App&quot;;</span>
+
+<span class="fc" id="L53">  public YoungAndroidSettingsBuilder() {</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * Read project settings from a parsed JSON settings object.
+   *
+   * @param settings the original settings object to build off of
+   */
+<span class="fc" id="L61">  public YoungAndroidSettingsBuilder(Settings settings) {</span>
+<span class="fc" id="L62">    icon = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_ICON));
+<span class="fc" id="L64">    versionCode = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_VERSION_CODE));
+<span class="fc" id="L66">    versionName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_VERSION_NAME));
+<span class="fc" id="L68">    usesLocation = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_USES_LOCATION));
+<span class="fc" id="L70">    sizing = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_SIZING));
+<span class="fc" id="L72">    showListsAsJson = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON));
+<span class="fc" id="L74">    tutorialUrl = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+<span class="fc" id="L76">    blockSubset = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
+<span class="fc" id="L78">    appName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_APP_NAME));
+<span class="fc" id="L80">    actionBar = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_ACTIONBAR));
+<span class="fc" id="L82">    theme = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_THEME));
+<span class="fc" id="L84">    primaryColor = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR));
+<span class="fc" id="L86">    primaryColorDark = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK));
+<span class="fc" id="L88">    accentColor = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+<span class="fc" id="L90">    defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,</span>
+        YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
+<span class="fc" id="L92">  }</span>
+
+  /**
+   * Read project settings from a project.properties file.
+   *
+   * @param properties the original properties object to build off of
+   */
+<span class="fc" id="L99">  public YoungAndroidSettingsBuilder(Properties properties) {</span>
+<span class="fc" id="L100">    projectName = properties.getProperty(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L101">    qualifiedFormName = properties.getProperty(&quot;main&quot;, &quot;&quot;);</span>
+<span class="fc" id="L102">    appName = properties.getProperty(&quot;aname&quot;, &quot;&quot;);</span>
+<span class="fc" id="L103">    icon = properties.getProperty(&quot;icon&quot;, &quot;&quot;);</span>
+<span class="fc" id="L104">    versionCode = properties.getProperty(&quot;versioncode&quot;, &quot;&quot;);</span>
+<span class="fc" id="L105">    versionName = properties.getProperty(&quot;versionname&quot;, &quot;&quot;);</span>
+<span class="fc" id="L106">    usesLocation = properties.getProperty(&quot;useslocation&quot;, &quot;&quot;);</span>
+<span class="fc" id="L107">    sizing = properties.getProperty(&quot;sizing&quot;, &quot;&quot;);</span>
+<span class="fc" id="L108">    showListsAsJson = properties.getProperty(&quot;showlistsasjson&quot;, &quot;&quot;);</span>
+<span class="fc" id="L109">    tutorialUrl = properties.getProperty(&quot;tutorialurl&quot;, &quot;&quot;);</span>
+<span class="fc" id="L110">    blockSubset = properties.getProperty(&quot;subsetjson&quot;, &quot;&quot;);</span>
+<span class="fc" id="L111">    actionBar = properties.getProperty(&quot;actionbar&quot;, &quot;&quot;);</span>
+<span class="fc" id="L112">    theme = properties.getProperty(&quot;theme&quot;, &quot;&quot;);</span>
+<span class="fc" id="L113">    primaryColor = properties.getProperty(&quot;color.primary&quot;, &quot;&quot;);</span>
+<span class="fc" id="L114">    primaryColorDark = properties.getProperty(&quot;color.primary.dark&quot;, &quot;&quot;);</span>
+<span class="fc" id="L115">    accentColor = properties.getProperty(&quot;color.accent&quot;, &quot;&quot;);</span>
+<span class="fc" id="L116">    defaultFileScope = properties.getProperty(&quot;defaultfilescope&quot;, &quot;&quot;);</span>
+<span class="fc" id="L117">  }</span>
+
+  public YoungAndroidSettingsBuilder setProjectName(String projectName) {
+<span class="fc" id="L120">    this.projectName = projectName;</span>
+<span class="fc" id="L121">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setQualifiedFormName(String qualifiedFormName) {
+<span class="fc" id="L125">    this.qualifiedFormName = qualifiedFormName;</span>
+<span class="fc" id="L126">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setIcon(String icon) {
+<span class="nc" id="L130">    this.icon = icon;</span>
+<span class="nc" id="L131">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setVersionCode(String versionCode) {
+<span class="nc" id="L135">    this.versionCode = versionCode;</span>
+<span class="nc" id="L136">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setVersionName(String versionName) {
+<span class="nc" id="L140">    this.versionName = versionName;</span>
+<span class="nc" id="L141">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setUsesLocation(String usesLocation) {
+<span class="nc" id="L145">    this.usesLocation = usesLocation;</span>
+<span class="nc" id="L146">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setAppName(String appName) {
+<span class="nc" id="L150">    this.appName = appName;</span>
+<span class="nc" id="L151">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setSizing(String sizing) {
+<span class="nc" id="L155">    this.sizing = sizing;</span>
+<span class="nc" id="L156">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setShowListsAsJson(String showListsAsJson) {
+<span class="nc" id="L160">    this.showListsAsJson = showListsAsJson;</span>
+<span class="nc" id="L161">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setTutorialUrl(String tutorialUrl) {
+<span class="nc" id="L165">    this.tutorialUrl = tutorialUrl;</span>
+<span class="nc" id="L166">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setBlocksSubset(String blockSubset) {
+<span class="nc" id="L170">    this.blockSubset = blockSubset;</span>
+<span class="nc" id="L171">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setActionBar(String actionBar) {
+<span class="nc" id="L175">    this.actionBar = actionBar;</span>
+<span class="nc" id="L176">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setTheme(String theme) {
+<span class="nc" id="L180">    this.theme = theme;</span>
+<span class="nc" id="L181">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setPrimaryColor(String primaryColor) {
+<span class="nc" id="L185">    this.primaryColor = primaryColor;</span>
+<span class="nc" id="L186">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setPrimaryColorDark(String primaryColorDark) {
+<span class="nc" id="L190">    this.primaryColorDark = primaryColorDark;</span>
+<span class="nc" id="L191">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setAccentColor(String accentColor) {
+<span class="nc" id="L195">    this.accentColor = accentColor;</span>
+<span class="nc" id="L196">    return this;</span>
+  }
+
+  public YoungAndroidSettingsBuilder setDefaultFileScope(String defaultFileScope) {
+<span class="nc" id="L200">    this.defaultFileScope = defaultFileScope;</span>
+<span class="nc" id="L201">    return this;</span>
+  }
+
+  /**
+   * Convert the internal settings into a JSON structure.
+   *
+   * @return a JSON string containing the settings
+   */
+  public String build() {
+<span class="fc" id="L210">    JSONObject object = new JSONObject();</span>
+<span class="fc" id="L211">    object.put(YOUNG_ANDROID_SETTINGS_ICON, icon);</span>
+<span class="fc" id="L212">    object.put(YOUNG_ANDROID_SETTINGS_VERSION_CODE, versionCode);</span>
+<span class="fc" id="L213">    object.put(YOUNG_ANDROID_SETTINGS_VERSION_NAME, versionName);</span>
+<span class="fc" id="L214">    object.put(YOUNG_ANDROID_SETTINGS_USES_LOCATION, usesLocation);</span>
+<span class="fc" id="L215">    object.put(YOUNG_ANDROID_SETTINGS_APP_NAME, appName);</span>
+<span class="fc" id="L216">    object.put(YOUNG_ANDROID_SETTINGS_SIZING, sizing);</span>
+<span class="fc" id="L217">    object.put(YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, showListsAsJson);</span>
+<span class="fc" id="L218">    object.put(YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, tutorialUrl);</span>
+<span class="fc" id="L219">    object.put(YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, blockSubset);</span>
+<span class="fc" id="L220">    object.put(YOUNG_ANDROID_SETTINGS_ACTIONBAR, actionBar);</span>
+<span class="fc" id="L221">    object.put(YOUNG_ANDROID_SETTINGS_THEME, theme);</span>
+<span class="fc" id="L222">    object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, primaryColor);</span>
+<span class="fc" id="L223">    object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);</span>
+<span class="fc" id="L224">    object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);</span>
+<span class="fc" id="L225">    object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);</span>
+<span class="fc" id="L226">    JSONObject wrapper = new JSONObject();</span>
+<span class="fc" id="L227">    wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);</span>
+<span class="fc" id="L228">    return wrapper.toString();</span>
+  }
+
+  /**
+   * Convert the internal settings into a Java Properties object.
+   *
+   * @return a properties file contents containing the settings
+   */
+  public String toProperties() {
+<span class="fc" id="L237">    Properties result = new Properties();</span>
+<span class="fc" id="L238">    result.put(&quot;main&quot;, qualifiedFormName);</span>
+<span class="fc" id="L239">    result.put(&quot;name&quot;, projectName);</span>
+<span class="fc" id="L240">    result.put(&quot;aname&quot;, appName);</span>
+<span class="fc" id="L241">    result.put(&quot;assets&quot;, &quot;../&quot; + ASSETS_FOLDER);</span>
+<span class="fc" id="L242">    result.put(&quot;source&quot;, &quot;../&quot; + SRC_FOLDER);</span>
+<span class="fc" id="L243">    result.put(&quot;build&quot;, &quot;../build&quot;);</span>
+<span class="fc" id="L244">    addPropertyIfSet(result, &quot;icon&quot;, icon);</span>
+<span class="fc" id="L245">    addPropertyIfSet(result, &quot;versioncode&quot;, versionCode);</span>
+<span class="fc" id="L246">    addPropertyIfSet(result, &quot;versionname&quot;, versionName);</span>
+<span class="fc" id="L247">    addPropertyIfSet(result, &quot;useslocation&quot;, usesLocation);</span>
+<span class="fc" id="L248">    addPropertyIfSet(result, &quot;sizing&quot;, sizing);</span>
+<span class="fc" id="L249">    addPropertyIfSet(result, &quot;showlistsasjson&quot;, showListsAsJson);</span>
+<span class="fc" id="L250">    addPropertyIfSet(result, &quot;tutorialurl&quot;, tutorialUrl);</span>
+<span class="fc" id="L251">    addPropertyIfSet(result, &quot;subsetjson&quot;, blockSubset);</span>
+<span class="fc" id="L252">    addPropertyIfSet(result, &quot;actionbar&quot;, actionBar);</span>
+<span class="fc" id="L253">    addPropertyIfSet(result, &quot;theme&quot;, theme);</span>
+<span class="fc" id="L254">    addPropertyIfSet(result, &quot;color.primary&quot;, primaryColor);</span>
+<span class="fc" id="L255">    addPropertyIfSet(result, &quot;color.primary.dark&quot;, primaryColorDark);</span>
+<span class="fc" id="L256">    addPropertyIfSet(result, &quot;color.accent&quot;, accentColor);</span>
+<span class="fc" id="L257">    addPropertyIfSet(result, &quot;defaultfilescope&quot;, defaultFileScope);</span>
+<span class="fc" id="L258">    ByteArrayOutputStream out = new ByteArrayOutputStream();</span>
+    try {
+<span class="fc" id="L260">      result.store(out, &quot;&quot;);</span>
+<span class="nc" id="L261">    } catch (IOException e) {</span>
+<span class="nc" id="L262">      throw new RuntimeException(&quot;Unexpected IOException writing to byte buffer&quot;, e);</span>
+<span class="fc" id="L263">    }</span>
+<span class="fc" id="L264">    return out.toString();</span>
+  }
+
+  private static void addPropertyIfSet(Properties properties, String key, String value) {
+<span class="pc bpc" id="L268" title="1 of 4 branches missed.">    if (value != null &amp;&amp; !value.isEmpty()) {</span>
+<span class="fc" id="L269">      properties.put(key, value);</span>
+    }
+<span class="fc" id="L271">  }</span>
+
+  @Override
+  public String toString() {
+<span class="nc" id="L275">    return build();</span>
+  }
+
+  @Override
+  public boolean equals(Object object) {
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">    if (object instanceof YoungAndroidSettingsBuilder) {</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">      if (object == this) {</span>
+<span class="nc" id="L282">        return true;</span>
+      }
+<span class="fc" id="L284">      YoungAndroidSettingsBuilder other = (YoungAndroidSettingsBuilder) object;</span>
+      boolean result;
+<span class="fc" id="L286">      result = other.projectName.equals(projectName);</span>
+<span class="fc" id="L287">      result &amp;= other.qualifiedFormName.equals(qualifiedFormName);</span>
+<span class="fc" id="L288">      result &amp;= other.icon.equals(icon);</span>
+<span class="fc" id="L289">      result &amp;= other.versionCode.equals(versionCode);</span>
+<span class="fc" id="L290">      result &amp;= other.versionName.equals(versionName);</span>
+<span class="fc" id="L291">      result &amp;= other.usesLocation.equals(usesLocation);</span>
+<span class="fc" id="L292">      result &amp;= other.sizing.equals(sizing);</span>
+<span class="fc" id="L293">      result &amp;= other.appName.equals(appName);</span>
+<span class="fc" id="L294">      result &amp;= other.showListsAsJson.equals(showListsAsJson);</span>
+<span class="fc" id="L295">      result &amp;= other.tutorialUrl.equals(tutorialUrl);</span>
+<span class="fc" id="L296">      result &amp;= other.blockSubset.equals(blockSubset);</span>
+<span class="fc" id="L297">      result &amp;= other.actionBar.equals(actionBar);</span>
+<span class="fc" id="L298">      result &amp;= other.primaryColor.equals(primaryColor);</span>
+<span class="fc" id="L299">      result &amp;= other.primaryColorDark.equals(primaryColorDark);</span>
+<span class="fc" id="L300">      result &amp;= other.accentColor.equals(accentColor);</span>
+<span class="fc" id="L301">      result &amp;= other.defaultFileScope.equals(defaultFileScope);</span>
+<span class="fc" id="L302">      return result;</span>
+    }
+<span class="nc" id="L304">    return false;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

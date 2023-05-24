@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YoungAndroidFontTypefaceChoicePropertyEditor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.properties</a> &gt; <span class="el_source">YoungAndroidFontTypefaceChoicePropertyEditor.java</span></div><h1>YoungAndroidFontTypefaceChoicePropertyEditor.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.properties;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+import com.google.appinventor.client.wizards.FileUploadWizard;
+import com.google.appinventor.client.wizards.FileUploadWizard.FileUploadedCallback;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.FolderNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * Property editor for selecting a font asset for a property.
+ *
+ */
+public final class YoungAndroidFontTypefaceChoicePropertyEditor extends AdditionalChoicePropertyEditor
+  implements ProjectChangeListener {
+  // UI elements
+  private final ListBox fontAssetsList;
+  
+  private final ListWithNone choices;
+  
+  private final YoungAndroidAssetsFolder assetsFolder;
+  
+  /**
+   * Creates a new property editor for selecting a Young Android font asset.
+   *
+   * @param editor the editor that this property editor belongs to
+   */
+<span class="nc" id="L53">  public YoungAndroidFontTypefaceChoicePropertyEditor(final YaFormEditor editor) {</span>
+<span class="nc" id="L54">    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());</span>
+<span class="nc" id="L55">    assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();</span>
+<span class="nc" id="L56">    project.addProjectChangeListener(this);</span>
+
+<span class="nc" id="L58">    VerticalPanel selectorPanel = new VerticalPanel();</span>
+<span class="nc" id="L59">    fontAssetsList = new ListBox();</span>
+<span class="nc" id="L60">    fontAssetsList.setVisibleItemCount(10);</span>
+<span class="nc" id="L61">    fontAssetsList.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L62">    fontAssetsList.addChangeHandler(new ChangeHandler() {</span>
+      @Override
+      public void onChange(ChangeEvent event) {
+<span class="nc" id="L65">        setOkButtonEnabled(true);</span>
+<span class="nc" id="L66">      }</span>
+    });
+<span class="nc" id="L68">    selectorPanel.add(fontAssetsList);</span>
+    
+<span class="nc" id="L70">    choices = new ListWithNone(MESSAGES.noneCaption(), new ListWithNone.ListBoxWrapper() {</span>
+      @Override
+      public void addItem(String item) {
+<span class="nc" id="L73">        fontAssetsList.addItem(item);</span>
+<span class="nc" id="L74">      }</span>
+      
+      @Override
+      public String getItem(int index) {
+<span class="nc" id="L78">        return fontAssetsList.getItemText(index);</span>
+      }
+      
+      @Override
+      public void removeItem(int index) {
+<span class="nc" id="L83">        fontAssetsList.removeItem(index);</span>
+<span class="nc" id="L84">      }</span>
+      
+      @Override
+      public void setSelectedIndex(int index) {
+<span class="nc" id="L88">        fontAssetsList.setSelectedIndex(index);</span>
+<span class="nc" id="L89">      }</span>
+    });
+    
+<span class="nc" id="L92">    choices.addItem(&quot;0&quot;, MESSAGES.defaultFontTypeface());</span>
+<span class="nc" id="L93">    choices.addItem(&quot;1&quot;, MESSAGES.sansSerifFontTypeface());</span>
+<span class="nc" id="L94">    choices.addItem( &quot;2&quot;, MESSAGES.serifFontTypeface());</span>
+<span class="nc" id="L95">    choices.addItem(&quot;3&quot;, MESSAGES.monospaceFontTypeface());</span>
+    
+    // Fill choices with the assets.
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    if (assetsFolder != null) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      for (ProjectNode node : assetsFolder.getChildren()) {</span>
+<span class="nc bnc" id="L100" title="All 4 branches missed.">        if (node.getName().toLowerCase().contains(&quot;ttf&quot;) || node.getName().toLowerCase().contains(&quot;otf&quot;)) {</span>
+<span class="nc" id="L101">          choices.addItem(node.getName());</span>
+        }
+<span class="nc" id="L103">      }</span>
+    }
+    
+    // Remove None item from choices.
+<span class="nc" id="L107">    choices.removeValue(&quot;&quot;);</span>
+    
+<span class="nc" id="L109">    Button addButton = new Button(MESSAGES.addButton());</span>
+<span class="nc" id="L110">    addButton.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L111">    addButton.addClickHandler(new ClickHandler() {</span>
+      @Override
+      public void onClick(ClickEvent event) {
+<span class="nc" id="L114">        FileUploadedCallback callback = new FileUploadedCallback() {</span>
+          @Override
+          public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
+            // At this point, the font asset has been uploaded to the server, and
+            // has even been added to the assetsFolder. We are all set!
+<span class="nc bnc" id="L119" title="All 4 branches missed.">            if (fileNode.getName().toLowerCase().endsWith(&quot;.ttf&quot;) || fileNode.getName().toLowerCase().endsWith(&quot;.otf&quot;)) {</span>
+<span class="nc" id="L120">              choices.selectValue(fileNode.getName());</span>
+            }
+<span class="nc" id="L122">            closeAdditionalChoiceDialog(true);</span>
+<span class="nc" id="L123">          }</span>
+        };
+<span class="nc" id="L125">        FileUploadWizard uploader = new FileUploadWizard(assetsFolder, callback);</span>
+<span class="nc" id="L126">        uploader.show();</span>
+<span class="nc" id="L127">      }</span>
+    });
+<span class="nc" id="L129">    selectorPanel.add(addButton);</span>
+<span class="nc" id="L130">    selectorPanel.setWidth(&quot;100%&quot;);</span>
+    
+    // At this point, the editor hasn't finished loading.
+    // Use a DeferredCommand to finish the initialization after the editor has finished loading.
+<span class="nc" id="L134">    DeferredCommand.addCommand(new Command() {</span>
+      @Override
+      public void execute() {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (editor.isLoadComplete()) {</span>
+<span class="nc" id="L138">          finishInitialization();</span>
+        } else {
+          // Editor still hasn't finished loading.
+<span class="nc" id="L141">          DeferredCommand.addCommand(this);</span>
+        }
+<span class="nc" id="L143">      }</span>
+    });
+    
+<span class="nc" id="L146">    initAdditionalChoicePanel(selectorPanel);</span>
+<span class="nc" id="L147">  }</span>
+  
+  private void finishInitialization() {
+    // Previous version had a bug where the value could be accidentally saved as &quot;None&quot;.
+    // If the property value is &quot;None&quot; and choices doesn't contain the value &quot;None&quot;, set the
+    // property value to &quot;&quot;.
+<span class="nc" id="L153">    String value = property.getValue();</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">    if (value.equals(&quot;None&quot;) &amp;&amp; !choices.containsValue(value)) {</span>
+<span class="nc" id="L155">      property.setValue(&quot;&quot;);</span>
+    }
+<span class="nc" id="L157">  }</span>
+  
+  @Override
+  public void orphan() {
+<span class="nc" id="L161">    Project project = Ode.getInstance().getProjectManager().getProject(assetsFolder.getProjectId());</span>
+<span class="nc" id="L162">    project.removeProjectChangeListener(this);</span>
+<span class="nc" id="L163">    super.orphan();</span>
+<span class="nc" id="L164">  }</span>
+  
+  @Override
+  protected void openAdditionalChoiceDialog() {
+<span class="nc bnc" id="L168" title="All 2 branches missed.">    if (!isMultipleValues()) {</span>
+<span class="nc" id="L169">      choices.selectValue(property.getValue());</span>
+    } else {
+<span class="nc" id="L171">      setOkButtonEnabled(false);</span>
+    }
+<span class="nc" id="L173">    super.openAdditionalChoiceDialog();</span>
+<span class="nc" id="L174">    fontAssetsList.setFocus(true);</span>
+<span class="nc" id="L175">  }</span>
+  
+  @Override
+  protected String getPropertyValueSummary() {
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    if (isMultipleValues()) {</span>
+<span class="nc" id="L180">      return MESSAGES.multipleValues();</span>
+    }
+<span class="nc" id="L182">    String value = property.getValue();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">    if (choices.containsValue(value)) {</span>
+<span class="nc" id="L184">      return choices.getDisplayItemForValue(value);</span>
+    }
+<span class="nc" id="L186">    return value;</span>
+  }
+  
+  @Override
+  protected boolean okAction() {
+<span class="nc" id="L191">    int selected = fontAssetsList.getSelectedIndex();</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">    if (selected == -1) {</span>
+<span class="nc" id="L193">      Window.alert(MESSAGES.noAssetSelected());</span>
+<span class="nc" id="L194">      return false;</span>
+    }
+<span class="nc" id="L196">    boolean multiple = isMultipleValues();</span>
+<span class="nc" id="L197">    setMultipleValues(false);</span>
+<span class="nc" id="L198">    property.setValue(choices.getValueAtIndex(selected), multiple);</span>
+<span class="nc" id="L199">    return true;</span>
+  }
+  
+  // ProjectChangeListener implementation
+  
+  @Override
+  public void onProjectLoaded(Project project) {
+<span class="nc" id="L206">  }</span>
+  
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+    // Check whether our asset was updated.
+<span class="nc bnc" id="L211" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L212">      String assetName = node.getName();</span>
+      
+      // Add it to the list if it isn't already there.
+      // It could already be there if the user adds an asset that's already there, which is the way
+      // to replace the asset.
+<span class="nc bnc" id="L217" title="All 6 branches missed.">      if (!choices.containsValue(assetName) &amp;&amp; (assetName.toLowerCase().contains(&quot;ttf&quot;) || assetName.toLowerCase().contains(&quot;otf&quot;))) {</span>
+<span class="nc" id="L218">        choices.addItem(assetName);</span>
+      }
+      
+      // Check whether our asset was updated.
+<span class="nc" id="L222">      String currentValue = property.getValue();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">      if (assetName.equals(currentValue)) {</span>
+        // Our asset was updated.
+        // Set the property value to blank and then back to the current value.
+        // This will force the component to update itself (for example, it will refresh its image).
+<span class="nc" id="L227">        property.setValue(&quot;&quot;);</span>
+<span class="nc" id="L228">        property.setValue(currentValue);</span>
+      }
+    }
+<span class="nc" id="L231">  }</span>
+  
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+<span class="nc bnc" id="L235" title="All 2 branches missed.">    if (node instanceof YoungAndroidAssetNode) {</span>
+<span class="nc" id="L236">      String assetName = node.getName();</span>
+      
+      // Check whether our asset was removed.
+<span class="nc" id="L239">      String currentValue = property.getValue();</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">      if (node.getName().equals(currentValue)) {</span>
+        // Our asset was removed.
+<span class="nc" id="L242">        choices.selectValue(MESSAGES.defaultFontTypeface());</span>
+<span class="nc" id="L243">        property.setValue(MESSAGES.defaultFontTypeface());</span>
+      }
+      
+      // Remove the asset from the list.
+<span class="nc" id="L247">      choices.removeValue(assetName);</span>
+    }
+<span class="nc" id="L249">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

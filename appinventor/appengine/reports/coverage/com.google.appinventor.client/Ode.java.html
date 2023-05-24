@@ -1,0 +1,2590 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client</a> &gt; <span class="el_source">Ode.java</span></div><h1>Ode.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client;
+
+import com.google.appinventor.client.boxes.AdminUserListBox;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.MessagesOutputBox;
+import com.google.appinventor.client.boxes.OdeLogBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.ViewerBox;
+
+import com.google.appinventor.client.editor.EditorManager;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.CommandRegistry;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
+import com.google.appinventor.client.explorer.project.ProjectManager;
+import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+
+import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+
+import com.google.appinventor.client.output.OdeLog;
+
+import com.google.appinventor.client.settings.Settings;
+import com.google.appinventor.client.settings.user.UserSettings;
+
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.HTML5DragDrop;
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
+
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
+import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
+import com.google.appinventor.client.widgets.boxes.ColumnLayout;
+import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
+
+import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
+
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
+
+import com.google.appinventor.common.version.AppInventorFeatures;
+
+import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
+
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
+
+import com.google.appinventor.shared.rpc.GetMotdService;
+import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
+import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.admin.AdminInfoService;
+import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ProjectService;
+import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+
+import com.google.appinventor.shared.rpc.user.Config;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.UserInfoService;
+import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
+
+import com.google.appinventor.shared.settings.SettingsConstants;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
+
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+
+import com.google.gwt.http.client.Response;
+
+import com.google.gwt.resources.client.ImageResource;
+
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
+
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Random;
+
+/**
+ * Main entry point for Ode. Defines the startup UI elements in
+ * {@link #onModuleLoad()}.
+ *
+ */
+<span class="nc" id="L141">public class Ode implements EntryPoint {</span>
+  // I18n messages
+<span class="nc" id="L143">  public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);</span>
+
+  // Global instance of the Ode object
+  private static Ode instance;
+
+  // Application level image bundle
+<span class="nc" id="L149">  private static final Images IMAGES = GWT.create(Images.class);</span>
+
+  // ProjectEditor registry
+<span class="nc" id="L152">  private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();</span>
+
+  // Command registry
+<span class="nc" id="L155">  private static final CommandRegistry COMMANDS = new CommandRegistry();</span>
+
+  // System config
+  private static Config config;
+
+  // User settings
+  private static UserSettings userSettings;
+
+  private MotdFetcher motdFetcher;
+
+  // User information
+  private User user;
+
+  // Template path if set by /?repo=
+  private String templatePath;
+<span class="nc" id="L170">  private boolean templateLoadingFlag = false;</span>
+
+  // New Gallery path if set by /?ng=
+  // Set to true if we are loading from the new Gallery
+<span class="nc" id="L174">  private boolean newGalleryLoadingFlag = false;</span>
+  private String newGalleryId;
+
+  // Nonce Information
+  private String nonce;
+
+  // Read Only Flag: If true, the UI will not permit operations which permit
+  // write requests
+
+  private boolean isReadOnly;
+
+<span class="nc" id="L185">  private String sessionId = generateUuid(); // Create new session id</span>
+
+<span class="nc" id="L187">  private Random random = new Random(); // For generating random nonce</span>
+
+  // Collection of projects
+  private ProjectManager projectManager;
+
+  // Collection of editors
+  private EditorManager editorManager;
+
+  // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
+  private FileEditor currentFileEditor;
+
+  private AssetManager assetManager;
+
+  // Remembers the current View
+  public static final int DESIGNER = 0;
+  public static final int PROJECTS = 1;
+  public static final int USERADMIN = 2;
+  public static final int TRASHCAN = 3;
+<span class="nc" id="L205">  public static int currentView = PROJECTS;</span>
+
+  /*
+   * The following fields define the general layout of the UI as seen in the following diagram:
+   *
+   *  +-- mainPanel --------------------------------+
+   *  |+-- topPanel -------------------------------+|
+   *  ||                                           ||
+   *  |+-------------------------------------------+|
+   *  |+-- overDeckPanel --+-----------------------+|
+   *  || tutorialPanel     |  deckPanel            ||
+   *  |+-------------------+-----------------------+|
+   *  |+-- statusPanel ----------------------------+|
+   *  ||                                           ||
+   *  |+-------------------------------------------+|
+   *  +---------------------------------------------+
+   */
+  private DeckPanel deckPanel;
+  private HorizontalPanel overDeckPanel;
+  private Frame tutorialPanel;
+  private int projectsTabIndex;
+  private int designTabIndex;
+  private int debuggingTabIndex;
+  private int userAdminTabIndex;
+  private TopPanel topPanel;
+  private StatusPanel statusPanel;
+  private HorizontalPanel workColumns;
+  private VerticalPanel structureAndAssets;
+  private ProjectToolbar projectToolbar;
+  private AdminUserListBox uaListBox;
+  private DesignToolbar designToolbar;
+  private TopToolbar topToolbar;
+  private VerticalPanel pVertPanel;
+<span class="nc" id="L238">  private HorizontalPanel projectListPanel = new HorizontalPanel();</span>
+
+  // Is the tutorial toolbar currently displayed?
+<span class="nc" id="L241">  private boolean tutorialVisible = false;</span>
+
+  // Popup that indicates that an asynchronous request is pending. It is visible
+  // initially, and will be hidden automatically after the first RPC completes.
+  private static RpcStatusPopup rpcStatusPopup;
+
+  // Web service for project related information
+<span class="nc" id="L248">  private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);</span>
+
+  // Web service for user related information
+<span class="nc" id="L251">  private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);</span>
+
+  // Web service for get motd information
+<span class="nc" id="L254">  private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);</span>
+
+  // Web service for component related operations
+<span class="nc" id="L257">  private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);</span>
+<span class="nc" id="L258">  private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);</span>
+
+  //Web service for Token authentication operations
+<span class="nc" id="L261">  private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);</span>
+
+  private boolean windowClosing;
+
+  private boolean screensLocked;
+
+  // Licensing related variables
+  private String licenseCode;
+  private String systemId;
+
+  /**
+   * Flag set if we may need to show the splash screen based on
+   * current user settings.
+   */
+<span class="nc" id="L275">  private boolean mayNeedSplash = false;</span>
+
+  /**
+   * Flag to inidcate that we have already transitioned away from the
+   * project list to a project (auto-open feature).
+   */
+<span class="nc" id="L281">  private boolean didTransitionFromProjectList = false;</span>
+
+  /**
+   * Flag indicating that we have shown the splash screens.
+   */
+<span class="nc" id="L286">  private boolean didShowSplash = false;</span>
+
+  private SplashConfig splashConfig; // Splash Screen Configuration
+
+<span class="nc" id="L290">  private boolean secondBuildserver = false; // True if we have a second</span>
+                                             // buildserver.
+
+  // The flags below are used by the Build menus. Because we have two
+  // different buildservers, we have two sets of build menu items, one
+  // for each buildserver.  The first time one is selected, we put up
+  // a warning/notice dialog box explaining its purpose. We don't show
+  // it again during the same session, and keeping track of that is
+  // the purpose of these two flags.
+
+<span class="nc" id="L300">  private boolean warnedBuild1 = false;</span>
+<span class="nc" id="L301">  private boolean warnedBuild2 = false;</span>
+
+  /**
+   * Returns global instance of Ode.
+   *
+   * @return  global Ode instance
+   */
+  public static Ode getInstance() {
+<span class="nc" id="L309">    return instance;</span>
+  }
+
+  /**
+   * Returns instance of the aggregate image bundle for the application.
+   *
+   * @return  image bundle
+   */
+  public static Images getImageBundle() {
+<span class="nc" id="L318">    return IMAGES;</span>
+  }
+
+  /**
+   * Returns the editor registry.
+   *
+   * @return the editor registry
+   */
+  public static ProjectEditorRegistry getProjectEditorRegistry() {
+<span class="nc" id="L327">    return EDITORS;</span>
+  }
+
+  /**
+   * Returns the command registry.
+   *
+   * @return the command registry
+   */
+  public static CommandRegistry getCommandRegistry() {
+<span class="nc" id="L336">    return COMMANDS;</span>
+  }
+
+  /**
+   * Returns the system config.
+   *
+   * @return  system config
+   */
+  public static Config getSystemConfig() {
+<span class="nc" id="L345">    return config;</span>
+  }
+
+  /**
+   * Returns the user settings.
+   *
+   * @return  user settings
+   */
+  public static UserSettings getUserSettings() {
+<span class="nc" id="L354">    return userSettings;</span>
+  }
+
+  /**
+   * Returns the asset manager.
+   *
+   * @return  asset manager
+   */
+  public AssetManager getAssetManager() {
+<span class="nc" id="L363">    return assetManager;</span>
+  }
+
+  /**
+   * Returns true if we have received the window closing event.
+   */
+  public static boolean isWindowClosing() {
+<span class="nc" id="L370">    return getInstance().windowClosing;</span>
+  }
+
+  /**
+   * Get the current view
+   */
+  public int getCurrentView() {
+<span class="nc" id="L377">    return currentView;</span>
+  }
+
+  public DeckPanel getDeckPanel() {
+<span class="nc" id="L381">    return deckPanel;</span>
+  }
+
+  public HorizontalPanel getOverDeckPanel() {
+<span class="nc" id="L385">    return overDeckPanel;</span>
+  }
+
+  /**
+   * Switch to the Projects tab
+   */
+  public void switchToProjectsView() {
+    // We may need to pass the code below as a runnable to
+    // screenShotMaybe() so build the runnable now
+<span class="nc" id="L394">    hideChaff();</span>
+<span class="nc" id="L395">    hideTutorials();</span>
+<span class="nc" id="L396">    Runnable next = new Runnable() {</span>
+        @Override
+        public void run() {
+<span class="nc" id="L399">          ProjectListBox.getProjectListBox().loadProjectList();</span>
+<span class="nc" id="L400">          currentView = PROJECTS;</span>
+<span class="nc" id="L401">          getTopToolbar().updateFileMenuButtons(currentView);</span>
+<span class="nc" id="L402">          deckPanel.showWidget(projectsTabIndex);</span>
+          // If we started a project, then the start button was disabled (to avoid
+          // a second press while the new project wizard was starting (aka we &quot;debounce&quot;
+          // the button). When the person switches to the projects list view again (here)
+          // we re-enable it.
+<span class="nc" id="L407">          projectToolbar.enableStartButton();</span>
+<span class="nc" id="L408">          projectToolbar.setProjectTabButtonsVisible(true);</span>
+<span class="nc" id="L409">          projectToolbar.setTrashTabButtonsVisible(false);</span>
+<span class="nc" id="L410">        }</span>
+      };
+<span class="nc bnc" id="L412" title="All 2 branches missed.">    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {</span>
+<span class="nc" id="L413">      next.run();</span>
+    } else {
+      // maybe take a screenshot, second argument is true so we wait for i/o to complete
+<span class="nc" id="L416">      screenShotMaybe(next, true);</span>
+    }
+<span class="nc" id="L418">  }</span>
+
+  /**
+   * Switch to the Trash tab
+   */
+
+  public void switchToTrash() {
+<span class="nc" id="L425">    Ode.getInstance().getTopToolbar().updateMoveToTrash(&quot;Delete From Trash&quot;);</span>
+<span class="nc" id="L426">    hideChaff();</span>
+<span class="nc" id="L427">    hideTutorials();</span>
+<span class="nc" id="L428">    ProjectListBox.getProjectListBox().loadTrashList();</span>
+<span class="nc" id="L429">    currentView = TRASHCAN;</span>
+<span class="nc" id="L430">    projectToolbar.enableStartButton();</span>
+<span class="nc" id="L431">    projectToolbar.setProjectTabButtonsVisible(false);</span>
+<span class="nc" id="L432">    projectToolbar.setTrashTabButtonsVisible(true);</span>
+<span class="nc" id="L433">  }</span>
+
+  /**
+   * Switch to the User Admin Panel
+   */
+
+  public void switchToUserAdminPanel() {
+<span class="nc" id="L440">    hideChaff();</span>
+<span class="nc" id="L441">    hideTutorials();</span>
+<span class="nc" id="L442">    currentView = USERADMIN;</span>
+<span class="nc" id="L443">    deckPanel.showWidget(userAdminTabIndex);</span>
+<span class="nc" id="L444">  }</span>
+
+  /**
+   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
+   */
+  public void switchToDesignView() {
+<span class="nc" id="L450">    hideChaff();</span>
+    // Only show designer if there is a current editor.
+    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+<span class="nc" id="L453">    showTutorials();</span>
+<span class="nc" id="L454">    currentView = DESIGNER;</span>
+<span class="nc" id="L455">    getTopToolbar().updateFileMenuButtons(currentView);</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">    if (currentFileEditor != null) {</span>
+<span class="nc" id="L457">      deckPanel.showWidget(designTabIndex);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">    } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?</span>
+<span class="nc" id="L459">      OdeLog.wlog(&quot;No current file editor to show in designer&quot;);</span>
+<span class="nc" id="L460">      ErrorReporter.reportInfo(MESSAGES.chooseProject());</span>
+    }
+<span class="nc" id="L462">  }</span>
+
+  /**
+   * Switch to the Debugging tab
+   */
+  public void switchToDebuggingView() {
+<span class="nc" id="L468">    hideChaff();</span>
+<span class="nc" id="L469">    hideTutorials();</span>
+<span class="nc" id="L470">    deckPanel.showWidget(debuggingTabIndex);</span>
+
+    // NOTE(lizlooney) - Calling resizeWorkArea for debuggingTab prevents the
+    // boxes from overlapping each other.
+<span class="nc" id="L474">    resizeWorkArea((WorkAreaPanel) deckPanel.getWidget(debuggingTabIndex));</span>
+<span class="nc" id="L475">  }</span>
+
+  /**
+   * Processes the template and galleryId flags.
+   *
+   * @return true if a template or gallery id is present and being handled, otherwise false.
+   */
+  private boolean handleQueryString() {
+<span class="nc bnc" id="L483" title="All 2 branches missed.">    if (userSettings == null) {</span>
+<span class="nc" id="L484">      return false;</span>
+    }
+    // Retrieve the userTemplates
+<span class="nc" id="L487">    String userTemplates = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)</span>
+<span class="nc" id="L488">        .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);</span>
+<span class="nc" id="L489">    TemplateUploadWizard.setStoredTemplateUrls(userTemplates);</span>
+
+<span class="nc bnc" id="L491" title="All 2 branches missed.">    if (templateLoadingFlag) {  // We are loading a template, open it instead</span>
+                                // of the last project
+<span class="nc" id="L493">      NewProjectCommand callbackCommand = new NewProjectCommand() {</span>
+        @Override
+        public void execute(Project project) {
+<span class="nc" id="L496">          templateLoadingFlag = false;</span>
+<span class="nc" id="L497">          Ode.getInstance().openYoungAndroidProjectInDesigner(project);</span>
+<span class="nc" id="L498">        }</span>
+      };
+<span class="nc" id="L500">      TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);</span>
+<span class="nc" id="L501">      return true;</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">    } else if (newGalleryLoadingFlag) {</span>
+<span class="nc" id="L503">      final DialogBox dialog = galleryLoadingDialog();</span>
+<span class="nc" id="L504">      NewProjectCommand callback = new NewProjectCommand() {</span>
+          @Override
+          public void execute(Project project) {
+<span class="nc" id="L507">            newGalleryLoadingFlag = false;</span>
+<span class="nc" id="L508">            dialog.hide();      // Get rid of the project loading dialog</span>
+<span class="nc" id="L509">            Ode.getInstance().openYoungAndroidProjectInDesigner(project);</span>
+<span class="nc" id="L510">          }</span>
+        };
+<span class="nc" id="L512">      LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);</span>
+<span class="nc" id="L513">      return true;</span>
+    }
+<span class="nc" id="L515">    return false;</span>
+  }
+
+  /**
+   * Opens the user's last project, if the information is known.
+   */
+  private void openPreviousProject() {
+<span class="nc bnc" id="L522" title="All 2 branches missed.">    if (userSettings == null) {</span>
+<span class="nc" id="L523">      OdeLog.wlog(&quot;Ignoring openPreviousProject() since userSettings is null&quot;);</span>
+<span class="nc" id="L524">      return;</span>
+    }
+<span class="nc" id="L526">    final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)</span>
+<span class="nc" id="L527">        .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);</span>
+<span class="nc" id="L528">    openProject(value);</span>
+<span class="nc" id="L529">  }</span>
+
+  private void openProject(String projectIdString) {
+<span class="nc bnc" id="L532" title="All 2 branches missed.">    if (projectIdString.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L533">      openPreviousProject();</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">    } else if (!projectIdString.equals(&quot;0&quot;)) {</span>
+<span class="nc" id="L535">      final long projectId = Long.parseLong(projectIdString);</span>
+<span class="nc" id="L536">      Project project = projectManager.getProject(projectId);</span>
+<span class="nc bnc" id="L537" title="All 4 branches missed.">      if (project != null &amp;&amp; !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.</span>
+<span class="nc" id="L538">        openYoungAndroidProjectInDesigner(project);</span>
+      } else {
+        // The project hasn't been added to the ProjectManager yet.
+        // Add a ProjectManagerEventListener so we'll be notified when it has been added.
+        // Alternatively, it is an invalid projectId. In which case,
+        // nothing happens since if the listener eventually fires
+        // it will not match the projectId.
+<span class="nc" id="L545">        projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {</span>
+          @Override
+          public void onProjectAdded(Project project) {
+<span class="nc bnc" id="L548" title="All 2 branches missed.">            if (project.getProjectId() == projectId) {</span>
+<span class="nc" id="L549">              projectManager.removeProjectManagerEventListener(this);</span>
+<span class="nc" id="L550">              openYoungAndroidProjectInDesigner(project);</span>
+            }
+<span class="nc" id="L552">          }</span>
+          @Override
+          public void onProjectsLoaded() {
+            // we only get here iff onProjectAdded is never called with the target project id
+<span class="nc" id="L556">            projectManager.removeProjectManagerEventListener(this);</span>
+<span class="nc" id="L557">            switchToProjectsView();  // the user will need to select a project...</span>
+<span class="nc" id="L558">            ErrorReporter.reportInfo(MESSAGES.chooseProject());</span>
+<span class="nc" id="L559">          }</span>
+        });
+      }
+    }
+    // else projectIdString == 0; do nothing
+<span class="nc" id="L564">  }</span>
+
+  public void openYoungAndroidProjectInDesigner(final Project project) {
+<span class="nc" id="L567">    ProjectRootNode projectRootNode = project.getRootNode();</span>
+<span class="nc bnc" id="L568" title="All 2 branches missed.">    if (projectRootNode == null) {</span>
+      // The project nodes haven't been loaded yet.
+      // Add a ProjectChangeListener so we'll be notified when they have been loaded.
+<span class="nc" id="L571">      project.addProjectChangeListener(new ProjectChangeAdapter() {</span>
+        @Override
+        public void onProjectLoaded(Project glass) {
+<span class="nc" id="L574">          project.removeProjectChangeListener(this);</span>
+<span class="nc" id="L575">          openYoungAndroidProjectInDesigner(project);</span>
+<span class="nc" id="L576">        }</span>
+      });
+<span class="nc" id="L578">      project.loadProjectNodes();</span>
+
+    } else {
+      // The project nodes have been loaded. Tell the viewer to open
+      // the project. This will cause the projects source files to be fetched
+      // asynchronously, and loaded into file editors.
+<span class="nc" id="L584">      ViewerBox.getViewerBox().show(projectRootNode);</span>
+      // Note: we can't call switchToDesignView until the Screen1 file editor
+      // finishes loading. We leave that to setCurrentFileEditor(), which
+      // will get called at the appropriate time.
+<span class="nc" id="L588">      String projectIdString = Long.toString(project.getProjectId());</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">      if (!History.getToken().equals(projectIdString)) {</span>
+        // insert token into history but do not trigger listener event
+<span class="nc" id="L591">        History.newItem(projectIdString, false);</span>
+      }
+<span class="nc bnc" id="L593" title="All 2 branches missed.">      if (assetManager == null) {</span>
+<span class="nc" id="L594">        assetManager = AssetManager.getInstance();</span>
+      }
+<span class="nc" id="L596">      assetManager.loadAssets(project.getProjectId());</span>
+    }
+<span class="nc" id="L598">    getTopToolbar().updateFileMenuButtons(1);</span>
+<span class="nc" id="L599">  }</span>
+
+  /**
+   * Returns i18n compatible messages
+   * @return messages
+   */
+  public static OdeMessages getMessages() {
+<span class="nc" id="L606">    return MESSAGES;</span>
+  }
+
+  /**
+   * Returns the rpcStatusPopup object.
+   * @return RpcStatusPopup
+   */
+  public static RpcStatusPopup getRpcStatusPopup() {
+<span class="nc" id="L614">    return rpcStatusPopup;</span>
+  }
+
+  /**
+   * Main entry point for Ode. Setting up the UI and the web service
+   * connections.
+   */
+  @Override
+  public void onModuleLoad() {
+    // Handler for any otherwise unhandled exceptions
+<span class="nc" id="L624">    GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {</span>
+      @Override
+      public void onUncaughtException(Throwable e) {
+<span class="nc" id="L627">        OdeLog.xlog(e);</span>
+
+<span class="nc bnc" id="L629" title="All 2 branches missed.">        if (AppInventorFeatures.sendBugReports()) {</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">          if (Window.confirm(MESSAGES.internalErrorReportBug())) {</span>
+<span class="nc" id="L631">            Window.open(BugReport.getBugReportLink(e), &quot;_blank&quot;, &quot;&quot;);</span>
+          }
+        } else {
+          // Display a confirm dialog with error msg and if 'ok' open the debugging view
+<span class="nc bnc" id="L635" title="All 2 branches missed.">          if (Window.confirm(MESSAGES.internalErrorClickOkDebuggingView())) {</span>
+<span class="nc" id="L636">            Ode.getInstance().switchToDebuggingView();</span>
+          }
+        }
+<span class="nc" id="L639">      }</span>
+    });
+
+    // Initialize global Ode instance
+<span class="nc" id="L643">    instance = this;</span>
+
+    // Let's see if we were started with a repo= parameter which points to a template
+<span class="nc" id="L646">    templatePath = Window.Location.getParameter(&quot;repo&quot;);</span>
+<span class="nc bnc" id="L647" title="All 2 branches missed.">    if (templatePath != null) {</span>
+<span class="nc" id="L648">      OdeLog.wlog(&quot;Got a template path of &quot; + templatePath);</span>
+<span class="nc" id="L649">      templateLoadingFlag = true;</span>
+    }
+
+    // OK, let's see if we are loading from the new gallery Note: If
+    // we are loading from a template (see above) then we ignore the
+    // &quot;ng&quot; parameter. It doesn't make sense to have both, but if we
+    // do, template loading wins.
+
+<span class="nc bnc" id="L657" title="All 2 branches missed.">    if (!templateLoadingFlag) {</span>
+<span class="nc" id="L658">      newGalleryId = Window.Location.getParameter(&quot;ng&quot;);</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">      if (newGalleryId != null) {</span>
+<span class="nc" id="L660">        OdeLog.wlog(&quot;Got a new Gallery ID of &quot; + newGalleryId);</span>
+<span class="nc" id="L661">        newGalleryLoadingFlag = true;</span>
+      }
+    }
+
+    // We call this below to initialize the ConnectProgressBar
+<span class="nc" id="L666">    ConnectProgressBar.getInstance();</span>
+
+    // Get user information.
+<span class="nc" id="L669">    OdeAsyncCallback&lt;Config&gt; callback = new OdeAsyncCallback&lt;Config&gt;(</span>
+        // failure message
+<span class="nc" id="L671">        MESSAGES.serverUnavailable()) {</span>
+
+      @Override
+      public void onSuccess(Config result) {
+<span class="nc" id="L675">        config = result;</span>
+<span class="nc" id="L676">        user = result.getUser();</span>
+<span class="nc" id="L677">        isReadOnly = user.isReadOnly();</span>
+
+        // Arrange to redirect to the new gallery, which is run as a
+        // separate server when we are started with a galleryId flag
+        // We process this as soon as we have the system config
+        // because we need the system config to tell us where the
+        // gallery is located!
+
+<span class="nc" id="L685">        String galleryId = Window.Location.getParameter(&quot;galleryId&quot;);</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">        if (galleryId != null) {</span>
+          // This will replace us with the gallery server, displaying the app in question
+<span class="nc" id="L688">          Window.open(config.getGalleryLocation() + &quot;?galleryid=&quot; + galleryId, &quot;_self&quot;, null);</span>
+          // Never get here...(?)
+<span class="nc" id="L690">          return;</span>
+        }
+
+        // load the user's backpack if we are not using a shared
+        // backpack
+
+<span class="nc" id="L696">        final String backPackId = user.getBackpackId();</span>
+<span class="nc bnc" id="L697" title="All 4 branches missed.">        if (backPackId == null || backPackId.isEmpty()) {</span>
+<span class="nc" id="L698">          loadBackpack();</span>
+<span class="nc" id="L699">          OdeLog.log(&quot;backpack: No shared backpack&quot;);</span>
+        } else {
+<span class="nc" id="L701">          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {</span>
+            @Override
+            public void call() {
+<span class="nc" id="L704">              BlocklyPanel.setSharedBackpackId(backPackId);</span>
+<span class="nc" id="L705">            }</span>
+          });
+<span class="nc" id="L707">          OdeLog.log(&quot;Have a shared backpack backPackId = &quot; + backPackId);</span>
+        }
+
+        // Setup noop timer (if enabled)
+<span class="nc" id="L711">        int noop = config.getNoop();</span>
+<span class="nc bnc" id="L712" title="All 2 branches missed.">        if (noop &gt; 0) {</span>
+          // If we have a noop time, setup a timer to do the noop
+<span class="nc" id="L714">          Timer t = new Timer() {</span>
+              @Override
+              public void run() {
+<span class="nc" id="L717">                userInfoService.noop(new AsyncCallback&lt;Void&gt;() {</span>
+                    @Override
+                    public void onSuccess(Void e) {
+<span class="nc" id="L720">                    }</span>
+                    @Override
+                    public void onFailure(Throwable e) {
+<span class="nc" id="L723">                    }</span>
+                  });
+<span class="nc" id="L725">              }</span>
+            };
+<span class="nc" id="L727">            t.scheduleRepeating(1000*60*noop);</span>
+        }
+
+        // If user hasn't accepted terms of service, ask them to.
+<span class="nc bnc" id="L731" title="All 4 branches missed.">        if (!user.getUserTosAccepted() &amp;&amp; !isReadOnly) {</span>
+          // We expect that the redirect to the TOS page should be handled
+          // by the onFailure method below. The server should return a
+          // &quot;forbidden&quot; error if the TOS wasn't accepted.
+<span class="nc" id="L735">          ErrorReporter.reportError(MESSAGES.serverUnavailable());</span>
+<span class="nc" id="L736">          return;</span>
+        }
+
+<span class="nc" id="L739">        splashConfig = result.getSplashConfig();</span>
+<span class="nc" id="L740">        secondBuildserver = result.getSecondBuildserver();</span>
+        // The code below is invoked if we do not have a second buildserver
+        // configured. It sets the warnedBuild1 flag to true which inhibits
+        // the display of the dialog box used when building. This means that
+        // if no second buildserver is configured, there is no dialog box
+        // displayed when the build menu items are invoked.
+<span class="nc bnc" id="L746" title="All 2 branches missed.">        if (!secondBuildserver) {</span>
+<span class="nc" id="L747">          warnedBuild1 = true;</span>
+        }
+
+<span class="nc bnc" id="L750" title="All 2 branches missed.">        if (result.getRendezvousServer() != null) {</span>
+<span class="nc" id="L751">          setRendezvousServer(result.getRendezvousServer(), true);</span>
+        } else {
+<span class="nc" id="L753">          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);</span>
+        }
+
+<span class="nc" id="L756">        userSettings = new UserSettings(user);</span>
+<span class="nc" id="L757">        userSettings.loadSettings(new Command() {</span>
+          @Override
+          public void execute() {
+
+            // Initialize project and editor managers
+            // The project manager loads the user's projects asynchronously
+<span class="nc" id="L763">            projectManager = new ProjectManager();</span>
+<span class="nc" id="L764">            projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {</span>
+              @Override
+              public void onProjectsLoaded() {
+<span class="nc" id="L767">                projectManager.removeProjectManagerEventListener(this);</span>
+                // This handles any built-in templates stored in /war
+                // Retrieve template data stored in war/templates folder and
+                // and save it for later use in TemplateUploadWizard
+<span class="nc" id="L771">                OdeAsyncCallback&lt;String&gt; templateCallback =</span>
+                    new OdeAsyncCallback&lt;String&gt;(
+                        // failure message
+<span class="nc" id="L774">                        MESSAGES.createProjectError()) {</span>
+                      @Override
+                      public void onSuccess(String json) {
+                        // Save the templateData
+<span class="nc" id="L778">                        TemplateUploadWizard.initializeBuiltInTemplates(json);</span>
+
+<span class="nc bnc" id="L780" title="All 4 branches missed.">                        if (!handleQueryString() &amp;&amp; shouldAutoloadLastProject()) {</span>
+<span class="nc" id="L781">                          openPreviousProject();</span>
+                        }
+<span class="nc" id="L783">                      }</span>
+                    };
+<span class="nc" id="L785">                Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);</span>
+<span class="nc" id="L786">              }</span>
+            });
+<span class="nc" id="L788">            editorManager = new EditorManager();</span>
+
+
+            // Initialize UI
+<span class="nc" id="L792">            initializeUi();</span>
+<span class="nc" id="L793">            topPanel.showUserEmail(user.getUserEmail());</span>
+
+<span class="nc" id="L795">          }</span>
+        });
+<span class="nc" id="L797">      }</span>
+
+      private boolean isSet(String str) {
+<span class="nc bnc" id="L800" title="All 4 branches missed.">        return str != null &amp;&amp; !str.equals(&quot;&quot;);</span>
+      }
+
+      private String makeUri(String base) {
+<span class="nc" id="L804">        String[] params = new String[] { &quot;locale&quot;, &quot;repo&quot;, &quot;galleryId&quot;, &quot;autoload&quot;, &quot;ng&quot; };</span>
+<span class="nc" id="L805">        String separator = &quot;?&quot;;</span>
+<span class="nc" id="L806">        StringBuilder sb = new StringBuilder(base);</span>
+<span class="nc bnc" id="L807" title="All 2 branches missed.">        for (String param : params) {</span>
+<span class="nc" id="L808">          String value = Window.Location.getParameter(param);</span>
+<span class="nc bnc" id="L809" title="All 2 branches missed.">          if (isSet(value)) {</span>
+<span class="nc" id="L810">            sb.append(separator);</span>
+<span class="nc" id="L811">            sb.append(param);</span>
+<span class="nc" id="L812">            sb.append(&quot;=&quot;);</span>
+<span class="nc" id="L813">            sb.append(value);</span>
+<span class="nc" id="L814">            separator = &quot;&amp;&quot;;</span>
+          }
+        }
+<span class="nc" id="L817">        return sb.toString();</span>
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc bnc" id="L822" title="All 2 branches missed.">        if (caught instanceof StatusCodeException) {</span>
+<span class="nc" id="L823">          StatusCodeException e = (StatusCodeException) caught;</span>
+<span class="nc" id="L824">          int statusCode = e.getStatusCode();</span>
+<span class="nc bnc" id="L825" title="All 4 branches missed.">          switch (statusCode) {</span>
+            case Response.SC_UNAUTHORIZED:
+              // unauthorized =&gt; not on whitelist
+              // getEncodedResponse() gives us the message that we wrote in
+              // OdeAuthFilter.writeWhitelistErrorMessage().
+<span class="nc" id="L830">              Window.alert(e.getEncodedResponse());</span>
+<span class="nc" id="L831">              return;</span>
+            case Response.SC_FORBIDDEN:
+              // forbidden =&gt; need tos accept
+<span class="nc" id="L834">              Window.open(makeUri(&quot;/&quot; + ServerLayout.YA_TOS_FORM), &quot;_self&quot;, null);</span>
+<span class="nc" id="L835">              return;</span>
+            case Response.SC_PRECONDITION_FAILED:
+<span class="nc" id="L837">              Window.Location.replace(makeUri(&quot;/login/&quot;));</span>
+<span class="nc" id="L838">              return;           // likely not reached</span>
+          }
+        }
+<span class="nc" id="L841">        super.onFailure(caught);</span>
+<span class="nc" id="L842">      }</span>
+    };
+
+    // The call below begins an asynchronous read of the user's settings
+    // When the settings are finished reading, various settings parsers
+    // will be called on the returned JSON object. They will call various
+    // other functions in this module, including openPreviousProject (the
+    // previous project ID is stored in the settings) as well as the splash
+    // screen displaying functions below.
+    //
+    // TODO(user): ODE makes too many RPC requests at startup time. Currently
+    // we do 3 RPCs + 1 per project + 1 per open file. We should bundle some of
+    // those with each other or with the initial HTML transfer.
+    //
+    // This call also stores our sessionId in the backend. This will be checked
+    // when we go to save a file and if different file saving will be disabled
+    // Newer sessions invalidate older sessions.
+
+<span class="nc" id="L860">    userInfoService.getSystemConfig(sessionId, callback);</span>
+
+<span class="nc" id="L862">    History.addValueChangeHandler(new ValueChangeHandler&lt;String&gt;() {</span>
+      @Override
+      public void onValueChange(ValueChangeEvent&lt;String&gt; event) {
+<span class="nc" id="L865">        openProject(event.getValue());</span>
+<span class="nc" id="L866">      }</span>
+    });
+
+    // load project based on current url
+    // TODO(sharon): Seems like a possible race condition here if the onValueChange
+    // handler defined above gets called before the getSystemConfig call sets
+    // userSettings.
+    // The following line causes problems with GWT debugging, and commenting
+    // it out doesn't seem to break things.
+    //History.fireCurrentHistoryState();
+<span class="nc" id="L876">  }</span>
+
+  /*
+   * Initializes all UI elements.
+   */
+  private void initializeUi() {
+<span class="nc" id="L882">    rpcStatusPopup = new RpcStatusPopup();</span>
+
+    // Register services with RPC status popup
+<span class="nc" id="L885">    rpcStatusPopup.register((ExtendedServiceProxy&lt;?&gt;) projectService);</span>
+<span class="nc" id="L886">    rpcStatusPopup.register((ExtendedServiceProxy&lt;?&gt;) userInfoService);</span>
+
+<span class="nc" id="L888">    Window.setTitle(MESSAGES.titleYoungAndroid());</span>
+<span class="nc" id="L889">    Window.enableScrolling(true);</span>
+
+<span class="nc bnc" id="L891" title="All 2 branches missed.">    if (config.getServerExpired()) {</span>
+<span class="nc" id="L892">      RootPanel.get().add(new ExpiredServiceOverlay());</span>
+    }
+
+<span class="nc" id="L895">    topPanel = new TopPanel();</span>
+<span class="nc" id="L896">    statusPanel = new StatusPanel();</span>
+
+<span class="nc" id="L898">    DockPanel mainPanel = new DockPanel();</span>
+<span class="nc" id="L899">    mainPanel.add(topPanel, DockPanel.NORTH);</span>
+
+    // Create the Tutorial Panel
+<span class="nc" id="L902">    tutorialPanel = new TutorialPanel();</span>
+<span class="nc" id="L903">    tutorialPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L904">    tutorialPanel.setHeight(&quot;100%&quot;);</span>
+    // Initially we do not display it. If the project we load has
+    // a tutorial URL, then we will set this visible when we load
+    // the project
+<span class="nc" id="L908">    tutorialPanel.setVisible(false);</span>
+
+    // Create tab panel for subsequent tabs
+<span class="nc" id="L911">    deckPanel = new DeckPanel() {</span>
+      @Override
+      public final void onBrowserEvent(Event event) {
+<span class="nc bnc" id="L914" title="All 2 branches missed.">        switch (event.getTypeInt()) {</span>
+          case Event.ONCONTEXTMENU:
+<span class="nc" id="L916">            event.preventDefault();</span>
+            break;
+        }
+<span class="nc" id="L919">      }</span>
+    };
+
+<span class="nc" id="L922">    deckPanel.setAnimationEnabled(true);</span>
+<span class="nc" id="L923">    deckPanel.sinkEvents(Event.ONCONTEXTMENU);</span>
+<span class="nc" id="L924">    deckPanel.setStyleName(&quot;ode-DeckPanel&quot;);</span>
+
+    // Projects tab
+<span class="nc" id="L927">    pVertPanel = new VerticalPanel() {</span>
+        /**
+         * Flag to indicate the project list has been rendered at least once.
+         */
+<span class="nc" id="L931">        private boolean rendered = false;</span>
+
+        // Override to add splash screen behavior after leaving the project list
+        @Override
+        public void setVisible(boolean visible) {
+<span class="nc" id="L936">          super.setVisible(visible);</span>
+<span class="nc bnc" id="L937" title="All 4 branches missed.">          if (visible &amp;&amp; !rendered) {</span>
+            // setVisible(false) will be called during UI initialization.
+            // this flag indicates we are now being shown (possibly again...)
+<span class="nc" id="L940">            rendered = true;</span>
+<span class="nc" id="L941">            maybeShowSplash2();  // in case of new user; they have no projects!</span>
+<span class="nc bnc" id="L942" title="All 8 branches missed.">          } else if (rendered &amp;&amp; !visible &amp;&amp; (mayNeedSplash || shouldShowWelcomeDialog())</span>
+<span class="nc bnc" id="L943" title="All 2 branches missed.">                     &amp;&amp; !didShowSplash) {</span>
+<span class="nc" id="L944">            showSplashScreens();</span>
+          }
+<span class="nc" id="L946">        }</span>
+      };
+<span class="nc" id="L948">    pVertPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L949">    pVertPanel.setSpacing(0);</span>
+<span class="nc" id="L950">    projectListPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L951">    projectListPanel.add(ProjectListBox.getProjectListBox());</span>
+<span class="nc" id="L952">    projectToolbar = new ProjectToolbar();</span>
+<span class="nc" id="L953">    pVertPanel.add(projectToolbar);</span>
+<span class="nc" id="L954">    pVertPanel.add(projectListPanel);</span>
+<span class="nc" id="L955">    projectsTabIndex = deckPanel.getWidgetCount();</span>
+<span class="nc" id="L956">    deckPanel.add(pVertPanel);</span>
+
+    // Design tab
+<span class="nc" id="L959">    VerticalPanel dVertPanel = new VerticalPanel();</span>
+<span class="nc" id="L960">    dVertPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L961">    dVertPanel.setHeight(&quot;100%&quot;);</span>
+
+    // Add the Code Navigation arrow
+//    switchToBlocksButton = new VerticalPanel();
+//    switchToBlocksButton.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+//    switchToBlocksButton.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+//    switchToBlocksButton.setStyleName(&quot;ode-NavArrow&quot;);
+//    switchToBlocksButton.add(new Image(RIGHT_ARROW_IMAGE_URL));
+//    switchToBlocksButton.setWidth(&quot;25px&quot;);
+//    switchToBlocksButton.setHeight(&quot;100%&quot;);
+
+    // Add the Code Navigation arrow
+//    switchToDesignerButton = new VerticalPanel();
+//    switchToDesignerButton.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+//    switchToDesignerButton.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+//    switchToDesignerButton.setStyleName(&quot;ode-NavArrow&quot;);
+//    switchToDesignerButton.add(new Image(LEFT_ARROW_IMAGE_URL));
+//    switchToDesignerButton.setWidth(&quot;25px&quot;);
+//    switchToDesignerButton.setHeight(&quot;100%&quot;);
+
+<span class="nc" id="L981">    designToolbar = new DesignToolbar();</span>
+<span class="nc" id="L982">    dVertPanel.add(designToolbar);</span>
+
+<span class="nc" id="L984">    workColumns = new HorizontalPanel();</span>
+<span class="nc" id="L985">    workColumns.setWidth(&quot;100%&quot;);</span>
+
+    //workColumns.add(switchToDesignerButton);
+
+<span class="nc" id="L989">    Box palletebox = PaletteBox.getPaletteBox();</span>
+<span class="nc" id="L990">    palletebox.setWidth(&quot;240px&quot;);</span>
+<span class="nc" id="L991">    workColumns.add(palletebox);</span>
+
+<span class="nc" id="L993">    Box viewerbox = ViewerBox.getViewerBox();</span>
+<span class="nc" id="L994">    workColumns.add(viewerbox);</span>
+<span class="nc" id="L995">    workColumns.setCellWidth(viewerbox, &quot;97%&quot;);</span>
+<span class="nc" id="L996">    workColumns.setCellHeight(viewerbox, &quot;97%&quot;);</span>
+
+<span class="nc" id="L998">    structureAndAssets = new VerticalPanel();</span>
+<span class="nc" id="L999">    structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);</span>
+    // Only one of the SourceStructureBox and the BlockSelectorBox is visible
+    // at any given time, according to whether we are showing the form editor
+    // or the blocks editor. They share the same screen real estate.
+<span class="nc" id="L1003">    structureAndAssets.add(SourceStructureBox.getSourceStructureBox());</span>
+<span class="nc" id="L1004">    structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible</span>
+<span class="nc" id="L1005">    structureAndAssets.add(AssetListBox.getAssetListBox());</span>
+<span class="nc" id="L1006">    workColumns.add(structureAndAssets);</span>
+
+<span class="nc" id="L1008">    Box propertiesbox = PropertiesBox.getPropertiesBox();</span>
+<span class="nc" id="L1009">    propertiesbox.setWidth(&quot;222px&quot;);</span>
+<span class="nc" id="L1010">    workColumns.add(propertiesbox);</span>
+    //switchToBlocksButton.setHeight(&quot;650px&quot;);
+    //workColumns.add(switchToBlocksButton);
+<span class="nc" id="L1013">    dVertPanel.add(workColumns);</span>
+<span class="nc" id="L1014">    designTabIndex = deckPanel.getWidgetCount();</span>
+<span class="nc" id="L1015">    deckPanel.add(dVertPanel);</span>
+
+    // User Admin Panel
+<span class="nc" id="L1018">    VerticalPanel uaVertPanel = new VerticalPanel();</span>
+<span class="nc" id="L1019">    uaVertPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L1020">    uaVertPanel.setSpacing(0);</span>
+<span class="nc" id="L1021">    HorizontalPanel adminUserListPanel = new HorizontalPanel();</span>
+<span class="nc" id="L1022">    adminUserListPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L1023">    adminUserListPanel.add(AdminUserListBox.getAdminUserListBox());</span>
+<span class="nc" id="L1024">    uaVertPanel.add(adminUserListPanel);</span>
+<span class="nc" id="L1025">    userAdminTabIndex = deckPanel.getWidgetCount();</span>
+<span class="nc" id="L1026">    deckPanel.add(uaVertPanel);</span>
+
+    // Debugging tab
+<span class="nc bnc" id="L1029" title="All 2 branches missed.">    if (AppInventorFeatures.hasDebuggingView()) {</span>
+
+<span class="nc" id="L1031">      Button dismissButton = new Button(MESSAGES.dismissButton());</span>
+<span class="nc" id="L1032">      dismissButton.addClickHandler(new ClickHandler() {</span>
+        @Override
+        public void onClick(ClickEvent event) {
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">          if (currentView == DESIGNER)</span>
+<span class="nc" id="L1036">            switchToDesignView();</span>
+          else
+<span class="nc" id="L1038">            switchToProjectsView();</span>
+<span class="nc" id="L1039">        }</span>
+      });
+
+<span class="nc" id="L1042">      ColumnLayout defaultLayout = new ColumnLayout(&quot;Default&quot;);</span>
+<span class="nc" id="L1043">      Column column = defaultLayout.addColumn(100);</span>
+<span class="nc" id="L1044">      column.add(MessagesOutputBox.class, 300, false);</span>
+<span class="nc" id="L1045">      column.add(OdeLogBox.class, 300, false);</span>
+<span class="nc" id="L1046">      final WorkAreaPanel debuggingTab = new WorkAreaPanel(new OdeBoxRegistry(), defaultLayout);</span>
+
+<span class="nc" id="L1048">      debuggingTab.add(dismissButton);</span>
+
+<span class="nc" id="L1050">      debuggingTabIndex = deckPanel.getWidgetCount();</span>
+<span class="nc" id="L1051">      deckPanel.add(debuggingTab);</span>
+
+      // Hook the window resize event, so that we can adjust the UI.
+<span class="nc" id="L1054">      Window.addResizeHandler(new ResizeHandler() {</span>
+        @Override
+        public void onResize(ResizeEvent event) {
+<span class="nc" id="L1057">          resizeWorkArea(debuggingTab);</span>
+<span class="nc" id="L1058">        }</span>
+      });
+
+      // Call the window resized handler to get the initial sizes setup. Doing this in a deferred
+      // command causes it to occur after all widgets' sizes have been computed by the browser.
+<span class="nc" id="L1063">      DeferredCommand.addCommand(new Command() {</span>
+        @Override
+        public void execute() {
+<span class="nc" id="L1066">          resizeWorkArea(debuggingTab);</span>
+<span class="nc" id="L1067">        }</span>
+      });
+
+<span class="nc" id="L1070">      resizeWorkArea(debuggingTab);</span>
+    }
+
+    // We do not select the designer tab here because at this point there is no current project.
+    // Instead, we select the projects tab. If the user has a previously opened project, we will
+    // open it and switch to the designer after the user settings are loaded.
+    // Remember, the user may not have any projects at all yet.
+    // Or, the user may have deleted their previously opened project.
+    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT PROJECT. *****
+<span class="nc" id="L1079">    deckPanel.showWidget(projectsTabIndex);</span>
+
+<span class="nc" id="L1081">    overDeckPanel = new HorizontalPanel();</span>
+<span class="nc" id="L1082">    overDeckPanel.setHeight(&quot;100%&quot;);</span>
+<span class="nc" id="L1083">    overDeckPanel.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L1084">    overDeckPanel.add(tutorialPanel);</span>
+<span class="nc" id="L1085">    overDeckPanel.setCellWidth(tutorialPanel, &quot;0%&quot;);</span>
+<span class="nc" id="L1086">    overDeckPanel.setCellHeight(tutorialPanel, &quot;100%&quot;);</span>
+<span class="nc" id="L1087">    overDeckPanel.add(deckPanel);</span>
+<span class="nc" id="L1088">    mainPanel.add(overDeckPanel, DockPanel.CENTER);</span>
+<span class="nc" id="L1089">    mainPanel.setCellHeight(overDeckPanel, &quot;100%&quot;);</span>
+<span class="nc" id="L1090">    mainPanel.setCellWidth(overDeckPanel, &quot;100%&quot;);</span>
+
+//    mainPanel.add(switchToDesignerButton, DockPanel.WEST);
+//    mainPanel.add(switchToBlocksButton, DockPanel.EAST);
+
+    //Commenting out for now to gain more space for the blocks editor
+<span class="nc" id="L1096">    mainPanel.add(statusPanel, DockPanel.SOUTH);</span>
+<span class="nc" id="L1097">    mainPanel.setSize(&quot;100%&quot;, &quot;100%&quot;);</span>
+<span class="nc" id="L1098">    RootPanel.get().add(mainPanel);</span>
+
+    // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
+    // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
+    // control key pressed.
+<span class="nc" id="L1103">    RootPanel.get().addDomHandler(new MouseWheelHandler() {</span>
+      @Override
+      public void onMouseWheel(MouseWheelEvent event) {
+<span class="nc bnc" id="L1106" title="All 2 branches missed.">        if(event.isControlKeyDown()) {</span>
+          // Trip the appropriate flag in PZAwarePositionCallback when the page
+          // is Pinch Zoomed. Note that this flag does not need to be removed when
+          // the browser is un-zoomed because the patched function for determining
+          // absolute position works in all circumstances.
+<span class="nc" id="L1111">          PZAwarePositionCallback.setPinchZoomed(true);</span>
+        }
+<span class="nc" id="L1113">      }</span>
+<span class="nc" id="L1114">    }, MouseWheelEvent.getType());</span>
+
+<span class="nc bnc" id="L1116" title="All 2 branches missed.">    if (getUserDyslexicFont()) {</span>
+<span class="nc" id="L1117">      RootPanel.get().addStyleName(&quot;dyslexic&quot;);</span>
+    }
+
+    // There is no sure-fire way of preventing people from accidentally navigating away from ODE
+    // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
+    // not lose any work because of this. We hook into the window closing  event to detect the
+    // situation.
+<span class="nc" id="L1124">    Window.addWindowClosingHandler(new Window.ClosingHandler() {</span>
+      @Override
+      public void onWindowClosing(Window.ClosingEvent event) {
+<span class="nc" id="L1127">        onClosing();</span>
+<span class="nc" id="L1128">      }</span>
+    });
+
+<span class="nc" id="L1131">    setupMotd();</span>
+<span class="nc" id="L1132">    HTML5DragDrop.init();</span>
+<span class="nc" id="L1133">  }</span>
+
+  private void setupMotd() {
+<span class="nc" id="L1136">    AsyncCallback&lt;Integer&gt; callback = new AsyncCallback&lt;Integer&gt;() {</span>
+      @Override
+      public void onFailure(Throwable caught) {
+<span class="nc" id="L1139">        OdeLog.log(MESSAGES.getMotdFailed());</span>
+<span class="nc" id="L1140">      }</span>
+
+      @Override
+      public void onSuccess(Integer intervalSecs) {
+<span class="nc bnc" id="L1144" title="All 2 branches missed.">        if (intervalSecs &gt; 0) {</span>
+<span class="nc" id="L1145">          topPanel.showMotd();</span>
+<span class="nc" id="L1146">          motdFetcher = new MotdFetcher(intervalSecs);</span>
+<span class="nc" id="L1147">          motdFetcher.register((ExtendedServiceProxy&lt;?&gt;) projectService);</span>
+<span class="nc" id="L1148">          motdFetcher.register((ExtendedServiceProxy&lt;?&gt;) userInfoService);</span>
+        }
+<span class="nc" id="L1150">      }</span>
+    };
+
+<span class="nc" id="L1153">    getGetMotdService().getCheckInterval(callback);</span>
+<span class="nc" id="L1154">  }</span>
+
+  /**
+   * Returns the editor manager.
+   *
+   * @return  {@link EditorManager}
+   */
+  public EditorManager getEditorManager() {
+<span class="nc" id="L1162">    return editorManager;</span>
+  }
+
+  /**
+   * Returns the project manager.
+   *
+   * @return  {@link ProjectManager}
+   */
+  public ProjectManager getProjectManager() {
+<span class="nc" id="L1171">    return projectManager;</span>
+  }
+
+  /**
+   * Returns the project tool bar.
+   *
+   * @return  {@link ProjectToolbar}
+   */
+  public ProjectToolbar getProjectToolbar() {
+<span class="nc" id="L1180">    return projectToolbar;</span>
+  }
+
+  /**
+   * Returns the structureAndAssets panel.
+   *
+   * @return  {@link VerticalPanel}
+   */
+  public VerticalPanel getStructureAndAssets() {
+<span class="nc" id="L1189">    return structureAndAssets;</span>
+  }
+
+  /**
+   * Returns the workColumns panel.
+   *
+   * @return  {@link HorizontalPanel}
+   */
+  public HorizontalPanel getWorkColumns() {
+<span class="nc" id="L1198">    return workColumns;</span>
+  }
+
+  /**
+   * Returns the design tool bar.
+   *
+   * @return  {@link DesignToolbar}
+   */
+  public DesignToolbar getDesignToolbar() {
+<span class="nc" id="L1207">    return designToolbar;</span>
+  }
+
+  /**
+   * Returns the design tool bar.
+   *
+   * @return  {@link DesignToolbar}
+   */
+  public TopToolbar getTopToolbar() {
+<span class="nc" id="L1216">    return topToolbar;</span>
+  }
+
+  /**
+   * Set the location of the topToolBar. Called from
+   * TopPanel(). We need a way to find it because the
+   * blockly code needs to interact with the Connect-To
+   * dropdown when a connection to a companion terminates.
+   */
+
+  public void setTopToolbar(TopToolbar toolbar) {
+<span class="nc" id="L1227">    topToolbar = toolbar;</span>
+<span class="nc" id="L1228">  }</span>
+
+  /**
+   * Get an instance of the project information web service.
+   *
+   * @return project web service instance
+   */
+  public ProjectServiceAsync getProjectService() {
+<span class="nc" id="L1236">    return projectService;</span>
+  }
+
+  /**
+   * Get an instance of the user information web service.
+   *
+   * @return user information web service instance
+   */
+  public UserInfoServiceAsync getUserInfoService() {
+<span class="nc" id="L1245">    return userInfoService;</span>
+  }
+
+  /**
+   * Get an instance of the motd web service.
+   *
+   * @return motd web service instance
+   */
+  public GetMotdServiceAsync getGetMotdService() {
+<span class="nc" id="L1254">    return getMotdService;</span>
+  }
+
+  /**
+   * Get an instance of the Admin Info service
+   *
+   * @return admin info service instance
+   */
+  public AdminInfoServiceAsync getAdminInfoService() {
+<span class="nc" id="L1263">    return adminInfoService;</span>
+  }
+
+  /**
+   * Get an instance of the component web service.
+   *
+   * @return component web service instance
+   */
+  public ComponentServiceAsync getComponentService() {
+<span class="nc" id="L1272">    return componentService;</span>
+  }
+
+  /**
+   * Get an instance of the TokenAuth web service.
+   *
+   * @return TokenAuth web service instance
+   */
+  public TokenAuthServiceAsync getTokenAuthService(){
+<span class="nc" id="L1281">    return tokenAuthService;</span>
+  }
+
+  /**
+   * Set the current file editor.
+   *
+   * @param fileEditor  the file editor, can be null.
+   */
+  public void setCurrentFileEditor(FileEditor fileEditor) {
+<span class="nc" id="L1290">    currentFileEditor = fileEditor;</span>
+<span class="nc bnc" id="L1291" title="All 2 branches missed.">    if (currentFileEditor == null) {</span>
+      // nothing more we can do
+<span class="nc" id="L1293">      OdeLog.log(&quot;Setting current file editor to null&quot;);</span>
+<span class="nc" id="L1294">      return;</span>
+    }
+<span class="nc" id="L1296">    OdeLog.log(&quot;Ode: Setting current file editor to &quot; + currentFileEditor.getFileId());</span>
+<span class="nc" id="L1297">    switchToDesignView();</span>
+<span class="nc bnc" id="L1298" title="All 2 branches missed.">    if (!windowClosing) {</span>
+<span class="nc" id="L1299">      userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).</span>
+<span class="nc" id="L1300">      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,</span>
+<span class="nc" id="L1301">          &quot;&quot; + getCurrentYoungAndroidProjectId());</span>
+<span class="nc" id="L1302">      userSettings.saveSettings(null);</span>
+    }
+<span class="nc" id="L1304">  }</span>
+
+  /**
+   * @return  currently open FileEditor, or null if none
+   */
+  public FileEditor getCurrentFileEditor() {
+<span class="nc" id="L1310">    return currentFileEditor;</span>
+  }
+
+  /**
+   * Returns the project root node for the current project, or null if there is no current project.
+   *
+   * @return  project root node corresponding to current project
+   */
+  public ProjectRootNode getCurrentYoungAndroidProjectRootNode() {
+<span class="nc bnc" id="L1319" title="All 2 branches missed.">    if (currentFileEditor != null) {</span>
+<span class="nc" id="L1320">      return currentFileEditor.getProjectRootNode();</span>
+    }
+<span class="nc" id="L1322">    return null;</span>
+  }
+
+  /**
+   * Updates the modification date for the requested projected in the local
+   * cached data structure based on the date received from the server.
+   * @param date  the date to update it to
+   */
+  public void updateModificationDate(long projectId, long date) {
+<span class="nc" id="L1331">    Project project = getProjectManager().getProject(projectId);</span>
+<span class="nc bnc" id="L1332" title="All 2 branches missed.">    if (project != null) {</span>
+<span class="nc" id="L1333">      project.setDateModified(date);</span>
+    }
+<span class="nc" id="L1335">  }</span>
+
+  /**
+   * Returns the current project id, or 0 if there is no current project.
+   *
+   * @return  the current project id
+   */
+  public long getCurrentYoungAndroidProjectId() {
+<span class="nc bnc" id="L1343" title="All 2 branches missed.">    if (currentFileEditor != null) {</span>
+<span class="nc" id="L1344">      return currentFileEditor.getProjectId();</span>
+    }
+<span class="nc" id="L1346">    return 0;</span>
+  }
+
+  /**
+   * Returns the current source node, or null if there is no current source node.
+   *
+   * @return  the current source node
+   */
+  public YoungAndroidSourceNode getCurrentYoungAndroidSourceNode() {
+<span class="nc bnc" id="L1355" title="All 2 branches missed.">    if (currentFileEditor != null) {</span>
+<span class="nc" id="L1356">      FileNode fileNode = currentFileEditor.getFileNode();</span>
+<span class="nc bnc" id="L1357" title="All 2 branches missed.">      if (fileNode instanceof YoungAndroidSourceNode) {</span>
+<span class="nc" id="L1358">        return (YoungAndroidSourceNode) fileNode;</span>
+      }
+    }
+<span class="nc" id="L1361">    return null;</span>
+  }
+
+  /**
+   * Returns user account information.
+   *
+   * @return user account information
+   */
+  public User getUser() {
+<span class="nc" id="L1370">    return user;</span>
+  }
+
+  /**
+   * Checks whether autoloading of the user's previous project should be
+   * performed.
+   *
+   * @return true if autoloading should be performed, otherwise false.
+   */
+  public boolean shouldAutoloadLastProject() {
+<span class="nc" id="L1380">    String autoloadParam = Window.Location.getParameter(&quot;autoload&quot;);</span>
+<span class="nc bnc" id="L1381" title="All 2 branches missed.">    if (&quot;false&quot;.equalsIgnoreCase(autoloadParam)) {</span>
+<span class="nc" id="L1382">      return false;</span>
+<span class="nc bnc" id="L1383" title="All 2 branches missed.">    } else if (&quot;true&quot;.equalsIgnoreCase(autoloadParam)) {</span>
+<span class="nc" id="L1384">      return true;</span>
+    }
+<span class="nc" id="L1386">    return getUserAutoloadProject();</span>
+  }
+
+  /**
+   * HideChaff when switching view from block to others
+   */
+  private void hideChaff() {
+<span class="nc bnc" id="L1393" title="All 4 branches missed.">    if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS</span>
+        // currentFileEditor may be null when switching projects
+        &amp;&amp; currentFileEditor != null) {
+<span class="nc" id="L1396">      currentFileEditor.hideChaff();</span>
+    }
+<span class="nc" id="L1398">  }</span>
+  /**
+   * Returns user dyslexic font setting.
+   *
+   * @return user default font
+   */
+  public static boolean getUserDyslexicFont() {
+<span class="nc" id="L1405">    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).</span>
+<span class="nc" id="L1406">            getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);</span>
+<span class="nc" id="L1407">    return Boolean.parseBoolean(value);</span>
+  }
+
+  /**
+   * Set user dyslexic font setting.
+   *
+   * @param isTrue new value for the user default font
+   */
+  public static void setUserDyslexicFont(boolean dyslexicFont) {
+<span class="nc" id="L1416">    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).</span>
+<span class="nc" id="L1417">            changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,</span>
+                    &quot;&quot; + dyslexicFont);
+<span class="nc" id="L1419">    userSettings.saveSettings(new Command() {</span>
+        @Override
+        public void execute() {
+          // Reload for the new font to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+<span class="nc" id="L1427">          Window.Location.reload();</span>
+<span class="nc" id="L1428">        }</span>
+      });
+<span class="nc" id="L1430">  }</span>
+
+  /**
+   * Checks whether the user has autoloading enabled in their settings.
+   *
+   * @return true if autoloading is enabled, otherwise false.
+   */
+  public static boolean getUserAutoloadProject() {
+<span class="nc" id="L1438">    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)</span>
+<span class="nc" id="L1439">        .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);</span>
+<span class="nc" id="L1440">    return Boolean.parseBoolean(value);</span>
+  }
+
+  /**
+   * Sets whether to use autoloading for the current user.
+   *
+   * @param enable true if autoloading should be enabled or false if it should be disabled.
+   */
+  public static void setUserAutoloadProject(boolean enable) {
+<span class="nc" id="L1449">    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)</span>
+<span class="nc" id="L1450">        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));</span>
+<span class="nc" id="L1451">    userSettings.saveSettings(null);</span>
+<span class="nc" id="L1452">  }</span>
+
+  /**
+   * Helper method to create push buttons.
+   *
+   * @param img  image to shown on face of push button
+   * @param tip  text to show in tooltip
+   * @return  newly created push button
+   */
+  public static PushButton createPushButton(ImageResource img, String tip,
+                                            ClickHandler handler) {
+<span class="nc" id="L1463">    PushButton pb = new PushButton(new Image(img));</span>
+<span class="nc" id="L1464">    pb.addClickHandler(handler);</span>
+<span class="nc" id="L1465">    pb.setTitle(tip);</span>
+<span class="nc" id="L1466">    return pb;</span>
+  }
+
+  /**
+   * Compares two locales and determines if they are equal. We consider oldLocale value
+   * of null to be equal to the empty string to handle default values.
+   * @param oldLocale one locale
+   * @param newLocale another locale
+   * @param defaultValue the default locale
+   * @return  true if the locale ISO strings are equal modulo case or if both
+   *          are empty, otherwise false
+   */
+  @VisibleForTesting
+  static boolean compareLocales(String oldLocale, String newLocale, String defaultValue) {
+<span class="nc bnc" id="L1480" title="All 8 branches missed.">    if ((oldLocale == null || oldLocale.isEmpty()) &amp;&amp; (newLocale == null || newLocale.isEmpty())) {</span>
+<span class="nc" id="L1481">      return true;</span>
+<span class="nc bnc" id="L1482" title="All 4 branches missed.">    } else if (oldLocale == null || oldLocale.isEmpty()) {</span>
+<span class="nc" id="L1483">      return defaultValue.equalsIgnoreCase(newLocale);</span>
+    } else {
+<span class="nc" id="L1485">      return oldLocale.equalsIgnoreCase(newLocale);</span>
+    }
+  }
+
+  /**
+   * Check the user's locale against the currently requested locale. No locale
+   * is specified in the query string, then we redirect to the user's previous
+   * locale. English, the default locale, won't redirect in this scenario to
+   * prevent double requests for most of our users. If locale parameter is
+   * specified and the locales don't match, then we set the user's last locale
+   * to the current locale.
+   */
+  public static boolean handleUserLocale() {
+<span class="nc" id="L1498">    String locale = Window.Location.getParameter(&quot;locale&quot;);</span>
+<span class="nc" id="L1499">    String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);</span>
+<span class="nc bnc" id="L1500" title="All 2 branches missed.">    if (!compareLocales(locale, lastUserLocale, &quot;en&quot;)) {</span>
+<span class="nc bnc" id="L1501" title="All 2 branches missed.">      if (locale == null) {</span>
+<span class="nc" id="L1502">        Window.Location.assign(Window.Location.createUrlBuilder().setParameter(&quot;locale&quot;, lastUserLocale).buildString());</span>
+<span class="nc" id="L1503">        return false;</span>
+      } else {
+<span class="nc" id="L1505">        userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);</span>
+<span class="nc" id="L1506">        userSettings.saveSettings(null);</span>
+      }
+    }
+<span class="nc" id="L1509">    BlocklyMsg.Loader.ensureTranslationsLoaded();</span>
+<span class="nc" id="L1510">    return true;</span>
+  }
+
+  private void resizeWorkArea(WorkAreaPanel workArea) {
+    // Subtract 16px from width to account for vertical scrollbar FF3 likes to add
+<span class="nc" id="L1515">    workArea.onResize(Window.getClientWidth() - 16, Window.getClientHeight());</span>
+<span class="nc" id="L1516">  }</span>
+
+  private void onClosing() {
+    // At this point, we aren't allowed to do any UI.
+<span class="nc" id="L1520">    windowClosing = true;</span>
+
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">    if (motdFetcher != null) {</span>
+<span class="nc" id="L1523">      motdFetcher.unregister((ExtendedServiceProxy&lt;?&gt;) projectService);</span>
+<span class="nc" id="L1524">      motdFetcher.unregister((ExtendedServiceProxy&lt;?&gt;) userInfoService);</span>
+    }
+
+    // Unregister services with RPC status popup.
+<span class="nc" id="L1528">    rpcStatusPopup.unregister((ExtendedServiceProxy&lt;?&gt;) projectService);</span>
+<span class="nc" id="L1529">    rpcStatusPopup.unregister((ExtendedServiceProxy&lt;?&gt;) userInfoService);</span>
+
+    // Save the user settings.
+<span class="nc" id="L1532">    userSettings.saveSettings(null);</span>
+
+    // Save all unsaved editors.
+<span class="nc" id="L1535">    editorManager.saveDirtyEditors(null);</span>
+
+    // Not sure if this will get to do its work...
+    // We purposely do this after saving dirty
+    // editors because saving work is more important then
+    // getting this screenshot!
+<span class="nc" id="L1541">    screenShotMaybe(new Runnable() {</span>
+        @Override
+        public void run() {
+<span class="nc" id="L1544">        }</span>
+      }, true);                 // Wait for i/o!!!
+
+<span class="nc" id="L1547">    doCloseProxy();</span>
+
+<span class="nc" id="L1549">  }</span>
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
+<span class="nc" id="L1559">    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();</span>
+    
+<span class="nc bnc" id="L1561" title="All 2 branches missed.">    if (showDialog) {</span>
+<span class="nc" id="L1562">      dialogBox.show();</span>
+    }
+  
+<span class="nc" id="L1565">    return dialogBox;</span>
+  }
+
+  /**
+   * Creates a dialog box to show empty trash list message.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+
+  public DialogBox createEmptyTrashDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L1576">    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)</span>
+<span class="nc" id="L1577">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1578">    dialogBox.setText(MESSAGES.createNoProjectsDialogText());</span>
+
+<span class="nc" id="L1580">    Grid mainGrid = new Grid(2, 2);</span>
+<span class="nc" id="L1581">    mainGrid.getCellFormatter().setAlignment(0,</span>
+            0,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+<span class="nc" id="L1585">    mainGrid.getCellFormatter().setAlignment(0,</span>
+            1,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+<span class="nc" id="L1589">    mainGrid.getCellFormatter().setAlignment(1,</span>
+            1,
+            HasHorizontalAlignment.ALIGN_RIGHT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+<span class="nc" id="L1594">    Image dialogImage = new Image(Ode.getImageBundle().codiVert());</span>
+
+<span class="nc" id="L1596">    Grid messageGrid = new Grid(2, 1);</span>
+<span class="nc" id="L1597">    messageGrid.getCellFormatter().setAlignment(0,</span>
+            0,
+            HasHorizontalAlignment.ALIGN_JUSTIFY,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+<span class="nc" id="L1601">    messageGrid.getCellFormatter().setAlignment(1,</span>
+            0,
+            HasHorizontalAlignment.ALIGN_LEFT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+
+<span class="nc" id="L1607">    Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());</span>
+<span class="nc" id="L1608">    messageGrid.setWidget(1, 0, messageChunk2);</span>
+<span class="nc" id="L1609">    mainGrid.setWidget(0, 0, dialogImage);</span>
+<span class="nc" id="L1610">    mainGrid.setWidget(0, 1, messageGrid);</span>
+
+<span class="nc" id="L1612">    dialogBox.setWidget(mainGrid);</span>
+<span class="nc" id="L1613">    dialogBox.center();</span>
+
+<span class="nc bnc" id="L1615" title="All 2 branches missed.">    if (showDialog) {</span>
+<span class="nc" id="L1616">      dialogBox.show();</span>
+    }
+
+<span class="nc" id="L1619">    return dialogBox;</span>
+  }
+
+  /**
+   * public entry for (re)displaying the welcome dialog box.
+   * Bypass the &quot;Do Not Show Again&quot; feature. This is used by the
+   * menu choice to explicitly show the dialog box. This lets
+   * people who have dismissed the dialog to manually decide to
+   * see it again.
+   *
+   */
+  public void showWelcomeDialog() {
+<span class="nc" id="L1631">    createWelcomeDialog(true);</span>
+<span class="nc" id="L1632">  }</span>
+
+  /**
+   * Possibly display the MIT App Inventor &quot;Splash Screen&quot;
+   *
+   * @param force Bypass the check to see if they have dimissed this version
+   */
+  private void createWelcomeDialog(final boolean force) {
+<span class="nc bnc" id="L1640" title="All 4 branches missed.">    if (!shouldShowWelcomeDialog() &amp;&amp; !force) {</span>
+<span class="nc" id="L1641">      maybeShowNoProjectsDialog();</span>
+<span class="nc" id="L1642">      return;</span>
+    }
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L1645">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L1646">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1647">    dialogBox.setText(MESSAGES.createWelcomeDialogText());</span>
+<span class="nc" id="L1648">    dialogBox.setHeight(splashConfig.height + &quot;px&quot;);</span>
+<span class="nc" id="L1649">    dialogBox.setWidth(splashConfig.width + &quot;px&quot;);</span>
+<span class="nc" id="L1650">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L1651">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L1652">    dialogBox.center();</span>
+<span class="nc" id="L1653">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L1654">    HTML message = new HTML(splashConfig.content);</span>
+<span class="nc" id="L1655">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L1656">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L1657">    Button ok = new Button(MESSAGES.createWelcomeDialogButton());</span>
+<span class="nc" id="L1658">    final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());</span>
+<span class="nc" id="L1659">    ok.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1661">          dialogBox.hide();</span>
+<span class="nc bnc" id="L1662" title="All 2 branches missed.">          if (noshow.getValue()) { // User checked the box</span>
+<span class="nc" id="L1663">            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).</span>
+<span class="nc" id="L1664">              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,</span>
+<span class="nc" id="L1665">                &quot;&quot; + splashConfig.version);</span>
+<span class="nc" id="L1666">            userSettings.saveSettings(null);</span>
+          }
+<span class="nc" id="L1668">          maybeShowNoProjectsDialog();</span>
+<span class="nc" id="L1669">        }</span>
+      });
+<span class="nc" id="L1671">    holder.add(ok);</span>
+<span class="nc" id="L1672">    holder.add(noshow);</span>
+<span class="nc" id="L1673">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L1674">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L1675">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L1676">    dialogBox.show();</span>
+<span class="nc" id="L1677">  }</span>
+
+  /**
+   * Check the number of projects for the user and show the &quot;no projects&quot; dialog if no projects
+   * are present.
+   */
+  private void maybeShowNoProjectsDialog() {
+<span class="nc" id="L1684">    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {</span>
+      @Override
+      public void onProjectsLoaded() {
+<span class="nc bnc" id="L1687" title="All 4 branches missed.">        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 &amp;&amp; !templateLoadingFlag &amp;&amp;</span>
+<span class="nc bnc" id="L1688" title="All 2 branches missed.">          !newGalleryLoadingFlag) {</span>
+<span class="nc" id="L1689">          ErrorReporter.hide();  // hide the &quot;Please choose a project&quot; message</span>
+<span class="nc" id="L1690">          createNoProjectsDialog(true);</span>
+        }
+<span class="nc" id="L1692">      }</span>
+    });
+<span class="nc" id="L1694">  }</span>
+
+  /*
+   * Check the user's setting to get the version of the Splash
+   * Screen that they have seen. If they have seen this version (or greater)
+   * then return false so they do not see it again. Return true to show it
+   */
+  private boolean shouldShowWelcomeDialog() {
+<span class="nc bnc" id="L1702" title="All 2 branches missed.">    if (splashConfig.version == 0) {   // Never show splash if version is 0</span>
+<span class="nc" id="L1703">      return false;             // Check first to avoid others unnecessary calls</span>
+    }
+<span class="nc" id="L1705">    String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).</span>
+<span class="nc" id="L1706">      getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);</span>
+    int uversion;
+<span class="nc bnc" id="L1708" title="All 2 branches missed.">    if (value == null) {        // Nothing stored</span>
+<span class="nc" id="L1709">      uversion = 0;</span>
+    } else {
+<span class="nc" id="L1711">      uversion = Integer.parseInt(value);</span>
+    }
+<span class="nc bnc" id="L1713" title="All 2 branches missed.">    if (uversion &gt;= splashConfig.version) {</span>
+<span class="nc" id="L1714">      return false;</span>
+    } else {
+<span class="nc" id="L1716">      return true;</span>
+    }
+  }
+
+  /**
+   * Show a Survey Splash Screen to the user if they have not previously
+   * acknowledged it.
+   */
+  private void showSurveySplash() {
+    // Create the UI elements of the DialogBox
+<span class="nc bnc" id="L1726" title="All 2 branches missed.">    if (isReadOnly) {           // Bypass the survey if we are read-only</span>
+<span class="nc" id="L1727">      maybeShowSplash();</span>
+<span class="nc" id="L1728">      return;</span>
+    }
+<span class="nc" id="L1730">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L1731">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1732">    dialogBox.setText(MESSAGES.createWelcomeDialogText());</span>
+<span class="nc" id="L1733">    dialogBox.setHeight(&quot;200px&quot;);</span>
+<span class="nc" id="L1734">    dialogBox.setWidth(&quot;600px&quot;);</span>
+<span class="nc" id="L1735">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L1736">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L1737">    dialogBox.center();</span>
+<span class="nc" id="L1738">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L1739">    HTML message = new HTML(MESSAGES.showSurveySplashMessage());</span>
+<span class="nc" id="L1740">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L1741">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L1742">    Button takesurvey = new Button(MESSAGES.showSurveySplashButtonNow());</span>
+<span class="nc" id="L1743">    takesurvey.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1745">          dialogBox.hide();</span>
+          // Update Splash Settings here
+<span class="nc" id="L1747">          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).</span>
+<span class="nc" id="L1748">            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,</span>
+              &quot;&quot; + YaVersion.SPLASH_SURVEY);
+<span class="nc" id="L1750">          userSettings.saveSettings(null);</span>
+<span class="nc" id="L1751">          takeSurvey();         // Open survey in a new window</span>
+<span class="nc" id="L1752">          maybeShowSplash();</span>
+<span class="nc" id="L1753">        }</span>
+      });
+<span class="nc" id="L1755">    holder.add(takesurvey);</span>
+<span class="nc" id="L1756">    Button latersurvey = new Button(MESSAGES.showSurveySplashButtonLater());</span>
+<span class="nc" id="L1757">    latersurvey.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1759">          dialogBox.hide();</span>
+<span class="nc" id="L1760">          maybeShowSplash();</span>
+<span class="nc" id="L1761">        }</span>
+      });
+<span class="nc" id="L1763">    holder.add(latersurvey);</span>
+<span class="nc" id="L1764">    Button neversurvey = new Button(MESSAGES.showSurveySplashButtonNever());</span>
+<span class="nc" id="L1765">    neversurvey.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1767">          dialogBox.hide();</span>
+          // Update Splash Settings here
+          Settings settings =
+<span class="nc" id="L1770">            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);</span>
+<span class="nc" id="L1771">          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,</span>
+            &quot;&quot; + YaVersion.SPLASH_SURVEY);
+<span class="nc" id="L1773">          String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);</span>
+<span class="nc bnc" id="L1774" title="All 2 branches missed.">          if (declined == null) declined = &quot;&quot;; // Shouldn't happen</span>
+<span class="nc bnc" id="L1775" title="All 2 branches missed.">          if (declined != &quot;&quot;) declined += &quot;,&quot;;</span>
+<span class="nc" id="L1776">          declined += &quot;&quot; + YaVersion.SPLASH_SURVEY; // Record that we declined this survey</span>
+<span class="nc" id="L1777">          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);</span>
+<span class="nc" id="L1778">          userSettings.saveSettings(null);</span>
+<span class="nc" id="L1779">          maybeShowSplash();</span>
+<span class="nc" id="L1780">        }</span>
+      });
+<span class="nc" id="L1782">    holder.add(neversurvey);</span>
+<span class="nc" id="L1783">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L1784">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L1785">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L1786">    dialogBox.show();</span>
+<span class="nc" id="L1787">  }</span>
+
+  private void maybeShowSplash() {
+<span class="nc bnc" id="L1790" title="All 4 branches missed.">    if (AppInventorFeatures.showSplashScreen() &amp;&amp; !isReadOnly) {</span>
+<span class="nc" id="L1791">      createWelcomeDialog(false);</span>
+    } else {
+<span class="nc" id="L1793">      maybeShowNoProjectsDialog();</span>
+    }
+<span class="nc" id="L1795">  }</span>
+
+  private void maybeShowSplash2() {
+<span class="nc" id="L1798">    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {</span>
+      @Override
+      public void onProjectsLoaded() {
+<span class="nc bnc" id="L1801" title="All 4 branches missed.">        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 &amp;&amp; !templateLoadingFlag</span>
+<span class="nc bnc" id="L1802" title="All 2 branches missed.">          &amp;&amp; !newGalleryLoadingFlag) {</span>
+<span class="nc" id="L1803">          ErrorReporter.hide();  // hide the &quot;Please choose a project&quot; message</span>
+<span class="nc" id="L1804">          showSplashScreens();</span>
+        }
+<span class="nc" id="L1806">      }</span>
+    });
+<span class="nc" id="L1808">  }</span>
+
+  public void requestShowSplashScreens() {
+<span class="nc" id="L1811">    mayNeedSplash = true;</span>
+<span class="nc bnc" id="L1812" title="All 2 branches missed.">    if (didTransitionFromProjectList) {  // do immediately</span>
+<span class="nc" id="L1813">      showSplashScreens();</span>
+    }
+<span class="nc" id="L1815">  }</span>
+
+  // Display the Survey and/or Normal Splash Screens
+  // (if enabled). This function is called out of SplashSettings.java
+  // after the userSettings object is loaded (above) and parsed.
+  private void showSplashScreens() {
+<span class="nc" id="L1821">    boolean showSplash = false;</span>
+<span class="nc bnc" id="L1822" title="All 2 branches missed.">    if (AppInventorFeatures.showSurveySplashScreen()) {</span>
+<span class="nc" id="L1823">      int nvalue = 0;</span>
+<span class="nc" id="L1824">      String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).</span>
+<span class="nc" id="L1825">        getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);</span>
+<span class="nc bnc" id="L1826" title="All 2 branches missed.">      if (value != null) {</span>
+<span class="nc" id="L1827">        nvalue = Integer.parseInt(value);</span>
+      }
+<span class="nc bnc" id="L1829" title="All 2 branches missed.">      if (nvalue &lt; YaVersion.SPLASH_SURVEY) {</span>
+<span class="nc" id="L1830">        showSurveySplash();</span>
+      } else {
+<span class="nc" id="L1832">        showSplash = true;</span>
+      }
+<span class="nc" id="L1834">    } else {</span>
+<span class="nc" id="L1835">      showSplash = true;</span>
+    }
+<span class="nc bnc" id="L1837" title="All 2 branches missed.">    if (showSplash) {</span>
+<span class="nc" id="L1838">      maybeShowSplash();</span>
+    }
+<span class="nc" id="L1840">    didShowSplash = true;</span>
+<span class="nc" id="L1841">  }</span>
+
+  /**
+   * Show a Dialog Box when we receive an SC_PRECONDITION_FAILED
+   * response code to any Async RPC call. This is a signal that
+   * either our session has expired, or our login cookie has otherwise
+   * become invalid. This is a fatal error and the user should not
+   * be permitted to continue (many ignore the red error bar and keep
+   * working, in vain). So now when this happens, we put up this
+   * modal dialog box which cannot be dismissed. Instead it presents
+   * just one option, a &quot;Reload&quot; button which reloads the browser.
+   * This should trigger a re-authentication (or in the case of an
+   * App Inventor upgrade trigging the problem, the loading of newer
+   * code).
+   */
+
+  public void sessionDead() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L1859">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L1860">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1861">    dialogBox.setText(MESSAGES.invalidSessionDialogText());</span>
+<span class="nc" id="L1862">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L1863">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L1864">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L1865">    dialogBox.center();</span>
+<span class="nc" id="L1866">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L1867">    HTML message = new HTML(MESSAGES.sessionDead());</span>
+<span class="nc" id="L1868">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L1869">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L1870">    Button reloadSession = new Button(MESSAGES.reloadWindow());</span>
+<span class="nc" id="L1871">    reloadSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1873">          dialogBox.hide();</span>
+<span class="nc" id="L1874">          reloadWindow(true);</span>
+<span class="nc" id="L1875">        }</span>
+      });
+<span class="nc" id="L1877">    holder.add(reloadSession);</span>
+<span class="nc" id="L1878">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L1879">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L1880">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L1881">    dialogBox.show();</span>
+<span class="nc" id="L1882">  }</span>
+
+  /**
+   * Show a Warning Dialog box when another login session has been
+   * created. The user is then given two choices. They can either
+   * close this session of App Inventor, which will close the current
+   * window, or they can click &quot;Take Over&quot; which will reload this
+   * window effectively making it the latest login and invalidating
+   * all other sessions.
+   *
+   * We are called from OdeAsyncCallback when we detect that our
+   * session has been invalidated.
+   */
+  public void invalidSessionDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L1897">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L1898">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1899">    dialogBox.setText(MESSAGES.invalidSessionDialogText());</span>
+<span class="nc" id="L1900">    dialogBox.setHeight(&quot;200px&quot;);</span>
+<span class="nc" id="L1901">    dialogBox.setWidth(&quot;800px&quot;);</span>
+<span class="nc" id="L1902">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L1903">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L1904">    dialogBox.center();</span>
+<span class="nc" id="L1905">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L1906">    HTML message = new HTML(MESSAGES.invalidSessionDialogMessage());</span>
+<span class="nc" id="L1907">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L1908">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L1909">    Button closeSession = new Button(MESSAGES.invalidSessionDialogButtonEnd());</span>
+<span class="nc" id="L1910">    closeSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1912">          dialogBox.hide();</span>
+<span class="nc" id="L1913">          finalDialog();</span>
+<span class="nc" id="L1914">        }</span>
+      });
+<span class="nc" id="L1916">    holder.add(closeSession);</span>
+<span class="nc" id="L1917">    Button reloadSession = new Button(MESSAGES.invalidSessionDialogButtonCurrent());</span>
+<span class="nc" id="L1918">    reloadSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1920">          dialogBox.hide();</span>
+<span class="nc" id="L1921">          reloadWindow(false);</span>
+<span class="nc" id="L1922">        }</span>
+      });
+<span class="nc" id="L1924">    holder.add(reloadSession);</span>
+<span class="nc" id="L1925">    Button continueSession = new Button(MESSAGES.invalidSessionDialogButtonContinue());</span>
+<span class="nc" id="L1926">    continueSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1928">          dialogBox.hide();</span>
+<span class="nc" id="L1929">          bashWarningDialog();</span>
+<span class="nc" id="L1930">        }</span>
+      });
+<span class="nc" id="L1932">    holder.add(continueSession);</span>
+<span class="nc" id="L1933">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L1934">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L1935">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L1936">    dialogBox.show();</span>
+<span class="nc" id="L1937">  }</span>
+
+  /**
+   * The user has chosen to continue a session even though
+   * others are still active. This risks damaging (bashing) projects.
+   * So before we proceed, we provide a stern warning. If they press
+   * &quot;Continue&quot; we set their sessionId to &quot;force&quot; which is recognized
+   * by the backend as a sessionId that should always match. This is
+   * safe because normal sessionIds are UUIDs which are always longer
+   * then the word &quot;force.&quot; I know this is a bit kludgey, but by doing
+   * it this way we don't have to change the RPC interface which makes
+   * releasing this code non-disruptive to people using App Inventor
+   * during the release.
+   *
+   * If the user selects &quot;Cancel&quot; we take them back to the
+   * invalidSessionDialog.
+   */
+
+  private void bashWarningDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L1957">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L1958">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L1959">    dialogBox.setText(MESSAGES.bashWarningDialogText());</span>
+<span class="nc" id="L1960">    dialogBox.setHeight(&quot;200px&quot;);</span>
+<span class="nc" id="L1961">    dialogBox.setWidth(&quot;800px&quot;);</span>
+<span class="nc" id="L1962">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L1963">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L1964">    dialogBox.center();</span>
+<span class="nc" id="L1965">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L1966">    HTML message = new HTML(MESSAGES.bashWarningDialogMessage());</span>
+<span class="nc" id="L1967">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L1968">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L1969">    Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());</span>
+<span class="nc" id="L1970">    continueSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1972">          dialogBox.hide();</span>
+<span class="nc" id="L1973">          sessionId = &quot;force&quot;;  // OK, over-ride in place!</span>
+          // Because we ultimately got here from a failure in the save function...
+<span class="nc" id="L1975">          ChainableCommand cmd = new SaveAllEditorsCommand(null);</span>
+<span class="nc" id="L1976">          cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());</span>
+          // Will now go back to our regularly scheduled main loop
+<span class="nc" id="L1978">        }</span>
+      });
+<span class="nc" id="L1980">    holder.add(continueSession);</span>
+<span class="nc" id="L1981">    Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());</span>
+<span class="nc" id="L1982">    cancelSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L1984">          dialogBox.hide();</span>
+<span class="nc" id="L1985">          invalidSessionDialog();</span>
+<span class="nc" id="L1986">        }</span>
+      });
+<span class="nc" id="L1988">    holder.add(cancelSession);</span>
+<span class="nc" id="L1989">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L1990">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L1991">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L1992">    dialogBox.show();</span>
+<span class="nc" id="L1993">  }</span>
+
+  /**
+   * The &quot;Final&quot; Dialog box. When a user chooses to end their session
+   * due to a conflicting login, we should show this dialog which is modal
+   * and has no exit! My preference would have been to close the window
+   * altogether, but the browsers won't let javascript code close windows
+   * that it didn't open itself (like the main window). I also tried to
+   * use document.write() to write replacement HTML but that caused errors
+   * in Firefox and strange behavior in Chrome. So we do this...
+   *
+   * We are called from invalidSessionDialog() (above).
+   */
+  private void finalDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2008">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2009">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2010">    dialogBox.setText(MESSAGES.finalDialogText());</span>
+<span class="nc" id="L2011">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L2012">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L2013">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2014">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2015">    dialogBox.center();</span>
+<span class="nc" id="L2016">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2017">    HTML message = new HTML(MESSAGES.finalDialogMessage());</span>
+<span class="nc" id="L2018">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2019">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2020">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2021">    dialogBox.show();</span>
+<span class="nc" id="L2022">  }</span>
+
+  /**
+   * galleryLoadingDialog -- Put up a dialog box while a Gallery
+   * project is loading.
+   *
+   */
+
+  private DialogBox galleryLoadingDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2032">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2033">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+    // dialogBox.setText(MESSAGES.galleryLoadingDialogText());
+<span class="nc" id="L2035">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L2036">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L2037">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2038">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2039">    dialogBox.center();</span>
+<span class="nc" id="L2040">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2041">    HTML message = new HTML(MESSAGES.galleryLoadingDialogText());</span>
+<span class="nc" id="L2042">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2043">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2044">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2045">    dialogBox.show();</span>
+<span class="nc" id="L2046">    return dialogBox;</span>
+  }
+
+  /**
+   * corruptionDialog -- Put up a dialog box explaining that we detected corruption
+   * while reading in a project file. There is no continuing once this happens.
+   *
+   */
+  void corruptionDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2056">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2057">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2058">    dialogBox.setText(MESSAGES.corruptionDialogText());</span>
+<span class="nc" id="L2059">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L2060">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L2061">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2062">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2063">    dialogBox.center();</span>
+<span class="nc" id="L2064">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2065">    HTML message = new HTML(MESSAGES.corruptionDialogMessage());</span>
+<span class="nc" id="L2066">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2067">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2068">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2069">    dialogBox.show();</span>
+<span class="nc" id="L2070">  }</span>
+
+  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback callback) {
+<span class="nc" id="L2073">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2074">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2075">    dialogBox.setText(MESSAGES.blocksTruncatedDialogText());</span>
+<span class="nc" id="L2076">    dialogBox.setHeight(&quot;150px&quot;);</span>
+<span class="nc" id="L2077">    dialogBox.setWidth(&quot;600px&quot;);</span>
+<span class="nc" id="L2078">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2079">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2080">    dialogBox.center();</span>
+<span class="nc" id="L2081">    String [] fileParts = fileId.split(&quot;/&quot;);</span>
+<span class="nc" id="L2082">    String screenNameParts = fileParts[fileParts.length - 1];</span>
+<span class="nc" id="L2083">    final String screenName = screenNameParts.split(&quot;\\.&quot;)[0]; // Get rid of the .bky part</span>
+<span class="nc" id="L2084">    final String userEmail = user.getUserEmail();</span>
+<span class="nc" id="L2085">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2086">    HTML message = new HTML(MESSAGES.blocksTruncatedDialogMessage().replace(&quot;%1&quot;, screenName));</span>
+<span class="nc" id="L2087">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2088">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L2089">    final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());</span>
+<span class="nc" id="L2090">    continueSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L2092">          dialogBox.hide();</span>
+          // call save2 again, this time with force = true so the empty workspace will be written
+<span class="nc" id="L2094">          getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);</span>
+<span class="nc" id="L2095">        }</span>
+      });
+<span class="nc" id="L2097">    holder.add(continueSession);</span>
+<span class="nc" id="L2098">    final Button cancelSession = new Button(MESSAGES.blocksTruncatedDialogButtonNoSave());</span>
+<span class="nc" id="L2099">    final OdeAsyncCallback&lt;Void&gt; logReturn = new OdeAsyncCallback&lt;Void&gt; () {</span>
+      @Override
+      public void onSuccess(Void result) {
+<span class="nc" id="L2102">        reloadWindow(false);</span>
+<span class="nc" id="L2103">      }</span>
+    };
+<span class="nc" id="L2105">    cancelSession.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+          // Note: We do *not* remove the dialog, this locks the UI up (our intent)
+          // Wait for a few seconds for other I/O to complete
+<span class="nc" id="L2109">          cancelSession.setEnabled(false); // Disable button to prevent further clicking</span>
+<span class="nc" id="L2110">          continueSession.setEnabled(false); // This one as well</span>
+<span class="nc" id="L2111">          Timer t = new Timer() {</span>
+<span class="nc" id="L2112">              int count = 5;</span>
+              @Override
+              public void run() {
+<span class="nc bnc" id="L2115" title="All 2 branches missed.">                if (count &gt; 0) {</span>
+<span class="nc" id="L2116">                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);</span>
+<span class="nc" id="L2117">                  html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace(&quot;%1&quot;, &quot;&quot; + count));</span>
+<span class="nc" id="L2118">                  count -= 1;</span>
+<span class="nc" id="L2119">                } else {</span>
+<span class="nc" id="L2120">                  this.cancel();</span>
+<span class="nc" id="L2121">                  getProjectService().log(&quot;Disappearing Blocks: ProjectId = &quot; + projectId +</span>
+                      &quot; fileId = &quot; + fileId + &quot; User = &quot; + userEmail, logReturn);
+                }
+<span class="nc" id="L2124">              }</span>
+            };
+<span class="nc" id="L2126">          t.scheduleRepeating(1000);     // Run every second</span>
+<span class="nc" id="L2127">        }</span>
+      });
+<span class="nc" id="L2129">    holder.add(cancelSession);</span>
+<span class="nc" id="L2130">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2131">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L2132">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2133">    dialogBox.show();</span>
+<span class="nc" id="L2134">  }</span>
+
+  /**
+   * Display a dialog box with a provided warning message.
+   *
+   * @param message The message to display
+   */
+
+  public void genericWarning(String inputMessage) {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2144">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2145">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2146">    dialogBox.setText(MESSAGES.warningDialogTitle());</span>
+<span class="nc" id="L2147">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L2148">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L2149">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2150">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2151">    dialogBox.center();</span>
+<span class="nc" id="L2152">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2153">    HTML message = new HTML(&quot;&lt;p&gt;&quot; + inputMessage + &quot;&lt;/p&gt;&quot;);</span>
+<span class="nc" id="L2154">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2155">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L2156">    Button okButton = new Button(&quot;OK&quot;);</span>
+<span class="nc" id="L2157">    okButton.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L2159">          dialogBox.hide();</span>
+<span class="nc" id="L2160">        }</span>
+      });
+<span class="nc" id="L2162">    holder.add(okButton);</span>
+<span class="nc" id="L2163">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2164">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L2165">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2166">    dialogBox.show();</span>
+<span class="nc" id="L2167">  }</span>
+
+  /**
+   * Display a Dialog box that explains that you cannot connect a
+   * device or the emulator to App Inventor until you have a project
+   * selected.
+   */
+
+  private void wontConnectDialog() {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2177">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2178">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2179">    dialogBox.setText(MESSAGES.noprojectDialogTitle());</span>
+<span class="nc" id="L2180">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L2181">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L2182">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2183">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2184">    dialogBox.center();</span>
+<span class="nc" id="L2185">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2186">    HTML message = new HTML(&quot;&lt;p&gt;&quot; + MESSAGES.noprojectDuringConnect() + &quot;&lt;/p&gt;&quot;);</span>
+<span class="nc" id="L2187">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2188">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L2189">    Button okButton = new Button(&quot;OK&quot;);</span>
+<span class="nc" id="L2190">    okButton.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L2192">          dialogBox.hide();</span>
+<span class="nc" id="L2193">        }</span>
+      });
+<span class="nc" id="L2195">    holder.add(okButton);</span>
+<span class="nc" id="L2196">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2197">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L2198">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2199">    dialogBox.show();</span>
+<span class="nc" id="L2200">  }</span>
+
+  /**
+   * This dialog is showned if an account is disabled. It is
+   * completely modal with no escape. The provided URL is displayed in
+   * an iframe, so it can be tailored to each person whose account is
+   * disabled.
+   *
+   * @param Url the Url to display in the dialog box.
+   */
+
+  public void disabledAccountDialog(String Url) {
+    // Create the UI elements of the DialogBox
+<span class="nc" id="L2213">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L2214">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L2215">    dialogBox.setText(MESSAGES.accountDisabledMessage());</span>
+<span class="nc" id="L2216">    dialogBox.setHeight(&quot;700px&quot;);</span>
+<span class="nc" id="L2217">    dialogBox.setWidth(&quot;700px&quot;);</span>
+<span class="nc" id="L2218">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L2219">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L2220">    dialogBox.center();</span>
+<span class="nc" id="L2221">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L2222">    HTML message = new HTML(&quot;&lt;iframe src=\&quot;&quot; + Url + &quot;\&quot; style=\&quot;border: 0; width: 680px; height: 660px;\&quot;&gt;&lt;/iframe&gt;&quot;);</span>
+<span class="nc" id="L2223">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L2224">    DialogBoxContents.add(message);</span>
+<span class="nc" id="L2225">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L2226">    dialogBox.show();</span>
+<span class="nc" id="L2227">  }</span>
+
+  /**
+   * Is it OK to connect a device/emulator. Returns true if so false
+   * otherwise.
+   *
+   * Determination is made based on whether or not a project is
+   * selected.
+   *
+   * @return boolean
+   */
+
+  public boolean okToConnect() {
+<span class="nc bnc" id="L2240" title="All 2 branches missed.">    if (getCurrentYoungAndroidProjectId() == 0) {</span>
+<span class="nc" id="L2241">      wontConnectDialog();</span>
+<span class="nc" id="L2242">      return false;</span>
+    } else {
+<span class="nc" id="L2244">      return true;</span>
+    }
+  }
+
+  /**
+   * recordCorruptProject -- Record that we received a corrupt read. This
+   * may or may not work depending on the reason why we received a corrupt
+   * file. If the network just went down, then obviously we won't be able
+   * to use the network to report this problem. However if the corruption
+   * was due to a proxy mangling data (perhaps in the name of censorship)
+   * then this will likely work. We'll see.... (JIS)
+   *
+   */
+
+  public void recordCorruptProject(long projectId, String fileId, String message) {
+<span class="nc" id="L2259">    getProjectService().recordCorruption(projectId, fileId, message,</span>
+        new OdeAsyncCallback&lt;Void&gt;(
+<span class="nc" id="L2261">          &quot;&quot;) {                   // No failure message</span>
+          @Override
+            public void onSuccess(Void result) {
+            // do nothing
+<span class="nc" id="L2265">          }</span>
+        });
+<span class="nc" id="L2267">  }</span>
+
+  /**
+   * generateNonce() -- Generate a unique String value
+   * this value is used to reference a built APK without
+   * requiring explicit authentication.
+   *
+   * @return nonce
+   */
+  public String generateNonce() {
+<span class="nc" id="L2277">    int v = random.nextInt(10000000);</span>
+<span class="nc" id="L2278">    nonce = Integer.toString(v, 36); // Base 36 string</span>
+<span class="nc" id="L2279">    return nonce;</span>
+  }
+
+  public String getSessionId() {
+<span class="nc" id="L2283">    return sessionId;</span>
+  }
+
+  /*
+   * getNonce() -- return a previously generated nonce.
+   *
+   * @return nonce
+   */
+  public String getNonce() {
+<span class="nc" id="L2292">    return nonce;</span>
+  }
+
+  public boolean isReadOnly() {
+<span class="nc" id="L2296">    return isReadOnly;</span>
+  }
+
+  // This is called from AdminUserList when we are switching users
+  // See the comment there...
+  public void setReadOnly() {
+<span class="nc" id="L2302">    isReadOnly = true;</span>
+<span class="nc" id="L2303">  }</span>
+
+  // Code to lock out certain screen and project switching code
+  // These are locked out while files are being saved
+  // lockScreens(true) is called from EditorManager when it
+  // is about to call saveDirtyEditors() and then cleared
+  // in the afterSaving command called when saveDirtyEditors
+  // is finished.
+
+  public boolean screensLocked() {
+<span class="nc" id="L2313">    return screensLocked;</span>
+  }
+
+  public void lockScreens(boolean value) {
+<span class="nc bnc" id="L2317" title="All 2 branches missed.">    if (value) {</span>
+<span class="nc" id="L2318">      OdeLog.log(&quot;Locking Screens&quot;);</span>
+    } else {
+<span class="nc" id="L2320">      OdeLog.log(&quot;Unlocking Screens&quot;);</span>
+    }
+<span class="nc" id="L2322">    screensLocked = value;</span>
+<span class="nc" id="L2323">  }</span>
+
+  /**
+   * Take a screenshot when the user leaves a blocks editor
+   *
+   * Take note of the &quot;deferred&quot; flag. If set, we run the runnable
+   * after i/o is finished. Otherwise we run it immediately while i/o
+   * may still be happening. We wait in the case of logout or window
+   * closing, where we want to hold things up until i/o is done.
+   *
+   * @param next a runnable to run when we are finished
+   * @param deferred whether to run the runnable immediately or after i/o is finished
+   */
+
+  public void screenShotMaybe(final Runnable next, final boolean deferred) {
+    // Only take screenshots if we are an enabled feature
+<span class="nc bnc" id="L2339" title="All 2 branches missed.">    if (!AppInventorFeatures.takeScreenShots()) {</span>
+<span class="nc" id="L2340">      next.run();</span>
+<span class="nc" id="L2341">      return;</span>
+    }
+    // If we are not in the blocks editor, we do nothing
+    // but we do run our callback
+<span class="nc bnc" id="L2345" title="All 2 branches missed.">    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {</span>
+<span class="nc" id="L2346">      next.run();</span>
+<span class="nc" id="L2347">      return;</span>
+    }
+<span class="nc" id="L2349">    String image = &quot;&quot;;</span>
+<span class="nc" id="L2350">    FileEditor editor = Ode.getInstance().getCurrentFileEditor();</span>
+<span class="nc" id="L2351">    final long projectId = editor.getProjectId();</span>
+<span class="nc" id="L2352">    final FileNode fileNode = editor.getFileNode();</span>
+<span class="nc" id="L2353">    currentFileEditor.getBlocksImage(new Callback&lt;String,String&gt;() {</span>
+        @Override
+        public void onSuccess(String result) {
+<span class="nc" id="L2356">          int comma = result.indexOf(&quot;,&quot;);</span>
+<span class="nc bnc" id="L2357" title="All 2 branches missed.">          if (comma &lt; 0) {</span>
+<span class="nc" id="L2358">            OdeLog.log(&quot;screenshot invalid&quot;);</span>
+<span class="nc" id="L2359">            next.run();</span>
+<span class="nc" id="L2360">            return;</span>
+          }
+<span class="nc" id="L2362">          result = result.substring(comma+1); // Strip off url header</span>
+<span class="nc" id="L2363">          String screenShotName = fileNode.getName();</span>
+<span class="nc" id="L2364">          int period = screenShotName.lastIndexOf(&quot;.&quot;);</span>
+<span class="nc" id="L2365">          screenShotName = &quot;screenshots/&quot; + screenShotName.substring(0, period) + &quot;.png&quot;;</span>
+<span class="nc" id="L2366">          OdeLog.log(&quot;ScreenShotName = &quot; + screenShotName);</span>
+<span class="nc" id="L2367">          projectService.screenshot(sessionId, projectId, screenShotName, result,</span>
+<span class="nc" id="L2368">            new OdeAsyncCallback&lt;RpcResult&gt;() {</span>
+              @Override
+              public void onSuccess(RpcResult result) {
+<span class="nc bnc" id="L2371" title="All 2 branches missed.">                if (deferred) {</span>
+<span class="nc" id="L2372">                  next.run();</span>
+                }
+<span class="nc" id="L2374">              }</span>
+              public void OnFailure(Throwable caught) {
+<span class="nc" id="L2376">                super.onFailure(caught);</span>
+<span class="nc bnc" id="L2377" title="All 2 branches missed.">                if (deferred) {</span>
+<span class="nc" id="L2378">                  next.run();</span>
+                }
+<span class="nc" id="L2380">              }</span>
+            });
+<span class="nc bnc" id="L2382" title="All 2 branches missed.">          if (!deferred) {</span>
+<span class="nc" id="L2383">            next.run();</span>
+          }
+<span class="nc" id="L2385">        }</span>
+        @Override
+        public void onFailure(String error) {
+<span class="nc" id="L2388">          OdeLog.log(&quot;Screenshot failed: &quot; + error);</span>
+<span class="nc" id="L2389">          next.run();</span>
+<span class="nc" id="L2390">        }</span>
+      });
+<span class="nc" id="L2392">  }</span>
+
+  // Used internally here so that the tutorial panel is only shown on
+  // the blocks or designer view, not the gallery or projects (or
+  // other) views. unlike setTutorialVisible, we do not side effect
+  // the instance variable tutorialVisible, so we can use it in showTutorials()
+  // (below) to put back the tutorial frame when we revisit the project
+  private void hideTutorials() {
+<span class="nc" id="L2400">    tutorialPanel.setVisible(false);</span>
+<span class="nc" id="L2401">    overDeckPanel.setCellWidth(tutorialPanel, &quot;0%&quot;);</span>
+<span class="nc" id="L2402">  }</span>
+
+  private void showTutorials() {
+<span class="nc bnc" id="L2405" title="All 2 branches missed.">    if (tutorialVisible) {</span>
+<span class="nc" id="L2406">      tutorialPanel.setVisible(true);</span>
+<span class="nc" id="L2407">      overDeckPanel.setCellWidth(tutorialPanel, &quot;300&quot;);</span>
+    }
+<span class="nc" id="L2409">  }</span>
+
+  public void setTutorialVisible(boolean visible) {
+<span class="nc" id="L2412">    tutorialVisible = visible;</span>
+<span class="nc bnc" id="L2413" title="All 2 branches missed.">    if (visible) {</span>
+<span class="nc" id="L2414">      tutorialPanel.setVisible(true);</span>
+<span class="nc" id="L2415">      tutorialPanel.setWidth(&quot;300px&quot;);</span>
+<span class="nc" id="L2416">      overDeckPanel.setCellWidth(tutorialPanel, &quot;300&quot;);</span>
+    } else {
+<span class="nc" id="L2418">      tutorialPanel.setVisible(false);</span>
+<span class="nc" id="L2419">      overDeckPanel.setCellWidth(tutorialPanel, &quot;0%&quot;);</span>
+    }
+<span class="nc bnc" id="L2421" title="All 2 branches missed.">    if (currentFileEditor != null) {</span>
+<span class="nc" id="L2422">      currentFileEditor.resize();</span>
+    }
+<span class="nc" id="L2424">  }</span>
+
+  /**
+   * Indicate if the tutorial panel is currently visible.
+   * @return true if the tutorial panel is visible.
+   *
+   * Note: This value is only valid if in the blocks editor or the designer.
+   * As of this note this routine is called when the &quot;Toogle Tutorial&quot; button
+   * is clicked, and it is only displayed when in the Designer of the Blocks
+   * Editor.
+   */
+
+  public boolean isTutorialVisible() {
+<span class="nc" id="L2437">    return tutorialVisible;</span>
+  }
+
+  public void setTutorialURL(String newURL) {
+<span class="nc bnc" id="L2441" title="All 2 branches missed.">    if (newURL.isEmpty()) {</span>
+<span class="nc" id="L2442">      designToolbar.setTutorialToggleVisible(false);</span>
+<span class="nc" id="L2443">      setTutorialVisible(false);</span>
+<span class="nc" id="L2444">      return;</span>
+    }
+
+<span class="nc" id="L2447">    boolean isUrlAllowed = false;</span>
+<span class="nc bnc" id="L2448" title="All 2 branches missed.">    for (String candidate : config.getTutorialsUrlAllowed()) {</span>
+<span class="nc bnc" id="L2449" title="All 2 branches missed.">      if (newURL.startsWith(candidate)) {</span>
+<span class="nc" id="L2450">        isUrlAllowed = true;</span>
+<span class="nc" id="L2451">        break;</span>
+      }
+<span class="nc" id="L2453">    }</span>
+
+<span class="nc bnc" id="L2455" title="All 2 branches missed.">    if (!isUrlAllowed) {</span>
+<span class="nc" id="L2456">      designToolbar.setTutorialToggleVisible(false);</span>
+<span class="nc" id="L2457">      setTutorialVisible(false);</span>
+    } else {
+<span class="nc" id="L2459">      String[] urlSplits = newURL.split(&quot;//&quot;); // [protocol, rest]</span>
+<span class="nc bnc" id="L2460" title="All 4 branches missed.">      boolean isHttps = Window.Location.getProtocol() == &quot;https:&quot; || urlSplits[0] == &quot;https:&quot;;</span>
+<span class="nc" id="L2461">      String locale = Window.Location.getParameter(&quot;locale&quot;);</span>
+<span class="nc bnc" id="L2462" title="All 2 branches missed.">      if (locale != null) {</span>
+<span class="nc bnc" id="L2463" title="All 2 branches missed.">        newURL += (newURL.contains(&quot;?&quot;) ? &quot;&amp;&quot; : &quot;?&quot;) + &quot;locale=&quot; + locale;</span>
+      }
+<span class="nc bnc" id="L2465" title="All 2 branches missed.">      String effectiveUrl = (isHttps ? &quot;https://&quot; : &quot;http://&quot;) + urlSplits[1];</span>
+<span class="nc" id="L2466">      tutorialPanel.setUrl(effectiveUrl);</span>
+<span class="nc" id="L2467">      designToolbar.setTutorialToggleVisible(true);</span>
+<span class="nc" id="L2468">      setTutorialVisible(true);</span>
+    }
+<span class="nc" id="L2470">  }</span>
+
+  // Load the user's backpack. This is not called if we are using
+  // a shared backpack
+  private void loadBackpack() {
+<span class="nc" id="L2475">    userInfoService.getUserBackpack(new AsyncCallback&lt;String&gt;() {</span>
+        @Override
+        public void onSuccess(final String backpack) {
+<span class="nc" id="L2478">          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {</span>
+            @Override
+            public void call() {
+<span class="nc" id="L2481">              BlocklyPanel.setInitialBackpack(backpack);</span>
+<span class="nc" id="L2482">            }</span>
+          });
+<span class="nc" id="L2484">        }</span>
+        @Override
+        public void onFailure(Throwable caught) {
+<span class="nc" id="L2487">          OdeLog.log(&quot;Fetching backpack failed&quot;);</span>
+<span class="nc" id="L2488">        }</span>
+      });
+<span class="nc" id="L2490">  }</span>
+
+  public boolean hasSecondBuildserver() {
+<span class="nc" id="L2493">    return secondBuildserver;</span>
+  }
+
+  public boolean getWarnBuild(boolean secondBuildserver) {
+<span class="nc bnc" id="L2497" title="All 2 branches missed.">    return secondBuildserver ? warnedBuild2 : warnedBuild1;</span>
+  }
+
+  public void setWarnBuild(boolean secondBuildserver, boolean value) {
+<span class="nc bnc" id="L2501" title="All 2 branches missed.">    if (secondBuildserver) {</span>
+<span class="nc" id="L2502">      warnedBuild2 = value;</span>
+    } else {
+<span class="nc" id="L2504">      warnedBuild1 = value;</span>
+    }
+<span class="nc" id="L2506">  }</span>
+
+  public boolean getGalleryReadOnly() {
+<span class="nc" id="L2509">    return config.getGalleryReadOnly();</span>
+  }
+
+  public boolean getDeleteAccountAllowed() {
+<span class="nc" id="L2513">    return config.getDeleteAccountAllowed();</span>
+  }
+
+  /**
+   * setRendezvousServer
+   *
+   * Setup the Rendezvous server location.
+   *
+   * There are two places where the rendezvous servers is setup. The
+   * &quot;compiled in&quot; version is in YaVersion.RENDEZVOUS_SERVER.  The
+   * runtime version is in appengine-web.xml. If they differ, we set
+   * &quot;top.includeQRcode&quot; to true so that when we display the
+   * QRCode, we include the name of the Rendezvous server. Note: What
+   * is important here is what version of the rendezvous server is
+   * compiled into the Companion itself. The Companion does *not* get
+   * the default version from YaVersion, but from the blocks that are
+   * used to build the Companion.
+   *
+   * @param server the domain name of the Rendezvous servers
+   * @param inclQRcode true to indicate that the rendezvous server domain name should be included in the QR Code
+   *
+   */
+  private native void setRendezvousServer(String server, boolean inclQRcode) /*-{
+    top.rendezvousServer = server;
+    top.includeQRcode = inclQRcode;
+  }-*/;
+
+  // Native code to open a new window (or tab) to display the
+  // desired survey. The value below &quot;http://web.mit.edu&quot; is just
+  // a plug value. You should insert your own as appropriate.
+  private native void takeSurvey() /*-{
+    $wnd.open(&quot;http://web.mit.edu&quot;);
+  }-*/;
+
+  // Making this public in case we need something like this elsewhere
+  public static native String generateUuid() /*-{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&amp;0x3|0x8);
+      return v.toString(16);
+     });
+  }-*/;
+
+  public static native void reloadWindow(boolean full) /*-{
+    if (full) {
+      top.location.replace(top.location.origin);
+    } else {
+      top.location.reload();
+    }
+  }-*/;
+
+  private static native boolean finish(String userId) /*-{
+    var delete_cookie = function(name) {
+       document.cookie = name + '=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    };
+    var retval = {
+       &quot;type&quot;: &quot;closeApp&quot;,
+       &quot;uuid&quot; : userId }
+    if (top.opener) {
+      delete_cookie(&quot;AppInventor&quot;); // This ends our authentication
+      top.opener.postMessage(retval, &quot;*&quot;);
+      return true;
+    } else {
+      return false;
+    }
+  }-*/;
+
+  public static native void CLog(String message) /*-{
+    console.log(message);
+  }-*/;
+
+  private static native void doCloseProxy() /*-{
+    if (top.proxy) {
+      top.proxy.close();
+    }
+  }-*/;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

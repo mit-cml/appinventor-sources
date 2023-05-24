@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockComponentsUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockComponentsUtil.java</span></div><h1>MockComponentsUtil.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.StyleElement;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.graphics.client.Color;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+/**
+ * Helper methods for working with mock components.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+public final class MockComponentsUtil {
+
+  private MockComponentsUtil() {
+  }
+
+  /**
+   * Sets the background color for the given widget.
+   *
+   * @param widget  widget to change background color for
+   * @param color  new color (RGB value)
+   */
+  static void setWidgetBackgroundColor(Widget widget, String color) {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (isNoneColor(color)) {</span>
+<span class="nc" id="L46">      DOM.setStyleAttribute(widget.getElement(), &quot;backgroundColor&quot;, &quot;transparent&quot;);</span>
+    } else {
+<span class="nc" id="L48">      DOM.setStyleAttribute(widget.getElement(), &quot;backgroundColor&quot;, &quot;#&quot; + getHexString(color, 6));</span>
+    }
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * Clears the background color of a widget to its default by CSS rules.
+   *
+   * @param widget  widget to remove the background color for
+   */
+  static void resetWidgetBackgroundColor(Widget widget) {
+<span class="nc" id="L58">    Element el = widget.getElement();</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">    if (el != null) {</span>
+<span class="nc" id="L60">      el.getStyle().clearBackgroundColor();</span>
+    }
+<span class="nc" id="L62">  }</span>
+
+  /**
+   * Sets the background image for the given widget.
+   *
+   * @param widget  widget to change background image for
+   * @param image  URL
+   */
+  static void setWidgetBackgroundImage(Widget widget, String image) {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">    if (image.isEmpty()) {</span>
+<span class="nc" id="L72">      DOM.setStyleAttribute(widget.getElement(), &quot;backgroundImage&quot;, &quot;none&quot;);</span>
+    } else {
+<span class="nc" id="L74">      DOM.setStyleAttribute(widget.getElement(), &quot;backgroundImage&quot;, &quot;url(&quot; + image + ')');</span>
+    }
+<span class="nc" id="L76">    DOM.setStyleAttribute(widget.getElement(), &quot;backgroundRepeat&quot;, &quot;no-repeat&quot;);</span>
+<span class="nc" id="L77">    DOM.setStyleAttribute(widget.getElement(), &quot;backgroundPosition&quot;, &quot;center&quot;);</span>
+<span class="nc" id="L78">    DOM.setStyleAttribute(widget.getElement(), &quot;backgroundSize&quot;, &quot;100% 100%&quot;);</span>
+<span class="nc" id="L79">  }</span>
+
+  /**
+   * Sets the background image for the given widget.
+   *
+   * @param container the MockContainer to refresh when image is loaded
+   * @param widget  widget to change background image for
+   * @param image  URL
+   */
+  static void setWidgetBackgroundImage(final MockContainer container, Widget widget, String image) {
+    // Problem: When we change the background image via a Style referencing a &quot;url&quot;
+    // the browser doesn't initially know the size of the image. We need to know it
+    // when the container layout height and/or width is &quot;Automatic.&quot; If we query right
+    // away, we will be told the image is 0 x 0 because it isn't loaded yet.
+    // I have not been able to figure out how to get the browser to give us a onLoad (or
+    // similar event) when the image is loaded. If we could get such an event, we can
+    // call refreshForm in the container and win.
+    //
+    // The code below fudges this by setting up a time to fire after 1 second with the
+    // hope that the image will have been loaded by then and its dimensions known.
+    // The code commented out immediately below this code is what I would like to use,
+    // but it doesn't seem to work!   -JIS
+<span class="nc" id="L101">    Timer t = new Timer() {</span>
+        @Override
+        public void run() {
+<span class="nc" id="L104">          container.refreshForm();</span>
+<span class="nc" id="L105">        }</span>
+      };
+//    widget.addHandler(new LoadHandler() {
+//        @Override
+//        public void onLoad(LoadEvent event) {
+//          container.refreshForm();
+//        }
+//      }, new Type&lt;LoadHandler&gt;());
+<span class="nc" id="L113">    setWidgetBackgroundImage(widget, image);</span>
+<span class="nc" id="L114">    t.schedule(1000);           // Fire in one second</span>
+<span class="nc" id="L115">  }</span>
+
+  /**
+   * Sets the font weight for the given widget (bold or normal).
+   *
+   * @param widget  widget to change font weight for
+   * @param value  {@code true} for bold font and {@code false} for normal font
+   */
+  static void setWidgetFontBold(Widget widget, String value) {
+<span class="nc" id="L124">    DOM.setStyleAttribute(widget.getElement(), &quot;fontWeight&quot;,</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        Boolean.parseBoolean(value) ? &quot;bold&quot; : &quot;normal&quot;);</span>
+<span class="nc" id="L126">  }</span>
+
+  /**
+   * Sets the text color for the given widget.
+   *
+   * @param widget  widget to change text color for
+   * @param color  new color (RGB value)
+   */
+  static void setWidgetTextColor(Widget widget, String color) {
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (isNoneColor(color)) {</span>
+<span class="nc" id="L136">      DOM.setStyleAttribute(widget.getElement(), &quot;color&quot;, &quot;transparent&quot;);</span>
+    } else {
+<span class="nc" id="L138">      DOM.setStyleAttribute(widget.getElement(), &quot;color&quot;, &quot;#&quot; + getHexString(color, 6));</span>
+    }
+<span class="nc" id="L140">  }</span>
+
+  /**
+   * Clears the text color of a widget to its default by CSS rules
+   *
+   * @param widget  widget to remove the text color for
+   */
+  static void resetWidgetTextColor(Widget widget) {
+<span class="nc" id="L148">    Element el = widget.getElement();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">    if (el != null) {</span>
+<span class="nc" id="L150">      el.getStyle().clearColor();</span>
+    }
+<span class="nc" id="L152">  }</span>
+
+  /**
+   * Sets the font style for the given widget (italic or normal).
+   *
+   * @param widget  widget to change font style for
+   * @param value  {@code true} for italic font and {@code false} for normal font
+   */
+  static void setWidgetFontItalic(Widget widget, String value) {
+<span class="nc" id="L161">    DOM.setStyleAttribute(widget.getElement(), &quot;fontStyle&quot;,</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        Boolean.parseBoolean(value) ? &quot;italic&quot; : &quot;normal&quot;);</span>
+<span class="nc" id="L163">  }</span>
+
+  /**
+   * Sets the font size for the given widget.
+   *
+   * @param widget  widget to change font size for
+   * @param size  new font size (in scaled px)
+   */
+  static void setWidgetFontSize(Widget widget, String size) {
+    // Fonts on Android are in scaled pixels...
+    try {
+<span class="nc" id="L174">      DOM.setStyleAttribute(widget.getElement(), &quot;fontSize&quot;,</span>
+<span class="nc" id="L175">          (int)(Float.parseFloat(size) * 0.9) + &quot;px&quot;);</span>
+<span class="nc" id="L176">    } catch (NumberFormatException e) {</span>
+      // Ignore this. If we throw an exception here, the project is unrecoverable.
+<span class="nc" id="L178">    }</span>
+<span class="nc" id="L179">  }</span>
+
+  /**
+   * Returns the asset node of given name.
+   *
+   * @param editor current project editor
+   * @param name   the name of the asset
+   * @return the asset node
+   */
+  static ProjectNode getAssetNode(SimpleEditor editor, String name) {
+<span class="nc" id="L189">    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    if (project != null) {</span>
+<span class="nc" id="L191">      HasAssetsFolder&lt;YoungAndroidAssetsFolder&gt; hasAssetsFolder =</span>
+<span class="nc" id="L192">        (YoungAndroidProjectNode) project.getRootNode();</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">      for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (asset.getName().equals(name)) {</span>
+<span class="nc" id="L195">          return asset;</span>
+        }
+<span class="nc" id="L197">      }</span>
+    }
+<span class="nc" id="L199">    return null;</span>
+  }
+  
+  /**
+   * Converts the given font typeface property value to font resource URL
+   *
+   * @param editor the editor
+   * @param text   asset name
+   * @return the string value of font resource URL
+   */
+  static String convertFontPropertyValueToUrl(SimpleEditor editor, String text) {
+<span class="nc bnc" id="L210" title="All 2 branches missed.">    if (text.length() &gt; 0) {</span>
+<span class="nc" id="L211">      ProjectNode asset = getAssetNode(editor, text);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">      if (asset != null) {</span>
+<span class="nc" id="L213">        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());</span>
+      }
+    }
+<span class="nc" id="L216">    return null;</span>
+  }
+  
+  /**
+   * Create font resource into DOM's Head element.
+   *
+   * @param fontFamily      font family name
+   * @param fontResourceURL font resource url
+   * @param resourceId      uniq ID of font resource.
+   */
+  static void createFontResource(String fontFamily, String fontResourceURL, String resourceId)  {
+<span class="nc" id="L227">    StyleElement resourceElement = Document.get().createStyleElement();</span>
+<span class="nc" id="L228">    resourceElement.setId(resourceId);</span>
+<span class="nc" id="L229">    String resource = &quot;@font-face {&quot;;</span>
+<span class="nc" id="L230">    resource += &quot;font-family: &quot;;</span>
+<span class="nc" id="L231">    resource += fontFamily + &quot;;&quot;;</span>
+<span class="nc" id="L232">    resource += &quot;src: url(\&quot;&quot; + fontResourceURL + &quot;\&quot;);&quot;;</span>
+<span class="nc" id="L233">    resource += &quot;}&quot;;</span>
+<span class="nc" id="L234">    resourceElement.setInnerText(resource);</span>
+<span class="nc" id="L235">    Document.get().getHead().appendChild(resourceElement);</span>
+<span class="nc" id="L236">  }</span>
+  
+  /**
+   * Sets the font typeface for the given widget.
+   *
+   * @param editor  current project editor
+   * @param widget  widget to change font typeface for
+   * @param typeface  default, sans serif, serif, monospace or font file in case of custom
+   *                  font typeface
+   */
+  static void setWidgetFontTypeface(SimpleEditor editor, Widget widget, String typeface) {
+<span class="nc" id="L247">    String fontFamily = &quot;&quot;;</span>
+<span class="nc bnc" id="L248" title="All 4 branches missed.">    if (typeface.equals(&quot;0&quot;) || typeface.equals(&quot;1&quot;)){</span>
+<span class="nc" id="L249">      fontFamily = &quot;sans-serif&quot;;</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">    } else if (typeface.equals(&quot;2&quot;)) {</span>
+<span class="nc" id="L251">      fontFamily = &quot;serif&quot;;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    } else if (typeface.equals(&quot;3&quot;)) {</span>
+<span class="nc" id="L253">      fontFamily = &quot;monospace&quot;;</span>
+    } else {
+<span class="nc" id="L255">      fontFamily = typeface.substring(0, typeface.lastIndexOf(&quot;.&quot;));</span>
+<span class="nc" id="L256">      String resourceID = typeface.toLowerCase().substring(0, typeface.lastIndexOf(&quot;.&quot;));</span>
+<span class="nc" id="L257">      String resourceURL = convertFontPropertyValueToUrl(editor, typeface);</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">      if (Document.get().getElementById(resourceID) == null)  {</span>
+<span class="nc" id="L259">        createFontResource(fontFamily, resourceURL, resourceID);</span>
+      }
+    }
+<span class="nc" id="L262">    DOM.setStyleAttribute(widget.getElement(), &quot;fontFamily&quot;, fontFamily);</span>
+<span class="nc" id="L263">  }</span>
+
+  /**
+   * Update widget's text content appearances according to width property value.
+   *
+   * @param widget widget to update text appearances for
+   * @param width  widget's width property value -1 for Automatic
+   */
+  static void updateTextAppearances(Widget widget, String width) {
+<span class="nc bnc" id="L272" title="All 2 branches missed.">    if (width.equals(&quot;-1&quot;)) {</span>
+      // for width = Automatic
+<span class="nc" id="L274">      DOM.setStyleAttribute(widget.getElement(), &quot;whiteSpace&quot;, &quot;nowrap&quot;);</span>
+    } else {
+      // for width = Fill Parent, Pixels or Percentage
+<span class="nc" id="L277">      DOM.setStyleAttribute(widget.getElement(), &quot;whiteSpace&quot;, &quot;normal&quot;);</span>
+    }
+<span class="nc" id="L279">  }</span>
+
+  /**
+   * Sets the text alignment for the given widget.
+   *
+   * @param widget  widget to change text alignment for
+   * @param align  one of &quot;0&quot; for left, &quot;1&quot; for center or &quot;2&quot; for right
+   */
+  static void setWidgetTextAlign(Widget widget, String align) {
+<span class="nc bnc" id="L288" title="All 4 branches missed.">    switch (Integer.parseInt(align)) {</span>
+      default:
+        // This should never happen
+<span class="nc" id="L291">        throw new IllegalArgumentException(&quot;align:&quot; + align);</span>
+
+      case 0:
+<span class="nc" id="L294">        align = &quot;left&quot;;</span>
+<span class="nc" id="L295">        break;</span>
+
+      case 1:
+<span class="nc" id="L298">        align = &quot;center&quot;;</span>
+<span class="nc" id="L299">        break;</span>
+
+      case 2:
+<span class="nc" id="L302">        align = &quot;right&quot;;</span>
+        break;
+    }
+<span class="nc" id="L305">    DOM.setStyleAttribute(widget.getElement(), &quot;textAlign&quot;, align);</span>
+<span class="nc" id="L306">  }</span>
+
+  /**
+   * Indicates whether the given color value describes the &quot;None&quot; color.
+   */
+  static boolean isNoneColor(String color) {
+<span class="nc" id="L312">    return getHexString(color, 8).equals(MockVisibleComponent.COLOR_NONE);</span>
+  }
+
+  /**
+   * Indicates whether the given color value describes the &quot;Default&quot; color.
+   */
+  static boolean isDefaultColor(String color) {
+<span class="nc" id="L319">    return getHexString(color, 8).equals(MockVisibleComponent.COLOR_DEFAULT);</span>
+  }
+
+  /**
+   * Returns a new Color object for the given color value.
+   */
+  static Color getColor(String color) {
+<span class="nc" id="L326">    String hex = getHexString(color, 8);</span>
+<span class="nc" id="L327">    int alpha = Integer.parseInt(hex.substring(0, 2), 16);</span>
+<span class="nc" id="L328">    int red = Integer.parseInt(hex.substring(2, 4), 16);</span>
+<span class="nc" id="L329">    int green = Integer.parseInt(hex.substring(4, 6), 16);</span>
+<span class="nc" id="L330">    int blue = Integer.parseInt(hex.substring(6, 8), 16);</span>
+<span class="nc" id="L331">    return new Color(red, green, blue, alpha / 255.0F);</span>
+  }
+
+  /*
+   * Converts a string containing a number to a string containing the requested amount of least\
+   * significant digits of the equivalent hex number.
+   */
+  private static String getHexString(String color, int digits) {
+    // When receiving the property values from the server hex numbers were converted to decimal
+    // numbers
+<span class="nc bnc" id="L341" title="All 2 branches missed.">    color = color.startsWith(&quot;&amp;H&quot;) ? color.substring(2) : Long.toHexString(Long.parseLong(color));</span>
+<span class="nc" id="L342">    int len = color.length();</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">    if (len &lt; digits) {</span>
+      do {
+<span class="nc" id="L345">        color = '0' + color;</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">      } while (++len &lt; digits);</span>
+
+<span class="nc" id="L348">      return color;</span>
+    }
+
+<span class="nc" id="L351">    return color.substring(len - digits);</span>
+  }
+
+  /*
+   * Retrieves the size style attributes of the given widgets and then clears
+   * them.
+   *
+   * @param w the widget
+   * @return the previous size style attributes as an array with width at index
+   *         0 and height at index 1.
+   */
+  static String[] clearSizeStyle(Widget w) {
+<span class="nc" id="L363">    return clearSizeStyle(w.getElement());</span>
+  }
+
+  static String[] clearSizeStyle(Element element) {
+<span class="nc" id="L367">    String widthStyle = DOM.getStyleAttribute(element, &quot;width&quot;);</span>
+<span class="nc" id="L368">    String heightStyle = DOM.getStyleAttribute(element, &quot;height&quot;);</span>
+<span class="nc" id="L369">    String lineHeightStyle = DOM.getStyleAttribute(element, &quot;lineHeight&quot;);</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">    if (widthStyle != null) {</span>
+<span class="nc" id="L371">      DOM.setStyleAttribute(element, &quot;width&quot;, null);</span>
+    }
+<span class="nc bnc" id="L373" title="All 2 branches missed.">    if (heightStyle != null) {</span>
+<span class="nc" id="L374">      DOM.setStyleAttribute(element, &quot;height&quot;, null);</span>
+    }
+<span class="nc bnc" id="L376" title="All 2 branches missed.">    if (lineHeightStyle != null) {</span>
+<span class="nc" id="L377">      DOM.setStyleAttribute(element, &quot;lineHeight&quot;, &quot;initial&quot;);</span>
+    }
+<span class="nc" id="L379">    return new String[] { widthStyle, heightStyle, lineHeightStyle };</span>
+  }
+
+  /*
+   * Restores the given size style attributes for the widget.
+   *
+   * @param w the widget
+   * @param style the size style attributes as an array with width at index 0
+   *        and height at index 1.
+   */
+  static void restoreSizeStyle(Widget w, String[] style) {
+<span class="nc" id="L390">    restoreSizeStyle(w.getElement(), style);</span>
+<span class="nc" id="L391">  }</span>
+
+  static void restoreSizeStyle(Element element, String[] style) {
+<span class="nc bnc" id="L394" title="All 2 branches missed.">    if (style[0] != null) {</span>
+<span class="nc" id="L395">      DOM.setStyleAttribute(element, &quot;width&quot;, style[0]);</span>
+    }
+<span class="nc bnc" id="L397" title="All 2 branches missed.">    if (style[1] != null) {</span>
+<span class="nc" id="L398">      DOM.setStyleAttribute(element, &quot;height&quot;, style[1]);</span>
+    }
+<span class="nc bnc" id="L400" title="All 2 branches missed.">    if (style[2] != null) {</span>
+<span class="nc" id="L401">      DOM.setStyleAttribute(element, &quot;lineHeight&quot;, style[2]);</span>
+    }
+<span class="nc" id="L403">  }</span>
+
+  /**
+   * Returns the width of the given MockComponent after temporarily setting its
+   * width and height styles to null.
+   */
+  static int getPreferredWidth(MockComponent component) {
+<span class="nc" id="L410">    String[] style = clearSizeStyle(component);</span>
+<span class="nc" id="L411">    int width = component.getOffsetWidth() + 4;</span>
+<span class="nc" id="L412">    restoreSizeStyle(component, style);</span>
+    // We want the size without the MockComponent's CSS border.
+<span class="nc" id="L414">    return width - MockComponent.BORDER_SIZE;</span>
+  }
+
+  /**
+   * Returns the height of the given MockComponent after temporarily setting its
+   * width and height styles to null.
+   */
+  static int getPreferredHeight(MockComponent component) {
+<span class="nc" id="L422">    String[] style = clearSizeStyle(component);</span>
+<span class="nc" id="L423">    int height = component.getOffsetHeight();</span>
+<span class="nc" id="L424">    restoreSizeStyle(component, style);</span>
+    // We want the size without the MockComponent's CSS border.
+<span class="nc" id="L426">    return height - MockComponent.BORDER_SIZE;</span>
+  }
+
+  /**
+   * Returns the preferred size of the specified widget,
+   * in an array of the form {@code [width, height]}.
+   * &lt;p&gt;
+   * It is assumed that:
+   * &lt;ul&gt;
+   *   &lt;li&gt;{@code w} has no parent&lt;/li&gt;
+   *   &lt;li&gt;{@code w} has not been configured to be invisible&lt;/li&gt;
+   * &lt;/ul&gt;
+   */
+  public static int[] getPreferredSizeOfDetachedWidget(Widget w) {
+    // Attach the widget to the DOM, so that its preferred size is calculated correctly
+<span class="nc" id="L441">    RootPanel.get().add(w);</span>
+
+<span class="nc" id="L443">    String[] style = clearSizeStyle(w);</span>
+<span class="nc" id="L444">    int width = w.getOffsetWidth() + 4;</span>
+<span class="nc" id="L445">    int height = w.getOffsetHeight() + 6;</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">    if (height &lt; 26) {          // Do not make the button smaller</span>
+<span class="nc" id="L447">      height = 26;              // then 26, as this mimicks what happens</span>
+    }                           // on the real device
+<span class="nc" id="L449">    restoreSizeStyle(w, style);</span>
+
+    // Detach the widget from the DOM before returning
+<span class="nc" id="L452">    RootPanel.get().remove(w);</span>
+
+<span class="nc" id="L454">    return new int[] { width, height };</span>
+  }
+
+  /**
+   * Returns the preferred size of the specified DOM element in an array of the
+   * form {@code [width, height]}.
+   *
+   * @see #getPreferredSizeOfDetachedWidget(Widget)
+   * @param element the DOM element to compute the size for
+   * @return the natural width and height of the element
+   */
+  public static int[] getPreferredSizeOfElement(Element element) {
+<span class="nc" id="L466">    Element root = RootPanel.get().getElement();</span>
+<span class="nc" id="L467">    root.appendChild(element);</span>
+
+<span class="nc" id="L469">    String[] style = clearSizeStyle(element);</span>
+<span class="nc" id="L470">    int width = element.getOffsetWidth() + 4;</span>
+<span class="nc" id="L471">    int height = element.getOffsetHeight() + 6;</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">    if (height &lt; 26) {</span>
+<span class="nc" id="L473">      height = 26;</span>
+    }
+<span class="nc" id="L475">    restoreSizeStyle(element, style);</span>
+
+<span class="nc" id="L477">    root.removeChild(element);</span>
+<span class="nc" id="L478">    return new int[] { width, height };</span>
+  }
+
+  static void setEnabled(MockComponent component, String value) {
+    // Can't disable GWT control because then you wouldn't be able to select it anymore because it
+    // would not receive any browser events.
+<span class="nc bnc" id="L484" title="All 2 branches missed.">    if (Boolean.parseBoolean(value)) {</span>
+<span class="nc" id="L485">      component.removeStyleDependentName(&quot;disabled&quot;);</span>
+    } else {
+<span class="nc" id="L487">      component.addStyleDependentName(&quot;disabled&quot;);</span>
+    }
+<span class="nc" id="L489">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

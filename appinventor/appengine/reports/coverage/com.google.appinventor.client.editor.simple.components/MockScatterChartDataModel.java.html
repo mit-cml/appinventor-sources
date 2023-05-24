@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockScatterChartDataModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockScatterChartDataModel.java</span></div><h1>MockScatterChartDataModel.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import org.pepstock.charba.client.enums.PointStyle;
+
+/**
+ * Data Model class for the Scatter Chart.
+ * Provides full functionality for data operations and some styling settings
+ * for Scatter points.
+ */
+public class MockScatterChartDataModel extends MockPointChartDataModel&lt;MockScatterChartView&gt; {
+
+  /**
+   * Creates a new Mock Scatter Chart Data Model object instance, linking it with
+   * the specified Scatter Chart View.
+   *
+   * @param view Chart View to link to
+   */
+  protected MockScatterChartDataModel(MockScatterChartView view) {
+<span class="nc" id="L24">    super(view);</span>
+<span class="nc" id="L25">  }</span>
+
+  @Override
+  protected void setDefaultStylingProperties() {
+<span class="nc" id="L29">    dataSeries.setShowLine(false);</span>
+<span class="nc" id="L30">    dataSeries.setBorderWidth(1);</span>
+<span class="nc" id="L31">  }</span>
+
+  @Override
+  protected void postDataImportAction() {
+    // No data points generated, fallback to default option.
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    if (dataSeries.getDataPoints().isEmpty()) {</span>
+<span class="nc" id="L37">      setDefaultElements();</span>
+    }
+<span class="nc" id="L39">  }</span>
+
+  /**
+   * Changes the Point Shape of the Data Series.
+   *
+   * &lt;p&gt;The following values are used:
+   * 0 - Circle
+   * 1 - Square
+   * 2 - Triangle
+   * 3 - Cross
+   * 4 - X
+   *
+   * @param shape new Point Shape value (integer)
+   */
+  @Override
+  public void changePointShape(com.google.appinventor.components.common.PointStyle shape) {
+    PointStyle pointStyle;
+<span class="nc bnc" id="L56" title="All 6 branches missed.">    switch (shape) {</span>
+      case Circle:
+<span class="nc" id="L58">        pointStyle = PointStyle.CIRCLE;</span>
+<span class="nc" id="L59">        break;</span>
+
+      case Square:
+<span class="nc" id="L62">        pointStyle = PointStyle.RECT;</span>
+<span class="nc" id="L63">        break;</span>
+
+      case Triangle:
+<span class="nc" id="L66">        pointStyle = PointStyle.TRIANGLE;</span>
+<span class="nc" id="L67">        break;</span>
+
+      case Cross:
+<span class="nc" id="L70">        pointStyle = PointStyle.CROSS;</span>
+<span class="nc" id="L71">        break;</span>
+
+      case X:
+<span class="nc" id="L74">        pointStyle = PointStyle.CROSS_ROT;</span>
+<span class="nc" id="L75">        break;</span>
+
+      default:
+<span class="nc" id="L78">        throw new IllegalArgumentException(&quot;Unknown shape type: &quot; + shape);</span>
+    }
+
+<span class="nc" id="L81">    dataSeries.setPointStyle(pointStyle);</span>
+<span class="nc" id="L82">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

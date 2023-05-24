@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageDialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.utils</a> &gt; <span class="el_source">MessageDialog.java</span></div><h1>MessageDialog.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.utils;
+
+import com.google.appinventor.client.widgets.boxes.Box;
+
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * A Utility for Dialog Boxes
+ *
+ * Put up a Dialog Box in the middle of the screen. It must have an
+ * &quot;OK&quot; button and can optionally have a &quot;Cancel&quot; button. Also takes
+ * an object to call on OK or Cancel after the OK or Cancel button is
+ * pressed. This dialog is modal, locking out other activity.
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ */
+
+public class MessageDialog {
+  public interface Actions {
+    /**
+     * Action to perform when OK button is pressed.
+     * Note: the dialog box itself is already dismissed
+     */
+    public void onOK();
+
+    /**
+     * Action to peform when the Cancel button is pressed.
+     * Note: the dialog box itself is already dismissed
+     */
+    public void onCancel();
+  }
+
+  private MessageDialog() {
+  }
+
+  /**
+   * Put up a modal dialog box.
+   *
+   * @param title Title for the dialog, already internationalized
+   * @param message Message box content, already internationalized
+   * @param OK String for OK button, already internationalized
+   * @param Cancel String for Cancel button, null if non, internationalized
+   * @param actions Actions object to call upon completion, can be null
+   */
+  public static void messageDialog(String title, String message, String OK, String Cancel,
+    final Actions actions) {
+<span class="nc" id="L58">    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)</span>
+<span class="nc" id="L59">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc" id="L60">    dialogBox.setText(title);</span>
+<span class="nc" id="L61">    dialogBox.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L62">    dialogBox.setWidth(&quot;400px&quot;);</span>
+<span class="nc" id="L63">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L64">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L65">    dialogBox.center();</span>
+<span class="nc" id="L66">    VerticalPanel DialogBoxContents = new VerticalPanel();</span>
+<span class="nc" id="L67">    HTML messageHtml = new HTML(&quot;&lt;p&gt;&quot; + message + &quot;&lt;/p&gt;&quot;);</span>
+<span class="nc" id="L68">    messageHtml.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L69">    FlowPanel holder = new FlowPanel();</span>
+<span class="nc" id="L70">    Button okButton = new Button(OK);</span>
+<span class="nc" id="L71">    okButton.addClickListener(new ClickListener() {</span>
+        public void onClick(Widget sender) {
+<span class="nc" id="L73">          dialogBox.hide();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">          if (actions != null)</span>
+<span class="nc" id="L75">            actions.onOK();</span>
+<span class="nc" id="L76">        }</span>
+      });
+<span class="nc" id="L78">    holder.add(okButton);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    if (Cancel != null) {</span>
+<span class="nc" id="L80">      Button cancelButton = new Button(Cancel);</span>
+<span class="nc" id="L81">      cancelButton.addClickListener(new ClickListener() {</span>
+          @Override
+          public void onClick(Widget sender) {
+<span class="nc" id="L84">            dialogBox.hide();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (actions != null)</span>
+<span class="nc" id="L86">              actions.onCancel();</span>
+<span class="nc" id="L87">          }</span>
+        });
+<span class="nc" id="L89">      holder.add(cancelButton);</span>
+    }
+<span class="nc" id="L91">    DialogBoxContents.add(messageHtml);</span>
+<span class="nc" id="L92">    DialogBoxContents.add(holder);</span>
+<span class="nc" id="L93">    dialogBox.setWidget(DialogBoxContents);</span>
+<span class="nc" id="L94">    dialogBox.show();</span>
+<span class="nc" id="L95">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

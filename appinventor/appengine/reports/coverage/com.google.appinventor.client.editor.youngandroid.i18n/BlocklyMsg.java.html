@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BlocklyMsg.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.youngandroid.i18n</a> &gt; <span class="el_source">BlocklyMsg.java</span></div><h1>BlocklyMsg.java</h1><pre class="source lang-java linenums">package com.google.appinventor.client.editor.youngandroid.i18n;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ExternalTextResource;
+import com.google.gwt.resources.client.ResourceCallback;
+import com.google.gwt.resources.client.ResourceException;
+import com.google.gwt.resources.client.TextResource;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nullable;
+import jsinterop.annotations.JsFunction;
+
+/**
+ * BlocklyMsg leverages GWT's internationalization in ClientBundle's to load
+ * locale specific Blockly translations without having to ship the entire set
+ * of languages to every user. One can call
+ * {@link Loader#ensureTranslationsLoaded(LoadCallback)}
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
+public interface BlocklyMsg extends ClientBundle {
+  @Source(&quot;messages.json&quot;)
+  ExternalTextResource messages();
+
+  // Translation loading management
+
+  /**
+   * Callers that need to do additional work once the translations are loaded
+   * can pass an implementation of the {@code LoadCallback} interface to
+   * {@link Loader#ensureTranslationsLoaded(LoadCallback)} to be called after
+   * the translations are finished loading.
+   */
+  @JsFunction
+  interface LoadCallback {
+    void call();
+  }
+
+  final class Loader {
+<span class="nc" id="L41">    private static boolean translationsLoaded = false;</span>
+<span class="nc" id="L42">    private static Set&lt;LoadCallback&gt; pendingCallbacks = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L43">    private static boolean loadInitiated = false;</span>
+<span class="nc" id="L44">    private static JavaScriptObject translations = null;</span>
+
+    private Loader() {
+      // Not instantiable
+    }
+
+    static void loadTranslation() {
+<span class="nc" id="L51">      loadInitiated = true;</span>
+      try {
+<span class="nc" id="L53">        ((BlocklyMsg) GWT.create(BlocklyMsg.class)).messages()</span>
+<span class="nc" id="L54">            .getText(new ResourceCallback&lt;TextResource&gt;() {</span>
+              @Override
+              public void onError(ResourceException e) {
+                // TODO(ewpatton): How do we handle failures to load translations?
+<span class="nc" id="L58">              }</span>
+
+              @Override
+              public void onSuccess(TextResource textResource) {
+<span class="nc" id="L62">                installTranslations(textResource.getText());</span>
+<span class="nc" id="L63">                translationsLoaded = true;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                for (LoadCallback callback : pendingCallbacks) {</span>
+                  try {
+<span class="nc" id="L66">                    callback.call();</span>
+<span class="nc" id="L67">                  } catch (Exception e) {</span>
+                    // foo
+<span class="nc" id="L69">                  }</span>
+<span class="nc" id="L70">                }</span>
+<span class="nc" id="L71">                pendingCallbacks.clear();</span>
+<span class="nc" id="L72">              }</span>
+            });
+<span class="nc" id="L74">      } catch (ResourceException e) {</span>
+        // TODO(ewpatton): How do we handle failures to load translations?
+<span class="nc" id="L76">      }</span>
+<span class="nc" id="L77">    }</span>
+
+    /**
+     * Ensure that the Blockly translations are loaded. This will start the
+     * loading process if it has not previously been called.
+     */
+    public static void ensureTranslationsLoaded() {
+<span class="nc" id="L84">      ensureTranslationsLoaded(null);</span>
+<span class="nc" id="L85">    }</span>
+
+    /**
+     * Ensure that the Blockly translations are loaded. This will start the
+     * loading process if it has not previously been called.
+     *
+     * @param callback An optional callback to call once the translations have
+     *                 been loaded.
+     */
+    public static void ensureTranslationsLoaded(@Nullable LoadCallback callback) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">      if (!loadInitiated) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (callback != null) {</span>
+<span class="nc" id="L97">          pendingCallbacks.add(callback);</span>
+        }
+<span class="nc" id="L99">        loadTranslation();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">      } else if (translationsLoaded) {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (callback != null) {</span>
+<span class="nc" id="L102">          callback.call();</span>
+        }
+      } else {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (callback != null) {</span>
+<span class="nc" id="L106">          pendingCallbacks.add(callback);</span>
+        }
+      }
+<span class="nc" id="L109">    }</span>
+
+    /**
+     * Tests whether the Blockly strings have been loaded. It is preferable to use
+     * {@link #ensureTranslationsLoaded(LoadCallback)} with a callback, which will
+     * be executed when the translations are available rather than continuously polling
+     * this method.
+     *
+     * @return true if the Blockly messages are loaded, otherwise false.
+     */
+    public static boolean isTranslationLoaded() {
+<span class="nc" id="L120">      return translationsLoaded;</span>
+    }
+
+    public static JavaScriptObject getTranslations() {
+<span class="nc" id="L124">      return translations;</span>
+    }
+
+    private static native void installTranslations(String translations)/*-{
+      @com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg.Loader::translations =
+        JSON.parse(translations);
+    }-*/;
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

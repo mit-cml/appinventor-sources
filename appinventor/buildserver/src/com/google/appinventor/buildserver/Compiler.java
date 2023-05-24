@@ -12,12 +12,15 @@ import com.android.sdklib.build.ApkBuilder;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
+import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -45,6 +48,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -228,11 +232,22 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> permissionsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  /**
+   * Maps types to permissions to permission constraints.
+   */
+  private final ConcurrentMap<String, Map<String, Set<PermissionConstraint<?>>>>
+      permissionConstraintsNeeded = new ConcurrentHashMap<>();
   private final ConcurrentMap<String, Set<String>> minSdksNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
   private final ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals =
       new ConcurrentHashMap<>();
+  /**
+   * Maps types to blocks to permissions to permission constraints.
+   */
+  private final ConcurrentMap<String, Map<String, Map<String, Set<PermissionConstraint<?>>>>>
+      conditionalPermissionConstraints = new ConcurrentHashMap<>();
+
   /**
    * Maps component type names to a set of blocks used in the project from the
    * named component. For example, Hello Purr might produce:
@@ -246,6 +261,12 @@ public final class Compiler {
    * </code>
    */
   private final Map<String, Set<String>> compBlocks;
+
+  /**
+   * Maps Screen names to their orientation values to populate the
+   * android:screenOrientation attribution in the &lt;activity&gt; element.
+   */
+  private final Map<String, String> formOrientations;
 
   /**
    * Set of exploded AAR libraries.
@@ -348,6 +369,7 @@ public final class Compiler {
 
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
+  private JSONArray buildInfo;
   private Set<String> simpleCompTypes;  // types needed by the project
   private Set<String> extCompTypes; // types needed by the project
 
@@ -372,6 +394,7 @@ public final class Compiler {
   void generatePermissions() {
     try {
       loadJsonInfo(permissionsNeeded, ComponentDescriptorConstants.PERMISSIONS_TARGET);
+      loadPermissionConstraints();
       if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
         LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
         if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
@@ -394,6 +417,7 @@ public final class Compiler {
     }
 
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET), permissionsNeeded);
+    mergeConditionalPermissionConstraints();
 
     int n = 0;
     for (String type : permissionsNeeded.keySet()) {
@@ -462,6 +486,79 @@ public final class Compiler {
           }
         }
       }
+    }
+  }
+
+  private void mergeConditionalPermissionConstraints() {
+    if (isForCompanion) {
+      return;  // We don't want to place additional constraints on the companion
+    }
+    for (String type : conditionalPermissionConstraints.keySet()) {
+      String name = type.substring(type.lastIndexOf('.') + 1);
+      Set<String> blocks = compBlocks.get(name);
+      if (blocks == null) {  // this component wasn't used
+        continue;
+      }
+      Map<String, Map<String, Set<PermissionConstraint<?>>>> blockPermsMap =
+          conditionalPermissionConstraints.get(type);
+      if (!permissionConstraintsNeeded.containsKey(type)) {
+        permissionConstraintsNeeded.put(type,
+            new HashMap<String, Set<PermissionConstraint<?>>>());
+      }
+      Map<String, Set<PermissionConstraint<?>>> permConstraints =
+          permissionConstraintsNeeded.get(type);
+      for (String blockName : blocks) {
+        Map<String, Set<PermissionConstraint<?>>> blockPerms = blockPermsMap.get(blockName);
+        if (blockPerms == null) {
+          // No constraints specified by this block
+          continue;
+        }
+        for (Map.Entry<String, Set<PermissionConstraint<?>>> entry1 : blockPerms.entrySet()) {
+          String permName = entry1.getKey();
+          Set<PermissionConstraint<?>> constraints = entry1.getValue();
+          if (permConstraints.containsKey(permName)) {
+            permConstraints.get(permName).addAll(constraints);
+          } else {
+            permConstraints.put(permName, new HashSet<>(constraints));
+          }
+        }
+      }
+    }
+  }
+
+  private void outputPermissionConstraints(Writer out,
+      Multimap<String, PermissionConstraint<?>> permissionConstraints, String permission)
+      throws IOException {
+    Collection<PermissionConstraint<?>> constraints = permissionConstraints.get(permission);
+    if (constraints == null) {
+      return;
+    }
+
+    Multimap<String, PermissionConstraint<?>> aggregates = HashMultimap.create();
+    for (PermissionConstraint<?> constraint : constraints) {
+      aggregates.put(constraint.getAttribute(), constraint);
+    }
+
+    for (Map.Entry<String, Collection<PermissionConstraint<?>>> entry : aggregates.asMap().entrySet()) {
+      String attribute = entry.getKey();
+      // TODO(ewpatton): Figure out a more generic way of doing this.
+      String value;
+      if ("maxSdkVersion".equals(attribute)) {
+        PermissionConstraint.Reducer<Integer> reducer = new PermissionConstraint.MaxReducer();
+        for (PermissionConstraint<?> constraint : entry.getValue()) {
+          constraint.as(Integer.class).apply(reducer);
+        }
+        value = reducer.toString();
+      } else if ("usesPermissionFlags".equals(attribute)) {
+        PermissionConstraint.Reducer<String> reducer = new PermissionConstraint.UnionReducer<>();
+        for (PermissionConstraint<?> constraint : entry.getValue()) {
+          constraint.as(String.class).apply(reducer);
+        }
+        value = reducer.toString();
+      } else {
+        throw new IllegalArgumentException("Unrecognized permission constraint: " + attribute);
+      }
+      out.write(" android:" + attribute + "=\"" + value + "\"");
     }
   }
 
@@ -1128,6 +1225,13 @@ public final class Compiler {
         permissions.remove("android.permission.WRITE_CALL_LOG");
       }
 
+      Multimap<String, PermissionConstraint<?>> permissionConstraints = HashMultimap.create();
+      for (Map<String, Set<PermissionConstraint<?>>> constraints : permissionConstraintsNeeded.values()) {
+        for (Map.Entry<String, Set<PermissionConstraint<?>>> entry : constraints.entrySet()) {
+          permissionConstraints.putAll(entry.getKey(), entry.getValue());
+        }
+      }
+
       for (String permission : permissions) {
         if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
           out.write("  <uses-permission android:name=\"" + permission + "\"");
@@ -1137,13 +1241,14 @@ public final class Compiler {
             out.write(" android:maxSdkVersion=\"29\"");
           }
 
-          out.write(" />");
         } else {
           out.write("  <uses-permission android:name=\""
               // replace %packageName% with the actual packageName
               + permission.replace("%packageName%", packageName)
-              + "\" />\n");
+              + "\"");
         }
+        outputPermissionConstraints(out, permissionConstraints, permission);
+        out.write(" />");
       }
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
@@ -1219,6 +1324,9 @@ public final class Compiler {
         }
         // The line below is required for Android 12+
         out.write("android:exported=\"true\" ");
+        out.write("android:screenOrientation=\"");
+        out.write(formOrientations.get(source.getSimpleName()));
+        out.write("\" ");
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
 
@@ -1386,6 +1494,7 @@ public final class Compiler {
    * @param project  project to build
    * @param compTypes component types used in the project
    * @param compBlocks component type mapped to blocks used in project
+   * @param formOrientations form names mapped to screen orientations
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
@@ -1396,15 +1505,17 @@ public final class Compiler {
    * @throws IOException
    */
   public static boolean compile(Project project, Set<String> compTypes,
-      Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err, PrintStream userErrors,
+      Map<String, Set<String>> compBlocks,
+      Map<String, String> formOrientations,
+      PrintStream out, PrintStream err, PrintStream userErrors,
       boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
       String keystoreFilePath, int childProcessRam, String dexCacheDir, String outputFileName,
       BuildServer.ProgressReporter reporter, boolean isAab, StatReporter statReporter)
       throws IOException, JSONException {
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors,
-        isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam, dexCacheDir,
-        reporter);
+    Compiler compiler = new Compiler(project, compTypes, formOrientations, compBlocks, out, err,
+        userErrors, isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam,
+        dexCacheDir, reporter);
 
     return compileWithStats(compiler, project, isAab, keystoreFilePath, outputFileName, out,
         reporter, statReporter);
@@ -1423,6 +1534,9 @@ public final class Compiler {
         reporter.report(0);
       }
 
+      if (!compiler.loadJsonInfo()) {
+        return false;
+      }
       statReporter.nextStage(compiler, "generateActivities");
       compiler.generateActivities();
       statReporter.nextStage(compiler, "generateActivityMetadata");
@@ -1784,11 +1898,14 @@ public final class Compiler {
    * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
-  Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
-           int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
+  Compiler(Project project, Set<String> compTypes, Map<String, String> formOrientations,
+      Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
+      PrintStream userErrors, boolean isForCompanion, boolean isForEmulator,
+      boolean includeDangerousPermissions, int childProcessMaxRam, String dexCacheDir,
+      BuildServer.ProgressReporter reporter) {
     this.project = project;
     this.compBlocks = compBlocks;
+    this.formOrientations = formOrientations;
 
     prepareCompTypes(compTypes);
     readBuildInfo();
@@ -2834,6 +2951,20 @@ public final class Compiler {
     }
   }
 
+  private boolean loadJsonInfo() {
+    try {
+      buildInfo = new JSONArray(
+          "[" + simpleCompsBuildInfo.join(",") + ","
+              + extCompsBuildInfo.join(",") + "]"
+      );
+      return true;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      userErrors.printf(ERROR_IN_STAGE, "Loading Component Info");
+      return false;
+    }
+  }
+
   /*
    *  Loads permissions and information on component libraries and assets.
    */
@@ -2844,9 +2975,9 @@ public final class Compiler {
         return;
       }
 
-      JSONArray buildInfo = new JSONArray(
-          "[" + simpleCompsBuildInfo.join(",") + "," +
-          extCompsBuildInfo.join(",") + "]");
+      if (buildInfo == null) {
+        loadJsonInfo();
+      }
 
       for (int i = 0; i < buildInfo.length(); ++i) {
         JSONObject compJson = buildInfo.getJSONObject(i);
@@ -2878,6 +3009,80 @@ public final class Compiler {
         processConditionalInfo(compJson, type, targetInfo);
       }
     }
+  }
+
+  private void loadPermissionConstraints() throws JSONException {
+    if (!permissionConstraintsNeeded.isEmpty()) {
+      // Nothing to do here.
+      return;
+    }
+
+    for (int i = 0; i < buildInfo.length(); i++) {
+      JSONObject compJson = buildInfo.getJSONObject(i);
+      String type = compJson.getString("type");
+      if (!simpleCompTypes.contains(type) && !extCompTypes.contains(type)) {
+        // Component type not used.
+        continue;
+      }
+
+      JSONObject infoObject = compJson.optJSONObject(
+          ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+      if (infoObject == null) {
+        LOG.log(Level.INFO, "Component \"" + type + "\" does not specify "
+            + ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+        continue;
+      }
+
+      // Handle declared constraints
+      permissionConstraintsNeeded.put(type, processPermissionConstraints(infoObject));
+
+      // Handle conditional constraints
+      infoObject = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
+      if (infoObject == null) {
+        continue;
+      }
+      infoObject = infoObject.optJSONObject(
+          ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+      if (infoObject == null) {
+        continue;
+      }
+      Map<String, Map<String, Set<PermissionConstraint<?>>>> blockConstraints = new HashMap<>();
+      Iterator<?> it = infoObject.keys();
+      while (it.hasNext()) {
+        String blockName = (String) it.next();
+        JSONObject constraints = infoObject.getJSONObject(blockName);
+        blockConstraints.put(blockName, processPermissionConstraints(constraints));
+      }
+      conditionalPermissionConstraints.put(type, blockConstraints);
+    }
+  }
+
+  private Map<String, Set<PermissionConstraint<?>>> processPermissionConstraints(JSONObject src)
+      throws JSONException {
+    Map<String, Set<PermissionConstraint<?>>> neededConstraints = new HashMap<>();
+    Iterator<?> it = src.keys();
+    while (it.hasNext()) {
+      String permissionName = (String) it.next();
+      Set<PermissionConstraint<?>> constraintSet = neededConstraints.get(permissionName);
+      if (constraintSet == null) {
+        constraintSet = new HashSet<>();
+        neededConstraints.put(permissionName, constraintSet);
+      }
+      JSONObject constraints = src.getJSONObject(permissionName);
+      Iterator<?> it2 = constraints.keys();
+      while (it2.hasNext()) {
+        String attribute = (String) it2.next();
+        Object value = constraints.get(attribute);
+        if (value instanceof Number) {
+          constraintSet.add(new PermissionConstraint<>(permissionName, attribute,
+              ((Number) value).intValue()));
+        } else {
+          constraintSet.add(new PermissionConstraint<>(permissionName, attribute,
+              value.toString()));
+        }
+      }
+    }
+    return neededConstraints;
   }
 
   /**

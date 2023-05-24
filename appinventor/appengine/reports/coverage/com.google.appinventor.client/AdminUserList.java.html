@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminUserList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client</a> &gt; <span class="el_source">AdminUserList.java</span></div><h1>AdminUserList.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2015 MIT, All rights reserved
+// This code is unreleased
+
+package com.google.appinventor.client;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.admin.AdminComparators;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * A list of User elements used in the Admin interface
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller)
+ */
+public class AdminUserList extends Composite {
+<span class="nc" id="L44">  private enum SortField {</span>
+<span class="nc" id="L45">    NAME,</span>
+<span class="nc" id="L46">    VISITED,</span>
+  }
+<span class="nc" id="L48">  private enum SortOrder {</span>
+<span class="nc" id="L49">    ASCENDING,</span>
+<span class="nc" id="L50">    DESCENDING,</span>
+  }
+
+  // TODO: add these to OdeMessages.java
+
+  private final List&lt;AdminUser&gt; adminUsers;
+  private SortField sortField;
+  private SortOrder sortOrder;
+
+  // UI elements
+  private final Grid table;
+  private final Label nameSortIndicator;
+  private final Label visitedSortIndicator;
+
+  // Date Time Formatter
+<span class="nc" id="L65">  static final DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();</span>
+
+  // Callback to fill in table with user objects
+<span class="nc" id="L68">  private final OdeAsyncCallback&lt;List&lt;AdminUser&gt;&gt; searchCallback = new OdeAsyncCallback&lt;List&lt;AdminUser&gt;&gt;(</span>
+<span class="nc" id="L69">    &quot;Ooops&quot;) {</span>
+    @Override
+    public void onSuccess(List&lt;AdminUser&gt; newadminUsers) {
+<span class="nc" id="L72">      adminUsers.clear();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      for (AdminUser user : newadminUsers) {</span>
+<span class="nc" id="L74">        adminUsers.add(user);</span>
+<span class="nc" id="L75">      }</span>
+<span class="nc" id="L76">      refreshTable(true);</span>
+<span class="nc" id="L77">      refreshSortIndicators();</span>
+<span class="nc" id="L78">    }</span>
+
+  };
+
+  /**
+   * Creates a new AdminUserList
+   */
+<span class="nc" id="L85">  public AdminUserList() {</span>
+
+<span class="nc" id="L87">    adminUsers = new ArrayList&lt;AdminUser&gt;();</span>
+
+<span class="nc" id="L89">    sortField = SortField.NAME;</span>
+<span class="nc" id="L90">    sortOrder = SortOrder.ASCENDING;;</span>
+
+    // Initialize UI
+<span class="nc" id="L93">    table = new Grid(1, 4); // The table initially contains just the header row.</span>
+<span class="nc" id="L94">    table.addStyleName(&quot;ode-ProjectTable&quot;);</span>
+<span class="nc" id="L95">    table.setWidth(&quot;100%&quot;);</span>
+<span class="nc" id="L96">    table.setCellSpacing(0);</span>
+<span class="nc" id="L97">    nameSortIndicator = new Label(&quot;&quot;);</span>
+<span class="nc" id="L98">    visitedSortIndicator = new Label(&quot;&quot;);</span>
+<span class="nc" id="L99">    refreshSortIndicators();</span>
+<span class="nc" id="L100">    setHeaderRow();</span>
+
+<span class="nc" id="L102">    HorizontalPanel searchPanel = new HorizontalPanel();</span>
+<span class="nc" id="L103">    searchPanel.setSpacing(5);</span>
+<span class="nc" id="L104">    final LabeledTextBox searchText = new LabeledTextBox(&quot;Enter Email address (or partial)&quot;);</span>
+<span class="nc" id="L105">    Button searchButton = new Button(&quot;Search&quot;);</span>
+<span class="nc" id="L106">    searchPanel.add(searchText);</span>
+<span class="nc" id="L107">    searchPanel.add(searchButton);</span>
+<span class="nc" id="L108">    Button addUserButton = new Button(&quot;Add User&quot;);</span>
+<span class="nc" id="L109">    addUserButton.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc" id="L112">          addUpdateUserDialog(null);</span>
+<span class="nc" id="L113">        }</span>
+      });
+<span class="nc" id="L115">    searchPanel.add(addUserButton);</span>
+
+<span class="nc" id="L117">    searchButton.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc" id="L120">          Ode.getInstance().getAdminInfoService().searchUsers(searchText.getText(), searchCallback);</span>
+<span class="nc" id="L121">        }</span>
+      });
+
+<span class="nc" id="L124">    VerticalPanel panel = new VerticalPanel();</span>
+<span class="nc" id="L125">    panel.setWidth(&quot;100%&quot;);</span>
+
+<span class="nc" id="L127">    panel.add(searchPanel);</span>
+<span class="nc" id="L128">    panel.add(table);</span>
+<span class="nc" id="L129">    Button dismissButton = new Button(&quot;Dismiss&quot;);</span>
+<span class="nc" id="L130">    dismissButton.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc" id="L133">          Ode.getInstance().switchToDesignView();</span>
+<span class="nc" id="L134">        }</span>
+      });
+<span class="nc" id="L136">    panel.add(dismissButton);</span>
+<span class="nc" id="L137">    initWidget(panel);</span>
+<span class="nc" id="L138">  }</span>
+
+  /**
+   * Adds the header row to the table.
+   *
+   */
+  private void setHeaderRow() {
+<span class="nc" id="L145">    table.getRowFormatter().setStyleName(0, &quot;ode-ProjectHeaderRow&quot;);</span>
+
+<span class="nc" id="L147">    HorizontalPanel emailHeader = new HorizontalPanel();</span>
+<span class="nc" id="L148">    final Label emailHeaderLabel = new Label(&quot;User Email&quot;);</span>
+<span class="nc" id="L149">    emailHeaderLabel.addStyleName(&quot;ode-ProjectHeaderLabel&quot;);</span>
+<span class="nc" id="L150">    emailHeader.add(emailHeaderLabel);</span>
+<span class="nc" id="L151">    emailHeader.add(nameSortIndicator);</span>
+<span class="nc" id="L152">    table.setWidget(0, 0, emailHeader);</span>
+
+<span class="nc" id="L154">    HorizontalPanel uidHeader = new HorizontalPanel();</span>
+<span class="nc" id="L155">    final Label uidHeaderLabel = new Label(&quot;UID&quot;);</span>
+<span class="nc" id="L156">    uidHeaderLabel.addStyleName(&quot;ode-ProjectHeaderLabel&quot;);</span>
+<span class="nc" id="L157">    uidHeader.add(uidHeaderLabel);</span>
+<span class="nc" id="L158">    table.setWidget(0, 1, uidHeader);</span>
+
+<span class="nc" id="L160">    HorizontalPanel adminHeader = new HorizontalPanel();</span>
+<span class="nc" id="L161">    final Label adminHeaderLabel = new Label(&quot;isAdmin?&quot;);</span>
+<span class="nc" id="L162">    adminHeaderLabel.addStyleName(&quot;ode-ProjectHeaderLabel&quot;);</span>
+<span class="nc" id="L163">    adminHeader.add(adminHeaderLabel);</span>
+<span class="nc" id="L164">    table.setWidget(0, 2, adminHeader);</span>
+
+<span class="nc" id="L166">    HorizontalPanel visitedHeader = new HorizontalPanel();</span>
+<span class="nc" id="L167">    final Label visitedLabel = new Label(&quot;Visited&quot;);</span>
+<span class="nc" id="L168">    visitedLabel.addStyleName(&quot;ode-ProjectHeaderLabel&quot;);</span>
+<span class="nc" id="L169">    visitedHeader.add(visitedLabel);</span>
+<span class="nc" id="L170">    visitedHeader.add(visitedSortIndicator);</span>
+<span class="nc" id="L171">    table.setWidget(0, 3, visitedHeader);</span>
+
+<span class="nc" id="L173">    MouseDownHandler mouseDownHandler = new MouseDownHandler() {</span>
+      @Override
+      public void onMouseDown(MouseDownEvent e) {
+        SortField clickedSortField;
+<span class="nc bnc" id="L177" title="All 4 branches missed.">        if (e.getSource() == emailHeaderLabel || e.getSource() == nameSortIndicator) {</span>
+<span class="nc" id="L178">          clickedSortField = SortField.NAME;</span>
+<span class="nc bnc" id="L179" title="All 4 branches missed.">        } else if (e.getSource() == visitedLabel || e.getSource() == visitedSortIndicator) {</span>
+<span class="nc" id="L180">          clickedSortField = SortField.VISITED;</span>
+        } else {
+<span class="nc" id="L182">          return;</span>
+        }
+<span class="nc" id="L184">        changeSortOrder(clickedSortField);</span>
+<span class="nc" id="L185">      }</span>
+    };
+<span class="nc" id="L187">    emailHeaderLabel.addMouseDownHandler(mouseDownHandler);</span>
+<span class="nc" id="L188">    nameSortIndicator.addMouseDownHandler(mouseDownHandler);</span>
+<span class="nc" id="L189">    visitedLabel.addMouseDownHandler(mouseDownHandler);</span>
+<span class="nc" id="L190">    visitedSortIndicator.addMouseDownHandler(mouseDownHandler);</span>
+<span class="nc" id="L191">  }</span>
+
+  private void changeSortOrder(SortField clickedSortField) {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">    if (sortField != clickedSortField) {</span>
+<span class="nc" id="L195">      sortField = clickedSortField;</span>
+<span class="nc" id="L196">      sortOrder = SortOrder.ASCENDING;</span>
+    } else {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">      if (sortOrder == SortOrder.ASCENDING) {</span>
+<span class="nc" id="L199">        sortOrder = SortOrder.DESCENDING;</span>
+      } else {
+<span class="nc" id="L201">        sortOrder = SortOrder.ASCENDING;</span>
+      }
+    }
+<span class="nc" id="L204">    refreshTable(true);</span>
+<span class="nc" id="L205">  }</span>
+
+  private void refreshSortIndicators() {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    String text = (sortOrder == SortOrder.ASCENDING)</span>
+        ? &quot;\u25B2&quot;      // up-pointing triangle
+        : &quot;\u25BC&quot;;     // down-pointing triangle
+<span class="nc bnc" id="L211" title="All 3 branches missed.">    switch (sortField) {</span>
+      case NAME:
+<span class="nc" id="L213">        nameSortIndicator.setText(text);</span>
+<span class="nc" id="L214">        visitedSortIndicator.setText(&quot;&quot;);</span>
+<span class="nc" id="L215">        break;</span>
+    case VISITED:
+<span class="nc" id="L217">        nameSortIndicator.setText(&quot;&quot;);</span>
+<span class="nc" id="L218">        visitedSortIndicator.setText(text);</span>
+        break;
+    }
+<span class="nc" id="L221">  }</span>
+
+  private class UserWidgets {
+    final Label nameLabel;
+    final Label uidLabel;
+    final Label visitedLabel;
+    final Label isAdminLabel;
+
+<span class="nc" id="L229">    private UserWidgets(final AdminUser user) {</span>
+<span class="nc" id="L230">      nameLabel = new Label(user.getEmail());</span>
+<span class="nc" id="L231">      nameLabel.addStyleName(&quot;ode-ProjectNameLabel&quot;);</span>
+<span class="nc" id="L232">      uidLabel = new Label(user.getId());</span>
+<span class="nc" id="L233">      Date visited = user.getVisited();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">      if (visited == null) {</span>
+<span class="nc" id="L235">        visitedLabel = new Label(&quot;&lt;never&gt;&quot;);</span>
+      } else {
+<span class="nc" id="L237">        visitedLabel = new Label(dateTimeFormat.format(user.getVisited()));</span>
+      }
+<span class="nc" id="L239">      boolean isAdmin = user.getIsAdmin();</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">      if (!isAdmin) {</span>
+<span class="nc" id="L241">        isAdminLabel = new Label(&quot;No&quot;);</span>
+      } else {
+<span class="nc" id="L243">        isAdminLabel = new Label(&quot;Yes&quot;);</span>
+      }
+<span class="nc" id="L245">      nameLabel.addMouseDownHandler(new MouseDownHandler() {</span>
+          @Override
+          public void onMouseDown(MouseDownEvent e) {
+<span class="nc" id="L248">            addUpdateUserDialog(user);</span>
+<span class="nc" id="L249">          }</span>
+        });
+<span class="nc" id="L251">    }</span>
+  }
+
+  // TODO(user): This method was made public so it can be called
+  // directly from from Ode when the AdminUserList view is selected
+  // from another view.
+  public void refreshTable(boolean needToSort) {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">    if (needToSort) {</span>
+      // Sort the projects.
+      Comparator&lt;AdminUser&gt; comparator;
+<span class="nc bnc" id="L261" title="All 2 branches missed.">      switch (sortField) {</span>
+        default:
+        case NAME:
+<span class="nc bnc" id="L264" title="All 2 branches missed.">          comparator = (sortOrder == SortOrder.ASCENDING)</span>
+            ? AdminComparators.COMPARE_BY_NAME_ASCENDING
+            : AdminComparators.COMPARE_BY_NAME_DESCENDING;
+<span class="nc" id="L267">          break;</span>
+        case VISITED:
+<span class="nc bnc" id="L269" title="All 2 branches missed.">          comparator = (sortOrder == SortOrder.ASCENDING)</span>
+            ? AdminComparators.COMPARE_BY_VISTED_DATE_ASCENDING
+            : AdminComparators.COMPARE_BY_VISTED_DATE_DESCENDING;
+          break;
+      }
+<span class="nc" id="L274">      Collections.sort(adminUsers, comparator);</span>
+    }
+
+<span class="nc" id="L277">    refreshSortIndicators();</span>
+
+    // Refill the table.
+<span class="nc" id="L280">    table.resize(1 + adminUsers.size(), 4);</span>
+<span class="nc" id="L281">    int row = 1;</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">    for (AdminUser user : adminUsers) {</span>
+<span class="nc" id="L283">      UserWidgets uw = new UserWidgets(user);</span>
+<span class="nc" id="L284">      table.setWidget(row, 0, uw.nameLabel);</span>
+<span class="nc" id="L285">      table.setWidget(row, 1, uw.uidLabel);</span>
+<span class="nc" id="L286">      table.setWidget(row, 2, uw.isAdminLabel);</span>
+<span class="nc" id="L287">      table.setWidget(row, 3, uw.visitedLabel);</span>
+<span class="nc" id="L288">      row++;</span>
+<span class="nc" id="L289">    }</span>
+
+<span class="nc" id="L291">  }</span>
+
+  private void addUpdateUserDialog(final AdminUser user) {
+<span class="nc" id="L294">    boolean adding = true;</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">    if (user != null) {         // Adding a user</span>
+<span class="nc" id="L296">      adding = false;</span>
+    }
+<span class="nc" id="L298">    final DialogBox dialogBox = new DialogBox(false, true);</span>
+<span class="nc" id="L299">    dialogBox.setStylePrimaryName(&quot;ode-DialogBox&quot;);</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">    if (adding) {</span>
+<span class="nc" id="L301">      dialogBox.setText(&quot;Add User&quot;);</span>
+    } else {
+<span class="nc" id="L303">      dialogBox.setText(&quot;Update User&quot;);</span>
+    }
+<span class="nc" id="L305">    dialogBox.setGlassEnabled(true);</span>
+<span class="nc" id="L306">    dialogBox.setAnimationEnabled(true);</span>
+<span class="nc" id="L307">    final HTML message = new HTML(&quot;&quot;);</span>
+<span class="nc" id="L308">    message.setStyleName(&quot;DialogBox-message&quot;);</span>
+<span class="nc" id="L309">    final FlexTable userInfo = new FlexTable(); // Holds the username and password labels and boxes</span>
+<span class="nc" id="L310">    final Label userNameLabel = new Label(&quot;User Name&quot;);</span>
+<span class="nc" id="L311">    final TextBox userName = new TextBox();</span>
+<span class="nc" id="L312">    final Label passwordLabel = new Label(&quot;Password&quot;);</span>
+<span class="nc" id="L313">    final Label passwordLabel2 = new Label(&quot;Password (again)&quot;);</span>
+<span class="nc" id="L314">    final TextBox passwordBox = new TextBox();</span>
+    // We switch to the ones below if the hidePasswordCheckbox is selected
+    // otherwise we use the passwordBox above for the password
+<span class="nc" id="L317">    final PasswordTextBox passwordBox1 = new PasswordTextBox();</span>
+<span class="nc" id="L318">    final PasswordTextBox passwordBox2 = new PasswordTextBox();</span>
+<span class="nc" id="L319">    userInfo.setWidget(0, 0, userNameLabel);</span>
+<span class="nc" id="L320">    userInfo.setWidget(0, 1, userName);</span>
+<span class="nc" id="L321">    userInfo.setWidget(1, 0, passwordLabel);</span>
+<span class="nc" id="L322">    userInfo.setWidget(1, 1, passwordBox);</span>
+
+<span class="nc" id="L324">    final CheckBox isAdminBox = new CheckBox(&quot;Is Admin?&quot;);</span>
+<span class="nc" id="L325">    final CheckBox hidePasswordCheckbox = new CheckBox(&quot;Hide Password&quot;);</span>
+<span class="nc" id="L326">    final HorizontalPanel checkboxPanel = new HorizontalPanel();</span>
+<span class="nc" id="L327">    checkboxPanel.add(isAdminBox);</span>
+<span class="nc" id="L328">    checkboxPanel.add(hidePasswordCheckbox);</span>
+
+<span class="nc" id="L330">    VerticalPanel vPanel = new VerticalPanel();</span>
+<span class="nc" id="L331">    vPanel.add(message);</span>
+<span class="nc" id="L332">    vPanel.add(userInfo);</span>
+<span class="nc" id="L333">    vPanel.add(checkboxPanel);</span>
+<span class="nc" id="L334">    HorizontalPanel buttonPanel = new HorizontalPanel();</span>
+<span class="nc" id="L335">    Button okButton = new Button(&quot;OK&quot;);</span>
+<span class="nc" id="L336">    buttonPanel.add(okButton);</span>
+<span class="nc" id="L337">    hidePasswordCheckbox.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc bnc" id="L340" title="All 2 branches missed.">          if (hidePasswordCheckbox.isChecked()) { // We just asked to mask passwords</span>
+<span class="nc" id="L341">            userInfo.setWidget(1, 0, passwordLabel);</span>
+<span class="nc" id="L342">            userInfo.setWidget(1, 1, passwordBox1);</span>
+<span class="nc" id="L343">            userInfo.setWidget(2, 0, passwordLabel2);</span>
+<span class="nc" id="L344">            userInfo.setWidget(2, 1, passwordBox2);</span>
+          } else {              // Unchecked, passwords in the clear
+<span class="nc" id="L346">            userInfo.setWidget(1, 0, passwordLabel);</span>
+<span class="nc" id="L347">            userInfo.setWidget(1, 1, passwordBox);</span>
+<span class="nc" id="L348">            userInfo.removeRow(2);</span>
+          }
+<span class="nc" id="L350">        }</span>
+      });
+<span class="nc" id="L352">    okButton.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc" id="L355">          String password = passwordBox.getText();</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">          if (hidePasswordCheckbox.isChecked()) {</span>
+<span class="nc" id="L357">            password = passwordBox1.getText();</span>
+<span class="nc" id="L358">            String checkPassword = passwordBox2.getText();</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">            if (!checkPassword.equals(password)) {</span>
+<span class="nc" id="L360">              message.setHTML(&quot;&lt;font color=red&gt;Passwords do not match.&lt;/font&gt;&quot;);</span>
+<span class="nc" id="L361">              return;</span>
+            }
+          }
+<span class="nc" id="L364">          String email = userName.getText();</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">          if (email.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L366">            message.setHTML(&quot;&lt;font color=red&gt;You Must Supply a user name (email address)&lt;/font&gt;&quot;);</span>
+<span class="nc" id="L367">            return;</span>
+          } else {
+            // Work!!
+<span class="nc" id="L370">            AdminUser nuser = user;</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">            if (nuser == null) {</span>
+<span class="nc" id="L372">              nuser = new AdminUser(null, email, email, false, isAdminBox.isChecked(), null);</span>
+            } else {
+<span class="nc" id="L374">              nuser.setIsAdmin(isAdminBox.isChecked());</span>
+<span class="nc" id="L375">              nuser.setEmail(email);</span>
+            }
+<span class="nc" id="L377">            nuser.setPassword(password);</span>
+<span class="nc" id="L378">            Ode.getInstance().getAdminInfoService().storeUser(nuser,</span>
+<span class="nc" id="L379">              new OdeAsyncCallback&lt;Void&gt; (&quot;Oops&quot;) {</span>
+                @Override
+                public void onSuccess(Void v) {
+<span class="nc" id="L382">                  dialogBox.hide();</span>
+<span class="nc" id="L383">                }</span>
+                @Override
+                public void onFailure(Throwable error) {
+<span class="nc" id="L386">                  OdeLog.xlog(error);</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">                  if (error instanceof AdminInterfaceException) {</span>
+<span class="nc" id="L388">                    ErrorReporter.reportError(error.getMessage());</span>
+                  } else {
+<span class="nc" id="L390">                    super.onFailure(error);</span>
+                  }
+<span class="nc" id="L392">                  dialogBox.hide();</span>
+<span class="nc" id="L393">                }</span>
+              });
+          }
+<span class="nc" id="L396">        }</span>
+      });
+<span class="nc" id="L398">    Button cancelButton = new Button(&quot;Cancel&quot;);</span>
+<span class="nc" id="L399">    buttonPanel.add(cancelButton);</span>
+<span class="nc" id="L400">    cancelButton.addClickListener(new ClickListener() {</span>
+        @Override
+        public void onClick(Widget sender) {
+<span class="nc" id="L403">          dialogBox.hide();</span>
+<span class="nc" id="L404">        }</span>
+      });
+<span class="nc" id="L406">    vPanel.add(buttonPanel);</span>
+<span class="nc" id="L407">    dialogBox.setWidget(vPanel);</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">    if (!adding) {</span>
+<span class="nc" id="L409">      isAdminBox.setChecked(user.getIsAdmin());</span>
+<span class="nc" id="L410">      userName.setText(user.getEmail());</span>
+    }
+    // switchUserPanel -- Put up a button to permit us to
+    // switch to the selected user, but readonly
+<span class="nc bnc" id="L414" title="All 2 branches missed.">    if (!adding) {</span>
+<span class="nc" id="L415">      HorizontalPanel switchUserPanel = new HorizontalPanel();</span>
+<span class="nc" id="L416">      Button switchButton = new Button(&quot;Switch to This User&quot;);</span>
+<span class="nc" id="L417">      switchButton.addClickListener(new ClickListener() {</span>
+          @Override
+          public void onClick(Widget sender) {
+<span class="nc" id="L420">            Ode.getInstance().setReadOnly();  // Must make sure we are read only.</span>
+                                              // When we call reloadWindow (below) the onClosing
+                                              // handler in Ode will be called. It will attempt
+                                              // to save the project settings. But by the time we
+                                              // return below, we have switched accounts, so the settings
+                                              // will be saved in the wrong account(!!). So we set the
+                                              // read-only flag now!
+<span class="nc" id="L427">            Ode.getInstance().getAdminInfoService().switchUser(user, new OdeAsyncCallback&lt;Void&gt;(&quot;Oops&quot;) {</span>
+                @Override
+                public void onSuccess(Void v) {
+<span class="nc" id="L430">                  Ode.getInstance().reloadWindow(false);</span>
+<span class="nc" id="L431">                }</span>
+              });
+<span class="nc" id="L433">          }</span>
+        });
+<span class="nc" id="L435">      switchUserPanel.add(switchButton);</span>
+<span class="nc" id="L436">      vPanel.add(switchUserPanel);</span>
+    }
+<span class="nc" id="L438">    dialogBox.center();</span>
+<span class="nc" id="L439">    dialogBox.show();</span>
+<span class="nc" id="L440">  }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

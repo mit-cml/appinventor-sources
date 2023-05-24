@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CsvParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server.util</a> &gt; <span class="el_source">CsvParser.java</span></div><h1>CsvParser.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.util;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/**
+ *
+ * Note: this file was copied, more or less verbatim, from:
+ *   java/com/google/collaboration/tables/util/CsvParser.java
+ * by Debby Wallach on 7/20/2010.
+ *
+ * More efficient re-implementation of CsvQuotedParser. This is about 5X faster on large files. A
+ * CSV cell can be quoted or unquoted. A quoted cell escapes quotes by doubling them. Whitespace
+ * between the closing quote and the delimiter is ignored. An unquoted cell ends at the
+ * delimiter. The delimiter is comma or newline (\n). A carriage return (\r) before the newline is
+ * part of the delimiter.
+ *
+ * Quotes are handled subtly differently in CsvQuotedParser. There, quoted content can appear in
+ * unquoted cells. This is not
+ * &lt;a href=&quot;http://en.wikipedia.org/wiki/Comma-separated_values&quot;&gt;standard&lt;/a&gt; and hampers error
+ * reporting. Consider an unquoted cell value {@code 17&quot; screen}. By allowing quoted content inside
+ * cells the parser has to keep looking for the matching end quote. By restricting quotes to cell
+ * boundaries many accidental quotes can be reported immediately.
+ *
+ */
+public final class CsvParser implements Iterator&lt;List&lt;String&gt;&gt; {
+
+  /**
+   * Escaped quotes in quoted cells are doubled.
+   */
+<span class="fc" id="L45">  private static final Pattern ESCAPED_QUOTE_PATTERN = Pattern.compile(&quot;\&quot;\&quot;&quot;);</span>
+
+  /**
+   * Character buffer for cell parsing. The size limits the largest parsable cell. Specifically, if
+   * an unquoted cell and its trailing delimiter exceed this limit, the cell will be split at the
+   * limit. Moreover, a quoted large cell will cause a syntax error as when we reach end-of-file
+   * without reading a closing quote.
+   */
+<span class="fc" id="L53">  private final char[] buf = new char[10240];</span>
+
+  private final Reader in;
+
+  /**
+   * The beginning of the currently parsed cell in {@code buf}. Everything before it is discarded
+   * during compaction. The beginning includes the quote for a quoted cell.
+   */
+  private int pos;
+
+  /**
+   * The end of valid content in {@code buf}.
+   */
+  private int limit;
+
+  /**
+   * Indicates whether more content might be in the reader.
+   */
+<span class="fc" id="L71">  private boolean opened = true;</span>
+
+  /**
+   * Length of a successfully parsed cell. For a quoted cell this includes the closing quote. Set
+   * whenever parsing of a cell succeeds. The value should be ignored when cell parsing fails, but
+   * is set to -1 to help debugging.
+   */
+<span class="fc" id="L78">  private int cellLength = -1;</span>
+
+  /**
+   * Length of a successfully parsed cell including its trailing delimiter. Set whenever parsing of
+   * a cell with trailing delimiter succeeds. The value should be ignored when cell parsing fails,
+   * but is set to -1 to help debugging.
+   */
+<span class="fc" id="L85">  private int delimitedCellLength = -1;</span>
+
+  /**
+   * Last exception encountered. Saved here to properly implement {@code Iterator}.
+   */
+  private IOException lastException;
+
+  private long previouslyRead;
+
+<span class="fc" id="L94">  public CsvParser(InputStream in) {</span>
+<span class="fc" id="L95">    this.in = new InputStreamReader(in, Charsets.UTF_8);</span>
+<span class="fc" id="L96">  }</span>
+
+  public void skip(long charPosition) throws IOException {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">    while (charPosition &gt; 0) {</span>
+<span class="nc" id="L100">      int n = in.read(buf, 0, Math.min((int) charPosition, buf.length));</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">      if (n &lt; 0) break;</span>
+<span class="nc" id="L102">      previouslyRead += n;</span>
+<span class="nc" id="L103">      charPosition -= n;</span>
+<span class="nc" id="L104">    }</span>
+<span class="nc" id="L105">  }</span>
+
+  public boolean hasNext() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (limit == 0) {</span>
+<span class="fc" id="L109">      fill();</span>
+    }
+<span class="pc bpc" id="L111" title="2 of 6 branches missed.">    return (pos &lt; limit || indexAfterCompactionAndFilling(pos) &lt; limit) &amp;&amp; lookingAtCell();</span>
+  }
+
+  public List&lt;String&gt; next() {
+<span class="fc" id="L115">    List&lt;String&gt; result = Lists.newArrayList();</span>
+    boolean trailingComma;
+    boolean haveMoreData;
+    do {
+      // Invariant: pos &lt; limit &amp;&amp; lookingAtCell() from hasNext() or previous iteration
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">      if (buf[pos] != '&quot;') {</span>
+<span class="fc" id="L121">        result.add(new String(buf, pos, cellLength));</span>
+      } else {
+<span class="nc" id="L123">        String cell = new String(buf, pos + 1, cellLength - 2);</span>
+<span class="nc" id="L124">        result.add(ESCAPED_QUOTE_PATTERN.matcher(cell).replaceAll(&quot;\&quot;&quot;));</span>
+      }
+<span class="pc bpc" id="L126" title="2 of 4 branches missed.">      trailingComma = delimitedCellLength &gt; 0 &amp;&amp; buf[pos + delimitedCellLength - 1] == ',';</span>
+<span class="fc" id="L127">      pos += delimitedCellLength;</span>
+<span class="fc" id="L128">      delimitedCellLength = cellLength = -1;</span>
+<span class="pc bpc" id="L129" title="1 of 4 branches missed.">      haveMoreData = pos &lt; limit || indexAfterCompactionAndFilling(pos) &lt; limit;</span>
+<span class="pc bpc" id="L130" title="5 of 6 branches missed.">    } while (trailingComma &amp;&amp; haveMoreData &amp;&amp; lookingAtCell());</span>
+<span class="fc" id="L131">    return result;</span>
+  }
+
+  public long getCharPosition() {
+<span class="nc" id="L135">    return previouslyRead + pos;</span>
+  }
+
+  /**
+   * Compacts and fills the buffer. Returns the possibly shifted index for the given index.
+   */
+  private int indexAfterCompactionAndFilling(int i) {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">    if (pos &gt; 0) {</span>
+<span class="fc" id="L143">      i = compact(i);</span>
+    }
+<span class="fc" id="L145">    fill();</span>
+<span class="fc" id="L146">    return i;</span>
+  }
+
+  /**
+   * Moves the contents between {@code pos} and {@code limit} to the beginning of {@code buf}.
+   * Returns the new position of the given index.
+   */
+  private int compact(int i) {
+<span class="fc" id="L154">    int oldPos = pos;</span>
+<span class="fc" id="L155">    pos = 0;</span>
+<span class="fc" id="L156">    int toMove = limit - oldPos;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    if (toMove &gt; 0) {</span>
+<span class="nc" id="L158">      System.arraycopy(buf, oldPos, buf, 0, toMove);</span>
+    }
+<span class="fc" id="L160">    limit -= oldPos;</span>
+<span class="fc" id="L161">    previouslyRead += oldPos;</span>
+<span class="fc" id="L162">    return i - oldPos;</span>
+  }
+
+  /**
+   * Fills {@code buf} from the reader.
+   */
+  private void fill() {
+<span class="fc" id="L169">    int toFill = buf.length - limit;</span>
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">    while (opened &amp;&amp; toFill &gt; 0) {</span>
+      try {
+<span class="fc" id="L172">        int n = in.read(buf, limit, toFill);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (n == -1) {</span>
+<span class="fc" id="L174">          opened = false;</span>
+        } else {
+<span class="fc" id="L176">          limit += n;</span>
+<span class="fc" id="L177">          toFill -= n;</span>
+        }
+<span class="nc" id="L179">      } catch (IOException e) {</span>
+<span class="nc" id="L180">        lastException = e;</span>
+<span class="nc" id="L181">        opened = false;</span>
+<span class="pc" id="L182">      }</span>
+    }
+<span class="fc" id="L184">  }</span>
+
+  private boolean lookingAtCell() {
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">    return (buf[pos] == '&quot;' ? findUnescapedEndQuote(pos + 1) : findUnquotedCellEnd(pos));</span>
+  }
+
+  private boolean findUnescapedEndQuote(int i) {
+<span class="nc bnc" id="L191" title="All 4 branches missed.">    for (; i &lt; limit || (i = indexAfterCompactionAndFilling(i)) &lt; limit; i++) {</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">      if (buf[i] == '&quot;') {</span>
+<span class="nc" id="L193">        i = checkedIndex(i + 1);</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">        if (i == limit || buf[i] != '&quot;') {</span>
+<span class="nc" id="L195">          cellLength = i - pos;</span>
+<span class="nc" id="L196">          return findDelimOrEnd(i);</span>
+        }
+      }
+    }
+<span class="nc" id="L200">    lastException = new IOException(&quot;Syntax Error. unclosed quoted cell&quot;);</span>
+<span class="nc" id="L201">    return false;</span>
+  }
+
+  /**
+   * Determines that we are looking at the end of a cell, tolerating some whitespace.  Called after
+   * consuming the end quote of a quoted cell.
+   */
+  private boolean findDelimOrEnd(int i) {
+<span class="nc bnc" id="L209" title="All 4 branches missed.">    for (; i &lt; limit || (i = indexAfterCompactionAndFilling(i)) &lt; limit; i++) {</span>
+<span class="nc bnc" id="L210" title="All 4 branches missed.">      switch (buf[i]) {</span>
+        case ' ':
+        case '\t':
+          // whitespace after closing quote
+<span class="nc" id="L214">          continue;</span>
+        case '\r':
+          // In standard CSV \r\n terminates a cell. However, Macintosh uses one \r instead of \n.
+<span class="nc" id="L217">          int j = checkedIndex(i + 1);</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">          delimitedCellLength = (buf[j] == '\n' ? checkedIndex(j + 1) : j) - pos;</span>
+<span class="nc" id="L219">          return true;</span>
+        case ',':
+        case '\n':
+<span class="nc" id="L222">          delimitedCellLength = (checkedIndex(i + 1) - pos);</span>
+<span class="nc" id="L223">          return true;</span>
+        default:
+<span class="nc" id="L225">          lastException = new IOException(</span>
+              &quot;Syntax Error: non-whitespace between closing quote and delimiter or end&quot;);
+<span class="nc" id="L227">          return false;</span>
+      }
+    }
+<span class="nc" id="L230">    delimitedCellLength = (limit - pos);</span>
+<span class="nc" id="L231">    return true;</span>
+  }
+
+  /**
+   * Returns the given index, after trying to read its corresponding buffered character. The
+   * resulting index will be shifted if compaction was triggered.
+   */
+  private int checkedIndex(int i) {
+<span class="nc bnc" id="L239" title="All 2 branches missed.">    return i &lt; limit ? i : indexAfterCompactionAndFilling(i);</span>
+  }
+
+  private boolean findUnquotedCellEnd(int i) {
+<span class="pc bpc" id="L243" title="3 of 4 branches missed.">    for (; i &lt; limit || (i = indexAfterCompactionAndFilling(i)) &lt; limit; i++) {</span>
+<span class="pc bpc" id="L244" title="2 of 4 branches missed.">      switch (buf[i]) {</span>
+        case ',':
+        case '\n':
+<span class="fc" id="L247">          cellLength = i - pos;</span>
+<span class="fc" id="L248">          delimitedCellLength = cellLength + 1;</span>
+<span class="fc" id="L249">          return true;</span>
+        case '\r':
+          // In standard CSV \r\n terminates a cell. However, Macintosh uses one \r instead of \n.
+<span class="nc" id="L252">          cellLength = i - pos;</span>
+<span class="nc" id="L253">          int j = checkedIndex(i + 1);</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">          delimitedCellLength = (buf[j] == '\n' ? checkedIndex(j + 1) : j) - pos;</span>
+<span class="nc" id="L255">          return true;</span>
+        case '&quot;':
+<span class="nc" id="L257">          lastException = new IOException(&quot;Syntax Error: quote in unquoted cell&quot;);</span>
+<span class="nc" id="L258">          return false;</span>
+      }
+    }
+<span class="nc" id="L261">    delimitedCellLength = cellLength = (limit - pos);</span>
+<span class="nc" id="L262">    return true;</span>
+  }
+
+  public void remove() {
+<span class="nc" id="L266">    throw new UnsupportedOperationException();</span>
+  }
+
+  public void throwAnyProblem() throws IOException {
+<span class="nc bnc" id="L270" title="All 2 branches missed.">    if (lastException != null) {</span>
+<span class="nc" id="L271">      throw lastException;</span>
+    }
+<span class="nc" id="L273">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

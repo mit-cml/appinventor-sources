@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalUser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.server</a> &gt; <span class="el_source">LocalUser.java</span></div><h1>LocalUser.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server;
+
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.UserInfoProvider;
+
+/**
+ * A singleton providing the UserInfoProvider interface information.
+ *
+ * @author kerr@google.com (Debby Wallach)
+ */
+<span class="fc" id="L17">public class LocalUser implements UserInfoProvider {</span>
+
+<span class="fc" id="L19">  private ThreadLocal&lt;User&gt; user = new ThreadLocal&lt;User&gt;();</span>
+
+  /**
+   * Returns the singleton LocalUser instance.
+   *
+   * @return  localUser instance
+   */
+  public static LocalUser getInstance() {
+<span class="fc" id="L27">    return LocalUserInstanceHolder.INSTANCE;</span>
+  }
+
+  private static class LocalUserInstanceHolder {
+    private LocalUserInstanceHolder() {} // not to be instantiated
+<span class="fc" id="L32">    private static final LocalUser INSTANCE = new LocalUser();</span>
+  }
+
+  public void set(User newUser) {
+<span class="fc" id="L36">    user.set(newUser);</span>
+<span class="fc" id="L37">  }</span>
+
+  @Override
+  public User getUser() throws UnsupportedOperationException {
+    try {
+<span class="nc" id="L42">      return user.get().copy();</span>
+<span class="nc" id="L43">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L45">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  // UserInfoProvider implementation
+
+  @Override
+  public String getUserId() throws UnsupportedOperationException {
+    try {
+<span class="fc" id="L54">      return user.get().getUserId();</span>
+<span class="nc" id="L55">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L57">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  @Override
+  public String getUserEmail() throws UnsupportedOperationException {
+    try {
+<span class="fc" id="L64">      return user.get().getUserEmail();</span>
+<span class="nc" id="L65">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L67">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  @Override
+  public boolean getUserTosAccepted() throws UnsupportedOperationException {
+    try {
+<span class="nc" id="L74">      return user.get().getUserTosAccepted();</span>
+<span class="nc" id="L75">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L77">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  @Override
+  public boolean getIsAdmin() {
+    try {
+<span class="nc" id="L84">      return user.get().getIsAdmin();</span>
+<span class="nc" id="L85">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L87">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  @Override
+  public boolean isReadOnly() {
+<span class="nc" id="L93">    return user.get().isReadOnly();</span>
+  }
+
+  @Override
+  public void setReadOnly(boolean value) {
+<span class="nc" id="L98">    user.get().setReadOnly(value);</span>
+<span class="nc" id="L99">  }</span>
+
+  @Override
+  public String getSessionId() {
+    try {
+<span class="nc" id="L104">      return user.get().getSessionId();</span>
+<span class="nc" id="L105">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L107">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+    }
+  }
+
+  @Override
+  public void setSessionId(String sessionId) {
+    try {
+<span class="fc" id="L114">      user.get().setSessionId(sessionId);</span>
+<span class="nc" id="L115">    } catch (NullPointerException e) {</span>
+      // This should never happen, but just in case...
+<span class="nc" id="L117">      throw new UnsupportedOperationException(&quot;User field should have been initialized.&quot;);</span>
+<span class="fc" id="L118">    }</span>
+<span class="fc" id="L119">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

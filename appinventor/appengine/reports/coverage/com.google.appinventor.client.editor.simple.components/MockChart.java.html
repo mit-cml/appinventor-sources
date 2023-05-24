@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockChart.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.google.appinventor.client.editor.simple.components</a> &gt; <span class="el_source">MockChart.java</span></div><h1>MockChart.java</h1><pre class="source lang-java linenums">// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.simple.components;
+
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+
+import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+
+import com.google.appinventor.components.common.ChartType;
+import com.google.appinventor.components.common.ComponentConstants;
+
+import java.util.List;
+
+import org.pepstock.charba.client.resources.EmbeddedResources;
+import org.pepstock.charba.client.resources.ResourcesType;
+
+/**
+ * Central Chart component available to use for the users.
+ * Supports multiple types and handling all property changes.
+ *
+ * &lt;p&gt;The class handles using the correct Chart view based on
+ * the current selected Chart type, hiding/showing properties according
+ * to the selected Chart type and contains functionality related to
+ * checking compatibility with attaching Chart Data objects to the Chart.
+ *
+ * &lt;p&gt;The class extends from McokContainer due to the Chart component
+ * holding ChartData components as children.
+ */
+public final class MockChart extends MockContainer {
+  public static final String TYPE = &quot;Chart&quot;;
+
+  private static final String PROPERTY_NAME_TYPE = &quot;Type&quot;;
+  private static final String PROPERTY_NAME_DESCRIPTION = &quot;Description&quot;;
+  private static final String PROPERTY_NAME_LEGEND_ENABLED = &quot;LegendEnabled&quot;;
+  private static final String PROPERTY_NAME_GRID_ENABLED = &quot;GridEnabled&quot;;
+  private static final String PROPERTY_NAME_PIE_RADIUS = &quot;PieRadius&quot;;
+  private static final String PROPERTY_NAME_LABELS_FROM_STRING = &quot;LabelsFromString&quot;;
+
+  static {
+<span class="nc" id="L45">    ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);</span>
+<span class="nc" id="L46">  }</span>
+
+  private MockChartView&lt;?, ?, ?&gt; chartView;
+
+  // Legal values for type are defined in
+  // com.google.appinventor.components.common.ComponentConstants.java.
+  private ChartType type;
+
+  // Keep track whether the children of the Mock Chart have been
+  // reattached. The reattachment has to happen only once, since the Data
+  // Series are part of the Chart object itself.
+<span class="nc" id="L57">  private boolean childrenReattached = false;</span>
+
+  /**
+   * Creates a new instance of a visible component.
+   *
+   * @param editor editor of source file the component belongs to
+   */
+  public MockChart(SimpleEditor editor) {
+<span class="nc" id="L65">    super(editor, TYPE, images.chart(), new MockChartLayout());</span>
+
+    // Since the Mock Chart component is not a container in a normal
+    // sense (attached components should not be visible), the Chart Widget
+    // is added to the root panel, and the root panel itself is initialized.
+    // This is done to ensure that Mock Chart Data components can be dragged
+    // onto the Chart itself, rather than outside the Chart component.
+<span class="nc" id="L72">    rootPanel.setStylePrimaryName(&quot;ode-SimpleMockComponent&quot;);</span>
+
+    // Since default type property does not invoke the setter,
+    // initially, the Chart's type setter should be invoked
+    // with the default value.
+<span class="nc" id="L77">    setTypeProperty(&quot;0&quot;);</span>
+
+<span class="nc" id="L79">    initComponent(rootPanel);</span>
+<span class="nc" id="L80">  }</span>
+
+  @Override
+  protected void onAttach() {
+<span class="nc" id="L84">    super.onAttach();</span>
+
+    // The Children of the Mock Chart have not yet been attached
+    // (this happens upon initializing the Chart which has child components)
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    if (!childrenReattached) {</span>
+      // Attach all children MockComponents
+<span class="nc bnc" id="L90" title="All 2 branches missed.">      for (MockComponent child : children) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (child instanceof MockChartData) {</span>
+          // Re-add Data Components to the Mock Chart
+<span class="nc" id="L93">          ((MockChartData) child).addToChart(MockChart.this);</span>
+        }
+<span class="nc" id="L95">      }</span>
+
+      // Update the state of children to reattached
+<span class="nc" id="L98">      childrenReattached = true;</span>
+    }
+<span class="nc" id="L100">  }</span>
+  
+  /**
+   * Sets the type of the Chart to the newly specified value.
+   *
+   * @param value new Chart type
+   */
+  private void setTypeProperty(String value) {
+    // Update type
+<span class="nc" id="L109">    type = ChartType.fromUnderlyingValue(Integer.parseInt(value));</span>
+
+    // Keep track whether this is the first time that
+    // the Chart view is being initialized
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    boolean chartViewExists = (chartView != null);</span>
+
+    // Remove the current Chart Widget from the root panel (if present)
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    if (chartViewExists) {</span>
+<span class="nc" id="L117">      rootPanel.remove(chartView.getChartWidget());</span>
+    }
+
+    // Create a new Chart view based on the supplied type
+<span class="nc" id="L121">    chartView = createMockChartViewFromType(type);</span>
+
+    // Add the Chart Widget to the Root Panel (as the first widget)
+<span class="nc" id="L124">    rootPanel.insert(chartView.getChartWidget(), 0);</span>
+
+    // Chart view already existed before, so the new Chart view must
+    // be reinitialized.
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    if (chartViewExists) {</span>
+<span class="nc" id="L129">      reinitializeChart();</span>
+    }
+<span class="nc" id="L131">  }</span>
+
+  /**
+   * Sets the pie radius of the Chart if the current type is
+   * a Pie Chart, otherwise does nothing.
+   *
+   * @param newValue new Pie Radius value (as String)
+   */
+  private void setPieRadiusProperty(String newValue) {
+    // Check if the Chart View is a Pie Chart to
+    // change the value
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (chartView instanceof MockPieChartView) {</span>
+      // Parse the value to an integer
+<span class="nc" id="L144">      int value = Integer.parseInt(newValue);</span>
+
+      // Change the radius of the Pie Chart &amp; re-draw the Chart
+<span class="nc" id="L147">      ((MockPieChartView) chartView).setPieRadius(value);</span>
+<span class="nc" id="L148">      chartView.getChartWidget().draw();</span>
+    }
+<span class="nc" id="L150">  }</span>
+
+  /**
+   * Reacts to the LegendEnabled property change by changing
+   * the Mock Chart accordingly.
+   *
+   * @param newValue new value of the property (String)
+   */
+  private void setLegendEnabledProperty(String newValue) {
+<span class="nc" id="L159">    boolean enabled = Boolean.parseBoolean(newValue);</span>
+<span class="nc" id="L160">    chartView.setLegendEnabled(enabled);</span>
+
+<span class="nc" id="L162">    chartView.getChartWidget().draw(); // Re-draw the Chart to take effect</span>
+<span class="nc" id="L163">  }</span>
+
+  /**
+   * Reacts to the LabelsFromString property change by
+   * changing the Labels of the Mock Chart accordingly,
+   * provided that the Mock Chart has an X Axis.
+   *
+   * @param labels CSV formatted String representing the labels
+   *               to apply to the X axis.
+   */
+  private void setLabelsFromStringProperty(String labels) {
+    // Base case: Empty List of Labels should be an empty array.
+    // Store the LabelsFromStrings property parsed result
+    String[] labelArray;
+<span class="nc bnc" id="L177" title="All 2 branches missed.">    if (labels.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L178">      labelArray = new String[0];</span>
+    } else {
+      // TODO: Use a CSV split method that supports escaping commas, etc?
+<span class="nc" id="L181">      labelArray = labels.split(&quot;,&quot;);</span>
+    }
+
+    // Only update the labels to the Chart if the Chart is of type
+    // MockAxisChartView, since the labels apply to the X Axis.
+<span class="nc bnc" id="L186" title="All 2 branches missed.">    if (chartView instanceof MockAxisChartView) {</span>
+<span class="nc" id="L187">      ((MockAxisChartView&lt;?, ?, ?&gt;) chartView).updateLabels(labelArray);</span>
+<span class="nc" id="L188">      refreshChart();</span>
+    }
+<span class="nc" id="L190">  }</span>
+
+  /**
+   * Reacts to the GridEnabled property change by changing
+   * the Mock Chart accordingly.
+   *
+   * @param newValue new value of the property (String)
+   */
+  private void setGridEnabledProperty(String newValue) {
+    // The property should only be reflected on the Chart
+    // if the Chart View is an Axis Chart View.
+<span class="nc bnc" id="L201" title="All 2 branches missed.">    if (chartView instanceof MockAxisChartView) {</span>
+<span class="nc" id="L202">      boolean enabled = Boolean.parseBoolean(newValue);</span>
+<span class="nc" id="L203">      ((MockAxisChartView&lt;?, ?, ?&gt;) chartView).setGridEnabled(enabled);</span>
+
+<span class="nc" id="L205">      chartView.getChartWidget().draw(); // Re-draw the Chart to take effect</span>
+    }
+<span class="nc" id="L207">  }</span>
+
+  /**
+   * Changes Chart property visibilities depending on the
+   * current type of the Chart.
+   *
+   * &lt;p&gt;Should be invoked after the Type property is changed.
+   */
+  private void changeChartPropertyVisibilities() {
+    // Handle Pie Chart property hiding
+<span class="nc" id="L217">    boolean showPieChartProperties = chartView instanceof MockPieChartView;</span>
+<span class="nc" id="L218">    showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);</span>
+
+    // Handle Axis Chart property hiding
+<span class="nc" id="L221">    boolean showAxisChartProperties = chartView instanceof MockAxisChartView;</span>
+<span class="nc" id="L222">    showProperty(PROPERTY_NAME_GRID_ENABLED, showAxisChartProperties);</span>
+<span class="nc" id="L223">    showProperty(PROPERTY_NAME_LABELS_FROM_STRING, showAxisChartProperties);</span>
+
+    // If the component is currently selected, re-select it to refresh
+    // the Properties panel. isSelected() should only be invoked when
+    // the view is in a container, hence the additional check here.
+<span class="nc bnc" id="L228" title="All 4 branches missed.">    if (getContainer() != null &amp;&amp; isSelected()) {</span>
+<span class="nc" id="L229">      onSelectedChange(true);</span>
+    }
+<span class="nc" id="L231">  }</span>
+
+  /**
+   * Creates and returns a new MockChartView object based on the type
+   * (integer) provided.
+   *
+   * @param type Chart type (integer representation)
+   * @return new MockChartView object instance
+   */
+  private MockChartView&lt;?, ?, ?&gt; createMockChartViewFromType(ChartType type) {
+<span class="nc bnc" id="L241" title="All 6 branches missed.">    switch (type) {</span>
+      case Line:
+<span class="nc" id="L243">        return new MockLineChartView();</span>
+      case Scatter:
+<span class="nc" id="L245">        return new MockScatterChartView();</span>
+      case Area:
+<span class="nc" id="L247">        return new MockAreaChartView();</span>
+      case Bar:
+<span class="nc" id="L249">        return new MockBarChartView();</span>
+      case Pie:
+<span class="nc" id="L251">        return new MockPieChartView();</span>
+      default:
+        // Invalid argument
+<span class="nc" id="L254">        throw new IllegalArgumentException(&quot;Invalid Chart type specified: &quot; + type);</span>
+    }
+  }
+
+  /**
+   * Reinitializes the Chart view by reattaching all the Data
+   * components and setting back all the properties.
+   */
+  private void reinitializeChart() {
+    // Re-set all Chart properties to take effect on
+    // the newly instantiated Chart View
+<span class="nc bnc" id="L265" title="All 2 branches missed.">    for (EditableProperty property : properties) {</span>
+      // The Type property should not be re-set, since
+      // this method call is part of the Type setting process.
+<span class="nc bnc" id="L268" title="All 2 branches missed.">      if (!property.getName().equals(PROPERTY_NAME_TYPE)) {</span>
+<span class="nc" id="L269">        onPropertyChange(property.getName(), property.getValue());</span>
+      }
+<span class="nc" id="L271">    }</span>
+
+<span class="nc" id="L273">    chartView.getChartWidget().draw();</span>
+
+    // Re-attach all children MockChartData components.
+    // This is needed since the properties of the MockChart
+    // are set after the Data components are attached to
+    // the Chart, and thus they need to be re-attached.
+<span class="nc bnc" id="L279" title="All 2 branches missed.">    for (MockComponent child : children) {</span>
+<span class="nc" id="L280">      ((MockChartData) child).addToChart(this);</span>
+<span class="nc" id="L281">    }</span>
+<span class="nc" id="L282">  }</span>
+
+  @Override
+  public int getPreferredWidth() {
+<span class="nc" id="L286">    return ComponentConstants.CHART_PREFERRED_WIDTH;</span>
+  }
+
+  @Override
+  public int getPreferredHeight() {
+<span class="nc" id="L291">    return ComponentConstants.CHART_PREFERRED_HEIGHT;</span>
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+<span class="nc" id="L296">    super.onPropertyChange(propertyName, newValue);</span>
+
+<span class="nc bnc" id="L298" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_TYPE)) {</span>
+<span class="nc" id="L299">      setTypeProperty(newValue);</span>
+<span class="nc" id="L300">      changeChartPropertyVisibilities();</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {</span>
+<span class="nc" id="L302">      chartView.setBackgroundColor(newValue);</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {</span>
+<span class="nc" id="L304">      chartView.setTitle(newValue);</span>
+<span class="nc" id="L305">      chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_LEGEND_ENABLED)) {</span>
+<span class="nc" id="L307">      setLegendEnabledProperty(newValue);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_GRID_ENABLED)) {</span>
+<span class="nc" id="L309">      setGridEnabledProperty(newValue);</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {</span>
+<span class="nc" id="L311">      setPieRadiusProperty(newValue);</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">    } else if (propertyName.equals(PROPERTY_NAME_LABELS_FROM_STRING)) {</span>
+<span class="nc" id="L313">      setLabelsFromStringProperty(newValue);</span>
+    }
+<span class="nc" id="L315">  }</span>
+
+  /**
+   * Creates Data components from the contents of the specified MockDataFile component.
+   * The Data components are then attached as children to the Chart and the Source property
+   * of each individual Data component is set accordingly.
+   *
+   * @param dataFileSource MockDataFile component to instantiate components from
+   */
+  public void addDataFile(MockDataFile dataFileSource) {
+<span class="nc" id="L325">    List&lt;String&gt; columnNames = dataFileSource.getColumnNames();</span>
+
+<span class="nc bnc" id="L327" title="All 2 branches missed.">    for (String column : columnNames) {</span>
+      // Create a new MockChartData2D component and attach it to the Chart
+      // TODO: More data component support
+<span class="nc" id="L330">      MockChartData2D data = new MockChartData2D(editor);</span>
+<span class="nc" id="L331">      addComponent(data);</span>
+<span class="nc" id="L332">      data.addToChart(this);</span>
+
+      // Change the properties of the instantiated data component
+<span class="nc" id="L335">      data.changeProperty(&quot;DataFileYColumn&quot;, column);</span>
+<span class="nc" id="L336">      data.changeProperty(&quot;Label&quot;, column);</span>
+<span class="nc" id="L337">      data.changeProperty(&quot;Source&quot;, dataFileSource.getName());</span>
+<span class="nc" id="L338">    }</span>
+<span class="nc" id="L339">  }</span>
+
+  /**
+   * Creates a corresponding MockChartDataModel that
+   * represents the current Chart type.
+   *
+   * @return new MockChartDataModel instance
+   */
+  public MockChartDataModel&lt;?, ?&gt; createDataModel() {
+<span class="nc" id="L348">    return chartView.createDataModel();</span>
+  }
+
+  /**
+   * Refreshes the Chart view.
+   */
+  public void refreshChart() {
+<span class="nc" id="L355">    chartView.getChartWidget().update();</span>
+<span class="nc" id="L356">  }</span>
+
+  /**
+   * Returns the Mock Component of the Drag Source.
+   *
+   * @param source DragSource instance
+   * @return MockComponent instance
+   */
+  private MockComponent getComponentFromDragSource(DragSource source) {
+<span class="nc" id="L365">    MockComponent component = null;</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">    if (source instanceof MockComponent) {</span>
+<span class="nc" id="L367">      component = (MockComponent) source;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">    } else if (source instanceof SimplePaletteItem) {</span>
+<span class="nc" id="L369">      component = (MockComponent) source.getDragWidget();</span>
+    }
+
+<span class="nc" id="L372">    return component;</span>
+  }
+
+  @Override
+  protected boolean acceptableSource(DragSource source) {
+<span class="nc" id="L377">    MockComponent component = getComponentFromDragSource(source);</span>
+
+<span class="nc bnc" id="L379" title="All 2 branches missed.">    return (component instanceof MockChartData2D)</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">        || (isComponentAcceptableDataFileSource(component));</span>
+  }
+
+  /**
+   * Checks whether the component is an acceptable DataFile drag source for the Chart.
+   * The criterion is that the Component must be of type DataFile and is
+   * already instantiated in a container.
+   *
+   * @param component Component to check
+   * @return true if the component is a DataFile that is an acceptable source
+   */
+  private boolean isComponentAcceptableDataFileSource(MockComponent component) {
+<span class="nc bnc" id="L392" title="All 2 branches missed.">    return component instanceof MockDataFile</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        &amp;&amp; component.getContainer() != null; // DataFile must already be in it's own container</span>
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+    // Pie Radius property should be invisible by default, since
+    // the default Chart Type is a Line Chart
+<span class="nc bnc" id="L400" title="All 2 branches missed.">    if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">      return type == ChartType.Pie;</span>
+    }
+
+<span class="nc" id="L404">    return super.isPropertyVisible(propertyName);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
