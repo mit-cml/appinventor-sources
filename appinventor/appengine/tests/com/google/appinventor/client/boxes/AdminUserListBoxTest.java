@@ -1,5 +1,7 @@
 package com.google.appinventor.client.boxes;
 
-public class AdminUserListBoxTest {
+import junit.framework.TestCase;
+
+public class AdminUserListBoxTest extends TestCase {
 
 }

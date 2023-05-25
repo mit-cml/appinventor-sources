@@ -215,7 +215,7 @@
              fork="true"
              dir="${basedir}"
              forkmode="@{aij-forkmode}"
-             haltonfailure="yes"
+             haltonfailure="no"
              maxmemory="2000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
