@@ -377,7 +377,7 @@ Blockly.unprefixName = function (name) {
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
 Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
-  var options = new Blockly.Options({
+  var workspace = Blockly.inject(container, {
     'readOnly': readOnly,
     'rtl': rtl,
     'collapse': true,
@@ -389,20 +389,6 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': true, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1}
   });
-
-  var subContainer = goog.dom.createDom('div', 'injectionDiv');
-  subContainer.setAttribute('tabindex', '0');  // make injection div focusable
-  container.appendChild(subContainer);
-  var svg = Blockly.createDom_(subContainer, options);
-  svg.setAttribute('width', '100%');
-  svg.setAttribute('height', '100%');
-
-  // Create surfaces for dragging things. These are optimizations
-  // so that the broowser does not repaint during the drag.
-  var blockDragSurface = new Blockly.BlockDragSurfaceSvg(subContainer);
-  var workspaceDragSurface = new Blockly.workspaceDragSurfaceSvg(subContainer);
-
-  var workspace = new Blockly.WorkspaceSvg(options, blockDragSurface, workspaceDragSurface);
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.rendered = false;
