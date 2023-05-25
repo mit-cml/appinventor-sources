@@ -328,7 +328,7 @@ AI.Events.StartArrangeBlocks = function(workspaceId) {
   this.recordUndo = Blockly.Events.recordUndo;
   this.workspaceId = workspaceId;
 };
-goog.inherits(AI.Events.StartArrangeBlocks, Blockly.Events.Ui);
+goog.inherits(AI.Events.StartArrangeBlocks, Blockly.Events.UiBase);
 
 AI.Events.StartArrangeBlocks.prototype.type = AI.Events.BLOCKS_ARRANGE_START;
 
@@ -373,7 +373,7 @@ AI.Events.EndArrangeBlocks = function(workspaceId, type, layout) {
   this.recordUndo = Blockly.Events.recordUndo;
   this.workspaceId = workspaceId;
 };
-goog.inherits(AI.Events.EndArrangeBlocks, Blockly.Events.Ui);
+goog.inherits(AI.Events.EndArrangeBlocks, Blockly.Events.UiBase);
 
 AI.Events.EndArrangeBlocks.prototype.type = AI.Events.BLOCKS_ARRANGE_END;
 
