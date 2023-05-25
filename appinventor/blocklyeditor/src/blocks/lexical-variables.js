@@ -509,7 +509,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     }
   },
   renameBound: function (boundSubstitution, freeSubstitution) {
-    var oldMutation = Blockly.Xml.domToText(this.mutationToDom());
+    var oldMutation = Blockly.utils.xml.domToText(this.mutationToDom());
     var localNames = this.declaredNames();
     for (var i = 0; i < localNames.length; i++) {
       // This is LET semantics, not LET* semantics, and needs to change!
@@ -519,7 +519,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     this.renameVars(paramSubstitution);
     var newFreeSubstitution = freeSubstitution.remove(localNames).extend(paramSubstitution);
     Blockly.LexicalVariable.renameFree(this.getInputTargetBlock(this.bodyInputName), newFreeSubstitution);
-    var newMutation = Blockly.Xml.domToText(this.mutationToDom());
+    var newMutation = Blockly.utils.xml.domToText(this.mutationToDom());
     if (Blockly.Events.isEnabled()) {
       Blockly.Events.fire(new Blockly.Events.Change(this, 'mutation', null, oldMutation, newMutation));
     }

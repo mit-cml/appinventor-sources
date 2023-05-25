@@ -63,10 +63,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   function makeGeneric(block, opt_replacementDom) {
     var instanceName = block.instanceName;
     var mutation = block.mutationToDom();
-    var oldMutation = Blockly.Xml.domToText(mutation);
+    var oldMutation = Blockly.utils.xml.domToText(mutation);
     mutation.setAttribute('is_generic', 'true');
     mutation.removeAttribute('instance_name');
-    var newMutation = Blockly.Xml.domToText(mutation);
+    var newMutation = Blockly.utils.xml.domToText(mutation);
     block.domToMutation(mutation);
     block.initSvg();  // block shape may have changed
     block.render();
@@ -79,9 +79,9 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
           '<mutation component_type="' + block.typeName + '" instance_name="' + instanceName + '"></mutation>' +
           '<field name="COMPONENT_SELECTOR">' + instanceName + '</field>' +
           '</block></xml>';
-        opt_replacementDom = Blockly.Xml.textToDom(compBlockXml).firstElementChild;
+        opt_replacementDom = Blockly.utils.xml.textToDom(compBlockXml).firstElementChild;
       }
-      var replacement = Blockly.Xml.domToBlock(opt_replacementDom, block.workspace);
+      var replacement = Blockly.utils.xml.domToBlock(opt_replacementDom, block.workspace);
       replacement.initSvg();
       block.getInput('COMPONENT').connection.connect(replacement.outputConnection);
     }
@@ -106,10 +106,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         var instanceName = compBlock.instanceName;
         compBlock.dispose(true);
         var mutation = block.mutationToDom();
-        var oldMutation = Blockly.Xml.domToText(mutation);
+        var oldMutation = Blockly.utils.xml.domToText(mutation);
         mutation.setAttribute('instance_name', instanceName);
         mutation.setAttribute('is_generic', 'false');
-        var newMutation = Blockly.Xml.domToText(mutation);
+        var newMutation = Blockly.utils.xml.domToText(mutation);
         block.domToMutation(mutation);
         block.initSvg();  // block shape may have changed
         block.render();
@@ -170,7 +170,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         var varBlockXml = '<xml><block type="lexical_variable_get">' +
           '<mutation><eventparam name="component"></eventparam></mutation>' +
           '<field name="VAR">' + intlName + '</field></block></xml>';
-        var varBlockDom = Blockly.Xml.textToDom(varBlockXml).firstElementChild;
+        var varBlockDom = Blockly.utils.xml.textToDom(varBlockXml).firstElementChild;
         makeGeneric(block);  // Do this first so 'component' is defined.
         block.walk(function(block) {
             if ((block.type === 'component_method' || block.type === 'component_set_get') &&

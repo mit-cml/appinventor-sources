@@ -45,7 +45,7 @@ Blockly.Util.xml.blockTypeToXML = function(blockType, opt_attributes) {
     xmlString += Blockly.Util.xml.mutatorAttributesXmlString(opt_attributes);
   }
   xmlString += '</block></xml>';
-  return Blockly.Xml.textToDom(xmlString);
+  return Blockly.utils.xml.textToDom(xmlString);
 }
 
 /**
@@ -118,7 +118,7 @@ Blockly.Util.xml.procedureCallerBlockString = function(procDeclBlock) {
   var mutationDom = procDeclBlock.mutationToDom();
   // Decl doesn't have name attribute, but caller does
   mutationDom.setAttribute('name', procName); 
-  blockString += Blockly.Xml.domToText(mutationDom);
+  blockString += Blockly.utils.xml.domToText(mutationDom);
   blockString += '</block>';
   return blockString;
 };
@@ -131,7 +131,7 @@ Blockly.Util.xml.procedureCallerBlockString = function(procDeclBlock) {
  */
 Blockly.Util.xml.valueInputXml = function(name) {
   var xmlString = '<xml><value name="' + name + '"></value></xml>';
-  return Blockly.Xml.textToDom(xmlString);
+  return Blockly.utils.xml.textToDom(xmlString);
 }
 
 /**

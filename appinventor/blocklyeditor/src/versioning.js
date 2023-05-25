@@ -95,7 +95,7 @@ Blockly.Versioning.upgradeComponentMethods = function(dom) {
 Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, opt_workspace) {
   opt_workspace = opt_workspace || Blockly.mainWorkspace;
   var preUpgradeFormJsonObject = JSON.parse(preUpgradeFormJsonString);
-  var dom = Blockly.Xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
+  var dom = Blockly.utils.xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
   dom = Blockly.Versioning.upgradeComponentMethods(dom);
   var didUpgrade = false;
 
@@ -278,7 +278,7 @@ Blockly.Versioning.ensureDom = function (blocksRep) {
     return blocksRep; // already a dom
   } else if (Blockly.Versioning.isWorkspace(blocksRep)) {
     Blockly.Versioning.log("Blockly.Versioning.ensureDom: converting Blockly.mainWorkspace to dom");
-    return Blockly.Xml.workspaceToDom(blocksRep);
+    return Blockly.utils.xml.workspaceToDom(blocksRep);
   } else {
     throw "Blockly.Versioning.ensureDom: blocksRep is neither dom nor workspace -- " + blocksRep;
   }
@@ -303,7 +303,7 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep, opt_workspace) {
     var workspace = opt_workspace || Blockly.mainWorkspace;
     Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.mainWorkspace");
     workspace.clear(); // Remove any existing blocks before we add new ones.
-    Blockly.Xml.domToWorkspace(blocksRep, workspace);
+    Blockly.utils.xml.domToWorkspace(blocksRep, workspace);
     // update top block positions in event of save before rendering.
     var blocks = workspace.getTopBlocks();
     for (var i = 0; i < blocks.length; i++) {
@@ -1454,9 +1454,9 @@ Blockly.Versioning.firstChildWithTagName = function (elem, tag) {
  *
  */
 Blockly.Versioning.xmlBlockTextToDom = function(xmlBlockText) {
-  // To make Blockly.Xml.textToDom happy, must provide it with top-level XML tag
+  // To make Blockly.utils.xml.textToDom happy, must provide it with top-level XML tag
   var topLevelXmlString = "<xml>" + xmlBlockText + "</xml>";
-  var topLevelDom = Blockly.Xml.textToDom(topLevelXmlString);
+  var topLevelDom = Blockly.utils.xml.textToDom(topLevelXmlString);
   // Now extract single block dom from top-level dom
   var children = goog.dom.getChildren(topLevelDom);
   if (children.length != 1) {

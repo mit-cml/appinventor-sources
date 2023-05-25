@@ -461,8 +461,8 @@ PNG.prototype.toBlob = function() {
  */
 Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
-  xml.appendChild(Blockly.Xml.blockToDom(block, true));
-  var code = Blockly.Xml.domToText(xml);
+  xml.appendChild(Blockly.utils.xml.blockToDom(block, true));
+  var code = Blockly.utils.xml.domToText(xml);
   svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
     var img = new Image();
     img.src = uri;
@@ -528,9 +528,9 @@ Blockly.importPngAsBlock = function(workspace, xy, png) {
     var xmlChunk = png.getCodeChunk();
     if (xmlChunk) {
       var xmlText = new TextDecoder().decode(xmlChunk.data);
-      var xml = /** @type {!Element} */ Blockly.Xml.textToDom(xmlText);
+      var xml = /** @type {!Element} */ Blockly.utils.xml.textToDom(xmlText);
       xml = xml.firstElementChild;
-      var block = /** @type {Blockly.BlockSvg} */ Blockly.Xml.domToBlock(xml, workspace);
+      var block = /** @type {Blockly.BlockSvg} */ Blockly.utils.xml.domToBlock(xml, workspace);
       block.moveBy(xy.x, xy.y);
       block.initSvg();
       workspace.requestRender(block);

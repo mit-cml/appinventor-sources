@@ -549,16 +549,16 @@ Blockly.Drawer.prototype.blockTypeToXML = function(blockType, mutatorAttributes)
 
     switch (blockType) {
       case 'procedures_callnoreturn':
-        return Blockly.Xml.textToDom(
+        return Blockly.utils.xml.textToDom(
             utils.procedureCallersXMLString(false, this.workspace_));
       case 'procedures_callreturn':
-        return Blockly.Xml.textToDom(
+        return Blockly.utils.xml.textToDom(
             utils.procedureCallersXMLString(true, this.workspace_));
       default:
         var xmlString = Blockly.Drawer.getDefaultXMLString(
             blockType, mutatorAttributes);
         if (xmlString != null) {
-          return Blockly.Xml.textToDom(xmlString);
+          return Blockly.utils.xml.textToDom(xmlString);
         } else {
           return utils.blockTypeToXML(blockType, mutatorAttributes);
         }

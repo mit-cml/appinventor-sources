@@ -571,8 +571,8 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
 
             xmlString += '>';
             xmlString += '</mutation></block></xml>';
-            var xml = Blockly.Xml.textToDom(xmlString);
-            block = Blockly.Xml.domToBlock(xml.firstChild, self.workspace_);
+            var xml = Blockly.utils.xml.textToDom(xmlString);
+            block = Blockly.utils.xml.domToBlock(xml.firstChild, self.workspace_);
           } else {
             block = self.workspace_.newBlock(blockToCreateName);
             block.initSvg(); //Need to init the block before doing anything else

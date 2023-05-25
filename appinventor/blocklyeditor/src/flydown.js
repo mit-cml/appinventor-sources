@@ -213,8 +213,8 @@ Blockly.Flydown.prototype.placeNewBlock_ = function(originBlock) {
   xyOld.y += scrollY / scale - scrollY;
 
   // Create the new block by cloning the block in the flyout (via XML).
-  var xml = Blockly.Xml.blockToDom(originBlock);
-  var block = Blockly.Xml.domToBlock(xml, targetWorkspace);
+  var xml = Blockly.utils.xml.blockToDom(originBlock);
+  var block = Blockly.utils.xml.domToBlock(xml, targetWorkspace);
   var svgRootNew = block.getSvgRoot();
   if (!svgRootNew) {
     throw 'block is not rendered.';

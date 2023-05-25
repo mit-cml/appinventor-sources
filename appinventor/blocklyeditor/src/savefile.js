@@ -74,10 +74,10 @@ Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
 */
 Blockly.SaveFile.get = function(prettify, opt_workspace) {
   var workspace = opt_workspace || Blockly.mainWorkspace;
-  var xml = Blockly.Xml.workspaceToDom(workspace, false);
+  var xml = Blockly.utils.xml.workspaceToDom(workspace, false);
   var element = goog.dom.createElement('yacodeblocks');
   element.setAttribute('ya-version',top.YA_VERSION);
   element.setAttribute('language-version',top.BLOCKS_VERSION);
   xml.appendChild(element);
-  return prettify ? Blockly.Xml.domToPrettyText(xml) : Blockly.Xml.domToText(xml);
+  return prettify ? Blockly.utils.xml.domToPrettyText(xml) : Blockly.utils.xml.domToText(xml);
 };

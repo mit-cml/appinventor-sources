@@ -264,7 +264,7 @@ Blockly.Backpack.prototype.pasteBackpack = function() {
     try {
       Blockly.Events.setGroup(true);
       for (var i = 0; i < bp_contents.length; i++) {
-        var xml = Blockly.Xml.textToDom(bp_contents[i]);
+        var xml = Blockly.utils.xml.textToDom(bp_contents[i]);
         var blk = xml.childNodes[0];
         var arr = [];
         p.checkValidBlockTypes(blk, arr);
@@ -341,8 +341,8 @@ Blockly.Backpack.prototype.addToBackpack = function(block, store) {
   // Copy is made of the expanded block.
   var isCollapsed = block.collapsed_;
   block.setCollapsed(false);
-  var xmlBlock = Blockly.Xml.blockToDom(block);
-  Blockly.Xml.deleteNext(xmlBlock);
+  var xmlBlock = Blockly.utils.xml.blockToDom(block);
+  Blockly.utils.xml.deleteNext(xmlBlock);
   // Encode start position in XML.
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
@@ -355,7 +355,7 @@ Blockly.Backpack.prototype.addToBackpack = function(block, store) {
     if (!bp_contents) {
       bp_contents = [];
     }
-    bp_contents.push("<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>");
+    bp_contents.push("<xml>" + Blockly.utils.xml.domToText(xmlBlock) + "</xml>");
     // We technically do not need to set the contents here since the contents are manipulated by
     // reference, but separating the setting from modifying allows us to use different, non-in-memory
     // storage in the future.
@@ -478,7 +478,7 @@ Blockly.Backpack.prototype.openBackpack = function(e) {
       var len = backpack.length;
       var newBackpack = [];
       for (var i = 0; i < len; i++) {
-        newBackpack[i] = Blockly.Versioning.upgradeComponentMethods(Blockly.Xml.textToDom(backpack[i]).firstChild);
+        newBackpack[i] = Blockly.Versioning.upgradeComponentMethods(Blockly.utils.xml.textToDom(backpack[i]).firstChild);
       }
       Blockly.hideChaff();
       p.flyout_.show(newBackpack);
