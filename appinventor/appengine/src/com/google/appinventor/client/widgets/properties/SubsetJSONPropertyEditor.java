@@ -676,7 +676,6 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   private native JavaScriptObject getBlockDict()/*-{
     var blockCatDict = {};
     for (var blockName in $wnd.Blockly.Blocks) {
-      if (!$wnd.Blockly.Blocks.hasOwnProperty(blockName)) continue;
       var block = $wnd.Blockly.Blocks[blockName];
       // Component blocks are handled in the component tree and don't behave the same as the others
       if (block.category && (block.category !== "Component") && (typeof block.typeblock !== 'undefined')) {
