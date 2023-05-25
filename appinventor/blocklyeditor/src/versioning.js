@@ -303,7 +303,7 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep, opt_workspace) {
     var workspace = opt_workspace || Blockly.mainWorkspace;
     Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.mainWorkspace");
     workspace.clear(); // Remove any existing blocks before we add new ones.
-    Blockly.utils.xml.domToWorkspace(blocksRep, workspace);
+    Blockly.Xml.domToWorkspace(blocksRep, workspace);
     // update top block positions in event of save before rendering.
     var blocks = workspace.getTopBlocks();
     for (var i = 0; i < blocks.length; i++) {
