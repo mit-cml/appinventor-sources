@@ -26,6 +26,7 @@
  *     this field again.  Should be unique to the host block.
  * @return {!Blockly.Input} The input being append to (to allow chaining).
  */
+/*
 Blockly.Input.prototype.appendField = function(field, opt_name) {
   // Empty string, Null or undefined generates no field, unless field is named.
   if (!field && !opt_name) {
@@ -33,7 +34,7 @@ Blockly.Input.prototype.appendField = function(field, opt_name) {
   }
   // Generate a FieldLabel when given a plain text field.
   if (goog.isString(field)) {
-    field = new Blockly.FieldLabel(/** @type {string} */ (field));
+    field = new Blockly.FieldLabel(/** @type {string} * / (field));
   }
   field.setSourceBlock(this.sourceBlock_);
   if (this.sourceBlock_.rendered) {
@@ -64,6 +65,7 @@ Blockly.Input.prototype.appendField = function(field, opt_name) {
   }
   return this;
 };
+*/
 
 /**
  * Sets whether this input is visible or not.

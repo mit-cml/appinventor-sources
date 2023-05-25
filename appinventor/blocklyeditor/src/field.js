@@ -19,6 +19,7 @@ goog.provide('AI.Blockly.Field');
  * even if the newValue is the same as the old value.
  * @param {string} newValue The new value.
  */
+/*
 Blockly.Field.prototype.setValue = function(newValue) {
   if (newValue === null) {
     return null;  // No change if null;
@@ -30,3 +31,4 @@ Blockly.Field.prototype.setValue = function(newValue) {
         this.sourceBlock_, 'field', this.name, oldValue, newValue));
   }
 };
+*/

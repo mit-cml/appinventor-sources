@@ -14,7 +14,7 @@ goog.provide('AI.Blockly.Trashcan');
 
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument'); // lyn's instrumentation code
-
+/*
 Blockly.Trashcan.prototype.position = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -34,3 +34,4 @@ Blockly.Trashcan.prototype.position = (function(func) {
     return instrumentedFunc;
   }
 })(Blockly.Trashcan.prototype.position);
+*/

@@ -125,37 +125,3 @@ Blockly.svgResize = function(workspace) {
   }
   mainWorkspace.resize();
 };
-
-/**
- * Wrap Blockly's onKeyDown_ method with a check to ensure that the Blockly editor is active and
- * focused before sending it the keydown event. This prevents users from accidentally deleting
- * blocks on the workspace if they switch back to the Designer view and press the delete key.
- */
-Blockly.onKeyDown_ = (function(f) {
-  if (f.isWrapped) {
-    return f;
-  } else {
-    var wrappedFunc = function(e) {
-      var target = null;
-      // Is the target of the event the injection div?
-      if (e.target.tagName.toLowerCase() == 'div' && e.target.className == 'injectionDiv') {
-        target = e.target;
-      } else {
-        // see if the injection div is an ancestor of the current target element
-        // (i.e. it is in the BlocklyPanel)
-        var parent = e.target;
-        while (parent.parentNode && parent.tagName.toLowerCase() != 'div'
-            && parent.className != 'injectionDiv') {
-          parent = parent.parentNode;
-        }
-        target = parent;
-      }
-      // check that the main workspace's parent is the target injection div (if any)
-      if (Blockly.mainWorkspace.getParentSvg().parentNode == target) {
-        f.call(this, e);
-      }
-    };
-    f.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.onKeyDown_);

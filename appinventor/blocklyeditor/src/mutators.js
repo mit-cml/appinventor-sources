@@ -128,27 +128,6 @@ Blockly.saveConnections = function(containerBlock) {
   }
 }
 
-Blockly.Mutator.prototype.createEditor_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var wrappedFunc = function() {
-      var result = func.call(this);
-
-      //when mutator bubble is clicked, do not close mutator
-      Blockly.bindEvent_(this.svgDialog_, 'mousedown', this.svgDialog_,
-          function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-          });
-
-      return result;
-    };
-    wrappedFunc.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.Mutator.prototype.createEditor_);
-
 if (Blockly.Instrument.useRenderDown) {
   /**
    * Override's the render function in the mutator to take advantage of the

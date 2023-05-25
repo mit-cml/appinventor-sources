@@ -108,63 +108,6 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
   }
 })(Blockly.BlockSvg.prototype.onMouseDown_);
 
-// Adds backpack detection on mouse move
-Blockly.BlockSvg.prototype.onMouseMove_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var wrappedFunc = function(e) {
-      func.call(this, e);
-      if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
-        if (Blockly.getMainWorkspace().hasBackpack()) {
-          Blockly.getMainWorkspace().getBackpack().onMouseMove(e);
-        }
-      }
-    };
-    wrappedFunc.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.BlockSvg.prototype.onMouseMove_);
-
-/**
- * Handle a mouse-up anywhere in the SVG pane.  Is only registered when a
- * block is clicked.  We can't use mouseUp on the block since a fast-moving
- * cursor can briefly escape the block before it catches up.
- * @param {!Event} e Mouse up event.
- * @private
- */
-Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
-  if (func.isInstrumented) {
-    return func;
-  } else {
-    var instrumentedFunc = function(e) {
-      var start = new Date().getTime();
-      Blockly.Instrument.initializeStats('onMouseUp');
-      Blockly.getMainWorkspace().resetArrangements();
-      try {
-        var result = func.call(this, e);
-        if (Blockly.getMainWorkspace().hasBackpack() &&
-            Blockly.getMainWorkspace().getBackpack().isOpen) {
-          var backpack = Blockly.getMainWorkspace().getBackpack();
-          goog.Timer.callOnce(backpack.close, 100, backpack);
-          backpack.addToBackpack(Blockly.selected, true);
-          backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
-        }
-        return result;
-      } finally {
-        if (! Blockly.Instrument.avoidRenderWorkspaceInMouseUp) {
-          Blockly.mainWorkspace.render();
-        }
-        var stop = new Date().getTime();
-        Blockly.Instrument.stats.totalTime = stop - start;
-        Blockly.Instrument.displayStats('onMouseUp');
-      }
-    };
-    instrumentedFunc.isInstrumented = true;
-    return instrumentedFunc;
-  }
-})(Blockly.BlockSvg.prototype.onMouseUp_);
-
 /**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
