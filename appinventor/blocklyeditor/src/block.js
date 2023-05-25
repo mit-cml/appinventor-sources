@@ -217,3 +217,5 @@ Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
   }
   return text;
 };
+
+Blockly.Block.prototype.appendIndentedValueInput = Blockly.Block.prototype.appendValueInput;
