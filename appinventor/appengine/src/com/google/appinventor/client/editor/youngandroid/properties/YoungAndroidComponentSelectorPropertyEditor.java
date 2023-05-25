@@ -94,6 +94,11 @@ public final class YoungAndroidComponentSelectorPropertyEditor
       public void setSelectedIndex(int index) {
         componentsList.setSelectedIndex(index);
       }
+
+      @Override
+      public void renameItem(int index, String value) {
+        componentsList.setItemText(index, value);
+      }
     });
 
     // At this point, the editor hasn't finished loading.

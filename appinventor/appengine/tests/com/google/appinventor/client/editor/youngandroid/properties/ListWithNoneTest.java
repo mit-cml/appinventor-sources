@@ -40,6 +40,11 @@ public class ListWithNoneTest extends TestCase {
     public void setSelectedIndex(int index) {
       selectedIndex = index;
     }
+
+    @Override
+    public void renameItem(int index, String value) {
+      items.set(index, value);
+    }
   };
 
   private static final String NONE_DISPLAY_ITEM = "Nada";

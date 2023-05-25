@@ -337,6 +337,16 @@ public final class AssetManager implements ProjectChangeListener {
     }
   }
 
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+    if (DEBUG)
+      Ode.CLog("AssetManager: got onProjectNodeRenamed for node " + node.getFileId()
+              + " and project "  + project.getProjectId() + ", current project is " + projectId);
+    if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
+      loadAssets(project.getProjectId());
+    }
+  }
+
   private static native void exportMethodsToJavascript() /*-{
     $wnd.AssetManager_refreshAssets =
       $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Lcom/google/gwt/core/client/JavaScriptObject;));

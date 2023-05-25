@@ -199,4 +199,8 @@ public interface ProjectServiceAsync {
    */
   void log(String message, AsyncCallback<Void> callback);
 
+  /**
+   * @see ProjectService#renameFile(String, long, String, String)
+   */
+  void renameFile(String sessionId, long projectId, String oldFileId, String newFileId, AsyncCallback<Long> callback);
 }

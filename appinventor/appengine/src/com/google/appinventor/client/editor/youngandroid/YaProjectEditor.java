@@ -268,6 +268,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+
+  }
+
+  @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
     String formName = null;
     if (node instanceof YoungAndroidFormNode) {

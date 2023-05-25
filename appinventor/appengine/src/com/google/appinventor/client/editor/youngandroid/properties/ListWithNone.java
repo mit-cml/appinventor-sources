@@ -21,6 +21,7 @@ final class ListWithNone {
     String getItem(int index);
     void removeItem(int index);
     void setSelectedIndex(int index);
+    void renameItem(int index, String value);
   }
 
   private final ListBoxWrapper listBoxWrapper;
@@ -101,6 +102,24 @@ final class ListWithNone {
     }
     throw new IndexOutOfBoundsException("" + index);
   }
+
+  /**
+   * rename item at the specified index.
+   *
+   * @param index the index
+   * @param value the value
+   * @throws IndexOutOfBoundsException if the index is out of range
+   */
+  void renameItem(int index, String value) throws IndexOutOfBoundsException {
+    if (index >= 0 && index < values.size()) {
+      values.set(index, value);
+      listBoxWrapper.renameItem(index, value);
+      return;
+    }
+    throw new IndexOutOfBoundsException("" + index);
+  }
+
+
 
   /**
    * Returns the index of the given value or -1 if the value isn't in the list.

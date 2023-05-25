@@ -41,4 +41,12 @@ public interface ProjectChangeListener {
    * @param node  project node removed
    */
   void onProjectNodeRemoved(Project project, ProjectNode node);
+
+  /**
+   * Invoked when a project node is renamed
+   *
+   * @param node project node renamed
+   * @param oldName previous node name
+   */
+  void onProjectNodeRenamed(Project project, ProjectNode node, String oldName);
 }

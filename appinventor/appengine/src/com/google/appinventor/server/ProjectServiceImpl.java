@@ -797,6 +797,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     LOG.warning(message);
   }
 
+  @Override
+  public long renameFile(String sessionId, long projectId, String fileId, String newFileId) throws InvalidSessionException {
+    validateSessionId(sessionId);
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).renameFile(userId, projectId, fileId, newFileId);
+  }
+
   private void validateSessionId(String sessionId) throws InvalidSessionException {
     String storedSessionId = userInfoProvider.getSessionId();
     if (DEBUG) {

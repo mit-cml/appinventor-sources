@@ -84,6 +84,11 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
       }
 
       @Override
+      public void renameItem(int index, String value) {
+        assetsList.setItemText(index, value);
+      }
+
+      @Override
       public void setSelectedIndex(int index) {
         assetsList.setSelectedIndex(index);
       }
@@ -232,6 +237,21 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
 
       // Remove the asset from the list.
       choices.removeValue(assetName);
+    }
+  }
+
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+    if (node instanceof YoungAndroidAssetNode) {
+      String newAssetName = node.getName();
+      String propertyName = property.getValue();
+      int index = choices.indexOfValue(oldName);
+      // update 'choices' variable at index
+      choices.renameItem(index, newAssetName);
+      // update property value if renamed
+      if (!choices.containsValue(propertyName)) {
+        property.setValue(newAssetName);
+      }
     }
   }
 }

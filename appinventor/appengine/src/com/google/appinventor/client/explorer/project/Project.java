@@ -198,6 +198,17 @@ public final class Project {
     fireProjectNodeRemoved(node);
   }
 
+  /**
+   * Renames the given node from the project
+   *
+   * @param node node to be renamed
+   */
+  public void renameNode(ProjectNode node, String newName, String newFileId, String oldName) {
+    node.setName(newName);
+    node.setId(newFileId);
+    fireProjectNodeRenamed(node, oldName);
+  }
+
   public void moveToTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
         Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
@@ -295,6 +306,15 @@ public final class Project {
   private void fireProjectNodeRemoved(ProjectNode node) {
     for (ProjectChangeListener listener : copyProjectChangeListeners()) {
       listener.onProjectNodeRemoved(this, node);
+    }
+  }
+
+  /*
+   * Triggers a 'project node renamed' event to be sent to the listener on the listener list
+   */
+  private void fireProjectNodeRenamed(ProjectNode node, String oldName) {
+    for (ProjectChangeListener listener : copyProjectChangeListeners()) {
+      listener.onProjectNodeRenamed(this, node, oldName);
     }
   }
 }
