@@ -10,7 +10,7 @@
     <g:FlowPanel ui:field="container" styleName="ode-ProjectRowUnHighlighted">
       <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox ode-ProjectCheckBox'/>
       <g:FlowPanel addStyleNames="ode-ProjectFieldSpan">
-      <ai:Icon ui:field='toggleButton' icon='chevron_right' styleName="ode-ProjectFolderIcon" />
+      <ai:Icon ui:field='expandButton' icon='chevron_right' styleName="ode-ProjectFolderIcon" />
       <ai:Icon icon="folder" styleName="ode-ProjectFolderIcon" />
       <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
       </g:FlowPanel>

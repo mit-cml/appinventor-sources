@@ -15,6 +15,7 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.client.explorer.folder.ProjectsFolder;
 
+import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -217,15 +218,24 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
     selectedProjectListItems.clear();
     projectListItems.clear();
     projectsFolderListItems.clear();
+    ProjectSelectionChangeHandler selectionEvent = new ProjectSelectionChangeHandler() {
+      @Override
+      public void onSelectionChange(boolean selected) {
+        fireSelectionChangeEvent();
+      }
+    };
+
     for (final Folder childFolder : folders) {
       if ("*trash*".equals(childFolder.getName())) {
         continue;
       }
       ProjectsFolderListItem item = createProjectsFolderListItem(childFolder, container);
+      item.setSelectionChangeHandler(selectionEvent);
       projectsFolderListItems.add(item);
     }
     for(final Project project : projects) {
       ProjectListItem item = createProjectListItem(project, container);
+      item.setSelectionChangeHandler(selectionEvent);
       projectListItems.add(item);
     }
     selectAllCheckBox.setValue(false);

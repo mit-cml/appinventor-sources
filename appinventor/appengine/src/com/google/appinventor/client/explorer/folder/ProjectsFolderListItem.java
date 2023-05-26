@@ -35,7 +35,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   @UiField Label dateModifiedLabel;
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;
-  @UiField Icon toggleButton;
+  @UiField Icon expandButton;
 
   private boolean isExpanded;
 
@@ -63,27 +63,14 @@ public class ProjectsFolderListItem extends ProjectsFolder {
 
   @Override
   public void setSelected(boolean selected) {
-    setSelected(selected, false);
-  }
-
-
-  public void setSelected(boolean selected, boolean inTrash) {
     checkBox.setValue(selected);
-    if (isExpanded) {
-      for (ProjectsFolderListItem projectsFolderListItem : projectsFolderListItems) {
-        projectsFolderListItem.setSelected(selected, inTrash);
-      }
-      for (ProjectListItem projectListItem : projectListItems) {
-        projectListItem.setSelected(selected);
-      }
+    if (selected) {
+      container.addStyleName("ode-ProjectRowHighlighted");
     } else {
-      if (selected) {
-        container.addStyleName("ode-ProjectRowHighlighted");
-      } else {
-        container.removeStyleName("ode-ProjectRowHighlighted");
-      }
+      container.removeStyleName("ode-ProjectRowHighlighted");
     }
   }
+
 
   @Override
   public boolean isSelected() {
@@ -134,15 +121,6 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   }
 
   @Override
-  public List<Project> getAllProjects() {
-    if (isExpanded) {
-      return super.getAllProjects();
-    } else {
-      return new ArrayList<Project>();
-    }
-  }
-
-  @Override
   public List<Folder> getAllFolders() {
     return super.getAllFolders();
   }
@@ -158,17 +136,17 @@ public class ProjectsFolderListItem extends ProjectsFolder {
     fireSelectionChangeEvent();
   }
 
-  @UiHandler("toggleButton")
+  @UiHandler("expandButton")
   void toggleExpandedState(ClickEvent e) {
     setSelected(false);
     isExpanded = !isExpanded;
     if (isExpanded) {
-      toggleButton.setIcon("expand_more");
+      expandButton.setIcon("expand_more");
       childrenContainer.removeStyleName("ode-ProjectRowHidden");
       checkBox.addStyleName("ode-ProjectElementHidden");
       checkBox.setValue(false);
     } else {
-      toggleButton.setIcon("chevron_right");
+      expandButton.setIcon("chevron_right");
       childrenContainer.addStyleName("ode-ProjectRowHidden");
       checkBox.removeStyleName("ode-ProjectElementHidden");
     }

@@ -79,17 +79,6 @@ public abstract class ProjectsFolder extends Composite {
     return selectedFolders;
   }
 
-  public List<Project> getAllProjects() {
-    List<Project> projects = new ArrayList<Project>();
-    for (Project item : folder.getProjects()) {
-      projects.add(item);
-    }
-    for (ProjectsFolder item : projectsFolderListItems) {
-      projects.addAll(item.getAllProjects());
-    }
-    return projects;
-  }
-
   public List<Project> getVisibleProjects(boolean inTrash) {
     List<Project> projects = new ArrayList<Project>();
     for (Project item : folder.getProjects()) {
@@ -127,24 +116,12 @@ public abstract class ProjectsFolder extends Composite {
 
   protected ProjectsFolderListItem createProjectsFolderListItem(final Folder folder, final ComplexPanel container) {
     final ProjectsFolderListItem projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
-    projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
-      @Override
-      public void onSelectionChange(boolean selected) {
-        fireSelectionChangeEvent();
-      }
-    });
     container.add(projectsFolder);
     return projectsFolder;
   }
 
   protected ProjectListItem createProjectListItem(final Project project, final ComplexPanel container) {
     final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1);
-    projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
-      @Override
-      public void onSelectionChange(boolean selected) {
-        fireSelectionChangeEvent();
-      }
-    });
 
     if(!isTrash) {
       projectListItem.setClickHandler(new ClickHandler() {
