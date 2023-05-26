@@ -124,6 +124,15 @@ public final class Folder {
     return projects;
   }
 
+  public List<Project> getNestedProjects() {
+    List<Project> plist = new ArrayList<>();
+    plist.addAll(projects);
+    for (Folder child : getChildFolders()) {
+      plist.addAll(child.getNestedProjects());
+    }
+    return plist;
+  }
+
   public List<Folder> getChildFolders() {
     return Arrays.asList(folders.values().toArray(new Folder[0]));
   }

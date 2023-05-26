@@ -15,12 +15,4 @@ public class MoveProjectsAction implements Command {
     new MoveProjectsWizard();
   }
 
-
-  public class NewFolderAction implements Command {
-    @Override
-    public void execute() {
-      new NewFolderWizard();
-    }
-  }
-
 }

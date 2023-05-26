@@ -5,6 +5,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -20,11 +21,19 @@ public class DeleteAction implements Command {
         if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
           List<Project> selectedProjects =
               ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
-          if (selectedProjects.size() > 0) {
+          List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+          if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
+            List<Project> projectsToDelete = selectedProjects;
+            for(Folder f : selectedFolders) {
+              projectsToDelete.addAll(f.getNestedProjects());
+            }
             // Show one confirmation window for selected projects.
-            if (deleteConfirmation(selectedProjects)) {
-              for (Project project : selectedProjects) {
+            if (deleteConfirmation(projectsToDelete)) {
+              for (Project project : projectsToDelete) {
                 project.moveToTrash();
+              }
+              for (Folder f : selectedFolders) {
+                f.getParentFolder().removeChildFolder(f);
               }
             }
           } else {
@@ -51,7 +60,7 @@ public class DeleteAction implements Command {
     String message;
     if (projects.size() == 1) {
       message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
-    } else {
+    } else if (projects.size() < 10) {
       StringBuilder sb = new StringBuilder();
       String separator = "";
       for (Project project : projects) {
@@ -60,6 +69,8 @@ public class DeleteAction implements Command {
       }
       String projectNames = sb.toString();
       message = MESSAGES.confirmMoveToTrash(projectNames);
+    } else {
+      message = MESSAGES.confirmMoveToTrashCount(Integer.toString(projects.size()));
     }
     return Window.confirm(message);
   }
