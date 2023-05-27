@@ -198,7 +198,7 @@ open class File: NonvisibleComponent {
       }
   }
   
-  //
+  // Create a new directory for storing files.
   func makeDirectory(directoryName: String, completion: @escaping (Bool) -> Void) {
       let fileManager = FileManager.default
       let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -222,6 +222,7 @@ open class File: NonvisibleComponent {
       }
   }
   
+  // Remove a directory from the file system.
   func removeDirectory(directoryName: String, completion: @escaping (Bool) -> Void) {
       let fileManager = FileManager.default
       let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -236,6 +237,7 @@ open class File: NonvisibleComponent {
       }
   }
 
+  // Get a list of files and directories in the given directory.
   func listDirectories(path: String) -> [String]? {
       let fileManager = FileManager.default
       let url = URL(fileURLWithPath: path)
