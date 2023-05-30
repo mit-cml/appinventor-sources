@@ -149,7 +149,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
         formProperties = jsonObject.Properties;
         formName = formProperties.$Name;
     }
-    var componentMap = Blockly.mainWorkspace.buildComponentMap([], [], false, false);
+    var componentMap = Blockly.common.getMainWorkspace().buildComponentMap([], [], false, false);
     var componentNames = [];
     if (formProperties) {
         if (formName != 'Screen1')
@@ -183,7 +183,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
         }
     }
 
-    blocks = Blockly.mainWorkspace.getTopBlocks(true);
+    blocks = Blockly.common.getMainWorkspace().getTopBlocks(true);
     var success = function() {
         if (this.block.replError)
             this.block.replError = null;
@@ -1073,12 +1073,12 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                 top.loadAll = false;
                 // This was 20, but for large projects it lead to infinite loops trying to
                 // find an error if the error occurs below a top level block at index > 20.
-                top.loadAllErrorCount = Blockly.mainWorkspace.getTopBlocks().length;
+                top.loadAllErrorCount = Blockly.common.getMainWorkspace().getTopBlocks().length;
                 console.log("Error in chunking, disabling.");
                 this.resetYail(true);
-                this.pollYail(Blockly.mainWorkspace);
+                this.pollYail(Blockly.common.getMainWorkspace());
             } else if (r.blockid != "-1" && r.blockid != "-2") {
-                block = Blockly.mainWorkspace.getBlockById(r.blockid);
+                block = Blockly.common.getMainWorkspace().getBlockById(r.blockid);
                 if (block === null) {
                     break;      // This happens when we switch screens during a poll
                 }
@@ -1113,14 +1113,14 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             break;
         case "extensionsLoaded":
             rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-            Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+            Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
             break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
         }
     }
-    var handler = Blockly.getMainWorkspace().getWarningHandler();
+    var handler = Blockly.common.getMainWorkspace().getWarningHandler();
     handler && handler.checkAllBlocksForWarningsAndErrors();
 };
 
@@ -1626,7 +1626,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
                     // Only used in proxy context to indicate extensions
                     // are completely loaded
                     rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-                    Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+                    Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
                 } else if (json.status == 'hello') {
                     rs.proxy_origin = event.origin;
                     rs.proxy_ready = true;
@@ -1722,7 +1722,7 @@ Blockly.ReplMgr.loadExtensions = function() {
         this.putYail.putAsset(yailstring);
     } else {
         rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-        Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+        Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
     }
 };
 

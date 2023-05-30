@@ -59,11 +59,11 @@ Blockly.BackpackFlyout.prototype.createDom = function(tagName) {
  */
 Blockly.BackpackFlyout.prototype.dispose = function() {
   this.hide();
-  Blockly.unbindEvent_(this.eventWrappers_);
+  Blockly.browserEvents.unbind(this.eventWrappers_);
   this.eventWrappers_.length = 0;
-  if (this.scrollbar_) {
-    this.scrollbar_.dispose();
-    this.scrollbar_ = null;
+  if (this.scrollbar) {
+    this.scrollbar.dispose();
+    this.scrollbar = null;
   }
   this.workspace_ = null;
   if (this.svgGroup_) {
@@ -90,11 +90,11 @@ Blockly.BackpackFlyout.prototype.isBlockCreatable_ = function(_block) {
  */
 Blockly.BackpackFlyout.terminateDrag_ = function() {
   if (Blockly.BackpackFlyout.onMouseUpWrapper_) {
-    Blockly.unbindEvent_(Blockly.BackpackFlyout.onMouseUpWrapper_);
+    Blockly.browserEvents.unbind(Blockly.BackpackFlyout.onMouseUpWrapper_);
     Blockly.BackpackFlyout.onMouseUpWrapper_ = null;
   }
   if (Blockly.BackpackFlyout.onMouseMoveWrapper_) {
-    Blockly.unbindEvent_(Blockly.BackpackFlyout.onMouseMoveWrapper_);
+    Blockly.browserEvents.unbind(Blockly.BackpackFlyout.onMouseMoveWrapper_);
     Blockly.BackpackFlyout.onMouseMoveWrapper_ = null;
   }
   Blockly.BackpackFlyout.startDownEvent_ = null;

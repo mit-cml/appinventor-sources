@@ -47,8 +47,8 @@ Blockly.Workspace.prototype.addTopBlock = (function(func) {
     return func;
   } else {
     var wrappedAddTopBlock = function(block) {
-      if (block.workspace == Blockly.getMainWorkspace()) //Do not reset arrangements for the flyout
-        Blockly.getMainWorkspace().resetArrangements();
+      if (block.workspace == Blockly.common.getMainWorkspace()) //Do not reset arrangements for the flyout
+        Blockly.common.getMainWorkspace().resetArrangements();
       func.call(this, block);
       if (this.warningIndicator) {
         this.warningIndicator.updateWarningAndErrorCount();
@@ -65,8 +65,8 @@ Blockly.Workspace.prototype.removeTopBlock = (function(func) {
     return func;
   } else {
     var wrappedRemoveTopBlock = function(block) {
-      if (block.workspace == Blockly.getMainWorkspace())
-        Blockly.getMainWorkspace().resetArrangements();
+      if (block.workspace == Blockly.common.getMainWorkspace())
+        Blockly.common.getMainWorkspace().resetArrangements();
       func.call(this, block);
     };
     wrappedRemoveTopBlock.isWrapped = true;

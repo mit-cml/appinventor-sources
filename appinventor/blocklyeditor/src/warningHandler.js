@@ -418,7 +418,7 @@ Blockly.WarningHandler.prototype['checkIfUndefinedBlock'] = function(block) {
 
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(block, params){
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
+  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.common.getSelected() === block) {
     return false;  // wait until the user is done dragging to check validity.
   }
   for(var i=0;i<params.dropDowns.length;i++){
@@ -474,7 +474,7 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
 // if so, create an error
 
 Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
+  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.common.getSelected() === block) {
     return false;  // wait until the user is done dragging to check validity.
   }
   if (Blockly_containedInLoop(block)) {
@@ -549,7 +549,7 @@ Blockly.WarningHandler.prototype['checkComponentTypeNotExistsError'] = function(
 //
 // This function is called once as a change handler on the main workspace every
 // time there is a change to the space, before any error handlers are called.
-// (via Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange'
+// (via Blockly.browserEvents.bind(Blockly.common.getMainWorkspace().getCanvas(), 'blocklyWorkspaceChange'
 // in blocklyeditor.js). So the checkIfImADuplicateEventHandler for an event handler
 // block can use the IAmADuplicate property set by this function.
 //
@@ -617,7 +617,7 @@ Blockly.WarningHandler.prototype['checkIfIAmADuplicateEventHandler'] = function(
 // Currently, this is an inefficient process that is called on each handler block.
 // Should really only be called once on the whole workspace.
 Blockly.WarningHandler.checkDuplicateErrorHandler = function(params){
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+  var topBlocks = Blockly.common.getMainWorkspace().getTopBlocks(false);
   var len = topBlocks.length;
   Blockly.WarningHandler.outerCount++;
   console.log("outer checkDuplicateErrorHandler (topBlocks: " + len + "; outer: "

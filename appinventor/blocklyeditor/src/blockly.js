@@ -42,7 +42,7 @@ Blockly.hideChaff = (function(func) {
       var argCopy = Array.prototype.slice.call(arguments);
       func.apply(this, argCopy);
       // [lyn, 10/06/13] for handling parameter & procedure flydowns
-      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.getMainWorkspace(), argCopy);
+      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.common.getMainWorkspace(), argCopy);
     };
     f.isWrapped = true;
     return f;
@@ -57,11 +57,11 @@ Blockly.hideChaff = (function(func) {
 Blockly.confirmDeletion = function(callback) {
   var DELETION_THRESHOLD = 3;
 
-  var descendantCount = Blockly.mainWorkspace.getAllBlocks().length;
-  if (Blockly.selected != null) {
-    descendantCount = Blockly.selected.getDescendants().length;
-    if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
-      descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
+  var descendantCount = Blockly.common.getMainWorkspace().getAllBlocks().length;
+  if (Blockly.common.getSelected() != null) {
+    descendantCount = Blockly.common.getSelected().getDescendants().length;
+    if (Blockly.common.getSelected().nextConnection && Blockly.common.getSelected().nextConnection.targetConnection) {
+      descendantCount -= Blockly.common.getSelected().nextConnection.targetBlock().getDescendants().length;
     }
   }
 
@@ -74,7 +74,7 @@ Blockly.confirmDeletion = function(callback) {
       var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
         dialog.hide();
         if (button == deleteButton) {
-          Blockly.mainWorkspace.playAudio('delete');
+          Blockly.common.getMainWorkspace().playAudio('delete');
           callback(true);
         } else {
           callback(false);
@@ -83,13 +83,13 @@ Blockly.confirmDeletion = function(callback) {
     } else {
       var response = confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)));
       if (response) {
-        Blockly.mainWorkspace.playAudio('delete');
+        Blockly.common.getMainWorkspace().playAudio('delete');
       }
       callback(response);
     }
   }
   else {
-    Blockly.mainWorkspace.playAudio('delete');
+    Blockly.common.getMainWorkspace().playAudio('delete');
     callback(true);
   }
 };

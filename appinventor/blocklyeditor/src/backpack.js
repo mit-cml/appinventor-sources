@@ -188,7 +188,7 @@ Blockly.Backpack.backPackId = false;
  * @return {!Element} The backpack's SVG group.
  */
 Blockly.Backpack.prototype.createDom = function(opt_workspace) {
-  var workspace = opt_workspace || Blockly.getMainWorkspace();
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   // insert the flyout after the main workspace (except, there's no
   // svg.insertAfter method, so we need to insert before the thing following
   // the main workspace. Neil Fraser says: this is "less hacky than it looks".
@@ -200,8 +200,8 @@ Blockly.Backpack.prototype.createDom = function(opt_workspace) {
     workspace.getParentSvg().appendChild(flyoutGroup);
   }
 
-  this.svgGroup_ = Blockly.utils.createSvgElement('g', {}, null);
-  this.svgBody_ = Blockly.utils.createSvgElement('image',
+  this.svgGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+  this.svgBody_ = Blockly.utils.dom.createSvgElement('image',
       {'width': this.WIDTH_, 'height': this.BODY_HEIGHT_},
       this.svgGroup_);
   this.svgBody_.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
@@ -218,16 +218,16 @@ Blockly.Backpack.prototype.createDom = function(opt_workspace) {
 Blockly.Backpack.prototype.init = function() {
   this.position_();
   // If the document resizes, reposition the backpack.
-  Blockly.bindEvent_(window, 'resize', this, this.position_);
+  Blockly.browserEvents.bind(window, 'resize', this, this.position_);
   // Fixes a bug in Firefox where the backpack cannot be opened.
-  Blockly.bindEvent_(this.svgBody_, 'mousedown', this, function(e) { e.stopPropagation(); e.preventDefault(); });
-  Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
-  Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackMenu);
+  Blockly.browserEvents.bind(this.svgBody_, 'mousedown', this, function(e) { e.stopPropagation(); e.preventDefault(); });
+  Blockly.browserEvents.bind(this.svgBody_, 'click', this, this.openBackpack);
+  Blockly.browserEvents.bind(this.svgBody_, 'contextmenu', this, this.openBackpackMenu);
   this.flyout_.init(this.workspace_);
   this.flyout_.workspace_.isBackpack = true;
 
   // load files for sound effect
-  Blockly.getMainWorkspace().loadAudio_(['static/media/backpack.mp3', 'static/media/backpack.ogg', 'static/media/backpack.wav'], 'backpack');
+  Blockly.common.getMainWorkspace().getAudioManager().load(['static/media/backpack.mp3', 'static/media/backpack.ogg', 'static/media/backpack.wav'], 'backpack');
 
   var p = this;
   this.getContents(function(contents) {
@@ -317,7 +317,7 @@ Blockly.Backpack.prototype.checkValidBlockTypes = function(block, arr) {
  *
  */
 Blockly.Backpack.prototype.addAllToBackpack = function() {
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+  var topBlocks = Blockly.common.getMainWorkspace().getTopBlocks(false);
   var p = this;
   this.getContents(function(contents) {
     var saveAsync = p.NoAsync_;
@@ -361,7 +361,7 @@ Blockly.Backpack.prototype.addToBackpack = function(block, store) {
     // storage in the future.
     p.setContents(bp_contents, store);
     p.grow();
-    Blockly.getMainWorkspace().playAudio('backpack');
+    Blockly.common.getMainWorkspace().playAudio('backpack');
 
     // update the flyout when it's visible
     if (p.flyout_.isVisible()) {
@@ -448,8 +448,8 @@ Blockly.Backpack.prototype.openBackpackMenu = function(e) {
   var backpackClear = {enabled: true};
   backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
   backpackClear.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().clear();
+    if (Blockly.common.getMainWorkspace().hasBackpack()) {
+      Blockly.common.getMainWorkspace().getBackpack().clear();
     }
   };
   options.push(backpackClear);
@@ -492,10 +492,10 @@ Blockly.Backpack.prototype.openBackpack = function(e) {
  * @param {!goog.math.Coordinate} start coordinate of the mouseDown event
  */
 Blockly.Backpack.prototype.onMouseUp = function(e, start){
-  var xy = Blockly.selected.getRelativeToSurfaceXY();
+  var xy = Blockly.common.getSelected().getRelativeToSurfaceXY();
   var diffXY = goog.math.Coordinate.difference(start, xy);
-  Blockly.selected.moveBy(diffXY.x, diffXY.y);
-  Blockly.getMainWorkspace().render();
+  Blockly.common.getSelected().moveBy(diffXY.x, diffXY.y);
+  Blockly.common.getMainWorkspace().render();
 };
 
 /**
@@ -521,7 +521,7 @@ Blockly.Backpack.prototype.onMouseMove = function(e) {
 };
 
 Blockly.Backpack.prototype.mouseIsOver = function(e) {
-  var xy = Blockly.convertCoordinates(Blockly.getMainWorkspace(), e.clientX, e.clientY, true);
+  var xy = Blockly.convertCoordinates(Blockly.common.getMainWorkspace(), e.clientX, e.clientY, true);
   var mouseX = xy.x;
   var mouseY = xy.y;
   return (mouseX > this.left_) &&

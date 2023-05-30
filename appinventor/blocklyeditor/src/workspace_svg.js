@@ -76,8 +76,8 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
   } else {
     var f = function(e) {
       try {
-        var metrics = Blockly.mainWorkspace.getMetrics();
-        var point = Blockly.utils.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
+        var metrics = Blockly.common.getMainWorkspace().getMetrics();
+        var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
         point.x = (point.x + metrics.viewLeft) / this.scale;
         point.y = (point.y + metrics.viewTop) / this.scale;
         this.latestClick = point;
@@ -101,8 +101,8 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
           temp_block = blocks[i];
           if(temp_block.mutator){
             //deselect block in mutator workspace
-            if(Blockly.selected && Blockly.selected.workspace && Blockly.selected.workspace!=Blockly.mainWorkspace){
-              Blockly.selected.unselect();
+            if(Blockly.common.getSelected() && Blockly.common.getSelected().workspace && Blockly.common.getSelected().workspace!=Blockly.common.getMainWorkspace()){
+              Blockly.common.getSelected().unselect();
             }
             blocks[i].mutator.setVisible(false);
           }
@@ -149,8 +149,8 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
         if (e.dataTransfer.types.indexOf('Files') >= 0) {
           if (e.dataTransfer.files.item(0).type === 'image/png') {
             e.preventDefault();
-            var metrics = Blockly.mainWorkspace.getMetrics();
-            var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+            var metrics = Blockly.common.getMainWorkspace().getMetrics();
+            var point = Blockly.utils.browserEvents.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
             point.x = (point.x + metrics.viewLeft) / self.scale;
             point.y = (point.y + metrics.viewTop) / self.scale;
             Blockly.importPngAsBlock(self, point, e.dataTransfer.files.item(0));
@@ -162,8 +162,8 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
               if (xhr.readyState === 4 && xhr.status === 200) {
-                var metrics = Blockly.mainWorkspace.getMetrics();
-                var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+                var metrics = Blockly.common.getMainWorkspace().getMetrics();
+                var point = Blockly.utils.browserEvents.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
                 point.x = (point.x + metrics.viewLeft) / self.scale;
                 point.y = (point.y + metrics.viewTop) / self.scale;
                 Blockly.importPngAsBlock(self, point, xhr.response);
@@ -314,7 +314,7 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
 Blockly.WorkspaceSvg.prototype.render = function(blocks) {
   this.rendered = true;
   this.bulkRendering = true;
-  Blockly.Field.startCache();
+  Blockly.utils.dom.startTextWidthCache();
   try {
     if (Blockly.Instrument.isOn) {
       var start = new Date().getTime();
@@ -351,7 +351,7 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
   } finally {
     this.bulkRendering = false;
     this.requestConnectionDBUpdate();
-    Blockly.Field.stopCache();  // must balance with startCache() call above
+    Blockly.utils.dom.stopTextWidthCache();
   }
 };
 
@@ -681,7 +681,7 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
   } else if (this.targetWorkspace) {
     this.targetWorkspace.markFocused();
   } else {
-    Blockly.mainWorkspace = this;
+    Blockly.common.setMainWorkspace(this);
   }
 };
 
@@ -752,7 +752,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var exportOption = {enabled: true};
   exportOption.text = Blockly.Msg.EXPORT_IMAGE;
   exportOption.callback = function() {
-    Blockly.ExportBlocksImage.onclickExportBlocks(Blockly.getMainWorkspace().getMetrics());
+    Blockly.ExportBlocksImage.onclickExportBlocks(Blockly.common.getMainWorkspace().getMetrics());
   };
   menuOptions.splice(3, 0, exportOption);
 
@@ -957,29 +957,29 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   function arrangeBlocks(type, layout) {
     Blockly.Events.setGroup(true);  // group these movements together
     // start arrangement
-    var workspaceId = Blockly.mainWorkspace.id;
+    var workspaceId = Blockly.common.getMainWorkspace().id;
     Blockly.Events.fire(new AI.Events.StartArrangeBlocks(workspaceId));
     Blockly.workspace_arranged_type = type;
     Blockly.workspace_arranged_position = layout;
     Blockly.workspace_arranged_latest_position = layout;
     var event = new AI.Events.EndArrangeBlocks(workspaceId, type, layout);
     var SPACER = 25;
-    var topblocks = Blockly.mainWorkspace.getTopBlocks(/* ordered */ false);
+    var topblocks = Blockly.common.getMainWorkspace().getTopBlocks(/* ordered */ false);
     // If the blocks are arranged by Category, sort the array
     if (Blockly.workspace_arranged_type === Blockly.BLKS_CATEGORY){
       topblocks.sort(sortByCategory);
     }
-    var metrics = Blockly.mainWorkspace.getMetrics();
-    var spacing = Blockly.mainWorkspace.options.gridOptions.spacing;
+    var metrics = Blockly.common.getMainWorkspace().getMetrics();
+    var spacing = Blockly.common.getMainWorkspace().options.gridOptions.spacing;
     var spacingInv = 1 / spacing;
-    var snap = Blockly.mainWorkspace.options.gridOptions.snap ?
+    var snap = Blockly.common.getMainWorkspace().options.gridOptions.snap ?
       function(x) { return (Math.ceil(x * spacingInv) - .5) * spacing; } : function(x) { return x; };
     var viewLeft = snap(metrics.viewLeft + 5);
     var viewTop = snap(metrics.viewTop + 5);
     var x = viewLeft;
     var y = viewTop;
-    var wsRight = viewLeft + metrics.viewWidth / Blockly.mainWorkspace.scale;
-    var wsBottom = viewTop + metrics.viewHeight / Blockly.mainWorkspace.scale;
+    var wsRight = viewLeft + metrics.viewWidth / Blockly.common.getMainWorkspace().scale;
+    var wsBottom = viewTop + metrics.viewHeight / Blockly.common.getMainWorkspace().scale;
     var maxHgt = 0;
     var maxWidth = 0;
     for (var i = 0, len = topblocks.length; i < len; i++) {
@@ -1053,7 +1053,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var enableAll = {enabled: true};
   enableAll.text = Blockly.Msg.ENABLE_ALL_BLOCKS;
   enableAll.callback = function() {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       block.setDisabled(false);
@@ -1066,7 +1066,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var disableAll = {enabled: true};
   disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
   disableAll.callback = function() {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       block.setDisabled(true);
@@ -1079,7 +1079,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var showAll = {enabled: true};
   showAll.text = Blockly.Msg.SHOW_ALL_COMMENTS;
   showAll.callback = function() {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       if (block.comment != null && !block.isCollapsed()) {
@@ -1094,7 +1094,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var hideAll = {enabled: true};
   hideAll.text = Blockly.Msg.HIDE_ALL_COMMENTS;
   hideAll.callback = function() {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       if (block.comment != null && !block.isCollapsed()) {
@@ -1109,8 +1109,8 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var backpackCopyAll = {enabled: true};
   backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
   backpackCopyAll.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().addAllToBackpack();
+    if (Blockly.common.getMainWorkspace().hasBackpack()) {
+      Blockly.common.getMainWorkspace().getBackpack().addAllToBackpack();
     }
   };
   menuOptions.push(backpackCopyAll);
@@ -1118,10 +1118,10 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
   backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
-    Blockly.getMainWorkspace().getBackpack().count() + ")";
+    Blockly.common.getMainWorkspace().getBackpack().count() + ")";
   backpackRetrieve.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
+    if (Blockly.common.getMainWorkspace().hasBackpack()) {
+      Blockly.common.getMainWorkspace().getBackpack().pasteBackpack();
     }
   };
   menuOptions.push(backpackRetrieve);
@@ -1172,7 +1172,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var clearUnusedBlocks = {enabled: true};
   clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
   clearUnusedBlocks.callback = function() {
-    var allBlocks = Blockly.getMainWorkspace().getTopBlocks()
+    var allBlocks = Blockly.common.getMainWorkspace().getTopBlocks()
     var removeList = []
     for (var x = 0, block; block = allBlocks[x]; x++) {
       if (block.previousConnection || block.outputConnection) {
@@ -1190,7 +1190,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       if (button == deleteButton) {
         try {
           Blockly.Events.setGroup(true);
-          Blockly.mainWorkspace.playAudio('delete');
+          Blockly.common.getMainWorkspace().playAudio('delete');
           for (var x = 0; x < removeList.length; x++) {
             removeList[x].dispose(false);
           }
@@ -1242,14 +1242,16 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
         return;
       }
       var delta = e.deltaY > 0 ? -1 : 1;
-      var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
+      var position = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(),
         this.getInverseScreenCTM());
       this.zoom(position.x, position.y, delta);
     } else {
       // pan using mouse wheel
       this.scrollX -= e.deltaX;
       this.scrollY -= e.deltaY;
-      this.updateGridPattern_();
+      if (this.grid) {
+        this.grid.update(this.scale);
+      }
       if (this.scrollbar) {
         // can only pan if scrollbars exist
         this.scrollbar.resize();

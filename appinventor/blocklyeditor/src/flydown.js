@@ -51,8 +51,8 @@ Blockly.Flydown.prototype.createDom = function(cssClassName) {
   </g>
   */
   this.previousCSSClassName_ = cssClassName; // Remember class name for later
-  this.svgGroup_ = Blockly.utils.createSvgElement('g', {'class': cssClassName}, null);
-  this.svgBackground_ = Blockly.utils.createSvgElement('path', {}, this.svgGroup_);
+  this.svgGroup_ = Blockly.utils.dom.createSvgElement('g', {'class': cssClassName}, null);
+  this.svgBackground_ = Blockly.utils.dom.createSvgElement('path', {}, this.svgGroup_);
   this.svgGroup_.appendChild(this.workspace_.createDom());
   return this.svgGroup_;
 };

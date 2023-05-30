@@ -62,7 +62,7 @@ Blockly.Drawer.PREFIX_ = 'cat_';
  */
 Blockly.Drawer.buildTree_ = function() {
   var tree = {};
-  var formName = Blockly.mainWorkspace.formName;
+  var formName = Blockly.common.getMainWorkspace().formName;
   var screenName = formName.substring(formName.indexOf("_") + 1);
 
   // Check to see if a Blocks Toolkit is defined. If so, use that to build the tree.
@@ -222,7 +222,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var typeName = instanceRecord.typeName;
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
-  var formName = Blockly.mainWorkspace.formName;
+  var formName = Blockly.common.getMainWorkspace().formName;
   var screenName = formName.substring(formName.indexOf("_") + 1);
   var subsetJsonString = "";
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {

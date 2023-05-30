@@ -219,7 +219,7 @@ goog.require('goog.Timer');
  *
  */
 Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
-  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
+  saveSvgAsPng((opt_workspace || Blockly.common.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
 }
 
 
@@ -229,7 +229,7 @@ Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace)
  */
 Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
   var theUri;
-  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var metrics = workspace.getMetrics();
   if (metrics == null || metrics.viewHeight == 0) {
     return null;

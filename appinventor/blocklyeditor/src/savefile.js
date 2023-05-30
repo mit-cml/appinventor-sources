@@ -41,7 +41,7 @@ Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
           // to render once at the very end.
           try {
             Blockly.Block.isRenderingOn = false;
-            // Perform language and component upgrades, and put blocks into Blockly.mainWorkspace
+            // Perform language and component upgrades, and put blocks into Blockly.common.getMainWorkspace()
             Blockly.Versioning.upgrade(preUpgradeFormJson, blocksContent);
           } finally { // Guarantee that rendering is turned on going forward.
             Blockly.Block.isRenderingOn = true;
@@ -53,8 +53,8 @@ Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
         Blockly.Instrument.stats.blockCount = Blockly.Instrument.stats.domToBlockInnerCalls;
         Blockly.Instrument.stats.topBlockCount = Blockly.Instrument.stats.domToBlockCalls;
         Blockly.Instrument.displayStats("Blockly.SaveFile.load");
-        if (Blockly.mainWorkspace != null && Blockly.mainWorkspace.getCanvas() != null) {
-          Blockly.mainWorkspace.render(); // Save the rendering of the workspace until the very end
+        if (Blockly.common.getMainWorkspace() != null && Blockly.common.getMainWorkspace().getCanvas() != null) {
+          Blockly.common.getMainWorkspace().render(); // Save the rendering of the workspace until the very end
         }
       }
     );
@@ -69,12 +69,12 @@ Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
  *
  * @param {boolean} prettify Specify true if the workspace should be pretty printed.
  * @param {?Blockly.WorkspaceSvg} opt_workspace The workspace to serialize. If none is given,
- *     Blockly.mainWorkspace will be serialized.
+ *     Blockly.common.getMainWorkspace() will be serialized.
  * @return {string} XML serialization of the workspace
 */
 Blockly.SaveFile.get = function(prettify, opt_workspace) {
-  var workspace = opt_workspace || Blockly.mainWorkspace;
-  var xml = Blockly.utils.xml.workspaceToDom(workspace, false);
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
+  var xml = Blockly.Xml.workspaceToDom(workspace, false);
   var element = goog.dom.createElement('yacodeblocks');
   element.setAttribute('ya-version',top.YA_VERSION);
   element.setAttribute('language-version',top.BLOCKS_VERSION);

@@ -66,12 +66,12 @@ Blockly.Error.prototype.drawIcon_ = function(group) {
     <text class="blocklyIconMark" x="8" y="13">!</text>
   </g>
   */
-  Blockly.utils.createSvgElement('circle',
+  Blockly.utils.dom.createSvgElement('circle',
       {'class': 'blocklyErrorIconOutline',
        'r': Blockly.Error.ICON_RADIUS,
        'cx': Blockly.Error.ICON_RADIUS,
        'cy': Blockly.Error.ICON_RADIUS}, group);
-  Blockly.utils.createSvgElement('path',
+  Blockly.utils.dom.createSvgElement('path',
       {'class': 'blocklyErrorIconX',
        'd': 'M 4,4 12,12 8,8 4,12 12,4'},
                            // X fills circle vvv
@@ -86,11 +86,11 @@ Blockly.Error.prototype.drawIcon_ = function(group) {
  * @private
  */
 Blockly.Error.textToDom_ = function(text) {
-  var paragraph = Blockly.utils.createSvgElement('text',
+  var paragraph = Blockly.utils.dom.createSvgElement('text',
       {'class': 'blocklyText blocklyBubbleText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
   var lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
-    var tspanElement = Blockly.utils.createSvgElement('tspan',
+    var tspanElement = Blockly.utils.dom.createSvgElement('tspan',
         {'dy': '1em', 'x': Blockly.Bubble.BORDER_WIDTH}, paragraph);
     var textNode = document.createTextNode(lines[i]);
     tspanElement.appendChild(textNode);

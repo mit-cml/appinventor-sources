@@ -138,7 +138,7 @@ Blockly.TypeBlock.prototype.currentListener_ = null;
  * @param {goog.events.KeyEvent} e
  */
 Blockly.TypeBlock.prototype.handleKey = function(e){
-    if (Blockly.mainWorkspace !== this.workspace_) return;  // not targeting this workspace
+    if (Blockly.common.getMainWorkspace() !== this.workspace_) return;  // not targeting this workspace
     // test blocks editor displayed/visible to user
     if (!this.workspace_.getParentSvg() ||
         this.workspace_.getParentSvg().parentElement.offsetParent == null) return;
@@ -159,8 +159,8 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     }
     if (e.keyCode === 27){ //Dismiss the panel with esc
       this.hide();
-      Blockly.mainWorkspace.getParentSvg().parentNode.focus();  // refocus workspace div
-      Blockly.mainWorkspace.hideChaff();
+      Blockly.common.getMainWorkspace().getParentSvg().parentNode.focus();  // refocus workspace div
+      Blockly.common.getMainWorkspace().hideChaff();
       return;
     }
     switch (e.keyCode) {
@@ -457,7 +457,7 @@ Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
     return !option.isLocalVar;
   });
 
-  var selected = Blockly.selected;
+  var selected = Blockly.common.getSelected();
   if (!selected) {
     return;
   }
@@ -595,7 +595,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
           throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
         }
         block.render();
-        var blockSelected = Blockly.selected;
+        var blockSelected = Blockly.common.getSelected();
         var selectedX, selectedY, selectedXY;
         if (blockSelected) {
           selectedXY = blockSelected.getRelativeToSurfaceXY();
@@ -604,8 +604,8 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
           self.connectIfPossible(blockSelected, block);
           if (!block.parentBlock_) {
             //Place it close but a bit out of the way from the one we created.
-            block.moveBy(Blockly.selected.getRelativeToSurfaceXY().x + 110,
-                Blockly.selected.getRelativeToSurfaceXY().y + 50);
+            block.moveBy(Blockly.common.getSelected().getRelativeToSurfaceXY().x + 110,
+                Blockly.common.getSelected().getRelativeToSurfaceXY().y + 50);
           }
           block.select();
         } else {
@@ -752,6 +752,6 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
 };
 
 Blockly.TypeBlock.hide = function() {
-  if (Blockly.mainWorkspace && Blockly.mainWorkspace.typeBlock_)
-    Blockly.mainWorkspace.typeBlock_.hide();
+  if (Blockly.common.getMainWorkspace() && Blockly.common.getMainWorkspace().typeBlock_)
+    Blockly.common.getMainWorkspace().typeBlock_.hide();
 };

@@ -156,16 +156,16 @@ Blockly.FieldFlydown.prototype.showFlydownMaker_ = function() {
  */
 Blockly.FieldFlydown.prototype.showFlydown_ = function() {
   Blockly.hideChaff();
-  var flydown = Blockly.getMainWorkspace().getFlydown();
+  var flydown = Blockly.common.getMainWorkspace().getFlydown();
 
   // Add flydown to top-level svg, *not* to main workspace svg
   // This is essential for correct positioning of flydown via translation
   // (If it's in workspace svg, it will be additionally translated by
   //  workspace svg translation relative to Blockly.svg.)
-  Blockly.getMainWorkspace().getParentSvg().appendChild(flydown.svgGroup_);
+  Blockly.common.getMainWorkspace().getParentSvg().appendChild(flydown.svgGroup_);
 
   // Adjust scale for current zoom level
-  var scale = flydown.targetWorkspace_.scale;
+  var scale = flydown.targetWorkspace.scale;
   flydown.workspace_.setScale(scale);
 
   flydown.setCSSClass(this.flyoutCSSClassName);
@@ -176,7 +176,7 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
   //    .childNodes to make this code work across browsers.
   var blocksXMLList = goog.dom.getChildren(blocksDom);
 
-  var xy = Blockly.getMainWorkspace().getSvgXY(this.borderRect_);
+  var xy = Blockly.common.getMainWorkspace().getSvgXY(this.borderRect_);
   var borderBBox = this.borderRect_.getBBox();
   if (this.displayLocation == Blockly.FieldFlydown.DISPLAY_BELOW) {
     xy.y += borderBBox.height * scale;
@@ -195,7 +195,7 @@ Blockly.FieldFlydown.hide = function() {
   // Clear any pending timer event to show flydown.
   window.clearTimeout(Blockly.FieldFlydown.showPid_);
   // Hide any displayed flydown.
-  var flydown = Blockly.getMainWorkspace().getFlydown();
+  var flydown = Blockly.common.getMainWorkspace().getFlydown();
   if (flydown) {
     flydown.hide();
   }
@@ -217,9 +217,9 @@ Blockly.FieldFlydown.prototype.onHtmlInputChange_ = function(e) {
       valid = this.callValidator(htmlInput.value);
     }
     if (valid === null) {
-      Blockly.utils.addClass(htmlInput, 'blocklyInvalidInput');
+      Blockly.utils.dom.addClass(htmlInput, 'blocklyInvalidInput');
     } else {
-      Blockly.utils.removeClass(htmlInput, 'blocklyInvalidInput');
+      Blockly.utils.dom.removeClass(htmlInput, 'blocklyInvalidInput');
       this.setText(valid);
     }
   } else if (goog.userAgent.WEBKIT) {

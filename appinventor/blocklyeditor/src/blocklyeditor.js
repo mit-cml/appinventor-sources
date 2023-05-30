@@ -232,7 +232,7 @@ Blockly.BlocklyEditor.addClearDoItOption = function(myBlock, options) {
   clearDoitOption.text = Blockly.Msg.CLEAR_DO_IT_ERROR;
   clearDoitOption.callback = function() {
     myBlock.replError = null;
-    Blockly.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
+    Blockly.common.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
   };
   options.push(clearDoitOption);
 };
@@ -429,7 +429,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Blockly.WorkspaceSvg} workspace
  */
 Blockly.ai_inject = function(container, workspace) {
-  Blockly.mainWorkspace = workspace;  // make workspace the 'active' workspace
+  Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();
@@ -508,14 +508,14 @@ Blockly.ai_inject = function(container, workspace) {
   var flydown = new Blockly.Flydown(new Blockly.Options({scrollbars: false}));
   // ***** [lyn, 10/05/2013] NEED TO WORRY ABOUT MULTIPLE BLOCKLIES! *****
   workspace.flydown_ = flydown;
-  Blockly.utils.insertAfter_(flydown.createDom('g'), workspace.svgBubbleCanvas_);
+  Blockly.utils.dom.insertAfter(flydown.createDom('g'), workspace.getBubbleCanvas());
   flydown.init(workspace);
   flydown.autoClose = true; // Flydown closes after selecting a block
   workspace.addWarningIndicator();
   workspace.addBackpack();
   Blockly.init_(workspace);
   workspace.markFocused();
-  Blockly.bindEvent_(svg, 'focus', workspace, workspace.markFocused);
+  Blockly.browserEvents.bind(svg, 'focus', workspace, workspace.markFocused);
   workspace.resize();
   // Hide scrollbars by default (otherwise ghost rectangles intercept mouse events)
   workspace.flyout_.scrollbar_ && workspace.flyout_.scrollbar_.setContainerVisible(false);
@@ -595,7 +595,7 @@ top.document.addEventListener('mousedown', function(e) {
     target = target.parentElement;
   }
   // Make sure the workspace has been injected.
-  if (Blockly.mainWorkspace) {
+  if (Blockly.common.getMainWorkspace()) {
     Blockly.hideChaff();
   }
 }, false);

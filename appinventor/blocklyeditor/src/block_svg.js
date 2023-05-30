@@ -83,7 +83,7 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
         workspace.getParentSvg().parentNode.focus();
       }
       if (Blockly.FieldFlydown.openFieldFlydown_) {
-        var flydown = Blockly.getMainWorkspace().getFlydown();
+        var flydown = Blockly.common.getMainWorkspace().getFlydown();
         if (flydown) {
           if (goog.dom.contains(flydown.svgGroup_, this.svgGroup_)) {
             //prevent hiding the flyout if a child block is the target
@@ -225,7 +225,7 @@ Blockly.BlockSvg.prototype.renderDown_ = function() {
  */
 Blockly.BlockSvg.prototype.renderHere_ = function() {
   var start = new Date().getTime();
-  Blockly.Field.startCache();
+  Blockly.utils.dom.startTextWidthCache();
   this.rendered = true;
 
   if (this.isCollapsed()) {
@@ -258,7 +258,7 @@ Blockly.BlockSvg.prototype.renderHere_ = function() {
     this.removeBadBlock();
   }
 
-  Blockly.Field.stopCache();
+  Blockly.utils.dom.stopTextWidthCache();
   var stop = new Date().getTime();
   var timeDiff = stop-start;
   Blockly.Instrument.stats.renderHereCalls++;
@@ -348,7 +348,7 @@ Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
                            'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
@@ -360,7 +360,7 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgGroup_),
                               'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
@@ -371,7 +371,7 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  return Blockly.utils.hasClass(/** @type {!Element} */ (this.svgGroup_),
+  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
     'badBlock');
 };
 
@@ -380,7 +380,7 @@ Blockly.BlockSvg.prototype.isBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.badBlock = function() {
   this.isBad = true;
-  if (this.workspace == Blockly.getMainWorkspace()) {
+  if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
     goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
     this.addBadBlock();
@@ -392,7 +392,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
  */
 Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
-  if (this.workspace == Blockly.getMainWorkspace()) {
+  if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
     goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
     this.removeBadBlock();
@@ -518,7 +518,7 @@ Blockly.BlockSvg.prototype.getTopWorkspace = function() {
  * Add the selection highlight to the block.
  */
 Blockly.BlockSvg.prototype.addSelect = function() {
-  Blockly.utils.addClass(this.svgGroup_, 'blocklySelected');
+  Blockly.utils.dom.addClass(this.svgGroup_, 'blocklySelected');
   var block_0 = this;
   do {
     var root = block_0.getSvgRoot();

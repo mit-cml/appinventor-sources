@@ -171,17 +171,17 @@ Blockly.FieldLexicalVariable.prototype.setCachedParent = function(parent) {
 // * Removed from prototype and stripped off "global" prefix (add it elsewhere)
 // * Add optional excluded block argument as in Neil's code to avoid global declaration being created
 Blockly.FieldLexicalVariable.getGlobalNames = function (optExcludedBlock) {
-  if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.getMainWorkspace() &&
-      Blockly.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
-    return Blockly.getMainWorkspace().getWarningHandler().cachedGlobalNames;
+  if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.common.getMainWorkspace() &&
+      Blockly.common.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
+    return Blockly.common.getMainWorkspace().getWarningHandler().cachedGlobalNames;
   }
   var globals = [];
-  if (Blockly.mainWorkspace) {
+  if (Blockly.common.getMainWorkspace()) {
     var blocks = [];
     if (Blockly.Instrument.useLynGetGlobalNamesFix) {
-      blocks = Blockly.mainWorkspace.getTopBlocks(); // [lyn, 04/13/14] Only need top blocks, not all blocks!
+      blocks = Blockly.common.getMainWorkspace().getTopBlocks(); // [lyn, 04/13/14] Only need top blocks, not all blocks!
     } else {
-      blocks = Blockly.mainWorkspace.getAllBlocks(); // [lyn, 11/10/12] Is there a better way to get workspace?
+      blocks = Blockly.common.getMainWorkspace().getAllBlocks(); // [lyn, 11/10/12] Is there a better way to get workspace?
     }
     for (var i = 0; i < blocks.length; i++) {
       var block = blocks[i];
@@ -521,8 +521,8 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, globals);
   if (this.sourceBlock_.rendered) {
     // Rename getters and setters
-    if (Blockly.mainWorkspace) {
-      var blocks = Blockly.mainWorkspace.getAllBlocks();
+    if (Blockly.common.getMainWorkspace()) {
+      var blocks = Blockly.common.getMainWorkspace().getAllBlocks();
       for (var i = 0; i < blocks.length; i++) {
         var block = blocks[i];
         var renamingFunction = block.renameLexicalVar;

@@ -44,10 +44,11 @@ Blockly.FieldProcedure.onChange = function(procedureId) {
     //}
     this.block.setProcedureParameters(def.arguments_, def.paramIds_, true); // It's OK if def.paramIds is null
   }
+  return text;
 };
 
 Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) {
-  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var topBlocks = workspace.getTopBlocks();
   var procNameArray = [Blockly.FieldProcedure.defaultValue];
   for(var i=0;i<topBlocks.length;i++){
@@ -68,7 +69,7 @@ Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) {
 // If returnValue is false, lists all fruitless procedure declarations (defnoreturn)
 // If returnValue is true, lists all fruitful procedure declaraations (defreturn)
 Blockly.AIProcedure.getProcedureDeclarationBlocks = function(returnValue, opt_workspace) {
-  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var topBlocks = workspace.getTopBlocks(false);
   var blockArray = [];
   for(var i=0;i<topBlocks.length;i++){
@@ -101,7 +102,7 @@ Blockly.AIProcedure.getAllProcedureDeclarationNames = function () {
 
 Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
   if (workspace  // [lyn, 04/13/14] ensure workspace isn't undefined
-      && workspace === Blockly.mainWorkspace) {
+      && workspace === Blockly.common.getMainWorkspace()) {
     var blockArray = workspace.getAllBlocks();
     for(var i=0;i<blockArray.length;i++){
       var block = blockArray[i];
