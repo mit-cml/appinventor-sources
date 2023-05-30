@@ -20,7 +20,7 @@ public class DeleteAction implements Command {
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
           List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
           List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
           if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
             List<Project> projectsToDelete = selectedProjects;

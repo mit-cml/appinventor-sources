@@ -16,20 +16,22 @@ public class DeleteForeverProjectAction implements Command {
     Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
-        List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList()
-                                            .getSelectedProjects(true);
-        if (deletedProjects.size() > 0) {
-          // Show one confirmation window for selected projects.
-          if (deleteConfirmation(deletedProjects)) {
-            for (Project project : deletedProjects) {
-              project.deleteFromTrash();
+        if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
+          List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList()
+                                              .getSelectedProjects();
+          if (deletedProjects.size() > 0) {
+            // Show one confirmation window for selected projects.
+            if (deleteConfirmation(deletedProjects)) {
+              for (Project project : deletedProjects) {
+                project.deleteFromTrash();
+              }
             }
+            Ode.getInstance().switchToTrash();
+          } else {
+            // The user can select a project to resolve the
+            // error.
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
           }
-          Ode.getInstance().switchToTrash();
-        } else {
-          // The user can select a project to resolve the
-          // error.
-          ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
         }
       }
     });

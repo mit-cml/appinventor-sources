@@ -98,11 +98,13 @@ public final class FolderManager {
   public void moveItemsToFolder(List<Project> projects, List<Folder> folders, Folder destination) {
     LOG.info("Moving projects count " + projects.size() + " to " + destination.getName());
     for (Project project : projects) {
-      LOG.info("Moving project " + project.getProjectName()  + "to " + destination.getName());
+      LOG.info("Moving project " + project.getProjectName()  + " from " + project.getHomeFolder().getName() +
+                   " to " + destination.getName());
       destination.addProject(project);
     }
     for (Folder folder : folders) {
-      LOG.info("Moving project " + folder.getName()  + "to " + destination.getName());
+      LOG.info("Moving folder " + folder.getName()  + " from " + folder.getParentFolder().getName() +
+                   " to " + destination.getName());
       destination.addChildFolder(folder);
     }
     saveAllFolders();

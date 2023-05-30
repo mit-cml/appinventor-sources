@@ -95,9 +95,9 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   }
 
   @Override
-  public List<Project> getSelectedProjects(boolean inTrash) {
+  public List<Project> getSelectedProjects() {
     if (isExpanded) {
-      return super.getSelectedProjects(inTrash);
+      return super.getSelectedProjects();
     } else {
       return new ArrayList<Project>();
     }
@@ -120,18 +120,13 @@ public class ProjectsFolderListItem extends ProjectsFolder {
     }
   }
 
-  @Override
-  public List<Folder> getAllFolders() {
-    return super.getAllFolders();
-  }
-
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
   }
 
   @UiHandler("checkBox")
-  void toggleItemSelection(ClickEvent e) {
+  void toggleFolderSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
     fireSelectionChangeEvent();
   }

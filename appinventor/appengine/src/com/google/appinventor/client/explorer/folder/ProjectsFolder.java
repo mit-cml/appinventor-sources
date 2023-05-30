@@ -28,6 +28,7 @@ public abstract class ProjectsFolder extends Composite {
   public ProjectsFolder() {
     projectsFolderListItems = new HashSet<>();
     projectListItems = new HashSet<>();
+    refresh();
   }
 
   public abstract void refresh();
@@ -55,17 +56,17 @@ public abstract class ProjectsFolder extends Composite {
     return folder;
   }
 
-  public List<Project> getSelectedProjects(boolean inTrash) {
+  public List<Project> getSelectedProjects() {
     List<Project> selectedProjects = new ArrayList<Project>();
     for (ProjectListItem item : projectListItems) {
-      if (item.isSelected() && item.getProject().isInTrash() == inTrash) {
+      if (item.isSelected() && item.isVisible()) {
         selectedProjects.add(item.getProject());
       }
     }
     for (ProjectsFolderListItem item : projectsFolderListItems) {
-      if (item.isExpanded())
+      if (item.isExpanded() && item.checkBox.isVisible())
       {
-        selectedProjects.addAll(item.getSelectedProjects(inTrash));
+        selectedProjects.addAll(item.getSelectedProjects());
       }
     }
     return selectedProjects;
@@ -73,40 +74,33 @@ public abstract class ProjectsFolder extends Composite {
 
   public List<Folder> getSelectedFolders() {
     List<Folder> selectedFolders = new ArrayList<Folder>();
-    for (ProjectsFolder item : projectsFolderListItems) {
-      selectedFolders.addAll(item.getSelectedFolders());
+    for (ProjectsFolderListItem item : projectsFolderListItems) {
+      if (item.isSelected() && item.isVisible()) {
+        selectedFolders.add(item.getFolder());
+      }
     }
     return selectedFolders;
   }
 
-  public List<Project> getVisibleProjects(boolean inTrash) {
+  public List<Project> getVisibleProjects() {
     List<Project> projects = new ArrayList<Project>();
     for (Project item : folder.getProjects()) {
-      if (item.isInTrash() == inTrash) {
         projects.add(item);
-      }
     }
     for (ProjectsFolderListItem folderItem : projectsFolderListItems) {
       if (folderItem.isExpanded()) {
-        projects.addAll(folderItem.getVisibleProjects(inTrash));
+        projects.addAll(folderItem.getVisibleProjects());
       }
     }
     return projects;
   }
 
-  public List<Folder> getAllFolders() {
-    List<Folder> folders = new ArrayList<Folder>();
-    for (ProjectsFolderListItem item : projectsFolderListItems) {
-      folders.addAll(item.getAllFolders());
-    }
-    return folders;
-  }
 
-  public List<Folder> getSelectableFolders(boolean inTrash) {
+  public List<Folder> getSelectableFolders() {
     List<Folder> folders = new ArrayList<Folder>();
     for (ProjectsFolderListItem item : projectsFolderListItems) {
       if (item.isExpanded()) {
-        folders.addAll(item.getSelectableFolders(isTrash));
+        folders.addAll(item.getSelectableFolders());
       } else {
         folders.add(getFolder());
       }
@@ -114,14 +108,26 @@ public abstract class ProjectsFolder extends Composite {
     return folders;
   }
 
-  protected ProjectsFolderListItem createProjectsFolderListItem(final Folder folder, final ComplexPanel container) {
+  public ProjectsFolderListItem createProjectsFolderListItem(final Folder folder, final ComplexPanel container) {
     final ProjectsFolderListItem projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
+    projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
+      @Override
+      public void onSelectionChange(boolean selected) {
+        fireSelectionChangeEvent();
+      }
+    });
     container.add(projectsFolder);
     return projectsFolder;
   }
 
-  protected ProjectListItem createProjectListItem(final Project project, final ComplexPanel container) {
+  public ProjectListItem createProjectListItem(final Project project, final ComplexPanel container) {
     final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1);
+    projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
+      @Override
+      public void onSelectionChange(boolean selected) {
+        fireSelectionChangeEvent();
+      }
+    });
 
     if(!isTrash) {
       projectListItem.setClickHandler(new ClickHandler() {
