@@ -35,12 +35,13 @@ goog.provide('AI.Blockly.Error');
  * @param {!Blockly.Block} block The block associated with this error.
  * @constructor
  */
-Blockly.Error = function(block) {
-  Blockly.Error.superClass_.constructor.call(this, block);
-  this.createIcon();
-  this.text_ = {};
+Blockly.Error = class extends Blockly.OldIcon {
+  constructor(block) {
+    super(block);
+    this.createIcon();
+    this.text_ = {};
+  }
 };
-goog.inherits(Blockly.Error, Blockly.Icon);
 
 /**
  * If set to true, the icon will be hidden when the block it is
