@@ -266,6 +266,7 @@
       </jacoco:report>
       
       <echo message="Please see the report at file://${reports.dir}/html/index.html"/>
+      <echo message="Please see the coverage report at file://${reports.dir}/coverage/index.html"/>
     </sequential>
   </macrodef>
 
