@@ -217,6 +217,8 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   private static final String LOG_TAG = "ChatBot";
   private static final boolean DEBUG = false;
   private String apiKey;        // User supplied actual ChatGPT API key
+  private String provider;      // The provider to use (default chatgpt)
+  private String model;         // Model to use, provider dependent
 
   private SSLSocketFactory sslSockFactory = null; // Socket Factory for using
                                                   // SSL
@@ -395,6 +397,54 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   @SimpleProperty
   public String ApiKey() {
     return this.apiKey;
+  }
+
+  /**
+   * Set the name of the provider to use. See https://appinv.us/chatbot for
+   * the current list of supported providers.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+    description = "Set the name of the provider to use. " +
+    "See https://appinv.us/chatbot for the current list of supported " +
+    "providers.",
+    userVisible = true)
+  public String Provider() {
+    return provider;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "chatgpt")
+  @SimpleProperty(description = "Set the name of the provider to use. " +
+    "See https://appinv.us/chatbot for the current list of supported " +
+    "providers.",
+    userVisible = true)
+  public void Provider(String provider) {
+    this.provider = provider;
+  }
+
+  /**
+   * Set the name of the model to use. See https://appinv.us/chatbot for
+   * the current list of supported models.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+    description = "Set the name of the model to use. " +
+    "See https://appinv.us/chatbot for the current list of supported " +
+    "models. Leaving this blank will result in the default model set by " +
+    "the provider being used",
+    userVisible = true)
+  public String Model() {
+    return model;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(description = "Set the name of the model to use. " +
+    "See https://appinv.us/chatbot for the current list of supported " +
+    "models. Leaving this blank will result in the default model set by " +
+    "the provider being used",
+    userVisible = true)
+  public void Model(String provider) {
+    this.model = model;
   }
 
   /**

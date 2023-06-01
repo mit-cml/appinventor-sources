@@ -34,6 +34,12 @@ The ChatBot component is a non-visible component for chatting with an AI
  blocks, preferably using the Obfuscated Text block to provide some protection
  (not perfect protection) of the key embedded in a packaged app.
 
+{:id="ChatBot.Model" .text} *Model*
+: Set the name of the model to use. See https://appinv.us/chatbot for the current list of supported models. Leaving this blank will result in the default model set by the provider being used
+
+{:id="ChatBot.Provider" .text} *Provider*
+: Set the name of the provider to use. See https://appinv.us/chatbot for the current list of supported providers.
+
 {:id="ChatBot.System" .text} *System*
 : The "System" value given to ChatGPT. It is used to set the tone of a conversation. For example: "You are a funny person."
 

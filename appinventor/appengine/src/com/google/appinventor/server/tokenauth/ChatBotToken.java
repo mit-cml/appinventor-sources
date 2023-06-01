@@ -1718,6 +1718,34 @@ public final class ChatBotToken {
      */
     com.google.protobuf.ByteString
         getApikeyBytes();
+
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    boolean hasProvider();
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    java.lang.String getProvider();
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    com.google.protobuf.ByteString
+        getProviderBytes();
+
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    boolean hasModel();
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    java.lang.String getModel();
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    com.google.protobuf.ByteString
+        getModelBytes();
   }
   /**
    * Protobuf type {@code request}
@@ -1736,6 +1764,8 @@ public final class ChatBotToken {
       question_ = "";
       system_ = "";
       apikey_ = "";
+      provider_ = "chatgpt";
+      model_ = "";
     }
 
     @java.lang.Override
@@ -1806,6 +1836,18 @@ public final class ChatBotToken {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000020;
               apikey_ = bs;
+              break;
+            }
+            case 58: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000040;
+              provider_ = bs;
+              break;
+            }
+            case 66: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000080;
+              model_ = bs;
               break;
             }
           }
@@ -2037,6 +2079,90 @@ public final class ChatBotToken {
       }
     }
 
+    public static final int PROVIDER_FIELD_NUMBER = 7;
+    private volatile java.lang.Object provider_;
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    public boolean hasProvider() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    public java.lang.String getProvider() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          provider_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string provider = 7 [default = "chatgpt"];</code>
+     */
+    public com.google.protobuf.ByteString
+        getProviderBytes() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        provider_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int MODEL_FIELD_NUMBER = 8;
+    private volatile java.lang.Object model_;
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    public boolean hasModel() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    public java.lang.String getModel() {
+      java.lang.Object ref = model_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          model_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string model = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getModelBytes() {
+      java.lang.Object ref = model_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        model_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2067,6 +2193,12 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, apikey_);
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, provider_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, model_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2094,6 +2226,12 @@ public final class ChatBotToken {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, apikey_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, provider_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, model_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2142,6 +2280,16 @@ public final class ChatBotToken {
         result = result && getApikey()
             .equals(other.getApikey());
       }
+      result = result && (hasProvider() == other.hasProvider());
+      if (hasProvider()) {
+        result = result && getProvider()
+            .equals(other.getProvider());
+      }
+      result = result && (hasModel() == other.hasModel());
+      if (hasModel()) {
+        result = result && getModel()
+            .equals(other.getModel());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2177,6 +2325,14 @@ public final class ChatBotToken {
       if (hasApikey()) {
         hash = (37 * hash) + APIKEY_FIELD_NUMBER;
         hash = (53 * hash) + getApikey().hashCode();
+      }
+      if (hasProvider()) {
+        hash = (37 * hash) + PROVIDER_FIELD_NUMBER;
+        hash = (53 * hash) + getProvider().hashCode();
+      }
+      if (hasModel()) {
+        hash = (37 * hash) + MODEL_FIELD_NUMBER;
+        hash = (53 * hash) + getModel().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2313,6 +2469,10 @@ public final class ChatBotToken {
         bitField0_ = (bitField0_ & ~0x00000010);
         apikey_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
+        provider_ = "chatgpt";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        model_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -2365,6 +2525,14 @@ public final class ChatBotToken {
           to_bitField0_ |= 0x00000020;
         }
         result.apikey_ = apikey_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.provider_ = provider_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.model_ = model_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2431,6 +2599,16 @@ public final class ChatBotToken {
         if (other.hasApikey()) {
           bitField0_ |= 0x00000020;
           apikey_ = other.apikey_;
+          onChanged();
+        }
+        if (other.hasProvider()) {
+          bitField0_ |= 0x00000040;
+          provider_ = other.provider_;
+          onChanged();
+        }
+        if (other.hasModel()) {
+          bitField0_ |= 0x00000080;
+          model_ = other.model_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -2911,6 +3089,158 @@ public final class ChatBotToken {
   }
   bitField0_ |= 0x00000020;
         apikey_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object provider_ = "chatgpt";
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public boolean hasProvider() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public java.lang.String getProvider() {
+        java.lang.Object ref = provider_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            provider_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public com.google.protobuf.ByteString
+          getProviderBytes() {
+        java.lang.Object ref = provider_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          provider_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public Builder setProvider(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public Builder clearProvider() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        provider_ = getDefaultInstance().getProvider();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 7 [default = "chatgpt"];</code>
+       */
+      public Builder setProviderBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object model_ = "";
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public boolean hasModel() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public java.lang.String getModel() {
+        java.lang.Object ref = model_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            model_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public com.google.protobuf.ByteString
+          getModelBytes() {
+        java.lang.Object ref = model_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          model_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public Builder setModel(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        model_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public Builder clearModel() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        model_ = getDefaultInstance().getModel();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string model = 8;</code>
+       */
+      public Builder setModelBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        model_ = value;
         onChanged();
         return this;
       }
@@ -3913,14 +4243,15 @@ public final class ChatBotToken {
       "\022\n\007version\030\002 \001(\004:\0010\022\025\n\ngeneration\030\003 \001(\004:" +
       "\0010\"i\n\005token\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005keyid" +
       "\030\002 \001(\004:\0011\022\025\n\ngeneration\030\003 \001(\004:\0010\022\020\n\010unsi" +
-      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"t\n\007request" +
-      "\022\022\n\007version\030\001 \001(\004:\0011\022\025\n\005token\030\002 \001(\0132\006.to" +
-      "ken\022\014\n\004uuid\030\003 \001(\t\022\020\n\010question\030\004 \001(\t\022\016\n\006s" +
-      "ystem\030\005 \001(\t\022\016\n\006apikey\030\006 \001(\t\"O\n\010response\022" +
-      "\022\n\007version\030\001 \001(\004:\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014" +
-      "\n\004uuid\030\003 \001(\t\022\016\n\006answer\030\004 \001(\tB7\n\'com.goog",
-      "le.appinventor.server.tokenauthB\014ChatBot" +
-      "Token"
+      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"\236\001\n\007reques" +
+      "t\022\022\n\007version\030\001 \001(\004:\0011\022\025\n\005token\030\002 \001(\0132\006.t" +
+      "oken\022\014\n\004uuid\030\003 \001(\t\022\020\n\010question\030\004 \001(\t\022\016\n\006" +
+      "system\030\005 \001(\t\022\016\n\006apikey\030\006 \001(\t\022\031\n\010provider" +
+      "\030\007 \001(\t:\007chatgpt\022\r\n\005model\030\010 \001(\t\"O\n\010respon" +
+      "se\022\022\n\007version\030\001 \001(\004:\0011\022\021\n\006status\030\002 \001(\004:\001",
+      "0\022\014\n\004uuid\030\003 \001(\t\022\016\n\006answer\030\004 \001(\tB7\n\'com.g" +
+      "oogle.appinventor.server.tokenauthB\014Chat" +
+      "BotToken"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3951,7 +4282,7 @@ public final class ChatBotToken {
     internal_static_request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_request_descriptor,
-        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", });
+        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", "Provider", "Model", });
     internal_static_response_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_response_fieldAccessorTable = new

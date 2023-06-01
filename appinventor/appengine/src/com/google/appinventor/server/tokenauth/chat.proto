@@ -1,5 +1,6 @@
 // NOTE WELL!!! This file must define the same structures as the version
 // in the components hierarchy
+syntax = "proto2";
 
 option java_package = "com.google.appinventor.server.tokenauth";
 option java_outer_classname = "ChatBotToken";
@@ -33,6 +34,8 @@ message request {
     optional string question = 4;
     optional string system = 5;
     optional string apikey = 6;
+    optional string provider = 7 [default = "chatgpt"];
+    optional string model = 8;
 }
 
 message response {
