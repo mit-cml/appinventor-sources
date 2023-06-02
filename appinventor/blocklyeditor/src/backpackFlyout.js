@@ -72,7 +72,7 @@ Blockly.BackpackFlyout.prototype.dispose = function() {
     this.svgGroup_ = null;
   }
   this.svgBackground_ = null;
-  this.targetWorkspace_ = null;
+  this.targetWorkspace = null;
 };
 
 /**

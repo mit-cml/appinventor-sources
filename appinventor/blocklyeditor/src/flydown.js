@@ -104,7 +104,7 @@ Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
 
   // Start at bottom of top left arc and proceed clockwise
   // Flydown outline shape is symmetric about vertical axis, so no need to differentiate LTR and RTL paths.
-  var targetWorkspaceMetrics = this.targetWorkspace_.getMetrics();
+  var targetWorkspaceMetrics = this.targetWorkspace.getMetrics();
   var needsScrollbar = false;
   var contentBottom = targetWorkspaceMetrics.viewHeight + targetWorkspaceMetrics.absoluteTop;
   var flydownBottom = this.height_ + y;
@@ -144,7 +144,7 @@ Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
  * For RTL: Lay out the blocks right-aligned.
  */
 Blockly.Flydown.prototype.reflow = function() {
-  this.workspace_.scale = this.targetWorkspace_.scale;
+  this.workspace_.scale = this.targetWorkspace.scale;
   var scale = this.workspace_.scale;
   var flydownWidth = 0;
   var flydownHeight = 0;
@@ -194,7 +194,7 @@ Blockly.Flydown.prototype.onMouseMove_ = function(e) {
  * @private
  */
 Blockly.Flydown.prototype.placeNewBlock_ = function(originBlock) {
-  var targetWorkspace = this.targetWorkspace_;
+  var targetWorkspace = this.targetWorkspace;
   var svgRootOld = originBlock.getSvgRoot();
   if (!svgRootOld) {
     throw 'originBlock is not rendered.';
