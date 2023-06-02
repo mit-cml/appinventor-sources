@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 public final class FolderManager {
   private static final Logger LOG = Logger.getLogger(FolderManager.class.getName());
 
-  private Folder globalFolder;
-  private Folder trashFolder;
+  private ProjectFolder globalFolder;
+  private ProjectFolder trashFolder;
 
   private boolean foldersLoaded;
 
@@ -61,7 +61,7 @@ public final class FolderManager {
     }
 
     LOG.info("folderJSON - " + folderJSON);
-    globalFolder = new Folder(folderJSON, null);
+    globalFolder = new ProjectFolder(folderJSON, null);
     LOG.info("Creating Trash Folder");
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
     checkForUnassignedProjects();
@@ -77,8 +77,8 @@ public final class FolderManager {
     Ode.getUserSettings().saveSettings(null);
   }
 
-  public Folder createFolder(String name, Folder parent) {
-    Folder folder = new Folder(name, System.currentTimeMillis(), System.currentTimeMillis(), parent);
+  public ProjectFolder createFolder(String name, ProjectFolder parent) {
+    ProjectFolder folder = new ProjectFolder(name, System.currentTimeMillis(), System.currentTimeMillis(), parent);
     parent.addChildFolder(folder);
     while ((parent = parent.getParentFolder()) != null) {
       parent.clearCache();
@@ -88,21 +88,21 @@ public final class FolderManager {
     return folder;
   }
 
-  public void renameFolders(List<String> folderNames, List<Folder> foldersToRename) {
+  public void renameFolders(List<String> folderNames, List<ProjectFolder> foldersToRename) {
     for (int i = 0; i < foldersToRename.size(); ++i) {
       foldersToRename.get(i).setName(folderNames.get(i));
     }
     saveAllFolders();
   }
 
-  public void moveItemsToFolder(List<Project> projects, List<Folder> folders, Folder destination) {
+  public void moveItemsToFolder(List<Project> projects, List<ProjectFolder> folders, ProjectFolder destination) {
     LOG.info("Moving projects count " + projects.size() + " to " + destination.getName());
     for (Project project : projects) {
       LOG.info("Moving project " + project.getProjectName()  + " from " + project.getHomeFolder().getName() +
                    " to " + destination.getName());
       destination.addProject(project);
     }
-    for (Folder folder : folders) {
+    for (ProjectFolder folder : folders) {
       LOG.info("Moving folder " + folder.getName()  + " from " + folder.getParentFolder().getName() +
                    " to " + destination.getName());
       destination.addChildFolder(folder);
@@ -112,23 +112,23 @@ public final class FolderManager {
   }
 
   // relative to *global*
-  public Folder createFolder(String path) {
+  public ProjectFolder createFolder(String path) {
     return null;
   }
 
-  public Folder getGlobalFolder() {
+  public ProjectFolder getGlobalFolder() {
     return globalFolder;
   }
 
-  public Folder getTrashFolder() {
+  public ProjectFolder getTrashFolder() {
     return trashFolder;
   }
 
   private void initializeFolders() {
     LOG.info("Initializing folders for new user");
-    globalFolder = new Folder(FolderJSONKeys.GLOBAL_FOLDER, System.currentTimeMillis(),
+    globalFolder = new ProjectFolder(FolderJSONKeys.GLOBAL_FOLDER, System.currentTimeMillis(),
         null);
-    trashFolder = new Folder(FolderJSONKeys.TRASH_FOLDER, System.currentTimeMillis(),
+    trashFolder = new ProjectFolder(FolderJSONKeys.TRASH_FOLDER, System.currentTimeMillis(),
         globalFolder);
     globalFolder.addChildFolder(trashFolder);
 
@@ -174,13 +174,13 @@ public final class FolderManager {
     return new ArrayList<FolderManagerEventListener>(folderManagerEventListeners);
   }
 
-  private void fireFolderRenamed(Folder folder) {
+  private void fireFolderRenamed(ProjectFolder folder) {
     for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
       listener.onFolderRenamed(folder);
     }
   }
 
-  private void fireFolderAdded(Folder folder) {
+  private void fireFolderAdded(ProjectFolder folder) {
     for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
       listener.onFolderAdded(folder);
     }

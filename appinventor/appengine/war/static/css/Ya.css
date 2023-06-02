@@ -307,6 +307,10 @@ div.StatusPanel {
   display:contents;
 }
 
+.ode-ProjectFolderList {
+  margin-left: 28px;
+}
+
 .ode-ProjectHeaderRow {
   background: url(../images/toolbarBG.png) repeat;
   display: flex;

@@ -7,13 +7,11 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
-import com.google.appinventor.client.explorer.folder.ProjectsFolderListItem;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.client.explorer.folder.ProjectsFolder;
 
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
@@ -61,28 +59,21 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   private SortOrder sortOrder;
 
   private boolean projectListLoading = true;
-  private Folder folder;
+  private ProjectFolder folder;
   private boolean isTrash;
 
   // UI elements
 //  private final Grid table;
   @UiField
   CheckBox selectAllCheckBox;
-  @UiField
-  FlowPanel container;
+  @UiField FlowPanel container;
   boolean projectsLoaded = false;
-  @UiField
-  InlineLabel projectNameSortDec;
-  @UiField
-  InlineLabel projectNameSortAsc;
-  @UiField
-  InlineLabel createDateSortDec;
-  @UiField
-  InlineLabel createDateSortAsc;
-  @UiField
-  InlineLabel modDateSortDec;
-  @UiField
-  InlineLabel modDateSortAsc;
+  @UiField InlineLabel projectNameSortDec;
+  @UiField InlineLabel projectNameSortAsc;
+  @UiField InlineLabel createDateSortDec;
+  @UiField InlineLabel createDateSortAsc;
+  @UiField InlineLabel modDateSortDec;
+  @UiField InlineLabel modDateSortAsc;
 
   /**
    * Creates a new ProjectList
@@ -99,7 +90,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
     setIsTrash(false);
-//    setDepth(0);
   }
 
   @SuppressWarnings("unused")
@@ -180,11 +170,11 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   public void refresh(boolean needToSort) {
     LOG.info("Refresh ProjectList");
     List<Project> projects = folder.getProjects();
-    List<Folder> folders = folder.getChildFolders();
+    List<ProjectFolder> folders = folder.getChildFolders();
 //    if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
-      Comparator<Folder> folderComparator;
+      Comparator<ProjectFolder> folderComparator;
       folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
       switch (sortField) {
         default:
@@ -214,8 +204,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     refreshSortIndicators();
 
     container.clear();
-    projectListItems.clear();
-    projectsFolderListItems.clear();
     ProjectSelectionChangeHandler selectionEvent = new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
@@ -223,34 +211,22 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       }
     };
 
-    for (final Folder childFolder : folders) {
+    for (final ProjectFolder childFolder : folders) {
       if ("*trash*".equals(childFolder.getName())) {
         continue;
       }
-      ProjectsFolderListItem item =  folder.createProjectsFolderListItem(childFolder, container);
-      item.setSelectionChangeHandler(selectionEvent);
-      projectsFolderListItems.add(item);
+      childFolder.setSelectionChangeHandler(selectionEvent);
+      childFolder.refresh();
+      container.add(childFolder);
     }
+    folder.clearProjectList();
     for(final Project project : projects) {
-      ProjectListItem item = createProjectListItem(project, container);
+      ProjectListItem item = new ProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
-      projectListItems.add(item);
+      folder.addProjectListItem(item);
+      container.add(item);
     }
     selectAllCheckBox.setValue(false);
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
-  }
-
-  public void setSelected(boolean selected) {
-    // This intentionally does not call the selection changed event for individual
-    // list items.
-    for(ProjectListItem item : projectListItems) {
-      if (item.getProject().isInTrash() == isTrash) {
-        item.setSelected(selected);
-      }
-    }
-    for(ProjectsFolderListItem item : projectsFolderListItems) {
-      item.setSelected(selected);
-    }
     Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
@@ -259,27 +235,37 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
 public void fireSelectionChangeEvent() {
-    int selectableFolders = getSelectableFolders().size();
-    int visibleProjects = getVisibleProjects().size();
+    int selectableFolders = folder.getSelectableFolders(false).size();
+    int visibleProjects = folder.getVisibleProjects(false).size();
+    int selectedFolders = folder.getSelectedFolders().size();
+    int selectedProjects = folder.getSelectedProjects().size();
+
+    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders + " visibleProjects=" +
+               visibleProjects + " " + "SelectedFolders=" + selectedFolders +
+               " SelectedProjects=" + selectedProjects);
+
     if (selectableFolders + visibleProjects > 0 &&
-            selectableFolders == getSelectedFolders().size() &&
-            visibleProjects == getSelectedProjects().size()) {
+            selectableFolders == selectedFolders &&
+            visibleProjects == selectedProjects) {
       selectAllCheckBox.setValue(true);
     } else {
       selectAllCheckBox.setValue(false);
     }
-    for (Project p: getSelectedProjects()) {
-      LOG.info("Project " + p.getProjectName() + " is selected in folder " + p.getHomeFolder().getName());
-    }
-    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders + " visibleProjects=" +
-                visibleProjects + " " + "SelectedFolders=" + getSelectedFolders().size() +
-                " SelectedProjects=" + getSelectedProjects().size());
     Ode.getInstance().getBindProjectToolbar().updateButtons();
+  }
+
+  public List<Project> getSelectedProjects() {
+    return folder.getSelectedProjects();
+  }
+
+  public List<ProjectFolder> getSelectedFolders() {
+    return folder.getSelectedFolders();
   }
 
   @UiHandler("selectAllCheckBox")
   void toggleAllItemSelection(ClickEvent e) {
-    setSelected(selectAllCheckBox.getValue());
+    folder.selectAll(selectAllCheckBox.getValue());
+    fireSelectionChangeEvent();
   }
   /**
    * Gets the number of selected projects
@@ -287,21 +273,29 @@ public void fireSelectionChangeEvent() {
    * @return the number of selected projects
    */
   public int getSelectedProjectsCount() {
-//    return getSelectedProjects().size();
-    return getSelectedProjects().size() + getSelectedFolders().size();
+    if (folder != null) {
+      return folder.getSelectedProjects().size() + folder.getSelectedFolders().size();
+    }
+    else return 0;
   }
+
 
   public int getMyProjectsCount() {
     int count = 0;
     if (folder == null) {
       return 0;
     }
-    for (Project project : folder.getProjects()) {
+    for (Project project : folder.getVisibleProjects()) {
       if (!project.isInTrash()) {
         ++ count;
       };
     }
     return count;
+  }
+
+  public List<Project> getSelectableProjects() {
+    List<Project> list = new ArrayList<>();
+    return list;
   }
 
   /**
@@ -330,17 +324,17 @@ public void fireSelectionChangeEvent() {
 
   // FolderManagerEventListener implementation
   @Override
-  public void onFolderAdded(Folder folder) {
+  public void onFolderAdded(ProjectFolder folder) {
     refresh();
   }
 
   @Override
-  public void onFolderRemoved(Folder folder) {
+  public void onFolderRemoved(ProjectFolder folder) {
     refresh();
   }
 
   @Override
-  public void onFolderRenamed(Folder folder) {
+  public void onFolderRenamed(ProjectFolder folder) {
     refresh();
   }
 
@@ -357,10 +351,7 @@ public void fireSelectionChangeEvent() {
   @Override
   public void onProjectAdded(Project project) {
     if (folder == null) {
-    } else {
-      LOG.info(folder.getName());
     }
-
     if (projectsLoaded) {
       folder.addProject(project);
       Ode.getInstance().getFolderManager().saveAllFolders();

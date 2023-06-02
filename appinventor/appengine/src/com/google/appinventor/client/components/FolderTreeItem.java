@@ -1,18 +1,18 @@
 package com.google.appinventor.client.components;
 
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.explorer.folder.Folder;
 
 public class FolderTreeItem extends TreeItem {
 
   private static Resources.FolderTreeItemStyle style = Ode.getUserDarkThemeEnabled() ?
       Resources.INSTANCE.folderTreeItemStyleDark() : Resources.INSTANCE.folderTreeItemStyleLight();
 
-  private Folder folder;
+  private ProjectFolder folder;
 
-  public FolderTreeItem(Folder folder) {
+  public FolderTreeItem(ProjectFolder folder) {
     super();
     style.ensureInjected();
     this.folder = folder;
@@ -20,7 +20,7 @@ public class FolderTreeItem extends TreeItem {
     setStylePrimaryName(style.item());
   }
 
-  public Folder getFolder() {
+  public ProjectFolder getFolder() {
     return folder;
   }
 }

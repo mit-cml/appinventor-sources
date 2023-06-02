@@ -7,6 +7,7 @@ package com.google.appinventor.client.explorer.commands;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.ClientBundle;
@@ -23,7 +24,6 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dialog;
-import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.youngandroid.TextValidators;
 
@@ -47,12 +47,12 @@ public final class RenameProjectsCommand implements Command {
       Resources.INSTANCE.styleDark() : Resources.INSTANCE.styleLight();
 
   private List<Project> projects;
-  private List<Folder> folders;
+  private List<ProjectFolder> folders;
 
   /**
    * Creates a new command for renaming projects
    */
-  public RenameProjectsCommand(List<Project> projects, List<Folder> folders) {
+  public RenameProjectsCommand(List<Project> projects, List<ProjectFolder> folders) {
     style.ensureInjected();
     UI_BINDER.createAndBindUi(this);
 
@@ -71,7 +71,7 @@ public final class RenameProjectsCommand implements Command {
     List<String> projectNames = new ArrayList<String>();
     List<Long> projectIds = new ArrayList<Long>();
     List<String> folderNames = new ArrayList<String>();
-    List<Folder> foldersToRename = new ArrayList<Folder>();
+    List<ProjectFolder> foldersToRename = new ArrayList<ProjectFolder>();
     makeProjectNames(projectNames, projectIds);
     makeFolderNames(folderNames, foldersToRename);
     Ode.getInstance().getFolderManager().renameFolders(folderNames, foldersToRename);
@@ -106,8 +106,8 @@ public final class RenameProjectsCommand implements Command {
     }
   }
 
-  private void makeFolderNames(List<String> newNames, List<Folder> foldersToRename) {
-    for (Folder folder : folders) {
+  private void makeFolderNames(List<String> newNames, List<ProjectFolder> foldersToRename) {
+    for (ProjectFolder folder : folders) {
       String nameCandidate = makeName(input.getValue(), folder.getName(), folder);
 
       if (folder.getName().equals(nameCandidate)) {
@@ -118,7 +118,7 @@ public final class RenameProjectsCommand implements Command {
     }
   }
 
-  private String makeName(String nameCandidate, String currentName, Folder folder) {
+  private String makeName(String nameCandidate, String currentName, ProjectFolder folder) {
     String[] nameCandidateSegments = nameCandidate.split("\\+");
     if (nameCandidateSegments.length == 2) {
       nameCandidate = nameCandidateSegments[0] + currentName + nameCandidateSegments[1];

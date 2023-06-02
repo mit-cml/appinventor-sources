@@ -7,10 +7,10 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.ui.Button;
 import com.google.appinventor.client.components.FolderTreeItem;
-import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,9 +54,9 @@ public final class MoveProjectsWizard {
     moveDialog.center();
   }
 
-  static FolderTreeItem renderFolder(Folder folder) {
+  static FolderTreeItem renderFolder(ProjectFolder folder) {
     FolderTreeItem treeItem = new FolderTreeItem(folder);
-    for(Folder child : folder.getChildFolders()) {
+    for(ProjectFolder child : folder.getChildFolders()) {
       if (!"*trash*".equals(child.getName())) {
         FolderTreeItem childItem = renderFolder(child);
         childItem.setState(true);
@@ -75,7 +75,7 @@ public final class MoveProjectsWizard {
   void moveProjects(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
     List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-    List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+    List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
     Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
         treeItem.getFolder());
     moveDialog.hide();
