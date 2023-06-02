@@ -14,14 +14,12 @@
 
 goog.provide('Blockly.FieldTextBlockInput');
 
-Blockly.FieldTextBlockInput = function(text, opt_changeHandler) {
- // Call parent's constructor.
-  Blockly.FieldTextInput.call(this, text);
-  this.changeHandler_ = opt_changeHandler;
-};
-
-// FieldTextBlockInput is a subclass of FieldTextInput.
-goog.inherits(Blockly.FieldTextBlockInput, Blockly.FieldTextInput);
+Blockly.FieldTextBlockInput = class extends Blockly.FieldTextInput {
+  constructor(text, opt_changeHandler) {
+    super(text);
+    this.changeHandler_ = opt_changeHandler;
+  };
+}
 
 /**
  * Set the text in this field.

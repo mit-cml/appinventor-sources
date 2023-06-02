@@ -36,12 +36,13 @@ goog.require('goog.userAgent');
  * @param workspaceOptions Options to control the look-and-feel of the flyout
  * @constructor
  */
-Blockly.BackpackFlyout = function(workspaceOptions) {
-  Blockly.BackpackFlyout.superClass_.constructor.call(this, workspaceOptions);
-  // Backpack flyout is opposite the blocks flyout
-  this.toolboxPosition_ = this.RTL ? Blockly.TOOLBOX_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
-};
-goog.inherits(Blockly.BackpackFlyout, Blockly.Flyout);
+Blockly.BackpackFlyout = class extends Blockly.VerticalFlyout {
+  constructor(workspaceOptions) {
+    super(workspaceOptions);
+    // Backpack flyout is opposite the blocks flyout
+    this.toolboxPosition_ = this.RTL ? Blockly.TOOLBOX_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
+  }
+}
 
 /**
  * Creates the flyout's DOM.  Only needs to be called once.

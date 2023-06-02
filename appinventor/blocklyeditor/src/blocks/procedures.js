@@ -65,6 +65,16 @@ goog.require('Blockly.Blocks.Utilities');
 goog.require('goog.dom');
 goog.require('AI.Blockly.FieldProcedureName');
 
+Blockly.ProcedureNameDropdown = class extends Blockly.FieldDropdown {
+  constructor(menuGenerator, validator, config) {
+    super(menuGenerator, validator, config);
+  }
+
+  doClassValidation_(newValue) {
+    return newValue;
+  }
+}
+
 Blockly.Blocks['procedures_defnoreturn'] = {
   // Define a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
@@ -666,7 +676,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       return items.length > 0 ? items : ['',''];
     };
 
-    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
@@ -874,7 +884,7 @@ Blockly.Blocks['procedures_callreturn'] = {
       return items.length > 0 ? items : ['',''];
     };
 
-    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL)

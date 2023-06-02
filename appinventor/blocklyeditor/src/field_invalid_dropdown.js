@@ -23,14 +23,12 @@ goog.provide('AI.Blockly.FieldInvalidDropdown');
  * @param {Function=} opt_validator A change listener that is called when a new
  *     option is selected from the dropdown.
  */
-Blockly.FieldInvalidDropdown = function(
-    menuGenerator, opt_invalidOptions, opt_validator
-) {
-  Blockly.FieldInvalidDropdown.superClass_.constructor.call(
-      this, menuGenerator, opt_validator);
-  this.invalidOptions_ = opt_invalidOptions || [];
+Blockly.FieldInvalidDropdown = class extends Blockly.FieldDropdown {
+  constructor(menuGenerator, opt_invalidOptions, opt_validator) {
+    super(menuGenerator, opt_validator);
+    this.invalidOptions_ = opt_invalidOptions || [];
+  }
 }
-goog.inherits(Blockly.FieldInvalidDropdown, Blockly.FieldDropdown);
 
 /**
  * Displays the invalid value and marks the block this field belongs to as a

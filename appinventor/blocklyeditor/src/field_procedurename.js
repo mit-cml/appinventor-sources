@@ -17,35 +17,29 @@ goog.provide('AI.Blockly.FieldProcedureName');
  * @param {?string} text
  * @constructor
  */
-AI.Blockly.FieldProcedureName = function(text) {
-  AI.Blockly.FieldProcedureName.superClass_.constructor.call(this, text,
-    Blockly.AIProcedure.renameProcedure);
-};
-goog.inherits(AI.Blockly.FieldProcedureName, Blockly.FieldTextInput);
+AI.Blockly.FieldProcedureName = class extends Blockly.FieldTextInput {
+  constructor(text) {
+    super(text);
+  }
 
-/**
- * Set the value of the field.
- *
- * @see Blockly.FieldTextInput.setValue
- * @param {?string} newValue The new value of the field.
- * @override
- */
-AI.Blockly.FieldProcedureName.prototype.setValue = function(newValue) {
-  var oldValue = this.getValue();
-  AI.Blockly.FieldProcedureName.superClass_.setValue.call(this, newValue);
-  newValue = this.getValue();
-  if (typeof newValue === 'string' && this.sourceBlock_) {
-    var procDb = this.sourceBlock_.workspace.getProcedureDatabase();
-    if (procDb) {
-      if (procDb.getProcedure(this.sourceBlock_.id)) {
-        procDb.renameProcedure(this.sourceBlock_.id, oldValue, newValue);
-      } else {
-        procDb.addProcedure(newValue, this.sourceBlock_);
+  setValue(newValue) {
+    var oldValue = this.getValue();
+    super.setValue(newValue);
+    newValue = this.getValue();
+    if (typeof newValue === 'string' && this.sourceBlock_) {
+      var procDb = this.sourceBlock_.workspace.getProcedureDatabase();
+      if (procDb) {
+        if (procDb.getProcedure(this.sourceBlock_.id)) {
+          procDb.renameProcedure(this.sourceBlock_.id, oldValue, newValue);
+        } else {
+          procDb.addProcedure(newValue, this.sourceBlock_);
+        }
       }
     }
+    this.oldName_ = undefined;
   }
-  this.oldName_ = undefined;
 };
+
 /*
 AI.Blockly.FieldProcedureName.prototype.onHtmlInputChange_ = function(e) {
   if (e.type == 'keypress') {

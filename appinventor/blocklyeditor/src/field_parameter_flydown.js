@@ -33,25 +33,25 @@ goog.require('AI.Blockly.FieldFlydown');
  */
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of
 //    renaming of proc decl params
-Blockly.FieldParameterFlydown =
-  function(name, isEditable, opt_displayLocation, opt_additionalChangeHandler) {
-    var changeHandler = function (text) {
+Blockly.FieldParameterFlydown = class extends Blockly.FieldFlydown {
+  constructor(name, isEditable, opt_displayLocation, opt_additionalChangeHandler) {
+    super(name, isEditable, opt_displayLocation, (text) => {
       if (!Blockly.FieldParameterFlydown.changeHandlerEnabled) {
         return text;
       }
 
       // Both of these should be called in the context of the field (ie 'this').
-      var possiblyRenamedText = Blockly.LexicalVariable.renameParam.call(this, text);
+      const possiblyRenamedText = Blockly.LexicalVariable.renameParam.call(this, text);
       if (opt_additionalChangeHandler) {
         opt_additionalChangeHandler.call(this, possiblyRenamedText);
       }
-      return possiblyRenamedText;
-    };
+    });
+  }
 
-    Blockly.FieldParameterFlydown.superClass_.constructor.call(
-        this, name, isEditable, opt_displayLocation, changeHandler);
-  };
-goog.inherits(Blockly.FieldParameterFlydown, Blockly.FieldFlydown);
+  doClassValidation_(newValue) {
+    return newValue;
+  }
+}
 
 Blockly.FieldParameterFlydown.prototype.fieldCSSClassName = 'blocklyFieldParameter'
 

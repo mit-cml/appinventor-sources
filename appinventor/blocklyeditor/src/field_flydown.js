@@ -32,17 +32,47 @@ goog.provide('AI.Blockly.FieldFlydown');
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
-Blockly.FieldFlydown = function(name, isEditable, opt_displayLocation, opt_changeHandler) {
-  // This by itself does not control editability
-  this.EDITABLE = isEditable;
-  // [lyn, 10/27/13] Make flydown direction an instance variable
-  this.displayLocation = opt_displayLocation ||
+Blockly.FieldFlydown = class extends Blockly.FieldTextInput {
+  constructor(name, isEditable, opt_displayLocation, opt_changeHandler) {
+    super(name, opt_changeHandler);
+    // This by itself does not control editability
+    this.EDITABLE = isEditable;
+    // [lyn, 10/27/13] Make flydown direction an instance variable
+    this.displayLocation = opt_displayLocation ||
       Blockly.FieldFlydown.DISPLAY_RIGHT;
+  }
 
-  Blockly.FieldFlydown.superClass_.constructor.call(
-      this, name, opt_changeHandler);
-};
-goog.inherits(Blockly.FieldFlydown, Blockly.FieldTextInput);
+  // Override FieldTextInput's showEditor_ so it's only called for EDITABLE field.
+  showEditor_() {
+    if (!this.EDITABLE) {
+      return;
+    }
+    if (Blockly.FieldFlydown.showPid_) {  // cancel a pending flydown for editing
+      clearTimeout(Blockly.FieldFlydown.showPid_);
+      Blockly.FieldFlydown.showPid_ = 0;
+      this.sourceBlock_.getWorkspace().hideChaff();
+    }
+    super.showEditor_();
+  }
+
+  init(block) {
+    super.init(block);
+
+    // Remove inherited field css classes ...
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.fieldGroup_),
+      'blocklyEditableText');
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.fieldGroup_),
+      'blocklyNoNEditableText');
+    // ... and add new ones, so that look and feel of flyout fields can be customized
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.fieldGroup_),
+      this.fieldCSSClassName);
+
+    this.mouseOverWrapper_ =
+      Blockly.browserEvents.bind(this.fieldGroup_, 'mouseover', this, this.onMouseOver_);
+    this.mouseOutWrapper_ =
+      Blockly.browserEvents.bind(this.fieldGroup_, 'mouseout', this, this.onMouseOut_);
+  };
+}
 
 /**
  * Milliseconds to wait before showing flydown after mouseover event on flydown field.
@@ -83,37 +113,6 @@ Blockly.FieldFlydown.prototype.fieldCSSClassName = 'blocklyFieldFlydownField';
  * @const
  */
 Blockly.FieldFlydown.prototype.flyoutCSSClassName = 'blocklyFieldFlydownFlydown';
-
-// Override FieldTextInput's showEditor_ so it's only called for EDITABLE field.
-Blockly.FieldFlydown.prototype.showEditor_ = function() {
-  if (!this.EDITABLE) {
-    return;
-  }
-  if (Blockly.FieldFlydown.showPid_) {  // cancel a pending flydown for editing
-    clearTimeout(Blockly.FieldFlydown.showPid_);
-    Blockly.FieldFlydown.showPid_ = 0;
-    Blockly.hideChaff();
-  }
-  Blockly.FieldFlydown.superClass_.showEditor_.call(this);
-};
-
-Blockly.FieldFlydown.prototype.init = function(block) {
-  Blockly.FieldFlydown.superClass_.init.call(this, block);
-
-  // Remove inherited field css classes ...
-  Blockly.utils.removeClass(/** @type {!Element} */ (this.fieldGroup_),
-      'blocklyEditableText');
-  Blockly.utils.removeClass(/** @type {!Element} */ (this.fieldGroup_),
-      'blocklyNoNEditableText');
-  // ... and add new ones, so that look and feel of flyout fields can be customized
-  Blockly.utils.addClass(/** @type {!Element} */ (this.fieldGroup_),
-      this.fieldCSSClassName);
-
-  this.mouseOverWrapper_ =
-      Blockly.bindEvent_(this.fieldGroup_, 'mouseover', this, this.onMouseOver_);
-  this.mouseOutWrapper_ =
-      Blockly.bindEvent_(this.fieldGroup_, 'mouseout', this, this.onMouseOut_);
-};
 
 Blockly.FieldFlydown.prototype.onMouseOver_ = function(e) {
   if (!this.sourceBlock_.isInFlyout) { // [lyn, 10/22/13] No flydowns in a flyout!

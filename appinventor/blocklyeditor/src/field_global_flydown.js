@@ -20,12 +20,13 @@ goog.require('AI.Blockly.FieldFlydown');
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldGlobalFlydown = function(name, displayLocation) {
-  Blockly.FieldGlobalFlydown.superClass_.constructor.call(this, name, true, displayLocation,
-      // rename all references to this global variable
-      Blockly.LexicalVariable.renameGlobal)
-};
-goog.inherits(Blockly.FieldGlobalFlydown, Blockly.FieldFlydown);
+Blockly.FieldGlobalFlydown = class extends Blockly.FieldFlydown {
+  constructor(name, displayLocation) {
+    super(name, true, displayLocation,
+        // rename all references to this global variable
+        Blockly.LexicalVariable.renameGlobal)
+  }
+}
 
 Blockly.FieldGlobalFlydown.prototype.fieldCSSClassName = 'blocklyFieldParameter'
 

@@ -18,16 +18,25 @@ goog.provide('AI.Blockly.Flydown');
  * Class for a flydown.
  * @constructor
  */
-Blockly.Flydown = function(workspaceOptions) {
-  Blockly.Flydown.superClass_.constructor.call(this, workspaceOptions);
-  this.dragAngleRange_ = 360;
-};
-goog.inherits(Blockly.Flydown, Blockly.Flyout);
+Blockly.Flydown = class extends Blockly.VerticalFlyout {
+  constructor(workspaceOptions) {
+    super(workspaceOptions);
+    this.dragAngleRange_ = 360;
+  }
+
+  /**
+   * Initializes the Flydown.
+   * @param {!Blockly.Workspace} workspace The workspace in which to create new
+   *     blocks.
+   */
+  init(workspace) {
+    super.init(workspace, false); // Flydowns have no scrollbar
+  }
+}
 
 /**
  * Previous CSS class for this flydown
- * @type {number}
- * @const
+ * @type {string}
  */
 Blockly.Flydown.prototype.previousCSSClassName_ = '';
 
@@ -67,15 +76,6 @@ Blockly.Flydown.prototype.setCSSClass = function(newCSSClassName) {
     Blockly.utils.addClass(this.svgGroup_, newCSSClassName);
     this.previousCSSClassName_ = newCSSClassName;
   }
-}
-
-/**
- * Initializes the Flydown.
- * @param {!Blockly.Workspace} workspace The workspace in which to create new
- *     blocks.
- */
-Blockly.Flydown.prototype.init = function(workspace) {
-  Blockly.Flyout.prototype.init.call(this, workspace, false); // Flydowns have no scrollbar
 }
 
 /**
