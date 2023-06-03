@@ -217,7 +217,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   private static final String LOG_TAG = "ChatBot";
   private static final boolean DEBUG = false;
   private String apiKey;        // User supplied actual ChatGPT API key
-  private String provider;      // The provider to use (default chatgpt)
+  private String provider = "chatgpt";      // The provider to use (default chatgpt)
   private String model;         // Model to use, provider dependent
 
   private SSLSocketFactory sslSockFactory = null; // Socket Factory for using
@@ -275,6 +275,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       ChatBotToken.request.Builder builder = ChatBotToken.request.newBuilder()
         .setToken(token)
         .setUuid(uuid)
+        .setProvider(provider)
         .setQuestion(question);
       if (!system.equals("") && uuid.equals("")) {
         builder = builder.setSystem(system);
