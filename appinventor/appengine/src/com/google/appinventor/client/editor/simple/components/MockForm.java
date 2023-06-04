@@ -1341,7 +1341,17 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree() {
-    return buildTree();
+    return buildComponentsTree(1);
+  }
+
+  /**
+   * Builds a tree of the component hierarchy of the form for display in the
+   * {@code SourceStructureExplorer}.
+   *
+   * @return  tree showing the component hierarchy of the form
+   */
+  public TreeItem buildComponentsTree(Integer view) {
+    return buildTree(view);
   }
 
   // PropertyChangeListener implementation

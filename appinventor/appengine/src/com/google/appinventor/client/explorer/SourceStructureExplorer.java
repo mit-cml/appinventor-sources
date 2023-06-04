@@ -68,10 +68,14 @@ public class SourceStructureExplorer extends Composite {
     }
   }
 
+  public SourceStructureExplorer() {
+    this(true);
+  }
+
   /**
    * Creates a new source structure explorer.
    */
-  public SourceStructureExplorer() {
+  public SourceStructureExplorer(boolean includeButtonPanel) {
     // Initialize UI elements
     tree = new EventCaptureTree(Ode.getImageBundle());
     tree.setAnimationEnabled(true);
@@ -174,8 +178,12 @@ public class SourceStructureExplorer extends Composite {
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(scrollPanel);
-    panel.add(new Label());
-    panel.add(buttonPanel);
+    // TODO(diego@kodular.io): With App Inventor's current layout, as of now this is the only place to
+    //  render these buttons...
+    // if (includeButtonPanel) {
+      panel.add(new Label());
+      panel.add(buttonPanel);
+    // }
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
   }

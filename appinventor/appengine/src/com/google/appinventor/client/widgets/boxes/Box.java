@@ -442,6 +442,14 @@ public abstract class Box extends HandlerPanel {
   }
 
   /**
+   * Returns the box header container.
+   * @return header container
+   */
+  public DockPanel getHeaderContainer() {
+    return headerContainer;
+  }
+
+  /**
    * Invoked upon resizing of the box by the layout. Box height will remain
    * unmodified.
    *
