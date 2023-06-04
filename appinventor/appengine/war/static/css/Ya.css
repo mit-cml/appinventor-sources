@@ -3142,3 +3142,9 @@ div.dropdiv p {
 .listItem:nth-child(2n + 0) {
   background: rgba(200, 200, 200, 0.1);
 }
+
+.components-tree-filter {
+  margin-top: 1px;
+  margin-left: 1px;
+  font-size: 11px;
+}
