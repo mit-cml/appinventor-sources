@@ -34,7 +34,7 @@ Blockly.FieldProcedure.onChange = function(procedureId) {
     }
     //return;
   }
-  this.setValue(text);
+  // this.setValue(text);
   if(def) {
     // [lyn, 10/27/13] Lyn sez: this causes complications (e.g., might open up mutator on collapsed procedure
     //   declaration block) and is no longer necessary with changes to setProedureParameters.
