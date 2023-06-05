@@ -410,11 +410,9 @@ Blockly.FieldLexicalVariable.dropdownCreate = function() {
  * @this {!Blockly.FieldLexicalVariable}
  */
 Blockly.FieldLexicalVariable.dropdownChange = function(text) {
-  if (text) {
-    this.setValue(text);
+  if (text && this.sourceBlock_) {
     this.sourceBlock_.getTopWorkspace().getWarningHandler().checkErrors(this.sourceBlock_);
   }
-  // window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);
 };
 
 
