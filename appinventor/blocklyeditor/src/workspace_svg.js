@@ -1234,7 +1234,7 @@ Blockly.WorkspaceSvg.prototype.hasBackpack = function() {
 };
 
 Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
-  Blockly.terminateDrag_();
+  this.cancelCurrentGesture();
   if (e.eventPhase == 3) {
     if (e.ctrlKey == true) {
       // multi-touch pinch gesture
