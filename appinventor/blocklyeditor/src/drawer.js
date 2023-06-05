@@ -35,7 +35,7 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
   }
   this.options.languageTree = Blockly.Drawer.buildTree_();
   this.workspace_ = parentWorkspace;
-  this.flyout_ = new Blockly.Flyout(this.options);
+  this.flyout_ = new Blockly.VerticalFlyout(this.options);
   var flyoutGroup = this.flyout_.createDom('g'),
       svg = this.workspace_.getParentSvg();
   if (this.workspace_.svgGroup_.nextSibling == null) {
@@ -77,7 +77,6 @@ Blockly.Drawer.buildTree_ = function() {
 
   // Populate the tree structure.
   for (var name in Blockly.Blocks) {
-    if (!Blockly.Blocks.hasOwnProperty(name)) continue;
     var block = Blockly.Blocks[name];
     // Blocks without a category are fragments used by the mutator dialog.
     if (block.category) {
