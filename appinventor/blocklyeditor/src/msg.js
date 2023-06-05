@@ -12,3 +12,5 @@ AI.Blockly.Msg.applyMessages = function(_translations) {
     Blockly.Msg[key] = _translations[key];
   });
 };
+
+window['AI'] = AI;

@@ -49,7 +49,7 @@ Blockly.Instrument.avoidRenderWorkspaceInMouseUp = true;
  * Used to show that renderDown() is better than render() in many situations.
  * Default value = true.
  */
-Blockly.Instrument.useRenderDown = true;
+Blockly.Instrument.useRenderDown = false;
 
 /** [lyn, 04/01/14] Should we avoid renderDown on subblocks of collapsed blocks
  * Default value = true.
