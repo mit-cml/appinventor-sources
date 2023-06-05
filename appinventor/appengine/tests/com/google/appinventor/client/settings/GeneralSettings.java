@@ -1,6 +1,6 @@
-package appengine.tests.com.google.appinventor.client.settings;
+package com.google.appinventor.client.settings;
 
-import org.eclipse.jetty.security.jaspi.modules.UserInfo;
+import com.google.appinventor.shared.rpc.user.User;
 import junit.framework.TestCase;
 
 
@@ -11,9 +11,9 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
-public class GeneralSettings {
-    //User user = new User("1","abc@email.com","true","true","sessionid");
-    UserInfoProvider user = new UserInfoProvider() {
+public class GeneralSettingsTest extends TestCase {
+    User user = new User("1","abc@email.com",true,true,null);
+    UserInfoProvider userInfoProvider = new UserInfoProvider() {
         @Override
         public String getUserId() {
             // TODO Auto-generated method stub
@@ -31,7 +31,7 @@ public class GeneralSettings {
         @Override
         public User getUser() {
             try {
-            User user= new User("1","abc@email.com");
+            User user= new User("1","abc@email.com",true,true,null);
 
             //user.setUserId("1");
             return user;
