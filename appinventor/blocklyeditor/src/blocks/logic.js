@@ -363,13 +363,13 @@ Blockly.Blocks['logic_operation'] = {
       var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
         Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        input.fieldRow[0].setText(text);
+        input.fieldRow[0].setValue(text);
       }
     }
     if (this.itemCount_ === 1) {
       var identity = this.getField('IDENTITY');
       if (identity) {
-        identity.setText(Blockly.Blocks.logic_operation.IDENTITY(op));
+        identity.setValue(Blockly.Blocks.logic_operation.IDENTITY(op));
       }
     }
     // Update the mutator container block if the mutator is open

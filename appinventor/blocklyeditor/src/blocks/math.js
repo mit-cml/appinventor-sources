@@ -1318,18 +1318,18 @@ Blockly.Blocks['math_is_a_number'] = {
   category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_is_a_number.HELPURLS[mode];
+      return Blockly.Blocks.math_is_a_number.HELPURLS()[mode];
   },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('NUM')
-        .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS()), 'OP');
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_is_a_number.TOOLTIPS[mode];
+      return Blockly.Blocks.math_is_a_number.TOOLTIPS()[mode];
     });
   },
   typeblock: [{
@@ -1359,24 +1359,29 @@ Blockly.Blocks['math_is_a_number'] = {
   }]
 };
 
-Blockly.Blocks.math_is_a_number.OPERATORS =
-  [[ Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM, 'NUMBER' ],
-   [ Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM, 'BASE10' ],
-   [ Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM, 'HEXADECIMAL' ],
-   [ Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM, 'BINARY' ]];
+Blockly.Blocks.math_is_a_number.OPERATORS = function() {
+  return [[Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM, 'NUMBER'],
+    [Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM, 'BASE10'],
+    [Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM, 'HEXADECIMAL'],
+    [Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM, 'BINARY']]
+}
 
-Blockly.Blocks.math_is_a_number.TOOLTIPS = {
-  NUMBER : Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP,
-  BASE10 : Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP,
-  HEXADECIMAL : Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP,
-  BINARY : Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP
+Blockly.Blocks.math_is_a_number.TOOLTIPS = function() {
+  return {
+    NUMBER: Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP,
+    BASE10: Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP,
+    HEXADECIMAL: Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP,
+    BINARY: Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP
+  };
 };
 
-Blockly.Blocks.math_is_a_number.HELPURLS = {
-  NUMBER : Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL,
-  BASE10 : Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL,
-  HEXADECIMAL : Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL,
-  BINARY : Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL
+Blockly.Blocks.math_is_a_number.HELPURLS = function() {
+  return {
+    NUMBER: Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL,
+    BASE10: Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL,
+    HEXADECIMAL: Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL,
+    BINARY: Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL
+  };
 };
 
 Blockly.Blocks['math_convert_number'] = {
