@@ -311,6 +311,7 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
  * @param {Array.<Blockly.BlockSvg>=} blocks
  */
 // Override Blockly's render with optimized version from lyn
+/*
 Blockly.WorkspaceSvg.prototype.render = function(blocks) {
   this.rendered = true;
   this.bulkRendering = true;
@@ -320,7 +321,7 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
       var start = new Date().getTime();
     }
     // [lyn, 04/08/14] Get both top and all blocks for stats
-    var topBlocks = blocks || this.getTopBlocks(/* ordered */ false);
+    var topBlocks = blocks || this.getTopBlocks(/* ordered * / false);
     var allBlocks = this.getAllBlocks();
     if (Blockly.Instrument.useRenderDown) {
       for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
@@ -354,6 +355,7 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
     Blockly.utils.dom.stopTextWidthCache();
   }
 };
+*/
 
 /**
  * Obtain the {@link Blockly.ComponentDatabase} associated with the workspace.
@@ -1471,6 +1473,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
  * property of the workspace is set to true to false as any connections that Blockly attempted to
  * update during that time may be incorrectly ordered in the database.
  */
+/*
 Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
   goog.array.forEach(this.connectionDBList, function(connectionDB) {
     connectionDB.sort(function(a, b) {
@@ -1485,11 +1488,13 @@ Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
     connectionDB.removeDupes();
   });
 };
+ */
 
 /**
  * Request an update to the connection database's order due to movement of a block while a bulk
  * rendering operation was in progress.
  */
+/*
 Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
   if (!this.pendingConnectionDBUpdate) {
     this.pendingConnectionDBUpdate = setTimeout(function() {
@@ -1501,6 +1506,7 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
     }.bind(this));
   }
 };
+*/
 
 /**
  * Scroll the workspace to center on the given block.

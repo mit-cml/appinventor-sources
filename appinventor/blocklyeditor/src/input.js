@@ -76,6 +76,7 @@ Blockly.Input.prototype.appendField = function(field, opt_name) {
  * @param {boolean} visible True if visible.
  * @return {!Array.<!Blockly.Block>} List of blocks to render.
  */
+/*
 Blockly.Input.prototype.setVisible = function(visible) {
   var renderList = [];
   if (this.visible_ == visible) {
@@ -101,3 +102,4 @@ Blockly.Input.prototype.setVisible = function(visible) {
   }
   return renderList;
 };
+*/
