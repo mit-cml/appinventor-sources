@@ -54,7 +54,7 @@ Blockly.FieldInvalidDropdown.prototype.doValueInvalid_ = function(invalidValue) 
   this.size_.width = 0;
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.bumpNeighbours();
   }
 }
 
@@ -72,7 +72,7 @@ Blockly.FieldInvalidDropdown.prototype.doValueUpdate_ = function(newValue) {
 
   // TODO: Remove the rest of this function after Blockly update.
   this.value_ = newValue;
-  var options = this.getOptions_();
+  var options = this.getOptions();
   for (var i = 0, option; (option = options[i]); i++) {
     // Options are tuples of human-readable text and language-neutral values.
     if (option[1] == newValue) {
@@ -84,7 +84,7 @@ Blockly.FieldInvalidDropdown.prototype.doValueUpdate_ = function(newValue) {
   this.size_.width = 0;
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.bumpNeighbours();
   }
 }
 
@@ -130,7 +130,7 @@ Blockly.FieldInvalidDropdown.prototype.processValidation_ =
 
 Blockly.FieldInvalidDropdown.prototype.doClassValidation_ = function(newValue) {
   var isValueValid = false;
-  var options = this.getOptions_();
+  var options = this.getOptions();
   for (var i = 0, option; (option = options[i]); i++) {
     // Options are tuples of human-readable text and language-neutral values.
     if (option[1] == newValue) {

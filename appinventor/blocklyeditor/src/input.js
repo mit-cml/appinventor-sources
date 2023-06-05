@@ -61,7 +61,7 @@ Blockly.Input.prototype.appendField = function(field, opt_name) {
   if (this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
     // Adding a field will cause the block to change shape.
-    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.bumpNeighbours();
   }
   return this;
 };

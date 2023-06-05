@@ -500,7 +500,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
   if (changedState && this.rendered) {
     this.render();
     // Adding or removing a error icon will cause the block to change shape.
-    this.bumpNeighbours_();
+    this.bumpNeighbours();
   }
 };
 

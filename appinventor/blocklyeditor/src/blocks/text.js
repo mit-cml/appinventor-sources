@@ -80,7 +80,7 @@ Blockly.Blocks.text.bumpBlockOnFinishEdit = function(finalValue) {
   if (!Blockly.Blocks.text.connectionCheck(
       this.outputConnection, connection, finalValue)) {
     connection.disconnect();
-    connection.sourceBlock_.bumpNeighbours_();
+    connection.sourceBlock_.bumpNeighbours();
   }
 }
 
