@@ -391,7 +391,6 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   });
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
-  workspace.rendered = false;
   workspace.screenList_ = [];
   workspace.assetList_ = [];
   workspace.componentDb_ = new Blockly.ComponentDatabase();
