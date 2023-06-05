@@ -1347,8 +1347,8 @@ Blockly.WorkspaceSvg.prototype.getTopWorkspace = function() {
 };
 
 Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
-  Blockly.WorkspaceSvg.superClass_.fireChangeListener.call(this, event);
-  if (event instanceof Blockly.Events.Move) {
+  Blockly.Workspace.prototype.fireChangeListener.call(this, event);
+  if (event instanceof Blockly.Events.BlockMove) {
     // Reset arrangement parameters
     Blockly.workspace_arranged_latest_position = null;
     Blockly.workspace_arranged_position = null;
@@ -1360,7 +1360,7 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
   }
 
   // Double-click to collapse/expand blocks
-  if (event instanceof Blockly.Events.Ui && event.element === 'click') {
+  if (event instanceof Blockly.Events.Click) {
     if (this.doubleClickPid_) {
       clearTimeout(this.doubleClickPid_);
       this.doubleClickPid_ = undefined;
