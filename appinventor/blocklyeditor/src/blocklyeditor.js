@@ -450,7 +450,7 @@ Blockly.ai_inject = function(container, workspace) {
   var svg = container.querySelector('svg.blocklySvg');
   svg.cachedWidth_ = svg.clientWidth;
   svg.cachedHeight_ = svg.clientHeight;
-  svg.appendChild(workspace.createDom('blocklyMainBackground'));
+  // svg.appendChild(workspace.createDom('blocklyMainBackground'));
   workspace.setGridSettings(gridEnabled, gridSnap);
   workspace.translate(0, 0);
   if (!options.readOnly && !options.hasScrollbars) {
@@ -512,7 +512,7 @@ Blockly.ai_inject = function(container, workspace) {
   flydown.autoClose = true; // Flydown closes after selecting a block
   workspace.addWarningIndicator();
   workspace.addBackpack();
-  Blockly.init_(workspace);
+  // Blockly.init_(workspace);
   workspace.markFocused();
   Blockly.browserEvents.bind(svg, 'focus', workspace, workspace.markFocused);
   workspace.resize();
