@@ -70,8 +70,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     block.domToMutation(mutation);
     block.initSvg();  // block shape may have changed
     block.render();
-    Blockly.Events.fire(new Blockly.Events.Change(
-      block, 'mutation', null, oldMutation, newMutation));
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+        block, 'mutation', null, oldMutation, newMutation));
+    }
     if (block.type === 'component_event') opt_replacementDom = false;
     if (opt_replacementDom !== false) {
       if (opt_replacementDom === undefined) {
@@ -85,13 +87,15 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
       replacement.initSvg();
       block.getInput('COMPONENT').connection.connect(replacement.outputConnection);
     }
-    var group = Blockly.Events.getGroup();
-    setTimeout(function() {
-      Blockly.Events.setGroup(group);
-      // noinspection JSAccessibilityCheck
-      block.bumpNeighbours_();
-      Blockly.Events.setGroup(false);
-    }, Blockly.BUMP_DELAY);
+    if (Blockly.Events.isEnabled()) {
+      var group = Blockly.Events.getGroup();
+      setTimeout(function () {
+        Blockly.Events.setGroup(group);
+        // noinspection JSAccessibilityCheck
+        block.bumpNeighbours();
+        Blockly.Events.setGroup(false);
+      }, Blockly.BUMP_DELAY);
+    }
   }
 
   var item = { enabled: false };
@@ -113,15 +117,17 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         block.domToMutation(mutation);
         block.initSvg();  // block shape may have changed
         block.render();
-        Blockly.Events.fire(new Blockly.Events.Change(
-          block, 'mutation', null, oldMutation, newMutation));
-        var group = Blockly.Events.getGroup();
-        setTimeout(function () {
-          Blockly.Events.setGroup(group);
-          // noinspection JSAccessibilityCheck
-          block.bumpNeighbours_();
-          Blockly.Events.setGroup(false);
-        }, Blockly.BUMP_DELAY);
+        if (Blockly.Events.isEnabled()) {
+          Blockly.Events.fire(new Blockly.Events.BlockChange(
+            block, 'mutation', null, oldMutation, newMutation));
+          var group = Blockly.Events.getGroup();
+          setTimeout(function () {
+            Blockly.Events.setGroup(group);
+            // noinspection JSAccessibilityCheck
+            block.bumpNeighbours();
+            Blockly.Events.setGroup(false);
+          }, Blockly.BUMP_DELAY);
+        }
       } finally {
         Blockly.Events.setGroup(false);
       }

@@ -27,7 +27,7 @@ Blockly.Field.prototype.setValue = function(newValue) {
   var oldValue = this.getValue();  // Must get value before setting text.
   this.setText(newValue);  // Always update text. See #1238.
   if (this.sourceBlock_ && Blockly.Events.isEnabled() && newValue != oldValue) {
-    Blockly.Events.fire(new Blockly.Events.Change(
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
         this.sourceBlock_, 'field', this.name, oldValue, newValue));
   }
 };

@@ -113,7 +113,7 @@ Blockly.FieldInvalidDropdown.prototype.setValue = function(newValue) {
 
   var source = this.sourceBlock_;
   if (source && Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.Change(
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
         source, 'field', this.name || null, oldValue, newValue));
   }
   this.doValueUpdate_(newValue);

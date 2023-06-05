@@ -521,7 +521,8 @@ Blockly.Blocks['local_declaration_statement'] = {
     Blockly.LexicalVariable.renameFree(this.getInputTargetBlock(this.bodyInputName), newFreeSubstitution);
     var newMutation = Blockly.utils.xml.domToText(this.mutationToDom());
     if (Blockly.Events.isEnabled()) {
-      Blockly.Events.fire(new Blockly.Events.Change(this, 'mutation', null, oldMutation, newMutation));
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+        this, 'mutation', null, oldMutation, newMutation));
     }
     if (this.nextConnection) {
       var nextBlock = this.nextConnection.targetBlock();

@@ -579,8 +579,8 @@ Blockly.Blocks['procedures_mutatorarg'] = {
       Blockly.FieldFlydown.prototype.onHtmlInputChange_.call(this, e);
       var newValue = this.getValue();
       if (newValue && oldValue !== newValue && Blockly.Events.isEnabled()) {
-        Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name,
-          oldValue, newValue));
+        Blockly.Events.fire(new Blockly.Events.BlockChange(
+          this.sourceBlock_, 'field', this.name, oldValue, newValue));
       }
     };
     this.appendDummyInput()
