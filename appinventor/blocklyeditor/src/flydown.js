@@ -72,8 +72,8 @@ Blockly.Flydown.prototype.createDom = function(cssClassName) {
  */
 Blockly.Flydown.prototype.setCSSClass = function(newCSSClassName) {
   if (newCSSClassName !== this.previousCSSClassName_) {
-    Blockly.utils.removeClass(this.svgGroup_, this.previousCSSClassName_);
-    Blockly.utils.addClass(this.svgGroup_, newCSSClassName);
+    Blockly.utils.dom.removeClass(this.svgGroup_, this.previousCSSClassName_);
+    Blockly.utils.dom.addClass(this.svgGroup_, newCSSClassName);
     this.previousCSSClassName_ = newCSSClassName;
   }
 }
