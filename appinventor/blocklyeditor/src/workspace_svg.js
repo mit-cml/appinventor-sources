@@ -573,7 +573,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
             // Potentially apply any new translations for event parameter names
             var untranslatedEventName = block.eventparam;
             block.fieldVar_.setValue(untranslatedEventName);
-            block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
+            // block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
             block.eventparam = untranslatedEventName;
             block.workspace.requestErrorChecking(block);
           }
