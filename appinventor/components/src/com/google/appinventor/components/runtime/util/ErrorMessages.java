@@ -304,7 +304,10 @@ public final class ErrorMessages {
   // ImageBot Errors
   public static final int ERROR_IMAGEBOT_ERROR = 4300;
 
-  // Start the next group of errors at 4400
+  // Spreadsheet Errors
+  public static final int ERROR_SPREADSHEET_ERROR = 4401;
+
+  // Start the next group of errors at 4500
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -745,6 +748,8 @@ public final class ErrorMessages {
     // ImageBot Errors
     errorMessages.put(ERROR_IMAGEBOT_ERROR, "Error from the ImageBot code %1$d %2$s");
 
+    // Spreadsheet Errors
+    errorMessages.put(ERROR_SPREADSHEET_ERROR, "Error in Spreadsheet: %1$s");
   }
 
   private ErrorMessages() {
