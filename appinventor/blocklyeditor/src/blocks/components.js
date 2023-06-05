@@ -1156,7 +1156,6 @@ Blockly.Blocks.component_set_get = {
       },
       // change the output type and tooltip to match the new selection
       function(selection) {
-        this.setValue(selection);
         thisBlock.propertyName = selection;
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
