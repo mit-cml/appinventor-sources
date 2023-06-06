@@ -1,4 +1,4 @@
-package appengine.tests.com.google.appinventor.client.settings;
+package com.google.appinventor.client.settings;
 
 import static org.junit.Assert.assertFalse;
 
@@ -15,14 +15,13 @@ import org.junit.Assert;
 //import static org.mockito.Mockito.*;
 import com.google.appinventor.shared.rpc.user.User;
 import org.powermock.api.easymock.PowerMock;
-import com.google.api.server.spi.auth.common.User;
 import com.google.appinventor.client.settings.user.GeneralSettings;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
-import org.mockito.*;
+//import org.mockito.*;
 // import org.mockito.Mock;
 // import org.mockito.Mockito;
 
@@ -34,8 +33,12 @@ public class GeneralSettingsTest {
     //@Mock
     //private UserInfoProvider userInfoProvider;
 
-    Ode ode;
-    boolean valueee = ode.getUserDyslexicFont();
+    // protected GeneralSettingsTest(String category) {
+    //     //super(category);
+    //     //TODO Auto-generated constructor stub
+    // }
+    // Ode ode;
+    // boolean valueee = Ode.getUserDyslexicFont();
     //system.out.println(val);
     //assertTrue(valueee, True);
     //assertFalse("false",value);
@@ -155,6 +158,7 @@ public class GeneralSettingsTest {
             }
             catch(UnsupportedOperationException un) { };
             //throw new UnsupportedOperationException("Unimplemented method 'getUserTosAccepted'");
+            return user;
         }
 
 
@@ -200,11 +204,32 @@ public class GeneralSettingsTest {
         };
     };
     GeneralSettings generalSetting = new GeneralSettings(user);
-    EditableProperties editableProperties = new EditableProperties(true);
-    EditableProperty editableProperty = new EditableProperty(editableProperties,
-    SettingsConstants.USER_DYSLEXIC_FONT, "false",EditableProperty.TYPE_INVISIBLE);
+    generalSettingdummy gs;
+    public void testgs() {
+        gs.generalSettingg();
+        //assertVoid(gs.generalSettingg());
+    }
+    
+    // = new generalSetting2(valueee);
+    // EditableProperties editableProperties = new EditableProperties(true);
+    // EditableProperty editableProperty = new EditableProperty(editableProperties,
+    // SettingsConstants.USER_DYSLEXIC_FONT, "false",EditableProperty.TYPE_INVISIBLE);
     //assertEquals(editableProperty);
-    public void test_User_Dyslexic_font() {
-        generalSetting.addProperty(editableProperty);
+    // void test_User_Dyslexic_font() {// extends Editableproperties {
+    //     editableProperties.addProperty(editableProperty);
+    //     return;
+    // }
+    private class generalSettingdummy extends EditableProperties {
+        public generalSettingdummy(boolean changeEventOnAdd) {
+            super(changeEventOnAdd);
+            //TODO Auto-generated constructor stub
+        }
+
+        public void generalSettingg()
+        {
+            EditableProperty editableProperty = new EditableProperty(this,
+    SettingsConstants.USER_DYSLEXIC_FONT, "false",EditableProperty.TYPE_INVISIBLE);
+            super.addProperty(editableProperty);
+        }
     }
 }
