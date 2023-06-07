@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client;
 
 import com.google.appinventor.shared.rpc.user.User;
@@ -19,7 +24,7 @@ import com.google.gwt.user.client.Window;
 
 //import gnu.commonlisp.lang.CommonLisp;
 
-public class OdeTest extends GWTTestCase {
+public class OdeTestCase extends GWTTestCase {
   public void testCompareLocales() {
     assertTrue("Handles default case one is null",
         Ode.compareLocales(null, "en", "en"));
