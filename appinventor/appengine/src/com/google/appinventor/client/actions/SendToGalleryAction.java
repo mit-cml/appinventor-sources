@@ -21,32 +21,35 @@ public class SendToGalleryAction implements Command {
 
   @Override
   public void execute() {
-    List<Project> selectedProjects =
-        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
-    if (selectedProjects.size() != 1) {
-      ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
-    } else {
-      if (!lockPublishButton) {
-        lockPublishButton = true;
-        Project project = selectedProjects.get(0);
-        Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
-            new OdeAsyncCallback<RpcResult>(
-                MESSAGES.GallerySendingError()) {
-              @Override
-              public void onSuccess(RpcResult result) {
-                lockPublishButton = false;
-                if (result.getResult() == RpcResult.SUCCESS) {
-                  Window.open(result.getOutput(), "_blank", "");
-                } else {
-                  ErrorReporter.reportError(result.getError());
+    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+      List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() != 1) {
+        ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
+      } else {
+        if (!lockPublishButton) {
+          lockPublishButton = true;
+          Project project = selectedProjects.get(0);
+          Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
+              new OdeAsyncCallback<RpcResult>(
+                  MESSAGES.GallerySendingError()) {
+                @Override
+                public void onSuccess(RpcResult result) {
+                  lockPublishButton = false;
+                  if (result.getResult() == RpcResult.SUCCESS) {
+                    Window.open(result.getOutput(), "_blank", "");
+                  } else {
+                    ErrorReporter.reportError(result.getError());
+                  }
                 }
-              }
-              @Override
-              public void onFailure(Throwable t) {
-                lockPublishButton = false;
-                super.onFailure(t);
-              }
-            });
+
+                @Override
+                public void onFailure(Throwable t) {
+                  lockPublishButton = false;
+                  super.onFailure(t);
+                }
+              });
+        }
       }
     }
   }

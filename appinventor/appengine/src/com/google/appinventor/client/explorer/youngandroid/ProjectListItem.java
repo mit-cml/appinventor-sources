@@ -1,5 +1,6 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
@@ -41,11 +42,9 @@ public class ProjectListItem extends Composite {
   private ProjectSelectionChangeHandler changeHandler;
   private ClickHandler clickHandler;
 
-  public ProjectListItem(Project project, int depth) {
-//    style.ensureInjected();
+  public ProjectListItem(Project project) {
     initWidget(UI_BINDER.createAndBindUi(this));
     DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
-
     Date dateCreated = new Date(project.getDateCreated());
     Date dateModified = new Date(project.getDateModified());
 
@@ -54,7 +53,6 @@ public class ProjectListItem extends Composite {
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
     this.depth = depth;
-    checkBox.getElement().setAttribute("style", "margin-left: " + ((depth-1) * 40) + "px");
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -74,10 +72,6 @@ public class ProjectListItem extends Composite {
     }
   }
 
-  public void setClickHandler(ClickHandler handler) {
-    this.clickHandler = handler;
-  }
-
   public Project getProject() {
     return project;
   }
@@ -93,10 +87,9 @@ public class ProjectListItem extends Composite {
     changeHandler.onSelectionChange(checkBox.getValue());
   }
 
+
   @UiHandler("nameLabel")
   void itemClicked(ClickEvent e) {
-    if (clickHandler != null) {
-      clickHandler.onClick(e);
-    }
+    Ode.getInstance().openYoungAndroidProjectInDesigner(project);
   }
 }

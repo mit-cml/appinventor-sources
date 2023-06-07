@@ -7,9 +7,9 @@ package com.google.appinventor.client.explorer.folder;
 
 public interface FolderManagerEventListener {
 
-  void onFolderAdded(Folder folder);
-  void onFolderRemoved(Folder folder);
-  void onFolderRenamed(Folder folder);
+  void onFolderAdded(ProjectFolder folder);
+  void onFolderRemoved(ProjectFolder folder);
+  void onFolderRenamed(ProjectFolder folder);
   void onFoldersChanged();
   void onFoldersLoaded();
 

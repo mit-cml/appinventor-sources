@@ -5,7 +5,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.explorer.folder.Folder;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -20,11 +20,11 @@ public class DeleteAction implements Command {
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
           List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
-          List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
           if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
             List<Project> projectsToDelete = selectedProjects;
-            for(Folder f : selectedFolders) {
+            for(ProjectFolder f : selectedFolders) {
               projectsToDelete.addAll(f.getNestedProjects());
             }
             // Show one confirmation window for selected projects.
@@ -32,7 +32,7 @@ public class DeleteAction implements Command {
               for (Project project : projectsToDelete) {
                 project.moveToTrash();
               }
-              for (Folder f : selectedFolders) {
+              for (ProjectFolder f : selectedFolders) {
                 f.getParentFolder().removeChildFolder(f);
               }
             }

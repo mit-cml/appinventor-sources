@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Tree;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.components.FolderTreeItem;
-import com.google.appinventor.client.explorer.folder.Folder;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import java.util.logging.Logger;
@@ -50,9 +50,9 @@ public final class NewFolderWizard {
     input.setFocus(true);
   }
 
-  private FolderTreeItem renderFolder(Folder folder) {
+  private FolderTreeItem renderFolder(ProjectFolder folder) {
     FolderTreeItem treeItem = new FolderTreeItem(folder);
-    for(Folder child : folder.getChildFolders()) {
+    for(ProjectFolder child : folder.getChildFolders()) {
       if (!"*trash*".equals(child.getName())) {
         treeItem.addItem(renderFolder(child));
       }

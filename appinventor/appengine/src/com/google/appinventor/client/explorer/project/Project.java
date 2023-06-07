@@ -9,12 +9,12 @@ package com.google.appinventor.client.explorer.project;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public final class Project {
   // Project specific settings
   private ProjectSettings settings; // lazily and asynchronously initialized
 
-  private Folder homeFolder = null;
+  private ProjectFolder homeFolder = null;
 
   /**
    * Creates a new project.
@@ -160,9 +160,9 @@ public final class Project {
    * The project-folder relationship is stored in the folder object.
    * This is just a back-reference that is set when the folder is created.
    */
-  public void setHomeFolder(Folder folder) {homeFolder = folder;}
+  public void setHomeFolder(ProjectFolder folder) {homeFolder = folder;}
 
-  public Folder getHomeFolder() { return homeFolder; }
+  public ProjectFolder getHomeFolder() { return homeFolder; }
 
   /**
    * Returns the project specific settings, or null if the settings haven't

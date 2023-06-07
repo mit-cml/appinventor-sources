@@ -385,6 +385,10 @@ div.StatusPanel {
   display:contents;
 }
 
+.ode-ProjectFolderList {
+  margin-left: 42px;
+}
+
 .ode-ProjectHeaderRow {
   display: flex;
   align-items: center;

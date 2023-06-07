@@ -11,7 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
-import com.google.appinventor.client.explorer.folder.Folder;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
@@ -140,7 +140,7 @@ public final class TextValidators {
    *        folder name
    * @return {@code true} if the folder name is valid, {@code false} otherwise
    */
-  public static ProjectNameStatus checkNewFolderName(String folderName, Folder parent) {
+  public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
     // Check the format of the folder name
     if (!isValidIdentifier(folderName)) {
       // TODO: Decide whether to use new strings
@@ -155,7 +155,7 @@ public final class TextValidators {
     }
 
     // Check that folder does not already exist
-    for (Folder folder : parent.getChildFolders()) {
+    for (ProjectFolder folder : parent.getChildFolders()) {
       if (folderName.equals(folder.getName())) {
         Window.alert(MESSAGES.duplicateProjectNameError(folderName));
         return ProjectNameStatus.DUPLICATE;

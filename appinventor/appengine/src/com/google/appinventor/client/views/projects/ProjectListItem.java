@@ -5,6 +5,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,7 +40,7 @@ public class ProjectListItem extends Composite {
   Resources.ProjectListItemStyle style = Ode.getUserDarkThemeEnabled() ?
       Resources.INSTANCE.listItemStyleDark() : Resources.INSTANCE.listItemStyleLight();
 
-  private ProjectsFolder parentFolder;
+  private ProjectFolder parentFolder;
   private Project project;
   private ProjectSelectionChangeHandler changeHandler;
   private ClickHandler clickHandler;

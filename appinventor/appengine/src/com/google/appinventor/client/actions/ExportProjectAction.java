@@ -18,7 +18,7 @@ public class ExportProjectAction implements Command {
     if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
       //If we are in the projects view
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
         exportProject(selectedProjects.get(0));
       } else if (selectedProjects.size() > 1) {

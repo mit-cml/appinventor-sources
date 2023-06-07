@@ -1,4 +1,4 @@
-<!-- ProjectsFolderListItem.ui.xml -->
+<!-- ProjectsFolder.ui.xml -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.components"
@@ -17,6 +17,6 @@
       <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel '/>
       <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel '/>
     </g:FlowPanel>
-    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectRowHidden' />
+    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectFolderList ode-ProjectRowHidden' />
   </g:FlowPanel>
 </ui:UiBinder>
