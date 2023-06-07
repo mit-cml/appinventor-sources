@@ -29,7 +29,4 @@ public class GeneralSettingsTestCase extends GWTTestCase {
     assertTrue(Boolean.parseBoolean(value));
   }
 
-  public void testFailure() {
-    fail("This should fail");
-  }
 }
