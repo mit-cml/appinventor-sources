@@ -29,7 +29,8 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   @objc public func reloadComponents(){
@@ -77,7 +78,8 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   @objc public func reloadComponents(){
