@@ -680,32 +680,33 @@ public class BlocklyPanel extends HTMLPanel {
    * Make the workspace associated with the BlocklyPanel the main workspace.
    */
   native void makeActive()/*-{
-    $wnd.Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
-    $wnd.Blockly.mainWorkspace.refreshBackpack();
-    if ($wnd.Blockly.mainWorkspace.pendingRender === true) {
-      $wnd.Blockly.mainWorkspace.pendingRenderFunc();
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    $wnd.Blockly.common.setMainWorkspace(workspace);
+    workspace.refreshBackpack();
+    if (workspace.pendingRender === true) {
+      workspace.pendingRenderFunc();
     }
     // Trigger a screen switch to send new YAIL.
-    var parts = $wnd.Blockly.mainWorkspace.formName.split(/_(.+)/);  // Split string on first _
+    var parts = workspace.formName.split(/_(.+)/);  // Split string on first _
     if ($wnd.Blockly.ReplMgr.isConnected()) {
-      $wnd.Blockly.ReplMgr.pollYail($wnd.Blockly.mainWorkspace);
+      $wnd.Blockly.ReplMgr.pollYail(workspace);
     }
-    $wnd.Blockly.mainWorkspace.fireChangeListener(new $wnd.AI.Events.ScreenSwitch(parts[0], parts[1]));
+    workspace.fireChangeListener(new $wnd.AI.Events.ScreenSwitch(parts[0], parts[1]));
   }-*/;
 
   // [lyn, 2014/10/27] added formJson for upgrading
   public native void doLoadBlocksContent(String formJson, String blocksContent) /*-{
     var workspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
-    var previousMainWorkspace = $wnd.Blockly.mainWorkspace;
+    var previousMainWorkspace = $wnd.Blockly.common.getMainWorkspace();
     try {
-      $wnd.Blockly.mainWorkspace = workspace;
+      $wnd.Blockly.common.setMainWorkspace(workspace);
       workspace.loadBlocksFile(formJson, blocksContent).verifyAllBlocks();
     } catch(e) {
       workspace.loadError = true;
       throw e;
     } finally {
       workspace.loadComplete = true;
-      $wnd.Blockly.mainWorkspace = previousMainWorkspace;
+      $wnd.Blockly.common.setMainWorkspace(previousMainWorkspace);
     }
   }-*/;
 
