@@ -74,6 +74,9 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
         add("Publishing");
     }};
 
+    // maps the category to Label
+    private HashMap<String, Label> labelsMap = new HashMap<>();
+
     // maps the subcategory to list of editable property
     private HashMap<String, ArrayList<EditableProperty>> propertiesMap = new HashMap<>();
 
@@ -86,13 +89,10 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
     // Indicates the Vertical Panel which is on the the right side of the dialog
     VerticalPanel cur = null;
 
-    // Indicates the form on which dialog is opened
-    private MockForm curform;
-
     // indicates the currently active project editor
     private YaProjectEditor projectEditor;
     
-    public ProjectPropertiesDialogBox(String byDefaultCategory) {
+    public ProjectPropertiesDialogBox() {
         this.setStylePrimaryName("ode-projectPropertyDialogDiv");
         add(uiBinder.createAndBindUi(this));
         this.setAnimationEnabled(true);
@@ -127,7 +127,7 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
             });
 
             // make the first one selected by default
-            if (categoryNameLabel.getText() == byDefaultCategory) {
+            if (selectedLabel == null) {
                 selectedLabel = categoryNameLabel;
                 selectedLabel.setStyleName("ode-propertyDialogCategoryTitleSelected");
             }
@@ -143,14 +143,8 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
     	projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager().getOpenProjectEditor(
             Ode.getInstance().getCurrentYoungAndroidProjectId());
 
-        // get the active screen and active form
-    	String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+        // screen1 mock form
         form = projectEditor.getFormFileEditor("Screen1").getForm();
-        if (curScreen == "Screen1") {
-            curform = null;
-        }else {
-            curform = projectEditor.getFormFileEditor(curScreen).getForm();
-        }
 
         // get the editable properties of the screen1 MockForm
 	    EditableProperties editableProperties = form.getProperties();
@@ -207,7 +201,7 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
             Label description = new Label(property.getDescription());
             description.setStyleName("ode-propertyDialogPropertyDescription");
 
-            // editor of the edi
+            // editor of the editor
             PropertyEditor editor = property.getEditor();
             editor.setStyleName("ode-propertyDialogPropertyEditor");
 
@@ -225,15 +219,7 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
 
     @UiHandler("closeIcon")
     void handleClose(ClickEvent e) {
-        projectEditor.setSelectedCategory(selectedLabel.getText().toString());
         this.hide();
-    }
-
-    public static void closeIfOpen() {
-        if (lastDialog != null) {
-          lastDialog.removeFromParent();
-          lastDialog = null;
-        }
     }
     
     /**
@@ -242,7 +228,10 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
     @Override
     public void onPropertyChange(String name, String value) {
         if (PROJECT_PROPERTIES.contains(name)) {
-            if (curform != null) {
+            // get the active screen and active form
+    	    String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+            MockForm curform = projectEditor.getFormFileEditor(curScreen).getForm();
+            if (curScreen != "Screen1" && curform != null) {
                 Ode.CLog("refreshing cur form...");
                 curform.updatePropertiesPanel();
             }

@@ -116,21 +116,13 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    // variable which open the ProjectPropertyDialog(per project)
   private ProjectPropertiesDialogBox propertyDialogBox = null;
 
-  // variable indicate the last selected category in ProjectPropertyDialog(by default it's General)
-  private String selectedCategory = "General";
-
-  public void setSelectedCategory(String category) {
-    selectedCategory = category;
-  }
-
   /**
    * Opens the project property dialog
    */
   public void openProjectPropertyDialog() {
-    if (propertyDialogBox != null) {
-      propertyDialogBox = null;
+    if (propertyDialogBox == null) {
+      propertyDialogBox = new ProjectPropertiesDialogBox();
     }
-    propertyDialogBox = new ProjectPropertiesDialogBox(selectedCategory);
     propertyDialogBox.show();
   }
 
