@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -16,6 +17,7 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -27,12 +29,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.StackPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -82,10 +80,19 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // Map translated component names to English names
   private final Map<String, String> translationMap;
 
-  private final TextBox searchText; 
+  private final TextBox searchText;
+
+  private final DropDownButton componentFilter;
+
+  private final String WIDGET_NAME_FILTER = "Filter";
+
+//  private final CheckBox iosOnly, androidOnly;
+//  private final InlineLabel iosLabel, androidLabel;
   private final VerticalPanel searchResults;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
+
+  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
   private Map<String, SimplePaletteItem> searchSimplePaletteItems =
       new HashMap<String, SimplePaletteItem>();
 
@@ -180,6 +187,63 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
     searchText.getElement().setAttribute("style", "width: 100%; box-sizing: border-box;");
 
+    List<DropDownButton.DropDownItem> filterItems = new ArrayList<>();
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownAllComponents(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownAllComponents());
+        reloadComponentsExceptExtension();
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownAndroidSupported(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownAndroidSupported());
+        reloadComponentsExceptExtension();
+        for (String component : COMPONENT_DATABASE.getComponentNames()) {
+          if(!componentCoverage.isAndroidCompatible(component)){
+              removeComponent(component);
+            }
+        }
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownIosSupported(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownIosSupported());
+        reloadComponentsExceptExtension();
+        for (String component : COMPONENT_DATABASE.getComponentNames()) {
+          if(!componentCoverage.isIosCompatible(component)){
+            removeComponent(component);
+          }
+        }
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownSupportedByboth(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownSupportedByboth());
+        reloadComponentsExceptExtension();
+        for (String component : COMPONENT_DATABASE.getComponentNames()) {
+          if(!(componentCoverage.isAndroidCompatible(component) && componentCoverage.isIosCompatible(component))){
+            removeComponent(component);
+          }
+        }
+      }
+    }));
+
+    componentFilter = new DropDownButton(WIDGET_NAME_FILTER, "Filter", filterItems, false);
+    componentFilter.setStylePrimaryName("ode-PaletteFilter");
+
+    HorizontalPanel platformFilter = new HorizontalPanel();
+    platformFilter.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+
+
+    platformFilter.add(componentFilter);
+
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
     searchText.addKeyDownHandler(new EscapeKeyDownHandler());
@@ -198,6 +262,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     panel.setSpacing(3);
     panel.add(searchText);
+    panel.add(platformFilter);
     panel.setWidth("100%");
 
     searchResults = new VerticalPanel();
@@ -525,6 +590,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     paletteHelpers.clear();
     categoryOrder.clear();
     simplePaletteItems.clear();
+  }
+
+  //Inteded for use by component filter
+  public void reloadComponentsExceptExtension(){
+    clearComponentsExceptExtension();
+    loadComponents();
   }
 
 

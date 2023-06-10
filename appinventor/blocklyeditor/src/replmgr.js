@@ -1587,7 +1587,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
                 iosIncompatible.push(componentJson[i].$Type)
             }
         }
-        if (iosIncompatible.length > 0 && rs.android) {
+        if (iosIncompatible.length > 0 && !rs.android) {
             //dialog box containing list of incompatible components
             var dialog = new Blockly.Util.Dialog(
                 Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
