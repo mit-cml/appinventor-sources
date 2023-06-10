@@ -10,7 +10,7 @@ import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
@@ -131,6 +131,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Simplified Chinese";
   private static final String WIDGET_NAME_SWITCH_LANGUAGE_SPANISH_ES = "Spanish-Spain";
   private static final String WIDGET_NAME_SWITCH_LANGUAGE_PORTUGUESE = "Portuguese";
+  private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = "German";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = "Vietnamese";
 
@@ -196,6 +197,9 @@ public class DesignToolbar extends Toolbar {
           MESSAGES.publishToGalleryButton(), new SendToGalleryAction()));
     }
 
+    addButton(new ToolbarItem(WIDGET_NAME_PROJECTPROPERTIES,
+        MESSAGES.projectPropertiesButton(), new ProjectPropertiesAction()));
+
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
@@ -204,6 +208,16 @@ public class DesignToolbar extends Toolbar {
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+  }
+
+  private class ProjectPropertiesAction implements Command {
+    @Override
+    public void execute() {
+      // new ProjectPropertiesDialogBox();
+      YaProjectEditor projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager()
+      .getOpenProjectEditor(Ode.getInstance().getCurrentYoungAndroidProjectId());
+      projectEditor.openProjectPropertyDialog();
+    }
   }
 
   private class ToogleTutorialAction implements Command {

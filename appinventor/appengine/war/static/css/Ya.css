@@ -1425,6 +1425,105 @@ path.ode-SimpleMockMapFeature-selected {
 
 /* End of NoProjectsDialogBox. */
 
+/* Start Of ProjectPropertiesDialogBox. */
+.ode-projectPropertyDialogDiv {  
+  box-shadow: 0 0 20px gray;
+  background-color:  white;
+  width: 850px;
+  overflow: hidden;
+  border: 2px black solid;
+}
+
+.ode-propertyDialogDivHeader {
+  background-color: #a5cf47;
+  height: 10%;
+  padding: 10px;
+  border-bottom: 2px #2e2c2c solid;
+}
+
+.ode-propertyDialogDivInnerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#ode-closeButton {
+  max-width: 50px;
+  max-height: 50px;
+  margin-left: 15px;
+}
+
+#ode-closeButton:hover {
+  cursor: pointer;
+}
+
+.ode-propertyDialogVerticalPanel {
+  height: 100%;
+  width: 100%;
+}
+
+.ode-propertyDialogCategoryTitle {
+  margin-top: 5%;
+  padding-left: 8%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.ode-propertyDialogCategoryTitle:hover {
+  cursor: pointer;
+}
+
+.ode-propertyDialogCategoryTitleSelected {
+  margin-top: 5%;
+  padding-left: 8%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  background-color: #d2f5e0;
+}
+
+.ode-propertyDialogCategoryTitleSelected:hover {
+  cursor: pointer;
+}
+
+.ode-propertyDialogPropertyContainer {
+  margin-top: 3%;
+  padding-bottom: 3%;
+  padding-left: 5%;
+  padding-right: 3%;
+  border-bottom: 2px #030303 solid;
+  width: 100%;
+}
+
+.ode-propertyDialogPropertyTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #413f3f;
+}
+
+.ode-propertyDialogPropertyDescription {
+  margin-top: 4%;
+  font-size: 14px;
+  font-weight: 400;
+  color: #797575;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.ode-propertyDialogPropertyEditor {
+  min-height: 30px;
+  height: 10%;
+  margin-top: 4%;
+  width: 100%;
+}
+
+/* End of Project ProjectPropertiesDialogBox. */
+
 .ode-DialogBox {
   background-color: white;
   border-left: 4px solid #8fc202;

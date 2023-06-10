@@ -762,7 +762,7 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_ACCENT_COLOR:
       case PROPERTY_NAME_THEME:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
-        return editor.isScreen1();
+        return false;
       }
 
       default: {
@@ -1440,6 +1440,10 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  public void updatePropertiesPanel() {
+    ((YaFormEditor) editor).loadDesigner();
+  }
+
   @Override
   public EditableProperties getProperties() {
     // Before we return the Properties object, we make sure that the
@@ -1485,6 +1489,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, 
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR));            
     }
     return properties;
   }

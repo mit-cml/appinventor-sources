@@ -734,7 +734,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Updates the the whole designer: form, palette, source structure explorer,
    * assets list, and properties panel.
    */
-  private void loadDesigner() {
+  public void loadDesigner() {
     form.refresh();
     MockComponent selectedComponent = form.getLastSelectedComponent();
 

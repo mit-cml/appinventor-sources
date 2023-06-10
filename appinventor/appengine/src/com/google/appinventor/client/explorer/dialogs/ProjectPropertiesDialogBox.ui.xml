@@ -1,0 +1,55 @@
+!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2017 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui'
+    ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+    ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+    ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
+    ui:generateLocales="default">
+
+    <ui:with type="com.google.appinventor.client.Images" field="res" />
+
+    <ui:style>
+      .ode-propertyDialogCategoryScrollPanel {
+        height: 400px;
+        width: 250px;
+        border-right: 2px #918585 solid;
+        border-bottom: 2px #918585 solid;
+      }
+
+      .ode-propertyDialogPropertiesScrollPanel {
+        height: 400px;
+        width: 598px;
+        border-bottom: 2px #918585 solid;
+      }
+    </ui:style>
+
+  <g:HTMLPanel>
+    <div class="ode-propertyDialogDivHeader">
+      <div class="ode-propertyDialogDivInnerHeader">
+        <h3 class="ode-headerTitle">
+          <ui:msg key="ProjectProperties"
+                  description="Project Properties Title">Project Properties</ui:msg>
+        </h3>
+
+        <div id='ode-codiLogoDiv'>
+          <g:Image ui:field="closeIcon" resource="{res.close}" altText="MIT App Inventor" height="30px" width="30px" />
+        </div>
+      </div>
+    </div>
+
+    <g:HorizontalPanel>
+      <g:VerticalPanel>
+        <g:ScrollPanel ui:field="categories" styleName='{style.ode-propertyDialogCategoryScrollPanel}'></g:ScrollPanel>
+      </g:VerticalPanel>
+      <g:VerticalPanel>
+        <g:ScrollPanel ui:field="propertiesPanel" styleName='{style.ode-propertyDialogPropertiesScrollPanel}'></g:ScrollPanel>
+      </g:VerticalPanel>
+    </g:HorizontalPanel>
+
+  </g:HTMLPanel>
+
+</ui:UiBinder>

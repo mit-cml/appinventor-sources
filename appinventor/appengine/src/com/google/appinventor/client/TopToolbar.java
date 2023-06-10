@@ -9,6 +9,7 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
@@ -109,6 +110,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
+  private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -230,6 +232,8 @@ public class TopToolbar extends Composite {
     if (!isReadOnly) {
       fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
           new NewAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_PROJECTPROPERTIES, MESSAGES.ProjectPropertiesMenuItem(), 
+          new ProjectPropertiesAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
           new ImportProjectAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
@@ -423,6 +427,16 @@ public class TopToolbar extends Composite {
       new NewYoungAndroidProjectWizard(null).center();
       // The wizard will switch to the design view when the new
       // project is created.
+    }
+  }
+
+  private class ProjectPropertiesAction implements Command {
+    @Override
+    public void execute() {
+      // new ProjectPropertiesDialogBox();
+      YaProjectEditor projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager()
+      .getOpenProjectEditor(Ode.getInstance().getCurrentYoungAndroidProjectId());
+      projectEditor.openProjectPropertyDialog();
     }
   }
 
@@ -1073,7 +1087,9 @@ public class TopToolbar extends Composite {
     }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.ProjectPropertiesMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), 
+      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
@@ -1090,6 +1106,7 @@ public class TopToolbar extends Composite {
       }
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.ProjectPropertiesMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
       ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
