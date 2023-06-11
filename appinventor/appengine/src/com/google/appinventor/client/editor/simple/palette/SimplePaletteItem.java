@@ -37,11 +37,6 @@ public class SimplePaletteItem extends DragSourcePanel {
   // Component descriptor (needed for mock component instantiation)
   private SimpleComponentDescriptor scd;
 
-  //Getting an instance of ComponentConverge class to get the component platform support information
-  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
-
-  private static final Images images = Ode.getImageBundle();
-
   // Cached prototype of the component that this palette item creates.
   // Properties of the prototype may be queried by accessors.
   private MockComponent componentPrototype;
@@ -77,30 +72,6 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.add(label);
 
     HorizontalPanel optPanel = new HorizontalPanel();
-
-    boolean isAndroidCompatible = componentCoverage.isAndroidCompatible(scd.getName());
-    boolean isIosCompatible = componentCoverage.isIosCompatible(scd.getName());
-
-    if(!isAndroidCompatible){
-      //display apple icon if the component is available only in ios
-      Image iosImage = new Image(images.iosLogo());
-      iosImage.setWidth("16px");
-      iosImage.setHeight("16px");
-      iosImage.setStylePrimaryName("ode-SimplePaletteItem-icon");
-      optPanel.add(iosImage);
-      optPanel.setCellHorizontalAlignment(iosImage, HorizontalPanel.ALIGN_LEFT);
-      optPanel.setCellWidth(iosImage, "30px");
-    }
-    else if(!isIosCompatible) {
-      //display android icon if the component is available only in android
-      Image androidImage = new Image(images.androidLogo());
-      androidImage.setWidth("16px");
-      androidImage.setHeight("16px");
-      androidImage.setStylePrimaryName("ode-SimplePaletteItem-icon");
-      optPanel.add(androidImage);
-      optPanel.setCellHorizontalAlignment(androidImage, HorizontalPanel.ALIGN_LEFT);
-      optPanel.setCellWidth(androidImage, "30px");
-    }
 
     ComponentHelpWidget helpImage = new ComponentHelpWidget(scd);
     optPanel.add(helpImage);
