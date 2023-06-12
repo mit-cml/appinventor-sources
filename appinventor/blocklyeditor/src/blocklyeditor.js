@@ -377,7 +377,7 @@ Blockly.unprefixName = function (name) {
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
 Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
-  var workspace = Blockly.inject(container, {
+  var options = {
     'readOnly': readOnly,
     'rtl': rtl,
     'collapse': true,
@@ -387,8 +387,25 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'disable': true,
     'media': './static/media/',
     'grid': {'spacing': '20', 'length': '5', 'snap': true, 'colour': '#ccc'},
-    'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1}
-  });
+    'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
+    plugins: {
+      blockDragger: top.MultiselectBlockDragger,
+    },
+    useDoubleClick: true,
+    bumpNeighbours: true,
+    multiselectIcon: {
+      hideIcon: false,
+      enabledIcon: 'https://github.com/mit-cml/workspace-multiselect/raw/main/test/media/select.svg',
+      disabledIcon: 'https://github.com/mit-cml/workspace-multiselect/raw/main/test/media/unselect.svg',
+    },
+    multiselectCopyPaste: {
+      crossTab: true,
+      menu: true,
+    },
+  };
+  var workspace = Blockly.inject(container, options);
+  var multiselectPlugin = new top.Multiselect(workspace);
+  multiselectPlugin.init(options);
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
