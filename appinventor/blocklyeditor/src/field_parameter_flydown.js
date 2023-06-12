@@ -33,6 +33,30 @@ goog.require('AI.Blockly.FieldFlydown');
  */
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of
 //    renaming of proc decl params
+
+Blockly.Css.register(
+  '.blocklyFieldParameter>rect {' +
+  '  fill: rgb(222, 143, 108);' +
+  '  fill-opacity: 1.0;' +
+  '  stroke-width: 2;' +
+  '  stroke: rgb(231, 175, 150);' +
+  '}' +
+  '.blocklyFieldParameter>text {' +
+  '  stroke-width: 1;' +
+  '  fill: #000;' +
+  '}' +
+  '.blocklyFieldParameter:hover>rect {' +
+  '  stroke-width: 2;' +
+  '  stroke: rgb(231,175,150);' +
+  '  fill: rgb(231,175,150);' +
+  '  fill-opacity: 1.0;' +
+  '}' +
+  '.blocklyFieldParameterFlydown {' +
+  '  fill: rgb(231,175,150);' +
+  '  fill-opacity: 0.8;' +
+  '}'
+);
+
 Blockly.FieldParameterFlydown = class extends Blockly.FieldFlydown {
   constructor(name, isEditable, opt_displayLocation, opt_additionalChangeHandler) {
     super(name, isEditable, opt_displayLocation, (text) => {
