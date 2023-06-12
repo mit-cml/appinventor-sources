@@ -7,6 +7,7 @@ package com.google.appinventor.client.settings;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.gwt.junit.client.GWTTestCase;
 
 public class GeneralSettingsTestCase extends GWTTestCase {
@@ -64,5 +65,25 @@ public class GeneralSettingsTestCase extends GWTTestCase {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
     assertFalse(Boolean.parseBoolean(value));
+  }
+
+  public void testCurrentProjectId() {
+    User user = new User("1","abc@email.com",true,true,null);
+    UserSettings userSettings = new UserSettings(user);
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
+          "" + 1);
+    final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    assertEquals(value, "1");
+  }
+
+  //wip
+  public void testUserTemplateURLSetting() {
+    User user = new User("1","abc@email.com",true,true,null);
+    UserSettings settings = new UserSettings(user);
+    settings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      changePropertyValue(SettingsConstants.USER_TEMPLATE_URLS,
+        TemplateUploadWizard.getStoredTemplateUrls());
   }
 }

@@ -4,7 +4,11 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.user.client.Window;
 
 public class OdeTestCase extends GWTTestCase {
   public void testCompareLocales() {
@@ -20,9 +24,12 @@ public class OdeTestCase extends GWTTestCase {
         Ode.compareLocales(null, "fr_FR", "en"));
   }
 
-  public void testhandleUserLocale() {
-    boolean value = Ode.compareLocales(null, "en", "en");
-    assertEquals(value, Ode.handleUserLocale());
+  public void testhandleUserLocaletrue() {
+    String locale = Window.Location.getParameter("locale");
+    User user = new User("1","abc@email.com",true,true,null);
+    UserSettings userSettings = new UserSettings(user);
+    String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
+    assertTrue(Ode.compareLocales(locale,lastUserLocale, "en"));
   }
 
   @Override
