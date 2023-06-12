@@ -1353,8 +1353,8 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
     Blockly.workspace_arranged_latest_position = null;
     Blockly.workspace_arranged_position = null;
     Blockly.workspace_arranged_type = null;
-    var oldParent = this.blockDB_[event.oldParentId],
-      block = this.blockDB_[event.blockId];
+    var oldParent = this.blockDB.get(event.oldParentId),
+      block = this.blockDB.get(event.blockId);
     oldParent && this.requestErrorChecking(oldParent);
     block && this.requestErrorChecking(block);
   }
