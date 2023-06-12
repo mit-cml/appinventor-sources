@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Mock for the non-visible Translator component. This needs a separate mock
+ * Mock for the non-visible ChatBot component. This needs a separate mock
  * from other non-visible components so that we can fetch the token property
  * from the server.
  *
@@ -124,7 +124,7 @@ public class MockChatBot extends MockNonVisibleComponent {
       }
 
       @Override
-      public void onFailure(Throwable t){
+      public void onFailure(Throwable t) {
         changeProperty(PROPERTY_NAME_TOKEN, "ERROR : token not created");
         super.onFailure(t);
       }
