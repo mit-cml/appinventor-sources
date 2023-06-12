@@ -33,7 +33,6 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
     opt_options = opt_options || {};
     this.options = new Blockly.Options(opt_options);
   }
-  this.options.languageTree = Blockly.Drawer.buildTree_();
   this.workspace_ = parentWorkspace;
   this.flyout_ = new Blockly.VerticalFlyout(this.options);
   var flyoutGroup = this.flyout_.createDom('g'),
@@ -131,6 +130,9 @@ Blockly.Drawer.buildToolkitTree_ = function(jsonToolkit) {
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
+  if (!this.options.languageTree) {
+    this.options.languageTree = Blockly.Drawer.buildTree_();
+  }
   var blockSet = this.options.languageTree[drawerName];
   if (drawerName == "cat_Procedures") {
     var newBlockSet = [];
