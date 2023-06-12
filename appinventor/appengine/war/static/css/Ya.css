@@ -308,7 +308,8 @@ div.StatusPanel {
 }
 
 .ode-ProjectFolderList {
-  margin-left: 28px;
+  padding-left: 28px;
+  background: white;
 }
 
 .ode-ProjectHeaderRow {
