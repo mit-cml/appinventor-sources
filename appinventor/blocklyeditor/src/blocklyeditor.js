@@ -35,9 +35,6 @@ Blockly.configForTypeBlock = {
   inputText: 'ac_input_text'
 };
 
-Blockly.BlocklyEditor.render = function() {
-};
-
 Blockly.BlocklyEditor.HELP_IFRAME = null;
 
 top.addEventListener('mousedown', function(e) {
