@@ -1052,7 +1052,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
             '<block type="component_method">' +
             // mutator generator
             Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
-            '<value name="ARG2"><block type="text"><field name="TEXT">Yintercept</field></block></value>' +
+            '<value name="ARG2"><block type="helpers_dropdown"><mutation key="LOBFValues"></mutation><field name="OPTION">Slope</field></block></value>' +
             '</block>' +
             '</xml>'
         );

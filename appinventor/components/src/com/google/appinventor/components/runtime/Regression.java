@@ -6,8 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.common.*;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
@@ -39,7 +38,6 @@ public final class Regression extends DataCollection {
     sheetsColumns = Arrays.asList("", "");
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
-
 
   /**
    * Calculates the line of best fit
@@ -104,10 +102,10 @@ public final class Regression extends DataCollection {
    * @return Double slope
    */
   @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be \"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". The block returns the complete dictionary with all values if no specific value string is provided")
-  public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList, String value) {
+  public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList, LOBFValues value) {
     YailDictionary result = ComputeLineOfBestFit(xList, yList);
-    if (result.containsKey(value)){
-        return result.get(value);
+    if (result.containsKey(value.toUnderlyingValue())){
+        return result.get(value.toUnderlyingValue());
     }else{
       return result;
     }
