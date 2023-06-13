@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.settings;
 
+import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.user.UserSettings;
@@ -79,12 +80,15 @@ public class GeneralSettingsTestCase extends GWTTestCase {
     assertEquals(value, "1");
   }
 
-  //wip
   public void testUserTemplateURLSetting() {
     User user = new User("1","abc@email.com",true,true,null);
     UserSettings settings = new UserSettings(user);
+    String string = "{'name': 'HelloPurr', 'subtitle': 'A purring kitty app', 'description':'<p>This is App Inventor version of the HelloWorld app. ...', 'screenshot':'screenshot.png',  'thumbnail':'thumbnail.png'}";
     settings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       changePropertyValue(SettingsConstants.USER_TEMPLATE_URLS,
-        TemplateUploadWizard.getStoredTemplateUrls());
+        string);
+      String userTemplates = settings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
+      assertEquals(string, userTemplates);
   }
 }
