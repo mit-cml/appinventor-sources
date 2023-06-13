@@ -31,7 +31,8 @@ public class RunApkSigner implements Task {
         context.getPaths().getDeployFile().getAbsolutePath()
     };
 
-    if (!Execution.execute(null, apksignerCommandLine, context.getReporter().getSystemOut(), System.err)) {
+    if (!Execution.execute(null, apksignerCommandLine,
+        context.getReporter().getSystemOut(), System.err)) {
       TaskResult.generateError("Error while running ZipAligned tool");
     }
 

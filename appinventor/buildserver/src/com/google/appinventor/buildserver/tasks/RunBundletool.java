@@ -1,5 +1,7 @@
 package com.google.appinventor.buildserver.tasks;
 
+import static java.nio.file.Files.newInputStream;
+
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.Execution;
@@ -12,7 +14,6 @@ import com.google.appinventor.buildserver.util.AabZipper;
 import com.google.common.io.Files;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -75,7 +76,7 @@ public class RunBundletool implements Task {
     this.aab = new AabPaths();
 
     context.getReporter().info("Creating structure");
-    aab.setROOT(ExecutorUtils.createDir(context.getProject().getBuildDirectory(), "aab"));
+    aab.setRoot(ExecutorUtils.createDir(context.getProject().getBuildDirectory(), "aab"));
     aab.setProtoApk(context.getPaths().getTmpPackageName());
     if (!createStructure(context)) {
       return TaskResult.generateError("Could not create AAB structure");
@@ -100,15 +101,15 @@ public class RunBundletool implements Task {
 
   private boolean createStructure(CompilerContext context) {
     // Manifest is extracted from the protobuffed APK
-    aab.setManifestDir(ExecutorUtils.createDir(aab.getROOT(), "manifest"));
+    aab.setManifestDir(ExecutorUtils.createDir(aab.getRoot(), "manifest"));
 
     // Resources are extracted from the protobuffed APK
-    aab.setResDir(ExecutorUtils.createDir(aab.getROOT(), "res"));
+    aab.setResDir(ExecutorUtils.createDir(aab.getRoot(), "res"));
 
     // Assets are extracted from the protobuffed APK
-    aab.setAssetsDir(ExecutorUtils.createDir(aab.getROOT(), "assets"));
+    aab.setAssetsDir(ExecutorUtils.createDir(aab.getRoot(), "assets"));
 
-    aab.setDexDir(ExecutorUtils.createDir(aab.getROOT(), "dex"));
+    aab.setDexDir(ExecutorUtils.createDir(aab.getRoot(), "dex"));
     context.getReporter().log("Moving dex files");
     File[] dexFiles = context.getPaths().getTmpDir().listFiles();
     if (dexFiles != null) {
@@ -124,13 +125,13 @@ public class RunBundletool implements Task {
       }
     }
 
-    aab.setLibDir(ExecutorUtils.createDir(aab.getROOT(), "lib"));
+    aab.setLibDir(ExecutorUtils.createDir(aab.getRoot(), "lib"));
     context.getReporter().log("Moving lib files");
     File[] libFiles = context.getPaths().getLibsDir().listFiles();
     if (libFiles != null) {
       for (File lib : libFiles) {
         try {
-          Files.move(lib, new File(ExecutorUtils.createDir(aab.getROOT(), "lib"), lib.getName()));
+          Files.move(lib, new File(ExecutorUtils.createDir(aab.getRoot(), "lib"), lib.getName()));
         } catch (IOException e) {
           context.getReporter().error(e.getMessage(), true);
           return false;
@@ -142,7 +143,7 @@ public class RunBundletool implements Task {
   }
 
   private boolean extractProtobuf(CompilerContext context) {
-    try (ZipInputStream is = new ZipInputStream(new FileInputStream(aab.getProtoApk()))) {
+    try (ZipInputStream is = new ZipInputStream(newInputStream(aab.getProtoApk().toPath()))) {
       ZipEntry entry;
       byte[] buffer = new byte[1024];
       while ((entry = is.getNextEntry()) != null) {
@@ -153,7 +154,7 @@ public class RunBundletool implements Task {
           f = new File(aab.getManifestDir(), n);
         } else if (n.equals("resources.pb")) {
           context.getReporter().log("Found resources.pb");
-          f = new File(aab.getROOT(), n);
+          f = new File(aab.getRoot(), n);
         } else if (n.startsWith("assets")) {
           f = new File(aab.getAssetsDir(), n.substring(("assets").length()));
         } else if (n.startsWith("res")) {
@@ -201,9 +202,10 @@ public class RunBundletool implements Task {
       throw new RuntimeException("Unable to generate AAB", e);
     }
 
-    aab.setBASE(new File(context.getProject().getBuildDirectory(), "base.zip"));
+    aab.setBase(new File(context.getProject().getBuildDirectory(), "base.zip"));
 
-    if (!AabZipper.zipBundle(aab.getROOT(), aab.getBASE(), aab.getROOT().getName() + File.separator)) {
+    if (!AabZipper.zipBundle(aab.getRoot(), aab.getBase(),
+        aab.getRoot().getName() + File.separator)) {
       context.getReporter().error("Could not zip files for the bundle", true);
       return false;
     }
@@ -220,16 +222,17 @@ public class RunBundletool implements Task {
     bundletoolCommandLine.add("-mx" + context.getChildProcessRam() + "M");
     bundletoolCommandLine.add(bundletool);
     bundletoolCommandLine.add("build-bundle");
-    bundletoolCommandLine.add("--modules=" + aab.getBASE());
+    bundletoolCommandLine.add("--modules=" + aab.getBase());
     bundletoolCommandLine.add("--config=" + configFile.getAbsolutePath());
     bundletoolCommandLine.add("--output=" + context.getPaths().getDeployFile().getAbsolutePath());
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
-    return Execution.execute(null, bundletoolBuildCommandLine, context.getReporter().getSystemOut(), System.err);
+    return Execution.execute(null, bundletoolBuildCommandLine,
+        context.getReporter().getSystemOut(), System.err);
   }
 
   private boolean jarsigner(CompilerContext context) {
-    List<String> jarsignerCommandLine = new ArrayList<String>();
+    List<String> jarsignerCommandLine = new ArrayList<>();
 
     String jarsigner = context.getResources().jarsigner();
     if (jarsigner == null) {
@@ -250,6 +253,7 @@ public class RunBundletool implements Task {
     jarsignerCommandLine.add("AndroidKey");
     String[] jarsignerSignCommandLine = jarsignerCommandLine.toArray(new String[0]);
 
-    return Execution.execute(null, jarsignerSignCommandLine, context.getReporter().getSystemOut(), System.err);
+    return Execution.execute(null, jarsignerSignCommandLine,
+        context.getReporter().getSystemOut(), System.err);
   }
 }

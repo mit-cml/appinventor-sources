@@ -24,6 +24,9 @@ import javax.imageio.ImageIO;
  */
 @BuildType(apk = true, aab = true)
 public class PrepareAppIcon implements Task {
+  private static final String ERROR_NO_SUITABLE_ICON =
+      "Could not find a suitable app icon. Maybe it's not an image.";
+
   @Override
   public TaskResult execute(CompilerContext context) {
     // Create mipmap directories
@@ -35,12 +38,15 @@ public class PrepareAppIcon implements Task {
     File mipmapXxxhdpi = ExecutorUtils.createDir(context.getPaths().getResDir(), "mipmap-xxxhdpi");
 
     // Create list of mipmaps for all icon types with respective sizes
-    List<File> mipmapDirectoriesForIcons = Arrays.asList(mipmapMdpi, mipmapHdpi, mipmapXhdpi, mipmapXxhdpi, mipmapXxxhdpi);
-    List<Integer> standardICSizesForMipmaps = Arrays.asList(48, 72, 96, 144, 192);
-    List<Integer> foregroundICSizesForMipmaps = Arrays.asList(108, 162, 216, 324, 432);
+    List<File> mipmapDirectoriesForIcons = Arrays.asList(mipmapMdpi, mipmapHdpi, mipmapXhdpi,
+        mipmapXxhdpi, mipmapXxxhdpi);
+    List<Integer> standardSizesForMipmaps = Arrays.asList(48, 72, 96, 144, 192);
+    List<Integer> foregroundSizesForMipmaps = Arrays.asList(108, 162, 216, 324, 432);
 
     context.getReporter().info("Generating icons...");
-    if (!this.prepareApplicationIcon(context, new File(context.getPaths().getDrawableDir(), "ya.png"), mipmapDirectoriesForIcons, standardICSizesForMipmaps, foregroundICSizesForMipmaps)) {
+    if (!this.prepareApplicationIcon(context,
+        new File(context.getPaths().getDrawableDir(), "ya.png"),
+        mipmapDirectoriesForIcons, standardSizesForMipmaps, foregroundSizesForMipmaps)) {
       return TaskResult.generateError("Could not prepare app icon");
     }
     return TaskResult.generateSuccess();
@@ -49,7 +55,8 @@ public class PrepareAppIcon implements Task {
   /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(CompilerContext context, File outputPngFile, List<File> mipmapDirectories, List<Integer> standardICSizes, List<Integer> foregroundICSizes) {
+  private boolean prepareApplicationIcon(CompilerContext context, File outputPngFile,
+      List<File> mipmapDirectories, List<Integer> standardSizes, List<Integer> foregroundSizes) {
     String userSpecifiedIcon = Strings.nullToEmpty(context.getProject().getIcon());
     try {
       BufferedImage icon;
@@ -61,7 +68,7 @@ public class PrepareAppIcon implements Task {
           // For example, icon is null if the file is a .wav file.
           // TODO(lizlooney) - This happens if the user specifies a .ico file. We should
           // fix that.
-          context.getReporter().error("Could not find a suitable app icon. Maybe it's not an image.", true);
+          context.getReporter().error(ERROR_NO_SUITABLE_ICON, true);
           return false;
         }
       } else {
@@ -73,13 +80,13 @@ public class PrepareAppIcon implements Task {
       BufferedImage roundRectIcon = produceRoundedCornerIcon(icon);
       BufferedImage foregroundIcon = produceForegroundImageIcon(icon);
 
-      // For each mipmap directory, create all types of ic_launcher photos with respective mipmap sizes
+      // For each mipmap directory, create all launcher icons with respective mipmap sizes
       for (int i = 0; i < mipmapDirectories.size(); i++) {
         File mipmapDirectory = mipmapDirectories.get(i);
         context.getReporter().log("Generating icons for " + mipmapDirectory.getName());
 
-        Integer standardSize = standardICSizes.get(i);
-        Integer foregroundSize = foregroundICSizes.get(i);
+        Integer standardSize = standardSizes.get(i);
+        Integer foregroundSize = foregroundSizes.get(i);
 
         BufferedImage round = resizeImage(roundIcon, standardSize, standardSize);
         BufferedImage roundRect = resizeImage(roundRectIcon, standardSize, standardSize);
@@ -117,7 +124,8 @@ public class PrepareAppIcon implements Task {
     int intIconWidth = ((int) Math.round(iconWidth / 2) * 2);
     Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - intIconWidth) / 2);
-    BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth,
+        BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundIcon.createGraphics();
     g2.setClip(new Ellipse2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth));
     g2.drawImage(tmp, marginWidth, marginWidth, null);
@@ -135,11 +143,13 @@ public class PrepareAppIcon implements Task {
     int intIconWidth = ((int) Math.round(iconWidth / 2) * 2);
     Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - intIconWidth) / 2);
-    // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android material guidelines
+    // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android guidelines
     float cornerRadius = intIconWidth / 12;
-    BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth,
+        BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundedCornerIcon.createGraphics();
-    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth, cornerRadius, cornerRadius));
+    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth,
+        cornerRadius, cornerRadius));
     g2.drawImage(tmp, marginWidth, marginWidth, null);
     return roundedCornerIcon;
   }
@@ -156,7 +166,8 @@ public class PrepareAppIcon implements Task {
     int intIconWidth = ((int) Math.round(iconWidth / 2) * 2);
     Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - intIconWidth) / 2);
-    BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth,
+        BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = foregroundImageIcon.createGraphics();
     g2.drawImage(tmp, marginWidth, marginWidth, null);
     return foregroundImageIcon;

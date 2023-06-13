@@ -29,11 +29,13 @@ public class RunZipAlign implements Task {
         zipAlignedApk.getAbsolutePath()
     };
 
-    if (!Execution.execute(null, zipAlignCommandLine, context.getReporter().getSystemOut(), System.err)) {
+    if (!Execution.execute(null, zipAlignCommandLine,
+        context.getReporter().getSystemOut(), System.err)) {
       TaskResult.generateError("Error while running ZipAlign tool");
     }
 
-    if (!ExecutorUtils.copyFile(zipAlignedApk.getAbsolutePath(), context.getPaths().getDeployFile().getAbsolutePath())) {
+    if (!ExecutorUtils.copyFile(zipAlignedApk.getAbsolutePath(),
+        context.getPaths().getDeployFile().getAbsolutePath())) {
       TaskResult.generateError("Error while copying ZipAlign'ed APK");
     }
 

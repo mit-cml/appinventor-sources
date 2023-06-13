@@ -7,12 +7,11 @@ import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.interfaces.Task;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,17 +37,18 @@ public class RunMultidex implements Task {
       inputList.add(recordForMainDex(context.getPaths().getClassesDir(), mainDexClasses));
       inputList.add(recordForMainDex(new File(context.getResources().getSimpleAndroidRuntimeJar()),
           mainDexClasses));
-      inputList.add(recordForMainDex(new File(context.getResources().getKawaRuntime()), mainDexClasses));
+      inputList.add(recordForMainDex(new File(context.getResources().getKawaRuntime()),
+          mainDexClasses));
 
       /*
-       * Note for future updates: This list can be obtained from an Android Studio project running the
-       * following command:
+       * Note for future updates: This list can be obtained from an Android Studio project running
+       * the following command:
        *
        * ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain | \
        *     awk 'BEGIN {FS="--- "} {print $2}' | cut -d : -f2 | sort -u
        */
 
-      final Set<String> CRITICAL_JARS = new HashSet<>(Arrays.asList(
+      final Set<String> criticalJars = new HashSet<>(Arrays.asList(
           // Minimum required for Android 4.x
           context.getResources().getRuntimeFilesDir() + "appcompat.jar",
           context.getResources().getRuntimeFilesDir() + "collection.jar",
@@ -84,17 +84,18 @@ public class RunMultidex implements Task {
           context.getResources().getRuntimeFilesDir() + "viewpager.jar"
       ));
 
-      for (String jar : CRITICAL_JARS) {
+      for (String jar : criticalJars) {
         inputList.add(recordForMainDex(new File(context.getResource(jar)), mainDexClasses));
       }
 
       // Only include ACRA for the companion app
       if (context.isForCompanion()) {
-        inputList.add(recordForMainDex(new File(context.getResources().getAcraRuntime()), mainDexClasses));
+        inputList.add(recordForMainDex(new File(context.getResources().getAcraRuntime()),
+            mainDexClasses));
       }
 
       for (String jar : context.getResources().getSupportJars()) {
-        if (CRITICAL_JARS.contains(jar)) {  // already covered above
+        if (criticalJars.contains(jar)) {  // already covered above
           continue;
         }
         inputList.add(new File(context.getResource(jar)));
@@ -108,8 +109,9 @@ public class RunMultidex implements Task {
       // Add extension libraries
       Set<String> addedExtJars = new HashSet<>();
       for (String type : context.getExtCompTypes()) {
-        String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache()) +
-            context.getResources().getSimpleAndroidRuntimeJarPath();
+        String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+            context.getExtTypePathCache())
+            + context.getResources().getSimpleAndroidRuntimeJarPath();
         if (!addedExtJars.contains(sourcePath)) {
           inputList.add(new File(sourcePath));
           addedExtJars.add(sourcePath);
@@ -119,7 +121,8 @@ public class RunMultidex implements Task {
       // Run the dx utility
       DexExecTask dexTask = new DexExecTask();
       dexTask.setExecutable(context.getResources().getDxJar());
-      dexTask.setMainDexClassesFile(writeClassList(context.getPaths().getClassesDir(), mainDexClasses));
+      dexTask.setMainDexClassesFile(writeClassList(context.getPaths().getClassesDir(),
+          mainDexClasses));
       dexTask.setOutput(context.getPaths().getTmpDir().getAbsolutePath());
       dexTask.setChildProcessRamMb(context.getChildProcessRam());
       if (context.getDexCacheDir() == null) {
@@ -164,7 +167,7 @@ public class RunMultidex implements Task {
    */
   private String writeClassList(File classesDir, Set<String> classes) {
     File target = new File(classesDir, "main-classes.txt");
-    try (PrintStream out = new PrintStream(new FileOutputStream(target))) {
+    try (PrintStream out = new PrintStream(Files.newOutputStream(target.toPath()))) {
       for (String name : new TreeSet<>(classes)) {
         out.println(name.replaceAll("\\.", "/") + ".class");
       }
@@ -180,8 +183,8 @@ public class RunMultidex implements Task {
    *
    * @param dir     the directory to examine for class files
    * @param classes the Set used to record the classes
-   * @param root    the root path where the recursion started, which gets stripped from the file name
-   *                to determine the class name
+   * @param root    the root path where the recursion started, which gets stripped from the file
+   *                name to determine the class name
    */
   private void recordDirectoryForMainDex(File dir, Set<String> classes, String root) {
     File[] files = dir.listFiles();
@@ -208,7 +211,7 @@ public class RunMultidex implements Task {
    * @throws IOException if the input file cannot be read
    */
   private void recordJarForMainDex(File file, Set<String> classes) throws IOException {
-    try (ZipInputStream is = new ZipInputStream(new FileInputStream(file))) {
+    try (ZipInputStream is = new ZipInputStream(Files.newInputStream(file.toPath()))) {
       ZipEntry entry;
       while ((entry = is.getNextEntry()) != null) {
         String className = entry.getName();

@@ -1,20 +1,25 @@
 package com.google.appinventor.buildserver.tasks;
 
+import static com.google.appinventor.buildserver.ExecutorUtils.createDir;
+import static com.google.appinventor.buildserver.TaskResult.generateError;
+
 import com.google.appinventor.buildserver.AnimationXmlConstants;
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.interfaces.Task;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+
 import java.nio.charset.StandardCharsets;
+
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,55 +47,56 @@ public class XmlConfig implements Task {
 
     // Create the "any" dpi dir
     context.getReporter().info("Creating animation xml");
-    File mipmapV26 = ExecutorUtils.createDir(context.getPaths().getResDir(), "mipmap-anydpi-v26");
+    final File mipmapV26 = createDir(context.getPaths().getResDir(), "mipmap-anydpi-v26");
 
     // Create anim directory and animation xml files
-    File animDir = ExecutorUtils.createDir(context.getPaths().getResDir(), "anim");
+    File animDir = createDir(context.getPaths().getResDir(), "anim");
     if (!this.createAnimationXml(animDir)) {
-      return TaskResult.generateError("There was an error creating the animation xml");
+      return generateError("There was an error creating the animation xml");
     }
 
     // Create values directory and style xml files
     context.getReporter().info("Creating style xml");
-    File styleDir = ExecutorUtils.createDir(context.getPaths().getResDir(), "values");
+    final File styleDir = createDir(context.getPaths().getResDir(), "values");
     List<String> standardStyleVersions = Arrays.asList("", "-v11", "-v14", "-v21", "-v23");
     for (String standardStyleVersion : standardStyleVersions) {
-      File tmpStyleDir = ExecutorUtils.createDir(context.getPaths().getResDir(), "values" + standardStyleVersion);
+      File tmpStyleDir = createDir(context.getPaths().getResDir(), "values" + standardStyleVersion);
       if (!this.createValuesXml(tmpStyleDir, standardStyleVersion)) {
-        return TaskResult.generateError("There was an error while generating the values" + standardStyleVersion + " style");
+        return generateError("There was an error while generating the values"
+            + standardStyleVersion + " style");
       }
     }
 
     context.getReporter().info("Creating provider_path xml");
-    File providerDir = ExecutorUtils.createDir(context.getPaths().getResDir(), "xml");
+    File providerDir = createDir(context.getPaths().getResDir(), "xml");
     if (!this.createProviderXml(providerDir)) {
-      return TaskResult.generateError("There was an error creating the provider_path xml");
+      return generateError("There was an error creating the provider_path xml");
     }
 
     context.getReporter().info("Creating network_security_config xml");
     if (!this.createNetworkConfigXml(providerDir)) {
-      return TaskResult.generateError("There was an error creating the network_security_config xml");
+      return generateError("There was an error creating the network_security_config xml");
     }
 
     // Generate ic_launcher.xml
     context.getReporter().info("Generating adaptive icon file");
     File icLauncher = new File(mipmapV26, "ic_launcher.xml");
-    if (!this.writeICLauncher(icLauncher)) {
-      return TaskResult.generateError("There was an error creating the adaptive icon file");
+    if (!this.writeLauncher(icLauncher)) {
+      return generateError("There was an error creating the adaptive icon file");
     }
 
     // Generate ic_launcher_round.xml
     context.getReporter().info("Generating round adaptive icon file");
     File icLauncherRound = new File(mipmapV26, "ic_launcher_round.xml");
-    if (!this.writeICLauncher(icLauncherRound)) {
-      return TaskResult.generateError("There was an error creating the round adaptive icon file");
+    if (!this.writeLauncher(icLauncherRound)) {
+      return generateError("There was an error creating the round adaptive icon file");
     }
 
     // Generate ic_launcher_background.xml
     context.getReporter().info("Generating adaptive icon background file");
     File icBackgroundColor = new File(styleDir, "ic_launcher_background.xml");
-    if (!this.writeICLauncherBackground(icBackgroundColor)) {
-      return TaskResult.generateError("There was an error creating the adaptive icon background file");
+    if (!this.writeLauncherBackground(icBackgroundColor)) {
+      return generateError("There was an error creating the adaptive icon background file");
     }
 
     return TaskResult.generateSuccess();
@@ -154,20 +160,19 @@ public class XmlConfig implements Task {
    * Create the default color and styling for the app.
    */
   private boolean createValuesXml(File valuesDir, String suffix) {
-    String colorPrimary = context.getProject().getPrimaryColor();
-    String colorPrimaryDark = context.getProject().getPrimaryColorDark();
-    String colorAccent = context.getProject().getAccentColor();
     String theme = context.getProject().getTheme();
     String actionbar = context.getProject().getActionBar();
     String parentTheme;
-    boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
+    // Default to classic theme prior to SDK 11
+    boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();
     boolean needsBlackTitleText = false;
     boolean holo = "-v11".equals(suffix) || "-v14".equals(suffix);
     int sdk = suffix.isEmpty() ? 7 : Integer.parseInt(suffix.substring(2));
     if (isClassicTheme) {
       parentTheme = "android:Theme";
     } else {
-      if (suffix.equals("-v11")) {  // AppCompat needs SDK 14, so we explicitly name Holo for SDK 11 through 13
+      if (suffix.equals("-v11")) {
+        // AppCompat needs SDK 14, so we explicitly name Holo for SDK 11 through 13
         parentTheme = theme.replace("AppTheme", "android:Theme.Holo");
         needsBlackTitleText = theme.contains("Light") && !theme.contains("DarkActionBar");
         if (theme.contains("Light")) {
@@ -184,13 +189,16 @@ public class XmlConfig implements Task {
         }
       }
     }
+    String colorPrimary = context.getProject().getPrimaryColor();
+    String colorPrimaryDark = context.getProject().getPrimaryColorDark();
+    String colorAccent = context.getProject().getAccentColor();
     colorPrimary = cleanColor(colorPrimary);
     colorPrimaryDark = cleanColor(colorPrimaryDark);
     colorAccent = cleanColor(colorAccent);
     File colorsXml = new File(valuesDir, "colors" + suffix + ".xml");
     File stylesXml = new File(valuesDir, "styles" + suffix + ".xml");
-    try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(colorsXml), StandardCharsets.UTF_8));
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(colorsXml.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
       out.write("<color name=\"colorPrimary\">");
@@ -203,8 +211,12 @@ public class XmlConfig implements Task {
       out.write(colorAccent);
       out.write("</color>\n");
       out.write("</resources>\n");
-      out.close();
-      out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), StandardCharsets.UTF_8));
+    } catch (IOException e) {
+      context.getReporter().error("Error writing values XML file");
+      return false;
+    }
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(stylesXml.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
 
@@ -228,18 +240,22 @@ public class XmlConfig implements Task {
         // Handles theme for Notifier
         out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
         out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
-        out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+        // Fixes crash in ListPickerActivity
+        out.write("<item name=\"android:cacheColorHint\">#000</item>\n");
       } else {
         out.write("<item name=\"switchStyle\">@style/ClassicSwitch</item>\n");
         needsClassicSwitch = true;
       }
       out.write("</style>\n");
       if (needsClassicSwitch) {
-        out.write("<style name=\"ClassicSwitch\" parent=\"Widget.AppCompat.CompoundButton.Switch\">\n");
+        out.write("<style name=\"ClassicSwitch\" "
+            + "parent=\"Widget.AppCompat.CompoundButton.Switch\">\n");
         if (sdk == 23) {
-          out.write("<item name=\"android:background\">@drawable/abc_control_background_material</item>\n");
+          out.write("<item name=\"android:background\">"
+              + "@drawable/abc_control_background_material</item>\n");
         } else {
-          out.write("<item name=\"android:background\">@drawable/abc_item_background_holo_light</item>\n");
+          out.write("<item name=\"android:background\">"
+              + "@drawable/abc_item_background_holo_light</item>\n");
         }
         out.write("</style>\n");
       }
@@ -260,8 +276,10 @@ public class XmlConfig implements Task {
           out.write("<item name=\"android:background\">@color/colorPrimary</item>\n");
           out.write("<item name=\"android:titleTextStyle\">@style/AIActionBarTitle</item>\n");
           out.write("</style>\n");
-          out.write("<style name=\"AIActionBarTitle\" parent=\"android:TextAppearance.Holo.Widget.ActionBar.Title\">\n");
-          out.write("<item name=\"android:textColor\">" + (needsBlackTitleText ? "#000" : "#fff") + "</item>\n");
+          out.write("<style name=\"AIActionBarTitle\" "
+              + "parent=\"android:TextAppearance.Holo.Widget.ActionBar.Title\">\n");
+          out.write("<item name=\"android:textColor\">"
+              + (needsBlackTitleText ? "#000" : "#fff") + "</item>\n");
           out.write("</style>\n");
           // <<< writeActionBarStyle
         }
@@ -277,7 +295,6 @@ public class XmlConfig implements Task {
       out.write("<item name=\"textAllCaps\">false</item>\n");
       out.write("</style>\n");
       out.write("</resources>\n");
-      out.close();
     } catch (IOException e) {
       context.getReporter().error("Error writing values XML file");
       return false;
@@ -322,13 +339,12 @@ public class XmlConfig implements Task {
    */
   private boolean createProviderXml(File providerDir) {
     File paths = new File(providerDir, "provider_paths.xml");
-    try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths), StandardCharsets.UTF_8));
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(paths.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
       out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
       out.write("</paths>\n");
-      out.close();
     } catch (IOException e) {
       context.getReporter().error("Error writing provider_paths XML file");
       return false;
@@ -339,7 +355,8 @@ public class XmlConfig implements Task {
 
   private boolean createNetworkConfigXml(File configDir) {
     File networkConfig = new File(configDir, "network_security_config.xml");
-    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(networkConfig)))) {
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(
+        Files.newOutputStream(networkConfig.toPath()), StandardCharsets.UTF_8))) {
       out.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
       out.println("<network-security-config>");
       out.println("<base-config cleartextTrafficPermitted=\"true\">");
@@ -355,17 +372,16 @@ public class XmlConfig implements Task {
     return true;
   }
 
-
   // Writes ic_launcher.xml to initialize adaptive icon
-  private boolean writeICLauncher(File adaptiveIconFile) {
-    try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(adaptiveIconFile), StandardCharsets.UTF_8));
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+  private boolean writeLauncher(File adaptiveIconFile) {
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(adaptiveIconFile.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
       out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
       out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
       out.write("</adaptive-icon>\n");
-      out.close();
     } catch (IOException e) {
       context.getReporter().error("Error writing IC launcher file");
       return false;
@@ -375,14 +391,13 @@ public class XmlConfig implements Task {
 
 
   // Writes ic_launcher_background.xml to indicate background color of adaptive icon
-  private boolean writeICLauncherBackground(File icBackgroundFile) {
-    try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(icBackgroundFile), StandardCharsets.UTF_8));
+  private boolean writeLauncherBackground(File icBackgroundFile) {
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(icBackgroundFile.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
       out.write("<color name=\"ic_launcher_background\">#ffffff</color>\n");
       out.write("</resources>\n");
-      out.close();
     } catch (IOException e) {
       context.getReporter().error("Error writing IC launcher background file");
       return false;

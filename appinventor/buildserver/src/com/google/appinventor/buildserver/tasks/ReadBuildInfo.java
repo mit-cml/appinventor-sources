@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -30,9 +31,11 @@ import org.codehaus.jettison.json.JSONTokener;
 public class ReadBuildInfo implements Task {
   @Override
   public TaskResult execute(CompilerContext context) {
+    final String runtimeDir = context.getResources().getRuntimeFilesDir();
     List<String> aars = new ArrayList<>();
     List<String> jars = new ArrayList<>();
-    try (BufferedReader in = new BufferedReader(new InputStreamReader(Compiler.class.getResourceAsStream(context.getResources().getRuntimeFilesDir() + "aars.txt")))) {
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
+        Compiler.class.getResourceAsStream(runtimeDir + "aars.txt"))))) {
       String line;
       while ((line = in.readLine()) != null) {
         if (!line.isEmpty()) {
@@ -46,7 +49,8 @@ public class ReadBuildInfo implements Task {
       return TaskResult.generateError(e);
     }
     context.getResources().setSupportAars(aars.toArray(new String[0]));
-    try (BufferedReader in = new  BufferedReader(new InputStreamReader(Compiler.class.getResourceAsStream(context.getResources().getRuntimeFilesDir() + "jars.txt")))) {
+    try (BufferedReader in = new  BufferedReader(new InputStreamReader(Objects.requireNonNull(
+        Compiler.class.getResourceAsStream(runtimeDir + "jars.txt"))))) {
       String line;
       while ((line = in.readLine()) != null) {
         if (!line.isEmpty()) {
@@ -90,27 +94,32 @@ public class ReadBuildInfo implements Task {
       Set<String> readComponentInfos = new HashSet<String>();
       for (String type : context.getExtCompTypes()) {
         // .../assets/external_comps/com.package.MyExtComp/files/component_build_info.json
-        File extCompRuntimeFileDir = new File(ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache())
+        File extCompRuntimeFileDir = new File(ExecutorUtils.getExtCompDirPath(
+            type, context.getProject(), context.getExtTypePathCache())
             + context.getResources().getRuntimeFilesDir());
         if (!extCompRuntimeFileDir.exists()) {
           // try extension package name for multi-extension files
-          String path = ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache());
+          String path = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+              context.getExtTypePathCache());
           path = path.substring(0, path.lastIndexOf('.'));
-          extCompRuntimeFileDir = new File(path + context.getResources().getRuntimeFilesDir());
+          extCompRuntimeFileDir = new File(path
+              + context.getResources().getRuntimeFilesDir());
         }
         File jsonFile = new File(extCompRuntimeFileDir, "component_build_infos.json");
         if (!jsonFile.exists()) {
           // old extension with a single component?
           jsonFile = new File(extCompRuntimeFileDir, "component_build_info.json");
           if (!jsonFile.exists()) {
-            throw new IllegalStateException("No component_build_info.json in extension for " + type);
+            throw new IllegalStateException("No component_build_info.json in extension for "
+                + type);
           }
         }
         if (readComponentInfos.contains(jsonFile.getAbsolutePath())) {
           continue;  // already read the build infos for this type (bundle extension)
         }
 
-        String buildInfo = com.google.common.io.Resources.toString(jsonFile.toURI().toURL(), Charsets.UTF_8);
+        String buildInfo = com.google.common.io.Resources.toString(jsonFile.toURI().toURL(),
+            Charsets.UTF_8);
         JSONTokener tokener = new JSONTokener(buildInfo);
         Object value = tokener.nextValue();
         if (value instanceof JSONObject) {

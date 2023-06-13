@@ -22,17 +22,21 @@ public class RunAapt implements Task {
   @Override
   public TaskResult execute(CompilerContext context) {
     // Need to make sure assets directory exists otherwise aapt will fail.
-    context.getPaths().setAssetsDir(ExecutorUtils.createDir(context.getProject().getBuildDirectory(), YoungAndroidConstants.ASSET_DIR_NAME));
+    context.getPaths().setAssetsDir(
+        ExecutorUtils.createDir(context.getProject().getBuildDirectory(),
+            YoungAndroidConstants.ASSET_DIR_NAME));
 
-    File sourceOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(), "generated/src");
-    File symbolOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(), "generated/symbols");
+    File sourceOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(),
+        "generated/src");
+    File symbolOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(),
+        "generated/symbols");
 
     String aaptTool = context.getResources().aapt();
     if (aaptTool == null) {
       return TaskResult.generateError("Could not find a suitable AAPT tool for this OS");
     }
 
-    List<String> aaptPackageCommandLineArgs = new ArrayList<String>();
+    List<String> aaptPackageCommandLineArgs = new ArrayList<>();
     aaptPackageCommandLineArgs.add(aaptTool);
     aaptPackageCommandLineArgs.add("package");
     aaptPackageCommandLineArgs.add("-v");
@@ -60,10 +64,11 @@ public class RunAapt implements Task {
       aaptPackageCommandLineArgs.add("--no-version-vectors");
       context.getResources().setAppRTxt(new File(symbolOutputDir, "R.txt"));
     }
-    String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
+    String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[0]);
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
-    if (!Execution.execute(null, aaptPackageCommandLine, context.getReporter().getSystemOut(), System.err)) {
+    if (!Execution.execute(null, aaptPackageCommandLine,
+        context.getReporter().getSystemOut(), System.err)) {
       return TaskResult.generateError("Error running AAPT");
     }
 

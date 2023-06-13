@@ -12,9 +12,8 @@ import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 
-
 /**
- * libSetup()
+ * Sets up any host system specific shared libraries.
  */
 @BuildType(apk = true, aab = true)
 public class SetupLibs implements Task {

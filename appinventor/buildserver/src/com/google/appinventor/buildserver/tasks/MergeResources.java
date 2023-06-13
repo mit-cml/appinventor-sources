@@ -23,10 +23,13 @@ public class MergeResources implements Task {
     File intermediates = ExecutorUtils.createDir(context.getPaths().getBuildDir(), "intermediates");
     File resDir = ExecutorUtils.createDir(intermediates, "res");
     context.getPaths().setMergedResDir(ExecutorUtils.createDir(resDir, "merged"));
-    context.getPaths().setTmpPackageName(new File(context.getPaths().getDeployDir().getAbsolutePath() + File.separator + context.getProject().getProjectName() + "._ap"));
+    context.getPaths().setTmpPackageName(new File(
+        context.getPaths().getDeployDir().getAbsolutePath() + File.separator
+            + context.getProject().getProjectName() + "._ap"));
 
     PngCruncher cruncher = new AaptCruncher(context.getResources().aapt(), null, null);
-    if (!context.getComponentInfo().getExplodedAarLibs().mergeResources(context.getPaths().getMergedResDir(), context.getPaths().getResDir(), cruncher)) {
+    if (!context.getComponentInfo().getExplodedAarLibs().mergeResources(
+        context.getPaths().getMergedResDir(), context.getPaths().getResDir(), cruncher)) {
       return TaskResult.generateError("Could not merge resources");
     }
     return TaskResult.generateSuccess();

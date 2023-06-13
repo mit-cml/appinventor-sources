@@ -20,10 +20,12 @@ public class RunAapt2 implements Task {
   public TaskResult execute(CompilerContext context) {
     this.context = context;
 
-    File sourceOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(), "generated/src");
-    File symbolOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(), "generated/symbols");
+    final File buildDir = context.getPaths().getBuildDir();
+    ExecutorUtils.createDir(buildDir, "generated/src");
+    final File symbolOutputDir = ExecutorUtils.createDir(buildDir, "generated/symbols");
     // Need to make sure assets directory exists otherwise aapt2 will fail.
-    context.getPaths().setAssetsDir(ExecutorUtils.createDir(context.getProject().getBuildDirectory(), YoungAndroidConstants.ASSET_DIR_NAME));
+    context.getPaths().setAssetsDir(
+        ExecutorUtils.createDir(buildDir, YoungAndroidConstants.ASSET_DIR_NAME));
 
     String aapt2Tool = context.getResources().aapt2();
     if (aapt2Tool == null) {
@@ -53,7 +55,8 @@ public class RunAapt2 implements Task {
     aapt2CommandLine.add("-v");
     String[] aapt2CompileCommandLine = aapt2CommandLine.toArray(new String[0]);
 
-    if (!Execution.execute(null, aapt2CompileCommandLine, context.getReporter().getSystemOut(), System.err)) {
+    if (!Execution.execute(null, aapt2CompileCommandLine,
+        context.getReporter().getSystemOut(), System.err)) {
       context.getReporter().error("Could not execute AAPT2 compile step");
       return false;
     }
@@ -88,7 +91,8 @@ public class RunAapt2 implements Task {
     aapt2CommandLine.add("-v");
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
-    if (!Execution.execute(null, aapt2LinkCommandLine, context.getReporter().getSystemOut(), System.err)) {
+    if (!Execution.execute(null, aapt2LinkCommandLine,
+        context.getReporter().getSystemOut(), System.err)) {
       context.getReporter().error("Could not execute AAPT2 link step");
       return false;
     }

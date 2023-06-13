@@ -3,8 +3,8 @@ package com.google.appinventor.buildserver.util;
 import java.io.File;
 
 public class AabPaths {
-  private File ROOT = null;
-  private File BASE = null;
+  private File root = null;
+  private File base = null;
   private File protoApk = null;
 
   private File assetsDir = null;
@@ -13,20 +13,20 @@ public class AabPaths {
   private File manifestDir = null;
   private File resDir = null;
 
-  public File getROOT() {
-    return ROOT;
+  public File getRoot() {
+    return root;
   }
 
-  public void setROOT(File ROOT) {
-    this.ROOT = ROOT;
+  public void setRoot(File root) {
+    this.root = root;
   }
 
-  public File getBASE() {
-    return BASE;
+  public File getBase() {
+    return base;
   }
 
-  public void setBASE(File BASE) {
-    this.BASE = BASE;
+  public void setBase(File base) {
+    this.base = base;
   }
 
   public File getProtoApk() {

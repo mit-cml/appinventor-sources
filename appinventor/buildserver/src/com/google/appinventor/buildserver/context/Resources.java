@@ -1,19 +1,18 @@
 package com.google.appinventor.buildserver.context;
 
-
-import com.google.appinventor.buildserver.PathUtil;
 import com.google.appinventor.buildserver.Compiler;
+import com.google.appinventor.buildserver.PathUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.imageio.ImageIO;
 
 public class Resources {
   private final ConcurrentMap<String, File> resources;
@@ -39,7 +38,8 @@ public class Resources {
   public static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
 
-  private static final String COMP_BUILD_INFO = RUNTIME_FILES_DIR + "simple_components_build_info.json";
+  private static final String COMP_BUILD_INFO = RUNTIME_FILES_DIR
+      + "simple_components_build_info.json";
   private static final String BUNDLETOOL_JAR = RUNTIME_TOOLS_DIR + "bundletool.jar";
 
   public Resources() {
@@ -47,6 +47,11 @@ public class Resources {
     dexFiles = new ArrayList<>();
   }
 
+  /**
+   *
+   * @param resourcePath
+   * @return
+   */
   public synchronized String getResource(String resourcePath) {
     try {
       File file = resources.get(resourcePath);
@@ -153,12 +158,13 @@ public class Resources {
   }
 
   public BufferedImage getDefaultIcon() throws IOException {
-    return ImageIO.read(Compiler.class.getResource(DEFAULT_ICON));
+    return ImageIO.read(Objects.requireNonNull(Compiler.class.getResource(DEFAULT_ICON)));
   }
 
   public String getCompBuildInfo() {
     try {
-      return com.google.common.io.Resources.toString(Resources.class.getResource(COMP_BUILD_INFO), Charsets.UTF_8);
+      return com.google.common.io.Resources.toString(Resources.class.getResource(COMP_BUILD_INFO),
+          Charsets.UTF_8);
     } catch (IOException e) {
       return null;
     }

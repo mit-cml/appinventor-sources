@@ -53,18 +53,18 @@ public class LoadComponentInfo implements Task {
       return TaskResult.generateError("Unable to load component information");
     }
 
-    if (!this.generateAssets() ||
-        !this.generateActivities() ||
-        !this.generateActivityMetadata() ||
-        !this.generateBroadcastReceivers() ||
-        !this.generateContentProviders() ||
-        !this.generateLibNames() ||
-        !this.generateMetadata() ||
-        !this.generateMinSdks() ||
-        !this.generateNativeLibNames() ||
-        !this.generatePermissions() ||
-        !this.generateQueries() ||
-        !this.generateServices()) {
+    if (!this.generateAssets()
+        || !this.generateActivities()
+        || !this.generateActivityMetadata()
+        || !this.generateBroadcastReceivers()
+        || !this.generateContentProviders()
+        || !this.generateLibNames()
+        || !this.generateMetadata()
+        || !this.generateMinSdks()
+        || !this.generateNativeLibNames()
+        || !this.generatePermissions()
+        || !this.generateQueries()
+        || !this.generateServices()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
 
@@ -85,7 +85,8 @@ public class LoadComponentInfo implements Task {
   private boolean generateAssets() {
     context.getReporter().info("Generating assets...");
     try {
-      loadJsonInfo(context.getComponentInfo().getAssetsNeeded(), ComponentDescriptorConstants.ASSETS_TARGET);
+      loadJsonInfo(context.getComponentInfo().getAssetsNeeded(),
+          ComponentDescriptorConstants.ASSETS_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Assets stage", true);
@@ -107,7 +108,8 @@ public class LoadComponentInfo implements Task {
   private boolean generateActivities() {
     context.getReporter().info("Generating activities...");
     try {
-      loadJsonInfo(context.getComponentInfo().getActivitiesNeeded(), ComponentDescriptorConstants.ACTIVITIES_TARGET);
+      loadJsonInfo(context.getComponentInfo().getActivitiesNeeded(),
+          ComponentDescriptorConstants.ACTIVITIES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Activities stage", true);
@@ -128,7 +130,8 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateMetadata() {
     try {
-      loadJsonInfo(context.getComponentInfo().getMetadataNeeded(), ComponentDescriptorConstants.METADATA_TARGET);
+      loadJsonInfo(context.getComponentInfo().getMetadataNeeded(),
+          ComponentDescriptorConstants.METADATA_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Metadata stage", true);
@@ -149,7 +152,8 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateActivityMetadata() {
     try {
-      loadJsonInfo(context.getComponentInfo().getActivityMetadataNeeded(), ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET);
+      loadJsonInfo(context.getComponentInfo().getActivityMetadataNeeded(),
+          ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Activity Metadata stage", true);
@@ -171,14 +175,16 @@ public class LoadComponentInfo implements Task {
   private boolean generateBroadcastReceivers() {
     context.getReporter().info("Generating broadcast receivers...");
     try {
-      loadJsonInfo(context.getComponentInfo().getBroadcastReceiversNeeded(), ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET);
+      loadJsonInfo(context.getComponentInfo().getBroadcastReceiversNeeded(),
+          ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the BroadcastReceivers stage", true);
       return false;
     }
 
-    mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), context.getComponentInfo().getBroadcastReceiversNeeded());
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET),
+        context.getComponentInfo().getBroadcastReceiversNeeded());
 
     // TODO: Output the number of broadcast receivers
 
@@ -190,7 +196,8 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateQueries() {
     try {
-      loadJsonInfo(context.getComponentInfo().getQueriesNeeded(), ComponentDescriptorConstants.QUERIES_TARGET);
+      loadJsonInfo(context.getComponentInfo().getQueriesNeeded(),
+          ComponentDescriptorConstants.QUERIES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Queries stage", true);
@@ -208,7 +215,8 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateServices() {
     try {
-      loadJsonInfo(context.getComponentInfo().getServicesNeeded(), ComponentDescriptorConstants.SERVICES_TARGET);
+      loadJsonInfo(context.getComponentInfo().getServicesNeeded(),
+          ComponentDescriptorConstants.SERVICES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Services stage", true);
@@ -229,7 +237,8 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateContentProviders() {
     try {
-      loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(), ComponentDescriptorConstants.SERVICES_TARGET);
+      loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(),
+          ComponentDescriptorConstants.SERVICES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Content Providers stage", true);
@@ -251,7 +260,8 @@ public class LoadComponentInfo implements Task {
   private boolean generateLibNames() {
     context.getReporter().info("Generating libraries...");
     try {
-      loadJsonInfo(context.getComponentInfo().getLibsNeeded(), ComponentDescriptorConstants.LIBRARIES_TARGET);
+      loadJsonInfo(context.getComponentInfo().getLibsNeeded(),
+          ComponentDescriptorConstants.LIBRARIES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Libraries stage", true);
@@ -276,7 +286,8 @@ public class LoadComponentInfo implements Task {
       return true;
     }
     try {
-      loadJsonInfo(context.getComponentInfo().getNativeLibsNeeded(), ComponentDescriptorConstants.NATIVE_TARGET);
+      loadJsonInfo(context.getComponentInfo().getNativeLibsNeeded(),
+          ComponentDescriptorConstants.NATIVE_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Native Libraries stage", true);
@@ -295,17 +306,21 @@ public class LoadComponentInfo implements Task {
   private boolean generatePermissions() {
     context.getReporter().info("Generating permissions...");
     try {
-      loadJsonInfo(context.getComponentInfo().getPermissionsNeeded(), ComponentDescriptorConstants.PERMISSIONS_TARGET);
+      loadJsonInfo(context.getComponentInfo().getPermissionsNeeded(),
+          ComponentDescriptorConstants.PERMISSIONS_TARGET);
       loadPermissionConstraints();
-      if (context.getProject() != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
+      if (context.getProject() != null) {
+        // Only do this if we have a project (testing doesn't provide one :-( ).
         context.getReporter().log("usesLocation = " + context.getProject().getUsesLocation());
-        if (context.getProject().getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
+        if (context.getProject().getUsesLocation().equals("True")) {
+          // Add location permissions if any WebViewer requests it
           Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
           // See ProjectEditor.recordLocationSettings()
           locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
           locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
           locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
-          context.getComponentInfo().getPermissionsNeeded().put("com.google.appinventor.components.runtime.WebViewer", locationPermissions);
+          context.getComponentInfo().getPermissionsNeeded()
+              .put("com.google.appinventor.components.runtime.WebViewer", locationPermissions);
         }
       }
     } catch (IOException | JSONException e) {
@@ -314,7 +329,8 @@ public class LoadComponentInfo implements Task {
       return false;
     }
 
-    mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET), context.getComponentInfo().getPermissionsNeeded());
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET),
+        context.getComponentInfo().getPermissionsNeeded());
     mergeConditionalPermissionConstraints();
 
     int n = 0;
@@ -329,7 +345,8 @@ public class LoadComponentInfo implements Task {
   private boolean generateMinSdks() {
     context.getReporter().info("Generating Android minimum SDK...");
     try {
-      loadJsonInfo(context.getComponentInfo().getMinSdksNeeded(), ComponentDescriptorConstants.ANDROIDMINSDK_TARGET);
+      loadJsonInfo(context.getComponentInfo().getMinSdksNeeded(),
+          ComponentDescriptorConstants.ANDROIDMINSDK_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Android Min SDK stage", true);
@@ -348,10 +365,12 @@ public class LoadComponentInfo implements Task {
   private boolean generateBroadcastReceiver() {
     context.getReporter().info("Generating component broadcast receivers...");
     try {
-      loadJsonInfo(context.getComponentInfo().getComponentBroadcastReceiver(), ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET);
+      loadJsonInfo(context.getComponentInfo().getComponentBroadcastReceiver(),
+          ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
-      context.getReporter().error("There was an error in the BroadcastReceiver Generator stage", true);
+      context.getReporter().error("There was an error in the BroadcastReceiver Generator stage",
+          true);
       return false;
     }
     return true;
@@ -373,7 +392,8 @@ public class LoadComponentInfo implements Task {
   /*
    *  Loads permissions and information on component libraries and assets.
    */
-  private void loadJsonInfo(ConcurrentMap<String, Set<String>> infoMap, String targetInfo) throws IOException, JSONException {
+  private void loadJsonInfo(ConcurrentMap<String, Set<String>> infoMap, String targetInfo)
+      throws IOException, JSONException {
     synchronized (infoMap) {
       if (!infoMap.isEmpty()) {
         return;
@@ -396,7 +416,8 @@ public class LoadComponentInfo implements Task {
           continue;
         }
 
-        if (!context.getSimpleCompTypes().contains(type) && !context.getExtCompTypes().contains(type)) {
+        if (!context.getSimpleCompTypes().contains(type)
+            && !context.getExtCompTypes().contains(type)) {
           continue;
         }
 
@@ -432,7 +453,8 @@ public class LoadComponentInfo implements Task {
     // Strip off the package name since SCM and BKY use unqualified names
     type = type.substring(type.lastIndexOf('.') + 1);
 
-    JSONObject conditionals = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
+    JSONObject conditionals = compJson.optJSONObject(
+        ComponentDescriptorConstants.CONDITIONALS_TARGET);
     if (conditionals != null) {
       JSONObject jsonBlockMap = conditionals.optJSONObject(targetInfo);
       if (jsonBlockMap != null) {
@@ -532,7 +554,8 @@ public class LoadComponentInfo implements Task {
     return neededConstraints;
   }
 
-  private void mergeConditionals(Map<String, Map<String, Set<String>>> conditionalMap, Map<String, Set<String>> infoMap) {
+  private void mergeConditionals(Map<String, Map<String, Set<String>>> conditionalMap,
+      Map<String, Set<String>> infoMap) {
     if (conditionalMap != null) {
       if (context.isForCompanion()) {
         // For the companion, we take all of the conditionals

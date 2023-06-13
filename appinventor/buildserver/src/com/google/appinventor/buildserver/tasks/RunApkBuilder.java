@@ -30,7 +30,8 @@ public class RunApkBuilder implements Task {
           }
         }
       }
-      if (context.getComponentInfo().getNativeLibsNeeded().size() != 0) { // Need to add native libraries...
+      if (context.getComponentInfo().getNativeLibsNeeded().size() != 0) {
+        // Need to add native libraries...
         apkBuilder.addNativeLibraries(context.getPaths().getLibsDir());
       }
       apkBuilder.sealApk();

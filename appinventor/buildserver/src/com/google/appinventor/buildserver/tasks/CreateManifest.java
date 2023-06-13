@@ -14,15 +14,14 @@ import com.google.common.collect.Sets;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  * compiler.writeAndroidManifest()
@@ -30,9 +29,13 @@ import java.util.Set;
 // CreateManifest
 @BuildType(apk = true, aab = true)
 public class CreateManifest implements Task {
+  private static final String NEARFIELD_COMPONENT =
+      "com.google.appinventor.components.runtime.NearField";
+
   @Override
   public TaskResult execute(CompilerContext context) {
-    context.getPaths().setManifest(new File(context.getPaths().getBuildDir(), "AndroidManifest.xml"));
+    context.getPaths().setManifest(new File(context.getPaths().getBuildDir(),
+        "AndroidManifest.xml"));
 
     // Create AndroidManifest.xml
     context.getReporter().info("Reading project specs...");
@@ -40,29 +43,29 @@ public class CreateManifest implements Task {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = context.getProject().getProjectName();
-    String vCode = context.getProject().getVCode();
-    String vName = cleanName(context.getProject().getVName());
+    String versionCode = context.getProject().getVCode();
+    String versionName = cleanName(context.getProject().getVName());
     if (context.isIncludeDangerousPermissions()) {
-      vName += "u";
+      versionName += "u";
     }
-    String aName = cleanName(context.getProject().getAName());
+    String appName = cleanName(context.getProject().getAName());
     context.getReporter().log("VCode: " + context.getProject().getVCode());
     context.getReporter().log("VName: " + context.getProject().getVName());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
-    try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(context.getPaths().getManifest()), StandardCharsets.UTF_8));
+    try (Writer out = new BufferedWriter(new OutputStreamWriter(
+        Files.newOutputStream(context.getPaths().getManifest().toPath()),
+        StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       // TODO(markf) Allow users to set versionCode and versionName attributes.
       // See http://developer.android.com/guide/publishing/publishing.html for
       // more info.
-      out.write("<manifest " +
-          "xmlns:android=\"http://schemas.android.com/apk/res/android\" " +
-          "package=\"" + packageName + "\" " +
-          // TODO(markf): uncomment the following line when we're ready to enable publishing to the
-          // Android Market.
-          "android:versionCode=\"" + vCode + "\" " + "android:versionName=\"" + vName + "\" " +
-          ">\n");
+      out.write("<manifest "
+          + "xmlns:android=\"http://schemas.android.com/apk/res/android\" "
+          + "package=\"" + packageName + "\" "
+          + "android:versionCode=\"" + versionCode + "\" "
+          + "android:versionName=\"" + versionName + "\" "
+          + ">\n");
 
       // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
       // is used by the Google Play store to determine which devices the app is available for. By adding
@@ -70,19 +73,30 @@ public class CreateManifest implements Task {
       // to make the app available on devices that lack the feature. Without these lines the Play Store
       // makes a guess based on permissions and assumes that they are required features.
       if (context.isForCompanion()) {
-        out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.location.network\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.location.gps\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.microphone\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
-        out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.location\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.telephony\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.location.network\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.location.gps\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.microphone\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.camera\" "
+            + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" "
+            + "android:required=\"false\" />\n");
         if (context.isForEmulator()) {
-          out.write("  <uses-feature android:name=\"android.hardware.wifi\" android:required=\"false\" />\n"); // We actually require wifi
+          out.write("  <uses-feature android:name=\"android.hardware.wifi\" "
+              + "android:required=\"false\" />\n"); // We actually require wifi
         } else {
-          out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+          // We actually require wifi
+          out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n");
         }
       }
 
@@ -188,10 +202,10 @@ public class CreateManifest implements Task {
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
       // out.write("android:debuggable=\"true\" "); // DEBUGGING
-      if (aName.equals("")) {
+      if (appName.equals("")) {
         out.write("android:label=\"" + projectName + "\" ");
       } else {
-        out.write("android:label=\"" + aName + "\" ");
+        out.write("android:label=\"" + appName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
       out.write("android:requestLegacyExternalStorage=\"true\" ");  // For SDK 29 (Android Q)
@@ -231,7 +245,8 @@ public class CreateManifest implements Task {
         // TODO:  Check that this doesn't screw up other components.  Also, it might be
         // better to do this programmatically when the NearField component is created, rather
         // than here in the manifest.
-        if (context.getSimpleCompTypes().contains("com.google.appinventor.components.runtime.NearField") && !context.isForCompanion() && isMain) {
+        if (context.getSimpleCompTypes().contains(NEARFIELD_COMPONENT)
+            && !context.isForCompanion() && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
         } else if (isMain && context.isForCompanion()) {
           out.write("android:launchMode=\"singleTop\" ");
