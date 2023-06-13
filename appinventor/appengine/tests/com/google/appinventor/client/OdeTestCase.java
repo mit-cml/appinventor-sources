@@ -1,14 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2019-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
-import com.google.gwt.junit.client.GWTTestCase;
+
+import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.junit.client.GWTTestCase;
 
 public class OdeTestCase extends GWTTestCase {
   public void testCompareLocales() {
@@ -24,14 +26,14 @@ public class OdeTestCase extends GWTTestCase {
         Ode.compareLocales(null, "fr_FR", "en"));
   }
 
-  public void testhandleUserLocaletrue() {
+  public void testhandleUserLocale() {
     String locale = Window.Location.getParameter("locale");
     User user = new User("1","abc@email.com",true,true,null);
     UserSettings userSettings = new UserSettings(user);
     String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
-    assertTrue(Ode.compareLocales(locale,lastUserLocale, "en"));
+    boolean value = Ode.compareLocales(locale, lastUserLocale, "en");
+    assertTrue(value);
   }
-
   @Override
   public String getModuleName() {
     return "com.google.appinventor.YaClient";
