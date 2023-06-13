@@ -11,8 +11,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.app.Activity;
-
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -29,12 +27,13 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-import com.google.appinventor.components.runtime.errors.YailRuntimeError;
-
 import com.google.appinventor.components.runtime.chatbot.ChatBotToken;
+
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.Base58Util;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -53,8 +52,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-
-import org.json.JSONException;
 
 /**
  * The ChatBot component is a non-visible component for chatting with an AI
@@ -297,13 +294,11 @@ public final class ChatBot extends AndroidNonvisibleComponent {
           if (responseCode == 200) {
             returnText = response.getAnswer();
             this.uuid = response.getUuid();
+            GotResponse(returnText);
           } else {
             returnText = getResponseContent(connection, false);
+            ErrorOccurred(responseCode, returnText);
           }
-          final String chatbotorerror = returnText;
-
-          // Dispatch the event.
-          GotResponse(responseCode + "", chatbotorerror);
         } finally {
           connection.disconnect();
         }
@@ -317,9 +312,9 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         } catch  (IOException ee) {
           returnText = "Error Fetching from ChatBot";
         }
-        GotResponse("404", returnText);
+        ErrorOccurred(404, returnText);
       } else {
-        GotResponse("400", "Error Fetching ChatBot");
+        ErrorOccurred(400, "Error talking to ChatBot proxy");
       }
     }
   }
@@ -327,15 +322,14 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   /**
    * Event indicating that a request has finished and has returned data (output from ChatBot).
    *
-   * @param responseCode the response code from the server
    * @param responseText the response content from the server
    */
   @SimpleEvent(description = "Event fired when the Chat Bot answers a question.")
-  public void GotResponse(final String responseCode, final String responseText) {
+  public void GotResponse(final String responseText) {
     form.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          EventDispatcher.dispatchEvent(ChatBot.this, "GotResponse", responseCode, responseText);
+          EventDispatcher.dispatchEvent(ChatBot.this, "GotResponse", responseText);
         }
       });
   }
@@ -478,6 +472,27 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     } finally {
       reader.close();
     }
+  }
+
+  /**
+   * The ErrorOccurred event will be run when an error occurs during processing, such as if you
+   * forget to provide an API key or the server is overloaded.
+   *
+   * @param responseCode the HTTP status code returned by the server
+   * @param responseText a description of the error
+   */
+
+  @SimpleEvent
+  public void ErrorOccurred(final int responseCode, final String responseText) {
+    form.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          if (!EventDispatcher.dispatchEvent(ChatBot.this, "ErrorOccurred", responseCode, responseText)) {
+            form.dispatchErrorOccurredEvent(ChatBot.this, "ErrorOccurred",
+              ErrorMessages.ERROR_CHATBOT_ERROR, responseCode, responseText);
+          }
+        }
+      });
   }
 
   // We are synchronized because we are called simultaneously from two
