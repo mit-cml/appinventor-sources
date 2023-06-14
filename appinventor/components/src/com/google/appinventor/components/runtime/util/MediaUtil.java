@@ -26,10 +26,14 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
+
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -431,6 +435,41 @@ public class MediaUtil {
   public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
        final AsyncCallbackPair<BitmapDrawable> continuation) {
     getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+  }
+
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable.
+   */
+  public static void getSVGAsync(final Form form, final String mediaPath, final AsyncCallbackPair<SVG> continuation) {
+    if (mediaPath == null || mediaPath.length() == 0) {
+      continuation.onSuccess(null);
+      return;
+    }
+
+    final MediaSource mediaSource = determineMediaSource(form, mediaPath);
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        InputStream is = null;
+        try {
+          is = openMedia(form, mediaPath, mediaSource);
+          SVG svg = SVG.getFromInputStream(is);
+          continuation.onSuccess(svg);
+        } catch (IOException e) {
+          continuation.onFailure(e.getMessage());
+          return;
+        } catch (PermissionException e) {
+          continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
+          return;
+        } catch (SVGParseException e) {
+          continuation.onFailure(e.getMessage());
+          return;
+        } finally {
+          IOUtils.closeQuietly(LOG_TAG, is);
+        }
+      }
+    };
+    AsynchUtil.runAsynchronously(runnable);
   }
 
   /**

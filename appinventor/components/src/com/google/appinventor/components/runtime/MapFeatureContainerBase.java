@@ -431,6 +431,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       reader.close();
       return content.toString();
     } catch(MalformedURLException e) {
+      Log.e(LOG_TAG, "Unable to parse URL", e);
       $form().runOnUiThread(new Runnable() {
         public void run() {
           MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_MALFORMED_URL,
@@ -438,6 +439,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
         }
       });
     } catch (IOException e) {
+      e.printStackTrace();
       $form().runOnUiThread(new Runnable() {
         public void run() {
           MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_IO_EXCEPTION,

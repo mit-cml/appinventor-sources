@@ -977,8 +977,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     }
   }
 
-  private void getMarkerDrawableVector(MapMarker aiMarker,
-      AsyncCallbackPair<Drawable> callback) {
+  private void getMarkerDrawableVector(final MapMarker aiMarker,
+      final AsyncCallbackPair<Drawable> callback) {
     SVG markerSvg = null;
     if (defaultMarkerSVG == null) {
       try {
@@ -993,37 +993,38 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       }
     }
     final String markerAsset = aiMarker.ImageAsset();
-    if (markerAsset != null && markerAsset.length() != 0) {
+
+    if (markerAsset == null || markerAsset.length() == 0) {
       try {
-        markerSvg = SVG.getFromAsset(view.getContext().getAssets(), markerAsset);
-      } catch (SVGParseException e) {
-        Log.e(TAG, "Invalid SVG in Marker asset", e);
-      } catch (IOException e) {
-        Log.e(TAG, "Unable to read Marker asset", e);
-      }
-      if (markerSvg == null) {
-        // Attempt to retrieve asset from ReplForm storage location
-        InputStream is = null;
-        try {
-          is = MediaUtil.openMedia(form, markerAsset);
-          markerSvg = SVG.getFromInputStream(is);
-        } catch (SVGParseException e) {
-          Log.e(TAG, "Invalid SVG in Marker asset", e);
-        } catch (IOException e) {
-          Log.e(TAG, "Unable to read Marker asset", e);
-        } finally {
-          IOUtils.closeQuietly(TAG, is);
-        }
-      }
+        // Passes the defaultMarkerSVG
+        callback.onSuccess(rasterizeSVG(aiMarker, defaultMarkerSVG));
+      } catch (Exception e) {
+        callback.onFailure(e.getMessage());
+      } 
+      return;
     }
-    if (markerSvg == null) {
-      markerSvg = defaultMarkerSVG;
-    }
-    try {
-      callback.onSuccess(rasterizeSVG(aiMarker, markerSvg));
-    } catch(Exception e) {
-      callback.onFailure(e.getMessage());
-    }
+
+    MediaUtil.getSVGAsync(form, markerAsset, new AsyncCallbackPair<SVG>() {
+          @Override
+          public void onFailure(String message) {
+            try {
+              // Passes the defaultMarkerSVG
+              callback.onSuccess(rasterizeSVG(aiMarker, defaultMarkerSVG));
+            } catch (Exception e) {
+              callback.onFailure(e.getMessage());
+            }
+          }
+
+          @Override
+          public void onSuccess(SVG result) {
+            try {
+              callback.onSuccess(rasterizeSVG(aiMarker, result));  
+            } catch (Exception e) {
+              callback.onFailure(e.getMessage());
+            }
+            
+          }
+        });
   }
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
