@@ -78,8 +78,12 @@
         <yaactions:HardResetAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
-      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
+      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" >
+        <actions:AboutCompanionAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" >
+        <actions:CompanionUpdateAction />
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Build Menu -->
@@ -123,6 +127,9 @@
         <actions:CheckpointAction />
       </ai:DropDownItem>
       <hr />
+      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" >
+        <actions:ShowSplashAction />
+      </ai:DropDownItem>
       <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
         <actions:UploadKeystoreAction />
       </ai:DropDownItem>
