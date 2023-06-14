@@ -145,9 +145,15 @@
         <actions:OpenFeedbackAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
-      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
-      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
+      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" >
+        <actions:AboutCompanionAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" >
+        <actions:CompanionUpdateAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" >
+        <actions:ShowSplashAction />
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Admin Menu -->
