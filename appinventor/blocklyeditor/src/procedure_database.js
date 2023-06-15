@@ -31,7 +31,7 @@ Blockly.ProcedureDatabase = function(workspace) {
 
   /**
    * Procedure definition map from block ID to block. This is a subset of
-   * {@link Blockly.Workspace.blockDB_}.
+   * {@link Blockly.Workspace.blockDB}.
    * @type {{string: !Blockly.BlockSvg}}
    * @private
    */
