@@ -9,6 +9,8 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
+
 /**
  * Property editor for text alignment.
  */
@@ -23,6 +25,6 @@ public class YoungAndroidThemeChoicePropertyEditor extends ChoicePropertyEditor 
   };
 
   public YoungAndroidThemeChoicePropertyEditor() {
-    super(textAlignments);
+    super(textAlignments, Ode.getInstance().isProjectLoaded());
   }
 }

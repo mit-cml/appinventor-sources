@@ -5,22 +5,23 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
+import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
@@ -36,6 +37,8 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -53,14 +56,32 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import java.util.logging.Logger;
+
+interface BeginnerToolkit extends ClientBundle {
+  BeginnerToolkit INSTANCE = GWT.create(BeginnerToolkit.class);
+
+  @Source("toolkit_beginner.json")
+  TextResource getToolkit();
+}
+
+interface IntermediateToolkit extends ClientBundle {
+  IntermediateToolkit INSTANCE = GWT.create(IntermediateToolkit.class);
+
+  @Source("toolkit_intermediate.json")
+  TextResource getToolkit();
+}
+
 public class SubsetJSONPropertyEditor  extends PropertyEditor
         implements ProjectChangeListener {
-
+  
   private static SubsetJSONPropertyEditor INSTANCE;
+
   Tree componentTree;
   Tree blockTree;
   DropDownButton dropDownButton;
@@ -69,6 +90,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
+    Boolean newProject = Ode.getInstance().isProjectLoaded();
     buildTrees();
     file.addChangeHandler(new ChangeHandler() {
       @Override
@@ -91,19 +113,36 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     invisibleFilePanel.show();
 
     List<DropDownItem> items = Lists.newArrayList();
-    items.add(new DropDownItem("Subset Property Editor", MESSAGES.allButton(), new Command() {
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.beginnerToolkitButton(), new Command() {
+      @Override
+      public void execute() {
+        property.setValue(BeginnerToolkit.INSTANCE.getToolkit().getText());
+        updateValue();
+      }}));
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.intermediateToolkitButton(), new Command() {
+      @Override
+      public void execute() {
+        property.setValue(IntermediateToolkit.INSTANCE.getToolkit().getText());
+        updateValue();
+      }}));
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.expertToolkitButton(), new Command() {
       @Override
       public void execute() {
         property.setValue("");
         updateValue();
       }}));
-    items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
-      @Override
-      public void execute() {
-        matchProject();
-        property.setValue(createJSONString());
-        updateValue();
-      }}));
+    if (newProject){
+      items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
+        @Override
+        public void execute() {
+          matchProject();
+          property.setValue(createJSONString());
+          updateValue();
+        }}));  
+    }
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
       public void execute() {
@@ -115,6 +154,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       public void execute() {
         showCustomSubsetPanel();
       }}));
+    
     dropDownButton = new DropDownButton("Subset Property Editor", "", items, false);
     dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
     initWidget(dropDownButton);
@@ -594,8 +634,12 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
   protected void updateValue() {
     if (StringUtils.isNullOrEmpty(property.getValue())) {
-      dropDownButton.setCaption("All");
+      dropDownButton.setCaption(MESSAGES.expertToolkitButton());
       dropDownButton.setWidth("");
+    } else if (property.getValue() == BeginnerToolkit.INSTANCE.getToolkit().getText()){
+      dropDownButton.setCaption(MESSAGES.beginnerToolkitButton());
+    } else if (property.getValue() == IntermediateToolkit.INSTANCE.getToolkit().getText()){
+      dropDownButton.setCaption(MESSAGES.intermediateToolkitButton());
     } else {
       dropDownButton.setCaption("Toolkit Defined");
     }

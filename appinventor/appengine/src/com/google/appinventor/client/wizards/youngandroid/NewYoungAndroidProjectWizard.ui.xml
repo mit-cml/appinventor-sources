@@ -1,7 +1,10 @@
 <!--NewYoungAndroidProjectWizard.ui.xml -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:p="urn:import:com.google.appinventor.client.editor.simple.palette"
              xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:s="urn:import:com.google.appinventor.client.widgets.properties"
              xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
@@ -10,8 +13,23 @@
     <wiz:Dialog ui:field="addDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
                 styleName="ode-DialogBox">
         <g:FlowPanel>
+            <!--ProjectName-->
             <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
                               stylePrimaryName="ode-LabeledTextBox" />
+            <!--Theme-->
+            <g:HorizontalPanel ui:field="horizontalThemePanel">
+                <g:Label text="Theme:" ui:field="themeLabel" />
+                <e:YoungAndroidThemeChoicePropertyEditor ui:field="themeEditor"/>
+                <p:ComponentHelpWidget name="Theme" helpString ="Selects the theme for the application. Theme can only be set at compile time and the Companion will approximate changes during live development. Possible options are: Classic, which is the same as older versions of App Inventor; Device Default, which gives the same theme as the version of Android running on the device and uses PrimaryColor for the Action Bar and has light buttons; Black Title Text, which is the Device Default theme but with black title text; and Dark, which is a dark version of the Device Default theme using PrimaryColorDark and having dark grey components."
+                                        helpURL="http://ai2.appinventor.mit.edu/reference/components/userinterface.html#Screen"/>
+            </g:HorizontalPanel>
+            <!--Blocks-->
+            <g:HorizontalPanel ui:field="horizontalBlocksPanel">
+                <g:Label text="BlocksToolkit:" ui:field="blocksLabel"/>
+                <s:SubsetJSONPropertyEditor ui:field="blockstoolkitEditor"/>
+                <p:ComponentHelpWidget name="Blocks Toolkit" helpString="A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project."
+                                        helpURL="http://ai2.appinventor.mit.edu/reference/components/userinterface.html#Screen"/>
+            </g:HorizontalPanel>
             <g:FlowPanel styleName="buttonRow" >
                 <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
                 <g:Button ui:field='addButton' text='{messages.okButton}' />
@@ -19,3 +37,5 @@
         </g:FlowPanel>
     </wiz:Dialog>
 </ui:UiBinder>
+
+

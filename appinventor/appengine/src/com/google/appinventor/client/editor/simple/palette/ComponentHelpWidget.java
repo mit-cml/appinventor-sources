@@ -31,11 +31,11 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   String name;
   String helpString;
   String helpURL;
-  Boolean external;
-  int version;
-  String versionName;
-  String dateBuilt;
-  String license;
+  Boolean external = true;
+  int version = 0;
+  String versionName = "";
+  String dateBuilt = "";
+  String license = "";
 
   // Keep track of the last time (in milliseconds) of the last closure
   // so we don't reopen a popup too soon after closing it.  Specifically,
@@ -184,6 +184,30 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
     dateBuilt = datebuilt_p;
     license = license_p;
   }
+
+  public ComponentHelpWidget(String name_p, String helpString_p, String helpURL_p) {
+    super(imageResource);
+    name = name_p;
+    helpString = helpString_p;
+    helpURL = helpURL_p;
+  }
+
+  public ComponentHelpWidget() {
+    super(imageResource);
+  }
+
+  public void setName(String name){
+    this.name = name;
+  }
+
+  public void setHelpString(String helpString){
+    this.helpString = helpString;
+  }
+  
+  public void setHelpURL(String helpURLString){
+    this.helpURL = helpURLString;
+  }
+
 
   @Override
   protected void handleClick() {
