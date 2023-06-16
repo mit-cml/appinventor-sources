@@ -59,6 +59,16 @@ public final class Project {
     public File getFile() {
       return file;
     }
+
+    /**
+     * Returns the simple name of the class defined by the source file.
+     *
+     * @return simple class name of source file
+     */
+    public String getSimpleName() {
+      String[] parts = qualifiedName.split("\\.");
+      return parts[parts.length - 1];
+    }
   }
 
   /*

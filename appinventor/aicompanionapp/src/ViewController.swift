@@ -62,6 +62,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
+  private var didWifiCheck = false
 
   private static var _interpreterInitialized = false
 
@@ -111,7 +112,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         let runtime = try! String(contentsOfFile: url)
         interpreter.evalForm(runtime)
         if interpreter.exception != nil {
-          fatalError("Unable to initialize runtime: \(interpreter.exception!)")
+          let title = "Error"
+          let message = "Unable to initialize runtime: \(interpreter.exception!)"
+          let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+          let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+          alertController.addAction(okAction)
+          if let topController = UIApplication.shared.keyWindow?.rootViewController {
+            topController.present(alertController, animated: true, completion: nil)
+          }
+          return interpreter
         }
         ViewController._interpreterInitialized = true
       }
@@ -169,7 +178,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
-      checkWifi()
     }
   }
 
@@ -349,6 +357,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           self.onboardingScreen = nil
         })
       }
+      if !self.didWifiCheck {
+        DispatchQueue.main.async {
+          self.checkWifi()
+        }
+      }
       return
     }
 
@@ -357,10 +370,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     vc.modalPresentationStyle = .fullScreen
     present(vc, animated: true)
     onboardingScreen = vc
+    vc.onCompletionHandler = {
+      if !self.didWifiCheck {
+        self.checkWifi()
+      }
+    }
   }
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {
+    self.didWifiCheck = true
     if PhoneStatus.GetWifiIpAddress().hasPrefix("Error") {
       notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
                                  "No WiFi", "Continue without WiFi", "Exit", false)

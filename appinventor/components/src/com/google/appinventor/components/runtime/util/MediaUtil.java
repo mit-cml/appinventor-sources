@@ -108,9 +108,12 @@ public class MediaUtil {
     }
 
     try {
-      new URL(mediaPath);
+      URL url = new URL(mediaPath);
       // It's a well formed URL.
       if (mediaPath.startsWith("file:")) {
+        if (url.getPath().startsWith("/android_asset/")) {
+          return MediaSource.ASSET;
+        }
         return MediaSource.FILE_URL;
       }
 
@@ -263,7 +266,11 @@ public class MediaUtil {
       throws IOException {
     switch (mediaSource) {
       case ASSET:
-        return getAssetsIgnoreCaseInputStream(form,mediaPath);
+        if (mediaPath.startsWith("file:")) {
+          mediaPath = mediaPath.substring(mediaPath.indexOf("/android_asset/")
+              + "/android_asset/".length());
+        }
+        return getAssetsIgnoreCaseInputStream(form, mediaPath);
 
       case REPL_ASSET:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {

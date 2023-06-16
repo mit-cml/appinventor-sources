@@ -5,7 +5,7 @@
 
 import Foundation
 
-public final class Label: ViewComponent, AbstractMethodsForViewComponent {
+public final class Label: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
   fileprivate var _view: UILabel
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface = Typeface.normal
@@ -15,6 +15,10 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
   fileprivate var _fontSize: Float64 = 0
+  fileprivate var _isBigText = false
+  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _userFontSize = kFontSizeDefault
+  public var HighContrast: Bool = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -29,6 +33,25 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     Height = kLengthPreferred
     Width = kLengthPreferred
+    FontSize = Float64(kFontSizeDefault)
+  }
+
+  func updateFontSize() {
+    if _htmlFormat {
+      updateFormattedContent()
+    } else {
+      if form?.BigDefaultText == true {
+        if _userFontSize == kFontSizeDefault {
+          _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
+        } else {
+          _view.font = _view.font.withSize(CGFloat(_userFontSize))
+        }
+      } else {
+        _view.font = _view.font.withSize(CGFloat(_userFontSize))
+      }
+    }
+    _view.sizeToFit()
+    updateFormattedContent()
   }
   
   public override var view: UIView {
@@ -121,13 +144,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       return _fontSize
     }
     set(size) {
-      _fontSize = size
-      if _htmlFormat {
-        updateFormattedContent()
-      } else {
-        _view.font = _view.font.withSize(CGFloat(size))
-      }
-      _view.sizeToFit()
+      _userFontSize = Float(size)
+      updateFontSize()
     }
   }
   
@@ -148,6 +166,16 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
+  @objc public var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
+    }
+  }
+
   @objc public var Text: String {
     get {
       return _view.text ?? ""

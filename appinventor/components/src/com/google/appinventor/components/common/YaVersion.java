@@ -569,10 +569,14 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 220:
   // - CHART_COMPONENT_VERSION was incremented to 2
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
-  // For YOUNG_ANDROID_VERSION 221;
+  // For YOUNG_ANDROID_VERSION 221:
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222:
+  // - CHATBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 223:
+  // - IMAGEBOT_COMPONENT_VERSION was introduced
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 223;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -851,6 +855,9 @@ public class YaVersion {
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
+  //For CHATBOT_COMPONENT_VERSION: Initial Version
+  public static final int CHATBOT_COMPONENT_VERSION = 1;
+
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
@@ -1039,6 +1046,8 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
+
+  public static final int IMAGEBOT_COMPONENT_VERSION = 1;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
