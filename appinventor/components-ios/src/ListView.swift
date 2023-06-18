@@ -24,6 +24,9 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _textSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
+  fileprivate var _fontSizeDetail = Int32(16)
+  
+  fileprivate var _listData = [String]()    //ListData
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -91,7 +94,50 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
     }
   }
+  
+  
+  
+  
+  
+  
+  @objc open func CreateElement(mainText: String, detailText: String, imageName: String) -> [String: Any] {
+      var dictItem: [String: Any] = [
+          "mainText": mainText,
+          "Text2": detailText,
+          "Image": imageName
+      ]
+      return dictItem
+  }
+  
+  //ListData
+  @objc open var ListData: [[String: Any]] {
+      get {
+          var listData: [[String: Any]] = []
+          for element in _listData {
+              let dictItem: [String: Any] = [
+                  "mainText": element,
+                  "Text2": "",
+                  "Image": ""
+              ]
+              listData.append(dictItem)
+          }
+          return listData
+      }
+      set(listData) {
+          _listData = []
+          for item in listData {
+              if let mainText = item["mainText"] as? String {
+                  _listData.append(mainText)
+              }
+          }
+          _view.reloadData()
+      }
+  }
+  
 
+  
+  
+  
   @objc open var Selection: String {
     get {
       return _selection
@@ -179,6 +225,19 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
+  
+  //FontSizeDetail
+  @objc open var FontSizeDetail: Int32 {
+      get {
+          return _fontSizeDetail
+      }
+      set(fontSizeDetail) {
+          _fontSizeDetail = fontSizeDetail < 0 ? Int32(7) : fontSizeDetail
+          _view.reloadData()
+      }
+  }
+  
+ 
 
   // MARK: Events
 
@@ -191,8 +250,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
+    
     cell.textLabel?.text = elements[indexPath.row]
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
+
+   
+    if indexPath.row > elements.count {
+         let listDataIndex = indexPath.row - elements.count
+         cell.textLabel?.text = _listData[listDataIndex]
+       }
+    
     guard let form = _container?.form else {
       return cell
     }
@@ -212,16 +280,23 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     if elements[indexPath.row].contains("\n") {
       cell.textLabel?.numberOfLines = 0
       cell.textLabel?.lineBreakMode = .byWordWrapping
-    } else {
+    }
+    else {
       cell.textLabel?.numberOfLines = 1
       cell.textLabel?.lineBreakMode = .byTruncatingTail
     }
     cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+    
+    if indexPath.row > elements.count {
+      let listDataIndex = indexPath.row - elements.count
+           cell.textLabel?.text = _listData[listDataIndex]
+    }
+    
     return cell
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return elements.count
+    return elements.count + _listData.count
   }
 
   // MARK: UITableViewDelegate
