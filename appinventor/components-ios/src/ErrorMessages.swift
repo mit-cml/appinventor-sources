@@ -122,6 +122,12 @@ import Foundation
   case ERROR_ROUTING_SERVICE_ERROR = 4003
   case ERROR_NO_ROUTE_FOUND = 4004
 
+  // ChatBot Errors
+  case ERROR_CHATBOT_ERROR = 4200
+
+  // ImageBot Errors
+  case ERROR_IMAGEBOT_ERROR = 4300
+
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
   case ERROR_CLOUDDB_JSON_MALFORMED = 104002
@@ -338,6 +344,14 @@ import Foundation
       return "Routing service failed with status %d %s"
     case .ERROR_NO_ROUTE_FOUND:
       return "No route returned by the routing service."
+
+    // ChatBot Errors
+    case .ERROR_CHATBOT_ERROR:
+      return "Error from the ChatBot code: %d %@"
+
+    // ImageBot Errors
+    case .ERROR_IMAGEBOT_ERROR:
+      return "Error from the ImageBot code: %d %@"
 
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:

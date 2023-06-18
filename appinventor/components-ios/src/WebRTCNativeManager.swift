@@ -209,7 +209,7 @@ struct WebRTCMessage: Codable {
     print("dataChannel: received data channel message")
     if let input = String(data: buffer.data, encoding: .utf8) {
       DispatchQueue.main.async {
-        self.form.evalScheme(input)
+        (Form.activeForm as? ReplForm)?.evalScheme(input)
       }
     }
   }
