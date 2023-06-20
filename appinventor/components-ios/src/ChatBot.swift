@@ -45,6 +45,8 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
         if _uuid.isEmpty && !System.isEmpty {
           $0.system = System
         }
+        $0.provider = Provider
+        $0.model = Model
       }) {
         if let error = $2 {
           self.ErrorOccurred($0, (error as? ProxyError)?.message ?? error.localizedDescription)
