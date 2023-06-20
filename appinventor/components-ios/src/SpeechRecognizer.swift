@@ -127,6 +127,14 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
       return
     }
 
+    // Ensure the audio session is set up to use the microphone
+    let audioSession = AVAudioSession.sharedInstance()
+    do {
+      try audioSession.setCategory(.playAndRecord)
+      try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+    } catch {
+      print("Error starting speech recognizer: ", error)
+    }
     // prepare recording for speech recognition
     let audioEngine = AVAudioEngine()
     self.audioEngine = audioEngine
