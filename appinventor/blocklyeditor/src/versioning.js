@@ -3127,7 +3127,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // default value was added to the Country designer property
     // default value was added to the Language designer property
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: The Stop method was added.
+    6: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 

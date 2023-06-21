@@ -172,6 +172,10 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     _tts.speak(utterance)
   }
 
+  @objc open func Stop() {
+    _tts.stopSpeaking(at: .immediate)
+  }
+
   // MARK: Events
 
   @objc open func BeforeSpeaking() {

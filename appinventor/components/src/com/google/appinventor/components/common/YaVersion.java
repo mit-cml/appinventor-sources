@@ -575,8 +575,10 @@ public class YaVersion {
   // - CHATBOT_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 223:
   // - IMAGEBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 224:
+  // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 223;
+  public static final int YOUNG_ANDROID_VERSION = 224;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1388,7 +1390,7 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 5:
   // - default value was added to the Country designer property
   // - default value was added to the Language designer property
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 5;
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 6;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
