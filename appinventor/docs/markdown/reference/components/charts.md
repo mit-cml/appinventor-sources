@@ -283,6 +283,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Returns all entries of the data series matching the specified y value.
  For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
 
+{:id="ChartData2D.HighlightDataPoints" class="method"} <i/> HighlightDataPoints(*dataPoints*{:.list},*color*{:.number})
+: Highlights all given data points on the Chart in the color of choice
+
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.

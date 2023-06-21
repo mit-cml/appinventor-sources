@@ -26,7 +26,7 @@ import gnu.lists.Pair;
 @DesignerComponent(version = YaVersion.ANOMALY_COMPONENT_VERSION,
     description = "A component that contains anomaly detection models",
     category = ComponentCategory.DATASCIENCE,
-    iconName = "images/web.png",
+    iconName = "images/anomaly.png",
     nonVisible = true)
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")

@@ -126,23 +126,26 @@ None
  be a CSV formatted string, where the first value corresponds to the x column, and the second
  value corresponds to the y value.
 
+{:id="AnomalyDetection.CleanData" class="method returns list"} <i/> CleanData(*anomaly*{:.list},*xList*{:.list},*yList*{:.list})
+: Given a single anomaly: [(anomaly index, anomaly value)]
+
+ 1. Iterate over the xList and delete value at anomaly index
+ 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
+ 3. combine the xList and yList after modification in a list of x and y pairs
+
+ We assume x and y lists are the same size and are ordered
+
 {:id="AnomalyDetection.Clear" class="method"} <i/> Clear()
 : Removes all the entries from the Data Series.
 
-{:id="AnomalyDetection.DetectAnomalies" class="method returns list"} <i/> DetectAnomalies(*dataList*{:.list})
+{:id="AnomalyDetection.DetectAnomalies" class="method returns list"} <i/> DetectAnomalies(*dataList*{:.list},*threshold*{:.number})
 : Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
  If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly
-
-{:id="AnomalyDetection.DetectAnomaliesWithThreshold" class="method returns list"} <i/> DetectAnomaliesWithThreshold(*dataList*{:.list},*threshold*{:.number})
-: Simple anomaly detection with user defined threshold.
 
 {:id="AnomalyDetection.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
  The returned value is a list, where each element of the list
  is a list containing the values of the entry in order.
-
-{:id="AnomalyDetection.GetAnomalyIndex" class="method returns number"} <i/> GetAnomalyIndex(*anomaly*{:.list})
-: Gets the index of a single anomaly
 
 {:id="AnomalyDetection.GetEntriesWithXValue" class="method returns list"} <i/> GetEntriesWithXValue(*x*{:.text})
 : Returns all entries of the data series matching the specified x value.
@@ -205,15 +208,6 @@ None
  <p>
  Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
-{:id="AnomalyDetection.RemoveAnomaly" class="method returns list"} <i/> RemoveAnomaly(*anomaly*{:.list},*xList*{:.list},*yList*{:.list})
-: Given a single anomaly: [(anomaly index, anomaly value)]
-
- 1. Iterate over the xList and delete value at anomaly index
- 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
- 3. combine the xList and yList after modification in a list of x and y pairs
-
- We assume x and y lists are the same size and are ordered
-
 {:id="AnomalyDetection.RemoveDataSource" class="method"} <i/> RemoveDataSource()
 : Removes the currently attached Data Source from the Chart Data component.
  Doing so will result in no more updates from the Data Source being sent, however,
@@ -222,7 +216,7 @@ None
 ## Regression  {#Regression}
 
 A data science component to apply different regression models
- The component needs a data source to apply the model on
+ The component requires a data source to apply the model on
 
 
 
@@ -326,6 +320,9 @@ None
 
 {:.methods}
 
+{:id="Regression.CalculateLineOfBestFitValue" class="method returns any"} <i/> CalculateLineOfBestFitValue(*xList*{:.list},*yList*{:.list},*value*{:.com.google.appinventor.components.common.LOBFValuesEnum})
+: Returns one of the Line of Best Fit values. A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided
+
 {:id="Regression.ChangeDataSource" class="method"} <i/> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
 : Changes the Data Source of the component to the specified component Source with the
  specified key value. See the [`Source`](#Regression.Source) property for
@@ -349,15 +346,6 @@ None
 {:id="Regression.GetEntriesWithYValue" class="method returns list"} <i/> GetEntriesWithYValue(*y*{:.text})
 : Returns all entries of the data series matching the specified y value.
  For a description of the format of the returned List, see [`GetAllEntries`](#Regression.GetAllEntries)
-
-{:id="Regression.GetLineOfBestFitCorCoef" class="method returns number"} <i/> GetLineOfBestFitCorCoef(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit correlation coefficient
-
-{:id="Regression.GetLineOfBestFitSlope" class="method returns number"} <i/> GetLineOfBestFitSlope(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit slope
-
-{:id="Regression.GetLineOfBestFitYIntercept" class="method returns number"} <i/> GetLineOfBestFitYIntercept(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit Intercept
 
 {:id="Regression.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value

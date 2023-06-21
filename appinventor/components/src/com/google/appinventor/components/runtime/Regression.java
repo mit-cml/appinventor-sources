@@ -22,7 +22,7 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
     description = "A component that contains regression models",
     category = ComponentCategory.DATASCIENCE,
-    iconName = "images/web.png",
+    iconName = "images/regression.png",
     nonVisible = true)
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")

@@ -77,8 +77,6 @@ public final class ChartData2D extends ChartDataBase {
 
         // Refresh Chart with new data
         refreshChart();
-        // Set new Entry color to the initial default chart color
-        setEntryDefaultColor(x,y);
       }
     });
   }
@@ -271,17 +269,6 @@ public final class ChartData2D extends ChartDataBase {
   private void resetHighlightAtIndex(int index){
     List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
     defaultColors.remove(index);
-  }
-  private void setEntryDefaultColor(String x, String y){
-    // set color of new entry to default
-    List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
-    Entry currEntry = new Entry(Float.parseFloat(x),Float.parseFloat(y));
-    int index = dataModel.findEntryIndex(currEntry);
-    defaultColors.add(index, initColor);
-    ((LineDataSet) dataModel.getDataset()).setCircleColors(defaultColors);
-
-    // Refresh Chart with new data
-    refreshChart();
   }
 }
 
