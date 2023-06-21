@@ -688,6 +688,10 @@ public final class YoungAndroidFormUpgrader {
       // default value was added to the Language designer property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added the Stop method to the blocks
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
