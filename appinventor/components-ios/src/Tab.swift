@@ -5,7 +5,6 @@
 
 import Foundation
 
-
 @objc open class Tab: UIViewController, Component, ComponentContainer {
   private var _children = [ViewComponent]()
   private var _container: ComponentContainer
