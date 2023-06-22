@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2022-2023 MIT, All rights reserved
+// Copyright 2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,8 +20,8 @@ import gnu.lists.Pair;
 
 
 /**
- * A data science component to apply different anomaly detection models
- * The component needs a data source to apply the model on
+ * A data science component to apply different anomaly detection models.
+ * The component needs a data source to apply the model on.
  */
 @DesignerComponent(version = YaVersion.ANOMALY_COMPONENT_VERSION,
     description = "A component that contains anomaly detection models",
@@ -44,7 +44,7 @@ public final class AnomalyDetection extends DataCollection {
 
   /**
    * Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
-   * If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly
+   * If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly.
    *
    * @param dataList - the data array represents the data you want to check for anomalies
    * @return List of detected anomaly data points
@@ -88,7 +88,7 @@ public final class AnomalyDetection extends DataCollection {
    * 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
    * 3. combine the xList and yList after modification in a list of x and y pairs
    *
-   * We assume x and y lists are the same size and are ordered
+   * We assume x and y lists are the same size and are ordered.
    *
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return List of combined x and y pairs without the anomaly pair
@@ -101,9 +101,9 @@ public final class AnomalyDetection extends DataCollection {
     LList yValues = (LList) yList.getCdr();
     List yData = castToDouble(yValues);
 
-    if (xData.size() != yData.size())
+    if (xData.size() != yData.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
-
+    }
     int index = (int) GetAnomalyIndex(anomaly);
 
     xData.remove(index - 1);
@@ -118,8 +118,9 @@ public final class AnomalyDetection extends DataCollection {
     }
     return cleanData;
   }
+
   /**
-   * Given a single anomaly: [(anomaly index, anomaly value)] return the anomaly index
+   * Given a single anomaly: [(anomaly index, anomaly value)] return the anomaly index.
    *
    *
    * @param anomaly - a single YailList tuple of anomaly index and value
@@ -130,6 +131,7 @@ public final class AnomalyDetection extends DataCollection {
     List<Double> anomalyNr = castToDouble(anomalyValue);
     return anomalyNr.get(0);
   }
+
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
     return null;

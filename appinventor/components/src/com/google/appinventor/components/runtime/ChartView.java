@@ -9,8 +9,6 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-
-import android.util.Log;
 import android.view.View;
 
 import com.github.mikephil.charting.charts.Chart;
@@ -22,8 +20,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.appinventor.components.runtime.FileBase.LOG_TAG;
 
 /**
  * Base class to represent Chart Views. The class (and subclasses)
@@ -142,7 +138,6 @@ public abstract class ChartView<
 
     // Execute the RefreshTask with the ChartDataModel argument
     refreshTask.execute(model);
-    Log.i(LOG_TAG, "Model entries after refresh in ChartView" + model.getEntries().toString());
   }
 
   /**

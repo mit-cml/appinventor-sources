@@ -40,6 +40,7 @@ public abstract class AbstractChartTest<
   protected V chartView;
   protected C chart;
   protected Chart chartComponent;
+  protected DataCollection dataCollection;
 
   /**
    * Configures a new Chart component for testing.
@@ -208,13 +209,13 @@ public abstract class AbstractChartTest<
   public void testGetSyncedTValueConsecutive() {
     // Get t values in order (0, 1, 2) and verify that the
     // proper values are returned in order.
-    int t = chartComponent.getSyncedTValue(0);
+    int t = dataCollection.getSyncedTValue(0);
     assertEquals(0, t);
 
-    t = chartComponent.getSyncedTValue(1);
+    t = dataCollection.getSyncedTValue(1);
     assertEquals(1, t);
 
-    t = chartComponent.getSyncedTValue(2);
+    t = dataCollection.getSyncedTValue(2);
     assertEquals(2, t);
   }
 
@@ -226,23 +227,23 @@ public abstract class AbstractChartTest<
   @Test
   public void testGetSyncedTValueUpdateT() {
     // Get t value of 4
-    int t = chartComponent.getSyncedTValue(4);
+    int t = dataCollection.getSyncedTValue(4);
     assertEquals(4, t);
 
     // Now the local t value stored is 5; Getting the t value
     // of 4 should still return 4 (since the difference is not
     // bigger than 1)
-    t = chartComponent.getSyncedTValue(4);
+    t = dataCollection.getSyncedTValue(4);
     assertEquals(4, t);
 
     // Get the t value of 5 (should return 5). Now local
     // value is 6.
-    t = chartComponent.getSyncedTValue(5);
+    t = dataCollection.getSyncedTValue(5);
     assertEquals(5, t);
 
     // Difference between 6 and 4 is 2, which is bigger than 1,
     // so the local t value should be returned instead.
-    t = chartComponent.getSyncedTValue(4);
+    t = dataCollection.getSyncedTValue(4);
     assertEquals(6, t);
   }
 
@@ -255,12 +256,12 @@ public abstract class AbstractChartTest<
   public void testGetSyncedTValueSmaller() {
     // Get the t value of 9 (expected result is 9, since it
     // is way larger than the locally stored 0 value)
-    int t = chartComponent.getSyncedTValue(9);
+    int t = dataCollection.getSyncedTValue(9);
     assertEquals(9, t);
 
     // Get a far smaller value; Expected result is 10 (9 + 1), which
     // is the locally stored synced t value.
-    t = chartComponent.getSyncedTValue(4);
+    t = dataCollection.getSyncedTValue(4);
     assertEquals(10, t);
   }
 

@@ -1,12 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2022-2023 MIT, All rights reserved
+// Copyright 2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.common.*;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.LOBFValues;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
@@ -16,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A data science component to apply different regression models
- * The component requires a data source to apply the model on
+ * A data science component to apply different regression models.
+ * The component requires a data source to apply the model on.
  */
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
     description = "A component that contains regression models",
@@ -40,7 +44,7 @@ public final class Regression extends DataCollection {
   }
 
   /**
-   * Calculates the line of best fit
+   * Calculates the line of best fit.
    *
    * @param xEntries - the list of x values
    * @param yEntries - the list of y values
@@ -53,9 +57,9 @@ public final class Regression extends DataCollection {
     LList yValues = (LList) yEntries.getCdr();
     List<Double> y = castToDouble(yValues);
 
-    if (xValues.size() != yValues.size())
+    if (xValues.size() != yValues.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
-
+    }
     int n = xValues.size();
 
     double sumx = 0.0, sumy = 0.0, sumXY = 0.0, squareSum_X = 0.0, squareSum_Y = 0.0;
@@ -93,8 +97,9 @@ public final class Regression extends DataCollection {
 
     return resultDic;
   }
+
   /**
-   * Returns one of the Line of Best Fit values. A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided
+   * Returns one of the Line of Best Fit values. A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided.
    *
    * @param xList - the list of x values
    * @param yList - the list of y values

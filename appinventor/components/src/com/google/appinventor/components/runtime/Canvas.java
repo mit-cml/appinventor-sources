@@ -894,11 +894,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   @Override
-  public int getSyncedTValue(int dataSeriesT) {
-    return 0;
-  }
-
-  @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
     throw new UnsupportedOperationException("Canvas.setChildWidth() called");
   }

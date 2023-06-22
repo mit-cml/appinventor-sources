@@ -103,8 +103,8 @@ implements Component, DataSourceChangeListener {
 
   /**
    * Changes the underlying Executor Service of the threadRunner.
-   * <p>
-   * Primarily used for testing to inject test/mock ExecutorService
+   *
+   *    Primarily used for testing to inject test/mock ExecutorService
    * classes.
    *
    * @param service new ExecutorService object to use..
@@ -276,14 +276,14 @@ implements Component, DataSourceChangeListener {
   /**
    * Sets the Data Source key identifier for the value to import from the
    * attached Data Source.
-   * <p>
-   * An example is the tag of the TinyDB component, which identifies the value.
-   * <p>
-   * The property is a Designer-only property, and should be changed after setting the
+   *
+   *    An example is the tag of the TinyDB component, which identifies the value.
+   *
+   *    The property is a Designer-only property, and should be changed after setting the
    * Source component of the Chart Data component.
-   * <p>
-   * A complete list of applicable values for each compatible source is as follows:
-   * <p>
+   *
+   *    A complete list of applicable values for each compatible source is as follows:
+   *
    * * For TinyDB and CloudDB, this is the tag value.
    * * For the AccelerometerSensor, the value should be one of the following: X Y or Z
    * * For the GyroscopeSensor, the value should be one of the following: X Y or Z
@@ -317,8 +317,8 @@ implements Component, DataSourceChangeListener {
    * valid DataSourceValue, WebColumn or DataFileColumn properties,
    * depending on the type of the Source attached (the required properties
    * show up in the Properties menu after the Source is changed).
-   * <p>
-   * If the data identified by the {@link #DataSourceKey(String)} is updated
+   *
+   *    If the data identified by the {@link #DataSourceKey(String)} is updated
    * in the attached Data Source component, then the data is also updated in
    * the Chart Data component.
    *
@@ -601,11 +601,11 @@ implements Component, DataSourceChangeListener {
   /**
    * Imports data from the specified TinyDB component by taking the value
    * identified by the specified tag value.
-   * <p>
-   * The expected TinyDB value is a list formatted in the same way as described in
+   *
+   *    The expected TinyDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
-   * <p>
-   * Does not overwrite any data.
+   *
+   *    Does not overwrite any data.
    *
    * @param tinyDB TinyDB component to import from
    * @param tag    the identifier of the value to import
@@ -630,11 +630,11 @@ implements Component, DataSourceChangeListener {
   /**
    * Imports data from the specified CloudDB component by taking the value
    * identified by the specified tag value.
-   * <p>
-   * The expected CloudDB value is a list formatted in the same way as described in
+   *
+   *    The expected CloudDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
-   * <p>
-   * Does not overwrite any data.
+   *
+   *    Does not overwrite any data.
    *
    * @param cloudDB CloudDB component to import from
    * @param tag     the identifier of the value to import
@@ -784,8 +784,8 @@ implements Component, DataSourceChangeListener {
    * Imports data from the specified DataFile component by taking the specified x column
    * for the x values, and the specified y column for the y values. The DataFile's source file
    * is expected to be either a CSV or a JSON file.
-   * <p>
-   * Passing in empty test for any of the column parameters will result in the usage of
+   *
+   *    Passing in empty test for any of the column parameters will result in the usage of
    * default values which are the indices of the entries. For the first entry, the default
    * value would be the 1, for the second it would be 2, and so on.
    *
@@ -808,8 +808,8 @@ implements Component, DataSourceChangeListener {
    * for the x values, and the specified y column for the y values. Prior to calling this function,
    * the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
    * the GotSheet event in the Spreadsheet component is unnecessary.
-   * <p>
-   * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *
+   *    Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
    * @param sheet      Spreadsheet component to import from
    * @param xColumn    x-value column name
@@ -829,11 +829,11 @@ implements Component, DataSourceChangeListener {
    * for the x values, and the specified y column for the y values. Prior to calling this function,
    * the Web component's Get method has to be called to load the data. The usage of the gotValue
    * event in the Web component is unnecessary.
-   * <p>
-   * The expected response of the Web component is a JSON or CSV formatted
+   *
+   *    The expected response of the Web component is a JSON or CSV formatted
    * file for this function to work.
-   * <p>
-   * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *
+   *    Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
    * @param web          Web component to import from
    * @param xValueColumn x-value column name
@@ -854,8 +854,8 @@ implements Component, DataSourceChangeListener {
   /**
    * Links the Data Source component with the Data component, if
    * the Source component has been defined earlier.
-   * <p>
-   * The reason this is done is because otherwise exceptions
+   *
+   *    The reason this is done is because otherwise exceptions
    * are thrown if the Data is being imported before the component
    * is fully initialized.
    */
@@ -877,12 +877,12 @@ implements Component, DataSourceChangeListener {
 
   /**
    * Event called when the value of the observed DataSource component changes.
-   * <p>
-   * If the key matches the dataSourceKey of the Data Component, the specified
+   *
+   *    If the key matches the dataSourceKey of the Data Component, the specified
    * new value is processed and imported, while the old data part of the Data
    * Source is removed.
-   * <p>
-   * A key value of null is interpreted as a change of all the values, so it would
+   *
+   *    A key value of null is interpreted as a change of all the values, so it would
    * change the imported data.
    *
    * @param component component that triggered the event
@@ -917,6 +917,42 @@ implements Component, DataSourceChangeListener {
         refreshChart();
       }
     });
+  }
+
+  /**
+   * Returns the t value to use for time entries for a
+   * Data Series of this Chart component.
+   *
+   * <p>Takes in the t value of a Data Series as an argument
+   * to determine a value tailored to the Data Series, while
+   * updating the synced t value of the Chart component.
+   *
+   * <p>This method primarily takes care of syncing t values
+   * across all the Data Series of the Chart for consistency.
+   *
+   * @param dataSeriesT t value of a Data Series
+   * @return t value to use for the next time entry based on the specified parameter
+   */
+  public int getSyncedTValue(int dataSeriesT) {
+    int returnValue;
+
+    // If the difference between the global t and the Data Series' t
+    // value is more than one, that means the Data Series' t value
+    // is out of sync and must be updated.
+    if (tick - dataSeriesT > 1) {
+      returnValue = tick;
+    } else {
+      returnValue = dataSeriesT;
+    }
+
+    // Since the returnValue is either bigger or equal to t,
+    // the new synchronized t value should be 1 higher than
+    // the return value (since immediately after getting the
+    // t value, the value will be incremented either way)
+    tick = returnValue + 1;
+
+    // Return the calculated t value
+    return returnValue;
   }
 
   @Override
@@ -965,7 +1001,7 @@ implements Component, DataSourceChangeListener {
         public void run() {
           // Get the  t value synced across the entire Chart
           // and update the synced value if necessary
-          tick = container.getSyncedTValue(tick);
+          tick = getSyncedTValue(tick);
 
           // Create tuple from current t value and the received value
           final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
@@ -1043,5 +1079,4 @@ implements Component, DataSourceChangeListener {
     }
     return listDoubles;
   }
-
 }

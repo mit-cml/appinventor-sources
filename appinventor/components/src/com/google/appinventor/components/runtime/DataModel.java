@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
@@ -25,8 +30,6 @@ public abstract class DataModel<E> {
    */
   protected int maximumTimeEntries = 200;
 
-  public abstract void clearEntries();
-
   /**
    * Enum used to specify the criterion to use for entry filtering/comparing.
    */
@@ -49,6 +52,9 @@ public abstract class DataModel<E> {
    * @param tuple Tuple representing the entry to add
    */
   public abstract void addEntryFromTuple(YailList tuple);
+
+  public abstract void clearEntries();
+
   /**
    * Returns the size of the tuples that this Data Series
    * accepts.

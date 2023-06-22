@@ -881,9 +881,4 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     features.remove(feature);
     mapController.removeFeature(feature);
   }
-
-  @Override
-  public int getSyncedTValue(int dataSeriesT) {
-    return 0;
-  }
 }

@@ -151,14 +151,14 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
- <p>
- An example is the tag of the TinyDB component, which identifies the value.
- <p>
- The property is a Designer-only property, and should be changed after setting the
+
+    An example is the tag of the TinyDB component, which identifies the value.
+
+    The property is a Designer-only property, and should be changed after setting the
  Source component of the Chart Data component.
- <p>
- A complete list of applicable values for each compatible source is as follows:
- <p>
+
+    A complete list of applicable values for each compatible source is as follows:
+
  * For TinyDB and CloudDB, this is the tag value.
  * For the AccelerometerSensor, the value should be one of the following: X Y or Z
  * For the GyroscopeSensor, the value should be one of the following: X Y or Z
@@ -201,8 +201,8 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  valid DataSourceValue, WebColumn or DataFileColumn properties,
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
- <p>
- If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
+
+    If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
 
@@ -268,7 +268,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  for an explanation of the valid entry values.
 
 {:id="ChartData2D.DrawLineOfBestFit" class="method"} <i/> DrawLineOfBestFit(*xList*{:.list},*yList*{:.list})
-: Draws the line of best fit
+: Draws the line of best fit.
 
 {:id="ChartData2D.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
@@ -284,16 +284,16 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
 
 {:id="ChartData2D.HighlightDataPoints" class="method"} <i/> HighlightDataPoints(*dataPoints*{:.list},*color*{:.number})
-: Highlights all given data points on the Chart in the color of choice
+: Highlights all given data points on the Chart in the color of choice.
 
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected CloudDB value is a list formatted in the same way as described in
+
+    The expected CloudDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
- <p>
- Does not overwrite any data.
+
+    Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromDataFile" class="method"} <i/> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
@@ -322,11 +322,11 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected TinyDB value is a list formatted in the same way as described in
+
+    The expected TinyDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
- <p>
- Does not overwrite any data.
+
+    Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromWeb" class="method"} <i/> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column

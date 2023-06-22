@@ -736,6 +736,7 @@ public class YaVersion {
   // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
   // - Extras property was added to accept a list of key-value pairs to put to the intent
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
+  public static final int ANOMALY_COMPONENT_VERSION = 1;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -851,9 +852,6 @@ public class YaVersion {
   public static final int CHART_COMPONENT_VERSION = 2;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
-
-  public static final int REGRESSION_COMPONENT_VERSION = 1;
-  public static final int ANOMALY_COMPONENT_VERSION = 1;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1291,6 +1289,7 @@ public class YaVersion {
   // For RECTANGLE_COMPONENT_VERSION 2:
   // - Added fill and stroke opacity properties
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
+  public static final int REGRESSION_COMPONENT_VERSION = 1;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

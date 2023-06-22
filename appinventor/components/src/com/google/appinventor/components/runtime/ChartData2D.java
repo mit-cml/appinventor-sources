@@ -19,11 +19,10 @@ import gnu.lists.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.List;
 
-import static com.google.appinventor.components.runtime.FileBase.LOG_TAG;
 
 
 /**
@@ -164,7 +163,7 @@ public final class ChartData2D extends ChartDataBase {
   @SuppressWarnings("checkstyle:ParameterName")
   @SimpleFunction()
   public void ImportFromDataFile(final DataFile dataFile, String xValueColumn,
-                                 String yValueColumn) {
+        String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
@@ -186,7 +185,7 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction
   public void ImportFromSpreadsheet(final Spreadsheet spreadsheet, String xColumn, String yColumn,
-                                    boolean useHeaders) {
+        boolean useHeaders) {
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     importFromSpreadsheetAsync(spreadsheet, columns, useHeaders);
@@ -220,7 +219,7 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Draws the line of best fit
+   * Draws the line of best fit.
    *
    * @param xList - the list of x values
    * @param yList - the list of y values
@@ -241,8 +240,9 @@ public final class ChartData2D extends ChartDataBase {
     }
     refreshChart();
   }
+
   /**
-   * Highlights all given data points on the Chart in the color of choice
+   * Highlights all given data points on the Chart in the color of choice.
    *
    * @param dataPoints - the list of data points. A data point inside this list is a pair of point index and point value: [[point index, point value],...,[,]]
    * @param color - the highlight color chosen by the user
@@ -262,7 +262,6 @@ public final class ChartData2D extends ChartDataBase {
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
       refreshChart();
     }else{
-      Log.i(LOG_TAG, "Anomalies list is Empty:"+ dataPoints);
       throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }
   }

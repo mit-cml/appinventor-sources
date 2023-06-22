@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.util.Log;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.google.appinventor.components.runtime.FileBase.LOG_TAG;
 
 /**
  * Base class to represent Chart Data Models. The class (and subclasses)
@@ -37,26 +35,10 @@ public abstract class ChartDataModel<
     T extends IDataSet<E>,
     D extends ChartData<T>,
     C extends com.github.mikephil.charting.charts.Chart<D>,
-    V extends ChartView<E, T, D, C, V>> extends DataModel {
+    V extends ChartView<E, T, D, C, V>> extends DataModel<E> {
   protected D data;
   protected T dataset;
   protected V view;
-
-  /**
-   * Local List of entries; The modifications of the Data are made
-   * directly to these Entries, which are meant to be detached from
-   * the Dataset object itself to prevent exceptions & crashes due
-   * to asynchronous operations.
-  */
-  protected List<E> entries;
-
-  /**
-   * Limit the maximum allowed real-time data entries
-   * Since real-time data comes in fast, the case of
-   * multi-data source input is unhandled since it's
-   * better to avoid it.
-  */
-  protected int maximumTimeEntries = 200;
 
   /**
    * Initializes a new ChartDataModel object instance.
