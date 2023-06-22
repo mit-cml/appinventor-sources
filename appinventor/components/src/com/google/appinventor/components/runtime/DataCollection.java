@@ -919,42 +919,6 @@ implements Component, DataSourceChangeListener {
     });
   }
 
-  /**
-   * Returns the t value to use for time entries for a
-   * Data Series of this Chart component.
-   *
-   * <p>Takes in the t value of a Data Series as an argument
-   * to determine a value tailored to the Data Series, while
-   * updating the synced t value of the Chart component.
-   *
-   * <p>This method primarily takes care of syncing t values
-   * across all the Data Series of the Chart for consistency.
-   *
-   * @param dataSeriesT t value of a Data Series
-   * @return t value to use for the next time entry based on the specified parameter
-   */
-  public int getSyncedTValue(int dataSeriesT) {
-    int returnValue;
-
-    // If the difference between the global t and the Data Series' t
-    // value is more than one, that means the Data Series' t value
-    // is out of sync and must be updated.
-    if (tick - dataSeriesT > 1) {
-      returnValue = tick;
-    } else {
-      returnValue = dataSeriesT;
-    }
-
-    // Since the returnValue is either bigger or equal to t,
-    // the new synchronized t value should be 1 higher than
-    // the return value (since immediately after getting the
-    // t value, the value will be incremented either way)
-    tick = returnValue + 1;
-
-    // Return the calculated t value
-    return returnValue;
-  }
-
   @Override
   public void onReceiveValue(RealTimeDataSource<?, ?> component, final String key, Object value) {
     // Calling component is not the actual Data Source
@@ -1001,7 +965,8 @@ implements Component, DataSourceChangeListener {
         public void run() {
           // Get the  t value synced across the entire Chart
           // and update the synced value if necessary
-          tick = getSyncedTValue(tick);
+          if(container instanceof Chart) {
+            tick = ((Chart) container).getSyncedTValue(tick);
 
           // Create tuple from current t value and the received value
           final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
@@ -1011,6 +976,7 @@ implements Component, DataSourceChangeListener {
 
           // Increment t value
           tick++;
+          }
         }
       });
 
@@ -1064,7 +1030,7 @@ implements Component, DataSourceChangeListener {
   /**
    * Casts list items to doubles
    */
-  public static List<Double> castToDouble(List list) {
+  public static List<Double> castToDouble(List<?> list) {
     List<Double> listDoubles = new ArrayList<>();
     for (Object o : list) {
       if (o instanceof Number) {
