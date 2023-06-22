@@ -5,11 +5,10 @@
 
 package com.google.appinventor.client.settings;
 
-import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.settings.user.UserSettings;
-import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.gwt.junit.client.GWTTestCase;
 
 public class GeneralSettingsTestCase extends GWTTestCase {
@@ -43,6 +42,19 @@ public class GeneralSettingsTestCase extends GWTTestCase {
     assertFalse(Boolean.parseBoolean(value));
   }
 
+  public void testGetUserDyslexicFont() {
+    User user = new User("1","abc@email.com",true,true,null);
+    UserSettings userSettings = new UserSettings(user);
+
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
+
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
+                          "" + Boolean.parseBoolean(value));
+    assertFalse(Boolean.parseBoolean(value));
+  }
+
   public void testUserAutoloadProjectTrue() {
     User user = new User("1","abc@email.com",true,true,null);
     UserSettings userSettings = new UserSettings(user);
@@ -69,6 +81,19 @@ public class GeneralSettingsTestCase extends GWTTestCase {
     assertFalse(Boolean.parseBoolean(value));
   }
 
+  public void testGetUserAutoloadProject() {
+    User user = new User("1","abc@email.com",true,true,null);
+    UserSettings userSettings = new UserSettings(user);
+
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
+
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT,
+                          "" + Boolean.parseBoolean(value));
+    assertTrue(Boolean.parseBoolean(value));
+  }
+
   public void testCurrentProjectId() {
     User user = new User("1","abc@email.com",true,true,null);
     UserSettings userSettings = new UserSettings(user);
@@ -90,5 +115,54 @@ public class GeneralSettingsTestCase extends GWTTestCase {
       String userTemplates = settings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
       assertEquals(string, userTemplates);
+  }
+
+  public void testSetGridEnabled()
+  {
+      User user = new User("1","abc@email.com",true,true,null);
+      UserSettings userSettings = new UserSettings(user);
+      BlocksSettings settings = (BlocksSettings) userSettings.getSettings(SettingsConstants.BLOCKS_SETTINGS);
+      settings.changePropertyValue(SettingsConstants.GRID_ENABLED, Boolean.toString(true));
+
+      String snap = settings.getPropertyValue(SettingsConstants.GRID_ENABLED);
+
+      assertTrue(Boolean.parseBoolean(snap));
+  }
+
+  public void testGetGridEnabled()
+  {
+      User user = new User("1","abc@email.com",true,true,null);
+      UserSettings userSettings = new UserSettings(user);
+      BlocksSettings settings = (BlocksSettings) userSettings.getSettings(SettingsConstants.BLOCKS_SETTINGS);
+
+      String snap = settings.getPropertyValue(SettingsConstants.GRID_ENABLED);
+      settings.changePropertyValue(SettingsConstants.GRID_ENABLED, snap);
+      
+      assertFalse(Boolean.parseBoolean(snap));
+  }
+
+  public void testSetSnapEnabled()
+  {
+      User user = new User("1","abc@email.com",true,true,null);
+      UserSettings userSettings = new UserSettings(user);
+      BlocksSettings settings = (BlocksSettings) userSettings.getSettings(SettingsConstants.BLOCKS_SETTINGS);
+      settings.changePropertyValue(SettingsConstants.SNAP_ENABLED, Boolean.toString(true));
+
+      String snap = settings.getPropertyValue(SettingsConstants.SNAP_ENABLED);
+      
+
+      assertTrue(Boolean.parseBoolean(snap));
+  }
+
+  public void testGetSnapEnabled()
+  {
+      User user = new User("1","abc@email.com",true,true,null);
+      UserSettings userSettings = new UserSettings(user);
+      BlocksSettings settings = (BlocksSettings) userSettings.getSettings(SettingsConstants.BLOCKS_SETTINGS);
+
+      String snap = settings.getPropertyValue(SettingsConstants.SNAP_ENABLED);
+      settings.changePropertyValue(SettingsConstants.SNAP_ENABLED, snap);
+      
+      assertFalse(Boolean.parseBoolean(snap));
   }
 }
