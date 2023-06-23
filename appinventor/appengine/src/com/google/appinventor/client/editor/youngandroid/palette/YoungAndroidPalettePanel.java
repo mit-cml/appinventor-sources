@@ -59,6 +59,90 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
 
+  private static ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
+
+  /**
+   * The Filter interface is used by the palette panel to determine what components
+   * to show. By default, an identity filter is used (everything is shown). Other
+   * implementations may override the filter by calling {@link #setFilter(Filter, boolean)}.
+   *
+   * @author ewpatton@mit.edu (Evan W. Patton)
+   */
+  public interface Filter {
+    /**
+     * Tests whether the given component type should be shown in the palette.
+     * @param componentTypeName The component type to check.
+     * @return True if the component should be shown, otherwise false.
+     */
+    boolean shouldShowComponent(String componentTypeName);
+
+    /**
+     * Tests whether the extensions panel should be shown.
+     * @return True if extensions are allowed, otherwise false.
+     */
+    boolean shouldShowExtensions();
+  }
+
+  // Identity filter implementation
+  private static final Filter IDENTITY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return true;
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show ios components only implementation
+  private static final Filter SHOWIOSONLY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return componentCoverage.isIosCompatible(componentTypeName);
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show android components only implementation
+  private static final Filter SHOWANDROIDONLY  = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return componentCoverage.isAndroidCompatible(componentTypeName);
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show both compatible only implementation
+  private static final Filter SHOWBOTHCOMPATIBLE = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return (componentCoverage.isAndroidCompatible(componentTypeName) && componentCoverage.isIosCompatible(componentTypeName));
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  // The singleton instance of the palette panel
+  private static YoungAndroidPalettePanel INSTANCE;
+
+  private Filter filter = IDENTITY;
+
+  private Filter osFilter = IDENTITY;
+
+
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
 
@@ -92,7 +176,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
 
-  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
   private Map<String, SimplePaletteItem> searchSimplePaletteItems =
       new HashMap<String, SimplePaletteItem>();
 
@@ -160,6 +243,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
+
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new StackPanel();
@@ -192,7 +276,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void execute() {
         componentFilter.setCaption(MESSAGES.paletteDropdownAllComponents());
-        reloadComponentsExceptExtension();
+        setOsFilter(IDENTITY);
       }
     }));
 
@@ -200,12 +284,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void execute() {
         componentFilter.setCaption(MESSAGES.paletteDropdownAndroidSupported());
-        reloadComponentsExceptExtension();
-        for (String component : COMPONENT_DATABASE.getComponentNames()) {
-          if(!componentCoverage.isAndroidCompatible(component)){
-              removeComponent(component);
-            }
-        }
+        setOsFilter(SHOWANDROIDONLY);
       }
     }));
 
@@ -213,12 +292,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void execute() {
         componentFilter.setCaption(MESSAGES.paletteDropdownIosSupported());
-        reloadComponentsExceptExtension();
-        for (String component : COMPONENT_DATABASE.getComponentNames()) {
-          if(!componentCoverage.isIosCompatible(component)){
-            removeComponent(component);
-          }
-        }
+        setOsFilter(SHOWIOSONLY);
       }
     }));
 
@@ -226,12 +300,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void execute() {
         componentFilter.setCaption(MESSAGES.paletteDropdownSupportedByboth());
-        reloadComponentsExceptExtension();
-        for (String component : COMPONENT_DATABASE.getComponentNames()) {
-          if(!(componentCoverage.isAndroidCompatible(component) && componentCoverage.isIosCompatible(component))){
-            removeComponent(component);
-          }
-        }
+        setOsFilter(SHOWBOTHCOMPATIBLE);
       }
     }));
 
@@ -395,12 +464,14 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public void loadComponents(DropTargetProvider dropTargetProvider) {
     this.dropTargetProvider = dropTargetProvider;
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      if(filter.shouldShowComponent(component) && osFilter.shouldShowComponent(component))
       this.addComponent(component);
     }
   }
 
   public void loadComponents() {
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      if(filter.shouldShowComponent(component) && osFilter.shouldShowComponent(component))
       this.addComponent(component);
     }
   }
@@ -592,17 +663,22 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     simplePaletteItems.clear();
   }
 
+
+  @Override
+  public void reloadComponents() {
+    clearComponents();
+    loadComponents();
+  }
+
   //Inteded for use by component filter
   public void reloadComponentsExceptExtension(){
     clearComponentsExceptExtension();
     loadComponents();
   }
 
-
-  @Override
-  public void reloadComponents() {
-    clearComponents();
-    loadComponents();
+  public void setOsFilter(Filter filter) {
+    osFilter = filter == null ? IDENTITY : filter;
+    reloadComponentsExceptExtension();
   }
 
 }
