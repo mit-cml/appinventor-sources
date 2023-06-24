@@ -26,7 +26,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
   
-  fileprivate var _listData = [String]()    //ListData
+  fileprivate var _listData: [[String: String]] = []   //ListData
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -100,41 +100,53 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   
   
   
-  @objc open func CreateElement(mainText: String, detailText: String, imageName: String) -> [String: Any] {
-      var dictItem: [String: Any] = [
-          "mainText": mainText,
-          "Text2": detailText,
-          "Image": imageName
-      ]
-      return dictItem
-  }
-  
+ 
   //ListData
-  @objc open var ListData: [[String: Any]] {
-      get {
-          var listData: [[String: Any]] = []
-          for element in _listData {
-              let dictItem: [String: Any] = [
-                  "mainText": element,
-                  "Text2": "",
-                  "Image": ""
-              ]
-              listData.append(dictItem)
-          }
-          return listData
-      }
-      set(listData) {
-          _listData = []
-          for item in listData {
-              if let mainText = item["mainText"] as? String {
-                  _listData.append(mainText)
+  
+  @objc open var ListData: String {
+    get {
+      
+      do {
+                  let dictionaries: [[String: Any]] = _listData.map { element in
+                      return [
+                          "Text1": element,
+                          "Text2": "",
+                          "Image": ""
+                      ]
+                  }
+        let jsonString = try getJsonRepresentation(dictionaries as AnyObject)
+                
+        print("successful serialisingg")
+                  return jsonString
+        
               }
+      catch {
+                  print("Error serializing JSON: \(error)")
+                  return ""
+              }
+    }
+    set(jsonString) {
+      do {
+        
+        let jsonObject = try getObjectFromJson(jsonString)
+           print("JSON object: \(jsonObject)")
+        
+              if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
+                _listData = dictionaries.compactMap { $0["Text1"] as? [String: String] }
+                for dictionary in dictionaries {
+                            if let text1 = dictionary["Text1"] as? String {
+                                print("Text1: \(text1)")
+                            }
+                        }
+                  _view.reloadData()
+              }
+        
+          } catch {
+              print("Error parsing JSON: \(error)")
           }
-          _view.reloadData()
-      }
+    }
   }
   
-
   
   
   
@@ -250,16 +262,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
-    
-    cell.textLabel?.text = elements[indexPath.row]
+   
+    let dictionary = _listData[indexPath.row]
+     let text1 = dictionary["Text1"] ?? ""
+    cell.textLabel?.text = text1
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
+    
 
-   
-    if indexPath.row > elements.count {
-         let listDataIndex = indexPath.row - elements.count
-         cell.textLabel?.text = _listData[listDataIndex]
-       }
+  
+
+
     
     guard let form = _container?.form else {
       return cell
@@ -286,11 +299,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.lineBreakMode = .byTruncatingTail
     }
     cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
-    
-    if indexPath.row > elements.count {
-      let listDataIndex = indexPath.row - elements.count
-           cell.textLabel?.text = _listData[listDataIndex]
-    }
+  
     
     return cell
   }
