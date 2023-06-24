@@ -118,18 +118,18 @@ public class Paths {
 
   @Override
   public String toString() {
-    return "Paths{" +
-        "outputFileName='" + outputFileName + '\'' +
-        ", buildDir=" + buildDir +
-        ", deployDir=" + deployDir +
-        ", resDir=" + resDir +
-        ", drawableDir=" + drawableDir +
-        ", tmpDir=" + tmpDir +
-        ", libsDir=" + libsDir +
-        ", assetsDir=" + assetsDir +
-        ", manifest=" + manifest +
-        ", mergedResDir=" + mergedResDir +
-        ", tmpPackageName=" + tmpPackageName +
-        '}';
+    return "Paths{"
+        + "outputFileName='" + outputFileName + '\''
+        + ", buildDir=" + buildDir
+        + ", deployDir=" + deployDir
+        + ", resDir=" + resDir
+        + ", drawableDir=" + drawableDir
+        + ", tmpDir=" + tmpDir
+        + ", libsDir=" + libsDir
+        + ", assetsDir=" + assetsDir
+        + ", manifest=" + manifest
+        + ", mergedResDir=" + mergedResDir
+        + ", tmpPackageName=" + tmpPackageName
+        + '}';
   }
 }

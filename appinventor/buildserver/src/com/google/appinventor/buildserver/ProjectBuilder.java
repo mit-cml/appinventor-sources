@@ -6,9 +6,30 @@
 
 package com.google.appinventor.buildserver;
 
+import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
+
 import com.google.appinventor.buildserver.stats.StatReporter;
-import com.google.appinventor.buildserver.tasks.*;
+import com.google.appinventor.buildserver.tasks.AttachAarLibs;
+import com.google.appinventor.buildserver.tasks.AttachCompAssets;
+import com.google.appinventor.buildserver.tasks.AttachNativeLibs;
+import com.google.appinventor.buildserver.tasks.CreateManifest;
+import com.google.appinventor.buildserver.tasks.GenerateClasses;
+import com.google.appinventor.buildserver.tasks.LoadComponentInfo;
+import com.google.appinventor.buildserver.tasks.MergeResources;
+import com.google.appinventor.buildserver.tasks.PrepareAppIcon;
+import com.google.appinventor.buildserver.tasks.ReadBuildInfo;
+import com.google.appinventor.buildserver.tasks.RunAapt;
+import com.google.appinventor.buildserver.tasks.RunAapt2;
+import com.google.appinventor.buildserver.tasks.RunApkBuilder;
+import com.google.appinventor.buildserver.tasks.RunApkSigner;
+import com.google.appinventor.buildserver.tasks.RunBundletool;
+import com.google.appinventor.buildserver.tasks.RunMultidex;
+import com.google.appinventor.buildserver.tasks.RunZipAlign;
+import com.google.appinventor.buildserver.tasks.SetupLibs;
+import com.google.appinventor.buildserver.tasks.XmlConfig;
+
 import com.google.appinventor.common.utils.StringUtils;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -18,15 +39,21 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -34,6 +61,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Provides support for building Young Android projects.
@@ -68,8 +99,7 @@ public final class ProjectBuilder {
   private static final String CODEBLOCKS_SOURCE_EXTENSION =
       YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
-  private static final String ALL_COMPONENT_TYPES =
-      com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR + "simple_components.txt";
+  private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
   public File getOutputApk() {
     return outputApk;
@@ -118,8 +148,9 @@ public final class ProjectBuilder {
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
-               boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions, String[] extraExtensions,
-               int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter, String ext) {
+      boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
+      String[] extraExtensions, int childProcessRam, String dexCachePath,
+      BuildServer.ProgressReporter reporter, String ext) {
     try {
       // Download project files into a temporary directory
       File projectRoot = createNewTempDir();

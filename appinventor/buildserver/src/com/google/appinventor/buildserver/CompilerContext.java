@@ -7,14 +7,15 @@
 package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.context.ComponentInfo;
-import com.google.appinventor.buildserver.context.Resources;
 import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.context.Resources;
 import com.google.appinventor.buildserver.stats.StatReporter;
-import org.codehaus.jettison.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.codehaus.jettison.json.JSONArray;
 
 public class CompilerContext {
   private Project project;
@@ -129,23 +130,23 @@ public class CompilerContext {
       return this;
     }
 
+    /**
+     * Construct a new CompilerContext using the builder's configuration.
+     *
+     * @return a new CompilerContext
+     */
     public CompilerContext build() {
       CompilerContext context = new CompilerContext();
       if (project == null) {
-        System.out.println("[ERROR] ExecutorContext needs Project");
-        return null;
+        throw new IllegalStateException("CompilerContext.Builder needs a Project");
       } else if (compTypes == null) {
-        System.out.println("[ERROR] ExecutorContext needs CompTypes");
-        return null;
+        throw new IllegalStateException("CompilerContext.Builder needs CompTypes");
       } else if (compBlocks == null) {
-        System.out.println("[ERROR] ExecutorContext needs CompBlocks");
-        return null;
+        throw new IllegalStateException("CompilerContext.Builder needs CompBlocks");
       } else if (reporter == null) {
-        System.out.println("[ERROR] ExecutorContext needs Reporter");
-        return null;
+        throw new IllegalStateException("CompilerContext.Builder needs a Reporter");
       } else if (keystoreFilePath == null) {
-        System.out.println("[ERROR] ExecutorContext needs KeystoreFilePath");
-        return null;
+        throw new IllegalStateException("CompilerContext.Builder needs the KeystoreFilePath");
       }
       context.project = project;
       context.ext = ext;
@@ -162,25 +163,27 @@ public class CompilerContext {
       context.outputFileName = outputFileName;
       context.childProcessRam = childProcessRam;
 
+      final Paths paths;
       if (this.outputFileName != null) {
-        context.paths = new Paths(this.outputFileName);
+        paths = new Paths(this.outputFileName);
       } else {
-        context.paths = new Paths(this.project.getProjectName() + "." + ext);
+        paths = new Paths(this.project.getProjectName() + "." + ext);
       }
-      context.paths.setBuildDir(ExecutorUtils.createDir(project.getBuildDirectory()));
-      context.paths.setDeployDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "deploy"));
-      context.paths.setResDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "res"));
-      context.paths.setDrawableDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "drawable"));
-      context.paths.setTmpDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "tmp"));
-      context.paths.setLibsDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "libs"));
-      context.paths.setClassesDir(ExecutorUtils.createDir(context.paths.getBuildDir(), "classes"));
+      paths.setBuildDir(ExecutorUtils.createDir(project.getBuildDirectory()));
+      paths.setDeployDir(ExecutorUtils.createDir(paths.getBuildDir(), "deploy"));
+      paths.setResDir(ExecutorUtils.createDir(paths.getBuildDir(), "res"));
+      paths.setDrawableDir(ExecutorUtils.createDir(paths.getBuildDir(), "drawable"));
+      paths.setTmpDir(ExecutorUtils.createDir(paths.getBuildDir(), "tmp"));
+      paths.setLibsDir(ExecutorUtils.createDir(paths.getBuildDir(), "libs"));
+      paths.setClassesDir(ExecutorUtils.createDir(paths.getBuildDir(), "classes"));
+      context.paths = paths;
 
       context.resources = new Resources();
       context.componentInfo = new ComponentInfo();
 
       context.extTypePathCache = new HashMap<>();
 
-      System.out.println(this.toString());
+      System.out.println(this);
 
       return context;
     }
@@ -311,27 +314,27 @@ public class CompilerContext {
 
   @Override
   public String toString() {
-    return "ExecutorContext{" +
-        "project=" + project +
-        ", ext='" + ext + '\'' +
-        ", compTypes=" + compTypes +
-        ", compBlocks=" + compBlocks +
-        ", reporter=" + reporter +
-        ", isForCompanion=" + isForCompanion +
-        ", isForEmulator=" + isForEmulator +
-        ", includeDangerousPermissions=" + includeDangerousPermissions +
-        ", keystoreFilePath='" + keystoreFilePath + '\'' +
-        ", childProcessRam=" + childProcessRam +
-        ", dexCacheDir='" + dexCacheDir + '\'' +
-        ", outputFileName='" + outputFileName + '\'' +
-        ", simpleCompsBuildInfo=" + simpleCompsBuildInfo +
-        ", extCompsBuildInfo=" + extCompsBuildInfo +
-        ", simpleCompTypes=" + simpleCompTypes +
-        ", extCompTypes=" + extCompTypes +
-        ", extTypePathCache=" + extTypePathCache +
-        ", paths=" + paths +
-        ", resources=" + resources +
-        '}';
+    return "ExecutorContext{"
+        + "project=" + project
+        + ", ext='" + ext + '\''
+        + ", compTypes=" + compTypes
+        + ", compBlocks=" + compBlocks
+        + ", reporter=" + reporter
+        + ", isForCompanion=" + isForCompanion
+        + ", isForEmulator=" + isForEmulator
+        + ", includeDangerousPermissions=" + includeDangerousPermissions
+        + ", keystoreFilePath='" + keystoreFilePath + '\''
+        + ", childProcessRam=" + childProcessRam
+        + ", dexCacheDir='" + dexCacheDir + '\''
+        + ", outputFileName='" + outputFileName + '\''
+        + ", simpleCompsBuildInfo=" + simpleCompsBuildInfo
+        + ", extCompsBuildInfo=" + extCompsBuildInfo
+        + ", simpleCompTypes=" + simpleCompTypes
+        + ", extCompTypes=" + extCompTypes
+        + ", extTypePathCache=" + extTypePathCache
+        + ", paths=" + paths
+        + ", resources=" + resources
+        + '}';
   }
 }
 

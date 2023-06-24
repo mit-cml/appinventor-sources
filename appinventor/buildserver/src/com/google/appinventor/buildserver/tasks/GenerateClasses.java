@@ -9,6 +9,7 @@ import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 import java.io.ByteArrayOutputStream;
@@ -22,7 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Compiles screen source files written in YAIL to Java class files.
+ */
 @BuildType(apk = true, aab = true)
 public class GenerateClasses implements Task {
   CompilerContext context;
@@ -43,17 +46,18 @@ public class GenerateClasses implements Task {
       for (Project.SourceDescriptor source : sources) {
         String sourceFileName = source.getFile().getAbsolutePath();
         context.getReporter().info("Source File: " + sourceFileName);
-        int srcIndex = sourceFileName.indexOf(File.separator + ".." + File.separator + "src" + File.separator);
+        int srcIndex = sourceFileName.indexOf(File.separator + ".." + File.separator + "src"
+            + File.separator);
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
-        String classFileName = (context.getPaths().getClassesDir().getAbsolutePath() + "/" + sourceFileRelativePath)
+        String classFileName = (context.getPaths().getClassesDir().getAbsolutePath()
+            + File.separator + sourceFileRelativePath)
             .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
         // a line in the file
         // TODO(user): Replace with more robust test of empty source file.
         if (!userCodeExists) {
-          Reader fileReader = new FileReader(sourceFileName);
-          try {
+          try (Reader fileReader = new FileReader(sourceFileName)) {
             while (fileReader.ready()) {
               int c = fileReader.read();
               if (c == '(') {
@@ -61,8 +65,6 @@ public class GenerateClasses implements Task {
                 break;
               }
             }
-          } finally {
-            fileReader.close();
           }
         }
         sourceFileNames.add(sourceFileName);
@@ -89,9 +91,11 @@ public class GenerateClasses implements Task {
       // attach the jars of external comps
       Set<String> addedExtJars = new HashSet<String>();
       for (String type : context.getExtCompTypes()) {
-        String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache()) +
-            context.getResources().getSimpleAndroidRuntimeJarPath();
-        if (!addedExtJars.contains(sourcePath)) {  // don't add multiple copies for bundled extensions
+        String sourcePath = ExecutorUtils.getExtCompDirPath(
+            type, context.getProject(), context.getExtTypePathCache())
+            + context.getResources().getSimpleAndroidRuntimeJarPath();
+        if (!addedExtJars.contains(sourcePath)) {
+          // don't add multiple copies for bundled extensions
           classpath.append(sourcePath);
           classpath.append(File.pathSeparator);
           addedExtJars.add(sourcePath);
@@ -107,7 +111,8 @@ public class GenerateClasses implements Task {
           if (context.getSimpleCompTypes().contains(type)) {
             sourcePath = context.getResource(pathSuffix);
           } else if (context.getExtCompTypes().contains(type)) {
-            sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache()) + pathSuffix;
+            sourcePath = ExecutorUtils.getExtCompDirPath(
+                type, context.getProject(), context.getExtTypePathCache()) + pathSuffix;
           } else {
             context.getReporter().error("Found a lost component", true);
             return TaskResult.generateError("Error while generating classes");
@@ -130,7 +135,8 @@ public class GenerateClasses implements Task {
         }
       }
       if (context.getComponentInfo().getExplodedAarLibs().size() > 0) {
-        classpath.append(context.getComponentInfo().getExplodedAarLibs().getOutputDirectory().getAbsolutePath());
+        classpath.append(context.getComponentInfo().getExplodedAarLibs().getOutputDirectory()
+            .getAbsolutePath());
         classpath.append(File.pathSeparator);
       }
 
@@ -158,7 +164,7 @@ public class GenerateClasses implements Task {
       // root as the working directory for the Kawa compiler process.
       kawaCommandArgs.addAll(sourceFileNames);
       kawaCommandArgs.add(yailRuntime);
-      String[] kawaCommandLine = kawaCommandArgs.toArray(new String[kawaCommandArgs.size()]);
+      String[] kawaCommandLine = kawaCommandArgs.toArray(new String[0]);
 
       // Capture Kawa compiler stderr. The ODE server parses out the warnings and errors and adds
       // them to the protocol buffer for logging purposes. (See
@@ -166,7 +172,8 @@ public class GenerateClasses implements Task {
       ByteArrayOutputStream kawaOutputStream = new ByteArrayOutputStream();
       boolean kawaSuccess;
       synchronized (context.getResources().getSyncKawaOrDx()) {
-        kawaSuccess = Execution.execute(null, kawaCommandLine, context.getReporter().getSystemOut(), new PrintStream(kawaOutputStream));
+        kawaSuccess = Execution.execute(null, kawaCommandLine,
+            context.getReporter().getSystemOut(), new PrintStream(kawaOutputStream));
       }
       if (!kawaSuccess) {
         context.getReporter().error("Kawa compile has failed.", true);
@@ -191,7 +198,8 @@ public class GenerateClasses implements Task {
     return TaskResult.generateSuccess();
   }
 
-  public boolean compileRClasses() {
+  @VisibleForTesting
+  boolean compileRClasses() {
     if (context.getComponentInfo().getExplodedAarLibs().size() == 0) {
       return true;  // nothing to see here
     }

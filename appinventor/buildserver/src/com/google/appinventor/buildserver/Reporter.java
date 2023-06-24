@@ -2,44 +2,51 @@ package com.google.appinventor.buildserver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 
 /**
- * Class to report progress and information to the system or user
+ * Class to report progress and information to the system or user.
  */
 public class Reporter {
-  private BuildServer.ProgressReporter progress;
-  private ByteArrayOutputStream systemAOS;
-  private ByteArrayOutputStream userAOS;
-  private PrintStream system;
-  private PrintStream user;
-  private ConsoleColors c;
+  private final BuildServer.ProgressReporter progress;
+  private final ByteArrayOutputStream systemBuffer;
+  private final ByteArrayOutputStream userBuffer;
+  private final PrintStream system;
+  private final PrintStream user;
   private String task;
 
   private static class ConsoleColors {
-    public String RESET = "\u001B[0m";
-    public String BLACK = "\u001B[30m";
-    public String RED = "\u001B[31m";
-    public String GREEN = "\u001B[32m";
-    public String YELLOW = "\u001B[33m";
-    public String BLUE = "\u001B[34m";
-    public String PURPLE = "\u001B[35m";
-    public String CYAN = "\u001B[36m";
-    public String WHITE = "\u001B[37m";
+    static final String RESET = "\u001B[0m";
+    static final String BLACK = "\u001B[30m";
+    static final String RED = "\u001B[31m";
+    static final String GREEN = "\u001B[32m";
+    static final String YELLOW = "\u001B[33m";
+    static final String BLUE = "\u001B[34m";
+    static final String PURPLE = "\u001B[35m";
+    static final String CYAN = "\u001B[36m";
+    static final String WHITE = "\u001B[37m";
 
     public ConsoleColors() {
     }
   }
 
+  /**
+   * Construct a new Reporter that will report any progress via the provided ProgressReporter.
+   *
+   * @param reporter a ProgressReporter that will receive updates on build progress
+   */
   public Reporter(BuildServer.ProgressReporter reporter) {
     this.progress = reporter;
-    this.systemAOS = new ByteArrayOutputStream();
-    this.userAOS = new ByteArrayOutputStream();
-    this.system = new PrintStream(this.systemAOS);
-    this.user = new PrintStream(this.userAOS);
-    this.c = new ConsoleColors();
+    this.systemBuffer = new ByteArrayOutputStream();
+    this.userBuffer = new ByteArrayOutputStream();
+    this.system = new PrintStream(this.systemBuffer);
+    this.user = new PrintStream(this.userBuffer);
   }
 
+  /**
+   * Set the current build progress.
+   *
+   * @param progress build progress
+   */
   public void setProgress(int progress) {
     if (this.progress != null) {
       this.progress.report(progress);
@@ -50,7 +57,8 @@ public class Reporter {
     boolean color = colorCode != null && !colorCode.equals("");
 
     if (task != null && !task.equals("")) {
-      return (color ? colorCode : "") + "[" + (color ? c.PURPLE : "") + task + (color ? c.RESET : "") + (color ? colorCode : "") + "] ";
+      return (color ? colorCode : "") + "[" + (color ? ConsoleColors.PURPLE : "") + task
+          + (color ? ConsoleColors.RESET : "") + (color ? colorCode : "") + "] ";
     }
     return (color ? colorCode : "");
   }
@@ -66,9 +74,16 @@ public class Reporter {
     this.error(message, false);
   }
 
+  /**
+   * Report an error in the build process. The user parameter indicates whether the error should
+   * be reported to the user.
+   *
+   * @param message the error message
+   * @param user true if the user should receive the error
+   */
   public void error(String message, boolean user) {
     String text = "ERROR: " + message;
-    System.out.println(task(c.RED) + text + c.RESET);
+    System.out.println(task(ConsoleColors.RED) + text + ConsoleColors.RESET);
     this.system.println(task(null) + text);
     if (user) {
       this.user.println(task(null) + text);
@@ -79,9 +94,16 @@ public class Reporter {
     this.warn(message, false);
   }
 
+  /**
+   * Report a warning during the build process. The user parameter indicates whether the warning
+   * should be sent to the user.
+   *
+   * @param message the warning message
+   * @param user true if the user should receive the warning
+   */
   public void warn(String message, boolean user) {
     String text = "WARN: " + message;
-    System.out.println(task(c.YELLOW) + text + c.RESET);
+    System.out.println(task(ConsoleColors.YELLOW) + text + ConsoleColors.RESET);
     this.system.println(task(null) + text);
     if (user) {
       this.user.println(task(null) + text);
@@ -92,9 +114,16 @@ public class Reporter {
     this.info(message, false);
   }
 
+  /**
+   * Report info during the build process. The user parameter indicates whether the info should
+   * be sent to the user.
+   *
+   * @param message the info message
+   * @param user true if the user should receive the information
+   */
   public void info(String message, boolean user) {
     String text = "INFO: " + message;
-    System.out.println(task(c.CYAN) + text + c.RESET);
+    System.out.println(task(ConsoleColors.CYAN) + text + ConsoleColors.RESET);
     this.system.println(task(null) + text);
     if (user) {
       this.user.println(task(null) + message);
@@ -105,34 +134,57 @@ public class Reporter {
     this.log(message, false);
   }
 
+  /**
+   * Report general logs during the build process. The user parameter indicates whether the log
+   * should be sent to the user.
+   *
+   * @param message the log message
+   * @param user true if the user should receive the log
+   */
   public void log(String message, boolean user) {
-    System.out.println(task(c.WHITE) + message);
+    System.out.println(task(ConsoleColors.WHITE) + message);
     this.system.println(task(null) + message);
     if (user) {
       this.user.println(task(null) + message);
     }
   }
 
+  /**
+   * Log that a task has started.
+   *
+   * @param name the name of the task
+   */
   public void taskStart(String name) {
     this.task = name;
-    System.out.println(this.task(c.BLUE) + "Starting Task" + c.RESET);
+    System.out.println(this.task(ConsoleColors.BLUE) + "Starting Task" + ConsoleColors.RESET);
     this.system.println(this.task(null) + "Starting Task");
   }
 
+  /**
+   * Log that the current task has succeeded.
+   *
+   * @param seconds the time in seconds to complete the task
+   */
   public void taskSuccess(double seconds) {
-    System.out.println(this.task(c.GREEN) + "Task succeeded in " + c.PURPLE + seconds + c.GREEN + " seconds" + c.RESET);
+    System.out.println(this.task(ConsoleColors.GREEN) + "Task succeeded in " + ConsoleColors.PURPLE
+        + seconds + ConsoleColors.GREEN + " seconds" + ConsoleColors.RESET);
     this.system.println(this.task(null) + "Task succeeded in " + seconds + " seconds");
     this.task = null;
   }
 
+  /**
+   * Log that the current task has failed.
+   *
+   * @param seconds the time in seconds the task ran before failing
+   */
   public void taskError(double seconds) {
-    System.out.print(this.task(c.RED) + "Task errored");
+    System.out.print(this.task(ConsoleColors.RED) + "Task errored");
     this.system.print(this.task(null) + "Task errored");
     if (seconds > 0) {
-      System.out.print(" in " + c.PURPLE + seconds + c.RED + " seconds");
+      System.out.print(" in " + ConsoleColors.PURPLE + seconds + ConsoleColors.RED + " seconds");
       this.system.print(" in " + seconds + " seconds");
     }
-    System.out.print(c.RESET + "\n");
+    System.out.print(ConsoleColors.RESET + "\n");
     this.system.print("\n");
     this.task = null;
   }
@@ -141,40 +193,18 @@ public class Reporter {
   // AFTER FINISHING, CLOSE ALL PRINT STREAMS
 
   public void close() {
-    if (this.system != null) {
-      this.system.close();
-    }
-    if (this.user != null) {
-      this.user.close();
-    }
+    this.system.close();
+    this.user.close();
   }
 
 
   // CONVERT LOGS TO STRING
 
   public String getSystemOutput() {
-    if (systemAOS == null) {
-      return "";
-    }
-
-    try {
-      return systemAOS.toString(PathUtil.DEFAULT_CHARSET);
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return "";
+    return systemBuffer.toString();
   }
 
   public String getUserOutput() {
-    if (userAOS == null) {
-      return "";
-    }
-
-    try {
-      return userAOS.toString(PathUtil.DEFAULT_CHARSET);
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return "";
+    return userBuffer.toString();
   }
 }

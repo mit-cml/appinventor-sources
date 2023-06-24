@@ -23,7 +23,8 @@ public class AttachCompAssets implements Task {
     try {
       // Gather non-library assets to be added to apk's Asset directory.
       // The assets directory have been created before this.
-      File mergedAssetDir = ExecutorUtils.createDir(context.getProject().getBuildDirectory(), YoungAndroidConstants.ASSET_DIR_NAME);
+      File mergedAssetDir = ExecutorUtils.createDir(context.getProject().getBuildDirectory(),
+          YoungAndroidConstants.ASSET_DIR_NAME);
 
       // Copy component/extension assets to build/assets
       for (String type : context.getComponentInfo().getAssetsNeeded().keySet()) {
@@ -35,14 +36,17 @@ public class AttachCompAssets implements Task {
             String pathSuffix = context.getResources().getRuntimeFilesDir() + assetName;
             sourcePath = context.getResource(pathSuffix);
           } else if (context.getExtCompTypes().contains(type)) {
-            final String extCompDir = ExecutorUtils.getExtCompDirPath(type, context.getProject(), context.getExtTypePathCache());
-            sourcePath = extCompDir + File.separator + YoungAndroidConstants.ASSET_DIR_NAME + File.separator + assetName;
+            final String extCompDir = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+                context.getExtTypePathCache());
+            sourcePath = extCompDir + File.separator + YoungAndroidConstants.ASSET_DIR_NAME
+                + File.separator + assetName;
             // If targetDir's location is changed here, you must update Form.java in components to
             // reference the new location. The path for assets in compiled apps is assumed to be
             // assets/EXTERNAL-COMP-PACKAGE/ASSET-NAME
             targetDir = ExecutorUtils.createDir(targetDir, new File(extCompDir).getName());
           } else {
-            context.getReporter().error("There was an unexpected error while processing assets", true);
+            context.getReporter().error(
+                "There was an unexpected error while processing assets", true);
             return TaskResult.generateError("Unknown asset type");
           }
 

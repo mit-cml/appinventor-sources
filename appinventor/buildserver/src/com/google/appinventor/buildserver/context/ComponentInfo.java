@@ -35,6 +35,9 @@ public class ComponentInfo {
   private Set<String> uniqueLibsNeeded;
   private AARLibraries explodedAarLibs;
 
+  /**
+   * Construct a new, uninitialized ComponentInfo.
+   */
   public ComponentInfo() {
     assetsNeeded = new ConcurrentHashMap<>();
     activitiesNeeded = new ConcurrentHashMap<>();
@@ -86,7 +89,8 @@ public class ComponentInfo {
     return permissionsNeeded;
   }
 
-  public ConcurrentMap<String, Map<String, Set<PermissionConstraint<?>>>> getPermissionConstraintsNeeded() {
+  public ConcurrentMap<String, Map<String, Set<PermissionConstraint<?>>>>
+      getPermissionConstraintsNeeded() {
     return permissionConstraintsNeeded;
   }
 
@@ -128,16 +132,16 @@ public class ComponentInfo {
 
   @Override
   public String toString() {
-    return "JsonInfo{" +
-        "assetsNeeded=" + assetsNeeded +
-        ", activitiesNeeded=" + activitiesNeeded +
-        ", broadcastReceiversNeeded=" + broadcastReceiversNeeded +
-        ", libsNeeded=" + libsNeeded +
-        ", nativeLibsNeeded=" + nativeLibsNeeded +
-        ", permissionsNeeded=" + permissionsNeeded +
-        ", minSdksNeeded=" + minSdksNeeded +
-        ", componentBroadcastReceiver=" + componentBroadcastReceiver +
-        ", uniqueLibsNeeded=" + uniqueLibsNeeded +
-        '}';
+    return "JsonInfo{"
+        + "assetsNeeded=" + assetsNeeded
+        + ", activitiesNeeded=" + activitiesNeeded
+        + ", broadcastReceiversNeeded=" + broadcastReceiversNeeded
+        + ", libsNeeded=" + libsNeeded
+        + ", nativeLibsNeeded=" + nativeLibsNeeded
+        + ", permissionsNeeded=" + permissionsNeeded
+        + ", minSdksNeeded=" + minSdksNeeded
+        + ", componentBroadcastReceiver=" + componentBroadcastReceiver
+        + ", uniqueLibsNeeded=" + uniqueLibsNeeded
+        + '}';
   }
 }

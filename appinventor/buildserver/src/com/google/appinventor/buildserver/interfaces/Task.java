@@ -5,7 +5,7 @@ import com.google.appinventor.buildserver.TaskResult;
 
 public interface Task {
   /**
-   * Main method to run the task
+   * Main method to run the task.
    *
    * @return TaskResult
    */

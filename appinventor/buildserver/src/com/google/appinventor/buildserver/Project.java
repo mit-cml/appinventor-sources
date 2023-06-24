@@ -428,11 +428,11 @@ public final class Project {
 
   @Override
   public String toString() {
-    return "Project{" +
-        "properties=" + properties +
-        ", projectDir='" + projectDir + '\'' +
-        ", buildDirOverride='" + buildDirOverride + '\'' +
-        ", sources=" + sources +
-        '}';
+    return "Project{"
+        + "properties=" + properties
+        + ", projectDir='" + projectDir + '\''
+        + ", buildDirOverride='" + buildDirOverride + '\''
+        + ", sources=" + sources
+        + '}';
   }
 }

@@ -23,9 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 
 /**
- * "static"
- * prepareCompTypes(compTypes);
- * readBuildInfo();
+ * ReadBuildInfo sets up an initial state for Android builds.
  */
 @BuildType(apk = true, aab = true)
 public class ReadBuildInfo implements Task {

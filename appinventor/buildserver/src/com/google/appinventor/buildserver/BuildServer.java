@@ -682,8 +682,8 @@ public class BuildServer {
       .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, String ext, ProgressReporter reporter)
-    throws IOException, JSONException {
+  private void buildAndCreateZip(String userName, File inputZipFile, String ext,
+      ProgressReporter reporter) throws IOException, JSONException {
     Result buildResult = build(userName, inputZipFile, ext, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
@@ -722,7 +722,8 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile, String ext, ProgressReporter reporter) throws IOException {
+  private Result build(String userName, File zipFile, String ext, ProgressReporter reporter)
+      throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't

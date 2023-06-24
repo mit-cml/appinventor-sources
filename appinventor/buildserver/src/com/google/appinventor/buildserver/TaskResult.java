@@ -14,7 +14,7 @@ public class TaskResult {
   }
 
   /**
-   * Generates a success object for the Compiler
+   * Generates a success object for the Compiler.
    *
    * @return TaskResult(0)
    */
@@ -23,7 +23,7 @@ public class TaskResult {
   }
 
   /**
-   * Generates an error object for the Compiler
+   * Generates an error object for the Compiler.
    *
    * @return TaskResult(1, Exception)
    */
@@ -36,7 +36,7 @@ public class TaskResult {
   }
 
   /**
-   * Checks if the result object contains a success code
+   * Checks if the result object contains a success code.
    *
    * @return boolean
    */
@@ -45,7 +45,7 @@ public class TaskResult {
   }
 
   /**
-   * Checks if the given TaskResult was exited with success
+   * Checks if the given TaskResult was exited with success.
    *
    * @param result TaskResult
    * @return boolean
@@ -55,7 +55,7 @@ public class TaskResult {
   }
 
   /**
-   * Checks if the given number is the same as the success code
+   * Checks if the given number is the same as the success code.
    *
    * @param result int
    * @return boolean
@@ -65,7 +65,7 @@ public class TaskResult {
   }
 
   /**
-   * Returns the exit code of the task
+   * Returns the exit code of the task.
    *
    * @return int
    */
@@ -74,7 +74,7 @@ public class TaskResult {
   }
 
   /**
-   * Optional exception that is present when exit code is not success
+   * Optional exception that is present when exit code is not success.
    *
    * @return Exception
    */

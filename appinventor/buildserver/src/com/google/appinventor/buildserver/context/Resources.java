@@ -14,12 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.imageio.ImageIO;
 
+@SuppressWarnings("UnstableApiUsage")
 public class Resources {
   private final ConcurrentMap<String, File> resources;
   private final List<File> dexFiles;
 
-  private String[] SUPPORT_JARS;
-  private String[] SUPPORT_AARS;
+  private String[] supportJars;
+  private String[] supportAars;
 
   private File appRTxt;
 
@@ -48,9 +49,10 @@ public class Resources {
   }
 
   /**
+   * Unpack the given resource and return a path to the extracted file.
    *
-   * @param resourcePath
-   * @return
+   * @param resourcePath the path to the desired resource
+   * @return a path in the filesystem to the resource, or null if it is not found
    */
   public synchronized String getResource(String resourcePath) {
     try {
@@ -78,8 +80,8 @@ public class Resources {
         if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
           System.out.println("[WARN] Could not make directory: " + file.getParentFile());
         }
-        Files.copy(com.google.common.io.Resources.newInputStreamSupplier(Compiler.class.getResource(resourcePath)),
-            file);
+        Files.copy(com.google.common.io.Resources.newInputStreamSupplier(
+            Objects.requireNonNull(Compiler.class.getResource(resourcePath))), file);
         resources.put(resourcePath, file);
       }
       return file.getAbsolutePath();
@@ -130,19 +132,19 @@ public class Resources {
   }
 
   public String[] getSupportJars() {
-    return SUPPORT_JARS;
+    return supportJars;
   }
 
   public void setSupportJars(String[] supportJars) {
-    SUPPORT_JARS = supportJars;
+    this.supportJars = supportJars;
   }
 
   public String[] getSupportAars() {
-    return SUPPORT_AARS;
+    return supportAars;
   }
 
   public void setSupportAars(String[] supportAars) {
-    SUPPORT_AARS = supportAars;
+    this.supportAars = supportAars;
   }
 
   public File getAppRTxt() {
@@ -161,15 +163,26 @@ public class Resources {
     return ImageIO.read(Objects.requireNonNull(Compiler.class.getResource(DEFAULT_ICON)));
   }
 
+  /**
+   * Get the component build info.
+   *
+   * @return the build info for the built-in components
+   */
   public String getCompBuildInfo() {
     try {
-      return com.google.common.io.Resources.toString(Resources.class.getResource(COMP_BUILD_INFO),
+      return com.google.common.io.Resources.toString(
+          Objects.requireNonNull(Resources.class.getResource(COMP_BUILD_INFO)),
           Charsets.UTF_8);
     } catch (IOException e) {
       return null;
     }
   }
 
+  /**
+   * Get the path to the aapt executable for the current platform.
+   *
+   * @return absolute path to aapt
+   */
   public String aapt() {
     String osName = System.getProperty("os.name");
     String aaptTool;
@@ -182,11 +195,17 @@ public class Resources {
     } else {
       aaptTool = null;
     }
-    if (aaptTool != null)
+    if (aaptTool != null) {
       return getResource(aaptTool);
+    }
     return null;
   }
 
+  /**
+   * Get the path to the aapt2 executable for the current platform.
+   *
+   * @return absolute path to aapt2
+   */
   public String aapt2() {
     String osName = System.getProperty("os.name");
     String aaptTool;
@@ -199,11 +218,17 @@ public class Resources {
     } else {
       aaptTool = null;
     }
-    if (aaptTool != null)
+    if (aaptTool != null) {
       return getResource(aaptTool);
+    }
     return null;
   }
 
+  /**
+   * Get the path to the zipalign executable for the current platform.
+   *
+   * @return absolute path to zipalign
+   */
   public String zipalign() {
     String osName = System.getProperty("os.name");
     String zipAlignTool;
@@ -216,11 +241,17 @@ public class Resources {
     } else {
       zipAlignTool = null;
     }
-    if (zipAlignTool != null)
+    if (zipAlignTool != null) {
       return getResource(zipAlignTool);
+    }
     return null;
   }
 
+  /**
+   * Get the path to the jarsigner executable for the current platform.
+   *
+   * @return absolute path to jarsigner
+   */
   public String jarsigner() {
     String osName = System.getProperty("os.name");
     String jarsignerTool;

@@ -67,11 +67,12 @@ public class CreateManifest implements Task {
           + "android:versionName=\"" + versionName + "\" "
           + ">\n");
 
-      // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
-      // is used by the Google Play store to determine which devices the app is available for. By adding
-      // these lines we indicate that we use these features BUT THAT THEY ARE NOT REQUIRED so it is ok
-      // to make the app available on devices that lack the feature. Without these lines the Play Store
-      // makes a guess based on permissions and assumes that they are required features.
+      // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag
+      // which is used by the Google Play store to determine which devices the app is available
+      // for. By adding these lines we indicate that we use these features BUT THAT THEY ARE NOT
+      // REQUIRED so it is ok to make the app available on devices that lack the feature. Without
+      // these lines the Play Store makes a guess based on permissions and assumes that they are
+      // required features.
       if (context.isForCompanion()) {
         out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" "
             + "android:required=\"false\" />\n");
@@ -128,7 +129,8 @@ public class CreateManifest implements Task {
 
       // make permissions unique by putting them in one set
       Set<String> permissions = Sets.newHashSet();
-      for (Set<String> compPermissions : context.getComponentInfo().getPermissionsNeeded().values()) {
+      for (Set<String> compPermissions :
+          context.getComponentInfo().getPermissionsNeeded().values()) {
         permissions.addAll(compPermissions);
       }
       if (context.usesLegacyFileAccess()) {
@@ -182,7 +184,8 @@ public class CreateManifest implements Task {
         out.write(" />");
       }
 
-      if (context.isForCompanion()) { // This is so ACRA can do a logcat on phones older then Jelly Bean
+      if (context.isForCompanion()) {
+        // This is so ACRA can do a logcat on phones older then Jelly Bean
         out.write("  <uses-permission android:name=\"android.permission.READ_LOGS\" />\n");
       }
 
@@ -190,7 +193,8 @@ public class CreateManifest implements Task {
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
-      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"" + YaVersion.TARGET_SDK_VERSION + "\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\""
+          + YaVersion.TARGET_SDK_VERSION + "\" />\n");
 
       out.write("  <application ");
 
@@ -217,14 +221,16 @@ public class CreateManifest implements Task {
       if (context.isForCompanion()) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       } else {
-        out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
+        out.write("android:name="
+            + "\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
       // Write theme info if we are not using the "Classic" theme (i.e., no theme)
       //      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
       out.write("android:theme=\"@style/AppTheme\" ");
       out.write(">\n");
 
-      out.write("<uses-library android:name=\"org.apache.http.legacy\" android:required=\"false\" />");
+      out.write("<uses-library android:name=\"org.apache.http.legacy\" "
+          + "android:required=\"false\" />");
 
       for (Project.SourceDescriptor source : context.getProject().getSources()) {
         String formClassName = source.getQualifiedName();
@@ -279,7 +285,8 @@ public class CreateManifest implements Task {
           out.write("</intent-filter>\n");
         }
 
-        if (context.getSimpleCompTypes().contains("com.google.appinventor.components.runtime.NearField") && !context.isForCompanion() && isMain) {
+        if (context.getSimpleCompTypes().contains(NEARFIELD_COMPONENT)
+            && !context.isForCompanion() && isMain) {
           //  make the form respond to NDEF_DISCOVERED
           //  this will trigger the form's onResume method
           //  For now, we're handling text/plain only,but we can add more and make the Nearfield
@@ -292,7 +299,8 @@ public class CreateManifest implements Task {
         }
         out.write("    </activity>\n");
 
-        Set<Map.Entry<String, Set<String>>> metadataElements = context.getComponentInfo().getActivityMetadataNeeded().entrySet();
+        Set<Map.Entry<String, Set<String>>> metadataElements =
+            context.getComponentInfo().getActivityMetadataNeeded().entrySet();
 
         // If any component needs to register additional activity metadata,
         // insert them into the manifest here.
@@ -301,8 +309,9 @@ public class CreateManifest implements Task {
             Set<String> metadataElementSet = metadataElementSetPair.getValue();
             for (String metadataElement : metadataElementSet) {
               out.write(
+                  // replace %packageName% with the actual packageName
                   metadataElement
-                      .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+                      .replace("%packageName%", packageName)
               );
             }
           }
@@ -310,7 +319,11 @@ public class CreateManifest implements Task {
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {
-          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:exported=\"false\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("    <activity ");
+          out.write("android:name=\"com.google.appinventor.components.runtime.SplashActivity\" ");
+          out.write("android:exported=\"false\" ");
+          out.write("android:screenOrientation=\"behind\" ");
+          out.write("android:configChanges=\"keyboardHidden|orientation\">\n");
           out.write("      <intent-filter>\n");
           out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
           out.write("      </intent-filter>\n");
@@ -334,12 +347,14 @@ public class CreateManifest implements Task {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
           for (String subelement : subelementSet) {
-            if (context.isForCompanion() && !context.isIncludeDangerousPermissions() && subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
+            if (context.isForCompanion() && !context.isIncludeDangerousPermissions()
+                && subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
               continue;
             }
             out.write(
+                // replace %packageName% with the actual packageName
                 subelement
-                    .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+                    .replace("%packageName%", packageName)
             );
           }
         }
@@ -352,8 +367,10 @@ public class CreateManifest implements Task {
 
       // Collect any legacy simple broadcast receivers
       Set<String> simpleBroadcastReceivers = Sets.newHashSet();
-      for (String componentType : context.getComponentInfo().getComponentBroadcastReceiver().keySet()) {
-        simpleBroadcastReceivers.addAll(context.getComponentInfo().getComponentBroadcastReceiver().get(componentType));
+      for (String componentType :
+          context.getComponentInfo().getComponentBroadcastReceiver().keySet()) {
+        simpleBroadcastReceivers.addAll(
+            context.getComponentInfo().getComponentBroadcastReceiver().get(componentType));
       }
 
       // The format for each legacy Broadcast Receiver in simpleBroadcastReceivers is
@@ -425,7 +442,8 @@ public class CreateManifest implements Task {
       aggregates.put(constraint.getAttribute(), constraint);
     }
 
-    for (Map.Entry<String, Collection<PermissionConstraint<?>>> entry : aggregates.asMap().entrySet()) {
+    for (Map.Entry<String, Collection<PermissionConstraint<?>>> entry :
+        aggregates.asMap().entrySet()) {
       String attribute = entry.getKey();
       // TODO(ewpatton): Figure out a more generic way of doing this.
       String value;
