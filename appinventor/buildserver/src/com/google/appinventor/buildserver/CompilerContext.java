@@ -138,7 +138,7 @@ public class CompilerContext {
     public CompilerContext build() {
       CompilerContext context = new CompilerContext();
       if (project == null) {
-        throw new IllegalStateException("CompilerContext.Builder needs a Project");
+        System.out.println("[WARN] CompilerContext.Builder needs a Project");
       } else if (compTypes == null) {
         throw new IllegalStateException("CompilerContext.Builder needs CompTypes");
       } else if (compBlocks == null) {
@@ -166,16 +166,21 @@ public class CompilerContext {
       final Paths paths;
       if (this.outputFileName != null) {
         paths = new Paths(this.outputFileName);
-      } else {
+      } else if (project != null) {
         paths = new Paths(this.project.getProjectName() + "." + ext);
+      } else {
+        // For testing only
+        paths = new Paths(null);
       }
-      paths.setBuildDir(ExecutorUtils.createDir(project.getBuildDirectory()));
-      paths.setDeployDir(ExecutorUtils.createDir(paths.getBuildDir(), "deploy"));
-      paths.setResDir(ExecutorUtils.createDir(paths.getBuildDir(), "res"));
-      paths.setDrawableDir(ExecutorUtils.createDir(paths.getBuildDir(), "drawable"));
-      paths.setTmpDir(ExecutorUtils.createDir(paths.getBuildDir(), "tmp"));
-      paths.setLibsDir(ExecutorUtils.createDir(paths.getBuildDir(), "libs"));
-      paths.setClassesDir(ExecutorUtils.createDir(paths.getBuildDir(), "classes"));
+      if (project != null) {
+        paths.setBuildDir(ExecutorUtils.createDir(project.getBuildDirectory()));
+        paths.setDeployDir(ExecutorUtils.createDir(paths.getBuildDir(), "deploy"));
+        paths.setResDir(ExecutorUtils.createDir(paths.getBuildDir(), "res"));
+        paths.setDrawableDir(ExecutorUtils.createDir(paths.getBuildDir(), "drawable"));
+        paths.setTmpDir(ExecutorUtils.createDir(paths.getBuildDir(), "tmp"));
+        paths.setLibsDir(ExecutorUtils.createDir(paths.getBuildDir(), "libs"));
+        paths.setClassesDir(ExecutorUtils.createDir(paths.getBuildDir(), "classes"));
+      }
       context.paths = paths;
 
       context.resources = new Resources();

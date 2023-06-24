@@ -71,6 +71,7 @@ public enum DefaultValueColor: String {
 }
 
 public let kFontSizeDefault: Float = 14.0
+public let kFontSizeLargeDefault: Float = 24.0
 public let kLayoutOrientationHorizontal = HVOrientation.horizontal
 public let kLayoutOrientationVertical = HVOrientation.vertical
 

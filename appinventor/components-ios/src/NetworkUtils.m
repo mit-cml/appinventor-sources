@@ -25,10 +25,11 @@
         // Check if interface is an ethernet interface
         if([[NSString stringWithUTF8String:temp_addr->ifa_name] hasPrefix:@"en"]) {
           // Get IP address on interface as NSString (from C string)
-          address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+          NSString *tempaddress = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
 
           // Only accept a reasonable look IP address
-          if (![address isEqualToString:@""] && ![address isEqualToString:@"0.0.0.0"]) {
+          if (![tempaddress isEqualToString:@""] && ![tempaddress isEqualToString:@"0.0.0.0"] && ![tempaddress hasPrefix:@"169."]) {
+            address = tempaddress;
             break;
           }
           

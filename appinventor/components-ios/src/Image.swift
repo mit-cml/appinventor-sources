@@ -32,6 +32,18 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   }
 
   /**
+   * A written description of what the image looks like.
+   */
+  @objc open var AlternateText: String {
+    get {
+      return view.accessibilityLabel ?? ""
+    }
+    set {
+      view.accessibilityLabel = newValue
+    }
+  }
+
+  /**
    * Applies or cancels a horizontal scrolling animation
    */
   @objc open var Animation: String {

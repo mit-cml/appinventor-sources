@@ -12,7 +12,6 @@ import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.Paths;
 import com.google.appinventor.buildserver.interfaces.Task;
-import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.io.Files;
 
 import java.io.File;

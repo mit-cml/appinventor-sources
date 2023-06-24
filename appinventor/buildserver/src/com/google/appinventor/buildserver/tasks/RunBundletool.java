@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 @BuildType(aab = true)
 public class RunBundletool implements Task {
   private AabPaths aab;
