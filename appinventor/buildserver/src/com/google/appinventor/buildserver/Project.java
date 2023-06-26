@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -110,8 +109,9 @@ public final class Project {
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
 
-  private static final String DEFAULT_APP_NAME = "AI2 App"; // Do not leave it empty because even though it compiles
-                                                            // alright but Android OS can't install it!
+  // Do not leave it empty because even though it compiles
+  // alright but Android OS can't install it!
+  private static final String DEFAULT_APP_NAME = "AI2 App";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
   private static final String DEFAULT_MIN_SDK = "7";
