@@ -62,6 +62,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -282,7 +284,7 @@ public final class ProjectBuilder {
 
         // Note (ralph):  deleteRecursively has been removed from the guava-11.0.1 lib
         // Replacing with deleteDirectory, which is supposed to delete the entire directory.
-        // FileUtils.deleteQuietly(new File(projectRoot.getCanonicalPath()));
+        FileUtils.deleteQuietly(new File(projectRoot.getCanonicalPath()));
       }
     } catch (Exception e) {
       e.printStackTrace();
