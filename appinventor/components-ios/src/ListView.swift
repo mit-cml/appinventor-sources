@@ -106,22 +106,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   @objc open var ListData: String {
     get {
         do {
-            let dictionaries: [[String: Any]] = _listData.map { element in
-                return [
-                    "Text1": element,
-                    "Text2": "",
-                    "Image": ""
-                ]
-            }
-            do {
-                let jsonString = try getJsonRepresentation(dictionaries as AnyObject)
-                return jsonString
-            } catch {
-                print("Error serializing JSON: \(error)")
-                return ""
-            }
+          let jsonString = try getJsonRepresentation(_listData as AnyObject)
+          return jsonString
+        } catch {
+          print("Error serializing JSON: \(error)")
+          return ""
         }
-    }
+      }
     set(jsonString) {
       do {
         
@@ -129,12 +120,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
            print("JSON object: \(jsonObject)")
         
               if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
-                _listData = dictionaries.compactMap { $0["Text1"] as? [String: String] }
-                for dictionary in dictionaries {
-                            if let text1 = dictionary["Text1"] as? String {
-                                print("Text1: \(text1)")
+
+                _listData = dictionaries.compactMap { dictionary in
+                                if let text1 = dictionary["Text1"] as? String {
+                                    return ["Text1": text1]
+                                }
+                                return nil
                             }
-                        }
+                print(_listData[0]["Text1"])
                   _view.reloadData()
               }
         
@@ -260,9 +253,23 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
    
-   
-    let listDataElement = _listData[indexPath.row]
-    cell.textLabel?.text = listDataElement["Text1"]
+    if indexPath.row < _elements.count {
+           cell.textLabel?.text = _elements[indexPath.row]
+           cell.textLabel?.numberOfLines = 1
+           cell.textLabel?.lineBreakMode = .byTruncatingTail
+       } else {
+           let listDataIndex = indexPath.row - _elements.count
+           cell.textLabel?.text = _listData[listDataIndex]["Text1"] 
+           
+         if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
+               cell.textLabel?.numberOfLines = 0
+               cell.textLabel?.lineBreakMode = .byWordWrapping
+           } else {
+               cell.textLabel?.numberOfLines = 1
+               cell.textLabel?.lineBreakMode = .byTruncatingTail
+           }
+       }
+
     
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
@@ -288,14 +295,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     if cell.selectedBackgroundView == nil {
       cell.selectedBackgroundView = UIView()
     }
-    if elements[indexPath.row].contains("\n") {
-      cell.textLabel?.numberOfLines = 0
-      cell.textLabel?.lineBreakMode = .byWordWrapping
-    }
-    else {
-      cell.textLabel?.numberOfLines = 1
-      cell.textLabel?.lineBreakMode = .byTruncatingTail
-    }
+//    if elements[indexPath.row].contains("\n") {
+//      cell.textLabel?.numberOfLines = 0
+//      cell.textLabel?.lineBreakMode = .byWordWrapping
+//    }
+//    else {
+//      cell.textLabel?.numberOfLines = 1
+//      cell.textLabel?.lineBreakMode = .byTruncatingTail
+//    }
     cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
   
     
@@ -303,7 +310,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _elements.count + _listData.count
+    return _listData.count
   }
 
   // MARK: UITableViewDelegate
@@ -338,6 +345,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   var elements: [String] {
     return _results ?? _elements
   }
+  
 
  
   
