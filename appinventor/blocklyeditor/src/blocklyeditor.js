@@ -403,6 +403,9 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   var workspace = Blockly.inject(container, options);
   var multiselectPlugin = new top.Multiselect(workspace);
   multiselectPlugin.init(options);
+  // TODO: Right now top.init() is the initialization function for the Blockly lexical variable plugin.
+  //       That needs to change :-).
+  top.init(workspace);
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
