@@ -102,28 +102,25 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   
  
   //ListData
-  
+
   @objc open var ListData: String {
     get {
-      
-      do {
-                  let dictionaries: [[String: Any]] = _listData.map { element in
-                      return [
-                          "Text1": element,
-                          "Text2": "",
-                          "Image": ""
-                      ]
-                  }
-        let jsonString = try getJsonRepresentation(dictionaries as AnyObject)
-                
-        print("successful serialisingg")
-                  return jsonString
-        
-              }
-      catch {
-                  print("Error serializing JSON: \(error)")
-                  return ""
-              }
+        do {
+            let dictionaries: [[String: Any]] = _listData.map { element in
+                return [
+                    "Text1": element,
+                    "Text2": "",
+                    "Image": ""
+                ]
+            }
+            do {
+                let jsonString = try getJsonRepresentation(dictionaries as AnyObject)
+                return jsonString
+            } catch {
+                print("Error serializing JSON: \(error)")
+                return ""
+            }
+        }
     }
     set(jsonString) {
       do {
@@ -263,9 +260,10 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
    
-    let dictionary = _listData[indexPath.row]
-     let text1 = dictionary["Text1"] ?? ""
-    cell.textLabel?.text = text1
+   
+    let listDataElement = _listData[indexPath.row]
+    cell.textLabel?.text = listDataElement["Text1"]
+    
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
     
@@ -305,7 +303,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return elements.count + _listData.count
+    return _elements.count + _listData.count
   }
 
   // MARK: UITableViewDelegate
@@ -340,4 +338,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   var elements: [String] {
     return _results ?? _elements
   }
+
+ 
+  
+  
 }
