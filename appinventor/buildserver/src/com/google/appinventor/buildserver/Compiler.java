@@ -103,6 +103,7 @@ public class Compiler implements Callable<Boolean> {
   public Boolean call() {
     // Initializes progress to 0.
     context.getReporter().setProgress(0);
+    context.getStatReporter().startBuild(this);
     int numTasks = this.tasks.size();
 
     // If no tasks, we technically have successfully build everything.
