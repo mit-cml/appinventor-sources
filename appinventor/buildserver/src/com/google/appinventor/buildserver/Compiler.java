@@ -184,10 +184,10 @@ public class Compiler implements Callable<Boolean> {
     }
     return true;
   }
-  
+
   @Override
   public String toString() {
-    return "Executor{"
+    return "Compiler{"
         + "tasks=" + tasks
         + ", context=" + context
         + ", ext='" + ext + '\''
