@@ -47,10 +47,13 @@ public class Compiler implements Callable<Boolean> {
       return this;
     }
 
-    // Specifies the build type (the extension output actually).
-    // Only accepts the one specified in BuildType annotation.
+    /**
+     * Specifies the build type (the extension output actually).
+     * Only accepts the one specified in BuildType annotation.
+     */
     public Builder withType(String ext) {
-      if (ext == null || !ext.equals(BuildType.APK_EXTENSION) && !ext.equals(BuildType.AAB_EXTENSION)) {
+      if (ext == null || !ext.equals(BuildType.APK_EXTENSION)
+          && !ext.equals(BuildType.AAB_EXTENSION)) {
         System.out.println("[ERROR] BuildType '" + ext + "' is not supported!");
       } else {
         this.ext = ext;
@@ -58,8 +61,11 @@ public class Compiler implements Callable<Boolean> {
       return this;
     }
 
-    // Constructs the Executor object, making sure all needed
-    // attributes are passed.
+    /**
+     * Constructs the Executor object, making sure all needed attributes are passed.
+     *
+     * @return a new Compiler configured by the builder
+     */
     public Compiler build() {
       if (context == null) {
         System.out.println("[ERROR] ExecutorContext was not provided to Executor");
@@ -82,7 +88,9 @@ public class Compiler implements Callable<Boolean> {
     this.tasks = new ArrayList<>();
   }
 
-  // Adds a new Task to the build.
+  /**
+   * Adds a new Task to the build.
+   */
   public Compiler add(Class<? extends Task> task) {
     assert task != null;
     this.tasks.add(task);
@@ -95,16 +103,16 @@ public class Compiler implements Callable<Boolean> {
   public Boolean call() {
     // Initializes progress to 0.
     context.getReporter().setProgress(0);
-    int TASKS_SIZE = this.tasks.size();
+    int numTasks = this.tasks.size();
 
     // If no tasks, we technically have successfully build everything.
-    if (TASKS_SIZE == 0) {
+    if (numTasks == 0) {
       context.getReporter().warn("No tasks were executed");
       context.getReporter().setProgress(100);
       return true;
     }
 
-    for (int i = 0; i < TASKS_SIZE; i++) {
+    for (int i = 0; i < numTasks; i++) {
       // We accept Class'es, but not initialized ones.
       Class<? extends Task> task = this.tasks.get(i);
       String taskName = task.getSimpleName();
@@ -149,7 +157,7 @@ public class Compiler implements Callable<Boolean> {
       long start = System.currentTimeMillis();
 
       // And then invoke the execute(ExecutorContext) method to run the Task.
-      TaskResult result = null;
+      TaskResult result;
       try {
         Method execute = task.getMethod("execute", CompilerContext.class);
         result = (TaskResult) execute.invoke(taskObject, context);
@@ -163,13 +171,14 @@ public class Compiler implements Callable<Boolean> {
       // Make sure result is success, else we'll throw an error and don't run
       // more tasks.
       if (result == null || !result.isSuccess()) {
-        context.getReporter().error(result == null || result.getError() == null ? "Unknown exception" : result.getError().getMessage(), true);
+        context.getReporter().error(result == null || result.getError() == null
+            ? "Unknown exception" : result.getError().getMessage(), true);
         context.getReporter().taskError(endTime);
         return false;
       }
 
       // Update progress depending on the number of steps.
-      context.getReporter().setProgress(((i + 1) * 100) / TASKS_SIZE);
+      context.getReporter().setProgress(((i + 1) * 100) / numTasks);
       context.getReporter().taskSuccess(endTime);
     }
     return true;
@@ -177,10 +186,10 @@ public class Compiler implements Callable<Boolean> {
   
   @Override
   public String toString() {
-    return "Executor{" +
-        "tasks=" + tasks +
-        ", context=" + context +
-        ", ext='" + ext + '\'' +
-        '}';
+    return "Executor{"
+        + "tasks=" + tasks
+        + ", context=" + context
+        + ", ext='" + ext + '\''
+        + '}';
   }
 }

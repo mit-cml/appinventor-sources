@@ -244,10 +244,6 @@ public final class ProjectBuilder {
 
         Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
 
-        /* boolean success =
-            Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
-                isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
-                childProcessRam, dexCachePath, outputFileName, reporter, isAab); */
         boolean success = executor.get();
         statReporter.stopBuild(compiler, success);
         r.close();
