@@ -762,6 +762,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Show the given component's properties in the properties panel.
    */
   private void updatePropertiesPanel(List<MockComponent> components, boolean selected) {
+    Ode.CLog("update prpoperties called");
     if (components == null || components.size() == 0) {
       throw new IllegalArgumentException("components must be a list of at least 1");
     }
@@ -769,8 +770,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       selectedProperties.removePropertyChangeListener(this);
     }
     if (components.size() == 1) {
+      Ode.CLog("Inside Components Size == 1");
       selectedProperties = components.get(0).getProperties();
     } else {
+      Ode.CLog("Inside Components Size > 1");
       EditableProperties newProperties = new EditableProperties(true);
       Map<String, EditableProperty> propertyMaps = new HashMap<>();
       boolean first = true;
@@ -825,9 +828,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
       selectedProperties = newProperties;
     }
+    Ode.CLog("Update propeties : before adding property change listener");
     if (selected) {
       selectedProperties.addPropertyChangeListener(this);
     }
+    Ode.CLog("Update properties : After adding property change listner ");
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       designProperties.setPropertiesCaption(components.size() + " components selected");
@@ -836,6 +841,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       // setProperties clears the caption!
       designProperties.setPropertiesCaption(components.get(0).getName());
     }
+    Ode.CLog("Update propeties finished");
+  }
+
+  public void updateCurFormProjectProperty(List<MockComponent> components) {
+    selectedProperties = components.get(0).getProperties();
+    designProperties.setProperties(selectedProperties);
   }
 
   private void onFormStructureChange() {

@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -933,10 +934,10 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
-    }
 
-    if (editor.isLoadComplete()) {
-      ((YaFormEditor)editor).reloadComponentPalette(asJson);
+      if (editor.isLoadComplete()) {
+        ((YaFormEditor)editor).reloadComponentPalette(asJson);
+      }
     }
   }
 
@@ -1005,6 +1006,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME, theme);
     }
+    Ode.CLog("Updating theme in " + ((YaFormEditor)editor).getTabText());
     if (theme.equals("AppTheme.Light")) {
       final String newColor = "&HFF000000";
       blackIcons = true;
@@ -1044,6 +1046,7 @@ public final class MockForm extends MockContainer {
       phoneBar.setIconColor(blackIcons, idxPhoneSize);
       titleBar.changeBookmarkIcon(blackIcons);
     }
+    Ode.CLog("Updation theme complete");
 
   }
 
@@ -1350,6 +1353,8 @@ public final class MockForm extends MockContainer {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
+    Ode.CLog("Name : " + propertyName + " Value : " + newValue);
+
     // Apply changed properties to the mock component
     if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
@@ -1441,8 +1446,8 @@ public final class MockForm extends MockContainer {
     }
   }
 
-  public void updatePropertiesPanel() {
-    ((YaFormEditor) editor).loadDesigner();
+  public void curFormProjectPropertyChange() {    
+    ((YaFormEditor) editor).updateCurFormProjectProperty(selectedComponents);
   }
 
   @Override
@@ -1453,6 +1458,7 @@ public final class MockForm extends MockContainer {
     // per project, not per Screen(Form) We only have to do this on
     // screens other then screen1 because screen1's value is
     // definitive.
+    Ode.CLog("get properties called" + ((YaFormEditor)editor).getTabText());
     if (!editor.isScreen1()) {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
           editor.getProjectEditor().getProjectSettingsProperty(
@@ -1489,12 +1495,9 @@ public final class MockForm extends MockContainer {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
-      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, 
-          editor.getProjectEditor().getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR));            
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));         
     }
+    Ode.CLog("get properties finished" + ((YaFormEditor)editor).getTabText());
     return properties;
   }
 

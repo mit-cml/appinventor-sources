@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -39,7 +40,7 @@ import com.google.appinventor.client.widgets.properties.PropertyEditor;
 /**
  * A dailog for updating project property that can be open from any screen
  */
-public class ProjectPropertiesDialogBox extends DialogBox implements PropertyChangeListener { 
+public class ProjectPropertiesDialogBox extends DialogBox { 
 
     private static ProjectPropertiesDialogBoxUiBinder uiBinder =
         GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
@@ -56,16 +57,6 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
 
     @UiField
     Image closeIcon;
-
-    // these properties requires changes in the curForm/activeForm
-    private static final HashSet<String> PROJECT_PROPERTIES = new HashSet<String>() {{
-        add("BlocksToolkit");
-        add("PrimaryColor");
-        add("PrimaryColorDark");
-        add("AccentColor");
-        add("Theme");
-        add("Sizing");
-    }};
 
     // subcategories of the project properties
     private static final ArrayList<String> categoriesList = new ArrayList<String>() {{
@@ -91,13 +82,46 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
 
     // indicates the currently active project editor
     private YaProjectEditor projectEditor;
-    
+
+    // cur Screen on which dialog is opend
+    private String curScreen = "";
+
+    public void setCurScreen(String screenName) {
+        curScreen = screenName;
+    }
+
     public ProjectPropertiesDialogBox() {
         this.setStylePrimaryName("ode-projectPropertyDialogDiv");
         add(uiBinder.createAndBindUi(this));
         this.setAnimationEnabled(true);
         this.setAutoHideEnabled(false);
         lastDialog = this;
+
+        // get current instance of YaProjectEditor
+    	projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager().getOpenProjectEditor(
+            Ode.getInstance().getCurrentYoungAndroidProjectId());
+
+        // screen1 mock form
+        form = projectEditor.getFormFileEditor("Screen1").getForm();
+
+        // get the editable properties of the screen1 MockForm
+	    EditableProperties editableProperties = form.getProperties();
+        Iterator<EditableProperty> properties = editableProperties.iterator();
+
+        // iterate and put the editable property to the corresponding category on the map
+        while (properties.hasNext()) {
+            EditableProperty property = properties.next();
+
+            if (!propertiesMap.containsKey(property.getCategory())) {
+                propertiesMap.put(property.getCategory(), new ArrayList<EditableProperty>());
+            } 
+
+            propertiesMap.get(property.getCategory()).add(property);
+        }
+
+        // DeckPanel
+        DeckPanel deckPanel = new DeckPanel();
+        propertiesPanel.add(deckPanel);
 
         // vertical panel for 
         VerticalPanel  categoriesLabel = new VerticalPanel();
@@ -117,14 +141,12 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
                 // assign clicked label to selectedLabel
                 selectedLabel = categoryNameLabel;
 
-                // display corresponding editable properties in on the right panel
-                VerticalPanel newPanel = showProperty(selectedLabel.getText());
-
-                // removed cur properties panel from dialog and add new one
-                propertiesPanel.remove(cur);
-                propertiesPanel.add(newPanel);
-                cur = newPanel;
+                // display corresponding editable properties on the right panel
+                deckPanel.showWidget(categoriesList.indexOf(selectedLabel.getText()));
+                
             });
+
+            deckPanel.add(getPanel(c));
 
             // make the first one selected by default
             if (selectedLabel == null) {
@@ -139,38 +161,12 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
         // add vertical panel to scroll panel
         categories.add(categoriesLabel);
 
-        // get current instance of YaProjectEditor
-    	projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager().getOpenProjectEditor(
-            Ode.getInstance().getCurrentYoungAndroidProjectId());
-
-        // screen1 mock form
-        form = projectEditor.getFormFileEditor("Screen1").getForm();
-
-        // get the editable properties of the screen1 MockForm
-	    EditableProperties editableProperties = form.getProperties();
-        editableProperties.addPropertyChangeListener(this);
-        Iterator<EditableProperty> properties = editableProperties.iterator();
-
-        // iterate and put the editable property to the corresponding category on the map
-        while (properties.hasNext()) {
-            EditableProperty property = properties.next();
-
-            if (!propertiesMap.containsKey(property.getCategory())) {
-                propertiesMap.put(property.getCategory(), new ArrayList<EditableProperty>());
-            } 
-
-            propertiesMap.get(property.getCategory()).add(property);
-        }
-
-        // display the properties of the selected label
-        VerticalPanel newPanel = showProperty(selectedLabel.getText());
-        propertiesPanel.add(newPanel);
-        cur = newPanel;
+        deckPanel.showWidget(0);
 
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                lastDialog.center();
+                ProjectPropertiesDialogBox.this.center();
             }
         });
     }
@@ -181,7 +177,7 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
      * @param category indicates the currently selected category text
      * @return vertical panel which contains the all the Editable Property belongs to the selected category
      */
-    private VerticalPanel showProperty(String category) {
+    private VerticalPanel getPanel(String category) {
         // main container for the child vertical panels
         VerticalPanel mainContainer = new VerticalPanel();
         mainContainer.setStyleName("ode-propertyDialogVerticalPanel");
@@ -220,20 +216,10 @@ public class ProjectPropertiesDialogBox extends DialogBox implements PropertyCha
     @UiHandler("closeIcon")
     void handleClose(ClickEvent e) {
         this.hide();
-    }
-    
-    /**
-     * for appling changes on the currently visible MockForm
-     */
-    @Override
-    public void onPropertyChange(String name, String value) {
-        if (PROJECT_PROPERTIES.contains(name)) {
-            // get the active screen and active form
-    	    String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+        if (curScreen != "Screen1") {
             MockForm curform = projectEditor.getFormFileEditor(curScreen).getForm();
-            if (curScreen != "Screen1" && curform != null) {
-                Ode.CLog("refreshing cur form...");
-                curform.updatePropertiesPanel();
+            if (curform != null) {
+                curform.curFormProjectPropertyChange();
             }
         }
     }
