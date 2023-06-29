@@ -53,7 +53,7 @@ public class ProjectPropertiesDialogBox extends DialogBox {
     ScrollPanel categories;
 
     @UiField
-    ScrollPanel propertiesPanel;
+    DeckPanel propertiesDeckPanel;
 
     @UiField
     Image closeIcon;
@@ -119,10 +119,6 @@ public class ProjectPropertiesDialogBox extends DialogBox {
             propertiesMap.get(property.getCategory()).add(property);
         }
 
-        // DeckPanel
-        DeckPanel deckPanel = new DeckPanel();
-        propertiesPanel.add(deckPanel);
-
         // vertical panel for 
         VerticalPanel  categoriesLabel = new VerticalPanel();
         categoriesLabel.setStyleName("ode-propertyDialogVerticalPanel");
@@ -142,11 +138,11 @@ public class ProjectPropertiesDialogBox extends DialogBox {
                 selectedLabel = categoryNameLabel;
 
                 // display corresponding editable properties on the right panel
-                deckPanel.showWidget(categoriesList.indexOf(selectedLabel.getText()));
+                propertiesDeckPanel.showWidget(categoriesList.indexOf(selectedLabel.getText()));
                 
             });
 
-            deckPanel.add(getPanel(c));
+            propertiesDeckPanel.add(getPanel(c));
 
             // make the first one selected by default
             if (selectedLabel == null) {
@@ -160,8 +156,7 @@ public class ProjectPropertiesDialogBox extends DialogBox {
 
         // add vertical panel to scroll panel
         categories.add(categoriesLabel);
-
-        deckPanel.showWidget(0);
+        propertiesDeckPanel.showWidget(0);
 
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
