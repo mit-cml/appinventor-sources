@@ -9,10 +9,11 @@ package com.google.appinventor.buildserver;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import junit.framework.TestCase;
-
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import junit.framework.TestCase;
 
 /**
  * Tests Compiler class.
@@ -22,8 +23,9 @@ public class CompilerTest extends TestCase {
 
   public void testGeneratePermissions() throws Exception {
     Set<String> noComponents = Sets.newHashSet();
+    Map<String, String> noOrientations = new HashMap<>();
     Map<String, Set<String>> noComponentBlocks = Maps.newHashMap();
-    Compiler compiler = new Compiler(null, noComponents, noComponentBlocks, System.out, System.err, System.err, false,
+    Compiler compiler = new Compiler(null, noComponents, noOrientations, noComponentBlocks, System.out, System.err, System.err, false,
                                      false, false, 2048, null, null);
 
     compiler.generatePermissions();
@@ -31,7 +33,7 @@ public class CompilerTest extends TestCase {
     assertEquals(0, permissions.size());
 
     Set<String> componentTypes = Sets.newHashSet("com.google.appinventor.components.runtime.LocationSensor");
-    compiler = new Compiler(null, componentTypes, noComponentBlocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    compiler = new Compiler(null, componentTypes, noOrientations, noComponentBlocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generatePermissions();
     permissions = compiler.getPermissions();
     Set<String> flatPermissions = Sets.newHashSet();
@@ -55,9 +57,10 @@ public class CompilerTest extends TestCase {
     String label = "com.google.appinventor.components.runtime.Label";
     
     Set<String> componentTypes = Sets.newHashSet(texting);
+    Map<String, String> noOrientations = new HashMap<>();
     Map<String, Set<String>> blocks = Maps.newHashMap();
     blocks.put("Texting", Sets.newHashSet("ReceivingEnabled", "GoogleVoiceEnabled"));
-    Compiler compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    Compiler compiler = new Compiler(null, componentTypes, noOrientations, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generateBroadcastReceivers();
     Map<String, Set<String>> componentReceivers = compiler.getBroadcastReceivers();
     Set<String> receivers = Sets.newHashSet();
@@ -75,7 +78,7 @@ public class CompilerTest extends TestCase {
     assertTrue(hasGoogleVoice);
 
     componentTypes = Sets.newHashSet(texting, label);
-    compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    compiler = new Compiler(null, componentTypes, noOrientations, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generateBroadcastReceivers();
     componentReceivers = compiler.getBroadcastReceivers();
     receivers.clear();
@@ -92,8 +95,9 @@ public class CompilerTest extends TestCase {
     String twitter = "com.google.appinventor.components.runtime.Twitter";
     
     Set<String> componentTypes = Sets.newHashSet(barcodeScanner);
+    Map<String, String> noOrientations = new HashMap<>();
     Map<String, Set<String>> blocks = Maps.newHashMap();
-    Compiler compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    Compiler compiler = new Compiler(null, componentTypes, noOrientations, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generateActivities();
     Map<String, Set<String>> componentActivities = compiler.getActivities();
     Set<String> activities = componentActivities.get(barcodeScanner);
@@ -107,7 +111,7 @@ public class CompilerTest extends TestCase {
     assertTrue(activityElementString.contains("windowSoftInputMode=\"stateAlwaysHidden\""));
   
     componentTypes = Sets.newHashSet(listPicker);
-    compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    compiler = new Compiler(null, componentTypes, noOrientations, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generateActivities();
     componentActivities = compiler.getActivities();
     activities = componentActivities.get(listPicker);
@@ -118,7 +122,7 @@ public class CompilerTest extends TestCase {
     assertTrue(activityElementString.contains("screenOrientation=\"behind\""));
   
     componentTypes = Sets.newHashSet(twitter);
-    compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
+    compiler = new Compiler(null, componentTypes, noOrientations, blocks, System.out, System.err, System.err, false, false, false, 2048, null, null);
     compiler.generateActivities();
     componentActivities = compiler.getActivities();
     activities = componentActivities.get(twitter);

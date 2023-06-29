@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -26,12 +26,14 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -73,6 +75,7 @@ import javax.ws.rs.core.Response;
 @Path("/buildserver")
 public class BuildServer {
   private ProjectBuilder projectBuilder = new ProjectBuilder(statReporter);
+  private String hostname = getEtcHostname();
 
   static class ProgressReporter {
     // We create a ProgressReporter instance which is handed off to the
@@ -271,6 +274,7 @@ public class BuildServer {
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
     variables.put("hostname", InetAddress.getLocalHost().getHostName());
+    variables.put("etc-hostname", hostname);
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
@@ -896,4 +900,16 @@ public class BuildServer {
       return ShutdownState.DOWN;
     }
   }
+
+  private String getEtcHostname() {
+    if (hostname == null) {
+      try (BufferedReader fi =  new BufferedReader(new FileReader("/etc/hostname"))) {
+        hostname = fi.readLine();
+      } catch (IOException e) {
+        hostname = "Unknown";
+      }
+    }
+    return hostname;
+  }
+
 }

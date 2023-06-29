@@ -651,6 +651,7 @@
     "Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR": "Error de connexió de xarxa",
     "Blockly.Msg.REPL_NETWORK_ERROR": "Error de xarxa",
     "Blockly.Msg.REPL_OK": "OK",
+    "Blockly.Msg.REPL_RESET": "Restableix",
     "Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "Comprovació de la versió del Companion",
     "Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "L'app Companion està desactualizada. Fes clic a 'OK' per iniciar l'actualització. Presta atenció a la ",
     "Blockly.Msg.LANG_NO_ASSETS": "No hi ha fitxers disponibles",

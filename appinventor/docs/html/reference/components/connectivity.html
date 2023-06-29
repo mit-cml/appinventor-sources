@@ -247,7 +247,9 @@ set the following properties:
   <dt id="BluetoothClient.AddressesAndNames" class="list ro bo"><em>AddressesAndNames</em></dt>
   <dd>Returns the list of paired Bluetooth devices. Each element of the returned
  list is a String consisting of the device’s address, a space, and the
- device’s name.</dd>
+ device’s name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+ and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+ an error via the Screen’s PermissionDenied event.</dd>
   <dt id="BluetoothClient.Available" class="boolean ro bo"><em>Available</em></dt>
   <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
  <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
