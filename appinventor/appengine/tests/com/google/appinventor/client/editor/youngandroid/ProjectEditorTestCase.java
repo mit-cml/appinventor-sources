@@ -4,23 +4,29 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.editor.youngandroid;
 
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.client.Ode;
 
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
+
 import com.google.gwt.junit.client.GWTTestCase;
 
 public class ProjectEditorTestCase extends GWTTestCase {
 
-    public void testProjectSettingsIcon() {
+  public void testProjectSettingsIcon() {
     //settings: {"SimpleSettings":{"AccentColor":"&HFFFF4081","ActionBar":"False","AppName":"p1","BlocksToolkit":"","DefaultFileScope":"App","Icon":"","PhonePreview":"Classic","PhoneTablet":"False","PrimaryColor":"&HFF3F51B5","PrimaryColorDark":"&HFF303F9F","ScreenCheckboxStateMap":"","ShowHiddenComponents":"False","ShowListsAsJson":"True","Sizing":"Responsive","Theme":"Classic","TutorialURL":"","UsesLocation":"False","VersionCode":"1","VersionName":"1.0"}}
 
+    Ode ode = new Ode();
+    ode.onModuleLoad();
+    ode.getProjectManager().addProject(new UserProject(6565, "name", "YoungAndroid", 0, 0, false));
     YoungAndroidProjectNode projectNode = new YoungAndroidProjectNode("name", 6565);
-    //ProjectRootNode projectNode = new ProjectRootNode("p1", 656, "jjgh"){};
-    YaProjectEditor projectEditor = new YaProjectEditor(projectNode);
+    YoungAndroidFormNode formNode = new YoungAndroidFormNode("src/appinventor/ai_test/Screen1.scm");
+    projectNode.addChild(formNode);
 
-    YoungAndroidFormNode formNode = new YoungAndroidFormNode("fileid");
+    YaProjectEditor projectEditor = new YaProjectEditor(projectNode);
     final YaFormEditor editor = new YaFormEditor(projectEditor, formNode);
 
     editor.getProjectEditor().changeProjectSettingsProperty(
@@ -41,6 +47,6 @@ public class ProjectEditorTestCase extends GWTTestCase {
 
   @Override
   public String getModuleName() {
-    return "com.google.appinventor.YaClient";
+    return "com.google.appinventor.YaClient_dev";
   }
 }

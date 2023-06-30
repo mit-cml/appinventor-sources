@@ -216,10 +216,10 @@
              dir="${basedir}"
              forkmode="@{aij-forkmode}"
              haltonfailure="no"
-             maxmemory="2000m"
+             maxmemory="4000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
-        <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
+        <sysproperty key="gwt.args" value="-prod -style pretty -draftCompile -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war -setProperty locale=en -setProperty user.agent=safari" if:true="@{aij-prod}"/>
         <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war ${local.build.dir}/build/war" unless:true="@{aij-prod}"/>
         <sysproperty key="java.awt.headless" value="true"/>
         <classpath refid="@{aij-testingtarget}.path"/>

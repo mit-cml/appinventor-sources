@@ -29,7 +29,7 @@
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
-             else="com.google.appinventor.YaClient-dev">
+             else="com.google.appinventor.YaClient_dev">
     <equals arg1="${release}" arg2="true" />
   </condition>
 
@@ -654,7 +654,7 @@
       </classpath>
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
-      <arg value="com.google.appinventor.YaClient-dev" />
+      <arg value="com.google.appinventor.YaClient_dev" />
       <arg value="-bindAddress"/>
       <arg value="0.0.0.0"/>
     </java>

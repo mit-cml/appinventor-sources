@@ -91,6 +91,6 @@ public class OdeTestCase extends GWTTestCase {
 
   @Override
   public String getModuleName() {
-    return "com.google.appinventor.YaClient";
+    return "com.google.appinventor.YaClient_dev";
   }
 }

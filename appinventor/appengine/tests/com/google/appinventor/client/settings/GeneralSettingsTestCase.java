@@ -14,7 +14,7 @@ import com.google.gwt.junit.client.GWTTestCase;
 public class GeneralSettingsTestCase extends GWTTestCase {
   @Override
   public String getModuleName() {
-    return "com.google.appinventor.YaClient";
+    return "com.google.appinventor.YaClient_dev";
   }    
   public void testUserDyslexicFontTrue() {
     User user = new User("1","abc@email.com",true,true,null);
