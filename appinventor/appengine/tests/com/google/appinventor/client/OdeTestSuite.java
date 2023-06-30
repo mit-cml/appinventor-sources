@@ -6,6 +6,7 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.settings.GeneralSettingsTestCase;
+import com.google.appinventor.client.editor.youngandroid.ProjectEditorTestCase;
 import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -15,6 +16,7 @@ public class OdeTestSuite extends GWTTestSuite {
     TestSuite suite = new TestSuite("Test for App Inventor");
     suite.addTestSuite(OdeTestCase.class);
     suite.addTestSuite(GeneralSettingsTestCase.class);
+    suite.addTestSuite(ProjectEditorTestCase.class);
     return suite;
   }
 }
