@@ -445,7 +445,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         int height = getHeight();
         cache = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         android.graphics.Canvas c = new android.graphics.Canvas(cache);
-        layout(0, 0, width, height);
+        /**
+         * layout function call was creating Issue #2673
+         * removing layout call resolved the Issue
+         */
+        //layout(0, 0, width, height);
         draw(c);
       }
       return cache;
