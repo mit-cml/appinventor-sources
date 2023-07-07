@@ -586,7 +586,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectEditor {
-  width: 100%;
+  min-width: fit-content;
   height: 100%;
   top: 0;
   position: absolute;
@@ -1521,6 +1521,60 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 14px;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.ode-tutorialButton {
+  background-color: white;
+  border: 1px #8fc202 solid;
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: #8fc202;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.ode-tutorialButton:hover {
+  background-color: rgba(143, 194, 2, 0.616);
+  color: white;
+  cursor: pointer;
+}
+
+.ode-closeDialogBox {
+  background-color: white;
+  border: 1px #837d7d solid;
+  width: 25%;
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: #837d7d;
+  text-transform: uppercase;
+  font-size: 12px;
+  text-align: center;
+  margin: 0 10px;
+}
+
+.ode-closeDialogBox:hover {
+  background-color: rgba(131, 125, 125, 0.1);
+  cursor: pointer;
+}
+
+.ode-noDialogNewProject {
+  text-transform: uppercase;
+  font-size: 12px;
+  text-decoration: none;
+  text-align: center;
+  padding: 5px 8px;
+  width: 25%;
+  background-color: white;
+  border: 1px #8fc202 solid;
+  border-radius: 5px;
+  color: #8fc202;
+  margin: 0 10px;
+}
+
+.ode-noDialogNewProject:hover {
+  background-color: rgba(143, 194, 2, 0.616);
+  color: white;
+  cursor: pointer;
 }
 
 .ode-noDialogExampleDivs {
@@ -2914,6 +2968,7 @@ div.dropdiv p {
 
 .ya-Toolbar .center {
   text-align: center;
+  min-width: fit-content;
 }
 
 .ya-Toolbar>div>div {

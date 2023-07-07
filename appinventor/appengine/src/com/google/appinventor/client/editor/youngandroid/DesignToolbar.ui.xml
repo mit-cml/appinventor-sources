@@ -13,7 +13,7 @@
 
     <!-- Left button items -->
     <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
-                    visible="false">
+                    visible="false" align="center">
       <ya:ToggleTutorialAction />
     </ai:ToolbarItem>
     <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"

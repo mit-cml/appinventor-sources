@@ -929,6 +929,10 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiBinder.createAndBindUi(this);
 
     deckPanel.showWidget(0);
+    if ((mayNeedSplash || shouldShowWelcomeDialog())
+                   && !didShowSplash) {
+      showSplashScreens();
+    }
 
     // Projects tab
     projectsTabIndex = 0;
