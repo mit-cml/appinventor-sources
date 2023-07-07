@@ -3,6 +3,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+
 import Foundation
 
 fileprivate let kListViewDefaultBackgroundColor = Color.black
@@ -27,6 +28,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _fontSizeDetail = Int32(16)
   
   fileprivate var _listData: [[String: String]] = []   //ListData
+  fileprivate var _listViewLayoutMode = Int32()
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -70,6 +72,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.backgroundColor = argbToColor(_backgroundColor)
     }
   }
+  
 
   @objc open var ElementsFromString: String {
     get {
@@ -79,6 +82,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       Elements = elements.split(",") as [AnyObject]
     }
   }
+  
 
   @objc open var Elements: [AnyObject] {
     get {
@@ -122,12 +126,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
 
                 _listData = dictionaries.compactMap { dictionary in
-                                if let text1 = dictionary["Text1"] as? String {
-                                    return ["Text1": text1]
+                                if let text1 = dictionary["Text1"] as? String,
+                                   let text2 = dictionary["Text2"] as? String  {
+                                  return ["Text1": text1, "Text2": text2]
                                 }
                                 return nil
                             }
-                print(_listData[0]["Text1"])
+                
                   _view.reloadData()
               }
         
@@ -136,6 +141,26 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
           }
     }
   }
+  
+  
+  
+  
+  
+  
+  //ListLayout
+  @objc open var ListViewLayout: Int32 {
+      get {
+          return _listViewLayoutMode
+      }
+      set(listViewLayoutMode) {
+          _listViewLayoutMode = listViewLayoutMode
+          print(ListViewLayout)
+          _view.reloadData()
+      }
+  }
+
+ 
+  
   
   
   
@@ -251,28 +276,76 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
-      UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
+      UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
    
     if indexPath.row < _elements.count {
-           cell.textLabel?.text = _elements[indexPath.row]
-           cell.textLabel?.numberOfLines = 1
-           cell.textLabel?.lineBreakMode = .byTruncatingTail
-       } else {
-           let listDataIndex = indexPath.row - _elements.count
-           cell.textLabel?.text = _listData[listDataIndex]["Text1"] 
-           
-         if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
-               cell.textLabel?.numberOfLines = 0
-               cell.textLabel?.lineBreakMode = .byWordWrapping
-           } else {
+               cell.textLabel?.text = _elements[indexPath.row]
                cell.textLabel?.numberOfLines = 1
                cell.textLabel?.lineBreakMode = .byTruncatingTail
            }
-       }
+    
+    else {
+             let listDataIndex = indexPath.row - _elements.count
+              
+              cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+              
+        
+      
+             if _listViewLayoutMode == 1{
+               cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+               cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+             }
+             
+             else if _listViewLayoutMode == 2 {
+               tableView.rowHeight = 60
+               cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+                  cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+
+                  // Configure the layout
+               cell.layoutMargins = UIEdgeInsets.zero
+                  cell.separatorInset = UIEdgeInsets.zero
+                  cell.preservesSuperviewLayoutMargins = true
+
+                  // Create a stack view to hold the labels horizontally
+                  let stackView = UIStackView()
+                  stackView.axis = .horizontal
+               stackView.alignment = .fill
+               stackView.distribution = .fill
+
+                  // Add the labels to the stack view
+                  stackView.addArrangedSubview(cell.textLabel!)
+                  stackView.addArrangedSubview(cell.detailTextLabel!)
+
+                  // Add the stack view to the cell's content view
+                  cell.contentView.addSubview(stackView)
+
+                  // Set up constraints
+                  stackView.translatesAutoresizingMaskIntoConstraints = false
+                  NSLayoutConstraint.activate([
+                      stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+                      stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+                      stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+                      stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
+                  ])
+              
+               
+             }
+   
+      
+               
+               
+             if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
+                   cell.textLabel?.numberOfLines = 0
+                   cell.textLabel?.lineBreakMode = .byWordWrapping
+               } else {
+                   cell.textLabel?.numberOfLines = 1
+                   cell.textLabel?.lineBreakMode = .byTruncatingTail
+               }
+           }
 
     
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
+    cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
     
 
   
