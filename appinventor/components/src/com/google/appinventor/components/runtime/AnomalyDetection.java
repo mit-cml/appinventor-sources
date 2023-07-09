@@ -36,10 +36,6 @@ public final class AnomalyDetection extends DataCollection {
    */
   public AnomalyDetection(ComponentContainer container) {
     super();
-    // Construct default dataFileColumns list with 2 entries
-    dataFileColumns = Arrays.asList("", "");
-    sheetsColumns = Arrays.asList("", "");
-    webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
 
   /**

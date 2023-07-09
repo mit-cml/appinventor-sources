@@ -45,10 +45,6 @@ public final class ChartData2D extends ChartDataBase {
    */
   public ChartData2D(Chart chartContainer) {
     super(chartContainer);
-    // Construct default dataFileColumns list with 2 entries
-    dataFileColumns = Arrays.asList("", "");
-    sheetsColumns = Arrays.asList("", "");
-    webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
     initColor = dataModel.getDataset().getColor();
   }
 

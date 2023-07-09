@@ -99,6 +99,10 @@ implements Component, DataSourceChangeListener {
     // Set default properties
     DataSourceKey("");
     threadRunner = Executors.newSingleThreadExecutor();
+    // Construct default dataFileColumns list with 2 entries
+    dataFileColumns = Arrays.asList("", "");
+    sheetsColumns = Arrays.asList("", "");
+    webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
 
   /**

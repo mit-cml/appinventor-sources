@@ -37,10 +37,6 @@ public final class Regression extends DataCollection {
    */
   public Regression(ComponentContainer container) {
     super();
-    // Construct default dataFileColumns list with 2 entries
-    dataFileColumns = Arrays.asList("", "");
-    sheetsColumns = Arrays.asList("", "");
-    webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
 
   /**
@@ -111,7 +107,7 @@ public final class Regression extends DataCollection {
     YailDictionary result = ComputeLineOfBestFit(xList, yList);
     if (result.containsKey(value.toUnderlyingValue())){
         return result.get(value.toUnderlyingValue());
-    }else{
+    } else {
       return result;
     }
   }

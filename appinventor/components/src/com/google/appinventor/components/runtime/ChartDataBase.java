@@ -58,7 +58,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
     initChartData();
     DataSourceKey("");
 
-    threadRunner = Executors.newSingleThreadExecutor();
   }
 
   /**
