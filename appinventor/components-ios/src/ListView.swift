@@ -22,6 +22,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _selectionIndex = Int32(0)
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
@@ -29,6 +30,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   
   fileprivate var _listData: [[String: String]] = []   //ListData
   fileprivate var _listViewLayoutMode = Int32()
+  fileprivate var _fontTypeface: String = ""
+  fileprivate var _fontTypefaceDetail: String = ""
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -101,8 +104,27 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   
   
   
-  
-  
+  @objc open var FontTypeface: String {
+      get {
+          return _fontTypeface
+      }
+      set(fontTypeface) {
+          _fontTypeface = fontTypeface
+        print(_fontTypeface)
+              _view.reloadData()
+      }
+  }
+ 
+  @objc open var FontTypefaceDetail: String {
+      get {
+          return _fontTypeface
+      }
+      set(FontTypefaceDetail) {
+          _fontTypefaceDetail = FontTypefaceDetail
+        print(_fontTypeface)
+              _view.reloadData()
+      }
+  }
   
  
   //ListData
@@ -242,6 +264,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
+  
+  @objc open var TextColorDetail: Int32 {
+    get {
+      return _textColorDetail
+    }
+    set(textColorDetail) {
+      _textColorDetail = textColorDetail
+      _view.reloadData()
+    }
+  }
 
   @objc open var TextSize: Int32 {
     get {
@@ -360,11 +392,39 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
+    //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.textLabel?.textColor = argbToColor(_textColor)
     }
+    //detailtext
+    if _textColorDetail == Color.default.int32 {
+      cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
+    } else {
+      cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
+    }
+    
+    if _fontTypeface == "1" {
+      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
+    }
+    if _fontTypeface == "2" {
+      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
+    }
+    if _fontTypeface == "3" {
+      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
+    }
+   
+    if _fontTypefaceDetail == "1" {
+      cell.detailTextLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail))
+    }
+    if _fontTypefaceDetail == "2" {
+      cell.detailTextLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail))
+    }
+    if _fontTypefaceDetail == "3" {
+      cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
+    }
+    
     if cell.selectedBackgroundView == nil {
       cell.selectedBackgroundView = UIView()
     }
