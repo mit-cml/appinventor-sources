@@ -56,6 +56,9 @@ public final class Regression extends DataCollection {
     if (xValues.size() != yValues.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
     }
+    if (xValues.size() == 0 || xValues.size() == 0) {
+      throw new IllegalStateException("List must have at least one element");
+    }
     int n = xValues.size();
 
     double sumx = 0.0, sumy = 0.0, sumXY = 0.0, squareSum_X = 0.0, squareSum_Y = 0.0;

@@ -100,6 +100,9 @@ public final class AnomalyDetection extends DataCollection {
     if (xData.size() != yData.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
     }
+    if (xData.size() == 0 || yData.size() == 0) {
+      throw new IllegalStateException("List must have at least one element");
+    }
     int index = (int) GetAnomalyIndex(anomaly);
 
     xData.remove(index - 1);
@@ -122,10 +125,14 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return double anomaly index
    */
-  public static double GetAnomalyIndex(YailList anomaly){
-    LList anomalyValue = (LList) anomaly.getCdr();
-    List<Double> anomalyNr = castToDouble(anomalyValue);
-    return anomalyNr.get(0);
+  public static double GetAnomalyIndex(YailList anomaly) {
+    if (anomaly.size() > 0) {
+      LList anomalyValue = (LList) anomaly.getCdr();
+      List<Double> anomalyNr = castToDouble(anomalyValue);
+      return anomalyNr.get(0);
+    } else {
+      throw new IllegalStateException("Must have equal X and Y data points");
+    }
   }
 
   @Override
