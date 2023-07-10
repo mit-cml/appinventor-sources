@@ -230,7 +230,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   }
 
   @SimpleFunction(description = "Reset the current conversation, Chat bot will forget " +
-    "any previous conversation when resonding in the future.")
+    "any previous conversation when responding in the future.")
   public void ResetConversation() {
     this.uuid = "";
   }
