@@ -66,7 +66,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 : Ask a question of the Chat Bot. Successive calls will remember information from earlier in the conversation. Use the "ResetConversation" function to reset for a new conversation.
 
 {:id="ChatBot.ResetConversation" class="method"} <i/> ResetConversation()
-: Reset the current conversation, Chat bot will forget any previous conversation when resonding in the future.
+: Reset the current conversation, Chat bot will forget any previous conversation when responding in the future.
 
 ## FirebaseDB  {#FirebaseDB}
 
