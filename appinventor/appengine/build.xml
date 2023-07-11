@@ -402,6 +402,7 @@
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/selenium/*.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
     <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
@@ -485,6 +486,7 @@
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/selenium/*.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
@@ -560,6 +562,8 @@
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <pathelement location="${lib.dir}/selenium/*.jar" />
+        <pathelement location="${lib.dir}/selenium/lib/*.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
@@ -679,6 +683,15 @@
     <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
+    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
+    <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
+    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
+    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+    <pathelement location="${lib.dir}/mockito-core-2.23.4.jar" />
+    <pathelement location="${lib.dir}/mockito-all-1.10.19.jar" />
+    <pathelement location="${lib.dir}/selenium/*.jar" />
+    <pathelement location="${lib.dir}/selenium/lib/*.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
