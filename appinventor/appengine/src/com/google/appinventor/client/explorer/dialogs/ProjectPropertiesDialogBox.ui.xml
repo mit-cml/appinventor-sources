@@ -43,7 +43,7 @@
 
     <g:HorizontalPanel>
       <g:VerticalPanel>
-        <g:ScrollPanel ui:field="categories" styleName='{style.ode-propertyDialogCategoryScrollPanel}'></g:ScrollPanel>
+        <g:ScrollPanel ui:field="projectPropertyCategoryTitlePanel" styleName='{style.ode-propertyDialogCategoryScrollPanel}'></g:ScrollPanel>
       </g:VerticalPanel>
       <g:VerticalPanel>
         <g:ScrollPanel styleName='{style.ode-propertyDialogPropertiesScrollPanel}'>

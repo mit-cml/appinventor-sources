@@ -1,10 +1,14 @@
 package com.google.appinventor.client.explorer.dialogs;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -16,8 +20,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Image;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.DesignToolbar.Screen;
-
-import com.google.gwt.core.client.Scheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +52,7 @@ public class ProjectPropertiesDialogBox extends DialogBox {
     }
 
     @UiField
-    ScrollPanel categories;
+    ScrollPanel projectPropertyCategoryTitlePanel;
 
     @UiField
     DeckPanel propertiesDeckPanel;
@@ -58,34 +60,41 @@ public class ProjectPropertiesDialogBox extends DialogBox {
     @UiField
     Image closeIcon;
 
-    // subcategories of the project properties
-    private static final ArrayList<String> categoriesList = new ArrayList<String>() {{
-        add("General");
-        add("Theming");
-        add("Publishing");
+    /**
+     * List Of project property category, which will be used to display in the dialog 
+     * property category are : General, Theming, Publishing
+     */
+    private static final ArrayList<String> projectPropertyCategoryTitle = new ArrayList<String>() {{
+        add(Ode.MESSAGES.projectPropertyGeneralCategoryTitle());
+        add(Ode.MESSAGES.projectPropertyThemingCategoryTitle());
+        add(Ode.MESSAGES.projectPropertyPublishingCategoryTitle());
     }};
 
-    // maps the category to Label
-    private HashMap<String, Label> labelsMap = new HashMap<>();
+    /**
+     * Map for the project property category title to Label
+     */
+    private HashMap<String, Label> categoryToLabel = new HashMap<>();
 
-    // maps the subcategory to list of editable property
-    private HashMap<String, ArrayList<EditableProperty>> propertiesMap = new HashMap<>();
+    /**
+     * Maps the project property category to List of EditableProperty which
+     * belongs to that particular project property category
+     */
+    private HashMap<String, ArrayList<EditableProperty>> categoryToProperties = new HashMap<>();
 
-    // screen1 MockForm Instance
+    /* Object for stroing reference of Screen1's MockForm  */
     private MockForm form;
 
-    // Indicates the Label which is clicked by user on the left side of the dialog
-    Label selectedLabel = null;
+    /* Refers to currently selected label of the project property category */
+    Label selectedCategoryLabel = null;
 
-    // Indicates the Vertical Panel which is on the the right side of the dialog
-    VerticalPanel cur = null;
 
-    // indicates the currently active project editor
+    /* Object for stroing reference of project editor in which the dialog opned */
     private YaProjectEditor projectEditor;
 
-    // cur Screen on which dialog is opend
+    /* refers to the screen name in which dialog opend */
     private String curScreen = "";
 
+    /* Set the value of the curScreen */
     public void setCurScreen(String screenName) {
         curScreen = screenName;
     }
@@ -112,50 +121,42 @@ public class ProjectPropertiesDialogBox extends DialogBox {
         while (properties.hasNext()) {
             EditableProperty property = properties.next();
 
-            if (!propertiesMap.containsKey(property.getCategory())) {
-                propertiesMap.put(property.getCategory(), new ArrayList<EditableProperty>());
+            if (!categoryToProperties.containsKey(property.getCategory())) {
+                categoryToProperties.put(property.getCategory(), new ArrayList<EditableProperty>());
             } 
 
-            propertiesMap.get(property.getCategory()).add(property);
+            categoryToProperties.get(property.getCategory()).add(property);
         }
 
         // vertical panel for 
-        VerticalPanel  categoriesLabel = new VerticalPanel();
-        categoriesLabel.setStyleName("ode-propertyDialogVerticalPanel");
+        VerticalPanel  categoryLablesVerticalPanel = new VerticalPanel();
+        categoryLablesVerticalPanel.setStyleName("ode-propertyDialogVerticalPanel");
 
-        for (String c : categoriesList) {
+        for (String categoryTitle : projectPropertyCategoryTitle) {
             // create the label from the category name
-            Label categoryNameLabel = new Label(c);
+            Label categoryNameLabel = new Label(categoryTitle);
             categoryNameLabel.setStyleName("ode-propertyDialogCategoryTitle");
+            categoryToLabel.put(categoryTitle, categoryNameLabel);
 
-            // clickHandler
+            /* when project property category clicked by user */
             categoryNameLabel.addClickHandler(event -> {
-                // change the styles when label clicked
-                selectedLabel.setStyleName("ode-propertyDialogCategoryTitle");
-                categoryNameLabel.setStyleName("ode-propertyDialogCategoryTitleSelected");
-
-                // assign clicked label to selectedLabel
-                selectedLabel = categoryNameLabel;
-
-                // display corresponding editable properties on the right panel
-                propertiesDeckPanel.showWidget(categoriesList.indexOf(selectedLabel.getText()));
-                
+                onProjectPropertyCategoryChange(categoryNameLabel);
             });
 
-            propertiesDeckPanel.add(getPanel(c));
+            propertiesDeckPanel.add(getPanel(categoryTitle));
 
             // make the first one selected by default
-            if (selectedLabel == null) {
-                selectedLabel = categoryNameLabel;
-                selectedLabel.setStyleName("ode-propertyDialogCategoryTitleSelected");
+            if (selectedCategoryLabel == null) {
+                selectedCategoryLabel = categoryNameLabel;
+                selectedCategoryLabel.setStyleName("ode-propertyDialogCategoryTitleSelected");
             }
 
             // add the label to vertical panel
-            categoriesLabel.add(categoryNameLabel);
+            categoryLablesVerticalPanel.add(categoryNameLabel);
         }
 
         // add vertical panel to scroll panel
-        categories.add(categoriesLabel);
+        projectPropertyCategoryTitlePanel.add(categoryLablesVerticalPanel);
         propertiesDeckPanel.showWidget(0);
 
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
@@ -177,7 +178,7 @@ public class ProjectPropertiesDialogBox extends DialogBox {
         VerticalPanel mainContainer = new VerticalPanel();
         mainContainer.setStyleName("ode-propertyDialogVerticalPanel");
 
-        ArrayList<EditableProperty> properties = propertiesMap.get(category);
+        ArrayList<EditableProperty> properties = categoryToProperties.get(category);
 
         for (EditableProperty property : properties) {
             // container for displaing one editable property
@@ -206,6 +207,45 @@ public class ProjectPropertiesDialogBox extends DialogBox {
         }  
         
         return mainContainer;
+    }
+
+    /**
+     * Called when project property category changes 
+     */
+    private void onProjectPropertyCategoryChange(Label categoryNameLabel) {
+        // change the styles when label clicked
+        selectedCategoryLabel.setStyleName("ode-propertyDialogCategoryTitle");
+        categoryNameLabel.setStyleName("ode-propertyDialogCategoryTitleSelected");
+
+        // assign clicked label to selectedCategoryLabel
+        selectedCategoryLabel = categoryNameLabel;
+
+        // display corresponding editable properties on the right panel
+        propertiesDeckPanel.showWidget(projectPropertyCategoryTitle.indexOf(selectedCategoryLabel.getText()));
+    }
+
+    /**
+     *  Users press down arrow button, project property category will be changed
+     */
+    @Override
+    protected void onPreviewNativeEvent(NativePreviewEvent event) {
+        super.onPreviewNativeEvent(event);
+        switch (event.getTypeInt()) {
+            case Event.ONKEYDOWN:
+                Ode.CLog("Key Pressed");
+                int currentIndex = projectPropertyCategoryTitle.indexOf(selectedCategoryLabel.getText());
+                int code = event.getNativeEvent().getKeyCode();
+                if (code == KeyCodes.KEY_DOWN) {
+                    int newIndex = (currentIndex+1)%projectPropertyCategoryTitle.size();
+                    onProjectPropertyCategoryChange(categoryToLabel.get(projectPropertyCategoryTitle.get(newIndex)));
+                } else if (code == KeyCodes.KEY_UP) {
+                    int newIndex = currentIndex == 0 ? projectPropertyCategoryTitle.size()-1 : currentIndex - 1;
+                    onProjectPropertyCategoryChange(categoryToLabel.get(projectPropertyCategoryTitle.get(newIndex)));
+                } else if (code == KeyCodes.KEY_ESCAPE) {
+                    this.hide();
+                }
+                break;
+        }
     }
 
     @UiHandler("closeIcon")
