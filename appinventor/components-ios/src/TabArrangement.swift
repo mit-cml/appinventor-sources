@@ -58,10 +58,10 @@ import Foundation
   private var _selectedTabIndicatorColor: UIColor?
   @objc var SelectedTabIndicatorColor: Int32 {
     get {
-      return _selectedTabIndicatorColor?.toHex() ?? 0
+      return _selectedTabIndicatorColor?.cgColor as! Int32
     }
     set {
-      _selectedTabIndicatorColor = UIColor(hex: newValue)
+      _selectedTabIndicatorColor = argbToColor(newValue)
       _controller.tabBar.tintColor = _selectedTabIndicatorColor
     }
   }
@@ -69,10 +69,10 @@ import Foundation
   private var _tabBackgroundColor: UIColor?
   @objc var TabBackgroundColor: Int32 {
     get {
-      return _tabBackgroundColor?.toHex() ?? 0
+      return _tabBackgroundColor?.cgColor as! Int32
     }
     set {
-      _tabBackgroundColor = UIColor(hex: newValue)
+      _tabBackgroundColor = argbToColor(newValue)
       _controller.tabBar.barTintColor = _tabBackgroundColor
     }
   }
@@ -80,10 +80,10 @@ import Foundation
   private var _tabTextColor: UIColor?
   @objc var TabTextColor: Int32 {
     get {
-      return _tabTextColor?.toHex() ?? 0
+      return _tabTextColor?.cgColor as! Int32
     }
     set {
-      _tabTextColor = UIColor(hex: newValue)
+      _tabTextColor = argbToColor(newValue)
       _controller.tabBar.unselectedItemTintColor = _tabTextColor
     }
   }
@@ -103,20 +103,4 @@ import Foundation
   }
 }
 
-extension UIColor {
-  convenience init(hex: Int32) {
-    let red = CGFloat((hex & 0xFF0000) >> 16) / 255.0
-    let green = CGFloat((hex & 0x00FF00) >> 8) / 255.0
-    let blue = CGFloat(hex & 0x0000FF) / 255.0
-    
-    self.init(red: red, green: green, blue: blue, alpha: 1.0)
-  }
-  
-  func toHex() -> Int32 {
-    var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0
-    self.getRed(&red, green: &green, blue: &blue, alpha: nil)
-    
-    let rgb = (Int32)(red * 255) << 16 | (Int32)(green * 255) << 8 | (Int32)(blue * 255) << 0
-    return rgb
-  }
-}
+
