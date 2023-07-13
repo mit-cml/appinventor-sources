@@ -30,7 +30,7 @@
     "Blockly.Msg.DOIT_OPTION": "執行該程式方塊",
     "Blockly.Msg.COPY_TO_BACKPACK": "新增至背包",
     "Blockly.Msg.COPY_ALLBLOCKS": "複製所有程式方塊到背包",
-    "Blockly.Msg.BACKPACK_GET": "拿出背包中所有程式方塊",
+    "Blockly.Msg.BACKPACK_GET": "貼上背包中的所有程式方塊",
     "Blockly.Msg.BACKPACK_EMPTY": "清空背包",
     "Blockly.Msg.BACKPACK_CONFIRM_EMPTY": "您確定要清空背包嗎？",
     "Blockly.Msg.BACKPACK_DOC_TITLE": "背包資訊",
@@ -706,7 +706,7 @@
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX": "偏好",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "在文字中",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER": "返回透過取代所有事件而獲得的新文字內容\n由輸入字典鍵定義，並帶有相應鍵的值。\n在選擇取代一個或另一個鍵之間的情況下，首先替換字典中最先出現的元素。",
-    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST": "由輸入的字典鍵與對應的值進行查找，並以一段新的文字作為所有指定項目都取代完成後的結果。\n如果碰到有需要二選一的情況，最長的鍵將優先被取代。",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST": "回傳取代所有項目之後的一段新文字",
     "Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "反向",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "取代所有的對應結果",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "字典",
@@ -726,5 +726,14 @@
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "值",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "鍵",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "執行",
-    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "本文字中並未包含有效的數字"
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "本文字中並未包含有效的數字",
+    "Blockly.Msg.DO_IT_RESULT": "執行結果：",
+    "Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED": "Companion 已經斷線",
+    "Blockly.Msg.LANG_NO_ASSETS": "沒有可用的素材",
+    "Blockly.Msg.LANG_SCREENS_TITLE": "螢幕名稱： ",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL": "檢查這段文字中是否包含了所有的指定文字片段。",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY": "檢查這段文字中是否包含了任一個指定文字片段。",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "對字典中的每個鍵-值條目來執行 '執行' 區塊中的指令。使用指定變數名稱來參照當前字典項目的鍵/值。",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "對於任意字典中",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "對於任意 %1 與 %2 在字典 %3"
 }
