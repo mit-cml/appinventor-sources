@@ -13,11 +13,15 @@ fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 
 open class ListView: ViewComponent, AbstractMethodsForViewComponent,
-    UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+                     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+
+  
   fileprivate final var _view: UITableView
+  fileprivate var _horizontalTableView: UICollectionView?
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _elements = [String]()
   fileprivate var _selection = ""
+  fileprivate var _selectionDetailText = ""
   fileprivate var _selectionColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _selectionIndex = Int32(0)
   fileprivate var _showFilter = false
@@ -29,9 +33,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _fontSizeDetail = Int32(16)
   
   fileprivate var _listData: [[String: String]] = []   //ListData
-  fileprivate var _listViewLayoutMode = Int32()
+  fileprivate var _listViewLayoutMode = Int32(0)
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
+  fileprivate var _orientation = Int32(1)
+
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -45,6 +51,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
     _view.backgroundColor = preferredTextColor(parent.form)
+    
+ 
 
     // The intrinsic height of the ListView needs to be explicit because UITableView does not
     // provide a value. We use a low priority constraint to configure the height, and size it based
@@ -176,36 +184,74 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
       set(listViewLayoutMode) {
           _listViewLayoutMode = listViewLayoutMode
-          print(ListViewLayout)
+          print("ListViewLayout \(ListViewLayout) " )
           _view.reloadData()
       }
   }
 
  
+  @objc open var Orientation: Int32 {
+      get {
+          return _orientation
+      }
+      set(orientation) {
+          _orientation = orientation
+          print("Orientation \(Orientation)")
+          _view.reloadData()
+      }
+  }
+  
+  
   
   
   
   
   
   @objc open var Selection: String {
-    get {
-      return _selection
-    }
-    set(selection) {
-      if let selectedRow = _view.indexPathForSelectedRow {
-        _view.deselectRow(at: selectedRow, animated: false)
+      get {
+          return _selection
       }
-      if let index = _elements.firstIndex(of: selection) {
-        _selectionIndex = Int32(index) + 1
-        _selection = selection
-        _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else {
-        _selectionIndex = 0
-        _selection = ""
+      set(selection) {
+          if let selectedRow = _view.indexPathForSelectedRow {
+              _view.deselectRow(at: selectedRow, animated: false)
+          }
+          if let index = _listData.firstIndex(where: { $0["Text1"] == selection }) {
+              _selectionIndex = Int32(index) + 1
+              _selection = selection
+              print("selection index \(_selection)")
+              _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
+          } else {
+              _selectionIndex = 0
+              _selection = ""
+          }
+        print("Selection set: \(_selection)")
       }
-    }
   }
 
+
+  
+  @objc open var SelectionDetailText: String {
+      get {
+          return _selectionDetailText
+      }
+      set(selectionDetailText) {
+          if let selectedRow = _view.indexPathForSelectedRow {
+              _view.deselectRow(at: selectedRow, animated: false)
+          }
+          if let index = _listData.firstIndex(where: { $0["Text2"] == selectionDetailText }) {
+              _selectionIndex = Int32(index) + 1
+              _selectionDetailText = selectionDetailText
+              _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
+          } else {
+              _selectionIndex = 0
+              _selectionDetailText = ""
+          }
+   
+      
+      }
+  }
+  
+  
   @objc open var SelectionColor: Int32 {
     get {
       return _selectionColor
@@ -224,9 +270,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
         _selectionIndex = selectionIndex
         _selection = _elements[Int(selectionIndex) - 1]
+        _selectionDetailText = _elements[Int(selectionIndex) - 1]
       } else {
         _selectionIndex = 0
         _selection = ""
+        _selectionDetailText = ""
       }
       if _selectionIndex == 0 {
         if let path = _view.indexPathForSelectedRow {
@@ -307,140 +355,152 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   // MARK: UITableViewDataSource
 
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
-      UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
-   
-    if indexPath.row < _elements.count {
-               cell.textLabel?.text = _elements[indexPath.row]
-               cell.textLabel?.numberOfLines = 1
-               cell.textLabel?.lineBreakMode = .byTruncatingTail
-           }
     
-    else {
-             let listDataIndex = indexPath.row - _elements.count
-              
-              cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+
+      let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
+        UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
+     
+      if indexPath.row < _elements.count {
+                 cell.textLabel?.text = _elements[indexPath.row]
+                 cell.textLabel?.numberOfLines = 1
+                 cell.textLabel?.lineBreakMode = .byTruncatingTail
+             }
+      
+      else {
+               let listDataIndex = indexPath.row - _elements.count
+                
+               
+                
               
         
-      
-             if _listViewLayoutMode == 1{
-               cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-               cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-             }
-             
-             else if _listViewLayoutMode == 2 {
-               tableView.rowHeight = 60
-               cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-                  cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-
-                  // Configure the layout
-               cell.layoutMargins = UIEdgeInsets.zero
-                  cell.separatorInset = UIEdgeInsets.zero
-                  cell.preservesSuperviewLayoutMargins = true
-
-                  // Create a stack view to hold the labels horizontally
-                  let stackView = UIStackView()
-                  stackView.axis = .horizontal
-               stackView.alignment = .fill
-               stackView.distribution = .fill
-
-                  // Add the labels to the stack view
-                  stackView.addArrangedSubview(cell.textLabel!)
-                  stackView.addArrangedSubview(cell.detailTextLabel!)
-
-                  // Add the stack view to the cell's content view
-                  cell.contentView.addSubview(stackView)
-
-                  // Set up constraints
-                  stackView.translatesAutoresizingMaskIntoConstraints = false
-                  NSLayoutConstraint.activate([
-                      stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-                      stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-                      stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-                      stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
-                  ])
-              
-               
-             }
-   
-      
-               
-               
-             if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
-                   cell.textLabel?.numberOfLines = 0
-                   cell.textLabel?.lineBreakMode = .byWordWrapping
-               } else {
-                   cell.textLabel?.numberOfLines = 1
-                   cell.textLabel?.lineBreakMode = .byTruncatingTail
+        
+        
+               if _listViewLayoutMode == 1{
+                 cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+                 cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
                }
-           }
+               
+               else if _listViewLayoutMode == 2 {
+                 tableView.rowHeight = 60
+                 cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+                    cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+
+                    // Configure the layout
+                 cell.layoutMargins = UIEdgeInsets.zero
+                    cell.separatorInset = UIEdgeInsets.zero
+                    cell.preservesSuperviewLayoutMargins = true
+
+                    // Create a stack view to hold the labels horizontally
+                    let stackView = UIStackView()
+                    stackView.axis = .horizontal
+                 stackView.alignment = .fill
+                 stackView.distribution = .fill
+
+                    // Add the labels to the stack view
+                    stackView.addArrangedSubview(cell.textLabel!)
+                    stackView.addArrangedSubview(cell.detailTextLabel!)
+
+                    // Add the stack view to the cell's content view
+                    cell.contentView.addSubview(stackView)
+
+                    // Set up constraints
+                    stackView.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+                        stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+                        stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+                        stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
+                    ])
+                
+                 
+               }
+        else if _listViewLayoutMode == 3 {}
+        else if _listViewLayoutMode == 4 {}
+        else{
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        }
+     
+        
+                 
+                 
+               if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
+                     cell.textLabel?.numberOfLines = 0
+                     cell.textLabel?.lineBreakMode = .byWordWrapping
+                 } else {
+                     cell.textLabel?.numberOfLines = 1
+                     cell.textLabel?.lineBreakMode = .byTruncatingTail
+                 }
+             }
+
+      
+      cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+      cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
+      
 
     
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
-    cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
-    
-
-  
 
 
+      
+      guard let form = _container?.form else {
+        return cell
+      }
+      if _backgroundColor == Color.default.int32 {
+        cell.backgroundColor = preferredTextColor(form)
+      } else {
+        cell.backgroundColor = argbToColor(_backgroundColor)
+      }
+      //maintext
+      if _textColor == Color.default.int32 {
+        cell.textLabel?.textColor = preferredBackgroundColor(form)
+      } else {
+        cell.textLabel?.textColor = argbToColor(_textColor)
+      }
+      //detailtext
+      if _textColorDetail == Color.default.int32 {
+        cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
+      } else {
+        cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
+      }
+      
+      if _fontTypeface == "1" {
+        cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
+      }
+      if _fontTypeface == "2" {
+        cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
+      }
+      if _fontTypeface == "3" {
+        cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
+      }
+     
+      if _fontTypefaceDetail == "1" {
+        cell.detailTextLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail))
+      }
+      if _fontTypefaceDetail == "2" {
+        cell.detailTextLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail))
+      }
+      if _fontTypefaceDetail == "3" {
+        cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
+      }
+      
+      if cell.selectedBackgroundView == nil {
+        cell.selectedBackgroundView = UIView()
+      }
+  //    if elements[indexPath.row].contains("\n") {
+  //      cell.textLabel?.numberOfLines = 0
+  //      cell.textLabel?.lineBreakMode = .byWordWrapping
+  //    }
+  //    else {
+  //      cell.textLabel?.numberOfLines = 1
+  //      cell.textLabel?.lineBreakMode = .byTruncatingTail
+  //    }
+      cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
     
-    guard let form = _container?.form else {
-      return cell
-    }
-    if _backgroundColor == Color.default.int32 {
-      cell.backgroundColor = preferredTextColor(form)
-    } else {
-      cell.backgroundColor = argbToColor(_backgroundColor)
-    }
-    //maintext
-    if _textColor == Color.default.int32 {
-      cell.textLabel?.textColor = preferredBackgroundColor(form)
-    } else {
-      cell.textLabel?.textColor = argbToColor(_textColor)
-    }
-    //detailtext
-    if _textColorDetail == Color.default.int32 {
-      cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
-    } else {
-      cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
-    }
-    
-    if _fontTypeface == "1" {
-      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
-    }
-    if _fontTypeface == "2" {
-      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
-    }
-    if _fontTypeface == "3" {
-      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
-    }
-   
-    if _fontTypefaceDetail == "1" {
-      cell.detailTextLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail))
-    }
-    if _fontTypefaceDetail == "2" {
-      cell.detailTextLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail))
-    }
-    if _fontTypefaceDetail == "3" {
-      cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
-    }
-    
-    if cell.selectedBackgroundView == nil {
-      cell.selectedBackgroundView = UIView()
-    }
-//    if elements[indexPath.row].contains("\n") {
-//      cell.textLabel?.numberOfLines = 0
-//      cell.textLabel?.lineBreakMode = .byWordWrapping
-//    }
-//    else {
-//      cell.textLabel?.numberOfLines = 1
-//      cell.textLabel?.lineBreakMode = .byTruncatingTail
-//    }
-    cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
-  
-    
+      
+      //Horizontal Orientation
+
     return cell
   }
+
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return _listData.count
@@ -449,13 +509,33 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   // MARK: UITableViewDelegate
 
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    _selectionIndex = Int32(indexPath.row) + 1
-    _selection = elements[indexPath.row]
+    if indexPath.row < _elements.count {
+            _selectionIndex = Int32(indexPath.row) + 1
+            _selection = _elements[indexPath.row]
+            _selectionDetailText = ""
+        } else if indexPath.row < _elements.count + _listData.count {
+            let listDataIndex = indexPath.row - _elements.count
+            _selectionIndex = Int32(indexPath.row) + 1
+            _selection = _listData[listDataIndex]["Text1"] ?? ""
+            _selectionDetailText = _listData[listDataIndex]["Text2"] ?? ""
+        }
+
     AfterPicking()
   }
 
-  // MARK: UISearchBarDelegate
+  
+  
+  
+  
 
+  
+ 
+  
+  
+  
+  
+  
+  // MARK: UISearchBarDelegate
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     _results = nil
     if !searchText.isEmpty  {
