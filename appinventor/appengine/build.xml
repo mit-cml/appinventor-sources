@@ -692,7 +692,6 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/mockito-core-5.3.1-javadoc" />
     <pathelement location="${lib.dir}/mockito-core-1.10.19-javadoc.jar" />
-    <pathelement location="${lib.dir}/mockito-all-1.10.19.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>

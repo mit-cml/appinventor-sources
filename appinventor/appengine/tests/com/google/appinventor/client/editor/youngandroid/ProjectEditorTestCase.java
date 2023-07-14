@@ -8,7 +8,12 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.client.settings.Settings;
+import com.google.appinventor.client.settings.project.ProjectSettings;
+import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.junit.client.GWTTestCase;
 
 public class ProjectEditorTestCase extends GWTTestCase{
@@ -18,12 +23,13 @@ public class ProjectEditorTestCase extends GWTTestCase{
     Ode ode = new Ode();
     ode.onModuleLoad();
     ode.getProjectManager().addProject(new UserProject(6565, "name", "YoungAndroid", 0, 0, false));
+
     YoungAndroidProjectNode projectNode = new YoungAndroidProjectNode("name", 6565);
     YoungAndroidFormNode formNode = new YoungAndroidFormNode("src/appinventor/ai_test/Screen1.scm");
-    projectNode.addChild(formNode);
+    projectNode.addChild(formNode); 
 
     YaProjectEditor projectEditor = new YaProjectEditor(projectNode);
-    final YaFormEditor editor = new YaFormEditor(projectEditor, formNode);
+    YaFormEditor editor = new YaFormEditor(projectEditor, formNode);
     
     editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
