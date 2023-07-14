@@ -1570,7 +1570,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
         }
     });
 
-    var checkComponentSupport = new Promise(function(resolve, reject) {
+    var checkComponentSupport = new Promise(function (resolve, reject) {
         var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
         var componentCoverage = JSON.parse(top.COMPONENT_COVERAGE);
         var componentTypes = [];
@@ -1597,7 +1597,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
                 false,
                 null,
                 0,
-                function(response) {
+                function (response) {
                     dialog.hide();
                     reject();
                 }
@@ -1611,7 +1611,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
                 false,
                 null,
                 0,
-                function(response) {
+                function (response) {
                     dialog.hide();
                     reject();
                 }
@@ -1738,30 +1738,34 @@ Blockly.ReplMgr.rendezvousDone = function() {
         phoneState.initialized = true;
     }
 
-    checkversion.then(function() {
-        if (usewebrtc) {
-            startwebrtc();
-        } else if (useproxy) {
-            startproxy();
-        } else  {
-            startlegacy();
-        }
-    }, function() {
+    checkComponentSupport.then(function () {
+        checkversion.then(function () {
+            if (usewebrtc) {
+                startwebrtc();
+            } else if (useproxy) {
+                startproxy();
+            } else {
+                startlegacy();
+            }
+        }, function () {
+            return;
+        })
+    }, function () {
         return;
     });
 };
 
-Blockly.ReplMgr.makeIncompatibleDialogMsg = function(iosIncompatible, isIos){
-        var result = "<ul>"
-        for(var i=0;i<iosIncompatible.length;i++){
-            result+="<li>"+iosIncompatible[i]+"</li>"
-        }
-        result+="</ul>"
-        if(isIos){
-        result+= "<a href="+Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_URL+">"+Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_TRACK+"</a>"
-        }
-        return result
- }
+Blockly.ReplMgr.makeIncompatibleDialogMsg = function (iosIncompatible, isIos) {
+    var result = "<ul>"
+    for (var i = 0; i < iosIncompatible.length; i++) {
+        result += "<li>" + iosIncompatible[i] + "</li>"
+    }
+    result += "</ul>"
+    if (isIos) {
+        result += "<a href=" + Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_URL + ">" + Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_TRACK + "</a>"
+    }
+    return result
+}
 
 Blockly.ReplMgr.resendAssetsAndExtensions = function() {
     var rs = top.ReplState;

@@ -7,9 +7,6 @@
 package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
-import com.google.appinventor.client.Images;
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
@@ -23,8 +20,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Map;
 
 /**
  * This class represents a component on the component palette panel.

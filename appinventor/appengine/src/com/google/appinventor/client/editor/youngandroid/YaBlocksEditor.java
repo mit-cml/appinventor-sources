@@ -458,8 +458,6 @@ public final class YaBlocksEditor extends FileEditor
     return SimpleComponentDatabase.getInstance(projectId).getComponentsJSONString();
   }
 
-
-
   public static String getComponentInstanceTypeName(String formName, String instanceName) {
       //use form name to get blocks editor
       YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);

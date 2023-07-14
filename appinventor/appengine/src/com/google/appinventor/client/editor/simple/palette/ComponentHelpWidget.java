@@ -15,9 +15,10 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-
-import java.util.Map;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -64,16 +65,15 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       VerticalPanel inner = new VerticalPanel();
       inner.add(titleBar);
 
-      if(!isAndroidCompatible){
+      if (!isAndroidCompatible) {
         //display a message in help popup if the component is available only in ios
         HTML iosCompatibleText = new HTML(Ode.MESSAGES.iOSCompatibleOnly());
-        iosCompatibleText.setStyleName("ode-ComponentHelpPopup-iOS");
+        iosCompatibleText.setStyleName("ode-ComponentHelpPopup-coverage");
         inner.add(iosCompatibleText);
-      }
-      else if(!isIosCompatible) {
+      } else if (!isIosCompatible) {
         //display a message in help popup if the component is available only in android
         HTML androidCompatibleText = new HTML(Ode.MESSAGES.androidCompatibleOnly());
-        androidCompatibleText.setStyleName("ode-ComponentHelpPopup-iOS");
+        androidCompatibleText.setStyleName("ode-ComponentHelpPopup-coverage");
         inner.add(androidCompatibleText);
       }
 

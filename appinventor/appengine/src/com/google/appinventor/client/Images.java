@@ -792,5 +792,4 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/dataFile.png")
   ImageResource dataFile();
-
 }
