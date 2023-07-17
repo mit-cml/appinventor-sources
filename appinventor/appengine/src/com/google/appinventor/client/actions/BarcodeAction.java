@@ -47,7 +47,10 @@ public class BarcodeAction implements Command {
       String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
       ChainableCommand cmd = new SaveAllEditorsCommand(
           new GenerateYailCommand(
-              new BuildCommand(target, secondBuildserver, isAab)));
+              new BuildCommand(target, secondBuildserver, isAab,
+                  new ShowProgressBarCommand(target,
+                      new WaitForBuildResultCommand(target,
+                          new ShowBarcodeCommand(target, isAab)), "BarcodeAction"))));
       if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
         cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
         Ode.getInstance().setWarnBuild(secondBuildserver, true);
