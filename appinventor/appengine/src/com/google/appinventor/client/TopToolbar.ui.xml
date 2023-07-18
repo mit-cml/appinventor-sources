@@ -85,17 +85,17 @@
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
                        styleName="ode-TopPanelButton" ui:field="buildDropDown">
-      <ai:DropDownItem name="Barcode" caption="{messages.showExportAndroidApk}">
+      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Download" caption="{messages.showExportAndroidAab}">
+      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
         <actions:BarcodeAction second="false" isAab="true" />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Barcode2" caption="{messages.showExportAndroidApk2}">
+      <ai:DropDownItem name="BuildApk2" caption="{messages.showExportAndroidApk2}">
         <actions:BarcodeAction second="true" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Download2" caption="{messages.showExportAndroidAab2}">
+      <ai:DropDownItem name="BuildAab2" caption="{messages.showExportAndroidAab2}">
         <actions:BarcodeAction second="true" isAab="true" />
       </ai:DropDownItem>
       <hr />
