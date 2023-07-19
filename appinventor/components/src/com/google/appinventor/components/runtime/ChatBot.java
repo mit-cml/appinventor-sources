@@ -276,6 +276,9 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       if (apiKey != null && !apiKey.equals("")) {
         builder = builder.setApikey(apiKey);
       }
+      if (!model.isEmpty()) {
+        builder.setModel(model);
+      }
       ChatBotToken.request request = builder.build();
 
       URL url = new URL(CHATBOT_SERVICE_URL);
