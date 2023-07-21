@@ -733,10 +733,6 @@ public class BuildServer {
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, null,
         false, false, false, null,
         commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, ext);
-    String buildOutput = buildResult.getOutput();
-    LOG.info("Build output: " + buildOutput);
-    String buildError = buildResult.getError();
-    LOG.info("Build error output: " + buildError);
     outputApk = projectBuilder.getOutputApk();
     if (outputApk != null) {
       outputApk.deleteOnExit();  // In case build server is killed before cleanUp executes.

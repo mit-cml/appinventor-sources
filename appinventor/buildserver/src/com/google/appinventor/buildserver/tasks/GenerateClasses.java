@@ -178,7 +178,7 @@ public class GenerateClasses implements Task {
       boolean kawaSuccess;
       synchronized (context.getResources().getSyncKawaOrDx()) {
         kawaSuccess = Execution.execute(null, kawaCommandLine,
-            context.getReporter().getSystemOut(), new PrintStream(kawaOutputStream));
+            System.out, new PrintStream(kawaOutputStream));
       }
       if (!kawaSuccess) {
         context.getReporter().error("Kawa compile has failed.", true);

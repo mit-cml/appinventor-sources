@@ -232,7 +232,7 @@ public class RunBundletool implements Task {
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, bundletoolBuildCommandLine,
-        context.getReporter().getSystemOut(), System.err);
+        System.out, System.err);
   }
 
   private boolean jarsigner(CompilerContext context) {
@@ -258,6 +258,6 @@ public class RunBundletool implements Task {
     String[] jarsignerSignCommandLine = jarsignerCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, jarsignerSignCommandLine,
-        context.getReporter().getSystemOut(), System.err);
+        System.out, System.err);
   }
 }

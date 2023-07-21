@@ -73,7 +73,7 @@ public class RunAapt implements Task {
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, aaptPackageCommandLine,
-        context.getReporter().getSystemOut(), System.err)) {
+        System.out, System.err)) {
       return TaskResult.generateError("Error running AAPT");
     }
 

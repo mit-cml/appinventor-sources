@@ -57,11 +57,10 @@ public class RunAapt2 implements Task {
     aapt2CommandLine.add("-o");
     aapt2CommandLine.add(resourcesZip.getAbsolutePath());
     aapt2CommandLine.add("--no-crunch");
-    aapt2CommandLine.add("-v");
     String[] aapt2CompileCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2CompileCommandLine,
-        context.getReporter().getSystemOut(), System.err)) {
+        System.out, System.err)) {
       context.getReporter().error("Could not execute AAPT2 compile step");
       return false;
     }
@@ -93,11 +92,10 @@ public class RunAapt2 implements Task {
     aapt2CommandLine.add("--no-auto-version");
     aapt2CommandLine.add("--no-version-transitions");
     aapt2CommandLine.add("--no-resource-deduping");
-    aapt2CommandLine.add("-v");
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2LinkCommandLine,
-        context.getReporter().getSystemOut(), System.err)) {
+        System.out, System.err)) {
       context.getReporter().error("Could not execute AAPT2 link step");
       return false;
     }

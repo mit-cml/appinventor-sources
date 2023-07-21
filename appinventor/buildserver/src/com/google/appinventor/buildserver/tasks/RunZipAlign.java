@@ -35,7 +35,7 @@ public class RunZipAlign implements Task {
     };
 
     if (!Execution.execute(null, zipAlignCommandLine,
-        context.getReporter().getSystemOut(), System.err)) {
+        System.out, System.err)) {
       TaskResult.generateError("Error while running ZipAlign tool");
     }
 
