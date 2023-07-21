@@ -14,38 +14,39 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-//import com.google.gwt.junit.client.GWTTestCase;
-
 import junit.framework.TestCase;
 
 public class UserFlowITTest extends TestCase {
     private WebDriver driver;
 
     @Before
-    public void setUpdriver() throws InterruptedException {
+    public void setUp() throws InterruptedException {
         // Set up WebDriver configuration
-        System.setProperty("webdriver.chrome.driver", "${lib.dir}/chromedriver/chromedriver.exe");
+        //System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium-browser/chromedriver");
         driver = new ChromeDriver();
     }
 
     @Test
-    public void testLogin() {
+    public void loginTestUser() {
         // Navigate to the application URL
         //Option to choose google account link
-        //driver.get("http://localhost:8888/_ah/login?continue=http%3A%2F%2Flocalhost%3A8888%2Flogin%2Fgoogle%3Flocale%3Den");
-        //login page
-        driver.get("http://localhost:8888/login/");
-
-        // Submit the login button of test email to login
-        //driver.findElement(By.id("btn-login")).submit();
-        //driver.findElement(By.linkText("Click Here to use your Google Account to login")).submit();
-
-        // Assert that the application title is correct
-        //assertEquals(element.getText(), "Log In");
+        driver.get("http://localhost:8888/_ah/login?continue=http%3A%2F%2Flocalhost%3A8888%2Flogin%2Fgoogle%3Flocale%3Den");
+        
+        WebElement loginButton = driver.findElement(By.id("btn-login"));
+        WebElement isAdminCheckbox = driver.findElement(By.id("isAdmin"));
+        WebElement email=driver.findElement(By.id("email"));
+        
+        email.sendKeys("test@example.com");
+        isAdminCheckbox.click();
+        loginButton.submit();
+        
+        String actualUrl="http://localhost:8888/?locale=en";
+        String expectedUrl= driver.getCurrentUrl();
+        Assert.assertEquals(expectedUrl,actualUrl);
     }
 
-    @After
-    public void tearDowndriver() {
+  @After
+    public void tearDown() {
         // Close the WebDriver
         driver.quit();
     }
