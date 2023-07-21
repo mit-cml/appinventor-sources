@@ -258,18 +258,7 @@ public class Resources {
    * @return absolute path to jarsigner
    */
   public String jarsigner() {
-    String osName = System.getProperty("os.name");
-    String jarsignerTool;
-    if (osName.equals("Mac OS X")) {
-      jarsignerTool = System.getenv("JAVA_HOME") + "/bin/jarsigner";
-    } else if (osName.equals("Linux")) {
-      jarsignerTool = System.getenv("JAVA_HOME") + "/bin/jarsigner";
-    } else if (osName.startsWith("Windows")) {
-      jarsignerTool = System.getenv("JAVA_HOME") + "\\bin\\jarsigner.exe";
-    } else {
-      jarsignerTool = null;
-    }
-    return jarsignerTool;
+    return "jarsigner";  // Use the version of jarsigner in PATH
   }
 
   public String bundletool() {
