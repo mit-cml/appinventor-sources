@@ -27,7 +27,7 @@ public class UserFlowITTest extends TestCase {
     }
 
     @Test
-    public void loginTestUser() {
+    public void testLoginTestUser() {
         // Navigate to the application URL
         //Option to choose google account link
         driver.get("http://localhost:8888/_ah/login?continue=http%3A%2F%2Flocalhost%3A8888%2Flogin%2Fgoogle%3Flocale%3Den");
