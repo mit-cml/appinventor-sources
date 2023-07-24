@@ -162,17 +162,15 @@ public class ImagePicker extends Picker implements ActivityResultListener {
     // copy the picture at the image URI to the temp file
     try {
       tempFile = MediaUtil.copyMediaToTempFile(container.$form(), selectionURI);
+      // copy the temp file to external storage
+      Log.i(LOG_TAG, "temp file path is: " + tempFile.getPath());
+      // Copy file will signal a screen error if the copy fails.
+      copyToExternalStorageAndDeleteSource(tempFile, extension);
     } catch (IOException e) {
       Log.i(LOG_TAG, "copyMediaToTempFile failed: " + e.getMessage());
       container.$form().dispatchErrorOccurredEvent(this, "ImagePicker",
           ErrorMessages.ERROR_CANNOT_COPY_MEDIA, e.getMessage());
-      return;
     }
-
-    // copy the temp file to external storage
-    Log.i(LOG_TAG, "temp file path is: " + tempFile.getPath());
-    // Copy file will signal a screen error if the copy fails.
-    copyToExternalStorageAndDeleteSource(tempFile, extension);
   }
 
   private void copyToExternalStorageAndDeleteSource(File source, String extension) {
