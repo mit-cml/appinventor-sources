@@ -696,11 +696,62 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     });
   }
   @SimpleEvent(
-          description="The callback event for the addSheet block, called once the " +
+          description="The callback event for the AddSheet block, called once the " +
                   "values on the table have been updated.")
   public void FinishedAddSheet(final String sheetName) {
     EventDispatcher.dispatchEvent(this, "FinishedAddSheet", sheetName);
   }
+
+
+  @SimpleFunction(description = "Deletes the specified sheet inside the Spreadsheet")
+  public void DeleteSheet(final String sheetName){
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("DeleteSheet: " + "SpreadsheetID is empty.");
+      return;
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+      ErrorOccurred("DeleteSheet: " + "Credentials JSON is required.");
+      return;
+    }
+    // Run the API call asynchronously
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Sheets sheetsService = getSheetsService();
+          DeleteSheetRequest deleteSheetRequest = new DeleteSheetRequest()
+                  .setSheetId(getSheetID(sheetsService, sheetName)
+                  );
+
+
+          List<Request> requests = new ArrayList<>();
+          requests.add(new Request().setDeleteSheet(deleteSheetRequest));
+          BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
+                  .setRequests(requests);
+          sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+
+          // Run the callback event block
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              FinishedDeleteSheet(sheetName);
+            }
+          });
+
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+          ErrorOccurred("DeleteSheet: " + e.getMessage());
+        }
+      }
+    });
+  }
+  @SimpleEvent(
+          description="The callback event for the DeleteSheet block, called once the " +
+                  "values on the table have been updated.")
+  public void FinishedDeleteSheet(final String sheetName) {
+    EventDispatcher.dispatchEvent(this, "FinishedDeleteSheet", sheetName);
+  }
+
   /**
    * Given a list of values as `data`, appends the values to the next
    * empty row of the sheet. It will always start from the left most column and
