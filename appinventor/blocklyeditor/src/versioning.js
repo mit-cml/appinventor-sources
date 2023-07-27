@@ -3056,6 +3056,7 @@ Blockly.Versioning.AllUpgradeMaps =
     ]
 
     3: "noUpgrade"
+    
   },
 
   "TableArrangement": {
