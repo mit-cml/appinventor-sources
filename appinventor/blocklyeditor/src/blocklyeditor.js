@@ -547,7 +547,7 @@ Blockly.ai_inject = function(container, workspace) {
   /**
    * Creates a new helper function to render a comment set to visible but deferred during workspace
    * generation.
-   * @param {!Blockly.Comment} comment The Blockly Comment object to be made visible.
+   * @param {!Blockly.icons.CommentIcon} comment The Blockly Comment object to be made visible.
    * @returns {Function}
    */
   function commentRenderer(comment) {

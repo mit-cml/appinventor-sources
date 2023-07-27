@@ -35,7 +35,7 @@ goog.provide('AI.Blockly.Error');
  * @param {!Blockly.Block} block The block associated with this error.
  * @constructor
  */
-Blockly.Error = class extends Blockly.OldIcon {
+Blockly.Error = class extends Blockly.icons.Icon {
   constructor(block) {
     super(block);
     this.createIcon();
@@ -179,5 +179,5 @@ Blockly.Error.prototype.getText = function() {
  */
 Blockly.Error.prototype.dispose = function() {
   this.block_.error = null;
-  Blockly.Icon.prototype.dispose.call(this);
+  Blockly.icons.Icon.prototype.dispose.call(this);
 };

@@ -138,7 +138,7 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
 
 /**
  * [lyn, 04/01/14] Global flag to control whether rendering is done.
- * There is no need to render blocks in Blocky.SaveFile.load.
+ * There is no need to render blocks in Blockly.SaveFile.load.
  * We only need to render them when a Screen is loaded in the Blockly editor.
  * This flag is used to turn off rendering for first case and turn it on for the second.
  * @type {boolean}

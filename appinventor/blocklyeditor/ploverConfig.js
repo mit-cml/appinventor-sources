@@ -1,9 +1,8 @@
 {
   // "This config file is used to compile the blockly code base."
   "id": "blockly-config",
-  "paths": [],
   "inputs": [//'testalert.js'
-    "../lib/blockly/dist/blockly_compressed.js",
+    "../lib/blockly/blockly_compressed.js",
     // Lyn's instrumentation code
     "./src/instrument.js",
 

@@ -133,7 +133,7 @@ if (Blockly.Instrument.useRenderDown) {
    * Override's the render function in the mutator to take advantage of the
    * render down functionality.
    */
-  Blockly.Mutator.prototype.renderWorkspace = function() {
+  Blockly.icons.MutatorIcon.prototype.renderWorkspace = function() {
     this.rootBlock_.render();
   };
 }
