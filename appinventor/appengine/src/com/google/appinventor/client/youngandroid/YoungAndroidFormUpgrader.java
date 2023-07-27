@@ -1567,9 +1567,9 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeSpreadsheetProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
       // Various methods were renamed in the blocks editor.
-      srcCompVersion = 2;
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

@@ -18,7 +18,18 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.*;
+import com.google.api.services.sheets.v4.model.AppendValuesResponse;
+import com.google.api.services.sheets.v4.model.AddSheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.ClearValuesRequest;
+import com.google.api.services.sheets.v4.model.ClearValuesResponse;
+import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
+import com.google.api.services.sheets.v4.model.DimensionRange;
+import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.SheetProperties;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -654,7 +665,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   @SimpleFunction(description = "Adds a new sheet inside the Spreadsheet")
-  public void AddSheet(final String sheetName){
+  public void AddSheet(final String sheetName) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddSheet: " + "SpreadsheetID is empty.");
       return;
@@ -663,22 +674,22 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       return;
     }
     // Run the API call asynchronously
+    // Run the API call asynchronously
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
         try {
           Sheets sheetsService = getSheetsService();
           AddSheetRequest addSheetRequest = new AddSheetRequest()
-                  .setProperties(new SheetProperties()
-                          //set title of new sheet as user parameter
-                          .setTitle(sheetName)
-                  );
+              .setProperties(new SheetProperties()
+              //set title of new sheet as user parameter
+              .setTitle(sheetName)
+            );
           List<Request> requests = new ArrayList<>();
           requests.add(new Request().setAddSheet(addSheetRequest));
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
-                  .setRequests(requests);
+              .setRequests(requests);
           sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
-
           // Run the callback event block
           activity.runOnUiThread(new Runnable() {
             @Override
@@ -687,20 +698,68 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           e.printStackTrace();
           ErrorOccurred("AddSheet: " + e.getMessage());
         }
       }
     });
   }
+
   @SimpleEvent(
           description="The callback event for the addSheet block, called once the " +
                   "values on the table have been updated.")
   public void FinishedAddSheet(final String sheetName) {
     EventDispatcher.dispatchEvent(this, "FinishedAddSheet", sheetName);
   }
+
+  @SimpleFunction(description = "Deletes the specified sheet inside the Spreadsheet")
+  public void DeleteSheet(final String sheetName) {
+      if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+          ErrorOccurred("DeleteSheet: " + "SpreadsheetID is empty.");
+          return;
+      } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+          ErrorOccurred("DeleteSheet: " + "Credentials JSON is required.");
+          return;
+      }
+      // Run the API call asynchronously
+      AsynchUtil.runAsynchronously(new Runnable() {
+          @Override
+          public void run() {
+              try {
+                  Sheets sheetsService = getSheetsService();
+                  DeleteSheetRequest deleteSheetRequest = new DeleteSheetRequest()
+                      .setSheetId(getSheetID(sheetsService, sheetName)
+                      );
+                  List<Request> requests = new ArrayList<>();
+                  requests.add(new Request().setDeleteSheet(deleteSheetRequest));
+                  BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
+                      .setRequests(requests);
+                  sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+
+                  // Run the callback event block
+                  activity.runOnUiThread(new Runnable() {
+                      @Override
+                      public void run() {
+                          FinishedDeleteSheet(sheetName);
+                      }
+                  });
+
+              } catch (Exception e) {
+                  e.printStackTrace();
+                  ErrorOccurred("DeleteSheet: " + e.getMessage());
+              }
+          }
+      });
+  }
+
+  @SimpleEvent(
+          description="The callback event for the DeleteSheet block, called once the " +
+                  "values on the table have been updated.")
+  public void FinishedDeleteSheet(final String sheetName) {
+      EventDispatcher.dispatchEvent(this, "FinishedDeleteSheet", sheetName);
+  }
+
   /**
    * Given a list of values as `data`, appends the values to the next
    * empty row of the sheet. It will always start from the left most column and
