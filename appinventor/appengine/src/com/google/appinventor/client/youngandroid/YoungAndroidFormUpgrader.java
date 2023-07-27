@@ -1567,8 +1567,12 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeSpreadsheetProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 2) {
       // Various methods were renamed in the blocks editor.
+      srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // added an add sheet block and a delete sheet block
       srcCompVersion = 3;
     }
     return srcCompVersion;
