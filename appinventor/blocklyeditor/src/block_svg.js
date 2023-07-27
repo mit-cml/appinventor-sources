@@ -15,7 +15,7 @@ goog.provide('AI.Blockly.BlockSvg');
 
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');
-goog.require('AI.Blockly.Error');
+goog.require('AI.ErrorIcon');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
   (Blockly.BlockSvg.CORNER_RADIUS - 1) + 1;
@@ -24,7 +24,7 @@ Blockly.BlockSvg.DISTANCE_45_OUTSIDE = (1 - Math.SQRT1_2) *
 
 /**
  * Block's error icon (if any).
- * @type {Blockly.Error}
+ * @type {AI.ErrorIcon}
  */
 Blockly.BlockSvg.prototype.error = null;
 
@@ -57,6 +57,7 @@ Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
  * Returns a list of mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
+/*
 Blockly.BlockSvg.prototype.getIcons = (function(func) {
   return function() {
     var icons = func.call(this);
@@ -66,6 +67,7 @@ Blockly.BlockSvg.prototype.getIcons = (function(func) {
     return icons;
   };
 })(Blockly.BlockSvg.prototype.getIcons);
+ */
 
 /**
  * Obtains starting coordinates so the block can return to spot after copy.
@@ -113,18 +115,20 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
  * @param {?string} text The text, or null to delete.
  */
 Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
-  if (!Blockly.Error) {
+  if (!AI.ErrorIcon) {
     throw 'Warnings not supported.';
   }
   var changedState = false;
   if (goog.isString(text)) {
     if (!this.error) {
-      this.error = new Blockly.Error(this);
+      this.error = new AI.ErrorIcon(this);
+      this.addIcon(this.error);
       changedState = true;
     }
     this.error.setText(/** @type {string} */ (text));
   } else {
     if (this.error) {
+      this.removeIcon(this.error.getType());
       this.error.dispose();
       this.error = null;
       changedState = true;
@@ -478,7 +482,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
   var changedState = false;
   if (goog.isString(text)) {
     if (!this.error) {
-      this.error = new Blockly.Error(this);
+      this.error = new AI.ErrorIcon(this);
       changedState = true;
     }
     this.error.setText(/** @type {string} */ (text), id);

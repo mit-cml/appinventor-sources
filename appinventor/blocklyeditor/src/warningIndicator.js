@@ -91,8 +91,8 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.iconGroup_);
   this.iconMark_ = Blockly.utils.dom.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
-       'x': Blockly.Error.ICON_RADIUS,
-       'y': 2 * Blockly.Error.ICON_RADIUS - 18}, this.iconGroup_);
+       'x': AI.ErrorIcon.ICON_RADIUS,
+       'y': 2 * AI.ErrorIcon.ICON_RADIUS - 18}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
@@ -105,9 +105,9 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       {'class': 'blocklyIconGroup', 'transform':"translate(65,0)"}, this.svgGroup_);
   Blockly.utils.dom.createSvgElement('circle',
       {'class': 'blocklyErrorIconOutline',
-       'r': Blockly.Error.ICON_RADIUS,
-       'cx': Blockly.Error.ICON_RADIUS,
-       'cy': Blockly.Error.ICON_RADIUS - 15}, this.iconErrorGroup_);
+       'r': AI.ErrorIcon.ICON_RADIUS,
+       'cx': AI.ErrorIcon.ICON_RADIUS,
+       'cy': AI.ErrorIcon.ICON_RADIUS - 15}, this.iconErrorGroup_);
   Blockly.utils.dom.createSvgElement('path',
       {'class': 'blocklyErrorIconX',
        'd': 'M 4,-11 12,-3 8,-7 4,-3 12,-11'},
