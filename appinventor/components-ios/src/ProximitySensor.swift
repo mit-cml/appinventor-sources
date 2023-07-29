@@ -7,33 +7,28 @@ import Foundation
 import UIKit
 import CoreMotion
 
-class ProximitySensor: NonvisibleComponent {
-  private var motionManager: CMMotionManager?
+open class ProximitySensor: NonvisibleComponent {
+  private var motionManager = CMMotionManager()
   private var enabled: Bool = true
   private var distance: Float = 0.0
   private var keepRunningWhenOnPause: Bool = false
+  
   override init(_ container: ComponentContainer) {
     super.init(container)
     // Check if the proximity sensor is available
     let device = UIDevice.current
     device.isProximityMonitoringEnabled = true
-    
     // Register for proximity state changes
     NotificationCenter.default.addObserver(self, selector: #selector(proximityStateChanged(_:)), name: UIDevice.proximityStateDidChangeNotification, object: device)
-    
     // Configure motion manager for maximum range
-    motionManager = CMMotionManager()
-    motionManager?.startDeviceMotionUpdates()
-    
-    startListening()
+    motionManager.startDeviceMotionUpdates()
+    initialise()
   }
   
   deinit {
     stopListening()
     NotificationCenter.default.removeObserver(self)
   }
-  
-  // MARK: - Public Properties
   
   @objc var Available: Bool {
     return UIDevice.current.isProximityMonitoringEnabled
@@ -69,20 +64,14 @@ class ProximitySensor: NonvisibleComponent {
   }
   
   @objc var MaximumRange: Float {
-    return Float(motionManager?.deviceMotion?.attitude.roll ?? 0.0)
+    return Float(motionManager.deviceMotion?.attitude.roll ?? 0.0)
   }
   
-  // MARK: - Private Methods
-  
-  private func startListening() {
-    guard enabled else { return }
-    
-    NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-  }
-  
-  private func stopListening() {
-    NotificationCenter.default.removeObserver(self)
+  @objc func initialise() {
+    guard enabled else {
+      return
+    }
+    startListening()
   }
   
   @objc private func appDidEnterBackground() {
@@ -105,13 +94,24 @@ class ProximitySensor: NonvisibleComponent {
       } else {
         distance = MaximumRange
       }
-      
       ProximityChanged(distance)
     }
   }
-  // MARK: - Public Methods
+  
   @objc func ProximityChanged(_ distance: Float) {
     self.distance = distance
     EventDispatcher.dispatchEvent(of: self, called: "ProximityChanged", arguments: NSNumber(floatLiteral: Double(distance)))
   }
+  
+  private func startListening() {
+    guard enabled else { return }
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+  }
+  
+  private func stopListening() {
+    NotificationCenter.default.removeObserver(self)
+  }
+  
 }

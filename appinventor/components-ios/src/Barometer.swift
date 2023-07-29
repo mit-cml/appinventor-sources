@@ -6,7 +6,7 @@
 import Foundation
 import CoreMotion
 
-class Barometer: NonvisibleComponent {
+open class Barometer: NonvisibleComponent {
   private let motionManager = CMAltimeter()
   private var refreshTimer: Timer?
   private var enabled = true
@@ -17,7 +17,7 @@ class Barometer: NonvisibleComponent {
   override init(_ container: ComponentContainer) {
     super.init(container)
     checkAvailability()
-    startListening()
+    initialise()
   }
   
   @objc var Enabled: Bool {
@@ -34,6 +34,38 @@ class Barometer: NonvisibleComponent {
         }
       }
     }
+  }
+  
+  @objc func AirPressureChanged(_ pressure: Double) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "AirPressureChanged", arguments: NSNumber(floatLiteral: pressure))
+    }
+  }
+  
+  @objc func refreshAirPressure() {
+    motionManager.startRelativeAltitudeUpdates(to: OperationQueue.current!) { [weak self] (altitudeData, error) in
+      guard let altitudeData = altitudeData, error == nil else {
+        return
+      }
+      let pressure = self?.calculatePressure(from: altitudeData.relativeAltitude.doubleValue)
+      self?.AirPressure = NSNumber(value: pressure ?? 0.0)
+      if let pressure = pressure {
+        self?.AirPressureChanged(pressure)
+      }
+    }
+  }
+  
+  @objc func initialise() {
+    guard enabled else {
+      return
+    }
+    startListening()
+  }
+  
+  private func calculatePressure(from altitude: Double) -> Double {
+    let pressureAtSeaLevel = 1013.25 // Standard atmospheric pressure at sea level in hPa
+    let pressure = pressureAtSeaLevel * pow((1 - 2.25577e-5 * altitude), 5.25588)
+    return pressure
   }
   
   func startListening() {
@@ -59,30 +91,8 @@ class Barometer: NonvisibleComponent {
     refreshTimer = nil
   }
   
-  @objc func checkAvailability() {
+  func checkAvailability() {
     Available = CMAltimeter.isRelativeAltitudeAvailable()
   }
   
-  @objc func refreshAirPressure() {
-    motionManager.startRelativeAltitudeUpdates(to: OperationQueue.current!) { [weak self] (altitudeData, error) in
-      guard let altitudeData = altitudeData, error == nil else {
-        return
-      }
-      let pressure = self?.calculatePressure(from: altitudeData.relativeAltitude.doubleValue)
-      self?.AirPressure = NSNumber(value: pressure ?? 0.0)
-      if let pressure = pressure {
-        self?.AirPressureChanged(pressure)
-      }
-    }
-  }
-  
-  @objc func AirPressureChanged(_ pressure: Double) {
-    EventDispatcher.dispatchEvent(of: self, called: "AirPressureChanged", arguments: NSNumber(floatLiteral: pressure))
-  }
-  
-  private func calculatePressure(from altitude: Double) -> Double {
-    let pressureAtSeaLevel = 1013.25 // Standard atmospheric pressure at sea level in hPa
-    let pressure = pressureAtSeaLevel * pow((1 - 2.25577e-5 * altitude), 5.25588)
-    return pressure
-  }
 }

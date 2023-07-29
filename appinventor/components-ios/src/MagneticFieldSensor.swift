@@ -6,7 +6,7 @@
 import Foundation
 import CoreMotion
 
-class MagneticFieldSensor: NonvisibleComponent {
+open class MagneticFieldSensor: NonvisibleComponent {
   private let motionManager = CMMotionManager()
   private var enabled : Bool = true
   
@@ -37,8 +37,9 @@ class MagneticFieldSensor: NonvisibleComponent {
   
   override init(_ container: ComponentContainer) {
     super.init(container)
-    startListening()
+    initialise()
   }
+  
   @objc var Enabled: Bool {
     get {
       return enabled
@@ -52,6 +53,19 @@ class MagneticFieldSensor: NonvisibleComponent {
           stopListening()
         }
       }
+    }
+  }
+  
+  @objc func initialise() {
+    guard enabled else {
+      return
+    }
+    startListening()
+  }
+  
+  @objc func MagneticChanged(_ xStrength: Float, _ yStrength: Float, _ zStrength: Float, _ absoluteStrength: Double) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "MagneticChanged", arguments: NSNumber(floatLiteral: Double(xStrength)), NSNumber(floatLiteral: Double(yStrength)), NSNumber(floatLiteral: Double(zStrength)), NSNumber(floatLiteral: Double(absoluteStrength)))
     }
   }
   
@@ -84,9 +98,4 @@ class MagneticFieldSensor: NonvisibleComponent {
     }
   }
   
-  @objc func MagneticChanged(_ xStrength: Float, _ yStrength: Float, _ zStrength: Float, _ absoluteStrength: Double) {
-    // Handle the change in magnetic field here
-    print("Magnetic field changed - X: \(xStrength), Y: \(yStrength), Z: \(zStrength), Absolute: \(absoluteStrength)")
-    EventDispatcher.dispatchEvent(of: self, called: "MagneticChanged", arguments: NSNumber(floatLiteral: Double(xStrength)), NSNumber(floatLiteral: Double(yStrength)), NSNumber(floatLiteral: Double(zStrength)), NSNumber(floatLiteral: Double(absoluteStrength)))
-  }
 }
