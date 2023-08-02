@@ -403,7 +403,30 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     updateY(y: y)
     registerChanges()
   }
-  
+
+  /**
+   * Moves the sprite to given point after checking whether the coordinates are numbers.
+   */
+  @objc open func MoveToPoint(_ coordinates: YailList<AnyObject>) {
+    let xCoord = CoerceToDouble(coordinates[1] as AnyObject)
+    let yCoord = CoerceToDouble(coordinates[2] as AnyObject)
+    self.MoveTo(xCoord, yCoord)
+  }
+
+  /**
+   * Helper function for MoveToPoint
+   */
+  func CoerceToDouble(_ coordinate: AnyObject ) -> Double {
+    //unpack coordinate (check if are numbers and parse if string)
+    if let number = coordinate as? NSNumber {
+      return number.doubleValue
+    } else if let number = Double(coordinate as? NSString as? String ?? "") {
+      return number
+    } else {
+      return Double.nan
+    }
+  }
+
   /**
    * Turns the sprite to point towards the point with coordinates as (x, y).
    */
