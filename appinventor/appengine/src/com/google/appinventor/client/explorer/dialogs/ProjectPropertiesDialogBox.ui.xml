@@ -32,7 +32,7 @@
       <div class="ode-propertyDialogDivInnerHeader">
         <h3 class="ode-headerTitle">
           <ui:msg key="ProjectProperties"
-                  description="Project Properties Title">Project Properties</ui:msg>
+            description="Project Properties Title">Project Properties</ui:msg>
         </h3>
 
         <div id='ode-codiLogoDiv'>
