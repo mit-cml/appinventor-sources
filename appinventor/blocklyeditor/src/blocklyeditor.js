@@ -388,6 +388,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     plugins: {
       blockDragger: top.MultiselectBlockDragger,
     },
+    baseBlockDragger: top.ScrollBlockDragger,
     useDoubleClick: true,
     bumpNeighbours: true,
     multiselectIcon: {
