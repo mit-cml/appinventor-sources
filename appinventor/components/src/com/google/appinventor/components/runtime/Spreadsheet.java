@@ -1800,7 +1800,6 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                 spreadsheetID, cleanRangeReference);
 
             // Make the HTTP Request
-            // Make the HTTP Request
             URL url = new URL(getUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
