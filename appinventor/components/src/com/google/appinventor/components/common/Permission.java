@@ -46,7 +46,11 @@ public enum Permission implements OptionList<String> {
   // Added in Android SDK 31
   BluetoothAdvertise("BLUETOOTH_ADVERTISE"),
   BluetoothConnect("BLUETOOTH_CONNECT"),
-  BluetoothScan("BLUETOOTH_SCAN");
+  BluetoothScan("BLUETOOTH_SCAN"),
+  // Added in Android SDK 33
+  ReadMediaImages("READ_MEDIA_IMAGES"),
+  ReadMediaVideo("READ_MEDIA_VIDEO"),
+  ReadMediaAudio("READ_MEDIA_AUDIO");
 
   private final String value;
 
