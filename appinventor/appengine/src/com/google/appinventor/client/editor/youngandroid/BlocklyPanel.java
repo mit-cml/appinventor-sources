@@ -834,8 +834,8 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void resize()/*-{
-    $wnd.Blockly.svgResize(
-      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+    //$wnd.Blockly.svgResize(
+    //  this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
   }-*/;
 
   public native void toggleWarning()/*-{
