@@ -85,7 +85,7 @@ open class MagneticFieldSensor: NonvisibleComponent {
         let zStrength = Float(magnetometerData.z)
         let absoluteStrength = sqrt(Double(xStrength * xStrength + yStrength * yStrength + zStrength * zStrength))
         
-        if enabled {
+        if self.enabled {
           self.MagneticChanged(xStrength, yStrength, zStrength, absoluteStrength)
         }
       }
