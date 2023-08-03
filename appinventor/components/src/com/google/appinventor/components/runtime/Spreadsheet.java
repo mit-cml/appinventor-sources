@@ -699,8 +699,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
 
         } catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("AddSheet: " + e.getMessage());
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              e.printStackTrace();
+              ErrorOccurred("AddSheet: " + e.getMessage());
+            }
+          });
+
         }
       }
     });
@@ -747,8 +753,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
 
         } catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("DeleteSheet: " + e.getMessage());
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              e.printStackTrace();
+              ErrorOccurred("DeleteSheet: " + e.getMessage());
+            }
+          });
+
         }
       }
     });
@@ -1787,6 +1799,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                 "https://docs.google.com/spreadsheets/d/%s/export?format=csv&sheet=%s",
                 spreadsheetID, cleanRangeReference);
 
+            // Make the HTTP Request
             // Make the HTTP Request
             URL url = new URL(getUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
