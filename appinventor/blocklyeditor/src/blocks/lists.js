@@ -24,7 +24,7 @@ Blockly.Blocks['lists_create_with'] = {
         .appendField(Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST);
     this.appendValueInput('ADD1');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
-    this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['lists_create_with_item'], this));
     this.setTooltip(Blockly.Msg.LANG_LISTS_CREATE_WITH_TOOLTIP);
     this.itemCount_ = 2;
     this.emptyInputName = 'EMPTY';
@@ -85,11 +85,11 @@ Blockly.Blocks['lists_add_items'] = {
       .appendField(Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT_LIST);
     this.appendValueInput('ITEM0')
       .appendField(Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT_ITEM)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP);
-    this.setMutator(new Blockly.Mutator(['lists_add_items_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['lists_add_items_item'], this));
     this.itemCount_ = 1;
     this.emptyInputName = null;
     this.repeatingInputName = 'ITEM';
@@ -104,7 +104,7 @@ Blockly.Blocks['lists_add_items'] = {
   addEmptyInput: function(){},
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum);
-    input.appendField('item').setAlign(Blockly.ALIGN_RIGHT);
+    input.appendField('item').setAlign(Blockly.inputs.Align.RIGHT);
     return input;
   },
   updateContainerBlock: function(containerBlock) {
@@ -136,9 +136,9 @@ Blockly.Blocks['lists_is_in'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeAny = Blockly.Blocks.Utilities.YailTypeToBlocklyType("any",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_IS_IN_INPUT,
-            ['ITEM', checkTypeAny, Blockly.ALIGN_RIGHT],
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['ITEM', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP);
     this.setInputsInline(false);
@@ -205,9 +205,9 @@ Blockly.Blocks['lists_position_in'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeAny = Blockly.Blocks.Utilities.YailTypeToBlocklyType("any",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT,
-            ['ITEM', checkTypeAny, Blockly.ALIGN_RIGHT],
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['ITEM', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_LISTS_POSITION_IN_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -225,9 +225,9 @@ Blockly.Blocks['lists_select_item'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT,
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['NUM', checkTypeNumber, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['NUM', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -244,10 +244,10 @@ Blockly.Blocks['lists_insert_item'] = {
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     var checkTypeAny = Blockly.Blocks.Utilities.YailTypeToBlocklyType("any",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_INSERT_INPUT,
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['INDEX', checkTypeNumber, Blockly.ALIGN_RIGHT],
-            ['ITEM', checkTypeAny, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['INDEX', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+            ['ITEM', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_INSERT_TOOLTIP);
@@ -266,10 +266,10 @@ Blockly.Blocks['lists_replace_item'] = {
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     var checkTypeAny = Blockly.Blocks.Utilities.YailTypeToBlocklyType("any",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT,
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['NUM', checkTypeNumber, Blockly.ALIGN_RIGHT],
-            ['ITEM', checkTypeAny, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['NUM', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+            ['ITEM', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TOOLTIP);
@@ -287,9 +287,9 @@ Blockly.Blocks['lists_remove_item'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT,
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['INDEX', checkTypeNumber, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['INDEX', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TOOLTIP);
@@ -306,9 +306,9 @@ Blockly.Blocks['lists_append_list'] = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT,
-            ['LIST0', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['LIST1', checkTypeList, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['LIST0', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['LIST1', checkTypeList, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_APPEND_LIST_TOOLTIP);
@@ -440,10 +440,10 @@ Blockly.Blocks['lists_lookup_in_pairs'] = {
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     var checkTypeAny = Blockly.Blocks.Utilities.YailTypeToBlocklyType("any",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT,
-            ['KEY', checkTypeAny, Blockly.ALIGN_RIGHT],
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            ['NOTFOUND', checkTypeAny, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['KEY', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            ['NOTFOUND', checkTypeAny, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -460,9 +460,9 @@ Blockly.Blocks['lists_join_with_separator'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT,
-            ['SEPARATOR', checkTypeText, Blockly.ALIGN_RIGHT],
-            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-            Blockly.ALIGN_RIGHT);
+            ['SEPARATOR', checkTypeText, Blockly.inputs.Align.RIGHT],
+            ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+            Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -478,7 +478,7 @@ Blockly.Blocks['lists_map'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR,
@@ -486,7 +486,7 @@ Blockly.Blocks['lists_map'] = {
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR')
       .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_TO)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('TO');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
@@ -534,7 +534,7 @@ Blockly.Blocks['lists_filter'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR,
@@ -542,7 +542,7 @@ Blockly.Blocks['lists_filter'] = {
                                                      Blockly.FieldFlydown.DISPLAY_BELOW),
                    'VAR')
       .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('TEST')
         .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_TEST);
     this.setOutput(true, null);
@@ -593,10 +593,10 @@ Blockly.Blocks['lists_reduce'] = {
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE)
       .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INLIST)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('INITANSWER')
       .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INITIAL_ANSWER)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_COMBINE)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_VAR,
@@ -608,7 +608,7 @@ Blockly.Blocks['lists_reduce'] = {
                                                        true, // name is editable
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR2')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('COMBINE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP);
@@ -678,7 +678,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1,
@@ -691,7 +691,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
                                                      Blockly.FieldFlydown.DISPLAY_BELOW),
                    'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR2)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('COMPARE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
@@ -739,14 +739,14 @@ Blockly.Blocks['lists_sort_key'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_VAR,
                                                      true, // name is editable
                                                      Blockly.FieldFlydown.DISPLAY_BELOW),
                    'VAR')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('KEY');
     this.setOutput(true, null);
     this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
@@ -794,7 +794,7 @@ Blockly.Blocks['lists_minimum_value'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_VAR1,
@@ -807,7 +807,7 @@ Blockly.Blocks['lists_minimum_value'] = {
                                                    Blockly.FieldFlydown.DISPLAY_BELOW),
                  'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR2)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('COMPARE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP);
@@ -855,7 +855,7 @@ Blockly.Blocks['lists_maximum_value'] = {
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX, 'TITLE')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_VAR1,
@@ -868,7 +868,7 @@ Blockly.Blocks['lists_maximum_value'] = {
                                                      Blockly.FieldFlydown.DISPLAY_BELOW),
                    'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR2)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendIndentedValueInput('COMPARE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP);
@@ -950,10 +950,10 @@ Blockly.Blocks['lists_slice'] = {
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_SLICE_INPUT,
-      ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-      ['INDEX1', checkTypeNumber, Blockly.ALIGN_RIGHT],
-      ['INDEX2', checkTypeNumber, Blockly.ALIGN_RIGHT],
-      Blockly.ALIGN_RIGHT);
+      ['LIST', checkTypeList, Blockly.inputs.Align.RIGHT],
+      ['INDEX1', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+      ['INDEX2', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+      Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP);
     this.setInputsInline(false);
     this.setOutput(true, null);

@@ -237,7 +237,7 @@ Blockly.Blocks['math_add'] = {
     this.setTooltip(function () {
       return Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD;
     });
-    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_mutator_item'], this));
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'NUM';
     this.itemCount_ = 2;
@@ -332,7 +332,7 @@ Blockly.Blocks['math_multiply'] = {
     this.setTooltip(function () {
       return Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY;
     });
-    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_mutator_item'], this));
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'NUM';
     this.itemCount_ = 2;
@@ -433,7 +433,7 @@ Blockly.Blocks['math_bitwise'] = {
       var mode = thisBlock.getFieldValue('OP');
       return Blockly.Blocks.math_bitwise.TOOLTIPS()[mode];
     });
-    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_mutator_item'], this));
     this.itemCount_ = 2;
     this.valuesToSave = {'OP': null};
     this.emptyInputName = 'EMPTY';
@@ -522,9 +522,9 @@ Blockly.Blocks['math_random_int'] = {
 
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT,
-        ['FROM', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        ['TO', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT)
+        ['FROM', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        ['TO', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT)
     /*this.appendValueInput('FROM')
      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
      .appendField(Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM)
@@ -593,7 +593,7 @@ Blockly.Blocks['math_on_list'] = {
       var mode = thisBlock.getFieldValue('OP');
       return Blockly.Blocks.math_on_list.TOOLTIPS()[mode];
     });
-    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_mutator_item'], this));
     this.itemCount_ = 2;
     this.valuesToSave = {'OP': null};
     this.emptyInputName = 'EMPTY';
@@ -1218,11 +1218,11 @@ Blockly.Blocks['math_atan2'] = {
     this.appendValueInput('Y')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('X')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_MATH_TRIG_ATAN2_X)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setInputsInline(false);
     this.setTooltip(Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN2);
   },
@@ -1295,19 +1295,19 @@ Blockly.Blocks['math_format_as_decimal'] = {
 
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT,
-        ['NUM', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        ['PLACES', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+        ['NUM', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        ['PLACES', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT);
     /*this.appendDummyInput()
       .appendField('format as decimal');
     this.appendValueInput('NUM')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
       .appendField('number')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('PLACES')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
       .appendField('places')
-      .setAlign(Blockly.ALIGN_RIGHT);*/
+      .setAlign(Blockly.inputs.Align.RIGHT);*/
     this.setInputsInline(false);
     this.setTooltip(Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP);
   },

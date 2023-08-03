@@ -263,10 +263,10 @@ Blockly.Blocks['local_declaration_statement'] = {
     declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
              .appendField(this.parameterFlydown(0), 'VAR0')
              .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
-             .setAlign(Blockly.ALIGN_RIGHT);
+             .setAlign(Blockly.inputs.Align.RIGHT);
 
     // Add mutator for editing local variable names
-    this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['local_mutatorarg'], this));
   },
   onchange: function () {
      this.localNames_ = this.declaredNames(); // ensure localNames_ is in sync with paramFlydown fields
@@ -328,7 +328,7 @@ Blockly.Blocks['local_declaration_statement'] = {
       var declInput = this.appendValueInput('DECL' + i);
       // [lyn, 11/06/12]
       //   This was for case where tried to put "local" keyword on same line with first local name.
-      //   But even though alignment set to Blockly.ALIGN_RIGHT, the input was left justified
+      //   But even though alignment set to Blockly.inputs.Align.RIGHT, the input was left justified
       //   and covered the plus sign for popping up the mutator. So I put the "local" keyword
       //   on it's own line even though this wastes vertical space. This should be fixed in the future.
       // if (i == 0) {
@@ -337,7 +337,7 @@ Blockly.Blocks['local_declaration_statement'] = {
       declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
                .appendField(this.parameterFlydown(i), 'VAR' + i)
                .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
-               .setAlign(Blockly.ALIGN_RIGHT);
+               .setAlign(Blockly.inputs.Align.RIGHT);
       if (inits && inits[i]) { // If there is an initializer, connect it
         declInput.connection.connect(inits[i]);
       }

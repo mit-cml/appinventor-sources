@@ -387,7 +387,7 @@ Blockly.Blocks.component_event = {
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
-                               .setAlign(Blockly.ALIGN_LEFT);
+                               .setAlign(Blockly.inputs.Align.LEFT);
           for (i = 0; param = params[i]; i++) {
             var field = new Blockly.FieldEventFlydown(
                 param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
@@ -417,7 +417,7 @@ Blockly.Blocks.component_event = {
           var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
               .appendField(field, 'VAR' + i)
-              .setAlign(Blockly.ALIGN_RIGHT);
+              .setAlign(Blockly.inputs.Align.RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO);
@@ -782,7 +782,7 @@ Blockly.Blocks.component_method = {
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedMethodName);
       this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     }
 
     var tooltipDescription;
@@ -805,11 +805,11 @@ Blockly.Blocks.component_method = {
 
       var input = this.appendValueInput("ARG" + i)
           .appendField(name)
-          .setAlign(Blockly.ALIGN_RIGHT)
+          .setAlign(Blockly.inputs.Align.RIGHT)
           .setCheck(check);
 
       if (oldInputValues[i] && input.connection) {
-        Blockly.Mutator.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
+        Blockly.icons.MutatorIcon.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
       }
     }
 
@@ -1187,7 +1187,7 @@ Blockly.Blocks.component_set_get = {
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
       }
     } else { //this.setOrGet == "set"
       //a notches for set block
@@ -1210,17 +1210,17 @@ Blockly.Blocks.component_set_get = {
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
 
         this.appendValueInput("VALUE")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
       }
     }
 
     if (oldInput) {
       this.getInput('VALUE').init();
-      Blockly.Mutator.reconnect(oldInput.outputConnection, this, 'VALUE');
+      Blockly.icons.MutatorIcon.reconnect(oldInput.outputConnection, this, 'VALUE');
     }
 
     //for non-generic blocks, set the value of the component drop down

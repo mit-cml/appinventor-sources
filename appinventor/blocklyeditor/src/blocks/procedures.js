@@ -90,7 +90,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     this.horizontalParameters = true; // horizontal by default
     this.appendStatementInput('STACK')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
-    this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.arguments_ = []; // List of declared local variable names; has one ("name") initially
                           // Other methods guarantee the invariant that this variable contains
@@ -189,7 +189,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       for (var i = 0; i < this.arguments_.length; i++) {
         this.appendDummyInput('VAR' + i)
           .appendField(this.parameterFlydown(i), 'VAR' + i)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
       }
     }
 
@@ -495,7 +495,7 @@ Blockly.Blocks['procedures_defreturn'] = {
     this.horizontalParameters = true; // horizontal by default
     this.appendIndentedValueInput('RETURN')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
-    this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP);
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
@@ -771,7 +771,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.quarkArguments_ = paramIds;
     for (x = 0; x < this.arguments_.length; x++) {
       input = this.appendValueInput('ARG' + x)
-          .setAlign(Blockly.ALIGN_RIGHT)
+          .setAlign(Blockly.inputs.Align.RIGHT)
           .appendField(this.arguments_[x]);
       if (this.quarkArguments_) {
         // Reconnect any child blocks.

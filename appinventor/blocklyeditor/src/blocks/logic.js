@@ -178,7 +178,7 @@ Blockly.Blocks['logic_operation'] = {
     this.setTooltip(function () {
       return Blockly.Blocks.logic_operation.TOOLTIPS()[thisBlock.getFieldValue('OP')];
     });
-    this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['logic_mutator_item'], this));
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'BOOL';
     this.itemCount_ = 2;

@@ -96,7 +96,7 @@ Blockly.Blocks['text_join'] = {
         .appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
     this.appendValueInput('ADD1');
     this.setTooltip(Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP);
-    this.setMutator(new Blockly.Mutator(['text_join_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['text_join_item'], this));
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'ADD';
     this.itemCount_ = 2;
@@ -309,9 +309,9 @@ Blockly.Blocks['text_starts_at'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
     var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT,
-        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+        ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
+        ['PIECE', checkTypeText, Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -340,10 +340,10 @@ Blockly.Blocks['text_contains'] = {
     this.interpolateMsg(
         Blockly.Msg.LANG_TEXT_CONTAINS_INPUT,
         ['OP', dropdown],
-        ['TEXT', getType('text', utils.INPUT), Blockly.ALIGN_RIGHT],
+        ['TEXT', getType('text', utils.INPUT), Blockly.inputs.Align.RIGHT],
         ['PIECE_TEXT', text],
-        ['PIECE', getType('text', utils.INPUT), Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+        ['PIECE', getType('text', utils.INPUT), Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT);
     this.setInputsInline(false);
 
     this.setTooltip(function() {
@@ -460,7 +460,7 @@ Blockly.Blocks['text_split'] = {
     this.appendValueInput('AT')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME')
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
   },
   // TODO: This can be removed after the blockly update b/c validators are
   // properly triggered on load from XML.
@@ -575,10 +575,10 @@ Blockly.Blocks['text_segment'] = {
     var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_SEGMENT_INPUT,
-        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['START', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        ['LENGTH', checkTypeNumber, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+        ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
+        ['START', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        ['LENGTH', checkTypeNumber, Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -594,10 +594,10 @@ Blockly.Blocks['text_replace_all'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
     var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT,
-        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['SEGMENT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['REPLACEMENT', checkTypeText, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+        ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
+        ['SEGMENT', checkTypeText, Blockly.inputs.Align.RIGHT],
+        ['REPLACEMENT', checkTypeText, Blockly.inputs.Align.RIGHT],
+        Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -680,18 +680,18 @@ Blockly.Blocks['text_replace_mappings'] = {
     this.appendValueInput('MAPPINGS')
       .setCheck(checkTypeMap)
       .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE)
-      .setAlign(Blockly.ALIGN_RIGHT)
+      .setAlign(Blockly.inputs.Align.RIGHT)
 
     this.appendValueInput('TEXT')
       .setCheck(checkTypeText)
       .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT)
-      .setAlign(Blockly.ALIGN_RIGHT)
+      .setAlign(Blockly.inputs.Align.RIGHT)
 
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX)
         .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_replace_mappings.onchange), 'OP')
         .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER)
-        .setAlign(Blockly.ALIGN_RIGHT)
+        .setAlign(Blockly.inputs.Align.RIGHT)
 
     this.setInputsInline(false);
 
