@@ -12,8 +12,6 @@
 
 goog.provide('Blockly.Blocks.mutators');
 
-goog.require('AI.Blockly.Instrument');
-
 //container block for all mutators
 Blockly.Blocks['mutator_container'] = {
   // Container.
@@ -126,14 +124,4 @@ Blockly.saveConnections = function(containerBlock) {
     itemBlock = itemBlock.nextConnection &&
       itemBlock.nextConnection.targetBlock();
   }
-}
-
-if (Blockly.Instrument.useRenderDown) {
-  /**
-   * Override's the render function in the mutator to take advantage of the
-   * render down functionality.
-   */
-  Blockly.icons.MutatorIcon.prototype.renderWorkspace = function() {
-    this.rootBlock_.render();
-  };
 }

@@ -3,9 +3,6 @@
   "id": "blockly-config",
   "inputs": [//'testalert.js'
     "../lib/blockly/blockly_compressed.js",
-    // Lyn's instrumentation code
-    "./src/instrument.js",
-
     //finally, include any of our own .js file in any order
     "./src/msg.js",
     "./src/events.js",
@@ -15,9 +12,6 @@
     "./src/events.js",
     "./src/block.js",
     "./src/workspace.js",
-    "./src/xml.js",
-    "./src/trashcan.js",
-    "./src/scrollbar.js",
     "./src/block_svg.js",
     "./src/connection_db.js",
     "./src/component_database.js",

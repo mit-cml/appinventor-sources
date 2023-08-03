@@ -115,19 +115,13 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
   if (!this.workspace.rendered) {
     return;
   }
-  if (Blockly.Instrument.isOn) {
-    var start = new Date().getTime();
-    var topBlocks = this.workspace.getTopBlocks();
-  }
   var allBlocks = this.workspace.getAllBlocks();
   try {
-    if (Blockly.Instrument.useLynCacheGlobalNames) {
-      // Compute and cache the list of global names once only
-      // so that each call to checkDropDownContainsValidValue needn't recalculate this.
-      this.cacheGlobalNames = false; // Set to false to actually compute names in next line.
-      this.cachedGlobalNames = Blockly.FieldLexicalVariable.getGlobalNames();
-      this.cacheGlobalNames = true;
-    }
+    // Compute and cache the list of global names once only
+    // so that each call to checkDropDownContainsValidValue needn't recalculate this.
+    this.cacheGlobalNames = false; // Set to false to actually compute names in next line.
+    this.cachedGlobalNames = Blockly.FieldLexicalVariable.getGlobalNames();
+    this.cacheGlobalNames = true;
     for(var i=0;i<allBlocks.length;i++) {
       var blockErrorResult = this.checkErrors(allBlocks[i]);
     }
@@ -135,14 +129,6 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
     // [lyn, 04/13/14] Ensure that these are reset no matter what:
     this.cacheGlobalNames = false;
     this.cachedGlobalNames = [];
-  }
-  if (Blockly.Instrument.isOn) {
-    var stop = new Date().getTime();
-    var timeDiff = stop - start;
-    Blockly.Instrument.stats.topBlockCount = topBlocks.length;
-    Blockly.Instrument.stats.blockCount = allBlocks.length;
-    Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsCalls++;
-    Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsTime += timeDiff;
   }
 };
 

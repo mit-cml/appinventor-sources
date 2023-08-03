@@ -14,7 +14,6 @@
 goog.provide('AI.Blockly.BlockSvg');
 
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument');
 goog.require('AI.ErrorIcon');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
@@ -161,7 +160,6 @@ Blockly.BlockSvg.prototype.render = (function(func) {
         //if (Blockly.Realtime.isEnabled() && !Blockly.Realtime.withinSync) {
         //  Blockly.Realtime.blockChanged(this);
         //}
-        Blockly.Instrument.stats.renderCalls++;
         // [lyn, 04/08/14] Because render is recursive, doesn't make sense to track its time here.
       }
     };
@@ -171,7 +169,7 @@ Blockly.BlockSvg.prototype.render = (function(func) {
 })(Blockly.BlockSvg.prototype.render);
 */
 
-if (Blockly.Instrument.useRenderDown) {
+if (false) {
 
 Blockly.BlockSvg.prototype.render = function(opt_bubble) {
   if (opt_bubble !== false) {
@@ -206,8 +204,7 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  */
 Blockly.BlockSvg.prototype.renderDown_ = function() {
   // Recursively renderDown all my children (as long as I'm not collapsed)
-  if (!this.isCollapsed() || !Blockly.Instrument
-      .avoidRenderDownOnCollapsedSubblocks) {
+  if (!this.isCollapsed()) {
     var childBlocks = this.getChildren();  // Includes next block.
     for (var i = 0, childBlock; (childBlock = childBlocks[i]); i++) {
       childBlock.render(false);
@@ -219,7 +216,6 @@ Blockly.BlockSvg.prototype.renderDown_ = function() {
     }
   }
   this.renderHere_();
-  Blockly.Instrument.stats.renderDownCalls++; //***lyn
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
@@ -228,7 +224,6 @@ Blockly.BlockSvg.prototype.renderDown_ = function() {
  * @private Should only be called from renderDown_.
  */
 Blockly.BlockSvg.prototype.renderHere_ = function() {
-  var start = new Date().getTime();
   Blockly.utils.dom.startTextWidthCache();
   this.rendered = true;
 
@@ -263,10 +258,6 @@ Blockly.BlockSvg.prototype.renderHere_ = function() {
   }
 
   Blockly.utils.dom.stopTextWidthCache();
-  var stop = new Date().getTime();
-  var timeDiff = stop-start;
-  Blockly.Instrument.stats.renderHereCalls++;
-  Blockly.Instrument.stats.renderHereTime += timeDiff;
 };
 
 /**
@@ -325,6 +316,7 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
 }
 
 // Instruments the real setCollapsed function
+/*
 Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -336,16 +328,13 @@ Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
       } finally {
         var stop = new Date().getTime();
         var timeDiff = stop - start;
-        if (! collapsed) {
-          Blockly.Instrument.stats.expandCollapsedCalls++;
-          Blockly.Instrument.stats.expandCollapsedTime += timeDiff;
-        }
       }
     };
     instrumentedFunc.isInstrumented = true;
     return instrumentedFunc;
   }
 })(Blockly.BlockSvg.prototype.setCollapsed);
+ */
 
 /**
  * Mark this block as bad.  Highlight it visually in red.

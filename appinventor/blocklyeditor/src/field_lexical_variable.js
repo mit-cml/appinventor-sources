@@ -168,18 +168,14 @@ Blockly.FieldLexicalVariable.prototype.setCachedParent = function(parent) {
 // * Removed from prototype and stripped off "global" prefix (add it elsewhere)
 // * Add optional excluded block argument as in Neil's code to avoid global declaration being created
 Blockly.FieldLexicalVariable.getGlobalNames = function (optExcludedBlock) {
-  if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.common.getMainWorkspace() &&
+  if (Blockly.common.getMainWorkspace() &&
       Blockly.common.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
     return Blockly.common.getMainWorkspace().getWarningHandler().cachedGlobalNames;
   }
   var globals = [];
   if (Blockly.common.getMainWorkspace()) {
     var blocks = [];
-    if (Blockly.Instrument.useLynGetGlobalNamesFix) {
-      blocks = Blockly.common.getMainWorkspace().getTopBlocks(); // [lyn, 04/13/14] Only need top blocks, not all blocks!
-    } else {
-      blocks = Blockly.common.getMainWorkspace().getAllBlocks(); // [lyn, 11/10/12] Is there a better way to get workspace?
-    }
+    blocks = Blockly.common.getMainWorkspace().getTopBlocks(); // [lyn, 04/13/14] Only need top blocks, not all blocks!
     for (var i = 0; i < blocks.length; i++) {
       var block = blocks[i];
       if ((block.type === 'global_declaration') && (block != optExcludedBlock)) {

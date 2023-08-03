@@ -732,22 +732,11 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       }
     };
   }
-  function instrument(callback) {
-    return function() {
-      Blockly.Instrument.initializeStats('expandAllCollapsedBlocks');
-      Blockly.Instrument.timer(
-        function() { callback.call(self); },
-        function(result, timeDiff) {
-          Blockly.Instrument.stats.totalTime = timeDiff;
-          Blockly.Instrument.displayStats('expandAllCollapsedBlocks');
-        });
-    };
-  }
   for (var i = 0; i < menuOptions.length; ++i) {
     if (menuOptions[i].text == Blockly.Msg.COLLAPSE_ALL) {
       menuOptions[i].callback = addResetArrangements(menuOptions[i].callback);
     } else if (menuOptions[i].text == Blockly.Msg.EXPAND_ALL) {
-      menuOptions[i].callback = instrument(addResetArrangements(menuOptions[i].callback));
+      menuOptions[i].callback = addResetArrangements(menuOptions[i].callback);
     }
   }
 

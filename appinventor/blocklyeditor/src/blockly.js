@@ -14,7 +14,6 @@
 goog.provide('AI.Blockly');
 
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument');
 goog.require('Blockly.TypeBlock');
 goog.require('AI.Blockly.WorkspaceSvg');
 
@@ -102,7 +101,9 @@ Blockly.confirmDeletion = function(callback) {
  * Fixing the values to 100% gives the desired resizing behavior in AI2.
  * @param {!Blockly.WorkspaceSvg} workspace The workspace to resize
  */
+/*
 Blockly.svgResize = function(workspace) {
+  console.log("Blockly.svgResize");
   var mainWorkspace = workspace;
   while (mainWorkspace.options.parentWorkspace) {
     mainWorkspace = mainWorkspace.options.parentWorkspace;
@@ -125,3 +126,4 @@ Blockly.svgResize = function(workspace) {
   }
   mainWorkspace.resize();
 };
+*/
