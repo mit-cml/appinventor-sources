@@ -551,7 +551,7 @@ Blockly.WarningHandler.prototype['determineDuplicateComponentEventHandlers'] = f
   var eventHandlers = {}; // Object for storing event handler info
   for (var i = 0; i < len; i++) {
     var topBlock = topBlocks[i];
-    if (topBlock.type == "component_event") {
+    if (topBlock.type == "component_event" && !topBlock.isInsertionMarker()) {
       topBlock.IAmADuplicate = false; // default value for this field; may be changed to true below
       var typeName = topBlock.typeName;
       var propertyName = typeName + ":" + topBlock.eventName + ":" + topBlock.instanceName + ":" + topBlock.disabled;
