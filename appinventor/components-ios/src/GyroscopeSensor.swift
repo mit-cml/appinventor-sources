@@ -16,11 +16,19 @@ open class GyroscopeSensor: NonvisibleComponent {
   fileprivate var _zAngularVelocity: Float32 = 0
   fileprivate let _motion = CMMotionManager()
   fileprivate static let gyroQueue = OperationQueue()
+  private var _initialized = false
 
   public override init(_ parent: ComponentContainer) {
     _motion.gyroUpdateInterval = kDefaultGyroscopeSamplingRate
     super.init(parent)
     Enabled = true
+  }
+
+  @objc open func Initialize() {
+    _initialized = true
+    if _enabled {
+      _motion.startGyroUpdates(to: GyroscopeSensor.gyroQueue, withHandler: processUpdate)
+    }
   }
 
   @objc open var Available: Bool {
@@ -36,6 +44,9 @@ open class GyroscopeSensor: NonvisibleComponent {
     set(shouldEnable) {
       if Available, _enabled != shouldEnable {
         _enabled = shouldEnable
+        guard _initialized else {
+          return  // not ready to start yet
+        }
         if shouldEnable {
           _motion.startGyroUpdates(to: GyroscopeSensor.gyroQueue, withHandler: processUpdate)
         } else {
@@ -85,8 +96,10 @@ open class GyroscopeSensor: NonvisibleComponent {
                                    _ yAngularVelocity: Float32,
                                    _ zAngularVelocity: Float32,
                                    _ timestamp: UInt64) {
-    EventDispatcher.dispatchEvent(of: self, called: "GyroscopeChanged", arguments: NSNumber(value: xAngularVelocity)
-      , NSNumber(value: yAngularVelocity), NSNumber(value: zAngularVelocity), NSNumber(value: timestamp))
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "GyroscopeChanged", arguments: NSNumber(value: xAngularVelocity),
+          NSNumber(value: yAngularVelocity), NSNumber(value: zAngularVelocity), NSNumber(value: timestamp))
+    }
 
   }
 
