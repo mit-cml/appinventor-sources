@@ -160,6 +160,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       } else if path != "" {
         if let image = AssetManager.shared.imageFromPath(path: path) {
           _view.backgroundColor = UIColor(patternImage: image)
+          _imagePath = path
           return
         }
       }

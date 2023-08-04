@@ -45,6 +45,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IOUtils;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -339,7 +340,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage);
+        if (!EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage)) {
+          // Dispatch to screen if the event handler does not exist.
+          form.dispatchErrorOccurredEvent(Spreadsheet.this, "ErrorOccurred",
+              ErrorMessages.ERROR_SPREADSHEET_ERROR,  errorMessage);
+        }
       }
     });
   }

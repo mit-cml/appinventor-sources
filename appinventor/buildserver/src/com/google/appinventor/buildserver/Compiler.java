@@ -263,6 +263,12 @@ public final class Compiler {
   private final Map<String, Set<String>> compBlocks;
 
   /**
+   * Maps Screen names to their orientation values to populate the
+   * android:screenOrientation attribution in the &lt;activity&gt; element.
+   */
+  private final Map<String, String> formOrientations;
+
+  /**
    * Set of exploded AAR libraries.
    */
   private AARLibraries explodedAarLibs;
@@ -1318,6 +1324,9 @@ public final class Compiler {
         }
         // The line below is required for Android 12+
         out.write("android:exported=\"true\" ");
+        out.write("android:screenOrientation=\"");
+        out.write(formOrientations.get(source.getSimpleName()));
+        out.write("\" ");
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
 
@@ -1485,6 +1494,7 @@ public final class Compiler {
    * @param project  project to build
    * @param compTypes component types used in the project
    * @param compBlocks component type mapped to blocks used in project
+   * @param formOrientations form names mapped to screen orientations
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
@@ -1495,15 +1505,17 @@ public final class Compiler {
    * @throws IOException
    */
   public static boolean compile(Project project, Set<String> compTypes,
-      Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err, PrintStream userErrors,
+      Map<String, Set<String>> compBlocks,
+      Map<String, String> formOrientations,
+      PrintStream out, PrintStream err, PrintStream userErrors,
       boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
       String keystoreFilePath, int childProcessRam, String dexCacheDir, String outputFileName,
       BuildServer.ProgressReporter reporter, boolean isAab, StatReporter statReporter)
       throws IOException, JSONException {
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors,
-        isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam, dexCacheDir,
-        reporter);
+    Compiler compiler = new Compiler(project, compTypes, formOrientations, compBlocks, out, err,
+        userErrors, isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam,
+        dexCacheDir, reporter);
 
     return compileWithStats(compiler, project, isAab, keystoreFilePath, outputFileName, out,
         reporter, statReporter);
@@ -1886,11 +1898,14 @@ public final class Compiler {
    * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
-  Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
-           int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
+  Compiler(Project project, Set<String> compTypes, Map<String, String> formOrientations,
+      Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
+      PrintStream userErrors, boolean isForCompanion, boolean isForEmulator,
+      boolean includeDangerousPermissions, int childProcessMaxRam, String dexCacheDir,
+      BuildServer.ProgressReporter reporter) {
     this.project = project;
     this.compBlocks = compBlocks;
+    this.formOrientations = formOrientations;
 
     prepareCompTypes(compTypes);
     readBuildInfo();

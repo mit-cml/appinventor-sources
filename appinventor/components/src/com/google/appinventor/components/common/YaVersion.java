@@ -569,12 +569,17 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 220:
   // - CHART_COMPONENT_VERSION was incremented to 2
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
-  // For YOUNG_ANDROID_VERSION 221;
+  // For YOUNG_ANDROID_VERSION 221:
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
   // For YOUNG_ANDROID_VERSION 222:
-  // - TinyDB was updated to include GetEntries
+  // - CHATBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 223:
+  // - IMAGEBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 224:
+  // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
+  // - TINYDB_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 222;
+  public static final int YOUNG_ANDROID_VERSION = 224;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -853,6 +858,9 @@ public class YaVersion {
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
+  //For CHATBOT_COMPONENT_VERSION: Initial Version
+  public static final int CHATBOT_COMPONENT_VERSION = 1;
+
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
@@ -1041,6 +1049,8 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
+
+  public static final int IMAGEBOT_COMPONENT_VERSION = 1;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1381,7 +1391,7 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 5:
   // - default value was added to the Country designer property
   // - default value was added to the Language designer property
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 5;
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 6;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -1592,12 +1602,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.66";
+  public static final String PREFERRED_COMPANION = "2.67";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.66", "2.66u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.67", "2.67u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
