@@ -571,8 +571,8 @@ public class YaVersion {
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 221;
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
-  //  - TinyDB was updated to include GetEntries
-  // For YOUNG_ANDROID)_VERSION 222:
+  // For YOUNG_ANDROID_VERSION 222:
+  // - TinyDB was updated to include GetEntries
 
   public static final int YOUNG_ANDROID_VERSION = 222;
 
@@ -1397,7 +1397,9 @@ public class YaVersion {
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
-  public static final int TINYDB_COMPONENT_VERSION = 2;
+  // For TINYDB_COMPONENT_VERSION 3:
+  // - Added GetEntries method
+  public static final int TINYDB_COMPONENT_VERSION = 3;
 
   // For TINYWEBDB_COMPONENT_VERSION 2:
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
