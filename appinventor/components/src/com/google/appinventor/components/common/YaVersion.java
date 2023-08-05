@@ -1626,6 +1626,10 @@ public class YaVersion {
   public static final int LIGHTSENSOR_COMPONENT_VERSION = 1;
   public static final int THERMOMETER_COMPONENT_VERSION = 1;
 
+  // For CIRCULAR_PROGRESS_COMPONENT_VERSION 1:
+  // - Initial version
+  public static final int CIRCULAR_PROGRESS_COMPONENT_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if

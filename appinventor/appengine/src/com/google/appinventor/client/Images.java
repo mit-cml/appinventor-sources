@@ -816,4 +816,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/dataFile.png")
   ImageResource dataFile();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/circularProgress.png")
+  ImageResource circularProgress();
 }
