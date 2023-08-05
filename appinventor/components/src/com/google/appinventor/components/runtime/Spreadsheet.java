@@ -698,7 +698,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -752,7 +752,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
