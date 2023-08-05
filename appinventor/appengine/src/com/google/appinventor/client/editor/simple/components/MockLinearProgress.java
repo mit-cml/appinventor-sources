@@ -20,7 +20,7 @@ public final class MockLinearProgress extends MockVisibleComponent {
   private String indeterminateColorBackup = "&HFF2196F2";
 
   public MockLinearProgress(SimpleEditor editor) {
-    super(editor, TYPE, images.progressbar());
+    super(editor, TYPE, images.linearProgress());
 
     horizontalPanel = new HorizontalPanel();
     horizontalPanel.setStylePrimaryName("ode-SimpleMockComponent");
