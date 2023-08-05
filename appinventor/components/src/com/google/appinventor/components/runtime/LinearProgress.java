@@ -24,7 +24,7 @@ import com.google.appinventor.components.common.YaVersion;
 @DesignerComponent(
     version = YaVersion.LINEAR_PROGRESS_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
-    description = "",
+    description = "A visible component that indicates the progress of an operation using an animated linear bar.",
     iconName = "images/linearProgress.png"
 )
 @SimpleObject
