@@ -194,7 +194,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+   * Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "On devices with API level 14 (LEVEL_ICE_CREAM_SANDWICH) or higher, " +
