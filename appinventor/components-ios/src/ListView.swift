@@ -136,7 +136,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   
  
   //ListData
-
   @objc open var ListData: String {
     get {
         do {
@@ -149,18 +148,34 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
     set(jsonString) {
       do {
-        
+        print("JSON string: \(jsonString)")
         let jsonObject = try getObjectFromJson(jsonString)
            print("JSON object: \(jsonObject)")
         
               if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
 
                 _listData = dictionaries.compactMap { dictionary in
-                                if let text1 = dictionary["Text1"] as? String,
-                                   let text2 = dictionary["Text2"] as? String  {
-                                  return ["Text1": text1, "Text2": text2]
-                                }
-                                return nil
+                  var item: [String: String] = [:]
+                                     
+                                     if let text1 = dictionary["Text1"] as? String {
+                                         item["Text1"] = text1
+                                     }
+                                     
+                                     if let text2 = dictionary["Text2"] as? String {
+                                         item["Text2"] = text2
+                                     }
+                                     
+                                     if let image = dictionary["Image"] as? String {
+                                         item["Image"] = image
+                                     }
+                                     
+                                     // Check if any of the required values is missing and skip the entry if needed
+                                     if item["Text1"] != nil || item["Text2"] != nil || item["Image"] != nil {
+                                       
+                                         return item
+                                     }
+                                     
+                                     return nil
                             }
                 
                   _view.reloadData()
@@ -172,7 +187,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
   
-  
+
   
   
   
@@ -369,11 +384,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       else {
                let listDataIndex = indexPath.row - _elements.count
                 
-               
-                
-              
-        
-        
         
                if _listViewLayoutMode == 1{
                  cell.textLabel?.text = _listData[listDataIndex]["Text1"]
@@ -414,8 +424,108 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
                 
                  
                }
-        else if _listViewLayoutMode == 3 {}
-        else if _listViewLayoutMode == 4 {}
+        else if _listViewLayoutMode == 3 {
+          
+          tableView.rowHeight = 60
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+          if let imagePath = _listData[listDataIndex]["Image"],
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
+            cell.imageView?.image = image
+            
+            // Configure the layout
+            cell.layoutMargins = UIEdgeInsets.zero
+            cell.separatorInset = UIEdgeInsets.zero
+            cell.preservesSuperviewLayoutMargins = true
+            
+            // Create a stack view to hold the labels horizontally
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.alignment = .leading
+            stackView.distribution = .fill
+            stackView.spacing = 8.0
+          
+          
+            
+            // Add the labels to the stack view
+            stackView.addArrangedSubview(cell.imageView!)
+            stackView.addArrangedSubview(cell.textLabel!)
+            
+            
+            // Add the stack view to the cell's content view
+            cell.contentView.addSubview(stackView)
+            
+            
+            // Set up constraints
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+              stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+                  stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+                  stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+                  stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+              
+              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+            ])
+            
+            
+          }
+        }
+        
+        
+        else if _listViewLayoutMode == 4 {
+          
+          tableView.rowHeight = 60
+              cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+              cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+              if let imagePath = _listData[listDataIndex]["Image"],
+                  let image = AssetManager.shared.imageFromPath(path: imagePath) {
+                  cell.imageView?.image = image
+
+                  // Configure the layout
+                  cell.layoutMargins = UIEdgeInsets.zero
+                  cell.separatorInset = UIEdgeInsets.zero
+                  cell.preservesSuperviewLayoutMargins = true
+
+                  // Create a horizontal stack view to hold the imageView and a nested vertical stack view
+                  let horizontalStackView = UIStackView()
+                  horizontalStackView.axis = .horizontal
+                  horizontalStackView.alignment = .center
+                  horizontalStackView.distribution = .fill
+                  horizontalStackView.spacing = 8.0
+
+                  // Create a vertical stack view to hold the textLabel and detailTextLabel
+                  let verticalStackView = UIStackView()
+                  verticalStackView.axis = .vertical
+                  verticalStackView.alignment = .leading
+                  verticalStackView.distribution = .fill
+                  verticalStackView.spacing = 8.0
+
+                  // Add the imageView and nested vertical stack view to the horizontal stack view
+                  horizontalStackView.addArrangedSubview(cell.imageView!)
+                  horizontalStackView.addArrangedSubview(verticalStackView)
+
+                  // Add the textLabel and detailTextLabel to the vertical stack view
+                  verticalStackView.addArrangedSubview(cell.textLabel!)
+                  verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+
+                  // Add the horizontal stack view to the cell's content view
+                  cell.contentView.addSubview(horizontalStackView)
+
+                  // Set up constraints
+                  horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
+                  NSLayoutConstraint.activate([
+                      horizontalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+                      horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+                      horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+                      horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+                      cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+                  ])
+            
+            
+          }
+          
+        }
+        
+        
         else{
           cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         }
