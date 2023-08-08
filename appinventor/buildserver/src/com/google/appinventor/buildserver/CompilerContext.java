@@ -27,6 +27,7 @@ public class CompilerContext {
    * android:screenOrientation attribution in the &lt;activity&gt; element.
    */
   private Map<String, String> formOrientations;
+  private Set<String> blockPermissions;
   private Reporter reporter;
   private StatReporter statReporter;
   private boolean isForCompanion;
@@ -55,6 +56,7 @@ public class CompilerContext {
     private Set<String> compTypes;
     private Map<String, Set<String>> compBlocks;
     private Map<String, String> formOrientations;
+    private Set<String> blockPermissions;
     private Reporter reporter;
     private StatReporter statReporter;
     private boolean isForCompanion = false;
@@ -77,6 +79,11 @@ public class CompilerContext {
 
     public Builder withBlocks(Map<String, Set<String>> compBlocks) {
       this.compBlocks = compBlocks;
+      return this;
+    }
+
+    public Builder withBlockPermissions(Set<String> permissions) {
+      this.blockPermissions = permissions;
       return this;
     }
 
@@ -153,6 +160,7 @@ public class CompilerContext {
       context.compTypes = compTypes;
       context.compBlocks = compBlocks;
       context.formOrientations = formOrientations;
+      context.blockPermissions = blockPermissions;
       context.reporter = reporter;
       context.statReporter = statReporter;
       context.isForCompanion = isForCompanion;
@@ -203,6 +211,10 @@ public class CompilerContext {
 
   public String getExt() {
     return ext;
+  }
+
+  public Set<String> getBlockPermissions() {
+    return blockPermissions;
   }
 
   public Set<String> getCompTypes() {
@@ -315,6 +327,10 @@ public class CompilerContext {
 
   public boolean usesLegacyFileAccess() {
     return "Legacy".equals(project.getDefaultFileScope());
+  }
+
+  public boolean usesSharedFileAccess() {
+    return "Shared".equals(project.getDefaultFileScope());
   }
 
   @Override
