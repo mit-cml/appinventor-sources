@@ -24,7 +24,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 
 {:.properties}
 
-{:id="ChatBot.ApiKey" .text .bo} *ApiKey*
+{:id="ChatBot.ApiKey" .text} *ApiKey*
 : An ApiKey for ChatGPT. User supplied. If provided, we will use it instead of the
  API key embedded in the chat proxy service.
 
@@ -176,7 +176,7 @@ The ImageBot is a non-visible component that uses DALL-E 2 to create and edit im
 
 {:.properties}
 
-{:id="ImageBot.ApiKey" .text .wo .bo} *ApiKey*
+{:id="ImageBot.ApiKey" .text .wo} *ApiKey*
 : Specifies the ApiKey used to authenticate with the ImageBot.
 
 {:id="ImageBot.InvertMask" .boolean} *InvertMask*

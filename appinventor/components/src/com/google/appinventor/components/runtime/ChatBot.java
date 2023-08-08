@@ -378,6 +378,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
    * (not perfect protection) of the key embedded in a packaged app.
    *
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "A ChatGPT API Key. If provided, it will be used instead of " +
          "the embedded APIKEY in the ChatBot proxy server")
