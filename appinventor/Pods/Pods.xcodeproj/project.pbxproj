@@ -1880,7 +1880,7 @@
 		01BBF5EF46A365E0ACD46BB76AA63286 /* GCDWebServerRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerRequest.m; path = GCDWebServer/Core/GCDWebServerRequest.m; sourceTree = "<group>"; };
 		01ED33C47A18DEF8F11CA4439B2E2DD5 /* SwiftSVG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftSVG.release.xcconfig; sourceTree = "<group>"; };
 		026F0EEA11B9204DAEBE7F933C5437A0 /* BarLineScatterCandleBubbleChartDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarLineScatterCandleBubbleChartDataSet.swift; path = Source/Charts/Data/Implementations/Standard/BarLineScatterCandleBubbleChartDataSet.swift; sourceTree = "<group>"; };
-		0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionApp"; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		027B9370B407DC71554A2BF7DFFC7DC8 /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkReachabilityManager.swift; path = Source/NetworkReachabilityManager.swift; sourceTree = "<group>"; };
 		02870ADE0550E6DD5D03C2F2841C8C60 /* Bintree.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Bintree.cpp; path = geos/src/index/bintree/Bintree.cpp; sourceTree = "<group>"; };
 		028F155D6707D4FC8217E3F14DB3F95C /* ZXPDF417.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417.m; path = ZXingObjC/pdf417/encoder/ZXPDF417.m; sourceTree = "<group>"; };
@@ -1897,7 +1897,7 @@
 		0512F43BDB483E8BCE02C73E5DC80CA5 /* CandleChartDataProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CandleChartDataProvider.swift; path = Source/Charts/Interfaces/CandleChartDataProvider.swift; sourceTree = "<group>"; };
 		0544AE9FB3A3E1B830B4AE1E5BE8986D /* SimpleNestedRingTester.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleNestedRingTester.cpp; path = geos/src/operation/valid/SimpleNestedRingTester.cpp; sourceTree = "<group>"; };
 		05A3C64A2CFD55FBD184B2E1DD9F1CD5 /* ShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/ShapeRenderer.swift; sourceTree = "<group>"; };
-		05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Base58Swift; path = Base58Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Base58Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		060CAF1F7703195B4D5CDAA4D03C8F88 /* Helpers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Helpers.swift; path = Sources/SQLite/Helpers.swift; sourceTree = "<group>"; };
 		063A9443617811FF0EE5AF0BA7B78FEC /* TextFormatEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextFormatEncoder.swift; path = Sources/SwiftProtobuf/TextFormatEncoder.swift; sourceTree = "<group>"; };
 		065AACD94C7CED6FDFF3CC72D472ACAB /* ZXUPCEWriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXUPCEWriter.h; path = ZXingObjC/oned/ZXUPCEWriter.h; sourceTree = "<group>"; };
@@ -2128,7 +2128,7 @@
 		2E727E981A8D9D77BFC35A1E92851F4F /* Pods-SchemeKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SchemeKit-dummy.m"; sourceTree = "<group>"; };
 		2EBDBA7AA18D8826B8F1176A07D5CF15 /* PointExtracter.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PointExtracter.cpp; path = geos/src/geom/util/PointExtracter.cpp; sourceTree = "<group>"; };
 		2EBEB4FF8206800DE57C0F6C98BBC9AF /* PolygonBuilder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PolygonBuilder.cpp; path = geos/src/operation/overlay/PolygonBuilder.cpp; sourceTree = "<group>"; };
-		2EBEEB75C07DBDD567B413EFC5387ACC /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
+		2EBEEB75C07DBDD567B413EFC5387ACC /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
 		2F215A26F6CEFB34F2CFC445F2231BD0 /* BigInt.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = BigInt.modulemap; sourceTree = "<group>"; };
 		2F23A9035288B72FCC9724A3108A58C1 /* SineStarFactory.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SineStarFactory.cpp; path = geos/src/geom/util/SineStarFactory.cpp; sourceTree = "<group>"; };
 		2F6180B720DF4D356DF650C8965E6E2F /* ZXEncodeHints.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEncodeHints.h; path = ZXingObjC/core/ZXEncodeHints.h; sourceTree = "<group>"; };
@@ -2181,7 +2181,7 @@
 		37E138291DADD35CFFE289D41B0CC9A4 /* LegendEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LegendEntry.swift; path = Source/Charts/Components/LegendEntry.swift; sourceTree = "<group>"; };
 		3845A8CF8DA06620FD8765119E9F8979 /* ZXAztecCode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAztecCode.h; path = ZXingObjC/aztec/encoder/ZXAztecCode.h; sourceTree = "<group>"; };
 		38775EFAD407EBEEFD9F387DAD2DDBCA /* PrecisionReducerCoordinateOperation.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PrecisionReducerCoordinateOperation.cpp; path = geos/src/precision/PrecisionReducerCoordinateOperation.cpp; sourceTree = "<group>"; };
-		38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionApp-AICompanionAppUITests"; path = Pods_AICompanionApp_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38B96B95845011139ABF90B94EEE193F /* Pods-AIComponentKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AIComponentKit-umbrella.h"; sourceTree = "<group>"; };
 		391986E950CBBD5AAD2425634F4F1DEE /* timestamp.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = timestamp.pb.swift; path = Sources/SwiftProtobuf/timestamp.pb.swift; sourceTree = "<group>"; };
 		3921673BEB2857C18A5F7A46E49C5ACE /* PlanarGraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PlanarGraph.cpp; path = geos/src/geomgraph/PlanarGraph.cpp; sourceTree = "<group>"; };
@@ -2237,7 +2237,7 @@
 		409C8D38A3D646D6028F0723EC979DA6 /* MoveViewJob.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoveViewJob.swift; path = Source/Charts/Jobs/MoveViewJob.swift; sourceTree = "<group>"; };
 		40A8DEEA20D584B173583487CE96843B /* ZXISBNResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXISBNResultParser.m; path = ZXingObjC/client/result/ZXISBNResultParser.m; sourceTree = "<group>"; };
 		40D35B68081FC7753D3DCAA5063111B4 /* BarLineScatterCandleBubbleRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarLineScatterCandleBubbleRenderer.swift; path = Source/Charts/Renderers/BarLineScatterCandleBubbleRenderer.swift; sourceTree = "<group>"; };
-		40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AIComponentKit"; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		411BB6CD882B161FBD03A1626C86C816 /* ZXMaxiCodeReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXMaxiCodeReader.h; path = ZXingObjC/maxicode/ZXMaxiCodeReader.h; sourceTree = "<group>"; };
 		41207314832046040EA5775CC63CD15C /* ZXCode93Writer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCode93Writer.m; path = ZXingObjC/oned/ZXCode93Writer.m; sourceTree = "<group>"; };
 		4133E7DE14CBA1FD636FD84DC413157B /* CombinedHighlighter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CombinedHighlighter.swift; path = Source/Charts/Highlight/CombinedHighlighter.swift; sourceTree = "<group>"; };
@@ -2290,7 +2290,7 @@
 		487DD6892B09E860F454620D9DC1591F /* ZXAbstractExpandedDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAbstractExpandedDecoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAbstractExpandedDecoder.h; sourceTree = "<group>"; };
 		489A66C0AF5C8F050F3995A85ED50675 /* ZXRSSExpandedDecodedObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedDecodedObject.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedDecodedObject.h; sourceTree = "<group>"; };
 		48CE2EC67A8ACE70813BD2266E1A660B /* Scalar+FromByteArray.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Scalar+FromByteArray.swift"; path = "SwiftSVG/SVG/Helpers/Scalar+FromByteArray.swift"; sourceTree = "<group>"; };
-		48D031403554BA5789B68E985515041D /* KTVJSONWebToken */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = KTVJSONWebToken; path = KTVJSONWebToken.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KTVJSONWebToken.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48DD2A7E0BBBCBE179975BE58152C9E2 /* ZXQRCodeDataBlock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDataBlock.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeDataBlock.h; sourceTree = "<group>"; };
 		48FD5BED6329B5A2C46C7D7647258E68 /* OffsetSegmentGenerator.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = OffsetSegmentGenerator.cpp; path = geos/src/operation/buffer/OffsetSegmentGenerator.cpp; sourceTree = "<group>"; };
 		4906531140C7CA1E8C3AB46619DD45EB /* MCIndexNoder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MCIndexNoder.cpp; path = geos/src/noding/MCIndexNoder.cpp; sourceTree = "<group>"; };
@@ -2331,7 +2331,7 @@
 		4FE4E061A526AFD84826786228A12510 /* FloatingPoint+DegreesRadians.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "FloatingPoint+DegreesRadians.swift"; path = "SwiftSVG/SVG/Helpers/FloatingPoint+DegreesRadians.swift"; sourceTree = "<group>"; };
 		4FE62A3664C35FF7C53F69197FA35199 /* ZXOneDimensionalCodeWriter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXOneDimensionalCodeWriter.m; path = ZXingObjC/oned/ZXOneDimensionalCodeWriter.m; sourceTree = "<group>"; };
 		4FFFCDA495957228B303FB99494D8460 /* ZXWifiParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXWifiParsedResult.h; path = ZXingObjC/client/result/ZXWifiParsedResult.h; sourceTree = "<group>"; };
-		5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PSSRedisClient; path = PSSRedisClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PSSRedisClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		501BF7C6D4BA440FC5C6F0F6ECE795A0 /* ZXGridSampler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXGridSampler.m; path = ZXingObjC/common/ZXGridSampler.m; sourceTree = "<group>"; };
 		506DBAE6902F5839728971C8C21ECAF6 /* AnyMessageStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnyMessageStorage.swift; path = Sources/SwiftProtobuf/AnyMessageStorage.swift; sourceTree = "<group>"; };
 		516B768A8A3D160C364E288A3021C584 /* SnapIfNeededOverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SnapIfNeededOverlayOp.cpp; path = geos/src/operation/overlay/snap/SnapIfNeededOverlayOp.cpp; sourceTree = "<group>"; };
@@ -2359,7 +2359,7 @@
 		55C735CD11D0BF16D155168648C84378 /* ZXQRCodeFormatInformation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeFormatInformation.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeFormatInformation.h; sourceTree = "<group>"; };
 		55EBA88BAA9239B892241A1C3FCB899B /* RectangleContains.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RectangleContains.cpp; path = geos/src/operation/predicate/RectangleContains.cpp; sourceTree = "<group>"; };
 		561B78DDFC367A279D782E5F8CCA095A /* GCDWebServerResponse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerResponse.m; path = GCDWebServer/Core/GCDWebServerResponse.m; sourceTree = "<group>"; };
-		568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-SchemeKit"; path = "libPods-SchemeKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		568CCF82305158353BA5D203F1DCA29E /* EnhancedPrecisionOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = EnhancedPrecisionOp.cpp; path = geos/src/precision/EnhancedPrecisionOp.cpp; sourceTree = "<group>"; };
 		56F804472DF2DC4DCC6EB1031FF69A1E /* RobustDeterminant.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RobustDeterminant.cpp; path = geos/src/algorithm/RobustDeterminant.cpp; sourceTree = "<group>"; };
 		56FDAA9A1DCCF40A237CF6DD19668D91 /* ZXBitArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXBitArray.h; path = ZXingObjC/common/ZXBitArray.h; sourceTree = "<group>"; };
@@ -2390,7 +2390,7 @@
 		5CB366AA62C0F5F0AF19B70B71AA17F6 /* ZXEAN13Reader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXEAN13Reader.m; path = ZXingObjC/oned/ZXEAN13Reader.m; sourceTree = "<group>"; };
 		5CCE30CB14203E7B3D0163E75941B326 /* ZXDataMatrixSymbolInfo144.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixSymbolInfo144.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixSymbolInfo144.m; sourceTree = "<group>"; };
 		5D00D04F43F7AC63C77AD10CB06757D4 /* SwiftSVG-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftSVG-prefix.pch"; sourceTree = "<group>"; };
-		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Alamofire; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E35D96CD1A887FAC1565AA403565645 /* DistanceOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = DistanceOp.cpp; path = geos/src/operation/distance/DistanceOp.cpp; sourceTree = "<group>"; };
 		5E473FCB33B9DD79B868361D6790AB41 /* SQLite-Bridging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SQLite-Bridging.h"; path = "Sources/SQLiteObjc/include/SQLite-Bridging.h"; sourceTree = "<group>"; };
 		5E52A251F4D603DCCB47CA9D71FF9AF7 /* ZXQRCodeErrorCorrectionLevel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeErrorCorrectionLevel.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeErrorCorrectionLevel.h; sourceTree = "<group>"; };
@@ -2413,7 +2413,7 @@
 		61F6D5F254F4A9E3ACDAB02BC740473A /* GCDWebServer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GCDWebServer.debug.xcconfig; sourceTree = "<group>"; };
 		625644E5A3A828B117D217956B5D4028 /* ZoomViewJob.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ZoomViewJob.swift; path = Source/Charts/Jobs/ZoomViewJob.swift; sourceTree = "<group>"; };
 		625B7B1A02AAC59E955BDA4B67944727 /* Zip.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Zip.release.xcconfig; sourceTree = "<group>"; };
-		62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftSVG; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6343A2A2BFCB718996A5202C5D23D035 /* PlanarGraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PlanarGraph.cpp; path = geos/src/planargraph/PlanarGraph.cpp; sourceTree = "<group>"; };
 		6366DDD04843F8FAB000081D8D844CBA /* CoordinateArraySequence.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = CoordinateArraySequence.cpp; path = geos/src/geom/CoordinateArraySequence.cpp; sourceTree = "<group>"; };
 		6397B8F4D73047902EFC7FF04EDCB215 /* TextFormatDecodingError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextFormatDecodingError.swift; path = Sources/SwiftProtobuf/TextFormatDecodingError.swift; sourceTree = "<group>"; };
@@ -2470,7 +2470,7 @@
 		6C44AB0059A0F89F59508C417D08E1D8 /* ZXCGImageLuminanceSourceInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCGImageLuminanceSourceInfo.m; path = ZXingObjC/client/ZXCGImageLuminanceSourceInfo.m; sourceTree = "<group>"; };
 		6C54CA3357BE9DDD9E33522E12006DE7 /* LocationIndexOfPoint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LocationIndexOfPoint.cpp; path = geos/src/linearref/LocationIndexOfPoint.cpp; sourceTree = "<group>"; };
 		6C754D846E5036A8EC70AECF61205F7A /* ZXDataMatrixBitMatrixParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixBitMatrixParser.h; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixBitMatrixParser.h; sourceTree = "<group>"; };
-		6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = CocoaAsyncSocket; path = CocoaAsyncSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CocoaAsyncSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D1194078E71C312CDEF70C8401D17E3 /* Highlighter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Highlighter.swift; path = Source/Charts/Highlight/Highlighter.swift; sourceTree = "<group>"; };
 		6D171FF48C0151C3C2FA202D14C0174F /* MonotoneChainBuilder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MonotoneChainBuilder.cpp; path = geos/src/index/chain/MonotoneChainBuilder.cpp; sourceTree = "<group>"; };
 		6D2D53A044AE2911FD1FCD320861D8D8 /* ZXingObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ZXingObjC.release.xcconfig; sourceTree = "<group>"; };
@@ -2487,7 +2487,7 @@
 		6EED9E35950FD3016B1FB366A3B588A8 /* ChartBaseDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartBaseDataSet.swift; path = Source/Charts/Data/Implementations/ChartBaseDataSet.swift; sourceTree = "<group>"; };
 		6F1B879226805235CB1486DFB72945E7 /* ZXUPCAWriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXUPCAWriter.h; path = ZXingObjC/oned/ZXUPCAWriter.h; sourceTree = "<group>"; };
 		6F62D987DB81E7C70137106213184725 /* BarChartDataSetProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarChartDataSetProtocol.swift; path = Source/Charts/Data/Interfaces/BarChartDataSetProtocol.swift; sourceTree = "<group>"; };
-		6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ZXingObjC; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FE81AC26075AD3816D2BB9C739CB915 /* ZXPDF417BarcodeValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417BarcodeValue.m; path = ZXingObjC/pdf417/decoder/ZXPDF417BarcodeValue.m; sourceTree = "<group>"; };
 		6FFC8D5DE04D658D30A96AB17972CF03 /* Sequence+KeyPath.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Sequence+KeyPath.swift"; path = "Source/Charts/Utils/Sequence+KeyPath.swift"; sourceTree = "<group>"; };
 		70214364E1BFAB7C2DBFE85653BC1362 /* Pods-SchemeKit-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SchemeKit-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -2538,7 +2538,7 @@
 		77471F7F8F8A0B13713AB08E6A741937 /* ZXQRCodeDataMask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDataMask.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeDataMask.h; sourceTree = "<group>"; };
 		77590D2049082A06BFBC1D264B9C7CD9 /* HashVisitor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HashVisitor.swift; path = Sources/SwiftProtobuf/HashVisitor.swift; sourceTree = "<group>"; };
 		77E98ECB5A03806DB28920BFBFC9C952 /* ZXResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXResult.h; path = ZXingObjC/core/ZXResult.h; sourceTree = "<group>"; };
-		77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GEOSwift; path = GEOSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GEOSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7829887A84E454E6D578584D8E40B9D5 /* empty.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = empty.pb.swift; path = Sources/SwiftProtobuf/empty.pb.swift; sourceTree = "<group>"; };
 		786EF735A7F4E4E17C02C4954EF5510F /* SwiftAlgorithms-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftAlgorithms-dummy.m"; sourceTree = "<group>"; };
 		787503AFAC0935F6506476CAA68E7A88 /* AnimatedZoomViewJob.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimatedZoomViewJob.swift; path = Source/Charts/Jobs/AnimatedZoomViewJob.swift; sourceTree = "<group>"; };
@@ -2689,14 +2689,14 @@
 		90143E4C20F86E44E18B55E0776BC845 /* ExtensionFieldValueSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExtensionFieldValueSet.swift; path = Sources/SwiftProtobuf/ExtensionFieldValueSet.swift; sourceTree = "<group>"; };
 		903DFB6E40B8B90B97CF3C612BF92224 /* GCDWebServerDataResponse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerDataResponse.h; path = GCDWebServer/Responses/GCDWebServerDataResponse.h; sourceTree = "<group>"; };
 		90418E2E074CDC535409ABF4E59485E4 /* BasicSegmentString.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BasicSegmentString.cpp; path = geos/src/noding/BasicSegmentString.cpp; sourceTree = "<group>"; };
-		90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AIComponentKit-AIComponentKitTests"; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9045ED62574957B091872AE0E5221C0F /* AxisValueFormatter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AxisValueFormatter.swift; path = Source/Charts/Formatters/AxisValueFormatter.swift; sourceTree = "<group>"; };
 		90533490E8AD0D50841B1DED3F613507 /* ZXMultiFormatUPCEANReader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXMultiFormatUPCEANReader.m; path = ZXingObjC/oned/ZXMultiFormatUPCEANReader.m; sourceTree = "<group>"; };
 		90616D703C01335E0665EC090D7BB4C8 /* ZXRSSExpandedFieldParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedFieldParser.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedFieldParser.h; sourceTree = "<group>"; };
 		90C7768E689801300C83E490ED835C56 /* ZXVINParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXVINParsedResult.h; path = ZXingObjC/client/result/ZXVINParsedResult.h; sourceTree = "<group>"; };
 		913219876CCCB5139D564757C5B07D8D /* Errors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Errors.swift; path = Sources/SQLite/Core/Errors.swift; sourceTree = "<group>"; };
 		918FE8F7A30334AF664CD2F74F18BAA9 /* Pods-AIComponentKit-AIComponentKitTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AIComponentKit-AIComponentKitTests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		91BB24BA472AF523E913108C9AA301F2 /* BigInt */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = BigInt; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		91F4EBFEE6A3E33275E14E0E22565E60 /* PreparedGeometryFactory.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PreparedGeometryFactory.cpp; path = geos/src/geom/prep/PreparedGeometryFactory.cpp; sourceTree = "<group>"; };
 		92727EC772FD4FF96CAFB52BAE1E04D9 /* SnapOverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SnapOverlayOp.cpp; path = geos/src/operation/overlay/snap/SnapOverlayOp.cpp; sourceTree = "<group>"; };
 		928B367AEF83ABCC9B18EE405CD4A3BB /* BufferInputLineSimplifier.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BufferInputLineSimplifier.cpp; path = geos/src/operation/buffer/BufferInputLineSimplifier.cpp; sourceTree = "<group>"; };
@@ -2709,7 +2709,7 @@
 		939D744C7F6D8A3DDEB429C08C000217 /* InteriorPointPoint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = InteriorPointPoint.cpp; path = geos/src/algorithm/InteriorPointPoint.cpp; sourceTree = "<group>"; };
 		93C1E63071839BB8F7E8BA9829BBE968 /* LengthLocationMap.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LengthLocationMap.cpp; path = geos/src/linearref/LengthLocationMap.cpp; sourceTree = "<group>"; };
 		941ECD163B2E6F39FD6E6DD98F18FC1E /* SwiftProtobuf-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftProtobuf-umbrella.h"; sourceTree = "<group>"; };
-		943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftProtobuf; path = SwiftProtobuf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftProtobuf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9493122D1DFB1812AE84F0B8BCE63146 /* MultiPoint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MultiPoint.cpp; path = geos/src/geom/MultiPoint.cpp; sourceTree = "<group>"; };
 		94D000675C4B7D173278FFDB8B165A21 /* ZXPDF417CodewordDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417CodewordDecoder.h; path = ZXingObjC/pdf417/decoder/ZXPDF417CodewordDecoder.h; sourceTree = "<group>"; };
 		94D6CAA03A9C652EE90BF004AF59DEEC /* geos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = geos.release.xcconfig; sourceTree = "<group>"; };
@@ -2730,7 +2730,7 @@
 		97A805AE06C7FD4AC00350011E6FAF1F /* Varint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Varint.swift; path = Sources/SwiftProtobuf/Varint.swift; sourceTree = "<group>"; };
 		98014C0A04E530EAB7B862F06828F7D0 /* DataRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DataRenderer.swift; path = Source/Charts/Renderers/DataRenderer.swift; sourceTree = "<group>"; };
 		980C2F3651317424AFB8A74874A87EF8 /* ZXRSSExpandedDecodedInformation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedDecodedInformation.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedDecodedInformation.h; sourceTree = "<group>"; };
-		980DDE277C6F9CB365F15DEED758EC9B /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
+		980DDE277C6F9CB365F15DEED758EC9B /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
 		984A8E07B9D5236AA54FB3139CDCB7CC /* ZXQRCodeReader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeReader.m; path = ZXingObjC/qrcode/ZXQRCodeReader.m; sourceTree = "<group>"; };
 		98B9A90D04923F6E316262A2CA0125E8 /* ZXRSSExpandedBlockParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedBlockParsedResult.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedBlockParsedResult.h; sourceTree = "<group>"; };
 		98DE6E72004F57B9659BB67865228A17 /* source_context.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = source_context.pb.swift; path = Sources/SwiftProtobuf/source_context.pb.swift; sourceTree = "<group>"; };
@@ -2758,9 +2758,9 @@
 		9BAF44878AC65857264A7CF3ACDB382E /* ZXRSSExpandedRow.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedRow.m; path = ZXingObjC/oned/rss/expanded/ZXRSSExpandedRow.m; sourceTree = "<group>"; };
 		9BF6942D8FA30D7968E7ADFB6B8E9DC3 /* ZXPDF417BarcodeMatrix.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417BarcodeMatrix.h; path = ZXingObjC/pdf417/encoder/ZXPDF417BarcodeMatrix.h; sourceTree = "<group>"; };
 		9D5015FA638EA77C6EE56DF1B672E009 /* GeometricShapeFactory.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = GeometricShapeFactory.cpp; path = geos/src/util/GeometricShapeFactory.cpp; sourceTree = "<group>"; };
-		9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionAppTests"; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D6818336277A39E8F7822272FEBB0B8 /* ZXBizcardResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXBizcardResultParser.m; path = ZXingObjC/client/result/ZXBizcardResultParser.m; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DBC968963460DF6696777435DCB9953 /* ZXDefaultGridSampler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDefaultGridSampler.h; path = ZXingObjC/common/ZXDefaultGridSampler.h; sourceTree = "<group>"; };
 		9DEA3D10521C4716AE5A2CEF56F4BFE3 /* ZXBitMatrix.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXBitMatrix.m; path = ZXingObjC/common/ZXBitMatrix.m; sourceTree = "<group>"; };
 		9E149CDC3BDD1307B3735E895C3B1809 /* ProtobufMap.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ProtobufMap.swift; path = Sources/SwiftProtobuf/ProtobufMap.swift; sourceTree = "<group>"; };
@@ -2779,12 +2779,12 @@
 		A0E398B9870213B0D213281FA989449D /* SquareShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SquareShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/SquareShapeRenderer.swift; sourceTree = "<group>"; };
 		A104BA9E8BC5E00AA3B942AFC52A7B4E /* Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A1772C35E3192CF3ED150F8EA3FFC11C /* geos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = geos.debug.xcconfig; sourceTree = "<group>"; };
-		A1C1B977ED8804E8AEEC884E7359EE58 /* Charts */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Charts; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1C1B977ED8804E8AEEC884E7359EE58 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F9AFBEF712FF0C3B7DC607C512326C /* ZXGeoParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXGeoParsedResult.h; path = ZXingObjC/client/result/ZXGeoParsedResult.h; sourceTree = "<group>"; };
 		A204F3A73700D933EC71FFAE2CD629E0 /* LinearLocation.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LinearLocation.cpp; path = geos/src/linearref/LinearLocation.cpp; sourceTree = "<group>"; };
 		A249ACDC289F7D1F85F5406454C5CAD5 /* JSONDecodingError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JSONDecodingError.swift; path = Sources/SwiftProtobuf/JSONDecodingError.swift; sourceTree = "<group>"; };
 		A25F9FBF3E8AD9EC80976148925172DA /* ZXDataMatrixWriter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixWriter.m; path = ZXingObjC/datamatrix/ZXDataMatrixWriter.m; sourceTree = "<group>"; };
-		A28AB133538FF4F23492D8B0D05D5035 /* geos */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = geos; path = geos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = geos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A0FB3526F71D446F36D9E0B7147A1C /* ZXDataMatrixEncoderContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixEncoderContext.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixEncoderContext.h; sourceTree = "<group>"; };
 		A2DA6B216E26D7AC0E52AF7D9FEE9417 /* ZXAddressBookParsedResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAddressBookParsedResult.m; path = ZXingObjC/client/result/ZXAddressBookParsedResult.m; sourceTree = "<group>"; };
 		A3197E463ED2C1C4E4BC190BC08E776D /* export.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = export.h; path = geos/include/geos/export.h; sourceTree = "<group>"; };
@@ -2805,7 +2805,7 @@
 		A6ECE72364D2E11B5B757C54FDDF9673 /* KTVJSONWebToken.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = KTVJSONWebToken.modulemap; sourceTree = "<group>"; };
 		A7621CF9FB4C4CFA8C0D03861D1D8CC8 /* ZXBinarizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXBinarizer.h; path = ZXingObjC/core/ZXBinarizer.h; sourceTree = "<group>"; };
 		A77AC0857FB18DAE99E341C807CF1AEC /* Zip-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Zip-umbrella.h"; sourceTree = "<group>"; };
-		A845402EF959A57A4640F2A4F5155943 /* Zip */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Zip; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A845402EF959A57A4640F2A4F5155943 /* Zip.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A87E2DD648DA83A8C8C514490ED7F8F4 /* SVGPath.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGPath.swift; path = SwiftSVG/SVG/Elements/SVGPath.swift; sourceTree = "<group>"; };
 		A8B9F8E0A3E7527DEB630989B33F5FCE /* MaximalEdgeRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MaximalEdgeRing.cpp; path = geos/src/operation/overlay/MaximalEdgeRing.cpp; sourceTree = "<group>"; };
 		A8CCAB7FD5C87DB028A82396F1358E00 /* ZXEANManufacturerOrgSupport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEANManufacturerOrgSupport.h; path = ZXingObjC/oned/ZXEANManufacturerOrgSupport.h; sourceTree = "<group>"; };
@@ -2878,7 +2878,7 @@
 		B5CCCA3EC1EC8EBC24580234ACDEB730 /* ZXSMSParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXSMSParsedResult.h; path = ZXingObjC/client/result/ZXSMSParsedResult.h; sourceTree = "<group>"; };
 		B5F368BBB8160465BA13071A916F3F73 /* ZXResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXResultParser.m; path = ZXingObjC/client/result/ZXResultParser.m; sourceTree = "<group>"; };
 		B65B2BA3CE088659CA22D1E510A8AFC9 /* ScatterChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScatterChartView.swift; path = Source/Charts/Charts/ScatterChartView.swift; sourceTree = "<group>"; };
-		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GCDWebServer; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CE18DB27B55627AEEADF2BA21CC58A /* ZXCGImageLuminanceSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCGImageLuminanceSource.m; path = ZXingObjC/client/ZXCGImageLuminanceSource.m; sourceTree = "<group>"; };
 		B6F5074B04BA9269F5C63934D1216FC8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		B71B7B8A97CF5FD5E5A9B565A61D8DC3 /* Platform+Graphics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Platform+Graphics.swift"; path = "Source/Charts/Utils/Platform+Graphics.swift"; sourceTree = "<group>"; };
@@ -2964,7 +2964,7 @@
 		C682A704C18FB280BBB567FFEDEDC6BE /* ZXDefaultGridSampler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDefaultGridSampler.m; path = ZXingObjC/common/ZXDefaultGridSampler.m; sourceTree = "<group>"; };
 		C6D1F4E3C681FF2BA306507CD77AF2D9 /* ZXResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXResult.m; path = ZXingObjC/core/ZXResult.m; sourceTree = "<group>"; };
 		C75740BDB2F3600483FA5C64125A1350 /* ZXingObjCAztec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXingObjCAztec.h; path = ZXingObjC/aztec/ZXingObjCAztec.h; sourceTree = "<group>"; };
-		C78E27D1CDA312713D78D83C9DB22745 /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
+		C78E27D1CDA312713D78D83C9DB22745 /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
 		C7930B15F080DC0A16888D1AC1BF1552 /* geos-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "geos-prefix.pch"; sourceTree = "<group>"; };
 		C7D2BEF3B78B745D05E376D1637D671F /* ZXURLTOResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXURLTOResultParser.m; path = ZXingObjC/client/result/ZXURLTOResultParser.m; sourceTree = "<group>"; };
 		C7E915B15B5FB48577D41C12A292E4C2 /* ZXDataMatrixC40Encoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixC40Encoder.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixC40Encoder.h; sourceTree = "<group>"; };
@@ -3050,7 +3050,7 @@
 		D5A3DE7205681A86F1341A16AB61AE56 /* TransformerHorizontalBarChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TransformerHorizontalBarChart.swift; path = Source/Charts/Utils/TransformerHorizontalBarChart.swift; sourceTree = "<group>"; };
 		D5A66B0F89C52CF4050A107B821E7C4E /* Bitwise Ops.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Bitwise Ops.swift"; path = "Sources/Bitwise Ops.swift"; sourceTree = "<group>"; };
 		D5EA026C4A56F55F91FDDE2F2F83E085 /* FieldTag.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FieldTag.swift; path = Sources/SwiftProtobuf/FieldTag.swift; sourceTree = "<group>"; };
-		D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Toast-Swift"; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D65C0BF19F0BEFCE096095DA43678105 /* Shifts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Shifts.swift; path = Sources/Shifts.swift; sourceTree = "<group>"; };
 		D65EFE60B880F4FD56E9806483D89FB5 /* Pods-SchemeKitTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SchemeKitTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		D6948AD078A0603E205ACC13A44F1B8C /* ZXAI013x0x1xDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAI013x0x1xDecoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI013x0x1xDecoder.h; sourceTree = "<group>"; };
@@ -3202,7 +3202,7 @@
 		F3B06517CAEC6313DE9BE2CED2E261DA /* ChevronDownShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChevronDownShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/ChevronDownShapeRenderer.swift; sourceTree = "<group>"; };
 		F3DB27888A03D40B2FF572CEFBC37E6A /* PSSRedisClient.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = PSSRedisClient.modulemap; sourceTree = "<group>"; };
 		F3E30FA0911C4D18C580DFA391B03B87 /* duration.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = duration.pb.swift; path = Sources/SwiftProtobuf/duration.pb.swift; sourceTree = "<group>"; };
-		F3E7458F7D38C89A9DE4BBACD3450C88 /* SwiftAlgorithms */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftAlgorithms; path = Algorithms.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3E7458F7D38C89A9DE4BBACD3450C88 /* Algorithms.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Algorithms.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3E9FFA292F5BEEF77CE0F93F12C8379 /* CocoaAsyncSocket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = CocoaAsyncSocket.release.xcconfig; sourceTree = "<group>"; };
 		F41CD0CBE638B5A1A1943365A5F7E53A /* MinimumDiameter.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MinimumDiameter.cpp; path = geos/src/algorithm/MinimumDiameter.cpp; sourceTree = "<group>"; };
 		F44B42480A8FCBA56CC87EF16F7F3A4D /* SVGElement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGElement.swift; path = SwiftSVG/SVG/Elements/SVGElement.swift; sourceTree = "<group>"; };
@@ -3220,7 +3220,7 @@
 		F5DDDDE8748AAB0AA960E8B0A602B41F /* RadarChartDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RadarChartDataSet.swift; path = Source/Charts/Data/Implementations/Standard/RadarChartDataSet.swift; sourceTree = "<group>"; };
 		F5F38D33FE34B0ED9E9C7D4E4FC7467D /* Google_Protobuf_Any+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Google_Protobuf_Any+Extensions.swift"; path = "Sources/SwiftProtobuf/Google_Protobuf_Any+Extensions.swift"; sourceTree = "<group>"; };
 		F5F49CC75378B56DFA6939E9F89F4F83 /* BarChartDataProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarChartDataProvider.swift; path = Source/Charts/Interfaces/BarChartDataProvider.swift; sourceTree = "<group>"; };
-		F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SQLite.swift; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F601678782211AAD4173FC2F91C2AE9E /* LineChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LineChartView.swift; path = Source/Charts/Charts/LineChartView.swift; sourceTree = "<group>"; };
 		F608E0EE9AD06A061AFB6DA5515F99C3 /* Highlight.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Highlight.swift; path = Source/Charts/Highlight/Highlight.swift; sourceTree = "<group>"; };
 		F61CE923E16A9537D83B8C778C892F0B /* Feature.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Feature.swift; path = GEOSwift/Feature.swift; sourceTree = "<group>"; };
@@ -3246,7 +3246,7 @@
 		FB721A2D0017A48B0A4D3612057F2F4C /* any.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = any.pb.swift; path = Sources/SwiftProtobuf/any.pb.swift; sourceTree = "<group>"; };
 		FB85BAD027A8CD4040A599233D983ECC /* ZXDataMatrixBase256Encoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixBase256Encoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixBase256Encoder.m; sourceTree = "<group>"; };
 		FBE66FC29F353CDCDC8D4A3DD6DE07FE /* RelateComputer.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RelateComputer.cpp; path = geos/src/operation/relate/RelateComputer.cpp; sourceTree = "<group>"; };
-		FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-SchemeKitTests"; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC21F28CAB964D171A407C7F70AD9945 /* PSSRedisClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PSSRedisClient.release.xcconfig; sourceTree = "<group>"; };
 		FC3EFF75AAD9D46A48A6EB0BB87BBEAA /* BigInt-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BigInt-dummy.m"; sourceTree = "<group>"; };
 		FC7D0A559896F4441F842D71DEC26057 /* Random.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Random.swift; path = Sources/Random.swift; sourceTree = "<group>"; };
@@ -3559,7 +3559,6 @@
 				FF5925685349162C98C99EF42AF9371A /* Words and Bits.swift */,
 				4BE6470B6DB71935249E125B13639C6E /* Support Files */,
 			);
-			name = BigInt;
 			path = BigInt;
 			sourceTree = "<group>";
 		};
@@ -3664,7 +3663,6 @@
 				606DE674951BD8C17E0EEC5A779A5592 /* ZipUtilities.swift */,
 				AB077AC76CC824009D46BA5F2F9F7ED3 /* Support Files */,
 			);
-			name = Zip;
 			path = Zip;
 			sourceTree = "<group>";
 		};
@@ -3719,7 +3717,6 @@
 				FDA8D6A1A92816F66FFBDEB2B242C98C /* Unown.swift */,
 				45E484F6ED5A8E1BD3A27345714E974A /* Support Files */,
 			);
-			name = SwiftSVG;
 			path = SwiftSVG;
 			sourceTree = "<group>";
 		};
@@ -3768,7 +3765,6 @@
 				7DE07F18B4CD5D4966CEBB81D5A0E27C /* Core */,
 				E307EAD0891703513301C0B6B7D10D22 /* Support Files */,
 			);
-			name = Charts;
 			path = Charts;
 			sourceTree = "<group>";
 		};
@@ -3795,7 +3791,6 @@
 				A91DAFDA0236ACA757EE4A627F9F8909 /* Core */,
 				0B2A621ACB0171EFD215BB369770D35B /* Support Files */,
 			);
-			name = GCDWebServer;
 			path = GCDWebServer;
 			sourceTree = "<group>";
 		};
@@ -3993,7 +3988,6 @@
 				608262226DD9C2B60AB1124A050EAE87 /* SpatialRelations.swift */,
 				AD05EAB62C456A990B7D7F5D32576202 /* Support Files */,
 			);
-			name = GEOSwift;
 			path = GEOSwift;
 			sourceTree = "<group>";
 		};
@@ -4003,37 +3997,36 @@
 				AAB2578A23BD67DF3FE4C1DD2525E82B /* All */,
 				875185EE9C98CC717B25C0CD6D6C927D /* Support Files */,
 			);
-			name = ZXingObjC;
 			path = ZXingObjC;
 			sourceTree = "<group>";
 		};
 		9C82D74CA712691A5B73689AA6AF8CC9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */,
-				05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */,
-				91BB24BA472AF523E913108C9AA301F2 /* BigInt */,
-				A1C1B977ED8804E8AEEC884E7359EE58 /* Charts */,
-				6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */,
-				B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */,
-				A28AB133538FF4F23492D8B0D05D5035 /* geos */,
-				77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */,
-				48D031403554BA5789B68E985515041D /* KTVJSONWebToken */,
-				0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */,
-				38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */,
-				9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */,
-				40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */,
-				90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */,
-				568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */,
-				FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */,
-				5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */,
-				F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */,
-				F3E7458F7D38C89A9DE4BBACD3450C88 /* SwiftAlgorithms */,
-				943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */,
-				62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */,
-				D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */,
-				A845402EF959A57A4640F2A4F5155943 /* Zip */,
-				6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */,
+				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */,
+				05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */,
+				91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */,
+				A1C1B977ED8804E8AEEC884E7359EE58 /* Charts.framework */,
+				6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */,
+				B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */,
+				A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */,
+				77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */,
+				48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */,
+				0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */,
+				38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */,
+				9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */,
+				40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */,
+				90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */,
+				568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */,
+				FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */,
+				5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */,
+				F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */,
+				F3E7458F7D38C89A9DE4BBACD3450C88 /* Algorithms.framework */,
+				943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */,
+				62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */,
+				D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */,
+				A845402EF959A57A4640F2A4F5155943 /* Zip.framework */,
+				6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -4047,7 +4040,6 @@
 				C9305B09BA335718AF4DD9A763B50FEB /* GCDAsyncUdpSocket.m */,
 				D7114C93AA739D6397EF96079F54B9DC /* Support Files */,
 			);
-			name = CocoaAsyncSocket;
 			path = CocoaAsyncSocket;
 			sourceTree = "<group>";
 		};
@@ -4706,7 +4698,6 @@
 				E2A3CF8CBFA231DCFDECE0E44AFBCEF5 /* Windows.swift */,
 				7A82FEB5C9CCF0EACF9D45625FCD6CEB /* Support Files */,
 			);
-			name = SwiftAlgorithms;
 			path = SwiftAlgorithms;
 			sourceTree = "<group>";
 		};
@@ -4799,7 +4790,6 @@
 				34A68FD4EC2CE93E9D706BE38CF11A79 /* ZigZag.swift */,
 				23562A2D69990995A8370FCA5D6FE0B6 /* Support Files */,
 			);
-			name = SwiftProtobuf;
 			path = SwiftProtobuf;
 			sourceTree = "<group>";
 		};
@@ -4833,7 +4823,6 @@
 				8D2F40F2040BEF5F5F507E9E10F6FDDF /* TokenValidator.swift */,
 				25D4CD09CA2E6E4A55261AA7C9EDFC97 /* Support Files */,
 			);
-			name = KTVJSONWebToken;
 			path = KTVJSONWebToken;
 			sourceTree = "<group>";
 		};
@@ -4889,7 +4878,6 @@
 				7AA3B2E4BEFBEA1BBB9CFC5BF6624AB1 /* Toast.swift */,
 				D4FE4CFBC3174E338ED7F28630AE9F58 /* Support Files */,
 			);
-			name = "Toast-Swift";
 			path = "Toast-Swift";
 			sourceTree = "<group>";
 		};
@@ -4915,7 +4903,6 @@
 				FADC693CEB5FFABEF1DDE1D842DCD9B8 /* RedisResponseParser.swift */,
 				2B30659A42487EA2B92FC551C8AE6F3D /* Support Files */,
 			);
-			name = PSSRedisClient;
 			path = PSSRedisClient;
 			sourceTree = "<group>";
 		};
@@ -4941,7 +4928,6 @@
 				5253817207BB7AA9718C2BE21E49308F /* Validation.swift */,
 				E67EF3D2187C79170CF0FF3C84B0A004 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -5000,7 +4986,6 @@
 				AFE6DC619AEED4AAAF1DD51943599E2D /* standard */,
 				0803E85276EDF7F86A9CCF4E05B61843 /* Support Files */,
 			);
-			name = SQLite.swift;
 			path = SQLite.swift;
 			sourceTree = "<group>";
 		};
@@ -5307,7 +5292,6 @@
 				88C4B3EED22F0FB6E949B69968B814BA /* Writer.cpp */,
 				306ACE675407044B8BA78F232679DD49 /* Support Files */,
 			);
-			name = geos;
 			path = geos;
 			sourceTree = "<group>";
 		};
@@ -5317,7 +5301,6 @@
 				21FE61072410E10DBA532CF1119E99F9 /* Base58.swift */,
 				2E7759EE553A23A09E4F2689A13F2B98 /* Support Files */,
 			);
-			name = Base58Swift;
 			path = Base58Swift;
 			sourceTree = "<group>";
 		};
@@ -5823,7 +5806,7 @@
 			);
 			name = "Pods-AICompanionApp";
 			productName = Pods_AICompanionApp;
-			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */;
+			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		09DD83B7D075842A3A5105AD410BD38A /* BigInt */ = {
@@ -5841,7 +5824,7 @@
 			);
 			name = BigInt;
 			productName = BigInt;
-			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt */;
+			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		0BE9E64AA13AC5C466D0A556F4D15857 /* Base58Swift */ = {
@@ -5860,7 +5843,7 @@
 			);
 			name = Base58Swift;
 			productName = Base58Swift;
-			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */;
+			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2349E173F60A2065FC65E52DD215DFF0 /* SwiftSVG */ = {
@@ -5878,7 +5861,7 @@
 			);
 			name = SwiftSVG;
 			productName = SwiftSVG;
-			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */;
+			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2C511EE63C6E7D5843B971D1E441119E /* SwiftAlgorithms */ = {
@@ -5896,7 +5879,7 @@
 			);
 			name = SwiftAlgorithms;
 			productName = Algorithms;
-			productReference = F3E7458F7D38C89A9DE4BBACD3450C88 /* SwiftAlgorithms */;
+			productReference = F3E7458F7D38C89A9DE4BBACD3450C88 /* Algorithms.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		30950EABCD5EFA0462FC017837EB16BE /* ZXingObjC */ = {
@@ -5914,7 +5897,7 @@
 			);
 			name = ZXingObjC;
 			productName = ZXingObjC;
-			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */;
+			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		31708EE6929C61C0EDA6F5DAE3AF9DB7 /* Zip */ = {
@@ -5932,7 +5915,7 @@
 			);
 			name = Zip;
 			productName = Zip;
-			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip */;
+			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3F2C1776D90B62B156DB52C41A5C419C /* SQLite.swift */ = {
@@ -5950,7 +5933,7 @@
 			);
 			name = SQLite.swift;
 			productName = SQLite;
-			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */;
+			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		4C553636806882CA884CCB37C93B7A1D /* Pods-AICompanionAppTests */ = {
@@ -5971,7 +5954,7 @@
 			);
 			name = "Pods-AICompanionAppTests";
 			productName = Pods_AICompanionAppTests;
-			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */;
+			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		6083682834ABE0AE7BD1CBF06CADD036 /* CocoaAsyncSocket */ = {
@@ -5989,7 +5972,7 @@
 			);
 			name = CocoaAsyncSocket;
 			productName = CocoaAsyncSocket;
-			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */;
+			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		62884CF888628EFA13EA1613B8C94267 /* PSSRedisClient */ = {
@@ -6008,7 +5991,7 @@
 			);
 			name = PSSRedisClient;
 			productName = PSSRedisClient;
-			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */;
+			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		739D73E5703F6F4ED0DB0A7A83146E9F /* Pods-SchemeKitTests */ = {
@@ -6026,7 +6009,7 @@
 			);
 			name = "Pods-SchemeKitTests";
 			productName = "Pods-SchemeKitTests";
-			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */;
+			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		7F80FEFE0385D9F0B1E5E029AACC864C /* geos */ = {
@@ -6044,7 +6027,7 @@
 			);
 			name = geos;
 			productName = geos;
-			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos */;
+			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		8C2C70E07119861A924AFFBB4EDB90F8 /* Pods-AICompanionApp-AICompanionAppUITests */ = {
@@ -6081,7 +6064,7 @@
 			);
 			name = "Pods-AICompanionApp-AICompanionAppUITests";
 			productName = Pods_AICompanionApp_AICompanionAppUITests;
-			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */;
+			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		A5F702E0DA383BC1479572581615A916 /* SwiftProtobuf */ = {
@@ -6099,7 +6082,7 @@
 			);
 			name = SwiftProtobuf;
 			productName = SwiftProtobuf;
-			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */;
+			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		AD904F32069787EFB2DFFE05EB82F5BD /* GCDWebServer */ = {
@@ -6117,7 +6100,7 @@
 			);
 			name = GCDWebServer;
 			productName = GCDWebServer;
-			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */;
+			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B990BD87169C76A3ED3FE8A9258D91A3 /* Toast-Swift */ = {
@@ -6135,7 +6118,7 @@
 			);
 			name = "Toast-Swift";
 			productName = Toast_Swift;
-			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */;
+			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		BF03B0B2B8B052092CB5F90CC5FB3757 /* Charts */ = {
@@ -6154,7 +6137,7 @@
 			);
 			name = Charts;
 			productName = Charts;
-			productReference = A1C1B977ED8804E8AEEC884E7359EE58 /* Charts */;
+			productReference = A1C1B977ED8804E8AEEC884E7359EE58 /* Charts.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C4DDD4DFF9E11EB5409BA8CED6FAEA6B /* Pods-AIComponentKit-AIComponentKitTests */ = {
@@ -6190,7 +6173,7 @@
 			);
 			name = "Pods-AIComponentKit-AIComponentKitTests";
 			productName = Pods_AIComponentKit_AIComponentKitTests;
-			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */;
+			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D1DAECCFA739F2B9F26311F0AA6D96D5 /* KTVJSONWebToken */ = {
@@ -6208,7 +6191,7 @@
 			);
 			name = KTVJSONWebToken;
 			productName = KTVJSONWebToken;
-			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken */;
+			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D9511E908172FC0635D8A6BF87724844 /* Pods-SchemeKit */ = {
@@ -6225,7 +6208,7 @@
 			);
 			name = "Pods-SchemeKit";
 			productName = "Pods-SchemeKit";
-			productReference = 568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */;
+			productReference = 568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E1AD339F31EABB0CEE96DD92C4E0BC03 /* Pods-AIComponentKit */ = {
@@ -6261,7 +6244,7 @@
 			);
 			name = "Pods-AIComponentKit";
 			productName = Pods_AIComponentKit;
-			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */;
+			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EAAA1AD3A8A1B59AB91319EE40752C6D /* Alamofire */ = {
@@ -6279,7 +6262,7 @@
 			);
 			name = Alamofire;
 			productName = Alamofire;
-			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */;
+			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EBEEF85FCA1109D5280B062D0A876D5A /* GEOSwift */ = {
@@ -6298,7 +6281,7 @@
 			);
 			name = GEOSwift;
 			productName = GEOSwift;
-			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */;
+			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -8139,7 +8122,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Zip/Zip-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -8195,7 +8178,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/PSSRedisClient/PSSRedisClient-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -8298,7 +8281,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftSVG/SwiftSVG-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftSVG/SwiftSVG-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftSVG/SwiftSVG.modulemap";
 				PRODUCT_MODULE_NAME = SwiftSVG;
@@ -8397,7 +8380,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/BigInt/BigInt-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/BigInt/BigInt-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigInt/BigInt.modulemap";
 				PRODUCT_MODULE_NAME = BigInt;
@@ -8465,7 +8448,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Toast-Swift/Toast-Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Toast-Swift/Toast-Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Toast-Swift/Toast-Swift.modulemap";
 				PRODUCT_MODULE_NAME = Toast_Swift;
@@ -8497,7 +8480,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket.modulemap";
 				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
@@ -8529,7 +8512,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftProtobuf/SwiftProtobuf-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf.modulemap";
 				PRODUCT_MODULE_NAME = SwiftProtobuf;
@@ -8632,7 +8615,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Zip/Zip-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -8664,7 +8647,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Base58Swift/Base58Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Base58Swift/Base58Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Base58Swift/Base58Swift.modulemap";
 				PRODUCT_MODULE_NAME = Base58Swift;
@@ -8757,7 +8740,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/PSSRedisClient/PSSRedisClient-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -8828,8 +8811,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -8875,7 +8857,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken.modulemap";
 				PRODUCT_MODULE_NAME = KTVJSONWebToken;
@@ -8907,7 +8889,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -8973,7 +8955,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/ZXingObjC/ZXingObjC-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/ZXingObjC/ZXingObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZXingObjC/ZXingObjC.modulemap";
 				PRODUCT_MODULE_NAME = ZXingObjC;
@@ -9006,7 +8988,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -9039,7 +9021,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GEOSwift/GEOSwift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -9107,7 +9089,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftSVG/SwiftSVG-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftSVG/SwiftSVG-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftSVG/SwiftSVG.modulemap";
 				PRODUCT_MODULE_NAME = SwiftSVG;
@@ -9139,7 +9121,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/geos/geos-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/geos/geos-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/geos/geos.modulemap";
 				PRODUCT_MODULE_NAME = geos;
@@ -9171,7 +9153,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SQLite.swift/SQLite.swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SQLite.swift/SQLite.swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SQLite.swift/SQLite.swift.modulemap";
 				PRODUCT_MODULE_NAME = SQLite;
@@ -9203,7 +9185,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms.modulemap";
 				PRODUCT_MODULE_NAME = Algorithms;
@@ -9235,7 +9217,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/ZXingObjC/ZXingObjC-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/ZXingObjC/ZXingObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZXingObjC/ZXingObjC.modulemap";
 				PRODUCT_MODULE_NAME = ZXingObjC;
@@ -9268,7 +9250,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftAlgorithms/SwiftAlgorithms.modulemap";
 				PRODUCT_MODULE_NAME = Algorithms;
@@ -9301,7 +9283,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GCDWebServer/GCDWebServer-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GCDWebServer/GCDWebServer.modulemap";
 				PRODUCT_MODULE_NAME = GCDWebServer;
@@ -9334,7 +9316,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftProtobuf/SwiftProtobuf-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf.modulemap";
 				PRODUCT_MODULE_NAME = SwiftProtobuf;
@@ -9402,7 +9384,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Base58Swift/Base58Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Base58Swift/Base58Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Base58Swift/Base58Swift.modulemap";
 				PRODUCT_MODULE_NAME = Base58Swift;
@@ -9434,7 +9416,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Toast-Swift/Toast-Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Toast-Swift/Toast-Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Toast-Swift/Toast-Swift.modulemap";
 				PRODUCT_MODULE_NAME = Toast_Swift;
@@ -9502,7 +9484,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken.modulemap";
 				PRODUCT_MODULE_NAME = KTVJSONWebToken;
@@ -9535,7 +9517,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket.modulemap";
 				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
@@ -9568,7 +9550,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/BigInt/BigInt-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/BigInt/BigInt-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigInt/BigInt.modulemap";
 				PRODUCT_MODULE_NAME = BigInt;
@@ -9637,7 +9619,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/geos/geos-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/geos/geos-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/geos/geos.modulemap";
 				PRODUCT_MODULE_NAME = geos;
@@ -9670,7 +9652,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GCDWebServer/GCDWebServer-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GCDWebServer/GCDWebServer.modulemap";
 				PRODUCT_MODULE_NAME = GCDWebServer;
@@ -9702,7 +9684,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GEOSwift/GEOSwift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -9767,7 +9749,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SQLite.swift/SQLite.swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SQLite.swift/SQLite.swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SQLite.swift/SQLite.swift.modulemap";
 				PRODUCT_MODULE_NAME = SQLite;
