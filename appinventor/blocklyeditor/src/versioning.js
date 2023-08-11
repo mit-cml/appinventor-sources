@@ -1820,6 +1820,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ChartData2D upgraders
 
+  "ChatBot" : {
+    //This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
+  }, // End ChatBot upgraders
+
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
@@ -2065,7 +2073,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "ImageBot": {
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
   },  // End ImageBot upgraders
 
   "ImagePicker": {
@@ -3394,10 +3405,4 @@ Blockly.Versioning.AllUpgradeMaps =
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
   }, // End Translate upgraders
-
-  "ChatBot" : {
-    //This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
-  } // End ChatBot upgraders
-
 };

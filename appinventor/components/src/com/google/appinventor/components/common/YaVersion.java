@@ -576,6 +576,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 223:
   // - IMAGEBOT_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 224:
+  // - CHATBOT_COMPONENT_VERSION was incremented to 2
+  // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
 
   public static final int YOUNG_ANDROID_VERSION = 224;
@@ -857,8 +859,10 @@ public class YaVersion {
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
-  //For CHATBOT_COMPONENT_VERSION: Initial Version
-  public static final int CHATBOT_COMPONENT_VERSION = 1;
+  // For CHATBOT_COMPONENT_VERSION: Initial Version
+  // For CHATBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made visible in the designer view
+  public static final int CHATBOT_COMPONENT_VERSION = 2;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1049,7 +1053,9 @@ public class YaVersion {
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
 
-  public static final int IMAGEBOT_COMPONENT_VERSION = 1;
+  // For IMAGEBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made available in the designer
+  public static final int IMAGEBOT_COMPONENT_VERSION = 2;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

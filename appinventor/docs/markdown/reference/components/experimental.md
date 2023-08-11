@@ -24,7 +24,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 
 {:.properties}
 
-{:id="ChatBot.ApiKey" .text .bo} *ApiKey*
+{:id="ChatBot.ApiKey" .text} *ApiKey*
 : An ApiKey for ChatGPT. User supplied. If provided, we will use it instead of the
  API key embedded in the chat proxy service.
 
@@ -66,7 +66,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 : Ask a question of the Chat Bot. Successive calls will remember information from earlier in the conversation. Use the "ResetConversation" function to reset for a new conversation.
 
 {:id="ChatBot.ResetConversation" class="method"} <i/> ResetConversation()
-: Reset the current conversation, Chat bot will forget any previous conversation when resonding in the future.
+: Reset the current conversation, Chat bot will forget any previous conversation when responding in the future.
 
 ## FirebaseDB  {#FirebaseDB}
 
@@ -176,7 +176,7 @@ The ImageBot is a non-visible component that uses DALL-E 2 to create and edit im
 
 {:.properties}
 
-{:id="ImageBot.ApiKey" .text .wo .bo} *ApiKey*
+{:id="ImageBot.ApiKey" .text .wo} *ApiKey*
 : Specifies the ApiKey used to authenticate with the ImageBot.
 
 {:id="ImageBot.InvertMask" .boolean} *InvertMask*

@@ -100,6 +100,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    *
    * @param apiKey the API key to use for requests
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void ApiKey(String apiKey) {
     this.apiKey = apiKey;
