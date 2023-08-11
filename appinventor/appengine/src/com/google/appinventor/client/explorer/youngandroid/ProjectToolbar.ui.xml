@@ -13,7 +13,7 @@
         <!-- Projects Menu -->
         <ai:Toolbar>
             <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" ui:field="newProjectItem" >
-                <actions:NewAction />
+                <actions:NewProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" >
                 <actions:SwitchToProjectAction />

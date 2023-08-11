@@ -21,7 +21,7 @@
       </ai:DropDownItem>
       <hr />
       <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}">
-        <actions:NewAction />
+        <actions:NewProjectAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}">
         <actions:ImportProjectAction />

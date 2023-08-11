@@ -8,10 +8,8 @@ package com.google.appinventor.client.actions;
 
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 
-public class NewAction implements Command {
+public class NewProjectAction implements Command {
   @Override
   public void execute() {
     new NewYoungAndroidProjectWizard();
