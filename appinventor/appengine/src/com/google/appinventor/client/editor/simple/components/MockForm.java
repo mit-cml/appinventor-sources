@@ -932,7 +932,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
     }
-
+    
     if (editor.isLoadComplete()) {
       ((YaFormEditor)editor).reloadComponentPalette(asJson);
     }
