@@ -222,42 +222,6 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
-   * Returns the t value to use for time entries for a
-   * Data Series of this Chart component.
-   *
-   * <p>Takes in the t value of a Data Series as an argument
-   * to determine a value tailored to the Data Series, while
-   * updating the synced t value of the Chart component.
-   *
-   * <p>This method primarily takes care of syncing t values
-   * across all the Data Series of the Chart for consistency.
-   *
-   * @param dataSeriesT t value of a Data Series
-   * @return t value to use for the next time entry based on the specified parameter
-   */
-  public int getSyncedTValue(int dataSeriesT) {
-    int returnValue;
-
-    // If the difference between the global t and the Data Series' t
-    // value is more than one, that means the Data Series' t value
-    // is out of sync and must be updated.
-    if (tick - dataSeriesT > 1) {
-      returnValue = tick;
-    } else {
-      returnValue = dataSeriesT;
-    }
-
-    // Since the returnValue is either bigger or equal to t,
-    // the new synchronized t value should be 1 higher than
-    // the return value (since immediately after getting the
-    // t value, the value will be incremented either way)
-    tick = returnValue + 1;
-
-    // Return the calculated t value
-    return returnValue;
-  }
-
-  /**
    * Reinitializes the Chart view by reattaching all the Data
    * components and setting back all the properties.
    */
@@ -607,5 +571,40 @@ public class Chart extends AndroidViewComponent
       ((PieChartView) chartView).setPieRadius(pieRadius);
       chartView.refresh();
     }
+  }
+  /**
+   * Returns the t value to use for time entries for a
+   * Data Series of this Chart component.
+   *
+   * <p>Takes in the t value of a Data Series as an argument
+   * to determine a value tailored to the Data Series, while
+   * updating the synced t value of the Chart component.
+   *
+   * <p>This method primarily takes care of syncing t values
+   * across all the Data Series of the Chart for consistency.
+   *
+   * @param dataSeriesT t value of a Data Series
+   * @return t value to use for the next time entry based on the specified parameter
+   */
+  public int getSyncedTValue(int dataSeriesT) {
+    int returnValue;
+
+    // If the difference between the global t and the Data Series' t
+    // value is more than one, that means the Data Series' t value
+    // is out of sync and must be updated.
+    if (tick - dataSeriesT > 1) {
+      returnValue = tick;
+    } else {
+      returnValue = dataSeriesT;
+    }
+
+    // Since the returnValue is either bigger or equal to t,
+    // the new synchronized t value should be 1 higher than
+    // the return value (since immediately after getting the
+    // t value, the value will be incremented either way)
+    tick = returnValue + 1;
+
+    // Return the calculated t value
+    return returnValue;
   }
 }
