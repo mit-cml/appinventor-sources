@@ -98,14 +98,16 @@ public final class Regression extends DataCollection {
   }
 
   /**
-   * Returns one of the Line of Best Fit values. A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided.
+   * Returns one of the Line of Best Fit values.
+   * A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided.
    *
    * @param xList - the list of x values
    * @param yList - the list of y values
    * @param value - the string name of the line of best fit property
    * @return Double slope
    */
-  @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be \"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". The block returns the complete dictionary with all values if no specific value string is provided")
+  @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be \"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". " +
+      "The block returns the complete dictionary with all values if no specific value string is provided")
   public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList, LOBFValues value) {
     YailDictionary result = ComputeLineOfBestFit(xList, yList);
     if (result.containsKey(value.toUnderlyingValue())){
@@ -117,11 +119,11 @@ public final class Regression extends DataCollection {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return null;
+    return container.$form();
   }
 
   @Override
-  public void refreshChart() {
+  public void onDataChange() {
 
   }
 }

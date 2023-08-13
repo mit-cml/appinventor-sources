@@ -29,8 +29,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.concurrent.Executors;
-
 /**
  * Base class for Chart Data components. Contains functionality common
  * to any Chart Data component. The component corresponds to a single
@@ -103,7 +101,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
   public void Color(int argb) {
     color = argb;
     dataModel.setColor(color);
-    refreshChart();
+    onDataChange();
   }
 
   /**
@@ -162,7 +160,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
     // Set the colors from the constructed List of colors
     // and refresh the Chart.
     dataModel.setColors(resultColors);
-    refreshChart();
+    onDataChange();
   }
 
   /**
@@ -186,7 +184,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
   public void Label(String text) {
     this.label = text;
     dataModel.setLabel(text);
-    refreshChart();
+    onDataChange();
   }
 
   /**
@@ -239,7 +237,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
    * Data Series data.
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public void refreshChart() {
+  public void onDataChange() {
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
     container.getChartView().refresh((ChartDataModel) dataModel);

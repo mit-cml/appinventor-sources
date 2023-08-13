@@ -71,7 +71,7 @@ public final class ChartData2D extends ChartDataBase {
         dataModel.addEntryFromTuple(pair);
 
         // Refresh Chart with new data
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -106,7 +106,7 @@ public final class ChartData2D extends ChartDataBase {
         dataModel.removeEntryFromTuple(pair);
         // Refresh Chart with new data
         resetHighlightAtIndex(index);
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -234,7 +234,7 @@ public final class ChartData2D extends ChartDataBase {
       ((LineDataSet) dataModel.getDataset()).setDrawCircles(false);
       ((LineDataSet) dataModel.getDataset()).setDrawValues(false);
     }
-    refreshChart();
+    onDataChange();
   }
 
   /**
@@ -243,7 +243,8 @@ public final class ChartData2D extends ChartDataBase {
    * @param dataPoints - the list of data points. A data point inside this list is a pair of point index and point value: [[point index, point value],...,[,]]
    * @param color - the highlight color chosen by the user
    */
-  @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of choice. This block expects a list of data points, each data point is an index, value pair")
+  @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of choice." +
+      " This block expects a list of data points, each data point is an index, value pair")
   public void HighlightDataPoints(final YailList dataPoints, int color) {
     List<List> dataPointsList = (LList) dataPoints.getCdr();
     if(!dataPoints.isEmpty()) {
@@ -256,7 +257,7 @@ public final class ChartData2D extends ChartDataBase {
         highlights[dataPointIndex - 1] = color;
       }
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
-      refreshChart();
+      onDataChange();
     }else{
       throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }

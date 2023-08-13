@@ -36,7 +36,7 @@ import java.util.concurrent.Future;
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class DataCollection<C extends ComponentContainer, E extends Entry, M extends DataModel>
-implements Component, DataSourceChangeListener {
+        implements Component, DataSourceChangeListener {
   protected M dataModel;
   protected C container;
 
@@ -122,7 +122,7 @@ implements Component, DataSourceChangeListener {
    * Data Series data.
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public abstract void refreshChart();
+  public abstract void onDataChange();
 
   /*
    * SimpleProperties
@@ -159,7 +159,7 @@ implements Component, DataSourceChangeListener {
       @Override
       public void run() {
         dataModel.setElements(elements);
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -392,7 +392,7 @@ implements Component, DataSourceChangeListener {
       @Override
       public void run() {
         dataModel.importFromList(list);
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -409,7 +409,7 @@ implements Component, DataSourceChangeListener {
       @Override
       public void run() {
         dataModel.clearEntries();
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -626,7 +626,7 @@ implements Component, DataSourceChangeListener {
       @Override
       public void run() {
         dataModel.importFromList(list);
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -663,7 +663,7 @@ implements Component, DataSourceChangeListener {
 
           // Import the data and refresh the Chart
           dataModel.importFromList(listValue);
-          refreshChart();
+          onDataChange();
         } catch (InterruptedException e) {
           Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
@@ -709,7 +709,7 @@ implements Component, DataSourceChangeListener {
         // Import from Data file with the specified parameters
         dataModel.importFromColumns(dataResult, true);
         // Refresh the Chart after import
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -737,7 +737,7 @@ implements Component, DataSourceChangeListener {
         }
 
         dataModel.importFromColumns(dataColumns, useHeaders);
-        refreshChart();
+        onDataChange();
 
       }
     });
@@ -778,7 +778,7 @@ implements Component, DataSourceChangeListener {
 
         // Import the data from the retrieved columns
         dataModel.importFromColumns(dataColumns, true);
-        refreshChart();
+        onDataChange();
 
       }
     });
@@ -918,7 +918,7 @@ implements Component, DataSourceChangeListener {
         if (lastDataSourceValue instanceof List) {
           dataModel.importFromList((List<?>) lastDataSourceValue);
         }
-        refreshChart();
+        onDataChange();
       }
     });
   }
@@ -976,7 +976,7 @@ implements Component, DataSourceChangeListener {
           final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
 
           dataModel.addTimeEntry(tuple);
-          refreshChart();
+          onDataChange();
 
           // Increment t value
           tick++;

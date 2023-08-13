@@ -89,7 +89,8 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return List of combined x and y pairs without the anomaly pair
    */
-  @SimpleFunction(description = "Given a single anomaly and the x and y values of your data. This block will return the x and y value pairs of your data without the anomaly")
+  @SimpleFunction(description = "Given a single anomaly and the x and y values of your data." +
+      " This block will return the x and y value pairs of your data without the anomaly")
   public List CleanData(final YailList anomaly, YailList xList, YailList yList) {
     LList xValues = (LList) xList.getCdr();
     List xData = castToDouble(xValues);
@@ -137,11 +138,11 @@ public final class AnomalyDetection extends DataCollection {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return null;
+    return container.$form();
   }
 
   @Override
-  public void refreshChart() {
+  public void onDataChange() {
 
   }
 }

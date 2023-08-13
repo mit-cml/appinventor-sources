@@ -572,6 +572,7 @@ public class Chart extends AndroidViewComponent
       chartView.refresh();
     }
   }
+
   /**
    * Returns the t value to use for time entries for a
    * Data Series of this Chart component.

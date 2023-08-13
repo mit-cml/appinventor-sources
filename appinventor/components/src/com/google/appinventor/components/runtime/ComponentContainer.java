@@ -51,5 +51,5 @@ public interface ComponentContainer {
   int Width();
 
   int Height();
-  
+
 }
