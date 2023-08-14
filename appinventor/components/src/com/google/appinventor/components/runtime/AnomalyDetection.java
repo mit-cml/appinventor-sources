@@ -21,7 +21,10 @@ import gnu.lists.Pair;
 
 /**
  * A data science component to apply different anomaly detection models.
- * The component needs a data source to apply the model on.
+ * The component only needs a data source to apply the model on.
+ *
+ * The anomaly detection models only return a list of anomalies.
+ * ChartData2D component is needed to highlight the anomalies on a chart
  */
 @DesignerComponent(version = YaVersion.ANOMALY_COMPONENT_VERSION,
     description = "A component that contains anomaly detection models",

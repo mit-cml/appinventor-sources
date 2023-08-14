@@ -21,7 +21,13 @@ import java.util.List;
 
 /**
  * A data science component to apply different regression models.
- * The component requires a data source to apply the model on.
+ * The component only requires a data source to apply the model on.
+ *
+ * The component is only responsible for the statistical calculations and
+ * provides the following properties for line of best fit:
+ * "slope", "Yintercept", "correlation coefficient", and "predictions"
+ *
+ * To draw the line of best fit use the drawing block in ChartData2D component
  */
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
     description = "A component that contains regression models",
