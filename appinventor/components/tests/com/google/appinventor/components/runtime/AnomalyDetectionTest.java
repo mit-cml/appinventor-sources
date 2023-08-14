@@ -17,9 +17,17 @@ import java.util.List;
 
 
 public class AnomalyDetectionTest extends RobolectricTestBase {
-  AnomalyDetection anomalyDetection = new AnomalyDetection(getForm());
-  YailList xList = YailList.makeList(Arrays.asList("1","2","3","4","5","6"));
-  YailList yList = YailList.makeList(Arrays.asList("1","2","3","2","2","88"));
+  AnomalyDetection anomalyDetection;
+  YailList xList;
+  YailList yList;
+
+  @Override
+  public void setUp() {
+    super.setUp();
+    anomalyDetection = new AnomalyDetection(getForm());
+    xList = YailList.makeList(Arrays.asList("1","2","3","4","5","6"));
+    yList = YailList.makeList(Arrays.asList("1","2","3","2","2","88"));
+  }
 
   @Test
   public void testDetectAnomalies(){
