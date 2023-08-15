@@ -209,6 +209,7 @@ import SchemeKit
         self.navigationController?.perform(Selector("reset"))
       }
     } else {
+      interpreter.setCurrentForm(self)
       interpreter.evalForm(sexp)
     }
   }

@@ -2063,6 +2063,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Image upgraders
 
+  "ImageBot": {
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  },  // End ImageBot upgraders
+
   "ImagePicker": {
 
     // AI1: The Alignment property was renamed to TextAlignment.
@@ -3122,7 +3127,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // default value was added to the Country designer property
     // default value was added to the Language designer property
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: The Stop method was added.
+    6: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 
@@ -3385,6 +3393,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "Translator": {
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
-  } // End Translate upgraders
+  }, // End Translate upgraders
+
+  "ChatBot" : {
+    //This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  } // End ChatBot upgraders
 
 };

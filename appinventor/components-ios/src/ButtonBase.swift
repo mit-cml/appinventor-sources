@@ -91,7 +91,7 @@ enum ButtonStylePipeline: Int {
 
 typealias PipelineStep = (ButtonBase)->Bool
 
-open class ButtonBase: ViewComponent {
+open class ButtonBase: ViewComponent, AccessibleComponent {
   @objc final var _view: MAIButton
   fileprivate weak var _delegate: AbstractMethodsForButton?
   fileprivate var _textAlignment = Alignment.center
@@ -116,6 +116,12 @@ open class ButtonBase: ViewComponent {
   fileprivate static var MODERN_DEFAULT_PIPELINE = [ButtonStylePipeline:PipelineStep]()
   fileprivate var _stylePipeline: [ButtonStylePipeline:PipelineStep]
   fileprivate var _needsStyleApplied = true
+  fileprivate var _isHighContrast = false
+  fileprivate var _isBigText = false
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _userBackgroundColor: Int32 = Color.default.int32
+  fileprivate var _userTextColor: Int32 = Color.default.int32
+  fileprivate var _hintColorDefault: Int32 = Color.default.int32
 
   static func loadClassicButton() {
     let bundle = Bundle(for: ButtonBase.self)
@@ -251,13 +257,51 @@ open class ButtonBase: ViewComponent {
     applyStyle()
   }
 
+  func updateFontSize() {
+    guard let titleLabel = _view.titleLabel else {
+      return
+    }
+
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        titleLabel.font = getFontSize(font: titleLabel.font, size: kFontSizeLargeDefault)
+      } else {
+        titleLabel.font = getFontSize(font: titleLabel.font, size: _userFontSize)
+      }
+    } else {
+      titleLabel.font = getFontSize(font: titleLabel.font, size: _userFontSize)
+    }
+    setNeedsStyleApplied()
+  }
+
+  func updateColor() {
+    if form?.HighContrast == true {
+      if _userTextColor == Color.default.int32  {
+        _textColor = Int32(bitPattern: Color.white.rawValue)
+      } else {
+        _textColor = _userTextColor
+      }
+
+      if _userBackgroundColor == Color.default.int32 {
+        _backgroundColor = Int32(bitPattern: Color.black.rawValue)
+      } else {
+        _backgroundColor = _userBackgroundColor
+      }
+
+    } else {
+      _textColor = _userTextColor
+      _backgroundColor = _userBackgroundColor
+    }
+    setNeedsStyleApplied()
+  }
+
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argb
-      setNeedsStyleApplied()
+      _userBackgroundColor = argb
+      updateColor()
     }
   }
 
@@ -309,7 +353,18 @@ open class ButtonBase: ViewComponent {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
+      _userFontSize = size
+      updateFontSize()
+    }
+  }
+
+  @objc open var HighContrast: Bool {
+    get {
+      return _isHighContrast
+    }
+    set(isHighContrast) {
+      _isHighContrast = isHighContrast
+      updateColor()
     }
   }
 
@@ -333,6 +388,16 @@ open class ButtonBase: ViewComponent {
         }
       }
       setNeedsStyleApplied()
+    }
+  }
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
 
@@ -402,12 +467,8 @@ open class ButtonBase: ViewComponent {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
     set(color) {
-      _textColor = color
-      if (color == Int32(bitPattern: Color.default.rawValue)) {
-        _view.setTitleColor(_defaultTextColor, for: .normal)
-      } else {
-        _view.setTitleColor(argbToColor(color), for: .normal)
-      }
+      _userTextColor = color
+      updateColor()
     }
   }
 

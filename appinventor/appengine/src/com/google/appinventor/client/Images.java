@@ -511,6 +511,12 @@ public interface Images extends Resources {
   ImageResource voting();
 
   /**
+   * Designer palette item: ImageBot.
+   */
+  @Source("com/google/appinventor/images/paintpalette.png")
+  ImageResource paintPalette();
+
+  /**
    * Designer palette item: Pedometer Component
    */
   @Source("com/google/appinventor/images/pedometer.png")
@@ -648,6 +654,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/translator.png")
   ImageResource translator();
+
+  /**
+   * Designer pallette item: ChatBot Component
+   */
+  @Source("com/google/appinventor/images/chatbot.png")
+  ImageResource chatbot();
 
   /**
     * Designer palette item: YandexTranslate
