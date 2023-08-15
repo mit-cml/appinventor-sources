@@ -19,10 +19,10 @@ import com.google.gwt.user.client.ui.Image;
  * {@link SimplePaletteItem} for a component.
  */
 public abstract class AbstractPaletteItemWidget extends Image {
-//  protected final SimpleComponentDescriptor scd;
+  protected final SimpleComponentDescriptor scd;
 
   AbstractPaletteItemWidget(SimpleComponentDescriptor scd, ImageResource image) {
-//    this.scd = scd;
+    this.scd = scd;
 
     AbstractImagePrototype.create(image).applyTo(this);
     this.addStyleName("ode-SimplePaletteItem-button");
@@ -48,30 +48,6 @@ public abstract class AbstractPaletteItemWidget extends Image {
     });
   }
 
-  AbstractPaletteItemWidget(ImageResource image) {
-    AbstractImagePrototype.create(image).applyTo(this);
-    this.addStyleName("ode-SimplePaletteItem-button");
-
-    addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        handleClick();
-      }
-    });
-    addTouchStartHandler(new TouchStartHandler() {
-      @Override
-      public void onTouchStart(TouchStartEvent touchStartEvent) {
-        // Otherwise captured by SimplePaletteItem
-        touchStartEvent.stopPropagation();
-      }
-    });
-    addTouchEndHandler(new TouchEndHandler() {
-      @Override
-      public void onTouchEnd(TouchEndEvent touchEndEvent) {
-        handleClick();
-      }
-    });
-  }
   /**
    * Handles when the user clicks (or taps) on the button.
    */
