@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.InlineHTML;
  */
 public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
 
+
   /**
    * Component type name.
    */
@@ -154,5 +155,12 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
   @Override
   protected void setContainer(MockContainer container) {
     super.setContainer(container);
+    getForm().addDesignPreviewChangeListener(this);
+  }
+
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    paintCheckBox(checked);
   }
 }

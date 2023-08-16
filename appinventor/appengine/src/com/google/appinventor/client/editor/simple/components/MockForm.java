@@ -425,6 +425,7 @@ public final class MockForm extends MockContainer {
     responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
+    changePreview();
     phoneBar = new PhoneBar();
     responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
@@ -493,6 +494,7 @@ public final class MockForm extends MockContainer {
 
     idxPhonePreviewStyle = idx;
     changePreviewFlag = true;
+    changePreview();
     setPhoneStyle();
     updateScreenSize();
   }
@@ -570,6 +572,61 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  private void changePreview() {
+    // this condition prevents adding multiple phoneBars and titleBars
+    if (changePreviewFlag)  {
+      responsivePanel.remove(phoneBar);
+      responsivePanel.remove(titleBar);
+    }
+
+    if (idxPhonePreviewStyle == -1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.removeStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 0) {
+      phoneBar = new PhoneBar(primaryDarkColor);
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidMaterial");
+    } else if (idxPhonePreviewStyle == 1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 2) {
+      phoneBar = new PhoneBar(blackIcons, idxPhoneSize, primaryColor);
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.addStyleDependentName("iOS");
+    }
+
+    // updating changes to the MockForm
+    if (changePreviewFlag) {
+      formWidget.remove(responsivePanel);
+      formWidget.remove(navigationBar);
+
+      ///////////////////////////////////////////////////////////////////
+      // Always need to add the phoneBar to the designer, then set the /
+      // visibility accordingly!                                       /
+      ///////////////////////////////////////////////////////////////////
+
+      responsivePanel.add(phoneBar);
+      phoneBar.setVisible(showStatusBar);
+      phoneBar.setVisibility(showStatusBar);
+      responsivePanel.add(titleBar);
+      responsivePanel.add(scrollPanel);
+      formWidget.add(responsivePanel);
+      formWidget.add(navigationBar);
+      if (idxPhonePreviewStyle != 2) {
+        titleBar.setActionBar(actionBar, false);
+      } else {
+        titleBar.setActionBar(true, true);
+        titleBar.changeBookmarkIcon(blackIcons);
+      }
+    }
+    changePreviewFlag = false;
+  }
   /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
