@@ -188,7 +188,7 @@ public class DexExecTask {
         }
 
         System.out.println(String.format(
-                "Converting compiled files and external libraries into %1$s...", mOutput));
+            "Converting compiled files and external libraries into %1$s...", mOutput));
 
         return runDx(paths, mOutput, mVerbose /*showInputs*/);
     }

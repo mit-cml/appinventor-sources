@@ -1,13 +1,35 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
+
 import com.google.appinventor.buildserver.stats.StatReporter;
+import com.google.appinventor.buildserver.tasks.AttachAarLibs;
+import com.google.appinventor.buildserver.tasks.AttachCompAssets;
+import com.google.appinventor.buildserver.tasks.AttachNativeLibs;
+import com.google.appinventor.buildserver.tasks.CreateManifest;
+import com.google.appinventor.buildserver.tasks.GenerateClasses;
+import com.google.appinventor.buildserver.tasks.LoadComponentInfo;
+import com.google.appinventor.buildserver.tasks.MergeResources;
+import com.google.appinventor.buildserver.tasks.PrepareAppIcon;
+import com.google.appinventor.buildserver.tasks.ReadBuildInfo;
+import com.google.appinventor.buildserver.tasks.RunAapt;
+import com.google.appinventor.buildserver.tasks.RunAapt2;
+import com.google.appinventor.buildserver.tasks.RunApkBuilder;
+import com.google.appinventor.buildserver.tasks.RunApkSigner;
+import com.google.appinventor.buildserver.tasks.RunBundletool;
+import com.google.appinventor.buildserver.tasks.RunMultidex;
+import com.google.appinventor.buildserver.tasks.RunZipAlign;
+import com.google.appinventor.buildserver.tasks.SetupLibs;
+import com.google.appinventor.buildserver.tasks.XmlConfig;
+
 import com.google.appinventor.common.utils.StringUtils;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -18,25 +40,22 @@ import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
+
 import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +63,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Provides support for building Young Android projects.
@@ -78,8 +101,7 @@ public final class ProjectBuilder {
   private static final String CODEBLOCKS_SOURCE_EXTENSION =
       YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
-  private static final String ALL_COMPONENT_TYPES =
-      Compiler.RUNTIME_FILES_DIR + "simple_components.txt";
+  private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
   public File getOutputApk() {
     return outputApk;
@@ -128,8 +150,9 @@ public final class ProjectBuilder {
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
-    boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions, String[] extraExtensions,
-    int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter, boolean isAab) {
+      boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
+      String[] extraExtensions, int childProcessRam, String dexCachePath,
+      BuildServer.ProgressReporter reporter, String ext) {
     try {
       // Download project files into a temporary directory
       File projectRoot = createNewTempDir();
@@ -156,12 +179,6 @@ public final class ProjectBuilder {
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
 
-        // Prepare for redirection of compiler message output
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PrintStream console = new PrintStream(output);
-        ByteArrayOutputStream errors = new ByteArrayOutputStream();
-        PrintStream userErrors = new PrintStream(errors);
-
         Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
         if (isForCompanion) {
           componentTypes.addAll(getAllComponentTypes());
@@ -173,26 +190,75 @@ public final class ProjectBuilder {
         Map<String, Set<String>> componentBlocks = getComponentBlocks(sourceFiles);
         Map<String, String> formOrientations = getScreenOrientations(sourceFiles);
 
+        // Generate the compiler context
+        Reporter r = new Reporter(reporter);
+        CompilerContext context = new CompilerContext.Builder(project, ext)
+            .withTypes(componentTypes)
+            .withBlocks(componentBlocks)
+            .withFormOrientations(formOrientations)
+            .withReporter(r)
+            .withStatReporter(statReporter)
+            .withCompanion(isForCompanion)
+            .withEmulator(isForEmulator)
+            .withDangerousPermissions(includeDangerousPermissions)
+            .withKeystore(keyStorePath)
+            .withRam(childProcessRam)
+            .withCache(dexCachePath)
+            .withOutput(outputFileName)
+            .build();
+
         // Invoke YoungAndroid compiler
-        boolean success =
-            Compiler.compile(project, componentTypes, componentBlocks, formOrientations, console,
-                console, userErrors,
-                isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
-                childProcessRam, dexCachePath, outputFileName, reporter, isAab, statReporter);
-        console.close();
-        userErrors.close();
+        Compiler compiler = new Compiler.Builder()
+            .withContext(context)
+            .withType(ext)
+            .build();
+
+        compiler.add(ReadBuildInfo.class);
+        compiler.add(LoadComponentInfo.class);
+        compiler.add(PrepareAppIcon.class);
+        compiler.add(XmlConfig.class);
+        compiler.add(CreateManifest.class);
+        compiler.add(AttachNativeLibs.class);
+        compiler.add(AttachAarLibs.class);
+        compiler.add(AttachCompAssets.class);
+        compiler.add(MergeResources.class);
+        compiler.add(SetupLibs.class);
+
+        // TODO: Upgrade APK to AAPT2
+        if (BuildType.APK_EXTENSION.equals(ext)) {
+          compiler.add(RunAapt.class);
+        } else if (BuildType.AAB_EXTENSION.equals(ext)) {
+          compiler.add(RunAapt2.class);
+        }
+
+        compiler.add(GenerateClasses.class);
+        compiler.add(RunMultidex.class);
+
+        if (BuildType.APK_EXTENSION.equals(ext)) {
+          compiler.add(RunApkBuilder.class);
+          compiler.add(RunZipAlign.class);
+          compiler.add(RunApkSigner.class);
+        } else if (BuildType.AAB_EXTENSION.equals(ext)) {
+          compiler.add(RunBundletool.class);
+        }
+
+        Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
+
+        boolean success = executor.get();
+        statReporter.stopBuild(compiler, success);
+        r.close();
 
         // Retrieve compiler messages and convert to HTML and log
         String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
             + ".." + SEPARATOR + "src" + SEPARATOR;
-        String messages = processCompilerOutput(output.toString(PathUtil.DEFAULT_CHARSET),
+        String messages = processCompilerOutput(context.getReporter().getSystemOutput(),
             srcPath);
 
         if (success) {
           // Locate output file
           String fileName = outputFileName;
           if (fileName == null) {
-            fileName = project.getProjectName() + (isAab ? ".aab" : ".apk");
+            fileName = project.getProjectName() + "." + ext;
           }
           File outputFile = new File(projectRoot,
               "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
@@ -207,7 +273,7 @@ public final class ProjectBuilder {
             }
           }
         }
-        return new Result(success, messages, errors.toString(PathUtil.DEFAULT_CHARSET));
+        return new Result(success, messages, context.getReporter().getUserOutput());
       } finally {
         // On some platforms (OS/X), the java.io.tmpdir contains a symlink. We need to use the
         // canonical path here so that Files.deleteRecursively will work.
@@ -297,7 +363,7 @@ public final class ProjectBuilder {
    * @return A mapping of component type names to sets of block names used in
    * the project
    * @throws IOException if any of the files named in {@code files} cannot be
-   * read
+   *                     read
    */
   private static Map<String, Set<String>> getComponentBlocks(List<String> files)
       throws IOException {
@@ -360,7 +426,7 @@ public final class ProjectBuilder {
         continue;
       }
 
-      File extCompJsonFile = new File (extCompDir, "component.json");
+      File extCompJsonFile = new File(extCompDir, "component.json");
       if (extCompJsonFile.exists()) {
         JSONObject extCompJson = new JSONObject(Resources.toString(
             extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
@@ -388,11 +454,11 @@ public final class ProjectBuilder {
     File keyStoreFile = new File(projectRoot.getPath(), keystoreFileName);
 
     /* Note: must expire after October 22, 2033, to be in the Android
-    * marketplace.  Android docs recommend "10000" as the expiration # of
-    * days.
-    *
-    * For DNAME, US may not the right country to assign it to.
-    */
+     * marketplace.  Android docs recommend "10000" as the expiration # of
+     * days.
+     *
+     * For DNAME, US may not the right country to assign it to.
+     */
     String[] keytoolCommandline = {
         System.getProperty("java.home") + SEPARATOR + "bin" + SEPARATOR + "keytool",
         "-genkey",
