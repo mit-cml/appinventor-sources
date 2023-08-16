@@ -33,6 +33,8 @@
 	<string>scanning barcodes and taking pictures</string>
 	<key>NSContactsUsageDescription</key>
 	<string>App Inventor accesses your contacts when you include a ContactPicker component in your app.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID/ Touch ID required for authentication.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App Inventor accesses your location data when you include a LocationSensor component in your app.</string>
 	<key>NSMicrophoneUsageDescription</key>
