@@ -57,9 +57,7 @@ public final class PropertiesBox extends Box {
         false,  // bodyPadding
         false); // highlightCaption
 
-    // UIBinder calls the private constructor, presumably through reflection, which
-    // disrupts the singleton pattern. This might not be the best way to deal with it.
-    INSTANCE = this;
+    setContent(designProperties);
   }
 
   /*
@@ -144,6 +142,5 @@ public final class PropertiesBox extends Box {
           components.get(0).getType() + ")");
 
     }
-    setContent(designProperties);
   }
 }

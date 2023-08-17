@@ -572,6 +572,9 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  /*
+   * Changes the preview of MockForm based on Android Holo, Android Material and iOS styles
+   */
   private void changePreview() {
     // this condition prevents adding multiple phoneBars and titleBars
     if (changePreviewFlag)  {
@@ -1015,9 +1018,9 @@ public final class MockForm extends MockContainer {
     }
     if (theme.equals("AppTheme")) {
       blackIcons = false;
-      formWidget.addStyleDependentName("Dark");
+      formWidget.addStyleDependentName("ode-SimpleMockFormDark");
     } else {
-      formWidget.removeStyleDependentName("Dark");
+      formWidget.removeStyleDependentName("ode-SimpleMockForm");
     }
 
     // Resetting the MockForm with new preview styles

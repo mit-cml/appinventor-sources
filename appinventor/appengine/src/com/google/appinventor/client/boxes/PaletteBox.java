@@ -8,7 +8,6 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.gwt.user.client.ui.Composite;
 
 /**
  * Box implementation for palette panels.

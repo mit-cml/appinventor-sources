@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.UIObject;
 
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,7 +187,7 @@ public class DropDownButton extends TextButton {
     if (item == null) {
       allItems.add(menu.addSeparator());
     } else {
-      MenuItem menuItem = menu.addItem(item.caption, true, item.command);
+      MenuItem menuItem = menu.addItem(item.caption, true, item.command, item.styleName);
       itemsById.put(item.getName(), menuItem);
       items.add(menuItem);
       allItems.add(menuItem);

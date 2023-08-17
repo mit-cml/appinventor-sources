@@ -157,4 +157,14 @@ public abstract class MockVisibleComponent extends MockComponent {
       refreshForm();
     }
   }
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+  }
 }

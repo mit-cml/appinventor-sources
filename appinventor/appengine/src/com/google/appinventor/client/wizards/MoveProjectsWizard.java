@@ -10,7 +10,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.ui.Button;
-import com.google.appinventor.client.components.FolderTreeItem;
+import com.google.appinventor.client.explorer.folder.FolderTreeItem;
 import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

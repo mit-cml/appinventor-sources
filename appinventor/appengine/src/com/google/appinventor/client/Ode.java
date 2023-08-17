@@ -224,7 +224,7 @@ public class Ode implements EntryPoint {
   @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
   @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
   @UiField SourceStructureBox bindSourceStructureBox;
-  @UiField PropertiesBox bindPropertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField (provided = true) PropertiesBox bindPropertiesBox = PropertiesBox.getPropertiesBox();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;

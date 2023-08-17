@@ -13,7 +13,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
-import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
+import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;

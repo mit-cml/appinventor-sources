@@ -3,7 +3,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.client.components;
+package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.user.client.ui.TreeItem;

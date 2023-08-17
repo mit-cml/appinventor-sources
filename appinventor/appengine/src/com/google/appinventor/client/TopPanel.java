@@ -58,6 +58,10 @@ public class TopPanel extends Composite {
 
   interface TopPanelUiBinder extends UiBinder<FlowPanel, TopPanel> {}
 
+  private static final String WIDGET_NAME_LANGUAGE = "Language";
+  private static final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
+  public static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+  public static final String WINDOW_OPEN_LOCATION = "_ai2";
   private static final TopPanelUiBinder UI_BINDER = GWT.create(TopPanelUiBinder.class);
 
   @UiField(provided = true) FlowPanel header = new FlowPanel("header");
@@ -67,12 +71,8 @@ public class TopPanel extends Composite {
   @UiField FlowPanel rightPanel;
   @UiField DropDownButton languageDropDown;
   @UiField DropDownButton accountButton;
+  @UiField DropDownItem deleteAccountItem;
   @UiField FlowPanel links;
-  private static final String WIDGET_NAME_LANGUAGE = "Language";
-  private final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
-
-  public static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  public static final String WINDOW_OPEN_LOCATION = "_ai2";
 
   final Ode ode = Ode.getInstance();
 
@@ -107,15 +107,16 @@ public class TopPanel extends Composite {
      *  |+----------++---------------++-----------------+|
      *  +------------------------------------------------+
      */
-    Config config = getSystemConfig();
     initWidget(UI_BINDER.createAndBindUi(this));
-
+    Config config = getSystemConfig();
     String logoUrl = config.getLogoUrl();
     if (!Strings.isNullOrEmpty(logoUrl)) {
       Image.wrap(logo).addClickHandler(new WindowOpenClickHandler(logoUrl));
     }
 
-    if (!Ode.getInstance().isReadOnly()) {
+    if (Ode.getInstance().isReadOnly()) {
+      accountButton.setItemVisible(WIDGET_NAME_DELETE_ACCOUNT, false);
+    } else {
       readOnly.removeFromParent();
     }
 
@@ -143,7 +144,7 @@ public class TopPanel extends Composite {
   @SuppressWarnings("unused")
   @UiHandler("myProjects")
   public void switchToMyProjects(ClickEvent e) {
-    topToolbar.updateMoveToTrash("Move To Trash");
+    topToolbar.updateMoveToTrash(getMessages().deleteProjectButton());
     ode.switchToProjectsView();
   }
 

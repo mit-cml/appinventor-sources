@@ -229,5 +229,12 @@ public final class MockSlider extends MockVisibleComponent {
   @Override
   protected void setContainer(MockContainer container) {
     super.setContainer(container);
+    getForm().addDesignPreviewChangeListener(this);
+  }
+
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    paintSlider();
   }
 }

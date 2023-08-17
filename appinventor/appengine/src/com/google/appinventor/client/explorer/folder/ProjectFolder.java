@@ -10,7 +10,7 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
-import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
+import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;

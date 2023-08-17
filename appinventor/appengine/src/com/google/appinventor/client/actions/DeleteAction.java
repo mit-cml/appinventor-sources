@@ -30,7 +30,7 @@ public class DeleteAction implements Command {
           List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
           if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
             List<Project> projectsToDelete = selectedProjects;
-            for(ProjectFolder f : selectedFolders) {
+            for (ProjectFolder f : selectedFolders) {
               projectsToDelete.addAll(f.getNestedProjects());
             }
             // Show one confirmation window for selected projects.

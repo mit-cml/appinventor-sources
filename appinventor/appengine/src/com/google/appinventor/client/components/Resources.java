@@ -109,14 +109,14 @@ public interface Resources extends ClientBundle {
   @Source({
     "com/google/appinventor/client/resources/base.css",
     "com/google/appinventor/client/resources/light.css",
-    "com/google/appinventor/client/components/folderTreeItem.css"
+      "com/google/appinventor/client/explorer/folder/folderTreeItem.css"
   })
   FolderTreeItemStyle folderTreeItemStyleLight();
 
   @Source({
     "com/google/appinventor/client/resources/base.css",
     "com/google/appinventor/client/resources/dark.css",
-    "com/google/appinventor/client/components/folderTreeItem.css"
+      "com/google/appinventor/client/explorer/folder/folderTreeItem.css"
   })
   FolderTreeItemStyle folderTreeItemStyleDark();
 

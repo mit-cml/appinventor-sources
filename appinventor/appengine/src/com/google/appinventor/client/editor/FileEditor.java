@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.editor;
 
-import com.google.appinventor.client.AssetManager;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.shared.rpc.project.FileNode;

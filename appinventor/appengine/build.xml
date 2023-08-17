@@ -562,7 +562,6 @@
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
         <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
         <!-- gwt libs -->
-        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
         <pathelement location="${lib.dir}/json/json.jar" />

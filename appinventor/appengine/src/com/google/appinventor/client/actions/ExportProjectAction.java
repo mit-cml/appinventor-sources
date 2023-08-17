@@ -36,7 +36,8 @@ public class ExportProjectAction implements Command {
     } else {
       //If we are in the designer view.
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE
-                                            + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
+          + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/"
+          + Ode.getInstance().getCurrentYoungAndroidProjectId());
     }
   }
 

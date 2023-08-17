@@ -42,6 +42,10 @@
           <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
             <actions:SignOutAction />
           </ai:DropDownItem>
+          <ai:DropDownItem name="DeleteAccount" caption="{messages.deleteAccountLink}"
+                           ui:field="deleteAccountItem" styleName="ode-ContextMenuItem-Red">
+            <actions:DeleteAccountAction />
+          </ai:DropDownItem>
         </ai:DropDownButton>
       </g:FlowPanel>
     </g:FlowPanel>
