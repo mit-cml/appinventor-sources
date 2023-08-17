@@ -141,7 +141,8 @@ public final class PropertiesBox extends Box {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-                                               components.get(0).getType() + ")");
+          components.get(0).getType() + ")");
+
     }
     setContent(designProperties);
   }
