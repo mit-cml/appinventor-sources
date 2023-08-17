@@ -1312,11 +1312,14 @@ public class FileUtil {
         }
         return null;
       case Shared:
-        String filename = file.getFileName();
-        if (filename.startsWith("/")) {
-          filename = filename.substring(1);
+        String dirname = file.getFileName();
+        if (dirname.startsWith("/")) {
+          dirname = dirname.substring(1);
         }
-        String[] parts = filename.split("/", 2);
+        String[] parts = dirname.split("/", 2);
+        if (!dirname.endsWith("/")) {
+          dirname += "/";
+        }
         final ContentResolver resolver = form.getContentResolver();
         Uri contentUri = getContentUriForPath(parts[0]);
         if (contentUri == null) {
@@ -1338,10 +1341,14 @@ public class FileUtil {
           while (cursor.moveToNext()) {
             String name = cursor.getString(nameColumn);
             String path = cursor.getString(pathColumn);
+            String pathname;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-              results.add(path.replace(rootPath, ""));
+              pathname = path.replace(rootPath, "");
             } else {
-              results.add(path + name);
+              pathname = path + name;
+            }
+            if (pathname.startsWith(dirname)) {
+              results.add(pathname.substring(dirname.length()));
             }
           }
           return results;
