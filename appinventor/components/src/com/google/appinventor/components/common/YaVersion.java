@@ -578,6 +578,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 224:
   // - ANOMALY_COMPONENT_VERSION was introduced
   // - CHATBOT_COMPONENT_VERSION was incremented to 2
+  // - FILEPICKER_COMPONENT_VERSION was introduced
   // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
   // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
@@ -940,6 +941,8 @@ public class YaVersion {
   // - The WritePermission property was added.
   // - The LegacyMode property was removed. Use DefaultScope instead.
   public static final int FILE_COMPONENT_VERSION = 4;
+
+  public static final int FILEPICKER_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.

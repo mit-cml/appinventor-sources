@@ -307,7 +307,10 @@ public final class ErrorMessages {
   // Spreadsheet Errors
   public static final int ERROR_SPREADSHEET_ERROR = 4401;
 
-  // Start the next group of errors at 4500
+  // FilePicker Errors
+  public static final int ERROR_FILEPICKER_NO_URI_RETURNED = 4501;
+
+  // Start the next group of errors at 4600
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -750,6 +753,9 @@ public final class ErrorMessages {
 
     // Spreadsheet Errors
     errorMessages.put(ERROR_SPREADSHEET_ERROR, "Error in Spreadsheet: %1$s");
+
+    // FilePicker Errors
+    errorMessages.put(ERROR_FILEPICKER_NO_URI_RETURNED, "No URI returned to FilePicker");
   }
 
   private ErrorMessages() {
