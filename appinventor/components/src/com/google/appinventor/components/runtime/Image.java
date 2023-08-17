@@ -26,6 +26,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
@@ -146,23 +147,22 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(@Asset final String path) {
-    if (MediaUtil.isExternalFile(container.$context(), path)
-        && container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
-          new PermissionResultHandler() {
+  public void Picture(@Asset String path) {
+    final String tempPath = path == null ? "" : path;
+    if (TiramisuUtil.requestImagePermissions(container.$form(), path,
+        new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {
               if (granted) {
-                Picture(path);
+                Picture(tempPath);
               } else {
                 container.$form().dispatchPermissionDeniedEvent(Image.this, "Picture", permission);
               }
             }
-          });
+          })) {
       return;
     }
-    picturePath = (path == null) ? "" : path;
+    picturePath = tempPath;
 
     Drawable drawable;
     try {
