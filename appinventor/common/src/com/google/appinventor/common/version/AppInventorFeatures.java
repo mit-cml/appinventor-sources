@@ -134,4 +134,14 @@ public final class AppInventorFeatures {
   public static boolean enableFutureFeatures() {
     return false;
   }
+
+  /**
+   * If set to true, redirect http connections to https if running in
+   * production (aka, not the Google Dev server).
+   */
+
+  public static boolean enableHttpRedirect() {
+    return true;
+  }
+
 }

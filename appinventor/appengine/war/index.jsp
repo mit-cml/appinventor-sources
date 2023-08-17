@@ -1,3 +1,20 @@
+<%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures" %>
+<%
+   if (request.getScheme().equals("http") && Server.isProductionServer()
+       && AppInventorFeatures.enableHttpRedirect()) {
+        String qs = request.getQueryString();
+        String host = request.getServerName();
+        if (qs != null) {
+           String redirect = "https://" + host + "/?" + qs;
+           response.sendRedirect(redirect);
+        } else {
+           String redirect = "https://" + host;
+           response.sendRedirect(redirect);
+        }
+     return;
+   }
+   response.setHeader("Strict-Transport-Security", "max-age=3600");
+%>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
 <!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>

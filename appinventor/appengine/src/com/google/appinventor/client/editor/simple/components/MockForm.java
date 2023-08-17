@@ -932,9 +932,10 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
-      if (editor.isLoadComplete()) {
-        ((YaFormEditor)editor).reloadComponentPalette(asJson);
-      }
+    }
+    
+    if (editor.isLoadComplete()) {
+      ((YaFormEditor)editor).reloadComponentPalette(asJson);
     }
   }
 

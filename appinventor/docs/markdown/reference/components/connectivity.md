@@ -154,7 +154,7 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  byte first.
 
 {:id="BluetoothClient.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
 
 {:id="BluetoothClient.NoLocationNeeded" .boolean .do} *NoLocationNeeded*
 : On Android 12 and later, indicates that Bluetooth is not used to determine the user's location.
@@ -297,7 +297,7 @@ Use the `BluetoothServer` component to turn your device into a server that recei
  incoming connection.
 
 {:id="BluetoothServer.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
 
 {:id="BluetoothServer.Secure" .boolean} *Secure*
 : Specifies whether a secure connection should be used.

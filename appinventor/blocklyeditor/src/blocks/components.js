@@ -1285,10 +1285,12 @@ Blockly.Blocks.component_set_get = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    if (property) {
+      var helperType = Blockly.Blocks.Utilities
         .helperKeyToBlocklyType(property.helperKey, this);
-    if (helperType && helperType != blocklyType) {
-      check.push(helperType);
+      if (helperType && helperType != blocklyType) {
+        check.push(helperType);
+      }
     }
 
     return !check.length ? null : check;
