@@ -22,27 +22,28 @@ public class AnomalyDetectionTest extends RobolectricTestBase {
   public void setUp() {
     super.setUp();
     anomalyDetection = new AnomalyDetection(getForm());
-    xList = YailList.makeList(Arrays.asList("1","2","3","4","5","6"));
-    yList = YailList.makeList(Arrays.asList("1","2","3","2","2","88"));
+    xList = YailList.makeList(Arrays.asList("1", "2", "3", "4", "5", "6"));
+    yList = YailList.makeList(Arrays.asList("1", "2", "3", "2", "2", "88"));
   }
 
   @Test
   public void testDetectAnomalies() {
     List<List<?>> anomalies = anomalyDetection.DetectAnomalies(yList, 2);
     List<List<?>> expectedAnomalies = new ArrayList<>();
-    expectedAnomalies.add(Arrays.asList(6, 88f));
+    expectedAnomalies.add(Arrays.asList(6, 88.0));
     assertEquals(expectedAnomalies.size(), anomalies.size());
-    // Assert.assertEquals(expectedAnomalies, anomalies);
+    assertEquals(expectedAnomalies, anomalies);
   }
 
   @Test
   public void testDetectMultipleAnomalies() {
-    YailList yList = YailList.makeList(Arrays.asList("1","2","78","2","2","88"));
+    YailList yList = YailList.makeList(Arrays.asList("1", "2", "78", "2", "2", "88"));
     List<List<?>> anomalies = anomalyDetection.DetectAnomalies(yList, 1);
     List<List<?>> expectedAnomalies = new ArrayList<>();
-    expectedAnomalies.add(Arrays.asList(3, 78f));
-    expectedAnomalies.add(Arrays.asList(6, 88f));
+    expectedAnomalies.add(Arrays.asList(3, 78.0));
+    expectedAnomalies.add(Arrays.asList(6, 88.0));
     assertEquals(expectedAnomalies.size(), anomalies.size());
+    assertEquals(expectedAnomalies, anomalies);
   }
 
   @Test
@@ -55,26 +56,15 @@ public class AnomalyDetectionTest extends RobolectricTestBase {
   @Test
   public void testCleanData() {
     List<?> cleanData = anomalyDetection.CleanData(
-        YailList.makeList(Arrays.asList(6, 88f)), xList, yList);
-    YailList expectedList = YailList.makeList(
-        Arrays.asList(
-            YailList.makeList(
-                Arrays.asList("1", "1")
-            ),
-            YailList.makeList(
-                Arrays.asList("2", "2")
-            ),
-            YailList.makeList(
-                Arrays.asList("3", "3")
-            ),
-            YailList.makeList(
-                Arrays.asList("4", "2")
-            ),
-            YailList.makeList(
-                Arrays.asList("5", "2")
-            )
-        )
+        YailList.makeList(Arrays.asList(6, 88.0)), xList, yList);
+    List<?> expectedList = Arrays.asList(
+        Arrays.asList(1.0, 1.0),
+        Arrays.asList(2.0, 2.0),
+        Arrays.asList(3.0, 3.0),
+        Arrays.asList(4.0, 2.0),
+        Arrays.asList(5.0, 2.0)
     );
     assertEquals(expectedList.size(), cleanData.size());
+    assertEquals(expectedList, cleanData);
   }
 }
