@@ -1310,7 +1310,9 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
-  public static final int REGRESSION_COMPONENT_VERSION = 1;
+  // For REGRESSION_COMPONENT_VERSION 2:
+  // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
+  public static final int REGRESSION_COMPONENT_VERSION = 2;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

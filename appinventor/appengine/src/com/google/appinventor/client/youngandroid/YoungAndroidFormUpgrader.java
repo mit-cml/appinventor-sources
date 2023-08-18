@@ -342,6 +342,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Player")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Regression")) {
+        srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
@@ -1541,6 +1544,16 @@ public final class YoungAndroidFormUpgrader {
         // Properties related to this component have now been upgraded to version  6.
         srcCompVersion = 6;
       }
+    return srcCompVersion;
+  }
+
+  private static int upgradeRegressionProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The Regression.ComputeLineOfBestFitValues method had its signature changed.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 

@@ -142,6 +142,101 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
     }
   }
 
+  // MARK: Properties and methods not currently needed
+
+  @Override
+  public void ElementsFromPairs(String elements) {
+  }
+
+  @Override
+  public void SpreadsheetUseHeaders(boolean useHeaders) {
+  }
+
+  @Override
+  public void DataFileXColumn(String column) {
+  }
+
+  @Override
+  public void WebXColumn(String column) {
+  }
+
+  @Override
+  public void SpreadsheetXColumn(String column) {
+  }
+
+  @Override
+  public void DataFileYColumn(String column) {
+  }
+
+  @Override
+  public void WebYColumn(String column) {
+  }
+
+  @Override
+  public void SpreadsheetYColumn(String column) {
+  }
+
+  @Override
+  public void DataSourceKey(String key) {
+  }
+
+  @Override
+  public <K, V> void Source(DataSource<K, V> dataSource) {
+  }
+
+  @Override
+  public void ImportFromList(YailList list) {
+  }
+
+  @Override
+  public void Clear() {
+  }
+
+  @Override
+  public <K, V> void ChangeDataSource(DataSource<K, V> source, String keyValue) {
+  }
+
+  @Override
+  public void RemoveDataSource() {
+  }
+
+  @Override
+  public YailList GetEntriesWithXValue(String x) {
+    return YailList.makeEmptyList();
+  }
+
+  @Override
+  public YailList GetEntriesWithYValue(String y) {
+    return YailList.makeEmptyList();
+  }
+
+  @Override
+  public YailList GetAllEntries() {
+    return YailList.makeEmptyList();
+  }
+
+  @Override
+  public void ImportFromTinyDB(TinyDB tinyDB, String tag) {
+  }
+
+  @Override
+  public void ImportFromCloudDB(CloudDB cloudDB, String tag) {
+  }
+
+  @Override
+  public void ImportFromDataFile(DataFile dataFile, String xValueColumn,
+      String yValueColumn) {
+  }
+
+  @Override
+  public void ImportFromSpreadsheet(Spreadsheet spreadsheet, String xColumn, String yColumn,
+      boolean useHeaders) {
+  }
+
+  @Override
+  public void ImportFromWeb(Web web, String xValueColumn, String yValueColumn) {
+  }
+
   @Override
   public void onDataChange() {
 

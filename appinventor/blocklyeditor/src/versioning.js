@@ -1314,6 +1314,31 @@ Blockly.Versioning.tryReplaceBlockWithPermissions =
   };
 
 /**
+ * Replaces the block currently attached to the passed value input with a
+ * helper block identified by the given key. The current block is replaced iff
+ * it is a text block.
+ * @param key the helper key to use in place of the current value
+ */
+Blockly.Versioning.tryReplaceBlockWithHelper = function(key) {
+  return function(valueNode, workspace) {
+    if (!valueNode) {
+      return;
+    }
+    var valueMap = Blockly.Versioning
+        .getOptionListValueMap(workspace, key);
+    var entries = Object.entries(valueMap);
+    for (var i = 0, pair; pair = entries[i]; i++) {
+      var k = pair[0];
+      var v = pair[1];
+      if (valueMap.hasOwnProperty(key)) {
+        valueMap[k] = v;
+      }
+    }
+    Blockly.Versioning.tryReplaceBlockWithDropdown(valueNode, valueMap, key);
+  };
+};
+
+/**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
  * componentType.
  * @param dom  DOM for XML workspace
@@ -2827,6 +2852,13 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade"
 
   }, // End ProximitySensor upgraders
+
+  "Regression": {
+    2: [
+      Blockly.Versioning.makeMethodUseHelper("Regression", "CalculateLineOfBestFitValue", 2,
+        Blockly.Versioning.tryReplaceBlockWithHelper('LOBFValues'))
+    ]
+  },
 
   // Screen is renamed from Form
   "Screen": {
