@@ -152,27 +152,27 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
 
-    An example is the tag of the TinyDB component, which identifies the value.
+   An example is the tag of the TinyDB component, which identifies the value.
 
-    The property is a Designer-only property, and should be changed after setting the
+   The property is a Designer-only property, and should be changed after setting the
  Source component of the Chart Data component.
 
-    A complete list of applicable values for each compatible source is as follows:
+   A complete list of applicable values for each compatible source is as follows:
 
- * For TinyDB and CloudDB, this is the tag value.
- * For the AccelerometerSensor, the value should be one of the following: X Y or Z
- * For the GyroscopeSensor, the value should be one of the following: X Y or Z
- * For the LocationSensor, the value should be one of the following:
- latitude, longitude, altitude or speed
- * For the OrientationSensor, the value should be one of the following:
- pitch, azimuth or roll
- * For the Pedometer, the value should be one of the following:
- WalkSteps, SimpleSteps or Distance
- * For the ProximitySensor, the value should be distance.
- * For the BluetoothClient, the value represents the prefix to remove from the value.
- For instance, if values come in the format "t:12", the prefix can be specified as "t:",
- and the prefix will then be removed from the data. No value can be specified if purely
- numerical values are returned.
+     * For TinyDB and CloudDB, this is the tag value.
+     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+     * For the LocationSensor, the value should be one of the following:
+       latitude, longitude, altitude or speed
+     * For the OrientationSensor, the value should be one of the following:
+       pitch, azimuth or roll
+     * For the Pedometer, the value should be one of the following:
+       WalkSteps, SimpleSteps or Distance
+     * For the ProximitySensor, the value should be distance.
+     * For the BluetoothClient, the value represents the prefix to remove from the value.
+       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+       and the prefix will then be removed from the data. No value can be specified if purely
+       numerical values are returned.
 
 {:id="ChartData2D.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
 : Comma separated list of Elements to use for the data series. Values are formatted
@@ -202,7 +202,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
 
-    If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
+   If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
 
@@ -290,10 +290,10 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
 
-    The expected CloudDB value is a list formatted in the same way as described in
+   The expected CloudDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
 
-    Does not overwrite any data.
+   Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromDataFile" class="method"} <i/> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
@@ -323,10 +323,10 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
 
-    The expected TinyDB value is a list formatted in the same way as described in
+   The expected TinyDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
 
-    Does not overwrite any data.
+   Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromWeb" class="method"} <i/> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column

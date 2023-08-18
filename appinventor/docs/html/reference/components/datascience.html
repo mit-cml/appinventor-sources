@@ -170,27 +170,24 @@
  Source component of the Chart Data component.</p>
 
     <p>A complete list of applicable values for each compatible source is as follows:</p>
+
+    <ul>
+      <li>For TinyDB and CloudDB, this is the tag value.</li>
+      <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the LocationSensor, the value should be one of the following:
+latitude, longitude, altitude or speed</li>
+      <li>For the OrientationSensor, the value should be one of the following:
+pitch, azimuth or roll</li>
+      <li>For the Pedometer, the value should be one of the following:
+WalkSteps, SimpleSteps or Distance</li>
+      <li>For the ProximitySensor, the value should be distance.</li>
+      <li>For the BluetoothClient, the value represents the prefix to remove from the value.
+For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
+and the prefix will then be removed from the data. No value can be specified if purely
+numerical values are returned.</li>
+    </ul>
   </dd>
-</dl>
-
-<ul>
-  <li>For TinyDB and CloudDB, this is the tag value.</li>
-  <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
-  <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
-  <li>For the LocationSensor, the value should be one of the following:
- latitude, longitude, altitude or speed</li>
-  <li>For the OrientationSensor, the value should be one of the following:
- pitch, azimuth or roll</li>
-  <li>For the Pedometer, the value should be one of the following:
- WalkSteps, SimpleSteps or Distance</li>
-  <li>For the ProximitySensor, the value should be distance.</li>
-  <li>For the BluetoothClient, the value represents the prefix to remove from the value.
- For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
- and the prefix will then be removed from the data. No value can be specified if purely
- numerical values are returned.</li>
-</ul>
-
-<dl>
   <dt id="AnomalyDetection.ElementsFromPairs" class="text wo do"><em>ElementsFromPairs</em></dt>
   <dd>Comma separated list of Elements to use for the data series. Values are formatted
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
@@ -371,27 +368,24 @@ value</li>
  Source component of the Chart Data component.</p>
 
     <p>A complete list of applicable values for each compatible source is as follows:</p>
+
+    <ul>
+      <li>For TinyDB and CloudDB, this is the tag value.</li>
+      <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the LocationSensor, the value should be one of the following:
+latitude, longitude, altitude or speed</li>
+      <li>For the OrientationSensor, the value should be one of the following:
+pitch, azimuth or roll</li>
+      <li>For the Pedometer, the value should be one of the following:
+WalkSteps, SimpleSteps or Distance</li>
+      <li>For the ProximitySensor, the value should be distance.</li>
+      <li>For the BluetoothClient, the value represents the prefix to remove from the value.
+For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
+and the prefix will then be removed from the data. No value can be specified if purely
+numerical values are returned.</li>
+    </ul>
   </dd>
-</dl>
-
-<ul>
-  <li>For TinyDB and CloudDB, this is the tag value.</li>
-  <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
-  <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
-  <li>For the LocationSensor, the value should be one of the following:
- latitude, longitude, altitude or speed</li>
-  <li>For the OrientationSensor, the value should be one of the following:
- pitch, azimuth or roll</li>
-  <li>For the Pedometer, the value should be one of the following:
- WalkSteps, SimpleSteps or Distance</li>
-  <li>For the ProximitySensor, the value should be distance.</li>
-  <li>For the BluetoothClient, the value represents the prefix to remove from the value.
- For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
- and the prefix will then be removed from the data. No value can be specified if purely
- numerical values are returned.</li>
-</ul>
-
-<dl>
   <dt id="Regression.ElementsFromPairs" class="text wo do"><em>ElementsFromPairs</em></dt>
   <dd>Comma separated list of Elements to use for the data series. Values are formatted
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed

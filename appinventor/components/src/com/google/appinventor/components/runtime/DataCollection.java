@@ -281,27 +281,27 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * Sets the Data Source key identifier for the value to import from the
    * attached Data Source.
    *
-   *    An example is the tag of the TinyDB component, which identifies the value.
+   *   An example is the tag of the TinyDB component, which identifies the value.
    *
-   *    The property is a Designer-only property, and should be changed after setting the
+   *   The property is a Designer-only property, and should be changed after setting the
    * Source component of the Chart Data component.
    *
-   *    A complete list of applicable values for each compatible source is as follows:
+   *   A complete list of applicable values for each compatible source is as follows:
    *
-   * * For TinyDB and CloudDB, this is the tag value.
-   * * For the AccelerometerSensor, the value should be one of the following: X Y or Z
-   * * For the GyroscopeSensor, the value should be one of the following: X Y or Z
-   * * For the LocationSensor, the value should be one of the following:
-   * latitude, longitude, altitude or speed
-   * * For the OrientationSensor, the value should be one of the following:
-   * pitch, azimuth or roll
-   * * For the Pedometer, the value should be one of the following:
-   * WalkSteps, SimpleSteps or Distance
-   * * For the ProximitySensor, the value should be distance.
-   * * For the BluetoothClient, the value represents the prefix to remove from the value.
-   * For instance, if values come in the format "t:12", the prefix can be specified as "t:",
-   * and the prefix will then be removed from the data. No value can be specified if purely
-   * numerical values are returned.
+   *     * For TinyDB and CloudDB, this is the tag value.
+   *     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+   *     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+   *     * For the LocationSensor, the value should be one of the following:
+   *       latitude, longitude, altitude or speed
+   *     * For the OrientationSensor, the value should be one of the following:
+   *       pitch, azimuth or roll
+   *     * For the Pedometer, the value should be one of the following:
+   *       WalkSteps, SimpleSteps or Distance
+   *     * For the ProximitySensor, the value should be distance.
+   *     * For the BluetoothClient, the value represents the prefix to remove from the value.
+   *       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+   *       and the prefix will then be removed from the data. No value can be specified if purely
+   *       numerical values are returned.
    *
    * @param key new key value
    */
@@ -322,7 +322,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * depending on the type of the Source attached (the required properties
    * show up in the Properties menu after the Source is changed).
    *
-   *    If the data identified by the {@link #DataSourceKey(String)} is updated
+   *   If the data identified by the {@link #DataSourceKey(String)} is updated
    * in the attached Data Source component, then the data is also updated in
    * the Chart Data component.
    *
@@ -606,10 +606,10 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * Imports data from the specified TinyDB component by taking the value
    * identified by the specified tag value.
    *
-   *    The expected TinyDB value is a list formatted in the same way as described in
+   *   The expected TinyDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
    *
-   *    Does not overwrite any data.
+   *   Does not overwrite any data.
    *
    * @param tinyDB TinyDB component to import from
    * @param tag    the identifier of the value to import
@@ -635,10 +635,10 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * Imports data from the specified CloudDB component by taking the value
    * identified by the specified tag value.
    *
-   *    The expected CloudDB value is a list formatted in the same way as described in
+   *   The expected CloudDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
    *
-   *    Does not overwrite any data.
+   *   Does not overwrite any data.
    *
    * @param cloudDB CloudDB component to import from
    * @param tag     the identifier of the value to import
@@ -834,10 +834,10 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * the Web component's Get method has to be called to load the data. The usage of the gotValue
    * event in the Web component is unnecessary.
    *
-   *    The expected response of the Web component is a JSON or CSV formatted
+   *   The expected response of the Web component is a JSON or CSV formatted
    * file for this function to work.
    *
-   *    Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
    * @param web          Web component to import from
    * @param xValueColumn x-value column name
