@@ -77,6 +77,7 @@ public enum ComponentCategory {
     DOC_MAP.put("Drawing and Animation", "animation");
     DOC_MAP.put("Maps", "maps");
     DOC_MAP.put("Charts", "charts");
+    DOC_MAP.put("Data Science", "datascience");
     DOC_MAP.put("Sensors", "sensors");
     DOC_MAP.put("Social", "social");
     DOC_MAP.put("Storage", "storage");

@@ -1207,6 +1207,9 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL": "/reference/components/charts.html#Chart",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL": "/reference/components/charts.html#ChartData2D",
 
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL": "/reference/components/datascience.html#AnomalyDetect",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL": "/reference/components/datascience.html#Regression",
+
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
