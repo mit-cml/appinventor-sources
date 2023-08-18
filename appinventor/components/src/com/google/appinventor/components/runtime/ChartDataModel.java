@@ -183,6 +183,7 @@ public abstract class ChartDataModel<
       entries.remove(index);
     }
   }
+
   /**
    * Adds the specified entry as a time entry to the Data Series.
    *
@@ -203,6 +204,7 @@ public abstract class ChartDataModel<
     // TODO: of two elements)
     addEntryFromTuple(tuple);
   }
+
   /**
    * Returns the entries of the Chart Data Model.
    *
@@ -211,6 +213,7 @@ public abstract class ChartDataModel<
   public List<E> getEntries() {
     return Collections.unmodifiableList(entries);
   }
+
   /**
    * Checks whether an entry exists in the Data Series.
    *
@@ -270,7 +273,8 @@ public abstract class ChartDataModel<
    * @param value     value to use for comparison (as a String)
    * @return true if the entry matches the criterion
    */
-  protected boolean isEntryCriterionSatisfied(Entry entry, DataModel.EntryCriterion criterion, String value) {
+  protected boolean isEntryCriterionSatisfied(Entry entry, DataModel.EntryCriterion criterion,
+      String value) {
     boolean criterionSatisfied = false;
 
     switch (criterion) {

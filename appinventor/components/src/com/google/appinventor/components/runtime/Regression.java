@@ -16,7 +16,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ import java.util.List;
     nonVisible = true)
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
-public final class Regression extends DataCollection {
+public final class Regression extends DataCollection<ComponentContainer, DataModel<?>> {
 
   /**
    * Creates a new Regression component.
@@ -50,9 +49,11 @@ public final class Regression extends DataCollection {
    *
    * @param xEntries - the list of x values
    * @param yEntries - the list of y values
-   * @return list. 1st element of the list is the slope, 2nd element is the intercept, 3rd correlation coefficient, 4th element is the line of best fit prediction values
+   * @return list. 1st element of the list is the slope, 2nd element is the intercept, 3rd
+   *     correlation coefficient, 4th element is the line of best fit prediction values
    */
-  public static YailDictionary ComputeLineOfBestFit(final YailList xEntries, final YailList yEntries) {
+  public static YailDictionary computeLineOfBestFit(final YailList xEntries,
+      final YailList yEntries) {
     LList xValues = (LList) xEntries.getCdr();
     List<Double> x = castToDouble(xValues);
 
@@ -62,37 +63,44 @@ public final class Regression extends DataCollection {
     if (xValues.size() != yValues.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
     }
-    if (xValues.size() == 0 || xValues.size() == 0) {
+    if (xValues.isEmpty() || xValues.isEmpty()) {
       throw new IllegalStateException("List must have at least one element");
     }
     int n = xValues.size();
 
-    double sumx = 0.0, sumy = 0.0, sumXY = 0.0, squareSum_X = 0.0, squareSum_Y = 0.0;
+    double sumx = 0.0;
+    double sumy = 0.0;
+    double sumXY = 0.0;
+    double squareSumX = 0.0;
+    double squareSumY = 0.0;
     for (int i = 0; i < n; i++) {
       sumx += x.get(i);
       sumXY = sumXY + x.get(i) * y.get(i);
       sumy += y.get(i);
-      squareSum_X = squareSum_X + x.get(i) * x.get(i);
-      squareSum_Y = squareSum_Y + y.get(i) * y.get(i);
+      squareSumX = squareSumX + x.get(i) * x.get(i);
+      squareSumY = squareSumY + y.get(i) * y.get(i);
     }
     double xmean = sumx / n;
     double ymean = sumy / n;
 
-    double xxmean = 0.0, xymean = 0.0;
-    List predictions = new ArrayList();
+    double xxmean = 0.0;
+    double xymean = 0.0;
+    List<Double> predictions = new ArrayList<>();
     for (int i = 0; i < n; i++) {
       xxmean += (x.get(i) - xmean) * (x.get(i) - xmean);
       xymean += (x.get(i) - xmean) * (y.get(i) - ymean);
     }
     double slope = xymean / xxmean;
     double intercept = ymean - slope * xmean;
-    // use formula for calculating correlation coefficient.
-    double corr = (n * sumXY - sumx * sumy) / (Math.sqrt((n * squareSum_X - sumx * sumx) * (n * squareSum_Y - sumy * sumy)));
 
     for (int i = 0; i < n; i++) {
       double prediction = slope * x.get(i) + intercept;
       predictions.add(prediction);
     }
+
+    // use formula for calculating correlation coefficient.
+    double corr = (n * sumXY - sumx * sumy)
+        / (Math.sqrt((n * squareSumX - sumx * sumx) * (n * squareSumY - sumy * sumy)));
 
     YailDictionary resultDic = new YailDictionary();
     resultDic.put("slope",slope);
@@ -105,19 +113,22 @@ public final class Regression extends DataCollection {
 
   /**
    * Returns one of the Line of Best Fit values.
-   * A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided.
+   * A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a
+   * dictionary with all values above if nothing specific provided.
    *
    * @param xList - the list of x values
    * @param yList - the list of y values
    * @param value - the string name of the line of best fit property
    * @return Double slope
    */
-  @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be \"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". " +
-      "The block returns the complete dictionary with all values if no specific value string is provided")
-  public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList, LOBFValues value) {
-    YailDictionary result = ComputeLineOfBestFit(xList, yList);
-    if (result.containsKey(value.toUnderlyingValue())){
-        return result.get(value.toUnderlyingValue());
+  @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be"
+      + "\"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". The block "
+      + "returns the complete dictionary with all values if no specific value string is provided")
+  public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList,
+      LOBFValues value) {
+    YailDictionary result = computeLineOfBestFit(xList, yList);
+    if (result.containsKey(value.toUnderlyingValue())) {
+      return result.get(value.toUnderlyingValue());
     } else {
       return result;
     }

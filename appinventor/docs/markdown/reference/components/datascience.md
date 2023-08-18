@@ -14,7 +14,10 @@ Table of Contents:
 ## AnomalyDetection  {#AnomalyDetection}
 
 A data science component to apply different anomaly detection models.
- The component needs a data source to apply the model on.
+ The component only needs a data source to apply the model on.
+
+ The anomaly detection models only return a list of anomalies.
+ ChartData2D component is needed to highlight the anomalies on a chart
 
 
 
@@ -130,7 +133,8 @@ None
 : Given a single anomaly: [(anomaly index, anomaly value)]
 
  1. Iterate over the xList and delete value at anomaly index
- 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
+ 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly
+    value
  3. combine the xList and yList after modification in a list of x and y pairs
 
  We assume x and y lists are the same size and are ordered.
@@ -139,8 +143,9 @@ None
 : Removes all the entries from the Data Series.
 
 {:id="AnomalyDetection.DetectAnomalies" class="method returns list"} <i/> DetectAnomalies(*dataList*{:.list},*threshold*{:.number})
-: Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
- If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly.
+: Calculates the mean and standard deviation of the data, and then checks each data point's
+ Z-score against the threshold. If a data point's Z-score is greater than the threshold,
+ the data point is labeled as anomaly.
 
 {:id="AnomalyDetection.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
@@ -216,7 +221,13 @@ None
 ## Regression  {#Regression}
 
 A data science component to apply different regression models.
- The component requires a data source to apply the model on.
+ The component only requires a data source to apply the model on.
+
+ The component is only responsible for the statistical calculations and
+ provides the following properties for line of best fit:
+ "slope", "Yintercept", "correlation coefficient", and "predictions"
+
+ To draw the line of best fit use the drawing block in ChartData2D component
 
 
 
@@ -322,7 +333,8 @@ None
 
 {:id="Regression.CalculateLineOfBestFitValue" class="method returns any"} <i/> CalculateLineOfBestFitValue(*xList*{:.list},*yList*{:.list},*value*{:.com.google.appinventor.components.common.LOBFValuesEnum})
 : Returns one of the Line of Best Fit values.
- A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided.
+ A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a
+ dictionary with all values above if nothing specific provided.
 
 {:id="Regression.ChangeDataSource" class="method"} <i/> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
 : Changes the Data Source of the component to the specified component Source with the

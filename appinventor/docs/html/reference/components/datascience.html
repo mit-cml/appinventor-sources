@@ -137,8 +137,11 @@
 
 <h2 id="AnomalyDetection">AnomalyDetection</h2>
 
-<p>A data science component to apply different anomaly detection models
- The component needs a data source to apply the model on</p>
+<p>A data science component to apply different anomaly detection models.
+ The component only needs a data source to apply the model on.</p>
+
+<p>The anomaly detection models only return a list of anomalies.
+ ChartData2D component is needed to highlight the anomalies on a chart</p>
 
 <h3 id="AnomalyDetection-Properties">Properties</h3>
 
@@ -159,384 +162,363 @@
  y values will be generated instead.</dd>
   <dt id="AnomalyDetection.DataSourceKey" class="text wo do"><em>DataSourceKey</em></dt>
   <dd>Sets the Data Source key identifier for the value to import from the
- attached Data Source.</dd>
-</dl>
-<p>
- An example is the tag of the TinyDB component, which identifies the value.
- <p>
- The property is a Designer-only property, and should be changed after setting the
- Source component of the Chart Data component.
- <p>
- A complete list of applicable values for each compatible source is as follows:
- <p>
- * For TinyDB and CloudDB, this is the tag value.
- * For the AccelerometerSensor, the value should be one of the following: X Y or Z
- * For the GyroscopeSensor, the value should be one of the following: X Y or Z
- * For the LocationSensor, the value should be one of the following:
- latitude, longitude, altitude or speed
- * For the OrientationSensor, the value should be one of the following:
- pitch, azimuth or roll
- * For the Pedometer, the value should be one of the following:
- WalkSteps, SimpleSteps or Distance
- * For the ProximitySensor, the value should be distance.
- * For the BluetoothClient, the value represents the prefix to remove from the value.
- For instance, if values come in the format "t:12", the prefix can be specified as "t:",
- and the prefix will then be removed from the data. No value can be specified if purely
- numerical values are returned.
-
-{:id="AnomalyDetection.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
-: Comma separated list of Elements to use for the data series. Values are formatted
- as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
- from the x and y values.
-
-{:id="AnomalyDetection.Source" .component .wo .do} *Source*
-: Sets the Source to use for the Data component. Valid choices
- include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
- GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
- ProximitySensor TinyDB and Web components. The Source value also requires
- valid DataSourceValue, WebColumn or DataFileColumn properties,
- depending on the type of the Source attached (the required properties
- show up in the Properties menu after the Source is changed).
- <p>
- If the data identified by the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) is updated
- in the attached Data Source component, then the data is also updated in
- the Chart Data component.
-
-{:id="AnomalyDetection.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
-: If checked, the first row of the spreadsheet will be used to interpret the x and y column
- values. Otherwise, the x and y columns should be a column reference, such as A or B.
-
-{:id="AnomalyDetection.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
-: Sets the column to parse from the attached Spreadsheet component for the x values. If a
- column is not specified, default values for the x values will be generated instead.
-
-{:id="AnomalyDetection.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
-: Sets the column to parse from the attached Spreadsheet component for the y values. If a
- column is not specified, default values for the y values will be generated instead.
-
-{:id="AnomalyDetection.WebXColumn" .text .wo .do} *WebXColumn*
-: Value used when importing data from a Web component Source. The
- value represents the column to use from the Web for the x entries
- of the Data Series. For instance, if the contents of the Web are
- retrieved in JSON format, and an array with the "Time" tag exists,
- the "Time" column value can be specified to use that array.
-
-{:id="AnomalyDetection.WebYColumn" .text .wo .do} *WebYColumn*
-: Value used when importing data from a Web component Source. The
- value represents the column to use from the Web for the y entries
- of the Data Series. For instance, if the contents of the Web are
- retrieved in JSON format, and an array with the "Temperature" tag exists,
- the "Temperature" column value can be specified to use that array.
-
-### Events  {#AnomalyDetection-Events}
-
-{:.events}
-None
-
-
-### Methods  {#AnomalyDetection-Methods}
-
-{:.methods}
-
-{:id="AnomalyDetection.ChangeDataSource" class="method"} <i /> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
-: Changes the Data Source of the component to the specified component Source with the
- specified key value. See the [`Source`](#AnomalyDetection.Source) property for
- applicable components. See the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) property for the interpretation
- of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
- be a CSV formatted string, where the first value corresponds to the x column, and the second
- value corresponds to the y value.
-
-{:id="AnomalyDetection.Clear" class="method"} <i /> Clear()
-: Removes all the entries from the Data Series.
-
-{:id="AnomalyDetection.DetectAnomalies" class="method returns list"} <i /> DetectAnomalies(*dataList*{:.list})
-: Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
- If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly
-
-{:id="AnomalyDetection.DetectAnomaliesWithThreshold" class="method returns list"} <i /> DetectAnomaliesWithThreshold(*dataList*{:.list},*threshold*{:.number})
-: Simple anomaly detection with user defined threshold.
-
-{:id="AnomalyDetection.GetAllEntries" class="method returns list"} <i /> GetAllEntries()
-: Returns all entries of the data series.
- The returned value is a list, where each element of the list
- is a list containing the values of the entry in order.
-
-{:id="AnomalyDetection.GetAnomalyIndex" class="method returns number"} <i /> GetAnomalyIndex(*anomaly*{:.list})
-: Gets the index of a single anomaly
-
-{:id="AnomalyDetection.GetEntriesWithXValue" class="method returns list"} <i /> GetEntriesWithXValue(*x*{:.text})
-: Returns all entries of the data series matching the specified x value.
- For a description of the format of the returned List, see [`GetAllEntries`](#AnomalyDetection.GetAllEntries)
-
-{:id="AnomalyDetection.GetEntriesWithYValue" class="method returns list"} <i /> GetEntriesWithYValue(*y*{:.text})
-: Returns all entries of the data series matching the specified y value.
- For a description of the format of the returned List, see [`GetAllEntries`](#AnomalyDetection.GetAllEntries)
-
-{:id="AnomalyDetection.ImportFromCloudDB" class="method"} <i /> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
-: Imports data from the specified CloudDB component by taking the value
- identified by the specified tag value.
- <p>
- The expected CloudDB value is a list formatted in the same way as described in
- [`ImportFromList`](#AnomalyDetection.ImportFromList).
- <p>
- Does not overwrite any data.
-
-{:id="AnomalyDetection.ImportFromDataFile" class="method"} <i /> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
-: Imports data from the specified DataFile component by taking the specified x column
- for the x values, and the specified y column for the y values. The DataFile's source file
- is expected to be either a CSV or a JSON file.
- <p>
- Passing in empty test for any of the column parameters will result in the usage of
- default values which are the indices of the entries. For the first entry, the default
- value would be the 1, for the second it would be 2, and so on.
-
-{:id="AnomalyDetection.ImportFromList" class="method"} <i /> ImportFromList(*list*{:.list})
-: Imports the data from the specified list parameter to the data series.
- The list is expected to contain element which are also lists. Each
- list element is expected to have 2 values, the first one being
- the x value, and the second one being the y value.
- Invalid list entries are simply skipped. Existing data are not cleared.
-
-{:id="AnomalyDetection.ImportFromSpreadsheet" class="method"} <i /> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
-: Imports data from the specified Spreadsheet component by taking the specified x column
- for the x values, and the specified y column for the y values. Prior to calling this function,
- the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
- the GotSheet event in the Spreadsheet component is unnecessary.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-
-{:id="AnomalyDetection.ImportFromTinyDB" class="method"} <i /> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
-: Imports data from the specified TinyDB component by taking the value
- identified by the specified tag value.
- <p>
- The expected TinyDB value is a list formatted in the same way as described in
- [`ImportFromList`](#AnomalyDetection.ImportFromList).
- <p>
- Does not overwrite any data.
-
-{:id="AnomalyDetection.ImportFromWeb" class="method"} <i /> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
-: Imports data from the specified Web component by taking the specified x column
- for the x values, and the specified y column for the y values. Prior to calling this function,
- the Web component's Get method has to be called to load the data. The usage of the gotValue
- event in the Web component is unnecessary.
- <p>
- The expected response of the Web component is a JSON or CSV formatted
- file for this function to work.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-
-{:id="AnomalyDetection.RemoveAnomaly" class="method returns list"} <i /> RemoveAnomaly(*anomaly*{:.list},*xList*{:.list},*yList*{:.list})
-: Given a single anomaly: [(anomaly index, anomaly value)]
-
- 1. Iterate over the xList and delete value at anomaly index
- 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
- 3. combine the xList and yList after modification in a list of x and y pairs
-
- We assume x and y lists are the same size and are ordered
-
-{:id="AnomalyDetection.RemoveDataSource" class="method"} <i /> RemoveDataSource()
-: Removes the currently attached Data Source from the Chart Data component.
- Doing so will result in no more updates from the Data Source being sent, however,
- the current data will not be removed.
-
-## Regression  {#Regression}
-
-A data science component to apply different regression models
- The component needs a data source to apply the model on
-
-
-
-### Properties  {#Regression-Properties}
-
-{:.properties}
-
-{:id="Regression.DataFileXColumn" .text .wo .do} *DataFileXColumn*
-: Value used when importing data from a DataFile component [`Source`](#Regression.Source). The
- value represents the column to use from the DataFile for the x entries
- of the Data Series. For instance, if a column's first value is "Time",
- and a column value of "Time" is specified, that column will be used
- for the x values. If a value here is not specified, default values for the
- x values will be generated instead.
-
-{:id="Regression.DataFileYColumn" .text .wo .do} *DataFileYColumn*
-: Value used when importing data from a DataFile component [`Source`](#Regression.Source). The
- value represents the column to use from the DataFile for the y entries
- of the Data Series. For instance, if a column's first value is "Temperature",
- and a column value of "Temperature" is specified, that column will be used
- for the y values. If a value here is not specified, default values for the
- y values will be generated instead.
-
-{:id="Regression.DataSourceKey" .text .wo .do} *DataSourceKey*
-: Sets the Data Source key identifier for the value to import from the
  attached Data Source.
- <p>
- An example is the tag of the TinyDB component, which identifies the value.
- <p>
- The property is a Designer-only property, and should be changed after setting the
- Source component of the Chart Data component.
- <p>
- A complete list of applicable values for each compatible source is as follows:
- <p>
- * For TinyDB and CloudDB, this is the tag value.
- * For the AccelerometerSensor, the value should be one of the following: X Y or Z
- * For the GyroscopeSensor, the value should be one of the following: X Y or Z
- * For the LocationSensor, the value should be one of the following:
- latitude, longitude, altitude or speed
- * For the OrientationSensor, the value should be one of the following:
- pitch, azimuth or roll
- * For the Pedometer, the value should be one of the following:
- WalkSteps, SimpleSteps or Distance
- * For the ProximitySensor, the value should be distance.
- * For the BluetoothClient, the value represents the prefix to remove from the value.
- For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+
+    <p>An example is the tag of the TinyDB component, which identifies the value.</p>
+
+    <p>The property is a Designer-only property, and should be changed after setting the
+ Source component of the Chart Data component.</p>
+
+    <p>A complete list of applicable values for each compatible source is as follows:</p>
+  </dd>
+</dl>
+
+<ul>
+  <li>For TinyDB and CloudDB, this is the tag value.</li>
+  <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
+  <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
+  <li>For the LocationSensor, the value should be one of the following:
+ latitude, longitude, altitude or speed</li>
+  <li>For the OrientationSensor, the value should be one of the following:
+ pitch, azimuth or roll</li>
+  <li>For the Pedometer, the value should be one of the following:
+ WalkSteps, SimpleSteps or Distance</li>
+  <li>For the ProximitySensor, the value should be distance.</li>
+  <li>For the BluetoothClient, the value represents the prefix to remove from the value.
+ For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
  and the prefix will then be removed from the data. No value can be specified if purely
- numerical values are returned.
+ numerical values are returned.</li>
+</ul>
 
-{:id="Regression.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
-: Comma separated list of Elements to use for the data series. Values are formatted
+<dl>
+  <dt id="AnomalyDetection.ElementsFromPairs" class="text wo do"><em>ElementsFromPairs</em></dt>
+  <dd>Comma separated list of Elements to use for the data series. Values are formatted
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
- from the x and y values.
-
-{:id="Regression.Source" .component .wo .do} *Source*
-: Sets the Source to use for the Data component. Valid choices
+ from the x and y values.</dd>
+  <dt id="AnomalyDetection.Source" class="component wo do"><em>Source</em></dt>
+  <dd>Sets the Source to use for the Data component. Valid choices
  include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
  GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
  ProximitySensor TinyDB and Web components. The Source value also requires
  valid DataSourceValue, WebColumn or DataFileColumn properties,
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
- <p>
- If the data identified by the [`DataSourceKey`](#Regression.DataSourceKey) is updated
+
+    <p>If the data identified by the <a href="#AnomalyDetection.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> is updated
  in the attached Data Source component, then the data is also updated in
- the Chart Data component.
-
-{:id="Regression.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
-: If checked, the first row of the spreadsheet will be used to interpret the x and y column
- values. Otherwise, the x and y columns should be a column reference, such as A or B.
-
-{:id="Regression.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
-: Sets the column to parse from the attached Spreadsheet component for the x values. If a
- column is not specified, default values for the x values will be generated instead.
-
-{:id="Regression.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
-: Sets the column to parse from the attached Spreadsheet component for the y values. If a
- column is not specified, default values for the y values will be generated instead.
-
-{:id="Regression.WebXColumn" .text .wo .do} *WebXColumn*
-: Value used when importing data from a Web component Source. The
+ the Chart Data component.</p>
+  </dd>
+  <dt id="AnomalyDetection.SpreadsheetUseHeaders" class="boolean wo do"><em>SpreadsheetUseHeaders</em></dt>
+  <dd>If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.</dd>
+  <dt id="AnomalyDetection.SpreadsheetXColumn" class="text wo do"><em>SpreadsheetXColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.</dd>
+  <dt id="AnomalyDetection.SpreadsheetYColumn" class="text wo do"><em>SpreadsheetYColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.</dd>
+  <dt id="AnomalyDetection.WebXColumn" class="text wo do"><em>WebXColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
  value represents the column to use from the Web for the x entries
  of the Data Series. For instance, if the contents of the Web are
- retrieved in JSON format, and an array with the "Time" tag exists,
- the "Time" column value can be specified to use that array.
-
-{:id="Regression.WebYColumn" .text .wo .do} *WebYColumn*
-: Value used when importing data from a Web component Source. The
+ retrieved in JSON format, and an array with the “Time” tag exists,
+ the “Time” column value can be specified to use that array.</dd>
+  <dt id="AnomalyDetection.WebYColumn" class="text wo do"><em>WebYColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
  value represents the column to use from the Web for the y entries
  of the Data Series. For instance, if the contents of the Web are
- retrieved in JSON format, and an array with the "Temperature" tag exists,
- the "Temperature" column value can be specified to use that array.
+ retrieved in JSON format, and an array with the “Temperature” tag exists,
+ the “Temperature” column value can be specified to use that array.</dd>
+</dl>
 
-### Events  {#Regression-Events}
+<h3 id="AnomalyDetection-Events">Events</h3>
 
-{:.events}
-None
+<p class="events">None</p>
 
+<h3 id="AnomalyDetection-Methods">Methods</h3>
 
-### Methods  {#Regression-Methods}
-
-{:.methods}
-
-{:id="Regression.ChangeDataSource" class="method"} <i /> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
-: Changes the Data Source of the component to the specified component Source with the
- specified key value. See the [`Source`](#Regression.Source) property for
- applicable components. See the [`DataSourceKey`](#Regression.DataSourceKey) property for the interpretation
+<dl class="methods">
+  <dt id="AnomalyDetection.ChangeDataSource" class="method"><i></i> ChangeDataSource(<em class="component">source</em>,<em class="text">keyValue</em>)</dt>
+  <dd>Changes the Data Source of the component to the specified component Source with the
+ specified key value. See the <a href="#AnomalyDetection.Source"><code class="highlighter-rouge">Source</code></a> property for
+ applicable components. See the <a href="#AnomalyDetection.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> property for the interpretation
  of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
  be a CSV formatted string, where the first value corresponds to the x column, and the second
- value corresponds to the y value.
+ value corresponds to the y value.</dd>
+  <dt id="AnomalyDetection.CleanData" class="method returns list"><i></i> CleanData(<em class="list">anomaly</em>,<em class="list">xList</em>,<em class="list">yList</em>)</dt>
+  <dd>Given a single anomaly: [(anomaly index, anomaly value)]</dd>
+</dl>
 
-{:id="Regression.Clear" class="method"} <i /> Clear()
-: Removes all the entries from the Data Series.
+<ol>
+  <li>Iterate over the xList and delete value at anomaly index</li>
+  <li>Iterate over the yList and delete the value at anomaly index with the same value as anomaly
+value</li>
+  <li>combine the xList and yList after modification in a list of x and y pairs</li>
+</ol>
 
-{:id="Regression.GetAllEntries" class="method returns list"} <i /> GetAllEntries()
-: Returns all entries of the data series.
+<p>We assume x and y lists are the same size and are ordered.</p>
+
+<dl>
+  <dt id="AnomalyDetection.Clear" class="method"><i></i> Clear()</dt>
+  <dd>Removes all the entries from the Data Series.</dd>
+  <dt id="AnomalyDetection.DetectAnomalies" class="method returns list"><i></i> DetectAnomalies(<em class="list">dataList</em>,<em class="number">threshold</em>)</dt>
+  <dd>Calculates the mean and standard deviation of the data, and then checks each data point’s
+ Z-score against the threshold. If a data point’s Z-score is greater than the threshold,
+ the data point is labeled as anomaly.</dd>
+  <dt id="AnomalyDetection.GetAllEntries" class="method returns list"><i></i> GetAllEntries()</dt>
+  <dd>Returns all entries of the data series.
  The returned value is a list, where each element of the list
- is a list containing the values of the entry in order.
-
-{:id="Regression.GetEntriesWithXValue" class="method returns list"} <i /> GetEntriesWithXValue(*x*{:.text})
-: Returns all entries of the data series matching the specified x value.
- For a description of the format of the returned List, see [`GetAllEntries`](#Regression.GetAllEntries)
-
-{:id="Regression.GetEntriesWithYValue" class="method returns list"} <i /> GetEntriesWithYValue(*y*{:.text})
-: Returns all entries of the data series matching the specified y value.
- For a description of the format of the returned List, see [`GetAllEntries`](#Regression.GetAllEntries)
-
-{:id="Regression.GetLineOfBestFitCorCoef" class="method returns number"} <i /> GetLineOfBestFitCorCoef(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit correlation coefficient
-
-{:id="Regression.GetLineOfBestFitSlope" class="method returns number"} <i /> GetLineOfBestFitSlope(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit slope
-
-{:id="Regression.GetLineOfBestFitYIntercept" class="method returns number"} <i /> GetLineOfBestFitYIntercept(*xList*{:.list},*yList*{:.list})
-: Gets the line of best fit Intercept
-
-{:id="Regression.ImportFromCloudDB" class="method"} <i /> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
-: Imports data from the specified CloudDB component by taking the value
+ is a list containing the values of the entry in order.</dd>
+  <dt id="AnomalyDetection.GetEntriesWithXValue" class="method returns list"><i></i> GetEntriesWithXValue(<em class="text">x</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified x value.
+ For a description of the format of the returned List, see <a href="#AnomalyDetection.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="AnomalyDetection.GetEntriesWithYValue" class="method returns list"><i></i> GetEntriesWithYValue(<em class="text">y</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified y value.
+ For a description of the format of the returned List, see <a href="#AnomalyDetection.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="AnomalyDetection.ImportFromCloudDB" class="method"><i></i> ImportFromCloudDB(<em class="component">cloudDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected CloudDB value is a list formatted in the same way as described in
- [`ImportFromList`](#Regression.ImportFromList).
- <p>
- Does not overwrite any data.
 
-{:id="Regression.ImportFromDataFile" class="method"} <i /> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
-: Imports data from the specified DataFile component by taking the specified x column
- for the x values, and the specified y column for the y values. The DataFile's source file
+    <p>The expected CloudDB value is a list formatted in the same way as described in
+ <a href="#AnomalyDetection.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="AnomalyDetection.ImportFromDataFile" class="method"><i></i> ImportFromDataFile(<em class="component">dataFile</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified DataFile component by taking the specified x column
+ for the x values, and the specified y column for the y values. The DataFile’s source file
  is expected to be either a CSV or a JSON file.
- <p>
- Passing in empty test for any of the column parameters will result in the usage of
- default values which are the indices of the entries. For the first entry, the default
- value would be the 1, for the second it would be 2, and so on.
 
-{:id="Regression.ImportFromList" class="method"} <i /> ImportFromList(*list*{:.list})
-: Imports the data from the specified list parameter to the data series.
+    <p>Passing in empty test for any of the column parameters will result in the usage of
+ default values which are the indices of the entries. For the first entry, the default
+ value would be the 1, for the second it would be 2, and so on.</p>
+  </dd>
+  <dt id="AnomalyDetection.ImportFromList" class="method"><i></i> ImportFromList(<em class="list">list</em>)</dt>
+  <dd>Imports the data from the specified list parameter to the data series.
  The list is expected to contain element which are also lists. Each
  list element is expected to have 2 values, the first one being
  the x value, and the second one being the y value.
- Invalid list entries are simply skipped. Existing data are not cleared.
-
-{:id="Regression.ImportFromSpreadsheet" class="method"} <i /> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
-: Imports data from the specified Spreadsheet component by taking the specified x column
+ Invalid list entries are simply skipped. Existing data are not cleared.</dd>
+  <dt id="AnomalyDetection.ImportFromSpreadsheet" class="method"><i></i> ImportFromSpreadsheet(<em class="component">sheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
+  <dd>Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
- the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
+ the Spreadsheet component’s ReadSheet method has to be called to load the data. The usage of
  the GotSheet event in the Spreadsheet component is unnecessary.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
-{:id="Regression.ImportFromTinyDB" class="method"} <i /> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
-: Imports data from the specified TinyDB component by taking the value
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="AnomalyDetection.ImportFromTinyDB" class="method"><i></i> ImportFromTinyDB(<em class="component">tinyDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected TinyDB value is a list formatted in the same way as described in
- [`ImportFromList`](#Regression.ImportFromList).
- <p>
- Does not overwrite any data.
 
-{:id="Regression.ImportFromWeb" class="method"} <i /> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
-: Imports data from the specified Web component by taking the specified x column
+    <p>The expected TinyDB value is a list formatted in the same way as described in
+ <a href="#AnomalyDetection.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="AnomalyDetection.ImportFromWeb" class="method"><i></i> ImportFromWeb(<em class="component">web</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified Web component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
- the Web component's Get method has to be called to load the data. The usage of the gotValue
+ the Web component’s Get method has to be called to load the data. The usage of the gotValue
  event in the Web component is unnecessary.
- <p>
- The expected response of the Web component is a JSON or CSV formatted
- file for this function to work.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
-{:id="Regression.RemoveDataSource" class="method"} <i /> RemoveDataSource()
-: Removes the currently attached Data Source from the Chart Data component.
+    <p>The expected response of the Web component is a JSON or CSV formatted
+ file for this function to work.</p>
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="AnomalyDetection.RemoveDataSource" class="method"><i></i> RemoveDataSource()</dt>
+  <dd>Removes the currently attached Data Source from the Chart Data component.
  Doing so will result in no more updates from the Data Source being sent, however,
- the current data will not be removed.
-</p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
+ the current data will not be removed.</dd>
+</dl>
+
+<h2 id="Regression">Regression</h2>
+
+<p>A data science component to apply different regression models.
+ The component only requires a data source to apply the model on.</p>
+
+<p>The component is only responsible for the statistical calculations and
+ provides the following properties for line of best fit:
+ “slope”, “Yintercept”, “correlation coefficient”, and “predictions”</p>
+
+<p>To draw the line of best fit use the drawing block in ChartData2D component</p>
+
+<h3 id="Regression-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Regression.DataFileXColumn" class="text wo do"><em>DataFileXColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#Regression.Source"><code class="highlighter-rouge">Source</code></a>. The
+ value represents the column to use from the DataFile for the x entries
+ of the Data Series. For instance, if a column’s first value is “Time”,
+ and a column value of “Time” is specified, that column will be used
+ for the x values. If a value here is not specified, default values for the
+ x values will be generated instead.</dd>
+  <dt id="Regression.DataFileYColumn" class="text wo do"><em>DataFileYColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#Regression.Source"><code class="highlighter-rouge">Source</code></a>. The
+ value represents the column to use from the DataFile for the y entries
+ of the Data Series. For instance, if a column’s first value is “Temperature”,
+ and a column value of “Temperature” is specified, that column will be used
+ for the y values. If a value here is not specified, default values for the
+ y values will be generated instead.</dd>
+  <dt id="Regression.DataSourceKey" class="text wo do"><em>DataSourceKey</em></dt>
+  <dd>Sets the Data Source key identifier for the value to import from the
+ attached Data Source.
+
+    <p>An example is the tag of the TinyDB component, which identifies the value.</p>
+
+    <p>The property is a Designer-only property, and should be changed after setting the
+ Source component of the Chart Data component.</p>
+
+    <p>A complete list of applicable values for each compatible source is as follows:</p>
+  </dd>
+</dl>
+
+<ul>
+  <li>For TinyDB and CloudDB, this is the tag value.</li>
+  <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
+  <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
+  <li>For the LocationSensor, the value should be one of the following:
+ latitude, longitude, altitude or speed</li>
+  <li>For the OrientationSensor, the value should be one of the following:
+ pitch, azimuth or roll</li>
+  <li>For the Pedometer, the value should be one of the following:
+ WalkSteps, SimpleSteps or Distance</li>
+  <li>For the ProximitySensor, the value should be distance.</li>
+  <li>For the BluetoothClient, the value represents the prefix to remove from the value.
+ For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
+ and the prefix will then be removed from the data. No value can be specified if purely
+ numerical values are returned.</li>
+</ul>
+
+<dl>
+  <dt id="Regression.ElementsFromPairs" class="text wo do"><em>ElementsFromPairs</em></dt>
+  <dd>Comma separated list of Elements to use for the data series. Values are formatted
+ as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
+ from the x and y values.</dd>
+  <dt id="Regression.Source" class="component wo do"><em>Source</em></dt>
+  <dd>Sets the Source to use for the Data component. Valid choices
+ include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
+ GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
+ ProximitySensor TinyDB and Web components. The Source value also requires
+ valid DataSourceValue, WebColumn or DataFileColumn properties,
+ depending on the type of the Source attached (the required properties
+ show up in the Properties menu after the Source is changed).
+
+    <p>If the data identified by the <a href="#Regression.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> is updated
+ in the attached Data Source component, then the data is also updated in
+ the Chart Data component.</p>
+  </dd>
+  <dt id="Regression.SpreadsheetUseHeaders" class="boolean wo do"><em>SpreadsheetUseHeaders</em></dt>
+  <dd>If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.</dd>
+  <dt id="Regression.SpreadsheetXColumn" class="text wo do"><em>SpreadsheetXColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.</dd>
+  <dt id="Regression.SpreadsheetYColumn" class="text wo do"><em>SpreadsheetYColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.</dd>
+  <dt id="Regression.WebXColumn" class="text wo do"><em>WebXColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the x entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the “Time” tag exists,
+ the “Time” column value can be specified to use that array.</dd>
+  <dt id="Regression.WebYColumn" class="text wo do"><em>WebYColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the y entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the “Temperature” tag exists,
+ the “Temperature” column value can be specified to use that array.</dd>
+</dl>
+
+<h3 id="Regression-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Regression-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Regression.CalculateLineOfBestFitValue" class="method returns any"><i></i> CalculateLineOfBestFitValue(<em class="list">xList</em>,<em class="list">yList</em>,<em class="com google appinventor components common LOBFValuesEnum">value</em>)</dt>
+  <dd>Returns one of the Line of Best Fit values.
+ A value could be “slope”, “Yintercept”, “correlation coefficient”, “predictions” or a
+ dictionary with all values above if nothing specific provided.</dd>
+  <dt id="Regression.ChangeDataSource" class="method"><i></i> ChangeDataSource(<em class="component">source</em>,<em class="text">keyValue</em>)</dt>
+  <dd>Changes the Data Source of the component to the specified component Source with the
+ specified key value. See the <a href="#Regression.Source"><code class="highlighter-rouge">Source</code></a> property for
+ applicable components. See the <a href="#Regression.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> property for the interpretation
+ of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
+ be a CSV formatted string, where the first value corresponds to the x column, and the second
+ value corresponds to the y value.</dd>
+  <dt id="Regression.Clear" class="method"><i></i> Clear()</dt>
+  <dd>Removes all the entries from the Data Series.</dd>
+  <dt id="Regression.GetAllEntries" class="method returns list"><i></i> GetAllEntries()</dt>
+  <dd>Returns all entries of the data series.
+ The returned value is a list, where each element of the list
+ is a list containing the values of the entry in order.</dd>
+  <dt id="Regression.GetEntriesWithXValue" class="method returns list"><i></i> GetEntriesWithXValue(<em class="text">x</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified x value.
+ For a description of the format of the returned List, see <a href="#Regression.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="Regression.GetEntriesWithYValue" class="method returns list"><i></i> GetEntriesWithYValue(<em class="text">y</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified y value.
+ For a description of the format of the returned List, see <a href="#Regression.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="Regression.ImportFromCloudDB" class="method"><i></i> ImportFromCloudDB(<em class="component">cloudDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified CloudDB component by taking the value
+ identified by the specified tag value.
+
+    <p>The expected CloudDB value is a list formatted in the same way as described in
+ <a href="#Regression.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="Regression.ImportFromDataFile" class="method"><i></i> ImportFromDataFile(<em class="component">dataFile</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified DataFile component by taking the specified x column
+ for the x values, and the specified y column for the y values. The DataFile’s source file
+ is expected to be either a CSV or a JSON file.
+
+    <p>Passing in empty test for any of the column parameters will result in the usage of
+ default values which are the indices of the entries. For the first entry, the default
+ value would be the 1, for the second it would be 2, and so on.</p>
+  </dd>
+  <dt id="Regression.ImportFromList" class="method"><i></i> ImportFromList(<em class="list">list</em>)</dt>
+  <dd>Imports the data from the specified list parameter to the data series.
+ The list is expected to contain element which are also lists. Each
+ list element is expected to have 2 values, the first one being
+ the x value, and the second one being the y value.
+ Invalid list entries are simply skipped. Existing data are not cleared.</dd>
+  <dt id="Regression.ImportFromSpreadsheet" class="method"><i></i> ImportFromSpreadsheet(<em class="component">sheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
+  <dd>Imports data from the specified Spreadsheet component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Spreadsheet component’s ReadSheet method has to be called to load the data. The usage of
+ the GotSheet event in the Spreadsheet component is unnecessary.
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="Regression.ImportFromTinyDB" class="method"><i></i> ImportFromTinyDB(<em class="component">tinyDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified TinyDB component by taking the value
+ identified by the specified tag value.
+
+    <p>The expected TinyDB value is a list formatted in the same way as described in
+ <a href="#Regression.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="Regression.ImportFromWeb" class="method"><i></i> ImportFromWeb(<em class="component">web</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified Web component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Web component’s Get method has to be called to load the data. The usage of the gotValue
+ event in the Web component is unnecessary.
+
+    <p>The expected response of the Web component is a JSON or CSV formatted
+ file for this function to work.</p>
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="Regression.RemoveDataSource" class="method"><i></i> RemoveDataSource()</dt>
+  <dd>Removes the currently attached Data Source from the Chart Data component.
+ Doing so will result in no more updates from the Data Source being sent, however,
+ the current data will not be removed.</dd>
+</dl>
 
 </article>
 <script>

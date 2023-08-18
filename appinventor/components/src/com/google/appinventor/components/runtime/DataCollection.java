@@ -7,8 +7,6 @@ package com.google.appinventor.components.runtime;
 
 import android.util.Log;
 
-
-import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -31,11 +29,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Data Source that is given to the Data Science component for analysis or directly to the chart component for visualisation
+ * Data Source that is given to the Data Science component for analysis or directly to the chart
+ * component for visualisation.
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class DataCollection<C extends ComponentContainer, E extends Entry, M extends DataModel>
+public abstract class DataCollection<C extends ComponentContainer, M extends DataModel<?>>
         implements Component, DataSourceChangeListener {
   protected M dataModel;
   protected C container;
@@ -969,17 +968,17 @@ public abstract class DataCollection<C extends ComponentContainer, E extends Ent
         public void run() {
           // Get the  t value synced across the entire Chart
           // and update the synced value if necessary
-          if(container instanceof Chart) {
+          if (container instanceof Chart) {
             tick = ((Chart) container).getSyncedTValue(tick);
 
-          // Create tuple from current t value and the received value
-          final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
+            // Create tuple from current t value and the received value
+            final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
 
-          dataModel.addTimeEntry(tuple);
-          onDataChange();
+            dataModel.addTimeEntry(tuple);
+            onDataChange();
 
-          // Increment t value
-          tick++;
+            // Increment t value
+            tick++;
           }
         }
       });
@@ -1032,7 +1031,7 @@ public abstract class DataCollection<C extends ComponentContainer, E extends Ent
 
 
   /**
-   * Casts list items to doubles
+   * Casts list items to doubles.
    */
   public static List<Double> castToDouble(List<?> list) {
     List<Double> listDoubles = new ArrayList<>();

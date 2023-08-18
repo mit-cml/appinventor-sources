@@ -15,15 +15,12 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
-import gnu.lists.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.List;
-
-
 
 /**
  * A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
@@ -39,13 +36,11 @@ import java.util.List;
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
 public final class ChartData2D extends ChartDataBase {
-  private int initColor;
   /**
    * Creates a new Coordinate Data component.
    */
   public ChartData2D(Chart chartContainer) {
     super(chartContainer);
-    initColor = dataModel.getDataset().getColor();
   }
 
   /**
@@ -100,7 +95,7 @@ public final class ChartData2D extends ChartDataBase {
         float xValue = Float.parseFloat(x);
         float yValue = Float.parseFloat(y);
 
-        Entry currEntry = new Entry(Float.parseFloat(x),Float.parseFloat(y));
+        Entry currEntry = new Entry(xValue, yValue);
         int index = dataModel.findEntryIndex(currEntry);
 
         dataModel.removeEntryFromTuple(pair);
@@ -143,6 +138,7 @@ public final class ChartData2D extends ChartDataBase {
     // Exceptions thrown (behavior undefined): Assume entry not found
     return false;
   }
+
   /**
    * Imports data from the specified DataFile component by taking the specified x column
    * for the x values, and the specified y column for the y values. The DataFile's source file
@@ -222,9 +218,10 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction(description = "Draws the corresponding line of best fit on the graph")
   public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
-    List predictions = (List) Regression.ComputeLineOfBestFit(xList, yList).get("predictions");
-    final List predictionPairs = new ArrayList<Pair>();
-    List xValues = (List) xList.getCdr();
+    List<?> predictions = (List<?>) Regression.computeLineOfBestFit(xList, yList)
+        .get("predictions");
+    final List<List<?>> predictionPairs = new ArrayList<>();
+    List<?> xValues = (List<?>) xList.getCdr();
     for (int i = 0; i < xValues.size(); i++) {
       predictionPairs.add(Arrays.asList(xValues.get(i), predictions.get(i)));
     }
@@ -240,29 +237,34 @@ public final class ChartData2D extends ChartDataBase {
   /**
    * Highlights all given data points on the Chart in the color of choice.
    *
-   * @param dataPoints - the list of data points. A data point inside this list is a pair of point index and point value: [[point index, point value],...,[,]]
+   * @param dataPoints - the list of data points. A data point inside this list is a pair of point
+   *                   index and point value: [[point index, point value],...,[,]]
    * @param color - the highlight color chosen by the user
    */
-  @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of choice." +
-      " This block expects a list of data points, each data point is an index, value pair")
+  @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of "
+      + "choice. This block expects a list of data points, each data point is an index, value pair")
   public void HighlightDataPoints(final YailList dataPoints, int color) {
-    List<List> dataPointsList = (LList) dataPoints.getCdr();
-    if(!dataPoints.isEmpty()) {
-      List entries = dataModel.getEntries();
+    List<?> dataPointsList = (LList) dataPoints.getCdr();
+    if (!dataPoints.isEmpty()) {
+      List<?> entries = dataModel.getEntries();
       int[] highlights = new int[entries.size()];
-      Arrays.fill(highlights, initColor);
+      Arrays.fill(highlights, dataModel.getDataset().getColor());
 
-      for (List dataPoint: dataPointsList){
-        int dataPointIndex = (int) AnomalyDetection.GetAnomalyIndex((YailList) dataPoint);
+      for (Object dataPoint: dataPointsList) {
+        if (!(dataPoint instanceof YailList)) {
+          continue;
+        }
+        int dataPointIndex = (int) AnomalyDetection.getAnomalyIndex((YailList) dataPoint);
         highlights[dataPointIndex - 1] = color;
       }
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
       onDataChange();
-    }else{
+    } else {
       throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }
   }
-  private void resetHighlightAtIndex(int index){
+
+  private void resetHighlightAtIndex(int index) {
     List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
     defaultColors.remove(index);
   }

@@ -8,13 +8,10 @@ package com.google.appinventor.components.runtime;
 import static junit.framework.Assert.assertEquals;
 
 import com.google.appinventor.components.runtime.util.YailList;
-import gnu.lists.Pair;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 
 public class AnomalyDetectionTest extends RobolectricTestBase {
   AnomalyDetection anomalyDetection;
@@ -30,34 +27,35 @@ public class AnomalyDetectionTest extends RobolectricTestBase {
   }
 
   @Test
-  public void testDetectAnomalies(){
-    ArrayList anomalies = (ArrayList) anomalyDetection.DetectAnomalies( yList, 2);
-    ArrayList expectedAnomalies = new ArrayList<Pair>();
+  public void testDetectAnomalies() {
+    List<List<?>> anomalies = anomalyDetection.DetectAnomalies(yList, 2);
+    List<List<?>> expectedAnomalies = new ArrayList<>();
     expectedAnomalies.add(Arrays.asList(6, 88f));
     assertEquals(expectedAnomalies.size(), anomalies.size());
     // Assert.assertEquals(expectedAnomalies, anomalies);
   }
 
   @Test
-  public void testDetectMultipleAnomalies(){
+  public void testDetectMultipleAnomalies() {
     YailList yList = YailList.makeList(Arrays.asList("1","2","78","2","2","88"));
-    ArrayList anomalies = (ArrayList) anomalyDetection.DetectAnomalies( yList, 1);
-    ArrayList expectedAnomalies = new ArrayList<Pair>();
+    List<List<?>> anomalies = anomalyDetection.DetectAnomalies(yList, 1);
+    List<List<?>> expectedAnomalies = new ArrayList<>();
     expectedAnomalies.add(Arrays.asList(3, 78f));
     expectedAnomalies.add(Arrays.asList(6, 88f));
     assertEquals(expectedAnomalies.size(), anomalies.size());
   }
 
   @Test
-  public void testGetAnomalyIndex(){
-    double index = anomalyDetection.GetAnomalyIndex(YailList.makeList(Arrays.asList(6, 88f)));
+  public void testGetAnomalyIndex() {
+    double index = AnomalyDetection.getAnomalyIndex(YailList.makeList(Arrays.asList(6, 88f)));
     double expectedIndex = 6;
     assertEquals(expectedIndex, index, 0.01f);
   }
 
   @Test
-  public void testCleanData(){
-    List cleanData = anomalyDetection.CleanData(YailList.makeList(Arrays.asList(6, 88f)),xList, yList);
+  public void testCleanData() {
+    List<?> cleanData = anomalyDetection.CleanData(
+        YailList.makeList(Arrays.asList(6, 88f)), xList, yList);
     YailList expectedList = YailList.makeList(
         Arrays.asList(
             YailList.makeList(

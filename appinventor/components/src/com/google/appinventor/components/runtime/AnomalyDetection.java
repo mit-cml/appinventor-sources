@@ -12,12 +12,9 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import gnu.lists.Pair;
-
 
 /**
  * A data science component to apply different anomaly detection models.
@@ -33,7 +30,7 @@ import gnu.lists.Pair;
     nonVisible = true)
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
-public final class AnomalyDetection extends DataCollection {
+public final class AnomalyDetection extends DataCollection<ComponentContainer, DataModel<?>> {
   /**
    * Creates a new Anomaly Detection component.
    */
@@ -42,15 +39,19 @@ public final class AnomalyDetection extends DataCollection {
   }
 
   /**
-   * Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
-   * If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly.
+   * Calculates the mean and standard deviation of the data, and then checks each data point's
+   * Z-score against the threshold. If a data point's Z-score is greater than the threshold,
+   * the data point is labeled as anomaly.
    *
    * @param dataList - the data array represents the data you want to check for anomalies
    * @return List of detected anomaly data points
    */
-  @SimpleFunction(description = "Z-Score Anomaly Detection: checks each data point's Z-score against the given threshold if a data point's Z-score is greater than the threshold, the data point is labeled as anomaly and returned in a list of pairs (anomaly index, anomaly value)")
-  public List DetectAnomalies(final YailList dataList, double threshold) {
-    ArrayList anomalies = new ArrayList<Pair>();
+  @SimpleFunction(description = "Z-Score Anomaly Detection: checks each data point's Z-score"
+      + "against the given threshold if a data point's Z-score is greater than the threshold, the "
+      + "data point is labeled as anomaly and returned in a list of pairs (anomaly index, anomaly "
+      + "value)")
+  public List<List<?>> DetectAnomalies(final YailList dataList, double threshold) {
+    List<List<?>> anomalies = new ArrayList<>();
 
     LList dataListValues = (LList) dataList.getCdr();
     List<Double> data = castToDouble(dataListValues);
@@ -72,10 +73,11 @@ public final class AnomalyDetection extends DataCollection {
 
     // Detect anomalies using Z-score
     for (int i = 0; i < data.size(); i++) {
-      double zScore = Math.abs((data.get(i) - mean) / sd); // The z-score is a measure of how many standard deviations a data point is away from the mean
-        if (zScore > threshold) {
-          anomalies.add(Arrays.asList(i + 1, data.get(i)));
-        }
+      // The z-score is a measure of how many standard deviations a data point is away from the mean
+      double zScore = Math.abs((data.get(i) - mean) / sd);
+      if (zScore > threshold) {
+        anomalies.add(Arrays.asList(i + 1, data.get(i)));
+      }
     }
     return anomalies;
   }
@@ -84,7 +86,8 @@ public final class AnomalyDetection extends DataCollection {
    * Given a single anomaly: [(anomaly index, anomaly value)]
    *
    * 1. Iterate over the xList and delete value at anomaly index
-   * 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
+   * 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly
+   *    value
    * 3. combine the xList and yList after modification in a list of x and y pairs
    *
    * We assume x and y lists are the same size and are ordered.
@@ -92,14 +95,14 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return List of combined x and y pairs without the anomaly pair
    */
-  @SimpleFunction(description = "Given a single anomaly and the x and y values of your data." +
-      " This block will return the x and y value pairs of your data without the anomaly")
-  public List CleanData(final YailList anomaly, YailList xList, YailList yList) {
+  @SimpleFunction(description = "Given a single anomaly and the x and y values of your data."
+      + " This block will return the x and y value pairs of your data without the anomaly")
+  public List<List<?>> CleanData(final YailList anomaly, YailList xList, YailList yList) {
     LList xValues = (LList) xList.getCdr();
-    List xData = castToDouble(xValues);
+    List<Double> xData = castToDouble(xValues);
 
     LList yValues = (LList) yList.getCdr();
-    List yData = castToDouble(yValues);
+    List<Double> yData = castToDouble(yValues);
 
     if (xData.size() != yData.size()) {
       throw new IllegalStateException("Must have equal X and Y data points");
@@ -107,12 +110,12 @@ public final class AnomalyDetection extends DataCollection {
     if (xData.size() == 0 || yData.size() == 0) {
       throw new IllegalStateException("List must have at least one element");
     }
-    int index = (int) GetAnomalyIndex(anomaly);
+    int index = (int) getAnomalyIndex(anomaly);
 
     xData.remove(index - 1);
     yData.remove(index - 1);
 
-    ArrayList cleanData = new ArrayList<Pair>();
+    List<List<?>> cleanData = new ArrayList<>();
 
     if (xData.size() == yData.size()) {
       for (int i = 0; i < xData.size(); i++) {
@@ -129,8 +132,8 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return double anomaly index
    */
-  public static double GetAnomalyIndex(YailList anomaly) {
-    if (anomaly.size() > 0) {
+  public static double getAnomalyIndex(YailList anomaly) {
+    if (!anomaly.isEmpty()) {
       LList anomalyValue = (LList) anomaly.getCdr();
       List<Double> anomalyNr = castToDouble(anomalyValue);
       return anomalyNr.get(0);

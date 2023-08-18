@@ -46,6 +46,7 @@ public abstract class DataModel<E> {
   protected DataModel() {
     entries = new ArrayList<>();
   }
+
   /**
    * Adds an entry from a specified tuple.
    *
@@ -286,7 +287,9 @@ public abstract class DataModel<E> {
    * @param value     value to use for comparison (as a String)
    * @return true if the entry matches the criterion
    */
-  protected abstract boolean isEntryCriterionSatisfied(Entry entry, DataModel.EntryCriterion criterion, String value);
+  protected abstract boolean isEntryCriterionSatisfied(Entry entry,
+      DataModel.EntryCriterion criterion, String value);
+
   /**
    * Creates an Entry from the specified tuple.
    *

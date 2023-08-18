@@ -38,8 +38,9 @@ import java.util.List;
  */
 @SuppressWarnings({"checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDataModel<?, ?, ?, ?, ?> > implements Component, DataSourceChangeListener,
-    OnChartGestureListener, OnChartValueSelectedListener {
+public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel<?, ?, ?, ?, ?>>
+    implements Component, DataSourceChangeListener, OnChartGestureListener,
+    OnChartValueSelectedListener {
 
   private String label;
   private int color;

@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * Defines a parameter of LOBF formula used by the regression components.
  */
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public enum LOBFValues implements OptionList<String> {
   CorrCoef("correlation coefficient"),
   @Default
@@ -31,7 +32,7 @@ public enum LOBFValues implements OptionList<String> {
   private static final Map<String, LOBFValues> lookup = new HashMap<>();
 
   static {
-    for(LOBFValues value : LOBFValues.values()) {
+    for (LOBFValues value : LOBFValues.values()) {
       lookup.put(value.toUnderlyingValue(), value);
     }
   }
