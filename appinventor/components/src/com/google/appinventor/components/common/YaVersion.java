@@ -12,7 +12,6 @@ package com.google.appinventor.components.common;
  *
  */
 public class YaVersion {
-
   private YaVersion() {
   }
 
@@ -577,8 +576,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 223:
   // - IMAGEBOT_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 224:
+  // - ANOMALY_COMPONENT_VERSION was introduced
   // - CHATBOT_COMPONENT_VERSION was incremented to 2
   // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
+  // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
 
