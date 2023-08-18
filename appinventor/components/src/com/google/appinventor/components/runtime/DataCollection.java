@@ -789,7 +789,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * for the x values, and the specified y column for the y values. The DataFile's source file
    * is expected to be either a CSV or a JSON file.
    *
-   *    Passing in empty test for any of the column parameters will result in the usage of
+   *   Passing in empty test for any of the column parameters will result in the usage of
    * default values which are the indices of the entries. For the first entry, the default
    * value would be the 1, for the second it would be 2, and so on.
    *
@@ -800,7 +800,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
   @SuppressWarnings("checkstyle:ParameterName")
   @SimpleFunction()
   public void ImportFromDataFile(final DataFile dataFile, String xValueColumn,
-                                 String yValueColumn) {
+      String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
@@ -813,19 +813,19 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
    * the GotSheet event in the Spreadsheet component is unnecessary.
    *
-   *    Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
-   * @param sheet      Spreadsheet component to import from
-   * @param xColumn    x-value column name
-   * @param yColumn    y-value column name
-   * @param useHeaders use the first row of values to interpret the column names
+   * @param spreadsheet  Spreadsheet component to import from
+   * @param xColumn      x-value column name
+   * @param yColumn      y-value column name
+   * @param useHeaders   use the first row of values to interpret the column names
    */
   @SimpleFunction
-  public void ImportFromSpreadsheet(final Spreadsheet sheet, String xColumn, String yColumn,
-                                    boolean useHeaders) {
+  public void ImportFromSpreadsheet(final Spreadsheet spreadsheet, String xColumn, String yColumn,
+      boolean useHeaders) {
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
-    importFromSpreadsheetAsync(sheet, columns, useHeaders);
+    importFromSpreadsheetAsync(spreadsheet, columns, useHeaders);
   }
 
   /**
