@@ -39,8 +39,7 @@ import java.util.List;
 @SuppressWarnings({"checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel<?, ?, ?, ?, ?>>
-    implements Component, DataSourceChangeListener, OnChartGestureListener,
-    OnChartValueSelectedListener {
+    implements OnChartGestureListener, OnChartValueSelectedListener {
 
   private String label;
   private int color;
@@ -50,7 +49,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
    * Creates a new Chart Data component.
    */
   protected ChartDataBase(Chart chartContainer) {
-    this.container = chartContainer;
+    super(chartContainer);
     chartContainer.addDataComponent(this);
 
     // Set default properties and instantiate Chart Data Model
@@ -242,11 +241,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
     container.getChartView().refresh((ChartDataModel) dataModel);
-  }
-
-  @Override
-  public HandlesEventDispatching getDispatchDelegate() {
-    return this.container.getDispatchDelegate();
   }
 
   @Override

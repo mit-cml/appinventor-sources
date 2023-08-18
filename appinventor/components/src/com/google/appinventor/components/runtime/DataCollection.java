@@ -36,8 +36,8 @@ import java.util.concurrent.Future;
 @SimpleObject
 public abstract class DataCollection<C extends ComponentContainer, M extends DataModel<?>>
         implements Component, DataSourceChangeListener {
+  protected final C container;
   protected M dataModel;
-  protected C container;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -93,7 +93,8 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
   /**
    * Creates a new Chart Data component.
    */
-  public DataCollection() {
+  public DataCollection(C container) {
+    this.container = container;
 
     // Set default properties
     DataSourceKey("");
@@ -876,6 +877,11 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
       // set to prevent data overriding.
       ElementsFromPairs(elements);
     }
+  }
+
+  @Override
+  public HandlesEventDispatching getDispatchDelegate() {
+    return container.$form();
   }
 
   /**

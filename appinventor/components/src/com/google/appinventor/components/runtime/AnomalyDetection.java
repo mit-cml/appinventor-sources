@@ -35,7 +35,7 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
    * Creates a new Anomaly Detection component.
    */
   public AnomalyDetection(ComponentContainer container) {
-    super();
+    super(container);
   }
 
   /**
@@ -140,11 +140,6 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
     } else {
       throw new IllegalStateException("Must have equal X and Y data points");
     }
-  }
-
-  @Override
-  public HandlesEventDispatching getDispatchDelegate() {
-    return container.$form();
   }
 
   @Override

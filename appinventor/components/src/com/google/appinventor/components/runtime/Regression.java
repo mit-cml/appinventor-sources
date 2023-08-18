@@ -41,7 +41,7 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
    * Creates a new Regression component.
    */
   public Regression(ComponentContainer container) {
-    super();
+    super(container);
   }
 
   /**
@@ -132,11 +132,6 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
     } else {
       return result;
     }
-  }
-
-  @Override
-  public HandlesEventDispatching getDispatchDelegate() {
-    return container.$form();
   }
 
   @Override
