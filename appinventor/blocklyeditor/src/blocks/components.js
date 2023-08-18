@@ -705,6 +705,7 @@ Blockly.Blocks.component_method = {
 
     this.typeName = xmlElement.getAttribute('component_type');
     this.methodName = xmlElement.getAttribute('method_name');
+    this.shape = xmlElement.getAttribute('shape');
     var isGenericString = xmlElement.getAttribute('is_generic');
     this.isGeneric = isGenericString == 'true';
     if(!this.isGeneric) {
@@ -811,9 +812,20 @@ Blockly.Blocks.component_method = {
     }
 
     if (!methodTypeObject) {
-      this.setOutput(false);
-      this.setPreviousStatement(false);
-      this.setNextStatement(false);
+      if (this.shape === 'statement') {
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setOutput(false);
+      } else if (this.shape === 'value') {
+        this.setOutput(true);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+      } else {
+        // In theory this shouldn't happen unless there's a new input type added to Blockly
+        this.setOutput(false);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+      }
     } // methodType.returnType is a Yail type
     else if (methodTypeObject.returnType) {
       this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(methodTypeObject.returnType,Blockly.Blocks.Utilities.OUTPUT));
@@ -1273,10 +1285,12 @@ Blockly.Blocks.component_set_get = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    if (property) {
+      var helperType = Blockly.Blocks.Utilities
         .helperKeyToBlocklyType(property.helperKey, this);
-    if (helperType && helperType != blocklyType) {
-      check.push(helperType);
+      if (helperType && helperType != blocklyType) {
+        check.push(helperType);
+      }
     }
 
     return !check.length ? null : check;

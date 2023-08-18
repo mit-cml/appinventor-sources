@@ -14,4 +14,5 @@ public interface TokenAuthServiceAsync {
 
     void getCloudDBToken(AsyncCallback<String> callback);
     void getTranslateToken(AsyncCallback<String> callback);
+    void getChatBotToken(AsyncCallback<String> callback);
 }

@@ -545,7 +545,7 @@ public abstract class Sprite extends VisibleComponent
    * When a fling gesture (quick swipe) is made on the sprite: provides
    * the (x,y) position of the start of the fling, relative to the upper
    * left of the canvas. Also provides the speed (pixels per millisecond) and heading
-   * (0-360 degrees) of the fling, as well as the x velocity and y velocity
+   * (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
    * components of the fling's vector.
    *
    * @param x  x-coordinate of touched point
@@ -559,7 +559,7 @@ public abstract class Sprite extends VisibleComponent
       description = "Event handler called when a fling gesture (quick swipe) is made on " +
           "an enabled %type%. This provides the x and y coordinates of the start of the " +
           "fling (relative to the upper left of the canvas), the speed (pixels per millisecond), " +
-          "the heading (0-360 degrees), and the x and y velocity components of " +
+          "the heading (-180 to 180 degrees), and the x and y velocity components of " +
           "the fling's vector.")
   public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
     postEvent(this, "Flung", x, y, speed, heading, xvel, yvel);

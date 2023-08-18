@@ -127,7 +127,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
 {:id="BluetoothClient.AddressesAndNames" .list .ro .bo} *AddressesAndNames*
 : Returns the list of paired Bluetooth devices. Each element of the returned
  list is a String consisting of the device's address, a space, and the
- device's name.
+ device's name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+ and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+ an error via the Screen's PermissionDenied event.
 
 {:id="BluetoothClient.Available" .boolean .ro .bo} *Available*
 : Returns `true`{:.logic.block} if Bluetooth is available on the device,
@@ -152,7 +154,7 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  byte first.
 
 {:id="BluetoothClient.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
 
 {:id="BluetoothClient.NoLocationNeeded" .boolean .do} *NoLocationNeeded*
 : On Android 12 and later, indicates that Bluetooth is not used to determine the user's location.
@@ -295,7 +297,7 @@ Use the `BluetoothServer` component to turn your device into a server that recei
  incoming connection.
 
 {:id="BluetoothServer.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
 
 {:id="BluetoothServer.Secure" .boolean} *Secure*
 : Specifies whether a secure connection should be used.

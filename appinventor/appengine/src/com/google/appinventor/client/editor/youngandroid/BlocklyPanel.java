@@ -26,8 +26,10 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.query.client.builders.JsniBundle;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -35,6 +37,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -347,7 +351,17 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static DialogBox createDialog(String title, String mess, final String buttonName, Boolean destructive,
                                        final String cancelButtonName, int size, final JavaScriptObject callback) {
-    final DialogBox dialogBox = new DialogBox();
+    // Holds a reference to an event handler to process key.
+    // AtomicReference would be a better way to do this but GWT doesn't support it.
+    final List<HandlerRegistration> registrationHolder = new ArrayList<>();
+    final DialogBox dialogBox = new DialogBox() {
+      @Override
+      public void hide(boolean autoClosed) {
+        super.hide(autoClosed);
+        // Clean up the registration
+        registrationHolder.get(0).removeHandler();
+      }
+    };
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(title);
     if (size == 0) {
@@ -392,6 +406,17 @@ public class BlocklyPanel extends HTMLPanel {
     terminateDrag();  // cancel a drag before showing the modal dialog
     ConnectProgressBar.tempHide(true); // Hide any connection progress bar
     dialogBox.show();
+    // Note that this MUST be after dialogBox.show() so that it runs after the dialog's
+    // event handlers, which cancel key events like Ctrl+C. We want people to be able to
+    // copy text, so we 'consume' the event to let the browser perform its default behavior.
+    registrationHolder.add(Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
+          event.consume();
+        }
+      }
+    }));
     return dialogBox;
   }
 

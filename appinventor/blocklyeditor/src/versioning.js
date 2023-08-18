@@ -41,6 +41,33 @@ Blockly.Versioning.log = function log(string) { // Display feedback on upgrade i
 };
 
 /**
+ * Updates the `<mutation>` element of `component_method` blocks to include a `shape` field that
+ * the block can use to shape itself properly in the event that the method definition is
+ * unavailable.
+ *
+ * @param {Element} dom the root of the workspace XML document
+ * @returns {Element}
+ */
+Blockly.Versioning.upgradeComponentMethods = function(dom) {
+  var els = dom.querySelectorAll('block[type="component_method"]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var parent = el.parentElement;
+    var mutation = el.querySelector('mutation');
+    if (!mutation) {
+      console.warn('component_method without mutation', el);
+      return;
+    }
+    if (!parent) {
+      // detached block
+      return;
+    }
+    mutation.setAttribute('shape', parent.tagName.toLowerCase());
+  }
+  return dom;
+};
+
+/**
  * [lyn, 2014/11/04] Simplified version of Halloween AI2 upgrading architecture.
  *
  * @param preUpgradeFormJsonString: JSON String from pre-upgrade Form associated with these blocks
@@ -69,6 +96,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   opt_workspace = opt_workspace || Blockly.mainWorkspace;
   var preUpgradeFormJsonObject = JSON.parse(preUpgradeFormJsonString);
   var dom = Blockly.Xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
+  dom = Blockly.Versioning.upgradeComponentMethods(dom);
   var didUpgrade = false;
 
   /**
@@ -1155,6 +1183,10 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
       return;
     }
     var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+    if (!field) {
+      // Older projects may use <title> rather than <field> in Blockly XML
+      field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+    }
     var targetValue = field.textContent;
     if (!valueToNameMap[targetValue]) {
       return;
@@ -1197,6 +1229,10 @@ Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
 
   valueNode.removeChild(targetNode);
@@ -1232,6 +1268,10 @@ Blockly.Versioning.tryReplaceBlockWithAssets = function(valueNode, workspace) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
   if (workspace.getAssetList().indexOf(targetValue) == -1) {
     // This is probably an http request or something. Don't upgrade.
@@ -1780,6 +1820,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ChartData2D upgraders
 
+  "ChatBot" : {
+    //This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
+  }, // End ChatBot upgraders
+
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
@@ -2022,6 +2070,14 @@ Blockly.Versioning.AllUpgradeMaps =
         'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Image upgraders
+
+  "ImageBot": {
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
+  },  // End ImageBot upgraders
 
   "ImagePicker": {
 
@@ -3082,7 +3138,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // default value was added to the Country designer property
     // default value was added to the Language designer property
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: The Stop method was added.
+    6: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 
@@ -3110,7 +3169,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     //Added Property: Namespace
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    //Added blocks GetEntries
+    3: "noUpgrade"
 
   }, // End TinyDB upgraders
 
@@ -3345,6 +3407,5 @@ Blockly.Versioning.AllUpgradeMaps =
   "Translator": {
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
-  } // End Translate upgraders
-
+  }, // End Translate upgraders
 };

@@ -131,4 +131,22 @@ public final class AppInventorFeatures {
   public static boolean doPrettifyXml() {
     return false;
   }
+
+  /**
+   * If set to true, features marked as part of future App Inventor
+   * iterations will be shown.
+   */
+  public static boolean enableFutureFeatures() {
+    return false;
+  }
+
+  /**
+   * If set to true, redirect http connections to https if running in
+   * production (aka, not the Google Dev server).
+   */
+
+  public static boolean enableHttpRedirect() {
+    return true;
+  }
+
 }

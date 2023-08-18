@@ -25,6 +25,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -283,4 +284,25 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
       dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }
+
+  /**
+   * Method to get all data in form of Dictionary
+   * @return Dictionary of tags and their associated values
+   */
+  @SimpleFunction(description = "Retrieves all data entries of TinyDB in form of Dictionaries")
+  public YailDictionary GetEntries() {
+    Map<String, ?> keyValues = sharedPreferences.getAll();
+    List<String> keyList = new ArrayList<>(keyValues.keySet());
+
+    java.util.Collections.sort(keyList);
+
+    YailDictionary dictionary = new YailDictionary();
+
+    for (String aKey : keyList) {
+      dictionary.put(aKey, GetValue(aKey, ""));
+    }
+
+    return dictionary;
+  }
+
 }
