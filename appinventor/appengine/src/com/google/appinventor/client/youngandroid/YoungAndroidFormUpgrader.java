@@ -1623,6 +1623,11 @@ public final class YoungAndroidFormUpgrader {
       // Added Property: Namespace
       srcCompVersion = 2;
     }
+
+    if (srcCompVersion < 3) {
+      // Added Property: GetEntries
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

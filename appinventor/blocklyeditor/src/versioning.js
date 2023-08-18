@@ -3169,7 +3169,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     //Added Property: Namespace
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    //Added blocks GetEntries
+    3: "noUpgrade"
 
   }, // End TinyDB upgraders
 

@@ -579,6 +579,7 @@ public class YaVersion {
   // - CHATBOT_COMPONENT_VERSION was incremented to 2
   // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
+  // - TINYDB_COMPONENT_VERSION was incremented to 3
 
   public static final int YOUNG_ANDROID_VERSION = 224;
 
@@ -1412,7 +1413,9 @@ public class YaVersion {
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
-  public static final int TINYDB_COMPONENT_VERSION = 2;
+  // For TINYDB_COMPONENT_VERSION 3:
+  // - Added GetEntries method
+  public static final int TINYDB_COMPONENT_VERSION = 3;
 
   // For TINYWEBDB_COMPONENT_VERSION 2:
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
