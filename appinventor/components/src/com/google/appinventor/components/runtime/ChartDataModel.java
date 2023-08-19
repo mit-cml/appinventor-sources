@@ -240,7 +240,7 @@ public abstract class ChartDataModel<
    * @param criterion criterion to use for comparison
    * @return YailList of entries represented as tuples matching the specified conditions
    */
-  public YailList findEntriesByCriterion(String value, DataModel.EntryCriterion criterion) {
+  public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
     List<YailList> entries = new ArrayList<>();
 
     for (Entry entry : this.entries) {
@@ -262,7 +262,7 @@ public abstract class ChartDataModel<
    */
   public YailList getEntriesAsTuples() {
     // Use the All criterion to get all the Entries
-    return findEntriesByCriterion("0", ChartDataModel.EntryCriterion.All);
+    return findEntriesByCriterion("0", EntryCriterion.All);
   }
 
   /**
@@ -273,7 +273,7 @@ public abstract class ChartDataModel<
    * @param value     value to use for comparison (as a String)
    * @return true if the entry matches the criterion
    */
-  protected boolean isEntryCriterionSatisfied(Entry entry, DataModel.EntryCriterion criterion,
+  protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion,
       String value) {
     boolean criterionSatisfied = false;
 

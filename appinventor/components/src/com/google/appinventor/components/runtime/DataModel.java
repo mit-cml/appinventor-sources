@@ -267,7 +267,7 @@ public abstract class DataModel<E> {
    * @param criterion criterion to use for comparison
    * @return YailList of entries represented as tuples matching the specified conditions
    */
-  public abstract YailList findEntriesByCriterion(String value, DataModel.EntryCriterion criterion);
+  public abstract YailList findEntriesByCriterion(String value, EntryCriterion criterion);
 
   /**
    * Returns all the entries of the Data Series in the form of tuples (YailLists).
@@ -276,7 +276,7 @@ public abstract class DataModel<E> {
    */
   public YailList getEntriesAsTuples() {
     // Use the All criterion to get all the Entries
-    return findEntriesByCriterion("0", DataModel.EntryCriterion.All);
+    return findEntriesByCriterion("0", EntryCriterion.All);
   }
 
   /**
@@ -288,7 +288,7 @@ public abstract class DataModel<E> {
    * @return true if the entry matches the criterion
    */
   protected abstract boolean isEntryCriterionSatisfied(Entry entry,
-      DataModel.EntryCriterion criterion, String value);
+      EntryCriterion criterion, String value);
 
   /**
    * Creates an Entry from the specified tuple.

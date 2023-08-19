@@ -534,7 +534,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
         @Override
         public YailList call() {
           // Use X Value as criterion to filter entries
-          return dataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
+          return dataModel.findEntriesByCriterion(x, DataModel.EntryCriterion.XValue);
         }
       }).get();
     } catch (InterruptedException e) {
@@ -563,7 +563,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
         @Override
         public YailList call() {
           // Use YValue as criterion to filter entries
-          return dataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
+          return dataModel.findEntriesByCriterion(y, DataModel.EntryCriterion.YValue);
         }
       }).get();
     } catch (InterruptedException e) {
