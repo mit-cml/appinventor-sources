@@ -576,8 +576,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 223:
   // - IMAGEBOT_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 224:
+  // - ANOMALY_COMPONENT_VERSION was introduced
   // - CHATBOT_COMPONENT_VERSION was incremented to 2
   // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
+  // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
 
@@ -744,6 +746,8 @@ public class YaVersion {
   // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
   // - Extras property was added to accept a list of key-value pairs to put to the intent
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
+
+  public static final int ANOMALY_COMPONENT_VERSION = 1;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -1305,6 +1309,10 @@ public class YaVersion {
   // For RECTANGLE_COMPONENT_VERSION 2:
   // - Added fill and stroke opacity properties
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
+
+  // For REGRESSION_COMPONENT_VERSION 2:
+  // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
+  public static final int REGRESSION_COMPONENT_VERSION = 2;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

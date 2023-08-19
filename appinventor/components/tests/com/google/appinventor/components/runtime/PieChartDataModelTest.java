@@ -226,7 +226,7 @@ public class PieChartDataModelTest
   @Test
   public void testCriterionSatisfiedXStringMatch() {
     Entry entry = createEntry("Entry", 4f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.XValue;
     final String value = "Entry";
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);

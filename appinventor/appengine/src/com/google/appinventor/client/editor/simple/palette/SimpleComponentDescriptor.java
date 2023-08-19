@@ -188,6 +188,8 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/chart.png", images.chart());
     bundledImages.put("images/chartData.png", images.chartData2D());
     bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/regression.png", images.regression());
+    bundledImages.put("images/anomaly.png", images.anomalyDetection());
 
     imagesInitialized = true;
   }
