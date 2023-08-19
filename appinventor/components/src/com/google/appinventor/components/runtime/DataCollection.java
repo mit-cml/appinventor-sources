@@ -35,7 +35,7 @@ import java.util.concurrent.Future;
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class DataCollection<C extends ComponentContainer, M extends DataModel<?>>
-        implements Component, DataSourceChangeListener {
+    implements Component, DataSourceChangeListener {
   protected final C container;
   protected M dataModel;
 
@@ -73,7 +73,6 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * attached Data Source.
    */
   protected String dataSourceKey;
-
 
   private DataSource<?, ?> dataSource; // Attached Chart Data Source
 
