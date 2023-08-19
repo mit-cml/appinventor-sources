@@ -165,12 +165,7 @@ public abstract class ChartDataModel<
       removeEntry(index);
     }
   }
-  /**
-   * Deletes all the entries in the Data Series.
-   */
-  public void clearEntries() {
-    entries.clear();
-  }
+
   /**
    * Removes the entry in the specified index, provided that the
    * index is within bounds.
@@ -182,36 +177,6 @@ public abstract class ChartDataModel<
     if (index >= 0) {
       entries.remove(index);
     }
-  }
-
-  /**
-   * Adds the specified entry as a time entry to the Data Series.
-   *
-   * <p>The method handles additional logic for removing excess values
-   * if the count exceeds the threshold.
-   *
-   * @param tuple tuple representing the time entry
-   */
-  public void addTimeEntry(YailList tuple) {
-    // If the entry count of the Data Series entries exceeds
-    // the maximum allowed time entries, then remove the first one
-    if (entries.size() >= maximumTimeEntries) {
-      entries.remove(0);
-    }
-
-    // Add entry from the specified tuple
-    // TODO: Support for multi-dimensional case (currently tuples always consist
-    // TODO: of two elements)
-    addEntryFromTuple(tuple);
-  }
-
-  /**
-   * Returns the entries of the Chart Data Model.
-   *
-   * @return List of entries of the Chart Data Model (Data Series)
-   */
-  public List<E> getEntries() {
-    return Collections.unmodifiableList(entries);
   }
 
   /**
@@ -357,6 +322,34 @@ public abstract class ChartDataModel<
   }
 
   /**
+   * Deletes all the entries in the Data Series.
+   */
+  public void clearEntries() {
+    entries.clear();
+  }
+
+  /**
+   * Adds the specified entry as a time entry to the Data Series.
+   *
+   * <p>The method handles additional logic for removing excess values
+   * if the count exceeds the threshold.
+   *
+   * @param tuple tuple representing the time entry
+   */
+  public void addTimeEntry(YailList tuple) {
+    // If the entry count of the Data Series entries exceeds
+    // the maximum allowed time entries, then remove the first one
+    if (entries.size() >= maximumTimeEntries) {
+      entries.remove(0);
+    }
+
+    // Add entry from the specified tuple
+    // TODO: Support for multi-dimensional case (currently tuples always consist
+    // TODO: of two elements)
+    addEntryFromTuple(tuple);
+  }
+
+  /**
    * Sets the maximum time entries to be kept in the Data Series.
    *
    * @param entries number of entries to keep
@@ -404,5 +397,14 @@ public abstract class ChartDataModel<
   // and equals() checks memory references instead of values.
   protected boolean areEntriesEqual(Entry e1, Entry e2) {
     return e1.equalTo(e2);
+  }
+
+  /**
+   * Returns the entries of the Chart Data Model.
+   *
+   * @return List of entries of the Chart Data Model (Data Series)
+   */
+  public List<E> getEntries() {
+    return Collections.unmodifiableList(entries);
   }
 }
