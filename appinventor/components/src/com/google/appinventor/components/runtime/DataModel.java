@@ -11,7 +11,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 import gnu.mapping.Symbol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class DataModel<E> {
@@ -22,6 +21,7 @@ public abstract class DataModel<E> {
    * to asynchronous operations.
    */
   protected List<E> entries;
+
   /**
    * Limit the maximum allowed real-time data entries
    * Since real-time data comes in fast, the case of
@@ -41,7 +41,6 @@ public abstract class DataModel<E> {
 
   /**
    * Initializes a new DataModel object instance.
-   *
    */
   protected DataModel() {
     entries = new ArrayList<>();
@@ -54,6 +53,9 @@ public abstract class DataModel<E> {
    */
   public abstract void addEntryFromTuple(YailList tuple);
 
+  /**
+   * Deletes all the entries in the DataModel.
+   */
   public abstract void clearEntries();
 
   /**
