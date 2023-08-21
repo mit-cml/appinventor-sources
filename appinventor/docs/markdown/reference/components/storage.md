@@ -412,14 +412,14 @@ Spreadsheet is a non-visible component for storing and receiving data from
  callback event. Additionally, this returns the row number for the new row.
 
 {:id="Spreadsheet.AddSheet" class="method"} <i/> AddSheet(*sheetName*{:.text})
-: Adds a new sheet inside the Spreadsheet
+: Adds a new sheet inside the Spreadsheet.
 
 {:id="Spreadsheet.ClearRange" class="method"} <i/> ClearRange(*sheetName*{:.text},*rangeReference*{:.text})
 : Empties the cells in the given range. Once complete, this block triggers
  the [`FinishedClearRange`](#Spreadsheet.FinishedClearRange) callback event.
 
 {:id="Spreadsheet.DeleteSheet" class="method"} <i/> DeleteSheet(*sheetName*{:.text})
-: Deletes the specified sheet inside the Spreadsheet
+: Deletes the specified sheet inside the Spreadsheet.
 
 {:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*column*{:.number})
 : Converts the integer representation of rows and columns to A1-Notation used

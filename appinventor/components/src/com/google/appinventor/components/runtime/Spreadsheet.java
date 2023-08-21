@@ -18,8 +18,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.AddSheetRequest;
+import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesResponse;
@@ -658,13 +658,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * values on the table have been updated.
    */
   @SimpleEvent(
-          description = "The callback event for the WriteRow block, called after the " +
-                  "values on the table have finished updating")
+    description="The callback event for the WriteRow block, called after the " +
+      "values on the table have finished updating")
   public void FinishedWriteRow() {
     EventDispatcher.dispatchEvent(this, "FinishedWriteRow");
   }
 
-  @SimpleFunction(description = "Adds a new sheet inside the Spreadsheet")
+  /**
+   * Adds a new sheet inside the Spreadsheet.
+   *
+   * @param sheetName the name of the new sheet to create
+   */
+  @SimpleFunction
   public void AddSheet(final String sheetName) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddSheet: " + "SpreadsheetID is empty.");
@@ -674,21 +679,20 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       return;
     }
     // Run the API call asynchronously
-    // Run the API call asynchronously
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
         try {
           Sheets sheetsService = getSheetsService();
           AddSheetRequest addSheetRequest = new AddSheetRequest()
-                  .setProperties(new SheetProperties()
-                          //set title of new sheet as user parameter
-                          .setTitle(sheetName)
-                  );
+              .setProperties(new SheetProperties()
+                  //set title of new sheet as user parameter
+                  .setTitle(sheetName)
+              );
           List<Request> requests = new ArrayList<>();
           requests.add(new Request().setAddSheet(addSheetRequest));
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
-                  .setRequests(requests);
+              .setRequests(requests);
           sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
           // Run the callback event block
           activity.runOnUiThread(new Runnable() {
@@ -702,7 +706,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              e.printStackTrace();
+              Log.e(LOG_TAG, "Error occurred in AddSheet", e);
               ErrorOccurred("AddSheet: " + e.getMessage());
             }
           });
@@ -712,15 +716,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(
-          description = "The callback event for the addSheet block, called once the " +
-                  "values on the table have been updated.")
+  @SimpleEvent(description = "The callback event for the addSheet block, called once the "
+      + "values on the table have been updated.")
   public void FinishedAddSheet(final String sheetName) {
     EventDispatcher.dispatchEvent(this, "FinishedAddSheet", sheetName);
   }
 
-  @SimpleFunction(
-          description = "Deletes the specified sheet inside the Spreadsheet")
+  /**
+   * Deletes the specified sheet inside the Spreadsheet.
+   *
+   * @param sheetName the name of the sheet to delete
+   */
+  @SimpleFunction
   public void DeleteSheet(final String sheetName) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("DeleteSheet: " + "SpreadsheetID is empty.");
@@ -736,12 +743,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
         try {
           Sheets sheetsService = getSheetsService();
           DeleteSheetRequest deleteSheetRequest = new DeleteSheetRequest()
-                  .setSheetId(getSheetID(sheetsService, sheetName)
-                  );
+              .setSheetId(getSheetID(sheetsService, sheetName));
           List<Request> requests = new ArrayList<>();
           requests.add(new Request().setDeleteSheet(deleteSheetRequest));
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
-                  .setRequests(requests);
+              .setRequests(requests);
           sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
 
           // Run the callback event block
@@ -756,7 +762,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              e.printStackTrace();
+              Log.e(LOG_TAG, "Error occurred in DeleteSheet", e);
               ErrorOccurred("DeleteSheet: " + e.getMessage());
             }
           });
@@ -766,9 +772,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(
-          description = "The callback event for the DeleteSheet block, called once the " +
-                  "values on the table have been updated.")
+  @SimpleEvent(description = "The callback event for the DeleteSheet block, called once the "
+      + "values on the table have been updated.")
   public void FinishedDeleteSheet(final String sheetName) {
     EventDispatcher.dispatchEvent(this, "FinishedDeleteSheet", sheetName);
   }
