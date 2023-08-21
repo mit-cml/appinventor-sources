@@ -415,8 +415,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
-      Ode.getInstance().refreshSourceStructure();
-      Ode.getInstance().refreshProperties();
+      SourceStructureBox.getSourceStructureBox().show(this);
+      PropertiesBox.getPropertiesBox().show(this, true);
     } else {
       LOG.severe("onComponentRenamed called when loadComplete is false");
     }
@@ -427,8 +427,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (loadComplete) {
       // TODO: SMRL Not sure this class should keep a pointer to source structure
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      Ode.getInstance().refreshSourceStructure();
-      Ode.getInstance().refreshProperties();
+      SourceStructureBox.getSourceStructureBox().show(this);
+      PropertiesBox.getPropertiesBox().show(this, true);
     } else {
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
@@ -770,9 +770,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     SourceStructureBox.getSourceStructureBox().setVisible(true);
 
     // Set the properties box's content.
-    // TODO: This should be a method on Ode
-    Ode.getInstance().refreshSourceStructure();
-    Ode.getInstance().refreshProperties();
+    SourceStructureBox.getSourceStructureBox().show(this);
+    PropertiesBox.getPropertiesBox().show(this, true);
 
     Ode.getInstance().showComponentDesigner();
   }
@@ -916,11 +915,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       // TODO: Refactor calls to to Source Structure
       cdbChangeListener.onComponentTypeAdded(componentTypes);
     }
-    //Update Mock Components
     updateMockComponents(componentTypes);
-    //Update the Properties Panel
-    Ode.getInstance().refreshProperties();
-    Ode.getInstance().refreshSourceStructure();
+    PropertiesBox.getPropertiesBox().show(this, true);
+    SourceStructureBox.getSourceStructureBox().show(this);
   }
 
   @Override

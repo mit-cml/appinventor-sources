@@ -1164,10 +1164,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  public void refreshSourceStructure() {
-    bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
-  }
-
   /**
    * @return  currently open FileEditor, or null if none
    */
