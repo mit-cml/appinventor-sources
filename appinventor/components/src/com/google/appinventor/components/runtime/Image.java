@@ -91,7 +91,8 @@ public final class Image extends AndroidViewComponent {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "A written description of what the image looks like.")
+  @SimpleProperty(description = "A written description of what the image looks like.",
+      category = PropertyCategory.APPEARANCE)
   public void AlternateText(String description){
     view.setContentDescription(description);
   }
@@ -209,7 +210,8 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
     defaultValue = "False")
   // @Deprecated -- We will deprecate this in a future release (jis: 2/12/2016)
-  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
+  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.",
+      category = PropertyCategory.APPEARANCE)
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);

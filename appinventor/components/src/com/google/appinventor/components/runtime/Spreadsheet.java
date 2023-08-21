@@ -29,6 +29,7 @@ import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -209,7 +210,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /* Getter and Setters for Properties */
 
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String CredentialsJson() {
     return credentialsPath;
   }
@@ -221,7 +222,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     this.credentialsPath = credentialsPath;
   }
 
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String SpreadsheetID() {
     return spreadsheetID;
   }
@@ -247,8 +248,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * in {@link com.google.appinventor.client.editor.simple.components.MockSpreadsheet}
    * and consists of the current App Inventor project name.
    */
-  @SimpleProperty(
-    userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public String ApplicationName() {
     return applicationName;
   }

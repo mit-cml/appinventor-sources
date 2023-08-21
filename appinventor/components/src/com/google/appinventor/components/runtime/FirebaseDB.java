@@ -381,7 +381,8 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     "screen, it makes all Firebase components on all screens persistent. " +
     "This is a limitation of the low level Firebase library. Also be " +
     "aware that if you want to set persist to true, you should do so " +
-    "before connecting the Companion for incremental development.")
+    "before connecting the Companion for incremental development.",
+    category = PropertyCategory.BEHAVIOR)
   public void Persist(boolean value) {
     Log.i(LOG_TAG, "Persist Called: Value = " + value);
     if (persist != value) {     // We are making a change

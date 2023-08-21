@@ -473,7 +473,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
-  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).")
+  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
+      category = PropertyCategory.APPEARANCE)
   public void BackgroundColor(@IsColor int argb) {
     backgroundColor = argb;
   }
