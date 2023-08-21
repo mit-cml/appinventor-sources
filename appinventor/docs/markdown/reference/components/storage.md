@@ -341,9 +341,15 @@ Spreadsheet is a non-visible component for storing and receiving data from
  values on the table have been updated. Additionally, this returns the
  row number for the new row.
 
+{:id="Spreadsheet.FinishedAddSheet"} FinishedAddSheet(*sheetName*{:.text})
+: The callback event for the addSheet block, called once the values on the table have been updated.
+
 {:id="Spreadsheet.FinishedClearRange"} FinishedClearRange()
 : The callback event for the [`ClearRange`](#Spreadsheet.ClearRange) block, called once the
  values on the table have been updated.
+
+{:id="Spreadsheet.FinishedDeleteSheet"} FinishedDeleteSheet(*sheetName*{:.text})
+: The callback event for the DeleteSheet block, called once the values on the table have been updated.
 
 {:id="Spreadsheet.FinishedRemoveColumn"} FinishedRemoveColumn()
 : The callback event for the [`RemoveColumn`](#Spreadsheet.RemoveColumn) block, called once the
@@ -405,9 +411,15 @@ Spreadsheet is a non-visible component for storing and receiving data from
  continue to the right. Once complete, it triggers the [`FinishedAddRow`](#Spreadsheet.FinishedAddRow)
  callback event. Additionally, this returns the row number for the new row.
 
+{:id="Spreadsheet.AddSheet" class="method"} <i/> AddSheet(*sheetName*{:.text})
+: Adds a new sheet inside the Spreadsheet.
+
 {:id="Spreadsheet.ClearRange" class="method"} <i/> ClearRange(*sheetName*{:.text},*rangeReference*{:.text})
 : Empties the cells in the given range. Once complete, this block triggers
  the [`FinishedClearRange`](#Spreadsheet.FinishedClearRange) callback event.
+
+{:id="Spreadsheet.DeleteSheet" class="method"} <i/> DeleteSheet(*sheetName*{:.text})
+: Deletes the specified sheet inside the Spreadsheet.
 
 {:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*column*{:.number})
 : Converts the integer representation of rows and columns to A1-Notation used

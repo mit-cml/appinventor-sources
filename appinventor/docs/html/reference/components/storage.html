@@ -420,9 +420,13 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>The callback event for the <a href="#Spreadsheet.AddRow"><code class="highlighter-rouge">AddRow</code></a> block, called once the
  values on the table have been updated. Additionally, this returns the
  row number for the new row.</dd>
+  <dt id="Spreadsheet.FinishedAddSheet">FinishedAddSheet(<em class="text">sheetName</em>)</dt>
+  <dd>The callback event for the addSheet block, called once the values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedClearRange">FinishedClearRange()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.ClearRange"><code class="highlighter-rouge">ClearRange</code></a> block, called once the
  values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedDeleteSheet">FinishedDeleteSheet(<em class="text">sheetName</em>)</dt>
+  <dd>The callback event for the DeleteSheet block, called once the values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedRemoveColumn">FinishedRemoveColumn()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.RemoveColumn"><code class="highlighter-rouge">RemoveColumn</code></a> block, called once the
  values on the table have been updated.</dd>
@@ -471,9 +475,13 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
  empty row of the sheet. It will always start from the left most column and
  continue to the right. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddRow"><code class="highlighter-rouge">FinishedAddRow</code></a>
  callback event. Additionally, this returns the row number for the new row.</dd>
+  <dt id="Spreadsheet.AddSheet" class="method"><i></i> AddSheet(<em class="text">sheetName</em>)</dt>
+  <dd>Adds a new sheet inside the Spreadsheet.</dd>
   <dt id="Spreadsheet.ClearRange" class="method"><i></i> ClearRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
   <dd>Empties the cells in the given range. Once complete, this block triggers
  the <a href="#Spreadsheet.FinishedClearRange"><code class="highlighter-rouge">FinishedClearRange</code></a> callback event.</dd>
+  <dt id="Spreadsheet.DeleteSheet" class="method"><i></i> DeleteSheet(<em class="text">sheetName</em>)</dt>
+  <dd>Deletes the specified sheet inside the Spreadsheet.</dd>
   <dt id="Spreadsheet.GetCellReference" class="method returns text"><i></i> GetCellReference(<em class="number">row</em>,<em class="number">column</em>)</dt>
   <dd>Converts the integer representation of rows and columns to A1-Notation used
  in Google Sheets for a single cell. For example, row 1 and col 2

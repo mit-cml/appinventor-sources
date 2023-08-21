@@ -3096,7 +3096,10 @@ Blockly.Versioning.AllUpgradeMaps =
       Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_rows", "returnRows"),
       Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_data", "returnData"),
       Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotColumnData", "colDataList", "columnData")
-    ]
+    ],
+
+    3: "noUpgrade"
+    
   },
 
   "TableArrangement": {
