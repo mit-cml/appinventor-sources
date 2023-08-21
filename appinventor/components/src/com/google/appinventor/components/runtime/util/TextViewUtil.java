@@ -179,7 +179,7 @@ public class TextViewUtil {
         typeface = Typeface.createFromAsset(form.$context().getAssets(), fontFile);
       }
     } else {
-      File file = new File(fontFile);
+      file = new File(fontFile);
       typeface = Typeface.createFromFile(file);
     }
     return typeface;
