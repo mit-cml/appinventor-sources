@@ -126,8 +126,8 @@ open class ImageSprite: Sprite {
   
   override func updateDisplayLayer() {
     let d = DisplayLayer
-    let xCenter = CGFloat(XCenter)
-    let yCenter = CGFloat(YCenter)
+    let xCenter = CGFloat(X) + Double(Width / 2)
+    let yCenter = CGFloat(Y) + Double(Height / 2)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
     if _rotates {

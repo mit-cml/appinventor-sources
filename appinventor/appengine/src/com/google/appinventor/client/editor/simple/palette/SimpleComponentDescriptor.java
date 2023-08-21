@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2022 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockChatBot;
 import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockChartData2D;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
@@ -31,6 +32,7 @@ import com.google.appinventor.client.editor.simple.components.MockFusionTablesCo
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
+import com.google.appinventor.client.editor.simple.components.MockImageBot;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
@@ -135,6 +137,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/bluetooth.png", images.bluetooth());
     bundledImages.put("images/camera.png", images.camera());
     bundledImages.put("images/camcorder.png", images.camcorder());
+    bundledImages.put("images/chatbot.png", images.chatbot());
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
@@ -144,6 +147,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
     bundledImages.put("images/legoMindstormsEv3.png", images.legoMindstormsEv3());
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
+    bundledImages.put("images/paintpalette.png", images.paintPalette());
     bundledImages.put("images/pedometer.png", images.pedometerComponent());
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
@@ -184,6 +188,8 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/chart.png", images.chart());
     bundledImages.put("images/chartData.png", images.chartData2D());
     bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/regression.png", images.regression());
+    bundledImages.put("images/anomaly.png", images.anomalyDetection());
 
     imagesInitialized = true;
   }
@@ -428,6 +434,14 @@ public final class SimpleComponentDescriptor {
             null, editor.getProjectId()));
       } else if(name.equals(MockTranslator.TYPE)) {
         return new MockTranslator(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockChatBot.TYPE)) {
+        return new MockChatBot(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockImageBot.TYPE)) {
+        return new MockImageBot(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
       } else if(name.equals(MockSpreadsheet.TYPE)) {

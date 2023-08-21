@@ -533,6 +533,9 @@ None
 {:id="TinyDB.ClearTag" class="method"} <i/> ClearTag(*tag*{:.text})
 : Clear the entry with the given `tag`{:.text.block}.
 
+{:id="TinyDB.GetEntries" class="method returns dictionary"} <i/> GetEntries()
+: Method to get all data in form of Dictionary
+
 {:id="TinyDB.GetTags" class="method returns any"} <i/> GetTags()
 : Return a list of all the tags in the data store.
 

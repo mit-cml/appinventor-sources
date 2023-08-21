@@ -569,10 +569,21 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 220:
   // - CHART_COMPONENT_VERSION was incremented to 2
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
-  // For YOUNG_ANDROID_VERSION 221;
+  // For YOUNG_ANDROID_VERSION 221:
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222:
+  // - CHATBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 223:
+  // - IMAGEBOT_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 224:
+  // - ANOMALY_COMPONENT_VERSION was introduced
+  // - CHATBOT_COMPONENT_VERSION was incremented to 2
+  // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
+  // - REGRESSION_COMPONENT_VERSION was introduced
+  // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
+  // - TINYDB_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 224;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -736,6 +747,8 @@ public class YaVersion {
   // - Extras property was added to accept a list of key-value pairs to put to the intent
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
+  public static final int ANOMALY_COMPONENT_VERSION = 1;
+
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
   // - The heading property was changed from int to double (for all sprites)
@@ -850,6 +863,11 @@ public class YaVersion {
   public static final int CHART_COMPONENT_VERSION = 2;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+
+  // For CHATBOT_COMPONENT_VERSION: Initial Version
+  // For CHATBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made visible in the designer view
+  public static final int CHATBOT_COMPONENT_VERSION = 2;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1039,6 +1057,10 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
+
+  // For IMAGEBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made available in the designer
+  public static final int IMAGEBOT_COMPONENT_VERSION = 2;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1288,6 +1310,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
+  // For REGRESSION_COMPONENT_VERSION 2:
+  // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
+  public static final int REGRESSION_COMPONENT_VERSION = 2;
+
   public static final int SHARING_COMPONENT_VERSION = 1;
 
   // For SLIDER_COMPONENT_VERSION 1:
@@ -1379,7 +1405,7 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 5:
   // - default value was added to the Country designer property
   // - default value was added to the Language designer property
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 5;
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 6;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -1395,7 +1421,9 @@ public class YaVersion {
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
-  public static final int TINYDB_COMPONENT_VERSION = 2;
+  // For TINYDB_COMPONENT_VERSION 3:
+  // - Added GetEntries method
+  public static final int TINYDB_COMPONENT_VERSION = 3;
 
   // For TINYWEBDB_COMPONENT_VERSION 2:
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
@@ -1588,12 +1616,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.66";
+  public static final String PREFERRED_COMPANION = "2.67";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.66", "2.66u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.67", "2.67u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

@@ -228,7 +228,7 @@ class RuntimeTests: XCTestCase {
     let interpreter = try getInterpreterForTesting()
     let form = Form()
     interpreter.setCurrentForm(form)
-    XCTAssertEqual("[\"\", \"1\", \"0\", \"0\", \"1\", \"0\"]",
+    XCTAssertEqual("[\"1\", \"0\", \"0\", \"1\", \"0\"]",
         interpreter.evalForm("(get-display-representation (string-split \"10010\" \"\"))"))
     XCTAssertEqual("[\"apple\", \"banana\", \"cantalope\"]",
         interpreter.evalForm("(get-display-representation (string-split \"apple,banana,cantalope\" \",\"))"))

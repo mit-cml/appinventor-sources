@@ -1314,6 +1314,31 @@ Blockly.Versioning.tryReplaceBlockWithPermissions =
   };
 
 /**
+ * Replaces the block currently attached to the passed value input with a
+ * helper block identified by the given key. The current block is replaced iff
+ * it is a text block.
+ * @param key the helper key to use in place of the current value
+ */
+Blockly.Versioning.tryReplaceBlockWithHelper = function(key) {
+  return function(valueNode, workspace) {
+    if (!valueNode) {
+      return;
+    }
+    var valueMap = Blockly.Versioning
+        .getOptionListValueMap(workspace, key);
+    var entries = Object.entries(valueMap);
+    for (var i = 0, pair; pair = entries[i]; i++) {
+      var k = pair[0];
+      var v = pair[1];
+      if (valueMap.hasOwnProperty(key)) {
+        valueMap[k] = v;
+      }
+    }
+    Blockly.Versioning.tryReplaceBlockWithDropdown(valueNode, valueMap, key);
+  };
+};
+
+/**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
  * componentType.
  * @param dom  DOM for XML workspace
@@ -1820,6 +1845,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ChartData2D upgraders
 
+  "ChatBot" : {
+    //This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
+  }, // End ChatBot upgraders
+
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
@@ -2062,6 +2095,14 @@ Blockly.Versioning.AllUpgradeMaps =
         'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Image upgraders
+
+  "ImageBot": {
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // The ApiKey property was made visible in the designer
+    2: "noUpgrade",
+  },  // End ImageBot upgraders
 
   "ImagePicker": {
 
@@ -2812,6 +2853,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ProximitySensor upgraders
 
+  "Regression": {
+    2: [
+      Blockly.Versioning.makeMethodUseHelper("Regression", "CalculateLineOfBestFitValue", 2,
+        Blockly.Versioning.tryReplaceBlockWithHelper('LOBFValues'))
+    ]
+  },
+
   // Screen is renamed from Form
   "Screen": {
 
@@ -3122,7 +3170,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // default value was added to the Country designer property
     // default value was added to the Language designer property
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: The Stop method was added.
+    6: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 
@@ -3150,7 +3201,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     //Added Property: Namespace
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    //Added blocks GetEntries
+    3: "noUpgrade"
 
   }, // End TinyDB upgraders
 
@@ -3385,6 +3439,5 @@ Blockly.Versioning.AllUpgradeMaps =
   "Translator": {
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
-  } // End Translate upgraders
-
+  }, // End Translate upgraders
 };

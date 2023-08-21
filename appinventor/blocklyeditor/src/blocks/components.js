@@ -1285,10 +1285,12 @@ Blockly.Blocks.component_set_get = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    if (property) {
+      var helperType = Blockly.Blocks.Utilities
         .helperKeyToBlocklyType(property.helperKey, this);
-    if (helperType && helperType != blocklyType) {
-      check.push(helperType);
+      if (helperType && helperType != blocklyType) {
+        check.push(helperType);
+      }
     }
 
     return !check.length ? null : check;
@@ -1646,7 +1648,9 @@ Blockly.ComponentBlock.HELPURLS = {
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
   "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL,
   "CloudDB" : Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL,
@@ -1734,7 +1738,9 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL,
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
@@ -1830,6 +1836,8 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
   "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
@@ -1914,7 +1922,9 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL,
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,

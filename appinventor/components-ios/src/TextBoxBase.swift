@@ -11,6 +11,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var textColor: UIColor? { get set }
   var font: UIFont { get set }
   var placeholderText: String? { get set }
+  var placeholderColor: Int32 { get set }
   var text: String? { get set }
   var readOnly: Bool { get set }
   func textFieldDidBeginEditing(_ textField: UITextField)
@@ -30,7 +31,7 @@ extension AbstractMethodsForTextBox {
   }
 }
 
-open class TextBoxBase: ViewComponent, UITextViewDelegate {
+open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   fileprivate weak var _delegate: AbstractMethodsForTextBox!
   
   fileprivate var _textAlignment: Int32 = 0
@@ -40,6 +41,12 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   fileprivate var _italic: Bool = false
   fileprivate var _hint: String = ""
   fileprivate var _textColor: Int32 = 0
+  fileprivate var _isHighContrast = false
+  fileprivate var _isBigText = false
+  fileprivate var _hintColor: Int32 = Color.default.int32
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _userBackgroundColor: Int32 = Color.default.int32
+  fileprivate var _userTextColor: Int32 = Color.default.int32
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
@@ -56,6 +63,54 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   internal func setDelegate(_ delegate: AbstractMethodsForTextBox) {
     _delegate = delegate
     super.setDelegate(delegate)
+  }
+
+  func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _delegate.font = getFontSize(font: _delegate.font, size: kFontSizeLargeDefault) ?? _delegate.font
+      } else {
+        _delegate.font = getFontSize(font: _delegate.font, size: _userFontSize) ?? _delegate.font
+      }
+    } else {
+      _delegate.font = getFontSize(font: _delegate.font, size: _userFontSize) ?? _delegate.font
+    }
+  }
+
+  func updateColor() {
+    var placeholderColor = colorToArgb(kDefaultPlaceholderColor)
+    if form?.HighContrast == true {
+      if _userTextColor == Color.default.int32  {
+        _textColor = Int32(bitPattern: Color.white.rawValue)
+        placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
+      } else {
+        _textColor = _userTextColor
+      }
+
+      if _userBackgroundColor == Color.default.int32 {
+        _backgroundColor = Int32(bitPattern: Color.black.rawValue)
+      } else {
+        _backgroundColor = _userBackgroundColor
+      }
+      _delegate.textColor = argbToColor(_textColor)
+      _delegate.backgroundColor = argbToColor(_backgroundColor)
+    } else {
+      _textColor = _userTextColor
+      _backgroundColor = _userBackgroundColor
+
+      if _textColor == Color.default.int32 {
+        _delegate.textColor = preferredTextColor(_container?.form)
+      } else {
+        _delegate.textColor = argbToColor(_textColor)
+      }
+
+      if _userBackgroundColor == Color.default.int32 {
+        _delegate.backgroundColor = preferredBackgroundColor(_container?.form)
+      } else {
+        _delegate.backgroundColor = argbToColor(_backgroundColor)
+      }
+    }
+    _delegate.placeholderColor = placeholderColor
   }
 
   // MARK: TextboxBase Properties
@@ -84,8 +139,9 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argb
+      _userBackgroundColor = argb
       _delegate?.backgroundColor = argbToColor(argb)
+      updateColor()
     }
   }
   
@@ -127,7 +183,8 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       }
     }
     set(size) {
-      _delegate.font = getFontSize(font: _delegate?.font, size: size) ?? _delegate.font
+      _userFontSize = size
+      updateFontSize()
     }
   }
   
@@ -147,6 +204,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
+  @objc open var HighContrast: Bool {
+    get {
+      return _isHighContrast
+    }
+    set(isHighContrast) {
+      _isHighContrast = isHighContrast
+      updateColor()
+    }
+  }
+
   @objc open var Hint: String {
     get {
       return _hint
@@ -154,6 +221,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     set(hint) {
       _hint = hint
       _delegate?.placeholderText = hint
+    }
+  }
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
 
@@ -185,12 +262,8 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       return _textColor
     }
     set(argb) {
-      _textColor = argb
-      if _textColor == Color.default.int32 {
-        _delegate?.textColor = preferredTextColor(_container?.form)
-      } else {
-        _delegate?.textColor = argbToColor(argb)
-      }
+      _userTextColor = argb
+      updateColor()
     }
   }
   

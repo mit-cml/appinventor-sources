@@ -45,10 +45,13 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IOUtils;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
+import gnu.math.DFloNum;
+import gnu.math.IntNum;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -339,7 +342,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage);
+        if (!EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage)) {
+          // Dispatch to screen if the event handler does not exist.
+          form.dispatchErrorOccurredEvent(Spreadsheet.this, "ErrorOccurred",
+              ErrorMessages.ERROR_SPREADSHEET_ERROR,  errorMessage);
+        }
       }
     });
   }
@@ -676,9 +683,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     }
 
     // Generates the 2D list, which are the values to assign to the range
-    LList rowValues = (LList) data.getCdr();
     List<List<Object>> values = new ArrayList<>();
-    List<Object> row = new ArrayList<Object>(rowValues);
+    List<Object> row = sanitizeList(data);
     values.add(row);
 
     // Sets the 2D list above to be the values in the body of the API Call
@@ -961,7 +967,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // Generates the body, which are the values to assign to the range
     List<List<Object>> values = new ArrayList<>();
     for (Object o : (LList) data.getCdr()) {
-      List<Object> r = new ArrayList<>(Collections.singletonList(o));
+      List<Object> r = new ArrayList<>(Collections.singletonList(sanitizeObject(o)));
       values.add(r);
     }
 
@@ -1030,7 +1036,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     List<List<Object>> values = new ArrayList<>();
     for (Object o : (LList) data.getCdr()) {
       List<Object> r = new ArrayList<Object>();
-      r.add(o);
+      r.add(sanitizeObject(o));
       values.add(r);
     }
     final ValueRange body = new ValueRange()
@@ -1325,7 +1331,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // Form the body as a 2D list of Strings, with only one string
     final ValueRange body = new ValueRange()
       .setValues(Arrays.asList(
-        Arrays.asList(data)
+        Arrays.asList(sanitizeObject(data))
       ));
     Log.d(LOG_TAG, "Writing Cell: " + rangeRef);
 
@@ -1525,9 +1531,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
         continue;
       YailList row = (YailList) elem;
       // construct the row that we will add to the list of rows
-      List<Object> r = new ArrayList<Object>();
-      for (Object o : (LList) row.getCdr())
-        r.add(o);
+      List<Object> r = sanitizeList(row);
       values.add(r);
       // Catch rows of unequal length
       if (cols == -1) cols = r.size();
@@ -1929,5 +1933,31 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     }
 
     return YailList.makeList(resultingColumns);
+  }
+
+  private static List<Object> sanitizeList(YailList source) {
+    List<Object> result = new ArrayList<>();
+    for (Object o : (LList) source.getCdr()) {
+      result.add(sanitizeObject(o));
+    }
+    return result;
+  }
+
+  private static Object sanitizeObject(Object o) {
+    if (o instanceof Boolean) {
+      return o;
+    } else if (o instanceof IntNum) {
+      return ((IntNum) o).longValue();
+    } else if (o instanceof DFloNum) {
+      return ((DFloNum) o).doubleValue();
+    } else if (o instanceof Integer || o instanceof Long) {
+      return o;
+    } else if (o instanceof Number) {
+      return ((Number) o).doubleValue();
+    } else if (o instanceof String) {
+      return o;
+    } else {
+      return o.toString();
+    }
   }
 }

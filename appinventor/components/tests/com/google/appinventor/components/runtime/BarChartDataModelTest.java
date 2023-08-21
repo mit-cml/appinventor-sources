@@ -516,7 +516,7 @@ public class BarChartDataModelTest
   @Test
   public void testCriterionSatisfiedXDecimalMatch() {
     Entry entry = createEntry(1.7f, 4f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.XValue;
     final String value = "1";
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);

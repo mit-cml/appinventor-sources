@@ -268,6 +268,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Chart")) {
         srcCompVersion = upgradeChartProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ChatBot")) {
+        srcCompVersion = upgradeChatBotProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("CheckBox")) {
         srcCompVersion = upgradeCheckBoxProperties(componentProperties, srcCompVersion);
 
@@ -303,6 +306,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Image")) {
         srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ImageBot")) {
+        srcCompVersion = upgradeImageBotProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ImagePicker")) {
         srcCompVersion = upgradeImagePickerProperties(componentProperties, srcCompVersion);
 
@@ -334,6 +340,9 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradePhoneNumberPickerProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Player")) {
+        srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("Regression")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Sound")) {
@@ -688,6 +697,10 @@ public final class YoungAndroidFormUpgrader {
       // default value was added to the Language designer property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added the Stop method to the blocks
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -827,6 +840,15 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The XFromZero and YFromZero properties were added.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeChatBotProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The ApiKey property was made visible in the designer.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -1250,6 +1272,15 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeImageBotProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The ApiKey property was made visible in the designer.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeImagePickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1516,6 +1547,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeRegressionProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The Regression.ComputeLineOfBestFitValues method had its signature changed.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeSoundProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1594,6 +1635,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // Added Property: Namespace
       srcCompVersion = 2;
+    }
+
+    if (srcCompVersion < 3) {
+      // Added Property: GetEntries
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

@@ -84,6 +84,9 @@ import UIKit
     }
     SCMInterpreter.shared.setCurrentForm(newForm)
     ReplForm.activeForm?.navigationController?.pushViewController(newForm, animated: true)
+    // There is a race condition in screen switching in the app and when the web editor sends the
+    // updated code, so we force the new form to be active even though it hasn't yet appeared.
+    Form.activeForm = newForm
     RetValManager.shared().pushScreen(name, withValue: startValue ?? "" as NSObject)
   }
 

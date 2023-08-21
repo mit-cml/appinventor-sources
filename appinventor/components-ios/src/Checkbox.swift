@@ -213,13 +213,16 @@ public class CheckBoxView: UIView {
   }
 }
 
-public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
+public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
+  public var HighContrast: Bool = false
   fileprivate var _view = CheckBoxView()
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _bold = false
   fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _italic = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _isBigText = false
+  fileprivate var _userFontSize = kFontSizeDefault
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -231,6 +234,18 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     Checked = false
     Enabled = true
     FontSize = 14.0
+  }
+
+  @objc func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
+      } else {
+        _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(_userFontSize))
+      }
+    } else {
+      _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(_userFontSize))
+    }
   }
 
   open override var view: UIView {
@@ -292,7 +307,8 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
       return Float32(_view._text.font.pointSize)
     }
     set(size) {
-      _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(size))
+      _userFontSize = size
+      updateFontSize()
     }
   }
 
@@ -307,6 +323,16 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
           _view._text.font = getFontTypeface(font: _view._text.font, typeFace: type)
         }
       }
+    }
+  }
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
 

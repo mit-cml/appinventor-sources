@@ -299,7 +299,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    *             side; the maximum absolute value of roll is 90 degrees, after
    *             which it decreases back toward 0 (flat face-up or face-down).
    *
-   * @returns the corresonding angle in the range [-180, +180] degrees
+   * @returns the corresponding angle in the range [-180, +180] degrees
    */
   static float computeAngle(float pitch, float roll) {
     return (float) Math.toDegrees(Math.atan2(Math.toRadians(pitch),

@@ -505,6 +505,9 @@ The `TextToSpeech` component speaks a given text aloud. You can set the pitch
 {:id="TextToSpeech.Speak" class="method"} <i/> Speak(*message*{:.text})
 : Speaks the given message.
 
+{:id="TextToSpeech.Stop" class="method"} <i/> Stop()
+: Stops any current speech.
+
 ## Translator  {#Translator}
 
 Use this component to translate words and sentences between
