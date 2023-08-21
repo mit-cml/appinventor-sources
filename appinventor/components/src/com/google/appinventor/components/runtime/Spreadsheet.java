@@ -21,6 +21,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.AddSheetRequest;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesResponse;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
@@ -183,7 +184,15 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     this.activity = componentContainer.$context();
   }
 
-  private int getSheetID(Sheets sheetsSvcParam, String sheetName) {
+  private synchronized void updateSheetID(String sheetName, int sheetId) {
+    sheetIdMap.put(sheetName, sheetId);
+  }
+
+  private synchronized void removeSheetID(String sheetName) {
+    sheetIdMap.remove(sheetName);
+  }
+
+  private synchronized int getSheetID(Sheets sheetsSvcParam, String sheetName) {
     if (sheetIdMap.containsKey(sheetName)) {
       return sheetIdMap.get(sheetName);
     } else {
@@ -693,7 +702,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           requests.add(new Request().setAddSheet(addSheetRequest));
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
               .setRequests(requests);
-          sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+          BatchUpdateSpreadsheetResponse response =
+              sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+          updateSheetID(sheetName,
+              response.getReplies().get(0).getAddSheet().getProperties().getSheetId());
+
           // Run the callback event block
           activity.runOnUiThread(new Runnable() {
             @Override
@@ -749,6 +762,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
               .setRequests(requests);
           sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+          removeSheetID(sheetName);
 
           // Run the callback event block
           activity.runOnUiThread(new Runnable() {
