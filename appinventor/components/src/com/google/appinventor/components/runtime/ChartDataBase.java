@@ -272,7 +272,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_POINT_SHAPE,
       defaultValue = "0")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void PointShape(PointStyle shape) {
 
     // Only change the Point Shape if the Chart Data Model is a
@@ -293,7 +293,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE,
       defaultValue = "0")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void LineType(LineType type) {
 
     // Only change the Line Type if the Chart Data Model is a

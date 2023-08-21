@@ -90,7 +90,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
       defaultValue = "")
   @SimpleProperty(description = "The MIT Access token to use. MIT App Inventor will automatically fill this " +
     "value in. You should not need to change it.",
-    userVisible = true)
+    userVisible = true, category = PropertyCategory.ADVANCED)
   public void Token(String token) {
     this.token = token;
   }
@@ -130,7 +130,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "256")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Size(int size) {
     this.size = size;
   }
