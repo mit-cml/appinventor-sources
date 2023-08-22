@@ -386,7 +386,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     for (JSONValue block : blockPropertiesArray.getElements()) {
       Map<String, JSONValue> properties = block.asObject().getProperties();
       String name = properties.get("name").asString().getString();
-      categoryMap.put(name, properties.get("category").asString().getString());
+      JSONValue categoryValue = properties.get("category");
+      if (categoryValue != null) {
+        categoryMap.put(name, categoryValue.asString().getString());
+      }
       descriptions.put(name, properties.get("description").asString().getString());
     }
     for (JSONValue propertyValue : propertiesArray.getElements()) {
