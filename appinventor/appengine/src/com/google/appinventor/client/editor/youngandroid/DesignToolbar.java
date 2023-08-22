@@ -153,8 +153,8 @@ public class DesignToolbar extends Toolbar {
 
     populateToolbar(UI_BINDER.createAndBindUi(this));
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
-      removeItem(addFormItem);
-      removeItem(removeFormItem);
+      setVisibleItem(addFormItem, false);
+      setVisibleItem(removeFormItem, false);
     }
 
     // Is the Gallery Enabled (new gallery)?

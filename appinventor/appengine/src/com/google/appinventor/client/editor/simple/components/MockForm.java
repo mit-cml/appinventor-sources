@@ -426,7 +426,6 @@ public final class MockForm extends MockContainer {
 
     // Initialize mock form UI by adding the phone bar and title bar.
     changePreview();
-    phoneBar = new PhoneBar();
     responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
     responsivePanel.add(titleBar);

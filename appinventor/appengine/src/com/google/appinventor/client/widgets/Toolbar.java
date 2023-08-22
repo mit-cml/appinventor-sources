@@ -120,17 +120,17 @@ public class Toolbar extends FlowPanel {
     add(item);
   }
 
-  protected void removeItem(ToolbarItem item) {
-    TextButton button = buttonMap.remove(item.getName());
+  protected void setEnabledItem(ToolbarItem item, boolean enabled) {
+    TextButton button = buttonMap.get(item.getName());
     if (button != null) {
-      remove(button);
+      button.setEnabled(enabled);
     }
   }
 
-  protected void setEnabledItem(ToolbarItem item, boolean enabled) {
-    TextButton button = buttonMap.remove(item.getName());
+  protected void setVisibleItem(ToolbarItem item, boolean visible) {
+    TextButton button = buttonMap.get(item.getName());
     if (button != null) {
-      button.setEnabled(enabled);
+      button.setVisible(visible);
     }
   }
 
