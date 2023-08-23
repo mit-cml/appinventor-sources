@@ -10,18 +10,12 @@ import com.google.gwt.user.client.ui.TreeItem;
 
 public class FolderTreeItem extends TreeItem {
 
-//  private static Resources.FolderTreeItemStyle style = Ode.getUserDarkThemeEnabled() ?
-//      Resources.INSTANCE.folderTreeItemStyleDark() : Resources.INSTANCE.folderTreeItemStyleLight();
-
   private ProjectFolder folder;
 
   public FolderTreeItem(ProjectFolder folder) {
     super();
-//    style.ensureInjected();
     this.folder = folder;
     setHTML("<span>" + folder.getName() + "</span>");
-//    setText(folder.getName());
-//    setStylePrimaryName(style.item());
   }
 
   public ProjectFolder getFolder() {

@@ -98,11 +98,7 @@ public class ProjectFolder extends Composite {
     name = json.get(FolderJSONKeys.NAME).isString().stringValue();
     nameLabel.setText(name);
     dateCreated = Long.parseLong(json.get(FolderJSONKeys.DATE_CREATED).isString().stringValue());
-//    this.dateCreatedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-//                                      .format(new Date(dateCreated)));
     dateModified = Long.parseLong(json.get(FolderJSONKeys.DATE_MODIFIED).isString().stringValue());
-//    this.dateModifiedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-//                                       .format(new Date(dateModified)));
 
     this.projects = new ArrayList<Project>();
     this.folders = new HashMap<String, ProjectFolder>();
