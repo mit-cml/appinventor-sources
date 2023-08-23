@@ -160,9 +160,13 @@ public final class Project {
    * The project-folder relationship is stored in the folder object.
    * This is just a back-reference that is set when the folder is created.
    */
-  public void setHomeFolder(ProjectFolder folder) {homeFolder = folder;}
+  public void setHomeFolder(ProjectFolder folder) {
+    homeFolder = folder;
+  }
 
-  public ProjectFolder getHomeFolder() { return homeFolder; }
+  public ProjectFolder getHomeFolder() {
+    return homeFolder;
+  }
 
   /**
    * Returns the project specific settings, or null if the settings haven't

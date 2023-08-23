@@ -35,15 +35,13 @@ public final class FolderManager {
     LOG.info("Created new folder manager");
   }
 
-  public void loadFolders()
-  {
+  public void loadFolders() {
     String foldersAsString = Ode.getUserSettings()
         .getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .getPropertyValue(SettingsConstants.FOLDERS);
     foldersLoaded = true;
 
-    if (foldersAsString.isEmpty())
-    {
+    if (foldersAsString.isEmpty()) {
       LOG.info("Initialize folders");
       initializeFolders();
       fireFoldersLoaded();
@@ -52,8 +50,7 @@ public final class FolderManager {
 
     JSONObject folderJSON = JSONParser.parse(foldersAsString).isObject();
     if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size() == 0 &&
-            folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size() == 0)
-    {
+        folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size() == 0) {
       LOG.info("Global folder is empty");
       initializeFolders();
       fireFoldersLoaded();
@@ -144,15 +141,11 @@ public final class FolderManager {
 
   // If users are switching back and forth between old and new view, they may have created
   // projects with the old view. Find those and assign to global root folder.
-  private void checkForUnassignedProjects()
-  {
-    for (Project project : Ode.getInstance().getProjectManager().getProjectsWithoutFolder())
-    {
-      if (project.isInTrash())
-      {
+  private void checkForUnassignedProjects() {
+    for (Project project : Ode.getInstance().getProjectManager().getProjectsWithoutFolder()) {
+      if (project.isInTrash()) {
         trashFolder.addProject(project);
-      } else
-      {
+      } else {
         globalFolder.addProject(project);
       }
     }
