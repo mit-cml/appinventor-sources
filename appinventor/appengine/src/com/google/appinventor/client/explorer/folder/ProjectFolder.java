@@ -254,6 +254,7 @@ public class ProjectFolder extends Composite {
   public List<Project> getProjects() {
     return projects;
   }
+
   public List<Project> getVisibleProjects(boolean onlySelected) {
     List<Project> list = new ArrayList<>();
     for (ProjectListItem item : projectListItems) {
