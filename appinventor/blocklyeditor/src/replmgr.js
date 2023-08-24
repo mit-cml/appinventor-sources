@@ -1569,6 +1569,59 @@ Blockly.ReplMgr.rendezvousDone = function() {
             resolve();
         }
     });
+
+    var checkComponentSupport = new Promise(function (resolve, reject) {
+        var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
+        var componentCoverage = JSON.parse(top.COMPONENT_COVERAGE);
+        var componentTypes = [];
+        var iosIncompatible = [];
+        var androidIncompatbile = [];
+
+        for (var i = 0; i < componentJson.length; i++) {
+            componentTypes.push(componentJson[i].$Type);
+            var coverage = componentCoverage[componentJson[i].$Type];
+            if (coverage.android.propertyCount == 0 && coverage.android.methodCount == 0 && coverage.android.eventCount == 0) {
+                androidIncompatbile.push(componentJson[i].$Type)
+            }
+            if (coverage.ios.propertyCount == 0 && coverage.ios.methodCount == 0 && coverage.ios.eventCount == 0) {
+                iosIncompatible.push(componentJson[i].$Type)
+            }
+        }
+        if (iosIncompatible.length > 0 && !rs.android) {
+            //dialog box containing list of incompatible components
+            var dialog = new Blockly.Util.Dialog(
+                Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+                Blockly.Msg.REPL_IOS_COMPANION_COMPONENT_NOT_AVAILABLE +
+                "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(iosIncompatible, true),
+                Blockly.Msg.REPL_OK,
+                false,
+                null,
+                0,
+                function (response) {
+                    dialog.hide();
+                    reject();
+                }
+            );
+        } else if (androidIncompatbile.length > 0 && rs.android) {
+            var dialog = new Blockly.Util.Dialog(
+                Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+                Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE +
+                "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(androidIncompatbile, false),
+                Blockly.Msg.REPL_OK,
+                false,
+                null,
+                0,
+                function (response) {
+                    dialog.hide();
+                    reject();
+                }
+            );
+
+        } else {
+            resolve();
+        }
+    });
+
     var startwebrtc = function() {
         top.usewebrtc = true;
         rs.state = me.rsState.ASSET;
@@ -1685,18 +1738,34 @@ Blockly.ReplMgr.rendezvousDone = function() {
         phoneState.initialized = true;
     }
 
-    checkversion.then(function() {
-        if (usewebrtc) {
-            startwebrtc();
-        } else if (useproxy) {
-            startproxy();
-        } else  {
-            startlegacy();
-        }
-    }, function() {
+    checkComponentSupport.then(function () {
+        checkversion.then(function () {
+            if (usewebrtc) {
+                startwebrtc();
+            } else if (useproxy) {
+                startproxy();
+            } else {
+                startlegacy();
+            }
+        }, function () {
+            return;
+        })
+    }, function () {
         return;
     });
 };
+
+Blockly.ReplMgr.makeIncompatibleDialogMsg = function (iosIncompatible, isIos) {
+    var result = "<ul>"
+    for (var i = 0; i < iosIncompatible.length; i++) {
+        result += "<li>" + iosIncompatible[i] + "</li>"
+    }
+    result += "</ul>"
+    if (isIos) {
+        result += "<a href=" + Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_URL + ">" + Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_TRACK + "</a>"
+    }
+    return result
+}
 
 Blockly.ReplMgr.resendAssetsAndExtensions = function() {
     var rs = top.ReplState;

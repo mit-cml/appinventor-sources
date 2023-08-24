@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -16,6 +17,7 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -27,6 +29,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -41,6 +44,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 
+import com.google.gwt.user.client.ui.*;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsType;
 
@@ -60,6 +64,90 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
+
+  /**
+   * The Filter interface is used by the palette panel to determine what components
+   * to show. By default, an identity filter is used (everything is shown). Other
+   * implementations may override the filter by calling {@link #setOsFilter(Filter)}.
+   *
+   * @author ewpatton@mit.edu (Evan W. Patton)
+   */
+  public interface Filter {
+    /**
+     * Tests whether the given component type should be shown in the palette.
+     * @param componentTypeName The component type to check.
+     * @return True if the component should be shown, otherwise false.
+     */
+    boolean shouldShowComponent(String componentTypeName);
+
+    /**
+     * Tests whether the extensions panel should be shown.
+     * @return True if extensions are allowed, otherwise false.
+     */
+    boolean shouldShowExtensions();
+  }
+
+  private static ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
+
+  // Identity filter implementation
+  private static final Filter IDENTITY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return true;
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show ios components only implementation
+  private static final Filter SHOW_IOS_ONLY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return componentCoverage.isIosCompatible(componentTypeName);
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show android components only implementation
+  private static final Filter SHOW_ANDROID_ONLY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return componentCoverage.isAndroidCompatible(componentTypeName);
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  //show both compatible only implementation
+  private static final Filter SHOW_BOTH_COMPATIBLE = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return (componentCoverage.isAndroidCompatible(componentTypeName) && componentCoverage.isIosCompatible(componentTypeName));
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  // The singleton instance of the palette panel
+  private static YoungAndroidPalettePanel INSTANCE;
+
+  private Filter filter = IDENTITY;
+
+  private Filter osFilter = IDENTITY;
+
 
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
@@ -82,10 +170,18 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // Map translated component names to English names
   private final Map<String, String> translationMap;
 
-  private final TextBox searchText; 
+  private final TextBox searchText;
+
+  private final DropDownButton componentFilter;
+
+  private final String WIDGET_NAME_FILTER = "Filter";
+
+//  private final CheckBox iosOnly, androidOnly;
+//  private final InlineLabel iosLabel, androidLabel;
   private final VerticalPanel searchResults;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
+
   private Map<String, SimplePaletteItem> searchSimplePaletteItems =
       new HashMap<String, SimplePaletteItem>();
 
@@ -153,6 +249,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
+
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new StackPanel();
@@ -180,6 +277,47 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
     searchText.getElement().setAttribute("style", "width: 100%; box-sizing: border-box;");
 
+    List<DropDownButton.DropDownItem> filterItems = new ArrayList<>();
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownAllComponents(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownAllComponents());
+        setOsFilter(IDENTITY);
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownAndroidSupported(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownAndroidSupported());
+        setOsFilter(SHOW_ANDROID_ONLY);
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownIosSupported(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownIosSupported());
+        setOsFilter(SHOW_IOS_ONLY);
+      }
+    }));
+
+    filterItems.add(new DropDownButton.DropDownItem(WIDGET_NAME_FILTER, MESSAGES.paletteDropdownSupportedByboth(), new Command() {
+      @Override
+      public void execute() {
+        componentFilter.setCaption(MESSAGES.paletteDropdownSupportedByboth());
+        setOsFilter(SHOW_BOTH_COMPATIBLE);
+      }
+    }));
+
+    componentFilter = new DropDownButton(WIDGET_NAME_FILTER, "Filter", filterItems, false);
+    componentFilter.setStylePrimaryName("ode-PaletteFilter");
+
+    HorizontalPanel platformFilter = new HorizontalPanel();
+    platformFilter.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+
+    platformFilter.add(componentFilter);
+
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
     searchText.addKeyDownHandler(new EscapeKeyDownHandler());
@@ -198,6 +336,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     panel.setSpacing(3);
     panel.add(searchText);
+    panel.add(platformFilter);
     panel.setWidth("100%");
 
     searchResults = new VerticalPanel();
@@ -330,13 +469,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public void loadComponents(DropTargetProvider dropTargetProvider) {
     this.dropTargetProvider = dropTargetProvider;
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      this.addComponent(component);
+      if (filter.shouldShowComponent(component) && osFilter.shouldShowComponent(component)) {
+        this.addComponent(component);
+      }
     }
   }
 
   public void loadComponents() {
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      this.addComponent(component);
+      if (filter.shouldShowComponent(component) && osFilter.shouldShowComponent(component)) {
+        this.addComponent(component);
+      }
     }
   }
 
@@ -532,6 +675,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public void reloadComponents() {
     clearComponents();
     loadComponents();
+  }
+
+  //Inteded for use by component filter
+  public void reloadComponentsExceptExtension() {
+    clearComponentsExceptExtension();
+    loadComponents();
+  }
+
+  public void setOsFilter(Filter filter) {
+    osFilter = filter == null ? IDENTITY : filter;
+    reloadComponentsExceptExtension();
   }
 
 }

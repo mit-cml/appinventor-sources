@@ -11,6 +11,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.FormChangeListener;
@@ -125,6 +126,8 @@ public final class YaBlocksEditor extends FileEditor
   // The project associated with this blocks editor.
   private Project project;
 
+  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
+
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
 
@@ -149,6 +152,8 @@ public final class YaBlocksEditor extends FileEditor
     });
     initWidget(blocksArea);
     blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());
+
+    blocksArea.addComponentCoverage(componentCoverage.getCoverageJsonString());
 
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();

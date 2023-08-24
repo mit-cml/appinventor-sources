@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -29,6 +30,9 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().help();
 
+  //Getting an instance of ComponentConverge class to get the component platform support information
+  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
+
   // Keep track of the last time (in milliseconds) of the last closure
   // so we don't reopen a popup too soon after closing it.  Specifically,
   // if a user clicks on the question-mark icon to close a popup, we
@@ -48,6 +52,9 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
+      boolean isAndroidCompatible = componentCoverage.isAndroidCompatible(scd.getName());
+      boolean isIosCompatible = componentCoverage.isIosCompatible(scd.getName());
+
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
       String translatedHelpText = ComponentsTranslation.getComponentHelpString(helpTextKey);
@@ -62,6 +69,19 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       // popup's widget.
       VerticalPanel inner = new VerticalPanel();
       inner.add(titleBar);
+
+      if (!isAndroidCompatible) {
+        //display a message in help popup if the component is available only in ios
+        HTML iosCompatibleText = new HTML(Ode.MESSAGES.iOSCompatibleOnly());
+        iosCompatibleText.setStyleName("ode-ComponentHelpPopup-coverage");
+        inner.add(iosCompatibleText);
+      } else if (!isIosCompatible) {
+        //display a message in help popup if the component is available only in android
+        HTML androidCompatibleText = new HTML(Ode.MESSAGES.androidCompatibleOnly());
+        androidCompatibleText.setStyleName("ode-ComponentHelpPopup-coverage");
+        inner.add(androidCompatibleText);
+      }
+
       inner.add(helpText);
 
       // Create link to more information.  This would be cleaner if
