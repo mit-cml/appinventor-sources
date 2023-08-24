@@ -293,23 +293,6 @@ public void fireSelectionChangeEvent() {
     return count;
   }
 
-  public List<Project> getSelectableProjects() {
-    List<Project> list = new ArrayList<>();
-    return list;
-  }
-
-  /**
-   * Returns if the specified project is in Trash or in MyProjects
-   */
-  public int getProjectCurrentView(Project project) {
-    if (project.isInTrash()) {
-      return Ode.TRASHCAN;
-    } else {
-      return Ode.PROJECTS;
-    }
-  }
-
-
   public void setIsTrash(boolean isTrash) {
     this.isTrash = isTrash;
     if (isTrash) {

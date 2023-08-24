@@ -11,6 +11,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="hasWriteAccess" type="java.lang.Boolean" />
 
   <g:FlowPanel styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -20,26 +21,26 @@
         <actions:SwitchToProjectAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}">
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:NewProjectAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}">
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:ImportProjectAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}">
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="{hasWriteAccess}">
         <actions:ImportTemplateAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}">
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}">
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}">
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAsAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}">
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
         <actions:CheckpointAction />
       </ai:DropDownItem>
       <hr />
@@ -50,13 +51,13 @@
         <actions:ExportAllProjectsAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
+      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
         <actions:DownloadKeystoreAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}">
+      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteKeystoreAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
@@ -72,6 +73,9 @@
       </ai:DropDownItem>
       <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
         <yaactions:UsbAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}">
+        <yaactions:ChromebookAction />
       </ai:DropDownItem>
       <hr />
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
@@ -89,10 +93,10 @@
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
                        styleName="ode-TopPanelButton" ui:field="buildDropDown">
-      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
+      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}" visible="{hasWriteAccess}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
+      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}" visible="{hasWriteAccess}">
         <actions:BarcodeAction second="false" isAab="true" />
       </ai:DropDownItem>
       <hr />

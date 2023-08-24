@@ -144,7 +144,7 @@ public class TopPanel extends Composite {
   @SuppressWarnings("unused")
   @UiHandler("myProjects")
   public void switchToMyProjects(ClickEvent e) {
-    topToolbar.updateMoveToTrash(getMessages().deleteProjectButton());
+    topToolbar.updateMoveToTrash(true);
     ode.switchToProjectsView();
   }
 

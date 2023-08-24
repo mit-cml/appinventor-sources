@@ -10,15 +10,12 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
-import com.google.appinventor.client.actions.WindowOpenAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.common.version.AppInventorFeatures;
-import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -83,8 +80,7 @@ public class TopToolbar extends Composite {
   @UiField public DropDownButton buildDropDown;
   @UiField public DropDownButton settingsDropDown;
   @UiField public DropDownButton adminDropDown;
-
-  private final boolean isReadOnly;
+  @UiField (provided = true) public final Boolean hasWriteAccess;
 
   /**
    * This flag is set to true when a check for the android.keystore file is in progress.
@@ -102,54 +98,17 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
-  public void updateMoveToTrash(String menu_item){
-    if (menu_item.equals("Move To Trash")) {
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
-    } else {
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
-    }
-  }
-
-
-  public void updateMenuState(int numSelectedProjects, int numProjects) {
-    boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
-    boolean allowExport = numSelectedProjects > 0;
-    boolean allowExportAll = numProjects > 0;
-    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
-    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
-    String exportProjectLabel = numSelectedProjects > 1 ?
-        MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
-    fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
-    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
-    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
-  }
-
   interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
 
   private static final TopToolbarUiBinder UI_BINDER = GWT.create(TopToolbarUiBinder.class);
 
   public TopToolbar() {
-    // Should the UI be in read only mode?
-    isReadOnly = Ode.getInstance().isReadOnly();
+    // The boolean needs to be reversed here so it is true when items need to be visible.
+    // UIBinder can't negate the boolean itself.
+    hasWriteAccess = !Ode.getInstance().isReadOnly();
 
     initWidget(UI_BINDER.createAndBindUi(this));
 
-    if (isReadOnly) {
-      fileDropDown.removeItemById(WIDGET_NAME_NEW);
-      fileDropDown.removeItemById(WIDGET_NAME_IMPORTPROJECT);
-      fileDropDown.removeItemById(WIDGET_NAME_IMPORTTEMPLATE);
-      fileDropDown.removeItemById(WIDGET_NAME_DELETE);
-      fileDropDown.removeItemById(WIDGET_NAME_SAVE);
-      fileDropDown.removeItemById(WIDGET_NAME_SAVE_AS);
-      fileDropDown.removeItemById(WIDGET_NAME_CHECKPOINT);
-      fileDropDown.removeItemById(WIDGET_NAME_UPLOAD_KEYSTORE);
-      fileDropDown.removeItemById(WIDGET_NAME_DELETE_KEYSTORE);
-      // TODO: Are these implemented?
-      fileDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_APK);
-      fileDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_AAB);
-    }
     fileDropDown.removeUnneededSeparators();
 
     // Second Buildserver Menu Items
@@ -165,7 +124,6 @@ public class TopToolbar extends Composite {
     // much older devices. The second buildserver will package applications with a target
     // SDK of 26 for those MIT App Inventor users who wish to put their applications in
     // the Play Store after 8/1/2018.
-    // TODO: This is probably wrong. Need to review how this functionality works with uibinder
     // template.
     if (!Ode.getInstance().hasSecondBuildserver()) {
       buildDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_APK2);
@@ -185,9 +143,12 @@ public class TopToolbar extends Composite {
       settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
       settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
     }
-
-//    helpDropDown.removeUnneededSeparators();
-
+    if (iamChromebook) {
+      connectDropDown.removeItemById(WIDGET_NAME_EMULATOR_BUTTON);
+      connectDropDown.removeItemById(WIDGET_NAME_USB_BUTTON);
+    } else {
+      connectDropDown.removeItemById(WIDGET_NAME_CHROMEBOOK);
+    }
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();
     }
@@ -196,6 +157,31 @@ public class TopToolbar extends Composite {
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
+  }
+
+  public void updateMoveToTrash(boolean moveToTrash){
+    if (moveToTrash) {
+      // Move projects from trash.
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
+    } else {
+      // Projects are alreayd in trash. Completely delete them.
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
+    }
+  }
+
+  public void updateMenuState(int numSelectedProjects, int numProjects) {
+    boolean allowDelete = hasWriteAccess && numSelectedProjects > 0;
+    boolean allowExport = numSelectedProjects > 0;
+    boolean allowExportAll = numProjects > 0;
+    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
+    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
+    String exportProjectLabel = numSelectedProjects > 1 ?
+                                    MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
+    fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
+    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
   public void updateKeystoreStatus(boolean present) {
@@ -299,17 +285,19 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
-    if (isReadOnly) {
+    if (!hasWriteAccess) {
       // This may be too simple
       return;
     }
+
+    // TODO: This code will work only so long as these menu items stay located in the file/build
+    // menus as expected. It should be refactored.
+    int projectCount= ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
-          ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
@@ -323,8 +311,7 @@ public class TopToolbar extends Composite {
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);

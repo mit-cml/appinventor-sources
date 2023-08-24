@@ -423,7 +423,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
-    getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
+    getInstance().getTopToolbar().updateMoveToTrash(false);
     hideChaff();
     hideTutorials();
     currentView = TRASHCAN;
