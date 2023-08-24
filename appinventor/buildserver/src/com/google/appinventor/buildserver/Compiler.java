@@ -2838,6 +2838,7 @@ public final class Compiler {
           }
         }
       }
+      Files.copy(new File(getResource(RUNTIME_FILES_DIR + "simple_components.json")), new File(mergedAssetDir, "simple_components.json"));
       return true;
     } catch (IOException e) {
       e.printStackTrace();

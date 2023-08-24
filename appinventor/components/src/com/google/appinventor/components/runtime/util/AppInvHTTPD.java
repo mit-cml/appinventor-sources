@@ -265,6 +265,13 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return(res);
+    } else if (uri.equals("/_simpleComponents")) {
+      Response res = processSimpleComponents();
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return res;
     }
 
     if (method.equals("PUT")) { // Asset File Upload for newblocks
@@ -337,6 +344,14 @@ public class AppInvHTTPD extends NanoHTTPD {
     } catch (IOException e) {
       e.printStackTrace();
       return true;              // Oops
+    }
+  }
+
+  private Response processSimpleComponents() {
+    try {
+      return new Response(HTTP_OK, MIME_PLAINTEXT, form.getResources().getAssets().open("simple_components.json"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

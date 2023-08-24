@@ -13,22 +13,21 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -85,6 +84,8 @@ public class WebRTCNativeMgr {
   private String rendezvousServer = null; // Primary (first level) Rendezvous server
   private String rendezvousServer2 = null; // Second level (webrtc rendezvous) Rendezvous server
   private List<PeerConnection.IceServer> iceServers = new ArrayList();
+
+  private boolean sentComp = false;
 
   Timer timer = new Timer();
 
@@ -463,17 +464,67 @@ public class WebRTCNativeMgr {
       });
   }
 
+  public void sendComponents() throws IOException {
+    InputStream inputStream = form.getResources().getAssets().open("simple_components.json");
+    String jsonData = new BufferedReader(
+            new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+            .lines()
+            .collect(Collectors.joining("\n"));
+    int chunkSize = 14000; // Approximately 14KB
+    List<String> chunks = new ArrayList<>();
+    int offset = 0;
+    while (offset < jsonData.length()) {
+      int length = Math.min(chunkSize, jsonData.length() - offset);
+      String chunk = jsonData.substring(offset, offset + length);
+      chunks.add(chunk);
+      offset += length;
+    }
+
+    // Send each chunk through the data channel
+    for (String chunk : chunks) {
+      ArrayList<JSONObject> curr = new ArrayList<>();
+      JSONObject objOutput = new JSONObject();
+      objOutput.put("status", "OK");
+      JSONObject obj = new JSONObject();
+      obj.put("status", "OK");
+      obj.put("type", "simple_components");
+      obj.put("value", chunk);
+      curr.add(obj);
+      objOutput.put("values", new JSONArray(curr));
+      ByteBuffer buffer = ByteBuffer.wrap(objOutput.toString().getBytes(StandardCharsets.UTF_8));
+      dataChannel.send(new Buffer(buffer, false));
+    }
+    ArrayList<JSONObject> curr = new ArrayList<>();
+    JSONObject objOutput = new JSONObject();
+    objOutput.put("status", "OK");
+    JSONObject obj = new JSONObject();
+    obj.put("status", "OK");
+    obj.put("type", "simple_components_done");
+    curr.add(obj);
+    objOutput.put("values", new JSONArray(curr));
+    ByteBuffer buffer = ByteBuffer.wrap(objOutput.toString().getBytes(StandardCharsets.UTF_8));
+    dataChannel.send(new Buffer(buffer, false));
+  }
+
   public void send(String output) {
     try {
       if (dataChannel == null) {
         Log.w(LOG_TAG, "No Data Channel in Send");
         return;
       }
+      if(!sentComp){
+        //sending the simple_Components json file during the first transfer
+        sendComponents();
+        //we are sending simple_components only once, so using flag variable
+        sentComp = true;
+      }
       ByteBuffer bbuffer = ByteBuffer.wrap(output.getBytes("UTF-8"));
       Buffer buffer = new Buffer(bbuffer, false); // false = not binary
       dataChannel.send(buffer);
     } catch (UnsupportedEncodingException e) {
       Log.e(LOG_TAG, "While encoding data to send to companion", e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

@@ -1388,6 +1388,6 @@
 	"Blockly.Msg.REPL_IOS_COMPANION_COMPONENT_NOT_AVAILABLE": "The Following components are not yet available for iOS companion",
 	"Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_URL": "http://doesappinventorrunonios.com/",
 	"Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_TRACK": "Track Progress of App Inventor for iOS",
-	"Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE": "The Following components are not yet available for Android companion"
-
+	"Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE": "The Following components are not yet available for Android companion",
+	"Blockly.Msg.REPL_COMPANION_VERSION_COMPONENT_CHECK": "The Following components are not available for this Companion version "
 }

@@ -1014,11 +1014,11 @@ Blockly.ReplMgr.acceptableVersion = function(version) {
     return false;
 };
 
-Blockly.ReplMgr.processRetvals = function(responses) {
+Blockly.ReplMgr.processRetvals = function (responses) {
     var rs = top.ReplState;
     var block;
     var context = this;
-    var runtimeerr = function(message) {
+    var runtimeerr = function (message) {
         if (!context.runtimeError) {
             context.runtimeError = new goog.ui.Dialog(null, true, new goog.dom.DomHelper(top.document));
             var dialogElement = context.runtimeError.getDialogElement();
@@ -1033,7 +1033,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         }
         context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
         context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
-                                       addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
+            addButton({ caption: Blockly.Msg.REPL_DISMISS }, false, true));
         if (context.runtimeError.getContentElement()) {
             // This is not condoned by Google Closure Library rules, but we have already escaped
             // the return value and the static content should be code reviewed to be safe.
@@ -1056,68 +1056,114 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     for (var i = 0; i < responses.length; i++) {
         var r = responses[i];
         console.log("processRetVals: " + JSON.stringify(r));
-        switch(r.type) {
-        case "return":
-            if (r.status == "OK" && top.loadAllErrorCount > 0) {
-                console.log("Error Countdown: " + top.loadAllErrorCount);
-                top.loadAllErrorCount -= 1;
-                if (top.loadAllErrorCount <= 0) {
-                    top.loadAllErrorCount = 0; // Make sure!
-                    top.loadAll = true;
-                    console.log("Reseting top.loadAll to true");
-                }
-            }
-            if (r.blockid == "-2" && r.status != "OK") {
-                // We had an error in initial form load or at another
-                // time when we were chunking forms together
-                top.loadAll = false;
-                // This was 20, but for large projects it lead to infinite loops trying to
-                // find an error if the error occurs below a top level block at index > 20.
-                top.loadAllErrorCount = Blockly.mainWorkspace.getTopBlocks().length;
-                console.log("Error in chunking, disabling.");
-                this.resetYail(true);
-                this.pollYail(Blockly.mainWorkspace);
-            } else if (r.blockid != "-1" && r.blockid != "-2") {
-                block = Blockly.mainWorkspace.getBlockById(r.blockid);
-                if (block === null) {
-                    break;      // This happens when we switch screens during a poll
-                }
-                if (r.status == "OK") {
-                    block.replError = null;
-                    if (r.value && (r.value != '*nothing*')) {
-                        this.setDoitResult(block, r.value);
+        switch (r.type) {
+            case "return":
+                if (r.status == "OK" && top.loadAllErrorCount > 0) {
+                    console.log("Error Countdown: " + top.loadAllErrorCount);
+                    top.loadAllErrorCount -= 1;
+                    if (top.loadAllErrorCount <= 0) {
+                        top.loadAllErrorCount = 0; // Make sure!
+                        top.loadAll = true;
+                        console.log("Reseting top.loadAll to true");
                     }
-                } else {
-                    if (r.value) {
-                        block.replError = Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value;
+                }
+                if (r.blockid == "-2" && r.status != "OK") {
+                    // We had an error in initial form load or at another
+                    // time when we were chunking forms together
+                    top.loadAll = false;
+                    // This was 20, but for large projects it lead to infinite loops trying to
+                    // find an error if the error occurs below a top level block at index > 20.
+                    top.loadAllErrorCount = Blockly.mainWorkspace.getTopBlocks().length;
+                    console.log("Error in chunking, disabling.");
+                    this.resetYail(true);
+                    this.pollYail(Blockly.mainWorkspace);
+                } else if (r.blockid != "-1" && r.blockid != "-2") {
+                    block = Blockly.mainWorkspace.getBlockById(r.blockid);
+                    if (block === null) {
+                        break;      // This happens when we switch screens during a poll
+                    }
+                    if (r.status == "OK") {
+                        block.replError = null;
+                        if (r.value && (r.value != '*nothing*')) {
+                            this.setDoitResult(block, r.value);
+                        }
                     } else {
-                        block.replError = "Error from Companion";
+                        if (r.value) {
+                            block.replError = Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value;
+                        } else {
+                            block.replError = "Error from Companion";
+                        }
                     }
+                } else if (r.status != "OK") {
+                    runtimeerr(Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value);
                 }
-            } else if (r.status != "OK") {
-                runtimeerr(Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value);
-            }
-            break;
-        case "pushScreen":
-            var success = top.BlocklyPanel_pushScreen(r.screen);
-            if (!success) {
-                console.log("processRetVals: Invalid Screen: " + r.screen);
-                runtimeerr("Invalid Screen: " + r.screen);
-            }
-            break;
-        case "popScreen":
-            top.BlocklyPanel_popScreen();
-            break;
-        case "assetTransferred":
-            top.AssetManager_markAssetTransferred(r.value);
-            break;
-        case "extensionsLoaded":
-            rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-            Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
-            break;
-        case "error":
-            console.log("processRetVals: Error value = " + r.value);
-            runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+                break;
+            case "pushScreen":
+                var success = top.BlocklyPanel_pushScreen(r.screen);
+                if (!success) {
+                    console.log("processRetVals: Invalid Screen: " + r.screen);
+                    runtimeerr("Invalid Screen: " + r.screen);
+                }
+                break;
+            case "popScreen":
+                top.BlocklyPanel_popScreen();
+                break;
+            case "assetTransferred":
+                top.AssetManager_markAssetTransferred(r.value);
+                break;
+            case "extensionsLoaded":
+                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+                break;
+            case "error":
+                console.log("processRetVals: Error value = " + r.value);
+                runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            case "simple_components":
+                top.simple_components += r.value;
+                break;
+            case "simple_components_done":
+                var res = goog.json.parse(top.simple_components);
+                console.log("components : ")
+                console.log(res)
+                var showDialogWait = new Promise(function (resolve, reject) {
+                    var versionIncompatible = [];
+                    var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
+                    var simpleComponentNames = res.map(function (component) {
+                        return component.name;
+                    });
+                    console.log(simpleComponentNames);
+                    for (var i = 0; i < componentJson.length; i++) {
+                        if (!simpleComponentNames.includes(componentJson[i].$Type)) {
+                            versionIncompatible.push(componentJson[i].$Type);
+                        }
+                    }
+                    if (versionIncompatible.length > 0) {
+                        var dialog = new Blockly.Util.Dialog(
+                            Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+                            Blockly.Msg.REPL_COMPANION_VERSION_COMPONENT_CHECK +
+                            "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(versionIncompatible, false),
+                            Blockly.Msg.REPL_OK,
+                            false,
+                            null,
+                            0,
+                            function (response) {
+
+                                dialog.hide();
+                                reject();
+                                return;
+                            }
+                        );
+                    }
+                    else {
+                        resolve();
+                    }
+                })
+                var _this = this;
+                showDialogWait.then(
+                    function (res) {console.log("response")},
+                    function (err) {this.putYail.engine.resetcompanion();}
+                )
+                break;
         }
     }
     var handler = Blockly.getMainWorkspace().getWarningHandler();
@@ -1467,6 +1513,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
+                rs.simpleComponentsUrl = 'http://' + json.ipaddr + ':8001/_simpleComponents';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
                 if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
                     rs.dialog.hide();
@@ -1570,60 +1617,85 @@ Blockly.ReplMgr.rendezvousDone = function() {
         }
     });
 
-    var checkComponentSupport = new Promise(function (resolve, reject) {
-        var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
-        var componentCoverage = JSON.parse(top.COMPONENT_COVERAGE);
-        var componentTypes = [];
-        var iosIncompatible = [];
-        var androidIncompatbile = [];
-
-        for (var i = 0; i < componentJson.length; i++) {
-            componentTypes.push(componentJson[i].$Type);
-            var coverage = componentCoverage[componentJson[i].$Type];
-            if (coverage.android.propertyCount == 0 && coverage.android.methodCount == 0 && coverage.android.eventCount == 0) {
-                androidIncompatbile.push(componentJson[i].$Type)
+    var httpReqPromise = new Promise(function(resolve, reject) {
+        //http request to get the simple_components.json file bundled with AI companion
+        var xmlhttp = goog.net.XmlHttp();
+        xmlhttp.open('POST', rs.simpleComponentsUrl, true);
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState == 4 && this.status == 200) {
+            try {
+              var json = goog.json.parse(xmlhttp.response);
+              var simple_components = json
+              function filterButton(component) {
+                  return component.name !== 'Button';
+              }
+              simple_components = simple_components.filter(filterButton);
+              console.log("Components json")
+              console.log(simple_components)
+              resolve(simple_components);
+            } catch (err) {
+              console.log("getSimpleComponents(): Error: " + err);
+              reject();
             }
-            if (coverage.ios.propertyCount == 0 && coverage.ios.methodCount == 0 && coverage.ios.eventCount == 0) {
-                iosIncompatible.push(componentJson[i].$Type)
-            }
-        }
-        if (iosIncompatible.length > 0 && !rs.android) {
-            //dialog box containing list of incompatible components
-            var dialog = new Blockly.Util.Dialog(
-                Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
-                Blockly.Msg.REPL_IOS_COMPANION_COMPONENT_NOT_AVAILABLE +
-                "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(iosIncompatible, true),
-                Blockly.Msg.REPL_OK,
-                false,
-                null,
-                0,
-                function (response) {
-                    dialog.hide();
-                    reject();
-                }
-            );
-        } else if (androidIncompatbile.length > 0 && rs.android) {
-            var dialog = new Blockly.Util.Dialog(
-                Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
-                Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE +
-                "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(androidIncompatbile, false),
-                Blockly.Msg.REPL_OK,
-                false,
-                null,
-                0,
-                function (response) {
-                    dialog.hide();
-                    reject();
-                }
-            );
-
-        } else {
-            resolve();
-        }
+          }
+        };
+        xmlhttp.send("IGNORED=STUFF");
     });
+
+   var checkComponentSupport = new Promise(function (resolve, reject) {
+       var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
+       var componentCoverage = JSON.parse(top.COMPONENT_COVERAGE);
+       var componentTypes = [];
+       var iosIncompatible = [];
+       var androidIncompatbile = [];
+       for (var i = 0; i < componentJson.length; i++) {
+           componentTypes.push(componentJson[i].$Type);
+           var coverage = componentCoverage[componentJson[i].$Type];
+           if (coverage.android.propertyCount == 0 && coverage.android.methodCount == 0 && coverage.android.eventCount == 0) {
+               androidIncompatbile.push(componentJson[i].$Type)
+           }
+           if (coverage.ios.propertyCount == 0 && coverage.ios.methodCount == 0 && coverage.ios.eventCount == 0) {
+               iosIncompatible.push(componentJson[i].$Type)
+           }
+       }
+       if (iosIncompatible.length > 0 && !rs.android) {
+           //dialog box containing list of incompatible components
+           var dialog = new Blockly.Util.Dialog(
+               Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+               Blockly.Msg.REPL_IOS_COMPANION_COMPONENT_NOT_AVAILABLE +
+               "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(iosIncompatible, true),
+               Blockly.Msg.REPL_OK,
+               false,
+               null,
+               0,
+               function (response) {
+                   dialog.hide();
+                   reject();
+               }
+           );
+       } else if (androidIncompatbile.length > 0 && rs.android) {
+           var dialog = new Blockly.Util.Dialog(
+               Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+               Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE +
+               "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(androidIncompatbile, false),
+               Blockly.Msg.REPL_OK,
+               false,
+               null,
+               0,
+               function (response) {
+                   dialog.hide();
+                   reject();
+               }
+           );
+       } else {
+           resolve();
+       }
+   });
 
     var startwebrtc = function() {
         top.usewebrtc = true;
+        // used to append chunks of simple_compenents.json from companion
+        top.simple_components = ""
         rs.state = me.rsState.ASSET;
         me.putYail();           // Sets up the context
     };
@@ -1736,6 +1808,41 @@ Blockly.ReplMgr.rendezvousDone = function() {
             phoneState.phoneQueue = [];
         }
         phoneState.initialized = true;
+    }
+
+    // make http request to get simple_components.json
+    if (!usewebrtc) {
+        httpReqPromise.then(function (res) {
+            var componentJson = JSON.parse(top.ReplState.phoneState.formJson).Properties.$Components;
+            var versionIncompatible = [];
+            var simpleComponentNames = res.map(function (component) {
+                return component.name;
+            });
+            console.log(simpleComponentNames);
+            for (var i = 0; i < componentJson.length; i++) {
+                if (!simpleComponentNames.includes(componentJson[i].$Type)) {
+                    versionIncompatible.push(componentJson[i].$Type);
+                }
+            }
+            if (versionIncompatible.length > 0) {
+                engine.resetcompanion();
+                var dialog = new Blockly.Util.Dialog(
+                    Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK,
+                    Blockly.Msg.REPL_COMPANION_VERSION_COMPONENT_CHECK +
+                    "<br/>" + Blockly.ReplMgr.makeIncompatibleDialogMsg(versionIncompatible, false),
+                    Blockly.Msg.REPL_OK,
+                    false,
+                    null,
+                    0,
+                    function (response) {
+                        dialog.hide();
+                        return;
+                    }
+                );
+            }
+        }, function () {
+            return;
+        });
     }
 
     checkComponentSupport.then(function () {
