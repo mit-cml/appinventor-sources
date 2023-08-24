@@ -7,11 +7,24 @@
 package com.google.appinventor.client.actions;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.Command;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class DisableAutoloadAction implements Command {
   @Override
   public void execute() {
-    Ode.setUserAutoloadProject(false);
+    Ode.getUserSettings().getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(false));
+    Ode.getUserSettings().saveSettings(new Command() {
+      @Override
+      public void execute() {
+        DropDownButton settings = Ode.getInstance().getTopToolbar().settingsDropDown;
+        settings.setCommandById("AutoloadLastProject", new EnableAutoloadAction());
+        settings.setItemHtmlById("AutoloadLastProject", MESSAGES.enableAutoload());
+      }
+    });
   }
 }

@@ -40,9 +40,6 @@ import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
-import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -220,7 +217,7 @@ public class Ode implements EntryPoint {
   @UiField ProjectToolbar bindProjectToolbar;
   @UiField (provided = true) ProjectListBox bindProjectListbox;
   @UiField DesignToolbar bindDesignToolbar;
-  @UiField PaletteBox paletteBox;
+  @UiField (provided = true) PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
   @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
   @UiField (provided = true) SourceStructureBox bindSourceStructureBox = SourceStructureBox.getSourceStructureBox();
@@ -423,7 +420,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
-    getInstance().getTopToolbar().updateMoveToTrash(false);
+    getTopToolbar().updateMoveToTrash(false);
     hideChaff();
     hideTutorials();
     currentView = TRASHCAN;
@@ -474,10 +471,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  public void refreshProperties()
-  {
-    bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
-  }
   /**
    * Switch to the Debugging tab
    */
@@ -598,7 +591,6 @@ public class Ode implements EntryPoint {
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
 
-//      ViewerBox.getViewerBox().show(projectRootNode);
       bindViewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
@@ -912,6 +904,9 @@ public class Ode implements EntryPoint {
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
 
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
       @Override
@@ -929,8 +924,8 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiBinder.createAndBindUi(this);
 
     deckPanel.showWidget(0);
-    if ((mayNeedSplash || shouldShowWelcomeDialog())
-                   && !didShowSplash) {
+    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
+
       showSplashScreens();
     }
 
@@ -1153,7 +1148,7 @@ public class Ode implements EntryPoint {
     }
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     if (currentFileEditor instanceof YaFormEditor) {
-      bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
+      bindSourceStructureBox.show(((YaFormEditor) currentFileEditor).getForm());
       switchToDesignView();
     }
     if (!windowClosing) {
@@ -1324,39 +1319,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns the dark theme setting.
-   *
-   * @return true if the user has opted to use a dark theme, false otherwise
-   */
-  public static boolean getUserDarkThemeEnabled() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
-    return Boolean.parseBoolean(value);
-  }
-
-  /**
-   * Set user dark theme setting.
-   *
-   * @param enabled new value for the user's UI preference
-   */
-  public static void setUserDarkThemeEnabled(boolean enabled) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
-                    "" + enabled);
-    userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the UI preferences to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
-  }
-
-  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.
@@ -1372,23 +1334,6 @@ public class Ode implements EntryPoint {
    *
    * @param enable true if autoloading should be enabled or false if it should be disabled.
    */
-  public static void setUserAutoloadProject(final boolean enable) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));
-    userSettings.saveSettings(new Command() {
-      @Override
-      public void execute() {
-        DropDownButton settings = Ode.getInstance().getTopToolbar().settingsDropDown;
-        if (enable) {
-          settings.setCommandById("AutoloadLastProject", new DisableAutoloadAction());
-          settings.setItemHtmlById("AutoloadLastProject", MESSAGES.disableAutoload());
-        } else {
-          settings.setCommandById("AutoloadLastProject", new EnableAutoloadAction());
-          settings.setItemHtmlById("AutoloadLastProject", MESSAGES.enableAutoload());
-        }
-      }
-    });
-  }
 
   /**
    * Helper method to create push buttons.

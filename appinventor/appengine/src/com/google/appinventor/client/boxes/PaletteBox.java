@@ -16,7 +16,7 @@ import com.google.appinventor.client.widgets.boxes.Box;
 public final class PaletteBox extends Box {
 
   // Singleton palette box instance
-  private static PaletteBox INSTANCE;
+  private static final PaletteBox INSTANCE = new PaletteBox();
 
   /**
    * Return the palette box.
@@ -38,9 +38,5 @@ public final class PaletteBox extends Box {
         false,     // startMinimized
         false,     // usePadding
         false);    // highlightCaption
-
-    // UIBinder calls the private constructor, presumably through reflection, which
-    // disrupts the singleton pattern. This might not be the best way to deal with it.
-    INSTANCE = this;
   }
 }

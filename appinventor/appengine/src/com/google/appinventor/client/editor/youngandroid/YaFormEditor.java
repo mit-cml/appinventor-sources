@@ -263,10 +263,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
 
-  public SourceStructureExplorer getSourceStructureExplorer() {
-    return sourceStructureExplorer;
-  }
-
   @Override
   public String getTabText() {
     return formNode.getFormName();
@@ -425,7 +421,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (loadComplete) {
       // TODO: SMRL Not sure this class should keep a pointer to source structure
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      SourceStructureBox.getSourceStructureBox().show(this);
+      SourceStructureBox.getSourceStructureBox().show(form);
       PropertiesBox.getPropertiesBox().show(this, true);
     } else {
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
@@ -768,7 +764,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     SourceStructureBox.getSourceStructureBox().setVisible(true);
 
     // Set the properties box's content.
-    SourceStructureBox.getSourceStructureBox().show(this);
+    SourceStructureBox.getSourceStructureBox().show(form);
     PropertiesBox.getPropertiesBox().show(this, true);
 
     Ode.getInstance().showComponentDesigner();
@@ -909,7 +905,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
     updateMockComponents(componentTypes);
     PropertiesBox.getPropertiesBox().show(this, true);
-    SourceStructureBox.getSourceStructureBox().show(this);
+    SourceStructureBox.getSourceStructureBox().show(form);
   }
 
   @Override
