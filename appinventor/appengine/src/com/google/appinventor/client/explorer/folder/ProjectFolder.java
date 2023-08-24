@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client.explorer.folder;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Icon;
@@ -32,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import java.util.logging.Logger;
 
 
@@ -54,7 +55,8 @@ public class ProjectFolder extends Composite {
   interface ProjectFolderUiBinder extends UiBinder<FlowPanel, ProjectFolder> {
   }
 
-  private static final ProjectFolder.ProjectFolderUiBinder UI_BINDER = GWT.create(ProjectFolder.ProjectFolderUiBinder.class);
+  private static final ProjectFolder.ProjectFolderUiBinder UI_BINDER =
+      GWT.create(ProjectFolder.ProjectFolderUiBinder.class);
   private boolean isExpanded = false;
 
 
@@ -78,11 +80,13 @@ public class ProjectFolder extends Composite {
     this.name = name;
     nameLabel.setText(name);
     this.dateCreated = dateCreated;
-    this.dateCreatedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-                                       .format(new Date(dateCreated)));
+    this.dateCreatedLabel.setText(
+        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
+            .format(new Date(dateCreated)));
     this.dateModified = dateModified;
-    this.dateModifiedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-                                       .format(new Date(dateModified)));
+    this.dateModifiedLabel.setText(
+        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
+            .format(new Date(dateModified)));
     this.parent = parent;
     this.projects = new ArrayList<Project>();
     this.folders = new HashMap<String, ProjectFolder>();
@@ -172,10 +176,12 @@ public class ProjectFolder extends Composite {
 
   public void refresh() {
     nameLabel.setText(name);
-    dateCreatedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-                                      .format(new Date(dateCreated)));
-    dateModifiedLabel.setText(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-                                       .format(new Date(dateModified)));
+    dateCreatedLabel.setText(
+        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
+            .format(new Date(dateCreated)));
+    dateModifiedLabel.setText(
+        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
+            .format(new Date(dateModified)));
     childrenContainer.clear();
     for (ProjectFolder f : folders.values()) {
       if (changeHandler != null) {

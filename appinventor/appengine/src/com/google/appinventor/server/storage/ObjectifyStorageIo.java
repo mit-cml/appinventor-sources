@@ -883,7 +883,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           ProjectData pd = datastore.find(projectKey(projectId));
           if (pd != null) {
             pd.name = name;
-						datastore.put(pd);
+            datastore.put(pd);
           }
         }
       }, false);

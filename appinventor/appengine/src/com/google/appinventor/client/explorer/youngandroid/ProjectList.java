@@ -220,7 +220,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       container.add(childFolder);
     }
     folder.clearProjectList();
-    for(final Project project : projects) {
+    for (final Project project : projects) {
       ProjectListItem item = new ProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
       folder.addProjectListItem(item);
@@ -234,7 +234,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     return selectAllCheckBox.getValue();
   }
 
-public void fireSelectionChangeEvent() {
+  public void fireSelectionChangeEvent() {
     int selectableFolders = folder.getSelectableFolders(false).size();
     int visibleProjects = folder.getVisibleProjects(false).size();
     int selectedFolders = folder.getSelectedFolders().size();
@@ -267,6 +267,7 @@ public void fireSelectionChangeEvent() {
     folder.selectAll(selectAllCheckBox.getValue());
     fireSelectionChangeEvent();
   }
+
   /**
    * Gets the number of selected projects
    *
@@ -275,8 +276,9 @@ public void fireSelectionChangeEvent() {
   public int getSelectedProjectsCount() {
     if (folder != null) {
       return folder.getSelectedProjects().size() + folder.getSelectedFolders().size();
+    } else {
+      return 0;
     }
-    else return 0;
   }
 
 

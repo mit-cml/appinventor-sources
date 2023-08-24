@@ -28,7 +28,7 @@ public final class FolderManager {
 
   private boolean foldersLoaded;
 
-  private ArrayList<FolderManagerEventListener> folderManagerEventListeners;
+  private List<FolderManagerEventListener> folderManagerEventListeners;
 
   public FolderManager() {
     folderManagerEventListeners = new ArrayList<FolderManagerEventListener>();
@@ -49,8 +49,8 @@ public final class FolderManager {
     }
 
     JSONObject folderJSON = JSONParser.parse(foldersAsString).isObject();
-    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size() == 0 &&
-        folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size() == 0) {
+    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size() == 0
+        && folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size() == 0) {
       LOG.info("Global folder is empty");
       initializeFolders();
       fireFoldersLoaded();
@@ -75,7 +75,8 @@ public final class FolderManager {
   }
 
   public ProjectFolder createFolder(String name, ProjectFolder parent) {
-    ProjectFolder folder = new ProjectFolder(name, System.currentTimeMillis(), System.currentTimeMillis(), parent);
+    ProjectFolder folder = new ProjectFolder(name, System.currentTimeMillis(),
+        System.currentTimeMillis(), parent);
     parent.addChildFolder(folder);
     while ((parent = parent.getParentFolder()) != null) {
       parent.clearCache();
@@ -92,16 +93,17 @@ public final class FolderManager {
     saveAllFolders();
   }
 
-  public void moveItemsToFolder(List<Project> projects, List<ProjectFolder> folders, ProjectFolder destination) {
+  public void moveItemsToFolder(List<Project> projects, List<ProjectFolder> folders,
+      ProjectFolder destination) {
     LOG.info("Moving projects count " + projects.size() + " to " + destination.getName());
     for (Project project : projects) {
-      LOG.info("Moving project " + project.getProjectName()  + " from " + project.getHomeFolder().getName() +
-                   " to " + destination.getName());
+      LOG.info("Moving project " + project.getProjectName()  + " from "
+          + project.getHomeFolder().getName() + " to " + destination.getName());
       destination.addProject(project);
     }
     for (ProjectFolder folder : folders) {
-      LOG.info("Moving folder " + folder.getName()  + " from " + folder.getParentFolder().getName() +
-                   " to " + destination.getName());
+      LOG.info("Moving folder " + folder.getName()  + " from " + folder.getParentFolder().getName()
+          + " to " + destination.getName());
       destination.addChildFolder(folder);
     }
     saveAllFolders();
