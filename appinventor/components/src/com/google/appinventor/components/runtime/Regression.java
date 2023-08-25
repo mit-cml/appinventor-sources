@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -114,7 +115,7 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
   /**
    * Returns one of the Line of Best Fit values.
    * A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a
-   * dictionary with all values above if nothing specific provided.
+   * dictionary when AllValues is specified.
    *
    * @param xList - the list of x values
    * @param yList - the list of y values
@@ -125,10 +126,10 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
       + "\"slope\", \"Yintercept\", \"correlation coefficient\"or \"predictions\". The block "
       + "returns the complete dictionary with all values if no specific value string is provided")
   public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList,
-      LOBFValues value) {
+      @Options(LOBFValues.class) String value) {
     YailDictionary result = computeLineOfBestFit(xList, yList);
-    if (result.containsKey(value.toUnderlyingValue())) {
-      return result.get(value.toUnderlyingValue());
+    if (result.containsKey(value)) {
+      return result.get(value);
     } else {
       return result;
     }

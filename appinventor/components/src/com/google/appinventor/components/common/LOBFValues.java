@@ -17,9 +17,10 @@ public enum LOBFValues implements OptionList<String> {
   @Default
   Slope("slope"),
   Yintercept("Yintercept"),
-  Predictions("predictions");
+  Predictions("predictions"),
+  AllValues("all values");
 
-  private String lobfValues;
+  private final String lobfValues;
 
   LOBFValues(String lobfV) {
     this.lobfValues = lobfV;
