@@ -208,22 +208,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // FileEditor methods
 
   @Override
-  public DropTargetProvider getDropTargetProvider() {
-    return new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = form.getDropTargetsWithin();
-        dropTargets.add(visibleComponentsPanel);
-        dropTargets.add(nonVisibleComponentsPanel);
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    };
-  }
-
-  @Override
   public void loadFile(final Command afterFileLoaded) {
     final long projectId = getProjectId();
     final String fileId = getFileId();

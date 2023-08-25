@@ -182,17 +182,6 @@ public final class YaBlocksEditor extends FileEditor
   // FileEditor methods
 
   @Override
-  public DropTargetProvider getDropTargetProvider() {
-    return new DropTargetProvider() {
-      // TODO(sharon): make the tree in the BlockSelectorBox a drop target
-      @Override
-      public DropTarget[] getDropTargets() {
-        return new DropTarget[0];
-      }
-    };
-  }
-
-  @Override
   public void loadFile(final Command afterFileLoaded) {
     final long projectId = getProjectId();
     final String fileId = getFileId();
