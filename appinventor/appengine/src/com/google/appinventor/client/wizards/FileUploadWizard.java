@@ -27,11 +27,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FileUpload;
 
 import java.util.Collection;
-import java.util.logging.Logger;
 
 
 /**
@@ -40,17 +39,18 @@ import java.util.logging.Logger;
  */
 public class FileUploadWizard {
   interface FileUploadWizardUiBinder extends UiBinder<Dialog, FileUploadWizard> {}
-  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER = GWT.create(FileUploadWizard.FileUploadWizardUiBinder.class);
-  private static final Logger LOG = Logger.getLogger(FileUploadWizard.class.getName());
+
+  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER =
+      GWT.create(FileUploadWizardUiBinder.class);
 
   @UiField Dialog uploadDialog;
   @UiField FileUpload upload;
   @UiField Button okButton;
   @UiField Button cancelButton;
 
-  FolderNode folderNode;
-  Collection<String> acceptableTypes;
-  FileUploadedCallback fileUploadedCallback;
+  private final FolderNode folderNode;
+  private final Collection<String> acceptableTypes;
+  private final FileUploadedCallback fileUploadedCallback;
 
   /**
    * Interface for callback to execute after a file is uploaded.
@@ -91,17 +91,17 @@ public class FileUploadWizard {
    * @param acceptableTypes a collection of acceptable types, or null.
    * @param fileUploadedCallback callback to be executed after upload
    */
-  public FileUploadWizard(final FolderNode p_folderNode,
-      final Collection<String> p_acceptableTypes,
-      final FileUploadedCallback p_fileUploadedCallback) {
-    folderNode = p_folderNode;
-    acceptableTypes = p_acceptableTypes;
-    fileUploadedCallback = p_fileUploadedCallback;
+  public FileUploadWizard(final FolderNode folderNode,
+      final Collection<String> acceptableTypes,
+      final FileUploadedCallback fileUploadedCallback) {
+    this.folderNode = folderNode;
+    this.acceptableTypes = acceptableTypes;
+    this.fileUploadedCallback = fileUploadedCallback;
 
     UI_BINDER.createAndBindUi(this);
 
-    if (acceptableTypes != null) {
-      upload.getElement().setAttribute("accept", String.join(",", acceptableTypes));
+    if (this.acceptableTypes != null) {
+      upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
     uploadDialog.center();
   }
