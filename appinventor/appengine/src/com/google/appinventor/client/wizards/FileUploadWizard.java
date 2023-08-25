@@ -27,17 +27,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FileUpload;
 
 import java.util.Collection;
-import java.util.logging.Logger;
 
 
 /**
@@ -46,17 +39,18 @@ import java.util.logging.Logger;
  */
 public class FileUploadWizard {
   interface FileUploadWizardUiBinder extends UiBinder<Dialog, FileUploadWizard> {}
-  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER = GWT.create(FileUploadWizard.FileUploadWizardUiBinder.class);
-  private static final Logger LOG = Logger.getLogger(FileUploadWizard.class.getName());
+
+  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER =
+      GWT.create(FileUploadWizardUiBinder.class);
 
   @UiField Dialog uploadDialog;
   @UiField FileUpload upload;
   @UiField Button okButton;
   @UiField Button cancelButton;
 
-  FolderNode folderNode;
-  Collection<String> acceptableTypes;
-  FileUploadedCallback fileUploadedCallback;
+  private final FolderNode folderNode;
+  private final Collection<String> acceptableTypes;
+  private final FileUploadedCallback fileUploadedCallback;
 
   /**
    * Interface for callback to execute after a file is uploaded.
@@ -97,17 +91,17 @@ public class FileUploadWizard {
    * @param acceptableTypes a collection of acceptable types, or null.
    * @param fileUploadedCallback callback to be executed after upload
    */
-  public FileUploadWizard(final FolderNode p_folderNode,
-      final Collection<String> p_acceptableTypes,
-      final FileUploadedCallback p_fileUploadedCallback) {
-    folderNode = p_folderNode;
-    acceptableTypes = p_acceptableTypes;
-    fileUploadedCallback = p_fileUploadedCallback;
+  public FileUploadWizard(final FolderNode folderNode,
+      final Collection<String> acceptableTypes,
+      final FileUploadedCallback fileUploadedCallback) {
+    this.folderNode = folderNode;
+    this.acceptableTypes = acceptableTypes;
+    this.fileUploadedCallback = fileUploadedCallback;
 
     UI_BINDER.createAndBindUi(this);
 
-    if (acceptableTypes != null) {
-      upload.getElement().setAttribute("accept", String.join(",", acceptableTypes));
+    if (this.acceptableTypes != null) {
+      upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
     uploadDialog.center();
   }
@@ -124,20 +118,20 @@ public class FileUploadWizard {
     if (!uploadFilename.isEmpty()) {
       final String filename = makeValidFilename(uploadFilename);
       if (!TextValidators.isValidCharFilename(filename)) {
-        new FileUploadError(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
-            Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
+            FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       } else if (!TextValidators.isValidLengthFilename(filename)) {
-        new FileUploadError(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
-            Error.FILENAMEBADSIZE, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
+            FileUploadErrorCode.FILENAME_BAD_SIZE, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       }
       int nameLength = uploadFilename.length();
       String fileEnd = uploadFilename.substring(nameLength - 4, nameLength);
 
       if (".aia".equals(fileEnd.toLowerCase())) {
-        new FileUploadError(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
-            Error.AIAMEDIAASSET, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
+            FileUploadErrorCode.AIA_MEDIA_ASSET, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       }
       String fn = conflictingExistingFile(folderNode, filename);
@@ -196,8 +190,8 @@ public class FileUploadWizard {
             }
           });
     } else {
-      new FileUploadError(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
-          Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
+      new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
+          FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
     }
   }
 
