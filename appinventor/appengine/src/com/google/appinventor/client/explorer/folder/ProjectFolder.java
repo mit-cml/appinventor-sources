@@ -6,13 +6,14 @@
 package com.google.appinventor.client.explorer.folder;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
+import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -27,29 +28,27 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 
 public class ProjectFolder extends Composite {
-  private static final Logger LOG = Logger.getLogger(ProjectFolder.class.getName());
+  private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
   /**
    * This class represents a folder containing project objects.
    */
   private String name;
   private List<Project> projects = new ArrayList<>();
-  private List<ProjectListItem> projectListItems = new ArrayList<>();
+  private final List<ProjectListItem> projectListItems = new ArrayList<>();
   private Map<String, ProjectFolder> folders = new HashMap<>();
-  private long dateCreated;
+  private final long dateCreated;
   protected long dateModified;
   private ProjectFolder parent;
-  protected JSONObject cachedJSON;
+  protected JSONObject cachedJson;
   private ProjectSelectionChangeHandler changeHandler;
 
   interface ProjectFolderUiBinder extends UiBinder<FlowPanel, ProjectFolder> {
@@ -80,16 +79,12 @@ public class ProjectFolder extends Composite {
     this.name = name;
     nameLabel.setText(name);
     this.dateCreated = dateCreated;
-    this.dateCreatedLabel.setText(
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-            .format(new Date(dateCreated)));
+    this.dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     this.dateModified = dateModified;
-    this.dateModifiedLabel.setText(
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-            .format(new Date(dateModified)));
+    this.dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
     this.parent = parent;
-    this.projects = new ArrayList<Project>();
-    this.folders = new HashMap<String, ProjectFolder>();
+    this.projects = new ArrayList<>();
+    this.folders = new HashMap<>();
   }
 
   public ProjectFolder(String name, long dateCreated, ProjectFolder parent) {
@@ -104,11 +99,11 @@ public class ProjectFolder extends Composite {
     dateCreated = Long.parseLong(json.get(FolderJSONKeys.DATE_CREATED).isString().stringValue());
     dateModified = Long.parseLong(json.get(FolderJSONKeys.DATE_MODIFIED).isString().stringValue());
 
-    this.projects = new ArrayList<Project>();
-    this.folders = new HashMap<String, ProjectFolder>();
-    JSONArray projectsJSON = json.get(FolderJSONKeys.PROJECTS).isArray();
-    for (int i = 0; i < projectsJSON.size(); i++) {
-      long projectId = Long.parseLong(projectsJSON.get(i).isString().stringValue());
+    this.projects = new ArrayList<>();
+    this.folders = new HashMap<>();
+    JSONArray projectsJson = json.get(FolderJSONKeys.PROJECTS).isArray();
+    for (int i = 0; i < projectsJson.size(); i++) {
+      long projectId = Long.parseLong(projectsJson.get(i).isString().stringValue());
       Project project = Ode.getInstance().getProjectManager().getProject(projectId);
       // If users switch back and forth between old and new explorer, the projects
       // may have changed
@@ -117,11 +112,11 @@ public class ProjectFolder extends Composite {
       }
     }
 
-    JSONArray childFoldersJSON = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
-    for (int i = 0; i < childFoldersJSON.size(); i++) {
-      addChildFolder(new ProjectFolder(childFoldersJSON.get(i).isObject(), this));
+    JSONArray childFoldersJson = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
+    for (int i = 0; i < childFoldersJson.size(); i++) {
+      addChildFolder(new ProjectFolder(childFoldersJson.get(i).isObject(), this));
     }
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -159,9 +154,9 @@ public class ProjectFolder extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleName("ode-ProjectRowHighlighted");
+      container.addStyleDependentName("Highlighted");
     } else {
-      container.removeStyleName("ode-ProjectRowHighlighted");
+      container.removeStyleDependentName("Highlighted");
     }
   }
 
@@ -171,17 +166,13 @@ public class ProjectFolder extends Composite {
     }
     project.setHomeFolder(this);
     projects.add(project);
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public void refresh() {
     nameLabel.setText(name);
-    dateCreatedLabel.setText(
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-            .format(new Date(dateCreated)));
-    dateModifiedLabel.setText(
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM)
-            .format(new Date(dateModified)));
+    dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
+    dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
     childrenContainer.clear();
     for (ProjectFolder f : folders.values()) {
       if (changeHandler != null) {
@@ -203,7 +194,7 @@ public class ProjectFolder extends Composite {
 
   public void removeProject(Project project) {
     projects.remove(project);
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public void addChildFolder(ProjectFolder folder) {
@@ -215,12 +206,12 @@ public class ProjectFolder extends Composite {
     }
     folders.put(folder.name, folder);
     folder.parent = this;
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public void removeChildFolder(ProjectFolder folder) {
     folders.remove(folder.name);
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public long getDateModified() {
@@ -311,7 +302,7 @@ public class ProjectFolder extends Composite {
   public void setName(String name) {
     this.name = name;
     dateModified = System.currentTimeMillis();
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   public String getName() {
@@ -344,15 +335,15 @@ public class ProjectFolder extends Composite {
   }
 
   public JSONObject toJSON() {
-    if (cachedJSON != null) {
-      return cachedJSON;
+    if (cachedJson != null) {
+      return cachedJson;
     }
-    cachedJSON = makeJSON();
-    return cachedJSON;
+    cachedJson = makeJSON();
+    return cachedJson;
   }
 
   public void clearCache() {
-    cachedJSON = null;
+    cachedJson = null;
   }
 
   protected JSONObject makeJSON() {

@@ -268,7 +268,6 @@ div.StatusPanel {
   vertical-align: top;
   padding-right: 10px;
   text-align: left;
-  width: 200px;
 }
 
 .ode-ProjectTable {
@@ -281,11 +280,7 @@ div.StatusPanel {
   width: 100%;
 }
 
-.ode-ProjectRowHighlighted {
-  background-color: #fff6c3 !important;
-}
-
-.ode-ProjectRowUnHighlighted {
+.ode-ProjectRow {
   display: flex;
   align-items: center;
   grid-gap: 10px;
@@ -295,8 +290,12 @@ div.StatusPanel {
   vertical-align: center;
 }
 
+.ode-ProjectRow-Highlighted {
+  background-color: #fff6c3;
+}
+
 .ode-ProjectRowHidden {
-  display:none !important;
+  display:none;
 }
 
 .ode-ProjectElementHidden {
