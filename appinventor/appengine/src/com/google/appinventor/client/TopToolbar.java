@@ -24,6 +24,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import java.util.logging.Logger;
 
 /**
@@ -109,6 +110,9 @@ public class TopToolbar extends Composite {
     hasWriteAccess = !Ode.getInstance().isReadOnly();
 
     initWidget(UI_BINDER.createAndBindUi(this));
+    if (iamChromebook) {
+      RootPanel.getBodyElement().addClassName("onChromebook");
+    }
 
     fileDropDown.removeUnneededSeparators();
 
@@ -143,12 +147,6 @@ public class TopToolbar extends Composite {
     if (!Ode.getUserDyslexicFont()) {
       settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
       settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
-    }
-    if (iamChromebook) {
-      connectDropDown.removeItemById(WIDGET_NAME_EMULATOR_BUTTON);
-      connectDropDown.removeItemById(WIDGET_NAME_USB_BUTTON);
-    } else {
-      connectDropDown.removeItemById(WIDGET_NAME_CHROMEBOOK);
     }
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();
