@@ -13,7 +13,8 @@
 
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
-<project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless"
+     xmlns:jacoco="antlib:org.jacoco.ant">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
   <description>
@@ -67,6 +68,7 @@
        directory is different for each project. 
        -->
   <property name="reports.dir" location="${basedir}/reports"/>
+  <property name="coverage.dir" location="${basedir}/reports/coverage"/>
 
   <!-- =====================================================================
        Define src.dir and tests.dir relative to the including file's base directory.
@@ -81,6 +83,9 @@
     <classpath>
       <pathelement location="${appinventor.dir}/lib/ant-contrib/ant-contrib-1.0b3.jar"/>
     </classpath>
+  </taskdef>
+  <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+    <classpath path="${appinventor.dir}/lib/jacoco/jacocoant.jar"/>
   </taskdef>
 
   <!-- =====================================================================
@@ -205,37 +210,61 @@
       <jar basedir="${classdir}"
            destfile="${local.build.dir}/@{aij-testingtarget}.jar" />
 
+      <jacoco:coverage destfile="${local.build.dir}/jacoco.exec" inclnolocationclasses="true">
       <junit printsummary="yes"
              fork="true"
              dir="${basedir}"
              forkmode="@{aij-forkmode}"
              haltonfailure="no"
-             maxmemory="2000m"
+             maxmemory="4000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
-        <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
+        <sysproperty key="gwt.args" value="-prod -style pretty -draftCompile -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war -setProperty locale=en -setProperty user.agent=safari" if:true="@{aij-prod}"/>
         <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war ${local.build.dir}/build/war" unless:true="@{aij-prod}"/>
         <sysproperty key="java.awt.headless" value="true"/>
         <classpath refid="@{aij-testingtarget}.path"/>
         <formatter type="xml"/>
         <!-- If the ant command line sets the test_name property (see above)
              then we just run that one test. -->
-        <test name="${test_name}" todir="${reports.dir}/raw/" if="test_name"/>
+        <test fork="true" name="${test_name}" todir="${reports.dir}/raw/" if="test_name"/>
         <!-- otherwise, we run all the tests -->
-        <batchtest todir="${reports.dir}/raw/" unless="test_name">
+        <batchtest fork="true" todir="${reports.dir}/raw/" unless="test_name">
           <fileset dir="${tests.dir}">
             <include name="@{aij-dir}/**/*Test.java" />
+            <include name="@{aij-dir}/**/*TestSuite.java" />
             <exclude name="@{aij-dir}/**/Abstract*Test.java" />
           </fileset>
         </batchtest>
       </junit>
+      </jacoco:coverage>
       <junitreport todir="${reports.dir}">
         <fileset dir="${reports.dir}/raw/">
           <include name="TEST-*.xml"/>
         </fileset>
         <report format="frames" todir="${reports.dir}/html"/>
       </junitreport>
+      <jacoco:report>
+          <executiondata>
+               <file file="${local.build.dir}/jacoco.exec"/>
+          </executiondata>
+          <structure name="Coverage Report">
+               <classfiles>
+                    <fileset dir="${class.dir}">
+                         <exclude name="**/*.aix"/> 
+                         <exclude name="**/*.jar"/> 
+                    </fileset>
+               </classfiles>
+               <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}">
+                         <exclude name="**/*.aix"/>
+                    </fileset>
+               </sourcefiles>
+          </structure>
+
+          <html destdir="${coverage.dir}"/>
+      </jacoco:report>
       <echo message="Please see the report at file://${reports.dir}/html/index.html"/>
+      <echo message="Please see the coverage report at file://${reports.dir}/coverage/index.html"/>
     </sequential>
   </macrodef>
 

@@ -187,7 +187,8 @@ public class Ode implements EntryPoint {
   private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
-  private ProjectManager projectManager;
+  private ProjectManager projectManager = new ProjectManager();
+  //projectManager = new ProjectManager();
 
   // Collection of editors
   private EditorManager editorManager;
@@ -760,7 +761,7 @@ public class Ode implements EntryPoint {
 
             // Initialize project and editor managers
             // The project manager loads the user's projects asynchronously
-            projectManager = new ProjectManager();
+            projectManager.retrieveProjectInfos();
             projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
               @Override
               public void onProjectsLoaded() {
