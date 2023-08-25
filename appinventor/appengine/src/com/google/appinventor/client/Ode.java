@@ -428,6 +428,7 @@ public class Ode implements EntryPoint {
     bindProjectToolbar.enableStartButton();
     bindProjectToolbar.setProjectTabButtonsVisible(false);
     bindProjectToolbar.setTrashTabButtonsVisible(true);
+    deckPanel.showWidget(projectsTabIndex);
   }
 
   /**
