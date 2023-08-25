@@ -124,6 +124,15 @@ div.StatusPanel {
   transition:color .1s ease-out, background .1s ease-in;
 }
 
+.ode-ContextMenuItem-needsChromebook,
+.onChromebook .ode-ContextMenuItem-needsAiStarter {
+  display: none;
+}
+
+.onChromebook .ode-ContextMenuItem-needsChromebook {
+  display: table-cell;
+}
+
 .ode-ContextMenuItem-Red {
   color: #ff0000;
   min-width: 50px;

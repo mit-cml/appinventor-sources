@@ -129,6 +129,9 @@ public class DropDownButton extends TextButton {
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
         MenuItem m = menu.addItem(item.caption, true, item.command);
+        if (item.dependentStyleName != null) {
+          m.addStyleDependentName(item.dependentStyleName);
+        }
         if (!item.getVisible()) {
           m.setVisible(false);
         }
@@ -199,6 +202,9 @@ public class DropDownButton extends TextButton {
       allItems.add(menu.addSeparator());
     } else {
       MenuItem menuItem = menu.addItem(item.caption, true, item.command, item.styleName);
+      if (item.dependentStyleName != null) {
+        menuItem.addStyleDependentName(item.dependentStyleName);
+      }
       if (!item.getVisible()) {
         menuItem.setVisible(false);
       }

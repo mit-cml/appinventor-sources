@@ -68,13 +68,16 @@
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}">
+      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}"
+                       dependentStyleName="needsAiStarter">
         <yaactions:EmulatorAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
+      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}"
+                       dependentStyleName="needsAiStarter">
         <yaactions:UsbAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}">
+      <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
+                       dependentStyleName="needsChromebook">
         <yaactions:ChromebookAction />
       </ai:DropDownItem>
       <hr />
