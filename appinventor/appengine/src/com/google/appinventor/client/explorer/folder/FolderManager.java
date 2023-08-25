@@ -5,12 +5,13 @@
 
 package com.google.appinventor.client.explorer.folder;
 
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+
 import com.google.appinventor.shared.settings.SettingsConstants;
+
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public final class FolderManager {
 
   private boolean foldersLoaded;
 
-  private List<FolderManagerEventListener> folderManagerEventListeners;
+  private final List<FolderManagerEventListener> folderManagerEventListeners;
 
   public FolderManager() {
     folderManagerEventListeners = new ArrayList<FolderManagerEventListener>();
@@ -108,11 +109,6 @@ public final class FolderManager {
     }
     saveAllFolders();
     fireFoldersChanged();
-  }
-
-  // relative to *global*
-  public ProjectFolder createFolder(String path) {
-    return null;
   }
 
   public ProjectFolder getGlobalFolder() {
