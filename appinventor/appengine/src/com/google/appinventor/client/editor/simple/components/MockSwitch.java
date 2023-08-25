@@ -24,7 +24,6 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
    * Component type name.
    */
   public static final String TYPE = "Switch";
-
   protected final HorizontalPanel panel;
   public Boolean checked = false;  // the "on" property of the switch is equivalent to "checked"
   public String thumbColorActive = "white";
