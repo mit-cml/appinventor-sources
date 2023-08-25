@@ -174,7 +174,7 @@ public class Ode implements EntryPoint {
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
 
-  private AssetManager assetManager;
+  private AssetManager assetManager = AssetManager.getInstance();
 
   private DropTargetProvider dragDropTargets;
 
@@ -216,7 +216,7 @@ public class Ode implements EntryPoint {
   @UiField DesignToolbar designToolbar;
   @UiField (provided = true) PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField (provided = true) ViewerBox viewerBox = ViewerBox.getViewerBox();
-  @UiField AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField (provided = true) AssetListBox assetListBox = AssetListBox.getAssetListBox();
   @UiField (provided = true) SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
   @UiField (provided = true) PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
@@ -598,11 +598,7 @@ public class Ode implements EntryPoint {
         // insert token into history but do not trigger listener event
         History.newItem(projectIdString, false);
       }
-      if (assetManager == null) {
-        assetManager = AssetManager.getInstance();
-      }
       assetManager.loadAssets(project.getProjectId());
-      assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
   }
