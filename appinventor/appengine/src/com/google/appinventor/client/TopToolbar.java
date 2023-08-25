@@ -11,7 +11,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignProject;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.common.version.AppInventorFeatures;
@@ -75,12 +76,12 @@ public class TopToolbar extends Composite {
 
   private static final Logger LOG = Logger.getLogger(TopToolbar.class.getName());
 
-  @UiField public DropDownButton fileDropDown;
-  @UiField public DropDownButton connectDropDown;
-  @UiField public DropDownButton buildDropDown;
-  @UiField public DropDownButton settingsDropDown;
-  @UiField public DropDownButton adminDropDown;
-  @UiField (provided = true) public final Boolean hasWriteAccess;
+  @UiField DropDownButton fileDropDown;
+  @UiField DropDownButton connectDropDown;
+  @UiField DropDownButton buildDropDown;
+  @UiField DropDownButton settingsDropDown;
+  @UiField DropDownButton adminDropDown;
+  @UiField (provided = true) final Boolean hasWriteAccess;
 
   /**
    * This flag is set to true when a check for the android.keystore file is in progress.
@@ -159,7 +160,7 @@ public class TopToolbar extends Composite {
     return MESSAGES;
   }
 
-  public void updateMoveToTrash(boolean moveToTrash){
+  public void updateMoveToTrash(boolean moveToTrash) {
     if (moveToTrash) {
       // Move projects from trash.
       fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
@@ -177,8 +178,9 @@ public class TopToolbar extends Composite {
     boolean allowExportAll = numProjects > 0;
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
     fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
-    String exportProjectLabel = numSelectedProjects > 1 ?
-                                    MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
+    String exportProjectLabel = numSelectedProjects > 1
+        ? MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects)
+        : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
@@ -192,7 +194,8 @@ public class TopToolbar extends Composite {
     fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), present);
   }
 
-  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
+  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
+      boolean isUsbRunning) {
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       if (iamChromebook) {
@@ -235,13 +238,13 @@ public class TopToolbar extends Composite {
    */
 
   public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
-    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring attempt to start the repl.");
       return;
     }
-    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    Screen screen = currentProject.screens.get(currentProject.currentScreen);
     screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
@@ -257,25 +260,25 @@ public class TopToolbar extends Composite {
   }
 
   public void replHardReset() {
-    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring attempt to do hard reset.");
       return;
     }
-    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).hardReset();
     updateConnectToDropDownButton(false, false, false);
   }
 
   public void replUpdate() {
-    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
               + "Ignoring attempt to refresh companion screen.");
       return;
     }
-    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).sendComponentData(true);
   }
 
@@ -292,7 +295,7 @@ public class TopToolbar extends Composite {
 
     // TODO: This code will work only so long as these menu items stay located in the file/build
     // menus as expected. It should be refactored.
-    int projectCount= ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
+    int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
@@ -387,6 +390,10 @@ public class TopToolbar extends Composite {
       Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
           callback);
     }
+  }
+
+  public DropDownButton getSettingsDropDown() {
+    return settingsDropDown;
   }
 
   private static native boolean isChromeBook() /*-{

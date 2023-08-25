@@ -21,7 +21,7 @@ public class DisableAutoloadAction implements Command {
     Ode.getUserSettings().saveSettings(new Command() {
       @Override
       public void execute() {
-        DropDownButton settings = Ode.getInstance().getTopToolbar().settingsDropDown;
+        DropDownButton settings = Ode.getInstance().getTopToolbar().getSettingsDropDown();
         settings.setCommandById("AutoloadLastProject", new EnableAutoloadAction());
         settings.setItemHtmlById("AutoloadLastProject", MESSAGES.enableAutoload());
       }
