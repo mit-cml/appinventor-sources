@@ -989,9 +989,7 @@ a, a:visited, a:hover {
   cursor: hand;
   cursor: pointer;
 }
-/*.gwt-Tree .gwt-TreeItem-selected {*/
-/*  background: #93c2f1 url(../images/hborder.png) repeat-x 0px -1463px;*/
-/*}*/
+
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
