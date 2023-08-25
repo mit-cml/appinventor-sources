@@ -394,6 +394,7 @@ public abstract class Box extends HandlerPanel {
   public void setStyleName(String styleName) {
     setStylePrimaryName(styleName);
   }
+
   @Override
   public void clear() {
     body.clear();

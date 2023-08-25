@@ -134,7 +134,7 @@ public class Toolbar extends FlowPanel {
     }
   }
 
-  public void setStylename (String styleName) {
+  public void setStylename(String styleName) {
     setStylePrimaryName(styleName);
   }
 

@@ -6,6 +6,9 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -67,9 +70,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -206,22 +206,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   // FileEditor methods
-
-  @Override
-  public DropTargetProvider getDropTargetProvider() {
-    return new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = form.getDropTargetsWithin();
-        dropTargets.add(visibleComponentsPanel);
-        dropTargets.add(nonVisibleComponentsPanel);
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    };
-  }
 
   @Override
   public void loadFile(final Command afterFileLoaded) {

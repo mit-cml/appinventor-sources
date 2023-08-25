@@ -71,6 +71,7 @@ public class LabeledTextBox extends Composite {
   public void setCaption(String caption) {
     captionLabel.setText(caption);
   }
+
   /**
    * Sets the content of the TextBox.
    *

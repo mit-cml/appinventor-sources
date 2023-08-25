@@ -1020,9 +1020,9 @@ public final class MockForm extends MockContainer {
     }
     if (theme.equals("AppTheme")) {
       blackIcons = false;
-      formWidget.addStyleDependentName("ode-SimpleMockFormDark");
+      formWidget.setStylePrimaryName("ode-SimpleMockFormDark");
     } else {
-      formWidget.removeStyleDependentName("ode-SimpleMockForm");
+      formWidget.setStylePrimaryName("ode-SimpleMockForm");
     }
 
     // Resetting the MockForm with new preview styles

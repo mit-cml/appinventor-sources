@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.components.Icon;
@@ -51,16 +56,22 @@ public class ToolbarItem {
   public Command getCommand() {
     return command;
   }
-  public Icon getIcon() { return icon; }
+
+  public Icon getIcon() {
+    return icon;
+  }
 
   public void setIcon(String iconName) {
     icon = new com.google.appinventor.client.components.Icon(iconName);
   }
+
   public void setIcon(Icon icon) {
     this.icon = icon;
   }
 
-  public String getStyleName() { return styleName; }
+  public String getStyleName() {
+    return styleName;
+  }
 
   public void setStyleName(String styleName) {
     this.styleName = styleName;
@@ -86,7 +97,10 @@ public class ToolbarItem {
     this.align = align;
   }
 
-  public boolean getEnabled() { return enabled; }
+  public boolean getEnabled() {
+    return enabled;
+  }
+
   public void setEnabled(boolean p_enabled) {
     this.enabled = p_enabled;
   }

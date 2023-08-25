@@ -94,14 +94,6 @@ div.StatusPanel {
 }
 
 /*
- * Module switcher root panel
- */
-.ode-ModuleControllerRoot {
-  height: 100vh;
-  width: 100vw;
-}
-
-/*
  * Context menus
  */
 
@@ -268,7 +260,6 @@ div.StatusPanel {
   vertical-align: top;
   padding-right: 10px;
   text-align: left;
-  width: 200px;
 }
 
 .ode-ProjectTable {
@@ -281,11 +272,7 @@ div.StatusPanel {
   width: 100%;
 }
 
-.ode-ProjectRowHighlighted {
-  background-color: #fff6c3 !important;
-}
-
-.ode-ProjectRowUnHighlighted {
+.ode-ProjectRow {
   display: flex;
   align-items: center;
   grid-gap: 10px;
@@ -295,8 +282,12 @@ div.StatusPanel {
   vertical-align: center;
 }
 
+.ode-ProjectRow-Highlighted {
+  background-color: #fff6c3;
+}
+
 .ode-ProjectRowHidden {
-  display:none !important;
+  display:none;
 }
 
 .ode-ProjectElementHidden {
@@ -328,7 +319,7 @@ div.StatusPanel {
 .ode-ProjectHeaderLabel {
   text-indent: initial;
   color: #112abb;
-  font-size: 11px !important;
+  font-size: 11px;
   cursor: pointer;
   text-align: left;
   padding-right: 10px;
@@ -950,7 +941,7 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem-Selected {
-  background-color: #d2e0a6 !important;
+  background-color: #d2e0a6;
 }
 
 .gwt-SimplePanel {

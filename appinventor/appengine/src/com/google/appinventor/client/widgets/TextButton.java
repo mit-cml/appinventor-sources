@@ -47,7 +47,7 @@ public class TextButton extends PushButton {
   public TextButton(String caption, Icon icon, String styleName) {
     super();
     super.setHTML(makeText(caption, icon));
-    if (styleName == null ||styleName.isEmpty()) {
+    if (styleName == null || styleName.isEmpty()) {
       setStylePrimaryName("ode-TextButton");
     } else {
       setStylePrimaryName(styleName);
@@ -65,7 +65,7 @@ public class TextButton extends PushButton {
 
   protected String makeText(String caption, Icon icon) {
     String text = "";
-    if(icon != null) {
+    if (icon != null) {
       text += icon.toString();
     }
     text+= caption;

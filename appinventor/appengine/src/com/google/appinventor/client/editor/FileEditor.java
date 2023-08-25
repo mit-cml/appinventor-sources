@@ -51,14 +51,6 @@ public abstract class FileEditor extends Composite {
     return projectEditor;
   }
 
-
-  /**
-   * Returns the drag drop targets for the gui
-   *
-   * @return  project editor associated with this file editor
-   */
-  public abstract DropTargetProvider getDropTargetProvider();
-
   /**
    * Returns the project ID associated with this file editor.
    *

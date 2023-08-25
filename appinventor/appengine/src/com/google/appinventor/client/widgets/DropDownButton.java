@@ -49,8 +49,7 @@ public class DropDownButton extends TextButton {
    * of a DropDownButton.
    */
   private class DropDownPositionCallback extends PZAwarePositionCallback {
-    public DropDownPositionCallback(Element elem)
-    {
+    public DropDownPositionCallback(Element elem) {
       super(elem);
     }
 
@@ -154,9 +153,10 @@ public class DropDownButton extends TextButton {
       }
     }
   }
+
   protected String makeText(String caption, Icon icon, boolean hasTriangle) {
     String text = "";
-    if(icon != null) {
+    if (icon != null) {
       text += icon.toString();
     }
     text+= caption;
@@ -165,17 +165,23 @@ public class DropDownButton extends TextButton {
     }
     return text;
   }
+
   public String getAlign() {
     return align;
   }
+
   public void setAlign(String align) {
     this.align = align;
   }
 
-  public Icon getIcon() { return icon; }
+  public Icon getIcon() {
+    return icon;
+  }
+
   public void setIcon(String iconName) {
     setIcon(new com.google.appinventor.client.components.Icon(iconName));
   }
+
   public void setIcon(Icon icon) {
     this.icon = icon;
     setHTML(makeText(caption, icon, true));

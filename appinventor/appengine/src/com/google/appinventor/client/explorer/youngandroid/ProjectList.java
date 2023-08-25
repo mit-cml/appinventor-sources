@@ -15,7 +15,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import com.google.gwt.uibinder.client.UiBinder;
@@ -26,7 +25,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,38 +34,39 @@ import java.util.logging.Logger;
 /**
  * The project list shows all projects in a table.
  *
- * <p> The project name, date created, and date modified will be shown in the table.
+ * <p>The project name, date created, and date modified will be shown in the table.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 public class ProjectList extends Composite implements FolderManagerEventListener,
     ProjectManagerEventListener {
-  private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
   interface ProjectListUiBinder extends UiBinder<FlowPanel, ProjectList> {}
+
+  private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
   private static final ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
+
   private enum SortField {
     NAME,
     DATE_CREATED,
     DATE_MODIFIED,
   }
+
   private enum SortOrder {
     ASCENDING,
     DESCENDING,
   }
-  private final List<ProjectListItem> projectListItems = new ArrayList<>();
+
   private SortField sortField;
   private SortOrder sortOrder;
 
-  private boolean projectListLoading = true;
   private ProjectFolder folder;
   private boolean isTrash;
+  private boolean projectsLoaded = false;
 
   // UI elements
-//  private final Grid table;
   @UiField
   CheckBox selectAllCheckBox;
   @UiField FlowPanel container;
-  boolean projectsLoaded = false;
   @UiField InlineLabel projectNameSortDec;
   @UiField InlineLabel projectNameSortAsc;
   @UiField InlineLabel createDateSortDec;
@@ -171,7 +170,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     LOG.info("Refresh ProjectList");
     List<Project> projects = folder.getProjects();
     List<ProjectFolder> folders = folder.getChildFolders();
-//    if (needToSort) {
+    if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
       Comparator<ProjectFolder> folderComparator;
@@ -199,7 +198,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       }
       Collections.sort(projects, comparator);
       Collections.sort(folders, folderComparator);
-//    }
+    }
 
     refreshSortIndicators();
 
@@ -220,7 +219,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       container.add(childFolder);
     }
     folder.clearProjectList();
-    for(final Project project : projects) {
+    for (final Project project : projects) {
       ProjectListItem item = new ProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
       folder.addProjectListItem(item);
@@ -228,25 +227,28 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
     selectAllCheckBox.setValue(false);
     Ode.getInstance().getBindProjectToolbar().updateButtons();
+    if (isTrash && folder.getProjects().isEmpty()) {
+      Ode.getInstance().createEmptyTrashDialog(true);
+    }
   }
 
   public boolean isSelected() {
     return selectAllCheckBox.getValue();
   }
 
-public void fireSelectionChangeEvent() {
+  public void fireSelectionChangeEvent() {
     int selectableFolders = folder.getSelectableFolders(false).size();
     int visibleProjects = folder.getVisibleProjects(false).size();
     int selectedFolders = folder.getSelectedFolders().size();
     int selectedProjects = folder.getSelectedProjects().size();
 
-    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders + " visibleProjects=" +
-               visibleProjects + " " + "SelectedFolders=" + selectedFolders +
-               " SelectedProjects=" + selectedProjects);
+    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders
+        + " visibleProjects=" + visibleProjects + " " + "SelectedFolders=" + selectedFolders
+        + " SelectedProjects=" + selectedProjects);
 
-    if (selectableFolders + visibleProjects > 0 &&
-            selectableFolders == selectedFolders &&
-            visibleProjects == selectedProjects) {
+    if (selectableFolders + visibleProjects > 0
+        && selectableFolders == selectedFolders
+        && visibleProjects == selectedProjects) {
       selectAllCheckBox.setValue(true);
     } else {
       selectAllCheckBox.setValue(false);
@@ -267,16 +269,18 @@ public void fireSelectionChangeEvent() {
     folder.selectAll(selectAllCheckBox.getValue());
     fireSelectionChangeEvent();
   }
+
   /**
-   * Gets the number of selected projects
+   * Gets the number of selected projects.
    *
    * @return the number of selected projects
    */
   public int getSelectedProjectsCount() {
     if (folder != null) {
       return folder.getSelectedProjects().size() + folder.getSelectedFolders().size();
+    } else {
+      return 0;
     }
-    else return 0;
   }
 
 
@@ -308,7 +312,7 @@ public void fireSelectionChangeEvent() {
   // FolderManagerEventListener implementation
   @Override
   public void onFolderAdded(ProjectFolder folder) {
-    refresh();
+    refresh(true);
   }
 
   @Override
@@ -333,12 +337,10 @@ public void fireSelectionChangeEvent() {
 
   @Override
   public void onProjectAdded(Project project) {
-    if (folder == null) {
-    }
     if (projectsLoaded) {
       folder.addProject(project);
       Ode.getInstance().getFolderManager().saveAllFolders();
-      refresh();
+      refresh(true);
     }
   }
 
@@ -372,16 +374,6 @@ public void fireSelectionChangeEvent() {
   @Override
   public void onProjectsLoaded() {
     projectsLoaded = true;
-    projectListLoading = false;
-    refresh();
+    refresh(true);
   }
-
-  private static native void configureDraggable(Element el)/*-{
-    if (el.getAttribute('draggable') != 'true') {
-      el.setAttribute('draggable', 'true');
-      el.addEventListener('dragstart', function(e) {
-        e.dataTransfer.setData('DownloadURL', this.dataset.exporturl);
-      });
-    }
-  }-*/;
 }
