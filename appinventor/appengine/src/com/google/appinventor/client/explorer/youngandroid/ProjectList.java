@@ -226,7 +226,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       container.add(item);
     }
     selectAllCheckBox.setValue(false);
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
+    Ode.getInstance().getProjectToolbar().updateButtons();
     if (isTrash && folder.getProjects().isEmpty()) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
@@ -253,7 +253,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     } else {
       selectAllCheckBox.setValue(false);
     }
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
+    Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
   public List<Project> getSelectedProjects() {

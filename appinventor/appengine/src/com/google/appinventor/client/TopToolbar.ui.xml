@@ -92,11 +92,11 @@
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
-                       styleName="ode-TopPanelButton" ui:field="buildDropDown">
-      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}" visible="{hasWriteAccess}">
+                       styleName="ode-TopPanelButton" ui:field="buildDropDown"  visible="{hasWriteAccess}" >
+      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
         <actions:BarcodeAction second="false" isAab="true" />
       </ai:DropDownItem>
       <hr />
