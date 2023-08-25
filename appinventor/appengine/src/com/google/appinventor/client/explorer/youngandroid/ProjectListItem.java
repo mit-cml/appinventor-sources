@@ -13,7 +13,9 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -44,6 +46,11 @@ public class ProjectListItem extends Composite {
 
   public ProjectListItem(Project project) {
     initWidget(UI_BINDER.createAndBindUi(this));
+    this.getElement().setAttribute("data-exporturl",
+        "application/octet-stream:" + project.getProjectName() + ".aia:"
+            + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
+            + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+    configureDraggable(this.getElement());
     DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
     Date dateCreated = new Date(project.getDateCreated());
     Date dateModified = new Date(project.getDateModified());
@@ -93,4 +100,13 @@ public class ProjectListItem extends Composite {
   void itemClicked(ClickEvent e) {
     Ode.getInstance().openYoungAndroidProjectInDesigner(project);
   }
+
+  private static native void configureDraggable(Element el)/*-{
+    if (el.getAttribute('draggable') != 'true') {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('DownloadURL', this.dataset.exporturl);
+      });
+    }
+  }-*/;
 }

@@ -15,7 +15,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import com.google.gwt.uibinder.client.UiBinder;
@@ -380,13 +379,4 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     projectListLoading = false;
     refresh();
   }
-
-  private static native void configureDraggable(Element el)/*-{
-    if (el.getAttribute('draggable') != 'true') {
-      el.setAttribute('draggable', 'true');
-      el.addEventListener('dragstart', function(e) {
-        e.dataTransfer.setData('DownloadURL', this.dataset.exporturl);
-      });
-    }
-  }-*/;
 }
