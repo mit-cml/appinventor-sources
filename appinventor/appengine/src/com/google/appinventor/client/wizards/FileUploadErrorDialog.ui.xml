@@ -10,13 +10,13 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="uploadError" styleName="ode-DialogBox">
+  <wiz:Dialog ui:field="uploadError" styleName="ode-DialogBox" animationEnabled="true"
+              width="350px" height="150px">
     <g:FlowPanel>
       <g:HTML ui:field="errorMessage" />
       <g:FlowPanel styleName="buttonRow" >
-        <g:Button ui:field='infoButton' text='{messages.aiaMediaAssetHelp}' visible="false"  />
-        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
         <g:Button ui:field='okButton' text='{messages.okButton}' />
+        <g:Button ui:field='infoButton' text='{messages.moreInformation}' visible="false"  />
       </g:FlowPanel>
     </g:FlowPanel>
   </wiz:Dialog>

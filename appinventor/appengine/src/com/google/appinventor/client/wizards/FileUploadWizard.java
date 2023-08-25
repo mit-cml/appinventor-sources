@@ -27,14 +27,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -124,20 +118,20 @@ public class FileUploadWizard {
     if (!uploadFilename.isEmpty()) {
       final String filename = makeValidFilename(uploadFilename);
       if (!TextValidators.isValidCharFilename(filename)) {
-        new FileUploadError(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
-            Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
+            FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       } else if (!TextValidators.isValidLengthFilename(filename)) {
-        new FileUploadError(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
-            Error.FILENAMEBADSIZE, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
+            FileUploadErrorCode.FILENAME_BAD_SIZE, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       }
       int nameLength = uploadFilename.length();
       String fileEnd = uploadFilename.substring(nameLength - 4, nameLength);
 
       if (".aia".equals(fileEnd.toLowerCase())) {
-        new FileUploadError(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
-            Error.AIAMEDIAASSET, folderNode, acceptableTypes, fileUploadedCallback);
+        new FileUploadErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
+            FileUploadErrorCode.AIA_MEDIA_ASSET, folderNode, acceptableTypes, fileUploadedCallback);
         return;
       }
       String fn = conflictingExistingFile(folderNode, filename);
@@ -196,8 +190,8 @@ public class FileUploadWizard {
             }
           });
     } else {
-      new FileUploadError(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
-          Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
+      new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
+          FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
     }
   }
 
