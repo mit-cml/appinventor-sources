@@ -228,6 +228,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
     selectAllCheckBox.setValue(false);
     Ode.getInstance().getBindProjectToolbar().updateButtons();
+    if (isTrash && folder.getProjects().isEmpty()) {
+      Ode.getInstance().createEmptyTrashDialog(true);
+    }
   }
 
   public boolean isSelected() {
