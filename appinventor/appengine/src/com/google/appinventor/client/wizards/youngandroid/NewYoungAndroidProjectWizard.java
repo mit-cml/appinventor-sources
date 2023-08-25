@@ -9,9 +9,15 @@ package com.google.appinventor.client.wizards.youngandroid;
 
 import com.google.appinventor.client.Ode;
 
+import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -44,12 +50,49 @@ public final class NewYoungAndroidProjectWizard {
   @UiField Button addButton;
   @UiField Button cancelButton;
   @UiField LabeledTextBox projectNameTextBox;
-  String errorMessage = "";
+
   /**
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
     UI_BINDER.createAndBindUi(this);
+    projectNameTextBox.setValidator(new Validator() {
+      @Override
+      public boolean validate(String value) {
+        errorMessage = TextValidators.getErrorMessage(value);
+        projectNameTextBox.setErrorMessage(errorMessage);
+        if (errorMessage.length() > 0) {
+          addButton.setEnabled(false);
+          return false;
+        }
+        errorMessage = TextValidators.getWarningMessages(value);
+        addButton.setEnabled(true);
+        return true;
+      }
+      @Override
+      public String getErrorMessage() {
+        return errorMessage;
+      }
+    });
+
+    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_ENTER) {
+          addButton.click();
+        } else if (keyCode == KeyCodes.KEY_ESCAPE) {
+          cancelButton.click();
+        }
+      }});
+
+    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
+        projectNameTextBox.validate();
+      }
+    });
+
     addDialog.center();
     projectNameTextBox.setFocus(true);
   }
@@ -68,7 +111,7 @@ public final class NewYoungAndroidProjectWizard {
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
-      errorMessage = TextValidators.getErrorMessage(projectNameTextBox.getText());
+      String errorMessage = TextValidators.getErrorMessage(projectNameTextBox.getText());
       if (errorMessage.length() > 0) {
         LOG.info("Found error: " + errorMessage);
         projectNameTextBox.setErrorMessage(errorMessage);
@@ -84,12 +127,6 @@ public final class NewYoungAndroidProjectWizard {
     }
   }
 
-//    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
-//      @Override
-//      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
-//        projectNameTextBox.validate();
-//      }
-//    });
 
   public void createProject() {
     String projectName = projectNameTextBox.getText().trim();
