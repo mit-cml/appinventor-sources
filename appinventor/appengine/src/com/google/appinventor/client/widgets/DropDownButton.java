@@ -303,6 +303,10 @@ public class DropDownButton extends TextButton {
           menu.removeSeparator((MenuItemSeparator) object);
         }
         previousWasSeparator = true;
+      } else if (!object.isVisible()) {
+        // treat invisible objects as separators for this algorithm
+        it.remove();
+        menu.removeItem((MenuItem) object);
       } else {
         previousWasSeparator = false;
       }
