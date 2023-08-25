@@ -41,6 +41,7 @@ body, html {
   margin: 0;
   min-width: 1024px;
   position: absolute;
+  min-height: 100vh;
 }
 
 body {
