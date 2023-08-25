@@ -160,6 +160,7 @@ public abstract class MockVisibleComponent extends MockComponent {
       refreshForm();
     }
   }
+
   @Override
   public void onDesignPreviewChanged() {
     super.onDesignPreviewChanged();
