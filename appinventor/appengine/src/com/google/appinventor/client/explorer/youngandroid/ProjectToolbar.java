@@ -13,7 +13,6 @@ import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import java.util.logging.Logger;
 
 
 /**
@@ -21,27 +20,25 @@ import java.util.logging.Logger;
  *
  */
 public class ProjectToolbar extends Toolbar {
-  private static final Logger LOG = Logger.getLogger(ProjectToolbar.class.getName());
   interface ProjectToolbarUiBinder extends UiBinder<Toolbar, ProjectToolbar> {}
+
   private static final ProjectToolbar.ProjectToolbarUiBinder UI_BINDER =
       GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
 
   private static final String WIDGET_NAME_NEW = "New";
+  private static final String WIDGET_NAME_MOVE = "Move";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_TRASH = "Trash";
-  private static final String WIDGET_NAME_PROJECT= "Projects";
-  private static final String WIDGET_NAME_RESTORE= "Restore";
-  private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
+  private static final String WIDGET_NAME_PROJECT = "Projects";
+  private static final String WIDGET_NAME_RESTORE = "Restore";
+  private static final String WIDGET_NAME_DELETE_FROM_TRASH = "Delete From Trash";
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
   private final boolean isReadOnly;
-  private final boolean galleryEnabled;
 
   @UiField ToolbarItem newProjectItem;
   @UiField ToolbarItem newFolderItem;
-
-  private static volatile boolean lockPublishButton = false; // To prevent double clicking
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -50,7 +47,7 @@ public class ProjectToolbar extends Toolbar {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
     // Is the new gallery enabled
-    galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
+    boolean galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
     populateToolbar(UI_BINDER.createAndBindUi(this));
 
     if (galleryEnabled) {
@@ -92,6 +89,7 @@ public class ProjectToolbar extends Toolbar {
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numAllItems);
       return;
     }
+    setButtonEnabled(WIDGET_NAME_MOVE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
