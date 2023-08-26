@@ -44,6 +44,13 @@ body, html {
   min-height: 100vh;
 }
 
+/* Needed for Safari to position comments correctly */
+body.blocklyMinimalBody {
+  min-width: auto;
+  min-height: auto;
+  position: inherit;
+}
+
 body {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   /* TODO(opensource): Change to commented version below once we're ready */
