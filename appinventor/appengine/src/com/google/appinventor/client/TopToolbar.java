@@ -141,6 +141,8 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
+  private static ProjectUploadWizard uploadWizard = null;
+
   public TopToolbar() {
     /*
      * Layout is as follows:
@@ -639,7 +641,12 @@ public class TopToolbar extends Composite {
   private static class ImportProjectAction implements Command {
     @Override
     public void execute() {
-      new ProjectUploadWizard().center();
+      if (uploadWizard == null || !uploadWizard.isUploading) {
+        uploadWizard = new ProjectUploadWizard();
+        uploadWizard.center();
+      } else {
+        ErrorReporter.reportError(MESSAGES.projectImportError());
+      }
     }
   }
 
