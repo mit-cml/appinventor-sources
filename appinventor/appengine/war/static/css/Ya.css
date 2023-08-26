@@ -1647,8 +1647,11 @@ path.ode-SimpleMockMapFeature-selected {
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
   z-index: 1000;
-  min-width: 340px;
   min-height: 40px;
+}
+
+.ode-DialogBox, .ode-DialogBox .dialogContent {
+  min-width: 340px;
 }
 
 .DialogBox-message {}
