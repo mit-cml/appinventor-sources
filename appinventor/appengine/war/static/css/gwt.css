@@ -982,18 +982,21 @@ a, a:visited, a:hover {
   filter: alpha(opacity=40);
 }
 
+.gwt-Tree table td:first-child {
+  width: 18px;
+}
+
 .gwt-Tree .gwt-TreeItem {
   padding: 1px 0px;
   margin: 0px;
   white-space: nowrap;
-  cursor: hand;
-  cursor: pointer;
 }
 
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
 }
+
 * html .gwt-TreeItem .gwt-RadioButton input,
 * html .gwt-TreeItem .gwt-CheckBox input {
   margin-left: -4px;

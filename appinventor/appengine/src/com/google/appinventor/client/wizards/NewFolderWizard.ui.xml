@@ -16,10 +16,8 @@
     <g:FlowPanel>
         <w:LabeledTextBox ui:field="input" caption="{messages.newFolderWizardName}"
                           stylePrimaryName="ode-LabeledTextBox" />
-      <g:FlowPanel >
-      <g:Label text="{messages.newFolderWizardParent}"  styleName="ode-TreeLabel dialogContent" />
+      <g:Label text="{messages.newFolderWizardParent}" styleName="ode-TreeLabel dialogContent" />
       <g:Tree ui:field='tree'  />
-    </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow" >
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
         <g:Button ui:field='addButton' text='{messages.okButton}' />

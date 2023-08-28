@@ -21,7 +21,7 @@
     <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" ui:field="newFolderItem" >
       <actions:NewFolderAction />
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="Move" caption="Move Project" >
+    <ai:ToolbarItem name="Move" caption="{messages.moveProjectButton}" >
       <actions:MoveProjectsAction />
     </ai:ToolbarItem>
     <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}">
