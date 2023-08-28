@@ -283,6 +283,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
   }
 
+  public boolean listContainsProjects() {
+    return folder.containsAnyProjects();
+  }
 
   public int getMyProjectsCount() {
     int count = 0;

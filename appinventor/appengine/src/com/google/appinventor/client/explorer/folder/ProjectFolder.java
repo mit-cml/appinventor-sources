@@ -264,6 +264,19 @@ public class ProjectFolder extends Composite {
     return list;
   }
 
+  public boolean containsAnyProjects() {
+    if (projectListItems.size() > 0) {
+      return true;
+    } else if (hasChildFolders()) {
+      for (ProjectFolder f : folders.values()) {
+        if (f.containsAnyProjects()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public List<ProjectFolder> getSelectedFolders() {
     return getSelectableFolders(true);
   }
@@ -324,6 +337,10 @@ public class ProjectFolder extends Composite {
 
   public List<ProjectFolder> getChildFolders() {
     return Arrays.asList(folders.values().toArray(new ProjectFolder[0]));
+  }
+
+  public boolean hasChildFolders() {
+    return folders.size() > 0;
   }
 
   public ProjectFolder getChildFolder(String name) {
