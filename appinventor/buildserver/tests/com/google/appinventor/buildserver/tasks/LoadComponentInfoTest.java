@@ -34,6 +34,7 @@ public class LoadComponentInfoTest {
         .withDangerousPermissions(false)
         .withEmulator(false)
         .withFormOrientations(Collections.<String, String>emptyMap())
+        .withBlockPermissions(Collections.<String>emptySet())
         .withRam(2048)
         .withReporter(new Reporter(null))
         .withTypes(Collections.<String>emptySet());
@@ -84,6 +85,7 @@ public class LoadComponentInfoTest {
         .withDangerousPermissions(false)
         .withEmulator(false)
         .withFormOrientations(Collections.<String, String>emptyMap())
+        .withBlockPermissions(Collections.<String>emptySet())
         .withRam(2048)
         .withReporter(new Reporter(null))
         .withTypes(componentTypes);
@@ -141,6 +143,7 @@ public class LoadComponentInfoTest {
         .withDangerousPermissions(false)
         .withEmulator(false)
         .withFormOrientations(Collections.<String, String>emptyMap())
+        .withBlockPermissions(Collections.<String>emptySet())
         .withRam(2048)
         .withReporter(new Reporter(null))
         .withTypes(componentTypes);

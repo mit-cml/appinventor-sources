@@ -8,6 +8,10 @@ package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
 
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.BlockXmlAnalyzer;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ComponentBlocksExtractor;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.PermissionBlockExtractor;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ScopeBlockExtractor;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.tasks.AttachAarLibs;
 import com.google.appinventor.buildserver.tasks.AttachCompAssets;
@@ -56,6 +60,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -187,7 +192,31 @@ public final class ProjectBuilder {
           System.err.println("Including extension: " + Arrays.toString(extraExtensions));
           Collections.addAll(componentTypes, extraExtensions);
         }
-        Map<String, Set<String>> componentBlocks = getComponentBlocks(sourceFiles);
+        ComponentBlocksExtractor componentBlocksExtractor = new ComponentBlocksExtractor();
+        PermissionBlockExtractor permissionBlockExtractor = new PermissionBlockExtractor();
+        ScopeBlockExtractor scopeBlockExtractor = new ScopeBlockExtractor();
+        analyzeBlockFiles(sourceFiles, componentBlocksExtractor, permissionBlockExtractor,
+            scopeBlockExtractor);
+        Map<String, Set<String>> componentBlocks = componentBlocksExtractor.getResult();
+        Set<String> extraPermissions = permissionBlockExtractor.getResult();
+        Set<String> usedScopes = scopeBlockExtractor.getResult();
+        for (String scope : usedScopes) {
+          switch (scope) {
+            case "Shared":
+              extraPermissions.add("android.permission.READ_MEDIA_AUDIO");
+              extraPermissions.add("android.permission.READ_MEDIA_IMAGES");
+              extraPermissions.add("android.permission.READ_MEDIA_VIDEO");
+              extraPermissions.add("android.permission.READ_EXTERNAL_STORAGE");
+              extraPermissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
+              break;
+            case "Legacy":
+              extraPermissions.add("android.permission.READ_EXTERNAL_STORAGE");
+              extraPermissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
+              break;
+            default:
+              break;
+          }
+        }
         Map<String, String> formOrientations = getScreenOrientations(sourceFiles);
 
         // Generate the compiler context
@@ -195,6 +224,7 @@ public final class ProjectBuilder {
         CompilerContext context = new CompilerContext.Builder(project, ext)
             .withTypes(componentTypes)
             .withBlocks(componentBlocks)
+            .withBlockPermissions(extraPermissions)
             .withFormOrientations(formOrientations)
             .withReporter(r)
             .withStatReporter(statReporter)
@@ -283,8 +313,8 @@ public final class ProjectBuilder {
         FileUtils.deleteQuietly(new File(projectRoot.getCanonicalPath()));
       }
     } catch (Exception e) {
-      e.printStackTrace();
-      return Result.createFailingResult("", "Server error performing build");
+      LOG.log(Level.SEVERE, "Unable to build project", e);
+      return Result.createFailingResult(e.toString(), "Server error performing build");
     }
   }
 
@@ -354,46 +384,16 @@ public final class ProjectBuilder {
     return componentTypes;
   }
 
-  /**
-   * Constructs a mapping of component types to the blocks of each type used in
-   * the project files. Properties specified in the designer are considered
-   * blocks for the purposes of this operation.
-   *
-   * @param files A list of files contained in the project.
-   * @return A mapping of component type names to sets of block names used in
-   * the project
-   * @throws IOException if any of the files named in {@code files} cannot be
-   *                     read
-   */
-  private static Map<String, Set<String>> getComponentBlocks(List<String> files)
+  private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
       if (f.endsWith(".bky")) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
-        for (Map.Entry<String, Set<String>> entry :
-            FormPropertiesAnalyzer.getComponentBlocksFromBlocksFile(bkyContent).entrySet()) {
-          if (result.containsKey(entry.getKey())) {
-            result.get(entry.getKey()).addAll(entry.getValue());
-          } else {
-            result.put(entry.getKey(), entry.getValue());
-          }
-        }
-      } else if (f.endsWith(".scm")) {
-        File scmFile = new File(f);
-        String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
-        for (Map.Entry<String, Set<String>> entry :
-            FormPropertiesAnalyzer.getComponentBlocksFromSchemeFile(scmContent).entrySet()) {
-          if (result.containsKey(entry.getKey())) {
-            result.get(entry.getKey()).addAll(entry.getValue());
-          } else {
-            result.put(entry.getKey(), entry.getValue());
-          }
-        }
+        FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
       }
     }
-    return result;
   }
 
   /**

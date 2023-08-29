@@ -133,6 +133,7 @@
 <ul>
   <li><a href="#Camcorder">Camcorder</a></li>
   <li><a href="#Camera">Camera</a></li>
+  <li><a href="#FilePicker">FilePicker</a></li>
   <li><a href="#ImagePicker">ImagePicker</a></li>
   <li><a href="#Player">Player</a></li>
   <li><a href="#Sound">Sound</a></li>
@@ -200,6 +201,112 @@
 <dl class="methods">
   <dt id="Camera.TakePicture" class="method"><i></i> TakePicture()</dt>
   <dd>Takes a picture, then raises the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event.</dd>
+</dl>
+
+<h2 id="FilePicker">FilePicker</h2>
+
+<p>The <code>FilePicker</code> component is a button-like component that when clicked
+ by the user will prompt them to select a file from the system. The picker
+ can also be programmatically opened by calling its
+ <a href="/reference/components/media.html#FilePicker.Open" target="_blank">Open</a> method.
+ Using the FilePicker requires Android 4.4 or higher or iOS 11 or higher.</p>
+
+<h3 id="FilePicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="FilePicker.Action" class="com google appinventor components common FileActionEnum"><em>Action</em></dt>
+  <dd>Sets the desired action for the FilePicker. One of:
+
+    <ul>
+      <li>Pick Existing File: Open an existing file</li>
+      <li>Pick Directory: Open an existing directory</li>
+      <li>Pick New File: Create a new file for saving</li>
+    </ul>
+  </dd>
+  <dt id="FilePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="FilePicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be active and clickable.</dd>
+  <dt id="FilePicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="FilePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="FilePicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">FilePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="FilePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">FilePicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="FilePicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="FilePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="FilePicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">FilePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#FilePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="FilePicker.MimeType" class="text"><em>MimeType</em></dt>
+  <dd>Sets the desired MIME type for picking a file.</dd>
+  <dt id="FilePicker.Selection" class="text ro bo"><em>Selection</em></dt>
+  <dd>Returns the selected file, possibly as a content URI.</dd>
+  <dt id="FilePicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">FilePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="FilePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">FilePicker</code> with an assigned
+ <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="FilePicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">FilePicker</code>.</dd>
+  <dt id="FilePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">FilePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="FilePicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">FilePicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="FilePicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">FilePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="FilePicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code>, measured in pixels.</dd>
+  <dt id="FilePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="FilePicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="FilePicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">FilePicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="FilePicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">FilePicker</code> is clicked or the picker is shown
+ using the <a href="#FilePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="FilePicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">FilePicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="FilePicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">FilePicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="FilePicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> was pressed down.</dd>
+  <dt id="FilePicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> has been released.</dd>
+</dl>
+
+<h3 id="FilePicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="FilePicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">FilePicker</code>, as though the user clicked on it.</dd>
 </dl>
 
 <h2 id="ImagePicker">ImagePicker</h2>
