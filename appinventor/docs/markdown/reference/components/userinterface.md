@@ -1040,7 +1040,8 @@ Top-level component containing all other components in the program.
  to a form behind it in the activity stack.
 
 {:id="Screen.DefaultFileScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultFileScope*
-: Specifies the default scope used when components access files. Note that the [`File`](#File)
+: Specifies the default scope used when components access files. Note that the
+ <a href="/reference/components/storage.html#File" target="_blank">File</a>
  component has its own property for controlling file scopes.
 
 {:id="Screen.Height" .number .ro .bo} *Height*

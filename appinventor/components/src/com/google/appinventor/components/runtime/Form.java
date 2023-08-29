@@ -1366,7 +1366,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Specifies the default scope used when components access files. Note that the {@link File}
+   * Specifies the default scope used when components access files. Note that the
+   * <a href="/reference/components/storage.html#File" target="_blank">File</a>
    * component has its own property for controlling file scopes.
    *
    * @param scope the desired scope to use by default during file accesses
