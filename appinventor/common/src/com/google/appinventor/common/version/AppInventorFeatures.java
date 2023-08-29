@@ -15,11 +15,6 @@ public final class AppInventorFeatures {
   private AppInventorFeatures() {
   }
 
-  public static boolean hasDebuggingView() {
-    // Set this to true if you want the Debugging view to show.
-    return true;
-  }
-
   public static boolean hasYailGenerationOption() {
     // Set this to true if you want the Package for Phone button to include an option to just
     // generate Yail

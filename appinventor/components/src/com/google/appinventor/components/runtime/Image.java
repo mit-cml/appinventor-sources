@@ -46,7 +46,8 @@ import java.io.IOException;
     category = ComponentCategory.USERINTERFACE,
     description = "Component for displaying images.  The picture to display, " +
     "and other aspects of the Image's appearance, can be specified in the " +
-    "Designer or in the Blocks Editor.")
+    "Designer or in the Blocks Editor.",
+    iconName = "images/image.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
     "android.permission.READ_EXTERNAL_STORAGE")

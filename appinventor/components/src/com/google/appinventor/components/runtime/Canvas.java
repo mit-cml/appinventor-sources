@@ -132,7 +132,8 @@ import java.util.Set;
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
     "and circles.</p>",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/canvas.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {

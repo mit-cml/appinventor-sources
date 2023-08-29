@@ -50,7 +50,8 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.TABLEARRANGEMENT_COMPONENT_VERSION,
     description = "<p>A formatting element in which to place components " +
     "that should be displayed in tabular form.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/table.png")
 @SimpleObject
 public class TableArrangement extends AndroidViewComponent
     implements Component, ComponentContainer {

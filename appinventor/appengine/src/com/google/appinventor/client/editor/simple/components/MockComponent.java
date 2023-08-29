@@ -18,7 +18,6 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -82,6 +81,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all components in the visual designer.
@@ -94,6 +94,7 @@ import java.util.Map;
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
     SourcesMouseEvents, DragSource, HasAllTouchHandlers, DesignPreviewChangeListener {
+  private static final Logger LOG = Logger.getLogger(MockComponent.class.getName());
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
@@ -333,7 +334,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
           YaBlocksEditor blocksEditor =
               (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
-          OdeLog.log("Showing item " + getName());
+          LOG.info("Showing item " + getName());
           blocksEditor.showComponentBlocks(getName());
         } else {
           select(source);

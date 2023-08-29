@@ -52,7 +52,8 @@ import org.osmdroid.util.GeoPoint;
  */
 @DesignerComponent(version = YaVersion.POLYGON_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "Polygon")
+    description = "Polygon encloses an arbitrary 2-dimensional area on a Map. Polygons can be used for drawing a perimeter, such as a campus, city, or country. Polygons begin as basic triangles. New vertices can be created by dragging the midpoint of a polygon away from the edge. Clicking on a vertex will remove the vertex, but a minimum of 3 vertices must exist at all times.",
+    iconName = "images/polygon.png")
 @SimpleObject
 public class Polygon extends PolygonBase implements MapPolygon {
   private static final String TAG = Polygon.class.getSimpleName();

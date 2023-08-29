@@ -1,0 +1,33 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <g:FlowPanel styleName="ode-ProjectEditor">
+    <DesignToolbar ui:field="designToolbar">
+      <ai:ToolbarItem name="SwitchToFormEditor" caption="{messages.switchToFormEditorButton}" align="right">
+        <ya:SwitchToFormEditorAction />
+      </ai:ToolbarItem>
+      <ai:ToolbarItem name="SwitchToBlocksEditor" caption="{messages.switchToBlocksEditorButton}" align="right">
+        <ya:SwitchToBlocksEditorAction />
+      </ai:ToolbarItem>
+    </DesignToolbar>
+    <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
+      <box:PaletteBox width="240px" />
+      <box:ViewerBox />
+      <g:FlowPanel ui:field="structureAndAssets">
+        <box:SourceStructureBox />
+        <box:BlockSelectorBox />
+        <box:AssetListBox />
+      </g:FlowPanel>
+      <box:PropertiesBox width="222px" />
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

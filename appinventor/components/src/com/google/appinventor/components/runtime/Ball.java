@@ -52,7 +52,8 @@ import android.graphics.Paint;
         "that the latter can get its appearance from an image file, while a " +
         "<code>Ball</code>'s appearance can be changed only by varying its " +
         "<code>PaintColor</code> and <code>Radius</code> properties.</p>",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/ball.png")
 @SimpleObject
 public final class Ball extends Sprite {
   private int radius;

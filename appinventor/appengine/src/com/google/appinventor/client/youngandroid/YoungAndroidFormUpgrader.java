@@ -12,10 +12,8 @@ import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -26,6 +24,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Window;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class that can upgrade a Young Android Form source file.
@@ -33,6 +33,8 @@ import com.google.gwt.user.client.Window;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class YoungAndroidFormUpgrader {
+  private static final Logger LOG = Logger.getLogger(YoungAndroidFormUpgrader.class.getName());
+
   static class LoadException extends IllegalStateException {
     LoadException(String message) {
       super(message);
@@ -69,7 +71,7 @@ public final class YoungAndroidFormUpgrader {
     } catch (LoadException e) {
       // This shouldn't happen. If it does it's our fault, not the user's fault.
       Window.alert(MESSAGES.unexpectedProblem(e.getMessage()));
-      OdeLog.xlog(e);
+      LOG.log(Level.SEVERE, "Unexpectd loading error", e);
     }
     return false;
   }
@@ -175,7 +177,7 @@ public final class YoungAndroidFormUpgrader {
     try {
       sysCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
     } catch (IllegalArgumentException e) {
-      OdeLog.wlog("Cound not find component of type = " + componentType
+      LOG.warning("Could not find component of type = " + componentType
         + " assuming it is an external component.");
       return;                   // This should be safe because external components don't have
                                 // nested children
@@ -453,7 +455,7 @@ public final class YoungAndroidFormUpgrader {
       // with GWT debugging. Maybe it changes the timing somehow. Anyway,
       // this test for null should not hurt anything. -Sharon
       if (propertyType == null) {
-        OdeLog.wlog("Couldn't find propertyType for property " + propertyName +
+        LOG.warning("Couldn't find propertyType for property " + propertyName +
             " in component type " + componentType);
         continue;
       }

@@ -309,7 +309,7 @@
       <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
     </copy>
     <ai.javac destdir="${AiServerLib-class.dir}"
-              source="1.7" target="1.7">
+              source="1.8" target="1.8">
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -457,7 +457,7 @@
     <mkdir dir="${AiSharedLib-class.dir}" />
 
     <ai.javac destdir="${AiSharedLib-class.dir}"
-              source="1.7" target="1.7">
+              source="1.8" target="1.8">
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -513,7 +513,7 @@
     <mkdir dir="${AiRebindLib-class.dir}" />
 
     <ai.javac destdir="${AiRebindLib-class.dir}"
-              source="1.7" target="1.7">
+              source="1.8" target="1.8">
       <include name="${appinventor.pkg}/rebind/**/*.java" />
       <classpath>
         <!-- gwt libs -->
@@ -560,6 +560,7 @@
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
@@ -608,6 +609,7 @@
     <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
     <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
     <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <!-- gwt libs -->
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>

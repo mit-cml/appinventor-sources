@@ -7,6 +7,9 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
 
@@ -52,4 +55,13 @@ public final class SourceStructureBox extends Box {
   public SourceStructureExplorer getSourceStructureExplorer() {
     return sourceStructureExplorer;
   }
+
+  public void show(MockForm form) {
+    sourceStructureExplorer.updateTree(form.buildComponentsTree(),
+        form.getLastSelectedComponent().getSourceStructureExplorerItem());
+    sourceStructureExplorer.setVisible(true);
+    this.setVisible(true);
+    setContent(sourceStructureExplorer);
+  }
+
 }
