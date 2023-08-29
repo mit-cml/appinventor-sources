@@ -81,7 +81,7 @@ None
 
 {:.methods}
 
-{:id="Regression.CalculateLineOfBestFitValue" class="method returns any"} <i/> CalculateLineOfBestFitValue(*xList*{:.list},*yList*{:.list},*value*{:.com.google.appinventor.components.common.LOBFValuesEnum})
+{:id="Regression.CalculateLineOfBestFitValue" class="method returns any"} <i/> CalculateLineOfBestFitValue(*xList*{:.list},*yList*{:.list},*value*{:.text})
 : Returns one of the Line of Best Fit values.
  A value could be "slope", "Yintercept", "correlation coefficient", "predictions" or a
- dictionary with all values above if nothing specific provided.
+ dictionary when AllValues is specified.

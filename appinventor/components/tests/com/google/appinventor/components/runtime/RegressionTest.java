@@ -29,26 +29,30 @@ public class RegressionTest extends RobolectricTestBase {
   @Test(expected = Exception.class)
   public void testCalculateLineOfBestFitWrongInputSize() {
     YailList xListWrongSize = YailList.makeList(Arrays.asList("1", "2", "3", "4", "5"));
-    regression.CalculateLineOfBestFitValue(xListWrongSize, yList, LOBFValues.Slope);
+    regression.CalculateLineOfBestFitValue(xListWrongSize, yList,
+        LOBFValues.Slope.toUnderlyingValue());
   }
 
   @Test
   public void testCalculateLineOfBestFitValueSlope() {
-    Object slope = regression.CalculateLineOfBestFitValue(xList, yList, LOBFValues.Slope);
+    Object slope = regression.CalculateLineOfBestFitValue(xList, yList,
+        LOBFValues.Slope.toUnderlyingValue());
     double expectedSlope = 12.4;
     assertEquals(expectedSlope, (double) slope,0.01f);
   }
 
   @Test
   public void testCalculateLineOfBestFitValueCorrCoef() {
-    Object corrCoef = regression.CalculateLineOfBestFitValue(xList, yList, LOBFValues.CorrCoef);
+    Object corrCoef = regression.CalculateLineOfBestFitValue(xList, yList,
+        LOBFValues.CorrCoef.toUnderlyingValue());
     double expectedCorrCoef = 0.66;
     assertEquals(expectedCorrCoef, (double) corrCoef,0.01f);
   }
 
   @Test
   public void testCalculateLineOfBestFitValueYintercept() {
-    Object yIntercept = regression.CalculateLineOfBestFitValue(xList, yList, LOBFValues.Yintercept);
+    Object yIntercept = regression.CalculateLineOfBestFitValue(xList, yList,
+        LOBFValues.Yintercept.toUnderlyingValue());
     double expectedYintercept = -27.07;
     assertEquals(expectedYintercept, (double) yIntercept,0.01f);
   }
@@ -56,7 +60,7 @@ public class RegressionTest extends RobolectricTestBase {
   @Test
   public void testCalculateLineOfBestFitPredictions() {
     List<?> predictions = (List<?>) regression.CalculateLineOfBestFitValue(xList, yList,
-        LOBFValues.Predictions);
+        LOBFValues.Predictions.toUnderlyingValue());
     List<Double> expectedPredictions = Arrays.asList(
         -14.6667, -2.2667, 10.1333, 22.5333, 34.9333, 47.3333);
     for (int i = 0; i < expectedPredictions.size(); i++) {
