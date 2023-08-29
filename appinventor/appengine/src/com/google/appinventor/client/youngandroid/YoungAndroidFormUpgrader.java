@@ -344,6 +344,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Player")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Regression")) {
+        srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
@@ -695,6 +698,10 @@ public final class YoungAndroidFormUpgrader {
       // default value was added to the Country designer property
       // default value was added to the Language designer property
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // Added the Stop method to the blocks
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -1542,6 +1549,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeRegressionProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The Regression.ComputeLineOfBestFitValues method had its signature changed.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeSoundProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1593,6 +1610,10 @@ public final class YoungAndroidFormUpgrader {
       // Various methods were renamed in the blocks editor.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // added an add sheet block and a delete sheet block
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1620,6 +1641,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // Added Property: Namespace
       srcCompVersion = 2;
+    }
+
+    if (srcCompVersion < 3) {
+      // Added Property: GetEntries
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

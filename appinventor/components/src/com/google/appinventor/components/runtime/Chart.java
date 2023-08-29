@@ -343,6 +343,8 @@ public class Chart extends AndroidViewComponent
   public void LegendEnabled(boolean enabled) {
     this.legendEnabled = enabled;
     chartView.setLegendEnabled(enabled);
+    view.invalidate();
+    chartView.refresh();
   }
 
   /**
@@ -374,6 +376,8 @@ public class Chart extends AndroidViewComponent
     // grids.
     if (chartView instanceof AxisChartView) {
       ((AxisChartView<?, ?, ?, ?, ?>) chartView).setGridEnabled(enabled);
+      view.invalidate();
+      chartView.refresh();
     }
   }
 

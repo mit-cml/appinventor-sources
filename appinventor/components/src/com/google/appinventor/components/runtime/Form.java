@@ -438,7 +438,6 @@ public class Form extends AppInventorCompatActivity
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     Theme(ComponentConstants.DEFAULT_THEME);
-    ScreenOrientation("unspecified");
     BackgroundColor(Component.COLOR_DEFAULT);
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
@@ -1583,7 +1582,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SuppressLint("SourceLockedOrientationActivity")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
-      defaultValue = "unspecified")
+      defaultValue = "unspecified", alwaysSend = true)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScreenOrientation(@Options(ScreenOrientation.class) String screenOrientation) {
     // Make sure screenOrientation is a valid ScreenOrientation.

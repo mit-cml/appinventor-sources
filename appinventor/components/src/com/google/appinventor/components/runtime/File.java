@@ -12,8 +12,11 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import android.annotation.SuppressLint;
 
 import android.content.res.AssetManager;
+import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.documentfile.provider.DocumentFile;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -48,6 +51,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -262,6 +266,16 @@ public class File extends FileBase implements Component {
             ErrorMessages.ERROR_CANNOT_LIST_DIRECTORY, directoryName);
       }
       return;
+    } else if (scope == FileScope.Shared && directoryName.startsWith("content:")
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      DocumentFile dir = DocumentFile.fromTreeUri(form, Uri.parse(directoryName));
+      DocumentFile[] files = dir.listFiles();
+      List<String> result = new ArrayList<>();
+      for (DocumentFile file : files) {
+        result.add(file.getName());
+      }
+      continuation.call(result);
+      return;
     }
     if (!directoryName.contains("/")) {
       directoryName += "/";
@@ -351,12 +365,15 @@ public class File extends FileBase implements Component {
           public void call(ScopedFile[] files) {
             InputStream in = null;
             OutputStream out = null;
-            java.io.File parent = files[1].resolve(form).getParentFile();
-            if (!parent.exists() && !parent.mkdirs()) {
-              form.dispatchErrorOccurredEvent(File.this, method,
-                  ErrorMessages.ERROR_CANNOT_MAKE_DIRECTORY, parent.getAbsolutePath());
-              result.caught(new IOException());
-              return;
+            if (!files[1].getFileName().startsWith("content:")) {
+              // If we aren't using a content provider, try to ensure the parent dirs exist
+              java.io.File parent = files[1].resolve(form).getParentFile();
+              if (!parent.exists() && !parent.mkdirs()) {
+                form.dispatchErrorOccurredEvent(File.this, method,
+                    ErrorMessages.ERROR_CANNOT_MAKE_DIRECTORY, parent.getAbsolutePath());
+                result.caught(new IOException());
+                return;
+              }
             }
             try {
               in = FileUtil.openForReading(form, files[0]);
@@ -642,8 +659,14 @@ public class File extends FileBase implements Component {
         @Override
         public void onError(IOException e) {
           super.onError(e);
+          String fileName;
+          if (getFile() == null) {
+            fileName = getScopedFile().getFileName();
+          } else {
+            fileName = getFile().getAbsolutePath();
+          }
           form.dispatchErrorOccurredEvent(File.this, method, ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE,
-              getFile().getAbsolutePath());
+              fileName);
         }
       }.run();
     } catch (StopBlocksExecution e) {

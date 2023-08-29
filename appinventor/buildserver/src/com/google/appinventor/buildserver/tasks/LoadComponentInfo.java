@@ -338,6 +338,11 @@ public class LoadComponentInfo implements Task {
         context.getComponentInfo().getPermissionsNeeded());
     mergeConditionalPermissionConstraints();
 
+    if (!context.getBlockPermissions().isEmpty()) {
+      context.getComponentInfo().getPermissionsNeeded().put("<blocks>",
+          context.getBlockPermissions());
+    }
+
     int n = 0;
     for (String type : context.getComponentInfo().getPermissionsNeeded().keySet()) {
       n += context.getComponentInfo().getPermissionsNeeded().get(type).size();

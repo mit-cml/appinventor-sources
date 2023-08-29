@@ -800,6 +800,18 @@ public interface Images extends Resources {
   ImageResource chartData2D();
 
   /**
+   * Designer palette item: Regression.
+   */
+  @Source("com/google/appinventor/images/regression.png")
+  ImageResource regression();
+
+  /**
+   * Designer palette item: AnomalyDetection.
+   */
+  @Source("com/google/appinventor/images/anomaly.png")
+  ImageResource anomalyDetection();
+
+  /**
    * Designer palette item: DataFile.
    */
   @Source("com/google/appinventor/images/dataFile.png")

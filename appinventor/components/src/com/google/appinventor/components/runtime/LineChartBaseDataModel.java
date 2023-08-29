@@ -80,6 +80,10 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase<V>>
       }
 
       entries.add(index, entry);
+
+      List<Integer> defaultColors = ((LineDataSet) dataset).getCircleColors();
+      defaultColors.add(index, dataset.getColor());
+      ((LineDataSet) dataset).setCircleColors(defaultColors);
     }
   }
 

@@ -27,6 +27,7 @@ import com.google.appinventor.client.editor.simple.components.MockDataFile;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
+import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
@@ -213,6 +214,9 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/chart.png", images.chart());
     bundledImages.put("images/chartData.png", images.chartData2D());
     bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/regression.png", images.regression());
+    bundledImages.put("images/anomaly.png", images.anomalyDetection());
+    bundledImages.put("images/filepicker.png", images.file());
 
     imagesInitialized = true;
   }
@@ -513,6 +517,8 @@ public final class SimpleComponentDescriptor {
       return new MockCanvas(editor);
     } else if (name.equals(MockCheckBox.TYPE)) {
       return new MockCheckBox(editor);
+    } else if (name.equals(MockFilePicker.TYPE)) {
+      return new MockFilePicker(editor);
     } else if (name.equals(MockSwitch.TYPE)) {
       return new MockSwitch(editor);
     } else if (name.equals(MockImage.TYPE)) {
