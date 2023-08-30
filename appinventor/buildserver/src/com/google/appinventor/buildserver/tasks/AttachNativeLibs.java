@@ -71,7 +71,7 @@ public class AttachNativeLibs implements Task {
 
           String sourcePath;
           String pathSuffix = context.getResources().getRuntimeFilesDir() + sourceDirName
-              + File.separator + lib;
+              + "/" + lib;  // Java resource lookups always use "/"
 
           if (context.getSimpleCompTypes().contains(type)) {
             sourcePath = context.getResource(pathSuffix);
