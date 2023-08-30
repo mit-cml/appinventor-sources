@@ -852,10 +852,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     sourceStructureExplorer.clearTree();
     SourceStructureBox.getSourceStructureBox().setVisible(false);
 
-    // Hide the assets box.
-    AssetListBox assetListBox = AssetListBox.getAssetListBox();
-    assetListBox.setVisible(false);
-
     Ode.getInstance().hideComponentDesigner();
   }
 
