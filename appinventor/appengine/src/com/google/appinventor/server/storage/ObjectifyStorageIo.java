@@ -917,50 +917,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public long getProjectDateBuilt(final String userId, final long projectId) {
-    final Result<Long> builtDate = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            builtDate.t = pd.dateBuilt;
-          } else {
-            builtDate.t = (long) 0;
-          }
-        }
-      }, false); // Transaction not needed, and we want the caching we get if we don't
-                 // use them.
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return builtDate.t;
-  }
-
-  @Override
-  public long updateProjectBuiltDate(final String userId, final long projectId, final long builtDate) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            pd.dateBuilt = builtDate;
-            datastore.put(pd);
-          }
-        }
-      }, false); // Transaction not needed, and we want the caching we get if we don't
-                 // use them.
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return builtDate;
-  }
-
-  @Override
   public String getProjectHistory(final String userId, final long projectId) {
     final Result<String> projectHistory = new Result<String>();
     try {
