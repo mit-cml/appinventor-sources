@@ -13,7 +13,11 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
