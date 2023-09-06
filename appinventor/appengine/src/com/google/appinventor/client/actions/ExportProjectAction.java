@@ -17,8 +17,10 @@ import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.Command;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ExportProjectAction implements Command {
+  private static final Logger LOG = Logger.getLogger(ExportProjectAction.class.getName());
   @Override
   public void execute() {
     if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
@@ -60,7 +62,6 @@ public class ExportProjectAction implements Command {
       selectedProjPath += project.getProjectId() + "-";
     }
 
-    Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-        ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/" + selectedProjPath);
+    Downloader.getInstance().download(selectedProjPath);
   }
 }
