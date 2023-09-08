@@ -3,7 +3,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import static com.google.appinventor.buildserver.YoungAndroidConstants.EXT_COMPS_DIR_NAME;
 import static com.google.appinventor.components.common.ComponentDescriptorConstants.ARM64_V8A_SUFFIX;
@@ -11,12 +11,13 @@ import static com.google.appinventor.components.common.ComponentDescriptorConsta
 import static com.google.appinventor.components.common.ComponentDescriptorConstants.X86_64_SUFFIX;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
-import com.google.appinventor.buildserver.context.Paths;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.context.AndroidPaths;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
+
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -28,10 +29,10 @@ import java.io.IOException;
  */
 
 @BuildType(apk = true, aab = true)
-public class AttachNativeLibs implements Task {
+public class AttachNativeLibs implements AndroidTask {
   @Override
-  public TaskResult execute(CompilerContext context) {
-    Paths paths = context.getPaths();
+  public TaskResult execute(AndroidCompilerContext context) {
+    AndroidPaths paths = context.getPaths();
     paths.setLibsDir(ExecutorUtils.createDir(paths.getBuildDir(),
         YoungAndroidConstants.LIBS_DIR_NAME));
     File armeabiDir = ExecutorUtils.createDir(paths.getLibsDir(),

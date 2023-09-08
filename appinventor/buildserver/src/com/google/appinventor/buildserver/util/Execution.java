@@ -4,7 +4,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver;
+package com.google.appinventor.buildserver.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;

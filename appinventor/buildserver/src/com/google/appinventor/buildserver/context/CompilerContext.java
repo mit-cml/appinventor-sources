@@ -4,53 +4,53 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver;
+package com.google.appinventor.buildserver.context;
 
-import com.google.appinventor.buildserver.context.ComponentInfo;
-import com.google.appinventor.buildserver.context.Paths;
-import com.google.appinventor.buildserver.context.Resources;
+import com.google.appinventor.buildserver.Project;
+import com.google.appinventor.buildserver.Reporter;
 import com.google.appinventor.buildserver.stats.StatReporter;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.codehaus.jettison.json.JSONArray;
 
-public class CompilerContext {
-  private Project project;
-  private String ext;
-  private Set<String> compTypes;
-  private Map<String, Set<String>> compBlocks;
+public class CompilerContext<P extends Paths> {
+  Project project;
+  String ext;
+  Set<String> compTypes;
+  Map<String, Set<String>> compBlocks;
   /**
    * Maps Screen names to their orientation values to populate the
    * android:screenOrientation attribution in the &lt;activity&gt; element.
    */
-  private Map<String, String> formOrientations;
-  private Set<String> blockPermissions;
-  private Reporter reporter;
-  private StatReporter statReporter;
-  private boolean isForCompanion;
-  private boolean isForEmulator;
-  private boolean includeDangerousPermissions;
-  private String keystoreFilePath;
-  private int childProcessRam;
-  private String dexCacheDir;
-  private String outputFileName;
+  Map<String, String> formOrientations;
+  Set<String> blockPermissions;
+  Reporter reporter;
+  StatReporter statReporter;
+  boolean isForCompanion;
+  boolean isForEmulator;
+  boolean includeDangerousPermissions;
+  String keystoreFilePath;
+  int childProcessRam;
+  String dexCacheDir;
+  String outputFileName;
 
-  private JSONArray simpleCompsBuildInfo;
-  private JSONArray extCompsBuildInfo;
-  private JSONArray buildInfo;
-  private Set<String> simpleCompTypes;  // types needed by the project
-  private Set<String> extCompTypes; // types needed by the project
+  JSONArray simpleCompsBuildInfo;
+  JSONArray extCompsBuildInfo;
+  JSONArray buildInfo;
+  Set<String> simpleCompTypes;  // types needed by the project
+  Set<String> extCompTypes; // types needed by the project
 
-  private Map<String, String> extTypePathCache;
+  Map<String, String> extTypePathCache;
 
-  private Paths paths;
-  private Resources resources;
-  private ComponentInfo componentInfo;
+  final P paths;
+  Resources resources;
+  ComponentInfo componentInfo;
 
-  public static class Builder {
+  public static class Builder<R extends Paths, T extends CompilerContext<? extends R>> {
     private final Project project;
     private final String ext;
     private Set<String> compTypes;
@@ -67,73 +67,80 @@ public class CompilerContext {
     private String dexCacheDir = null;
     private String outputFileName = null;
 
+    private Class<? extends T> clazz;
+
     public Builder(Project project, String ext) {
       this.project = project;
       this.ext = ext;
     }
 
-    public Builder withTypes(Set<String> compTypes) {
+    public Builder<R, T> withTypes(Set<String> compTypes) {
       this.compTypes = compTypes;
       return this;
     }
 
-    public Builder withBlocks(Map<String, Set<String>> compBlocks) {
+    public Builder<R, T> withBlocks(Map<String, Set<String>> compBlocks) {
       this.compBlocks = compBlocks;
       return this;
     }
 
-    public Builder withBlockPermissions(Set<String> permissions) {
+    public Builder<R, T> withBlockPermissions(Set<String> permissions) {
       this.blockPermissions = permissions;
       return this;
     }
 
-    public Builder withFormOrientations(Map<String, String> formOrientations) {
+    public Builder<R, T> withFormOrientations(Map<String, String> formOrientations) {
       this.formOrientations = formOrientations;
       return this;
     }
 
-    public Builder withReporter(Reporter reporter) {
+    public Builder<R, T> withReporter(Reporter reporter) {
       this.reporter = reporter;
       return this;
     }
 
-    public Builder withStatReporter(StatReporter statReporter) {
+    public Builder<R, T> withStatReporter(StatReporter statReporter) {
       this.statReporter = statReporter;
       return this;
     }
 
-    public Builder withCompanion(boolean isForCompanion) {
+    public Builder<R, T> withCompanion(boolean isForCompanion) {
       this.isForCompanion = isForCompanion;
       return this;
     }
 
-    public Builder withEmulator(boolean isForEmulator) {
+    public Builder<R, T> withEmulator(boolean isForEmulator) {
       this.isForEmulator = isForEmulator;
       return this;
     }
 
-    public Builder withDangerousPermissions(boolean includeDangerousPermissions) {
+    public Builder<R, T> withDangerousPermissions(boolean includeDangerousPermissions) {
       this.includeDangerousPermissions = includeDangerousPermissions;
       return this;
     }
 
-    public Builder withKeystore(String keystoreFilePath) {
+    public Builder<R, T> withKeystore(String keystoreFilePath) {
       this.keystoreFilePath = keystoreFilePath;
       return this;
     }
 
-    public Builder withRam(int childProcessRam) {
+    public Builder<R, T> withRam(int childProcessRam) {
       this.childProcessRam = childProcessRam;
       return this;
     }
 
-    public Builder withCache(String dexCacheDir) {
+    public Builder<R, T> withCache(String dexCacheDir) {
       this.dexCacheDir = dexCacheDir;
       return this;
     }
 
-    public Builder withOutput(String outputFileName) {
+    public Builder<R, T> withOutput(String outputFileName) {
       this.outputFileName = outputFileName;
+      return this;
+    }
+
+    public <E extends T> Builder<R, T> withClass(Class<E> clazz) {
+      this.clazz = clazz;
       return this;
     }
 
@@ -142,8 +149,13 @@ public class CompilerContext {
      *
      * @return a new CompilerContext
      */
-    public CompilerContext build() {
-      CompilerContext context = new CompilerContext();
+    public T build() {
+      T context;
+      try {
+        context = this.clazz.newInstance();
+      } catch (InstantiationException | IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
       if (project == null) {
         System.out.println("[WARN] CompilerContext.Builder needs a Project");
       } else if (compTypes == null) {
@@ -171,25 +183,11 @@ public class CompilerContext {
       context.outputFileName = outputFileName;
       context.childProcessRam = childProcessRam;
 
-      final Paths paths;
-      if (this.outputFileName != null) {
-        paths = new Paths(this.outputFileName);
-      } else if (project != null) {
-        paths = new Paths(this.project.getProjectName() + "." + ext);
-      } else {
-        // For testing only
-        paths = new Paths(null);
+      context.paths.setOutputFileName(outputFileName);
+      if (project != null) {  // For testing only!
+        context.paths.setProjectRootDir(new File(project.getProjectDir()).getParentFile());
+        context.paths.mkdirs(project.getBuildDirectory());
       }
-      if (project != null) {
-        paths.setBuildDir(ExecutorUtils.createDir(project.getBuildDirectory()));
-        paths.setDeployDir(ExecutorUtils.createDir(paths.getBuildDir(), "deploy"));
-        paths.setResDir(ExecutorUtils.createDir(paths.getBuildDir(), "res"));
-        paths.setDrawableDir(ExecutorUtils.createDir(paths.getBuildDir(), "drawable"));
-        paths.setTmpDir(ExecutorUtils.createDir(paths.getBuildDir(), "tmp"));
-        paths.setLibsDir(ExecutorUtils.createDir(paths.getBuildDir(), "libs"));
-        paths.setClassesDir(ExecutorUtils.createDir(paths.getBuildDir(), "classes"));
-      }
-      context.paths = paths;
 
       context.resources = new Resources();
       context.componentInfo = new ComponentInfo();
@@ -202,7 +200,8 @@ public class CompilerContext {
     }
   }
 
-  private CompilerContext() {
+  protected CompilerContext(P paths) {
+    this.paths = paths;
   }
 
   public Project getProject() {
@@ -289,7 +288,7 @@ public class CompilerContext {
     return extCompTypes;
   }
 
-  public Paths getPaths() {
+  public P getPaths() {
     return paths;
   }
 

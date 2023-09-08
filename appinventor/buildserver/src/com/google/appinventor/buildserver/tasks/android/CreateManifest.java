@@ -3,16 +3,18 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
+
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -33,12 +35,12 @@ import java.util.Set;
  */
 // CreateManifest
 @BuildType(apk = true, aab = true)
-public class CreateManifest implements Task {
+public class CreateManifest implements AndroidTask {
   private static final String NEARFIELD_COMPONENT =
       "com.google.appinventor.components.runtime.NearField";
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     context.getPaths().setManifest(new File(context.getPaths().getBuildDir(),
         "AndroidManifest.xml"));
 
@@ -107,7 +109,7 @@ public class CreateManifest implements Task {
       }
 
       final Map<String, Set<String>> queriesNeeded = context.getComponentInfo().getQueriesNeeded();
-      if (queriesNeeded.size() > 0) {
+      if (!queriesNeeded.isEmpty()) {
         out.write("  <queries>\n");
         for (Map.Entry<String, Set<String>> componentSubElSetPair : queriesNeeded.entrySet()) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
@@ -216,7 +218,7 @@ public class CreateManifest implements Task {
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
       // out.write("android:debuggable=\"true\" "); // DEBUGGING
-      if (appName.equals("")) {
+      if (appName.isEmpty()) {
         out.write("android:label=\"" + projectName + "\" ");
       } else {
         out.write("android:label=\"" + appName + "\" ");

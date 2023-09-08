@@ -3,26 +3,28 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.Execution;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.context.AndroidPaths;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.Execution;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 @BuildType(aab = true)
-public class RunAapt2 implements Task {
-  CompilerContext context;
+public class RunAapt2 implements AndroidTask {
+  CompilerContext<AndroidPaths> context;
   File resourcesZip;
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     this.context = context;
 
     final File buildDir = context.getPaths().getBuildDir();

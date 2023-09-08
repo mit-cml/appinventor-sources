@@ -3,16 +3,16 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
-import static com.google.appinventor.buildserver.ExecutorUtils.createDir;
 import static com.google.appinventor.buildserver.TaskResult.generateError;
+import static com.google.appinventor.buildserver.util.ExecutorUtils.createDir;
 
 import com.google.appinventor.buildserver.AnimationXmlConstants;
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,11 +43,11 @@ import java.util.Map;
 // createResXml
 // GenerateXmlRes
 @BuildType(apk = true, aab = true)
-public class XmlConfig implements Task {
-  CompilerContext context;
+public class XmlConfig implements AndroidTask {
+  AndroidCompilerContext context;
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     this.context = context;
 
     // Create the "any" dpi dir

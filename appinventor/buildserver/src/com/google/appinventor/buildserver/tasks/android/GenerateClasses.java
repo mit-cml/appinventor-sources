@@ -3,17 +3,19 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.Execution;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.context.AndroidPaths;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.Execution;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
@@ -32,11 +34,11 @@ import java.util.Set;
  * Compiles screen source files written in YAIL to Java class files.
  */
 @BuildType(apk = true, aab = true)
-public class GenerateClasses implements Task {
-  CompilerContext context;
+public class GenerateClasses implements AndroidTask {
+  CompilerContext<AndroidPaths> context;
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     this.context = context;
 
     if (!this.compileRClasses()) {
@@ -205,7 +207,7 @@ public class GenerateClasses implements Task {
 
   @VisibleForTesting
   boolean compileRClasses() {
-    if (context.getComponentInfo().getExplodedAarLibs().size() == 0) {
+    if (context.getComponentInfo().getExplodedAarLibs().isEmpty()) {
       return true;  // nothing to see here
     }
     int error;

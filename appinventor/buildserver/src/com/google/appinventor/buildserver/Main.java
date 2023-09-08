@@ -7,6 +7,7 @@
 package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.stats.NullStatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +95,9 @@ public final class Main {
       cmdLineParser.printUsage(System.err);
       System.exit(1);
     }
+
+    AndroidBuildFactory.install();
+    // TODO(ewpatton): Install iOS build factory once published
 
     ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());
     ZipFile zip = null;

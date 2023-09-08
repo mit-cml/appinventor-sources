@@ -10,6 +10,7 @@ import com.google.appinventor.buildserver.stats.SimpleStatReporter;
 import com.google.appinventor.buildserver.stats.StatCalculator;
 import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
 import com.google.appinventor.buildserver.stats.StatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -822,6 +823,8 @@ public class BuildServer {
       });
 
     // Now that the command line options have been processed, we can create the buildExecutor.
+    AndroidBuildFactory.install();
+    // TODO(ewpatton): Enable iOS build factory here when published
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
     int port = commandLineOptions.port;

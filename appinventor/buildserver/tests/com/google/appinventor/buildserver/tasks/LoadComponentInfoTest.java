@@ -10,24 +10,44 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Reporter;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.tasks.common.LoadComponentInfo;
+import com.google.appinventor.buildserver.tasks.common.ReadBuildInfo;
+import com.google.appinventor.buildserver.util.ProjectUtils;
+import com.google.appinventor.common.testutils.TestUtils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * Tests the {@link LoadComponentInfo} class.
  */
 public class LoadComponentInfoTest {
+  private static final String HELLO_PURR_TEMPLATE =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR)
+          + "/appengine/war/templates/HelloPurr/HelloPurr.zip";
   final ReadBuildInfo buildInfo = new ReadBuildInfo();
+  static Project project;
+  static File projectRoot;
+  CompilerContext.Builder<?, ?> builder;
 
-  @Test
-  public void testGeneratePermissions() {
-    CompilerContext.Builder builder = new CompilerContext.Builder(null, "apk")
+  @Before
+  public void setUp() {
+    builder = new CompilerContext.Builder<>(project, "apk")
+        .withClass(AndroidCompilerContext.class)
         .withBlocks(Collections.<String, Set<String>>emptyMap())
         .withCache(null)
         .withCompanion(false)
@@ -37,9 +57,25 @@ public class LoadComponentInfoTest {
         .withBlockPermissions(Collections.<String>emptySet())
         .withRam(2048)
         .withReporter(new Reporter(null))
+        .withKeystore("test.keystore")
         .withTypes(Collections.<String>emptySet());
+  }
 
-    CompilerContext context = builder.build();
+  @BeforeClass
+  public static void onlyOnce() throws IOException {
+    projectRoot = ProjectUtils.createNewTempDir();
+    ProjectUtils.extractProjectFiles(new ZipFile(HELLO_PURR_TEMPLATE), projectRoot);
+    project = ProjectUtils.getProjectProperties(projectRoot);
+  }
+
+  @AfterClass
+  public static void cleanUp() throws IOException {
+    FileUtils.deleteQuietly(new File(projectRoot.getCanonicalPath()));
+  }
+
+  @Test
+  public void testGeneratePermissions() {
+    CompilerContext<?> context = builder.build();
     LoadComponentInfo task = new LoadComponentInfo();
     buildInfo.execute(context);
     task.execute(context);
@@ -78,19 +114,9 @@ public class LoadComponentInfoTest {
     Set<String> componentTypes = Sets.newHashSet(texting);
     Map<String, Set<String>> blocks = Maps.newHashMap();
     blocks.put("Texting", Sets.newHashSet("ReceivingEnabled", "GoogleVoiceEnabled"));
-    CompilerContext.Builder builder = new CompilerContext.Builder(null, "apk")
-        .withBlocks(blocks)
-        .withCache(null)
-        .withCompanion(false)
-        .withDangerousPermissions(false)
-        .withEmulator(false)
-        .withFormOrientations(Collections.<String, String>emptyMap())
-        .withBlockPermissions(Collections.<String>emptySet())
-        .withRam(2048)
-        .withReporter(new Reporter(null))
-        .withTypes(componentTypes);
+    builder.withBlocks(blocks).withTypes(componentTypes);
 
-    CompilerContext context = builder.build();
+    CompilerContext<?> context = builder.build();
     buildInfo.execute(context);
     new LoadComponentInfo().execute(context);
 
@@ -136,19 +162,9 @@ public class LoadComponentInfoTest {
     Set<String> componentTypes = Sets.newHashSet(barcodeScanner);
     Map<String, Set<String>> blocks = Maps.newHashMap();
 
-    CompilerContext.Builder builder = new CompilerContext.Builder(null, "apk")
-        .withBlocks(blocks)
-        .withCache(null)
-        .withCompanion(false)
-        .withDangerousPermissions(false)
-        .withEmulator(false)
-        .withFormOrientations(Collections.<String, String>emptyMap())
-        .withBlockPermissions(Collections.<String>emptySet())
-        .withRam(2048)
-        .withReporter(new Reporter(null))
-        .withTypes(componentTypes);
+    builder.withBlocks(blocks).withTypes(componentTypes);
 
-    CompilerContext context = builder.build();
+    CompilerContext<?> context = builder.build();
 
     buildInfo.execute(context);
     new LoadComponentInfo().execute(context);

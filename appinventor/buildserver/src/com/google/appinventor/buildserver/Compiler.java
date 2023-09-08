@@ -6,12 +6,16 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.context.Paths;
 import com.google.appinventor.buildserver.interfaces.Task;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Executor class for the YAIL compiler. Callable implementation
@@ -26,15 +30,16 @@ import java.util.concurrent.Callable;
  *
  * @author diego@barreiro.xyz (Diego Barreiro)
  */
-public class Compiler implements Callable<Boolean> {
-  private final List<Class<? extends Task>> tasks;
-  private CompilerContext context;
+public class Compiler<P extends Paths, T extends CompilerContext<P>> implements Callable<Boolean> {
+  private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
+  private final List<Class<? extends Task<? super T>>> tasks;
+  private T context;
   private String ext = BuildType.APK_EXTENSION;
 
-  // The Builder class will construct a Executor object on which Task's
+  // The Builder class will construct an Executor object on which Task's
   // can be added.
-  public static class Builder {
-    private CompilerContext context;
+  public static class Builder<P extends Paths, T extends CompilerContext<P>> {
+    private T context;
     private String ext;
 
     public Builder() {
@@ -42,7 +47,7 @@ public class Compiler implements Callable<Boolean> {
 
     // Passes the previously constructed ExecutorContext with all
     // build info.
-    public Builder withContext(CompilerContext context) {
+    public Builder<P, T> withContext(T context) {
       this.context = context;
       return this;
     }
@@ -51,7 +56,7 @@ public class Compiler implements Callable<Boolean> {
      * Specifies the build type (the extension output actually).
      * Only accepts the one specified in BuildType annotation.
      */
-    public Builder withType(String ext) {
+    public Builder<P, T> withType(String ext) {
       if (ext == null || !ext.equals(BuildType.APK_EXTENSION)
           && !ext.equals(BuildType.AAB_EXTENSION)) {
         System.out.println("[ERROR] BuildType '" + ext + "' is not supported!");
@@ -66,7 +71,7 @@ public class Compiler implements Callable<Boolean> {
      *
      * @return a new Compiler configured by the builder
      */
-    public Compiler build() {
+    public Compiler<P, T> build() {
       if (context == null) {
         System.out.println("[ERROR] ExecutorContext was not provided to Executor");
         return null;
@@ -75,14 +80,14 @@ public class Compiler implements Callable<Boolean> {
         System.out.println("[WARN] No BuildType specified; using BuildType.APK_EXTENSION");
       }
 
-      Compiler compiler = new Compiler();
+      Compiler<P, T> compiler = new Compiler<>();
       compiler.context = context;
       compiler.ext = ext;
       return compiler;
     }
   }
 
-  // Actually, constructor is private, as it will be always
+  // Actually, constructor is private, as it will always be
   // built using the Executor.Builder.
   private Compiler() {
     this.tasks = new ArrayList<>();
@@ -91,7 +96,7 @@ public class Compiler implements Callable<Boolean> {
   /**
    * Adds a new Task to the build.
    */
-  public Compiler add(Class<? extends Task> task) {
+  public Compiler<P, T> add(Class<? extends Task<? super T>> task) {
     assert task != null;
     this.tasks.add(task);
     return this;
@@ -106,7 +111,7 @@ public class Compiler implements Callable<Boolean> {
     context.getStatReporter().startBuild(this);
     int numTasks = this.tasks.size();
 
-    // If no tasks, we technically have successfully build everything.
+    // If no tasks, we technically have successfully built everything.
     if (numTasks == 0) {
       context.getReporter().warn("No tasks were executed");
       context.getReporter().setProgress(100);
@@ -114,8 +119,8 @@ public class Compiler implements Callable<Boolean> {
     }
 
     for (int i = 0; i < numTasks; i++) {
-      // We accept Class'es, but not initialized ones.
-      Class<? extends Task> task = this.tasks.get(i);
+      // We accept Classes, but not initialized ones.
+      Class<? extends Task<?>> task = this.tasks.get(i);
       String taskName = task.getSimpleName();
 
       // We try to initialize a Task instance.
@@ -123,8 +128,8 @@ public class Compiler implements Callable<Boolean> {
       try {
         taskObject = task.newInstance();
       } catch (IllegalAccessException | InstantiationException e) {
-        e.printStackTrace();
-        context.getReporter().error("Could create new task " + taskName);
+        LOG.log(Level.SEVERE, "Could not create new task " + taskName, e);
+        context.getReporter().error("Could not create new task " + taskName);
         return false;
       }
 
@@ -164,7 +169,7 @@ public class Compiler implements Callable<Boolean> {
         result = (TaskResult) execute.invoke(taskObject, context);
       } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
         context.getReporter().taskError(-1);
-        e.printStackTrace();
+        LOG.log(Level.SEVERE, "Error running task " + task, e);
         return false;
       }
       double endTime = (System.currentTimeMillis() - start) / 1000.0;

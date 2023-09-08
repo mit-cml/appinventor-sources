@@ -5,27 +5,32 @@
 
 package com.google.appinventor.buildserver.context;
 
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
 
 public class Paths {
-  private final String outputFileName;
+  protected String outputFileName;
 
-  private File buildDir;
-  private File deployDir;
+  protected File projectRootDir;
+  protected File buildDir;
+  protected File deployDir;
 
-  private File resDir;
-  private File drawableDir;
-  private File tmpDir;
-  private File libsDir;
-  private File assetsDir;
-  private File classesDir;
+  protected File resDir;
+  protected File tmpDir;
+  protected File assetsDir;
 
-  private File manifest;
+  protected Paths() {
+  }
 
-  private File mergedResDir;
-  private File tmpPackageName;
+  public void setProjectRootDir(File projectRootDir) {
+    this.projectRootDir = projectRootDir;
+  }
 
-  public Paths(String outputFileName) {
+  public File getProjectRootDir() {
+    return projectRootDir;
+  }
+
+  public void setOutputFileName(String outputFileName) {
     this.outputFileName = outputFileName;
   }
 
@@ -57,28 +62,12 @@ public class Paths {
     this.resDir = resDir;
   }
 
-  public File getDrawableDir() {
-    return drawableDir;
-  }
-
-  public void setDrawableDir(File drawableDir) {
-    this.drawableDir = drawableDir;
-  }
-
   public File getTmpDir() {
     return tmpDir;
   }
 
   public void setTmpDir(File tmpDir) {
     this.tmpDir = tmpDir;
-  }
-
-  public File getLibsDir() {
-    return libsDir;
-  }
-
-  public void setLibsDir(File libsDir) {
-    this.libsDir = libsDir;
   }
 
   public File getAssetsDir() {
@@ -89,36 +78,9 @@ public class Paths {
     this.assetsDir = assetsDir;
   }
 
-  public File getClassesDir() {
-    return classesDir;
-  }
-
-  public void setClassesDir(File classesDir) {
-    this.classesDir = classesDir;
-  }
-
-  public File getManifest() {
-    return manifest;
-  }
-
-  public void setManifest(File manifest) {
-    this.manifest = manifest;
-  }
-
-  public File getMergedResDir() {
-    return mergedResDir;
-  }
-
-  public void setMergedResDir(File mergedResDir) {
-    this.mergedResDir = mergedResDir;
-  }
-
-  public File getTmpPackageName() {
-    return tmpPackageName;
-  }
-
-  public void setTmpPackageName(File tmpPackageName) {
-    this.tmpPackageName = tmpPackageName;
+  public void mkdirs(File buildDir) {
+    setBuildDir(ExecutorUtils.createDir(buildDir));
+    setTmpDir(ExecutorUtils.createDir(buildDir, "tmp"));
   }
 
   @Override
@@ -128,13 +90,8 @@ public class Paths {
         + ", buildDir=" + buildDir
         + ", deployDir=" + deployDir
         + ", resDir=" + resDir
-        + ", drawableDir=" + drawableDir
         + ", tmpDir=" + tmpDir
-        + ", libsDir=" + libsDir
         + ", assetsDir=" + assetsDir
-        + ", manifest=" + manifest
-        + ", mergedResDir=" + mergedResDir
-        + ", tmpPackageName=" + tmpPackageName
         + '}';
   }
 }

@@ -3,14 +3,15 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.common;
 
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Compiler;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.interfaces.CommonTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import java.io.BufferedReader;
@@ -31,9 +32,9 @@ import org.codehaus.jettison.json.JSONTokener;
  * ReadBuildInfo sets up an initial state for Android builds.
  */
 @BuildType(apk = true, aab = true)
-public class ReadBuildInfo implements Task {
+public class ReadBuildInfo implements CommonTask {
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(CompilerContext<?> context) {
     final String runtimeDir = context.getResources().getRuntimeFilesDir();
     List<String> aars = new ArrayList<>();
     List<String> jars = new ArrayList<>();

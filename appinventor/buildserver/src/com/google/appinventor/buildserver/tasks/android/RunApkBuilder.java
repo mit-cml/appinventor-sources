@@ -3,23 +3,28 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.android.sdklib.build.ApkBuilder;
+
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * compiler.runApkBuilder
  */
 @BuildType(apk = true)
-public class RunApkBuilder implements Task {
+public class RunApkBuilder implements AndroidTask {
+  private static final Logger LOG = Logger.getLogger(RunApkBuilder.class.getName());
+
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     try {
       ApkBuilder apkBuilder = new ApkBuilder(
           context.getPaths().getDeployFile().getAbsolutePath(),
@@ -35,12 +40,13 @@ public class RunApkBuilder implements Task {
           }
         }
       }
-      if (context.getComponentInfo().getNativeLibsNeeded().size() != 0) {
+      if (!context.getComponentInfo().getNativeLibsNeeded().isEmpty()) {
         // Need to add native libraries...
         apkBuilder.addNativeLibraries(context.getPaths().getLibsDir());
       }
       apkBuilder.sealApk();
     } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Unable to run ApkBuilder", e);
       return TaskResult.generateError(e);
     }
     return TaskResult.generateSuccess();
