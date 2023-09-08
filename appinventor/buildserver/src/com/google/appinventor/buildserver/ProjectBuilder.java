@@ -7,53 +7,36 @@
 package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
+import static com.google.appinventor.buildserver.util.ProjectUtils.PROJECT_DIRECTORY;
 
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.BlockXmlAnalyzer;
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ComponentBlocksExtractor;
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.PermissionBlockExtractor;
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ScopeBlockExtractor;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.context.Paths;
 import com.google.appinventor.buildserver.stats.StatReporter;
-import com.google.appinventor.buildserver.tasks.AttachAarLibs;
-import com.google.appinventor.buildserver.tasks.AttachCompAssets;
-import com.google.appinventor.buildserver.tasks.AttachNativeLibs;
-import com.google.appinventor.buildserver.tasks.CreateManifest;
-import com.google.appinventor.buildserver.tasks.GenerateClasses;
-import com.google.appinventor.buildserver.tasks.LoadComponentInfo;
-import com.google.appinventor.buildserver.tasks.MergeResources;
-import com.google.appinventor.buildserver.tasks.PrepareAppIcon;
-import com.google.appinventor.buildserver.tasks.ReadBuildInfo;
-import com.google.appinventor.buildserver.tasks.RunAapt;
-import com.google.appinventor.buildserver.tasks.RunAapt2;
-import com.google.appinventor.buildserver.tasks.RunApkBuilder;
-import com.google.appinventor.buildserver.tasks.RunApkSigner;
-import com.google.appinventor.buildserver.tasks.RunBundletool;
-import com.google.appinventor.buildserver.tasks.RunMultidex;
-import com.google.appinventor.buildserver.tasks.RunZipAlign;
-import com.google.appinventor.buildserver.tasks.SetupLibs;
-import com.google.appinventor.buildserver.tasks.XmlConfig;
+import com.google.appinventor.buildserver.tasks.common.BuildFactory;
+import com.google.appinventor.buildserver.util.Execution;
 
+import com.google.appinventor.buildserver.util.ProjectUtils;
 import com.google.appinventor.common.utils.StringUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
@@ -94,9 +76,6 @@ public final class ProjectBuilder {
   // TODO(user): These constants are (or should be) also defined in
   // appengine/src/com/google/appinventor/server/project/youngandroid/YoungAndroidProjectService
   // They should probably be in some place shared with the server
-  private static final String PROJECT_DIRECTORY = "youngandroidproject";
-  private static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + SEPARATOR
-      + "project.properties";
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
 
   private static final String FORM_PROPERTIES_EXTENSION =
@@ -118,38 +97,6 @@ public final class ProjectBuilder {
 
   private final StatReporter statReporter;
 
-  /**
-   * Creates a new directory beneath the system's temporary directory (as
-   * defined by the {@code java.io.tmpdir} system property), and returns its
-   * name. The name of the directory will contain the current time (in millis),
-   * and a random number.
-   *
-   * <p>This method assumes that the temporary volume is writable, has free
-   * inodes and free blocks, and that it will not be called thousands of times
-   * per second.
-   *
-   * @return the newly-created directory
-   * @throws IllegalStateException if the directory could not be created
-   */
-  private static File createNewTempDir() {
-    File baseDir = new File(System.getProperty("java.io.tmpdir"));
-    String baseNamePrefix = System.currentTimeMillis() + "_" + Math.random() + "-";
-
-    final int TEMP_DIR_ATTEMPTS = 10000;
-    for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
-      File tempDir = new File(baseDir, baseNamePrefix + counter);
-      if (tempDir.exists()) {
-        continue;
-      }
-      if (tempDir.mkdir()) {
-        return tempDir;
-      }
-    }
-    throw new IllegalStateException("Failed to create directory within "
-        + TEMP_DIR_ATTEMPTS + " attempts (tried "
-        + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
-  }
-
   public ProjectBuilder(StatReporter statReporter) {
     this.statReporter = statReporter;
   }
@@ -160,12 +107,12 @@ public final class ProjectBuilder {
       BuildServer.ProgressReporter reporter, String ext) {
     try {
       // Download project files into a temporary directory
-      File projectRoot = createNewTempDir();
+      File projectRoot = ProjectUtils.createNewTempDir();
       LOG.info("temporary project root: " + projectRoot.getAbsolutePath());
       try {
         List<String> sourceFiles;
         try {
-          sourceFiles = extractProjectFiles(inputZip, projectRoot);
+          sourceFiles = ProjectUtils.extractProjectFiles(inputZip, projectRoot);
         } catch (IOException e) {
           LOG.severe("unexpected problem extracting project file from zip");
           return Result.createFailingResult("", "Problems processing zip file.");
@@ -179,7 +126,15 @@ public final class ProjectBuilder {
         }
 
         // Create project object from project properties file.
-        Project project = getProjectProperties(projectRoot);
+        Project project = ProjectUtils.getProjectProperties(projectRoot);
+
+        final BuildFactory<?, CompilerContext<Paths>> factory = BuildFactory.get(ext);
+        if (factory == null) {
+          throw new IllegalStateException("No factory for target: " + ext);
+        }
+        if (outputFileName == null) {
+          outputFileName = project.getProjectName() + "." + factory.getExtension();
+        }
 
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
@@ -221,56 +176,26 @@ public final class ProjectBuilder {
 
         // Generate the compiler context
         Reporter r = new Reporter(reporter);
-        CompilerContext context = new CompilerContext.Builder(project, ext)
-            .withTypes(componentTypes)
-            .withBlocks(componentBlocks)
-            .withBlockPermissions(extraPermissions)
-            .withFormOrientations(formOrientations)
-            .withReporter(r)
-            .withStatReporter(statReporter)
-            .withCompanion(isForCompanion)
-            .withEmulator(isForEmulator)
-            .withDangerousPermissions(includeDangerousPermissions)
-            .withKeystore(keyStorePath)
-            .withRam(childProcessRam)
-            .withCache(dexCachePath)
-            .withOutput(outputFileName)
-            .build();
+        CompilerContext<Paths> context =
+            new CompilerContext.Builder<Paths, CompilerContext<Paths>>(project, ext)
+                .withClass(factory.getContextClass())
+                .withTypes(componentTypes)
+                .withBlocks(componentBlocks)
+                .withBlockPermissions(extraPermissions)
+                .withFormOrientations(formOrientations)
+                .withReporter(r)
+                .withStatReporter(statReporter)
+                .withCompanion(isForCompanion)
+                .withEmulator(isForEmulator)
+                .withDangerousPermissions(includeDangerousPermissions)
+                .withKeystore(keyStorePath)
+                .withRam(childProcessRam)
+                .withCache(dexCachePath)
+                .withOutput(outputFileName)
+                .build();
 
         // Invoke YoungAndroid compiler
-        Compiler compiler = new Compiler.Builder()
-            .withContext(context)
-            .withType(ext)
-            .build();
-
-        compiler.add(ReadBuildInfo.class);
-        compiler.add(LoadComponentInfo.class);
-        compiler.add(PrepareAppIcon.class);
-        compiler.add(XmlConfig.class);
-        compiler.add(CreateManifest.class);
-        compiler.add(AttachNativeLibs.class);
-        compiler.add(AttachAarLibs.class);
-        compiler.add(AttachCompAssets.class);
-        compiler.add(MergeResources.class);
-        compiler.add(SetupLibs.class);
-
-        // TODO: Upgrade APK to AAPT2
-        if (BuildType.APK_EXTENSION.equals(ext)) {
-          compiler.add(RunAapt.class);
-        } else if (BuildType.AAB_EXTENSION.equals(ext)) {
-          compiler.add(RunAapt2.class);
-        }
-
-        compiler.add(GenerateClasses.class);
-        compiler.add(RunMultidex.class);
-
-        if (BuildType.APK_EXTENSION.equals(ext)) {
-          compiler.add(RunApkBuilder.class);
-          compiler.add(RunZipAlign.class);
-          compiler.add(RunApkSigner.class);
-        } else if (BuildType.AAB_EXTENSION.equals(ext)) {
-          compiler.add(RunBundletool.class);
-        }
+        Compiler<?, ?> compiler = factory.makeCompiler(context);
 
         Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
 
@@ -326,28 +251,6 @@ public final class ProjectBuilder {
       compSet.add(component);
     }
     return compSet;
-  }
-
-  private ArrayList<String> extractProjectFiles(ZipFile inputZip, File projectRoot)
-      throws IOException {
-    ArrayList<String> projectFileNames = Lists.newArrayList();
-    Enumeration<? extends ZipEntry> inputZipEnumeration = inputZip.entries();
-    while (inputZipEnumeration.hasMoreElements()) {
-      ZipEntry zipEntry = inputZipEnumeration.nextElement();
-      final InputStream extractedInputStream = inputZip.getInputStream(zipEntry);
-      File extractedFile = new File(projectRoot, zipEntry.getName());
-      LOG.info("extracting " + extractedFile.getAbsolutePath() + " from input zip");
-      Files.createParentDirs(extractedFile); // Do I need this?
-      Files.copy(
-          new InputSupplier<InputStream>() {
-            public InputStream getInput() throws IOException {
-              return extractedInputStream;
-            }
-          },
-          extractedFile);
-      projectFileNames.add(extractedFile.getPath());
-    }
-    return projectFileNames;
   }
 
   private static Map<String, String> getScreenOrientations(List<String> files)
@@ -581,12 +484,5 @@ public final class ProjectBuilder {
     }
     sb.append('"');
     return sb.toString();
-  }
-
-  /*
-   * Loads the project properties file of a Young Android project.
-   */
-  private Project getProjectProperties(File projectRoot) {
-    return new Project(projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_PROPERTIES_FILE_NAME);
   }
 }

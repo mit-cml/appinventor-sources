@@ -3,14 +3,15 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
+
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -22,9 +23,9 @@ import java.io.IOException;
  */
 
 @BuildType(apk = true, aab = true)
-public class AttachCompAssets implements Task {
+public class AttachCompAssets implements AndroidTask {
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     try {
       // Gather non-library assets to be added to apk's Asset directory.
       // The assets directory have been created before this.

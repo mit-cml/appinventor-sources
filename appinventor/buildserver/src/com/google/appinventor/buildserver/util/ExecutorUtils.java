@@ -3,8 +3,10 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver;
+package com.google.appinventor.buildserver.util;
 
+import com.google.appinventor.buildserver.Project;
+import com.google.appinventor.buildserver.YoungAndroidConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

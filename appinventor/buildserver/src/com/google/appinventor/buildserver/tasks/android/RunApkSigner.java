@@ -3,21 +3,21 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.Execution;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.Execution;
 
 /**
  * compiler.runApkSigner()
  */
 @BuildType(apk = true)
-public class RunApkSigner implements Task {
+public class RunApkSigner implements AndroidTask {
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     int mx = context.getChildProcessRam() - 200;
     /*
       apksigner sign\

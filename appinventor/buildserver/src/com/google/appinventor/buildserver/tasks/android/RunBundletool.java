@@ -3,19 +3,21 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import static java.nio.file.Files.newInputStream;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.Execution;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
-
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.context.AndroidPaths;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.AabPaths;
 import com.google.appinventor.buildserver.util.AabZipper;
+import com.google.appinventor.buildserver.util.Execution;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
+
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -34,7 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @BuildType(aab = true)
-public class RunBundletool implements Task {
+public class RunBundletool implements AndroidTask {
   private AabPaths aab;
 
   // These regexes were taken from a project compiled via Android Studio
@@ -76,7 +78,7 @@ public class RunBundletool implements Task {
   };
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     this.aab = new AabPaths();
 
     context.getReporter().info("Creating structure");
@@ -103,7 +105,7 @@ public class RunBundletool implements Task {
     return TaskResult.generateSuccess();
   }
 
-  private boolean createStructure(CompilerContext context) {
+  private boolean createStructure(CompilerContext<AndroidPaths> context) {
     // Manifest is extracted from the protobuffed APK
     aab.setManifestDir(ExecutorUtils.createDir(aab.getRoot(), "manifest"));
 
@@ -146,7 +148,7 @@ public class RunBundletool implements Task {
     return true;
   }
 
-  private boolean extractProtobuf(CompilerContext context) {
+  private boolean extractProtobuf(CompilerContext<AndroidPaths> context) {
     try (ZipInputStream is = new ZipInputStream(newInputStream(aab.getProtoApk().toPath()))) {
       ZipEntry entry;
       byte[] buffer = new byte[1024];
@@ -184,11 +186,12 @@ public class RunBundletool implements Task {
     return false;
   }
 
-  private boolean bundletool(CompilerContext context) {
+  private boolean bundletool(CompilerContext<AndroidPaths> context) {
     // Create the bundle configuration
     File configFile;
     try {
-      configFile = File.createTempFile("BundleConfig", ".pb.json");
+      configFile = File.createTempFile("BundleConfig", ".pb.json",
+          context.getPaths().getBuildDir());
     } catch (IOException e) {
       throw new RuntimeException("Unable to generate bundle config", e);
     }
@@ -235,7 +238,7 @@ public class RunBundletool implements Task {
         System.out, System.err);
   }
 
-  private boolean jarsigner(CompilerContext context) {
+  private boolean jarsigner(CompilerContext<AndroidPaths> context) {
     List<String> jarsignerCommandLine = new ArrayList<>();
 
     String jarsigner = context.getResources().jarsigner();

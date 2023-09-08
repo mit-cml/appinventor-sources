@@ -3,13 +3,14 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
+
 import com.google.common.base.Strings;
 
 import java.awt.Graphics2D;
@@ -28,12 +29,12 @@ import javax.imageio.ImageIO;
  * compiler.prepareApplicationIcon()
  */
 @BuildType(apk = true, aab = true)
-public class PrepareAppIcon implements Task {
+public class PrepareAppIcon implements AndroidTask {
   private static final String ERROR_NO_SUITABLE_ICON =
       "Could not find a suitable app icon. Maybe it's not an image.";
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     // Create mipmap directories
     context.getReporter().info("Creating mipmap dirs...");
     File mipmapHdpi = ExecutorUtils.createDir(context.getPaths().getResDir(), "mipmap-hdpi");
@@ -60,7 +61,7 @@ public class PrepareAppIcon implements Task {
   /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(CompilerContext context, File outputPngFile,
+  private boolean prepareApplicationIcon(AndroidCompilerContext context, File outputPngFile,
       List<File> mipmapDirectories, List<Integer> standardSizes, List<Integer> foregroundSizes) {
     String userSpecifiedIcon = Strings.nullToEmpty(context.getProject().getIcon());
     try {

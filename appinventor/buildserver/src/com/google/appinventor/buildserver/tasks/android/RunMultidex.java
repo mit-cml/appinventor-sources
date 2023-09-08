@@ -3,14 +3,14 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.DexExecTask;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -31,9 +31,9 @@ import java.util.zip.ZipInputStream;
  * compiler.runMultidex()
  */
 @BuildType(apk = true, aab = true)
-public class RunMultidex implements Task {
+public class RunMultidex implements AndroidTask {
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     Set<String> mainDexClasses = new HashSet<>();
     List<File> inputList = new ArrayList<>();
     boolean success;

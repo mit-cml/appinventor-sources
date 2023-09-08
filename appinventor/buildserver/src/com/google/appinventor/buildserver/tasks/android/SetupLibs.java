@@ -3,13 +3,13 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Compiler;
-import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.AndroidCompilerContext;
+import com.google.appinventor.buildserver.interfaces.AndroidTask;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -21,12 +21,12 @@ import java.io.IOException;
  * Sets up any host system specific shared libraries.
  */
 @BuildType(apk = true, aab = true)
-public class SetupLibs implements Task {
+public class SetupLibs implements AndroidTask {
   public static final String RUNTIME_TOOLS_DIR =
       com.google.appinventor.buildserver.context.Resources.RUNTIME_TOOLS_DIR;
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(AndroidCompilerContext context) {
     String osName = System.getProperty("os.name");
     if (osName.equals("Linux")) {
       ensureLib("/tmp/lib64", "libc++.so",

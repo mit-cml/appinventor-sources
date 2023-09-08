@@ -3,13 +3,13 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.buildserver.tasks;
+package com.google.appinventor.buildserver.tasks.common;
 
 import com.google.appinventor.buildserver.BuildType;
-import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.interfaces.Task;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.interfaces.CommonTask;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.collect.Lists;
@@ -40,8 +40,8 @@ import org.codehaus.jettison.json.JSONObject;
  * compiler.generateBroadcastReceiver();
  */
 @BuildType(apk = true, aab = true)
-public class LoadComponentInfo implements Task {
-  CompilerContext context = null;
+public class LoadComponentInfo implements CommonTask {
+  CompilerContext<?> context = null;
   private ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals;
   /**
    * Maps types to blocks to permissions to permission constraints.
@@ -50,7 +50,7 @@ public class LoadComponentInfo implements Task {
       conditionalPermissionConstraints = new ConcurrentHashMap<>();
 
   @Override
-  public TaskResult execute(CompilerContext context) {
+  public TaskResult execute(CompilerContext<?> context) {
     this.context = context;
     this.conditionals = new ConcurrentHashMap<>();
 
