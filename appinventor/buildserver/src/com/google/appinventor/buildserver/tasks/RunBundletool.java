@@ -188,7 +188,8 @@ public class RunBundletool implements Task {
     // Create the bundle configuration
     File configFile;
     try {
-      configFile = File.createTempFile("BundleConfig", ".pb.json");
+      configFile = File.createTempFile("BundleConfig", ".pb.json",
+          context.getPaths().getBuildDir());
     } catch (IOException e) {
       throw new RuntimeException("Unable to generate bundle config", e);
     }
