@@ -104,10 +104,12 @@ public final class NewYoungAndroidProjectWizard {
 
   @UiHandler("addButton")
   void addProject(ClickEvent e) {
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectNameTextBox.getText());
+    String projectName = projectNameTextBox.getText().trim();
+    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
       LOG.info("Project status success");
-      createProject();
+      doCreateProject(projectName);
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
@@ -128,11 +130,7 @@ public final class NewYoungAndroidProjectWizard {
   }
 
 
-  public void createProject() {
-    String projectName = projectNameTextBox.getText().trim();
-    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
-    if (TextValidators.checkNewProjectName(projectName)
-            == TextValidators.ProjectNameStatus.SUCCESS) {
+  public void doCreateProject(String projectName) {
       String packageName = StringUtils.getProjectPackage(
           Ode.getInstance().getUser().getUserEmail(), projectName);
       NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
@@ -156,7 +154,5 @@ public final class NewYoungAndroidProjectWizard {
       NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
           parameters, callbackCommand);
       Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
-
-    }
   }
 }
