@@ -110,6 +110,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
   private static final String WIDGET_NAME_SENDTOGALLERY = "SendToGallery";
+  private static final String WIDGET_NAME_PROJECT_PROPERTIES_DIALOG = "ProjectPropertiesDialog";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -144,6 +145,7 @@ public class DesignToolbar extends Toolbar {
   @UiField ToolbarItem removeFormItem;
   @UiField ToolbarItem switchToDesign;
   @UiField ToolbarItem switchToBlocks;
+  @UiField ToolbarItem projectPropertiesDialog;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.

@@ -30,6 +30,10 @@
                     align="center">
       <ya:RemoveFormAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="ProjectPropertiesDialog" caption="{messages.projectPropertiesText}" ui:field="projectPropertiesDialog"
+                    align="center">
+      <ya:ProjectPropertiesAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
                     ui:field="switchToDesign" align="right">
       <ya:SwitchToFormEditorAction />

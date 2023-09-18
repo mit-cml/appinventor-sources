@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.DialogBox;
 
 public class Dialog extends DialogBox {
 
-
   private Caption caption;
 
   public Dialog() {
