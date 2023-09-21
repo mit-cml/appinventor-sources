@@ -27,11 +27,12 @@ public class ProjectToolbar extends Toolbar {
       GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
 
   private static final String WIDGET_NAME_NEW = "New";
+  private static final String WIDGET_NAME_MOVE = "Move";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_TRASH = "Trash";
-  private static final String WIDGET_NAME_PROJECT= "Projects";
-  private static final String WIDGET_NAME_RESTORE= "Restore";
-  private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
+  private static final String WIDGET_NAME_PROJECT = "Projects";
+  private static final String WIDGET_NAME_RESTORE = "Restore";
+  private static final String WIDGET_NAME_DELETE_FROM_TRASH = "Delete From Trash";
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
@@ -87,6 +88,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible("Move", visible);
     setButtonVisible("Publish", visible);
     setDropDownButtonVisible("Export", visible);
+    // TODO: Need to reconcile with classic
     projectLabel.setVisible(visible);
   }
 
@@ -106,6 +108,7 @@ public class ProjectToolbar extends Toolbar {
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numAllItems);
       return;
     }
+    setButtonEnabled(WIDGET_NAME_MOVE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);

@@ -5,9 +5,16 @@
 
 package com.google.appinventor.client.wizards;
 
+import com.google.appinventor.client.explorer.folder.FolderTreeItem;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.appinventor.client.widgets.Validator;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -15,7 +22,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Tree;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.components.FolderTreeItem;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -48,6 +54,42 @@ public final class NewFolderWizard {
     tree.setSelectedItem(root);
     addDialog.center();
     input.setFocus(true);
+    input.setValidator(new Validator() {
+      @Override
+      public boolean validate(String value) {
+        errorMessage = TextValidators.getErrorMessage(value);
+        input.setErrorMessage(errorMessage);
+        if (errorMessage.length() > 0) {
+          addButton.setEnabled(false);
+          return false;
+        }
+        errorMessage = TextValidators.getWarningMessages(value);
+        addButton.setEnabled(true);
+        return true;
+      }
+      @Override
+      public String getErrorMessage() {
+        return errorMessage;
+      }
+    });
+
+    input.getTextBox().addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_ENTER) {
+          addButton.click();
+        } else if (keyCode == KeyCodes.KEY_ESCAPE) {
+          cancelButton.click();
+        }
+      }});
+
+    input.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
+        input.validate();
+      }
+    });
   }
 
   private FolderTreeItem renderFolder(ProjectFolder folder) {

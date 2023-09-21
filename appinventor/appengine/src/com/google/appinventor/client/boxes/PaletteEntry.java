@@ -87,62 +87,6 @@ public class PaletteEntry extends DragSourcePanel {
   private static Boolean nonVisible;
 
   /**
-   * Creates a new palette item.
-   *
-   * @param componentName String display name of palette entry
-   * @param dropTargetProvider provider of targets that palette items can be dropped on
-   */
-  public PaletteEntry(String componentName, String componentType, String iconName, Boolean nonVisible,
-                      Boolean external, int version_p, String versionName, String datebuilt,
-                      String helpString_p, String helpURL_p, String catDocURL, Boolean external_p,
-                      String license_p, DropTargetProvider dropTargetProvider) {
-    this.dropTargetProvider = dropTargetProvider;
-    this.componentType = componentType;
-    editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
-    this.image = SimpleComponentDescriptor.getImageFromPath(iconName,
-        componentType.substring(0, componentType.lastIndexOf('.')),
-        editor.getProjectId());
-    this.iconName = iconName;
-    this.nonVisible = nonVisible;
-
-    // Initialize palette item UI
-    HorizontalPanel panel = new HorizontalPanel();
-    panel.setStylePrimaryName("ode-SimplePaletteItem");
-
-    image.setStylePrimaryName("ode-SimplePaletteItem-icon");
-    panel.add(image);
-    panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
-    panel.setCellWidth(image, "30px");
-
-    Label label = new Label(ComponentsTranslation.getComponentName(componentName));
-    label.setHorizontalAlignment(Label.ALIGN_LEFT);
-    label.addStyleName("ode-SimplePaletteItem-caption");
-    panel.add(label);
-
-    HorizontalPanel optPanel = new HorizontalPanel();
-
-    ComponentHelpWidget helpImage = new ComponentHelpWidget(componentName, helpString_p, helpURL_p,
-        external_p, version_p, versionName, datebuilt, license_p);
-    optPanel.add(helpImage);
-    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
-
-    if (external) {
-      ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(componentName);
-      optPanel.add(deleteImage);
-      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
-    }
-
-    panel.add(optPanel);
-    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_RIGHT);
-
-    panel.setWidth("100%");
-    add(panel);
-    setWidth("100%");
-
-    addHandlers();
-  }
-
-  /**
    * Selects (sets the background to green of) a palette item when it is clicked.
    *
    * @param paletteItemWidget the Widget of the panel item to be selected

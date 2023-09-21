@@ -179,17 +179,21 @@ public interface ComponentDatabaseInterface {
     private final String caption;
     private final String editorType;
     private final String[] editorArgs;
+    private final String description;
+    private final String category;
 
-    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
-      this(name, defaultValue, name, editorType, editorArgs);
+    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs, String category, String description) {
+      this(name, defaultValue, name, editorType, editorArgs, category, description);
     }
 
-    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs) {
+    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs, String category, String description) {
       this.name = name;
       this.defaultValue = defaultValue;
       this.caption = caption;
       this.editorType = editorType;
       this.editorArgs = editorArgs;
+      this.description = description;
+      this.category = category;
     }
 
     public String getName() {
@@ -210,6 +214,14 @@ public interface ComponentDatabaseInterface {
 
     public String[] getEditorArgs() {
       return editorArgs;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public String getCategory() {
+      return category;
     }
   }
 

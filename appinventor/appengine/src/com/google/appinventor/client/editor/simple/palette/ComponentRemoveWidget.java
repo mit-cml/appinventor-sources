@@ -28,11 +28,6 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
     name = simpleComponentDescriptor.getName();
   }
 
-  public ComponentRemoveWidget(String name_p) {
-    super(imageResource);
-    name = name_p;
-  }
-
   @Override
   protected void handleClick() {
     if (Window.confirm(MESSAGES.reallyRemoveComponent())) {

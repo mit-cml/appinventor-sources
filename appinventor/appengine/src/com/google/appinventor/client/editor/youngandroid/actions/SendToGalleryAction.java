@@ -1,11 +1,16 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid.actions;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;

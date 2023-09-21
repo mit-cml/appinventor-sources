@@ -1,8 +1,9 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.buildserver;
 
 import com.google.common.base.Preconditions;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -59,6 +59,16 @@ public final class Project {
     public File getFile() {
       return file;
     }
+
+    /**
+     * Returns the simple name of the class defined by the source file.
+     *
+     * @return simple class name of source file
+     */
+    public String getSimpleName() {
+      String[] parts = qualifiedName.split("\\.");
+      return parts[parts.length - 1];
+    }
   }
 
   /*
@@ -99,8 +109,9 @@ public final class Project {
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
 
-  private static final String DEFAULT_APP_NAME = "AI2 App"; // Do not leave it empty because even though it compiles
-                                                            // alright but Android OS can't install it!
+  // Do not leave it empty because even though it compiles
+  // alright but Android OS can't install it!
+  private static final String DEFAULT_APP_NAME = "AI2 App";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
   private static final String DEFAULT_MIN_SDK = "7";
@@ -414,5 +425,15 @@ public final class Project {
       }
     }
     return sources;
+  }
+
+  @Override
+  public String toString() {
+    return "Project{"
+        + "properties=" + properties
+        + ", projectDir='" + projectDir + '\''
+        + ", buildDirOverride='" + buildDirOverride + '\''
+        + ", sources=" + sources
+        + '}';
   }
 }

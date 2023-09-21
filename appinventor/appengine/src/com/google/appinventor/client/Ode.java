@@ -40,9 +40,6 @@ import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
-import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -180,7 +177,7 @@ public class Ode implements EntryPoint {
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
 
-  private AssetManager assetManager;
+  private AssetManager assetManager = AssetManager.getInstance();
 
   private DropTargetProvider dragDropTargets;
 
@@ -217,14 +214,14 @@ public class Ode implements EntryPoint {
   @UiField StatusPanel statusPanel;
   @UiField FlowPanel workColumns;
   @UiField FlowPanel structureAndAssets;
-  @UiField ProjectToolbar bindProjectToolbar;
-  @UiField (provided = true) ProjectListBox bindProjectListbox;
-  @UiField DesignToolbar bindDesignToolbar;
-  @UiField PaletteBox paletteBox;
-  @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
-  @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
-  @UiField SourceStructureBox bindSourceStructureBox;
-  @UiField PropertiesBox bindPropertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField ProjectToolbar projectToolbar;
+  @UiField (provided = true) ProjectListBox projectListbox;
+  @UiField DesignToolbar designToolbar;
+  @UiField PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField (provided = true) ViewerBox viewerBox = ViewerBox.getViewerBox();
+  @UiField (provided = true) AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField (provided = true) SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+  @UiField (provided = true) PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -405,12 +402,12 @@ public class Ode implements EntryPoint {
           // a second press while the new project wizard was starting (aka we "debounce"
           // the button). When the person switches to the projects list view again (here)
           // we re-enable it.
-          bindProjectToolbar.enableStartButton();
-          bindProjectToolbar.setProjectTabButtonsVisible(true);
-          bindProjectToolbar.setTrashTabButtonsVisible(false);
+          projectToolbar.enableStartButton();
+          projectToolbar.setProjectTabButtonsVisible(true);
+          projectToolbar.setTrashTabButtonsVisible(false);
         }
       };
-    if (bindDesignToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
+    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
     } else {
       // maybe take a screenshot, second argument is true so we wait for i/o to complete
@@ -423,14 +420,15 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
-    getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
+    getTopToolbar().updateMoveToTrash(false);
     hideChaff();
     hideTutorials();
     currentView = TRASHCAN;
     ProjectListBox.getProjectListBox().loadTrashList();
-    bindProjectToolbar.enableStartButton();
-    bindProjectToolbar.setProjectTabButtonsVisible(false);
-    bindProjectToolbar.setTrashTabButtonsVisible(true);
+    projectToolbar.enableStartButton();
+    projectToolbar.setProjectTabButtonsVisible(false);
+    projectToolbar.setTrashTabButtonsVisible(true);
+    deckPanel.showWidget(projectsTabIndex);
   }
 
   /**
@@ -446,14 +444,14 @@ public class Ode implements EntryPoint {
 
   public void hideComponentDesigner() {
     paletteBox.setVisible(false);
-    bindSourceStructureBox.setVisible(false);
-    bindPropertiesBox.setVisible(false);
+    sourceStructureBox.setVisible(false);
+    propertiesBox.setVisible(false);
   }
 
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
-    bindSourceStructureBox.setVisible(true);
-    bindPropertiesBox.setVisible(true);
+    sourceStructureBox.setVisible(true);
+    propertiesBox.setVisible(true);
   }
 
   /**
@@ -474,10 +472,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  public void refreshProperties()
-  {
-    bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
-  }
   /**
    * Switch to the Debugging tab
    */
@@ -598,8 +592,7 @@ public class Ode implements EntryPoint {
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
 
-//      ViewerBox.getViewerBox().show(projectRootNode);
-      bindViewerBox.show(projectRootNode);
+      viewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
@@ -608,11 +601,8 @@ public class Ode implements EntryPoint {
         // insert token into history but do not trigger listener event
         History.newItem(projectIdString, false);
       }
-      if (assetManager == null) {
-        assetManager = AssetManager.getInstance();
-      }
       assetManager.loadAssets(project.getProjectId());
-      bindAssetListBox.getAssetList().refreshAssetList(project.getProjectId());
+      assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
   }
@@ -808,7 +798,7 @@ public class Ode implements EntryPoint {
               }
             });
             editorManager = new EditorManager();
-            bindProjectListbox = ProjectListBox.getProjectListBox();
+            projectListbox = ProjectListBox.getProjectListBox();
 
             // Initialize UI
             initializeUi();
@@ -912,6 +902,9 @@ public class Ode implements EntryPoint {
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
 
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
       @Override
@@ -929,6 +922,10 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiBinder.createAndBindUi(this);
 
     deckPanel.showWidget(0);
+    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
+
+      showSplashScreens();
+    }
 
     // Projects tab
     projectsTabIndex = 0;
@@ -1032,8 +1029,8 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link ProjectToolbar}
    */
-  public ProjectToolbar getBindProjectToolbar() {
-    return bindProjectToolbar;
+  public ProjectToolbar getProjectToolbar() {
+    return projectToolbar;
   }
 
   /**
@@ -1060,7 +1057,7 @@ public class Ode implements EntryPoint {
    * @return  {@link DesignToolbar}
    */
   public DesignToolbar getDesignToolbar() {
-    return bindDesignToolbar;
+    return designToolbar;
   }
 
   /**
@@ -1149,7 +1146,7 @@ public class Ode implements EntryPoint {
     }
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     if (currentFileEditor instanceof YaFormEditor) {
-      bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
+      sourceStructureBox.show(((YaFormEditor) currentFileEditor).getForm());
       switchToDesignView();
     }
     if (!windowClosing) {
@@ -1158,10 +1155,6 @@ public class Ode implements EntryPoint {
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
-  }
-
-  public void refreshSourceStructure() {
-    bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
   }
 
   /**
@@ -1251,7 +1244,7 @@ public class Ode implements EntryPoint {
    * HideChaff when switching view from block to others
    */
   private void hideChaff() {
-    if (bindDesignToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
+    if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
         // currentFileEditor may be null when switching projects
         && currentFileEditor != null) {
       currentFileEditor.hideChaff();
@@ -1291,72 +1284,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns user new layout usage setting.
-   *
-   * @return true if the user has opted to use the new UI, false otherwise
-   */
-  public static boolean getUserNewLayout() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
-    return Boolean.parseBoolean(value);
-  }
-
-  /**
-   * Set user new layout usage setting.
-   *
-   * @param newLayout new value for the user's UI preference
-   */
-  public static void setUserNewLayout(boolean newLayout) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
-                    "" + newLayout);
-    userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the UI preferences to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
-  }
-
-  /**
-   * Returns the dark theme setting.
-   *
-   * @return true if the user has opted to use a dark theme, false otherwise
-   */
-  public static boolean getUserDarkThemeEnabled() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
-    return Boolean.parseBoolean(value);
-  }
-
-  /**
-   * Set user dark theme setting.
-   *
-   * @param enabled new value for the user's UI preference
-   */
-  public static void setUserDarkThemeEnabled(boolean enabled) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
-                    "" + enabled);
-    userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the UI preferences to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
-  }
-
-  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.
@@ -1365,29 +1292,6 @@ public class Ode implements EntryPoint {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
     return Boolean.parseBoolean(value);
-  }
-
-  /**
-   * Sets whether to use autoloading for the current user.
-   *
-   * @param enable true if autoloading should be enabled or false if it should be disabled.
-   */
-  public static void setUserAutoloadProject(final boolean enable) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));
-    userSettings.saveSettings(new Command() {
-      @Override
-      public void execute() {
-        DropDownButton settings = Ode.getInstance().getTopToolbar().settingsDropDown;
-        if (enable) {
-          settings.setCommandById("AutoloadLastProject", new DisableAutoloadAction());
-          settings.setItemHtmlById("AutoloadLastProject", MESSAGES.disableAutoload());
-        } else {
-          settings.setCommandById("AutoloadLastProject", new EnableAutoloadAction());
-          settings.setItemHtmlById("AutoloadLastProject", MESSAGES.enableAutoload());
-        }
-      }
-    });
   }
 
   /**
@@ -1623,7 +1527,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag &&
+        if (!ProjectListBox.getProjectListBox().getProjectList().listContainsProjects() && !templateLoadingFlag &&
           !newGalleryLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
@@ -2281,7 +2185,7 @@ public class Ode implements EntryPoint {
     }
     // If we are not in the blocks editor, we do nothing
     // but we do run our callback
-    if (bindDesignToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
+    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
       return;
     }
@@ -2375,21 +2279,22 @@ public class Ode implements EntryPoint {
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
         && !newURL.startsWith("http://appinv.us/"))) {
-      bindDesignToolbar.setTutorialToggleVisible(false);
+      designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
-      String[] urlSplits = newURL.split("//"); // [protocol, rest]
-      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
+      String[] urlSplits = newURL.split("//"); // [protocol, rest]
+      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
       tutorialPanel.setUrl(effectiveUrl);
-      bindDesignToolbar.setTutorialToggleVisible(true);
+      designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }
   }
+
 
   // Load the user's backpack. This is not called if we are using
   // a shared backpack

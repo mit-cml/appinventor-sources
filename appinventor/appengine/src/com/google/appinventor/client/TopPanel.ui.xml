@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
@@ -59,6 +63,10 @@
                              ui:field="accountButton" icon="logout">
             <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
               <actions:SignOutAction />
+            </ai:DropDownItem>
+            <ai:DropDownItem name="Signout" ui:field="deleteAccountItem"
+                             caption="{messages.deleteAccountLink}">
+              <actions:DeleteAccountAction />
             </ai:DropDownItem>
           </ai:DropDownButton>
         </g:FlowPanel>

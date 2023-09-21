@@ -69,10 +69,7 @@ public abstract class ProjectEditor extends Composite {
 
     deckPanel = new DeckPanel();
 
-//    VerticalPanel panel = new VerticalPanel();
-//    panel.add(deckPanel);
     deckPanel.setSize("100%", "100%");
-//    panel.setSize("100%", "100%");
     initWidget(deckPanel);
     // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");

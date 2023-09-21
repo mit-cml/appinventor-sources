@@ -610,6 +610,7 @@
     <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
     <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
     <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <!-- gwt libs -->
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>

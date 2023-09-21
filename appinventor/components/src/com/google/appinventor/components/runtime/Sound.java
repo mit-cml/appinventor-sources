@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,7 +177,20 @@ public class Sound extends AndroidNonvisibleComponent
       defaultValue = "")
   @SimpleProperty
   public void Source(@Asset String path) {
-    sourcePath = (path == null) ? "" : path;
+    final String tempPath = (path == null) ? "" : path;
+    if (TiramisuUtil.requestAudioPermissions(form, path, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          Sound.this.Source(tempPath);
+        } else {
+          form.dispatchPermissionDeniedEvent(Sound.this, "Source", permission);
+        }
+      }
+    })) {
+      return;
+    }
+    sourcePath = tempPath;
 
     // Clear the previous sound.
     if (streamId != 0) {

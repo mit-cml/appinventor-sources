@@ -34,6 +34,6 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
    * already finished loading projects, this will be called immediately upon adding the listener.
    */
   @Override
-  public void onProjectsLoaded() { }
-
+  public void onProjectsLoaded() {
+  }
 }

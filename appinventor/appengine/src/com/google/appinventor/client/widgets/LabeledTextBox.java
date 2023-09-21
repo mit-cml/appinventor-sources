@@ -48,8 +48,10 @@ public class LabeledTextBox extends Composite {
     panel.add(textbox);
     panel.setCellWidth(captionLabel, "40%");
     panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
+    VerticalPanel vp = new VerticalPanel();
+    vp.add(panel);
 
-    initWidget(panel);
+    initWidget(vp);
 
     setWidth("100%");
   }
@@ -61,37 +63,15 @@ public class LabeledTextBox extends Composite {
    * @param validator  The validator to use for a specific textBox
    */
   public LabeledTextBox(String caption, Validator validator) {
-    this.validator = validator;
-
-    HorizontalPanel panel = new HorizontalPanel();
-    Label label = new Label(caption);
-    panel.add(label);
-    panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);
-    textbox = new TextBox();
-    textbox.setStylePrimaryName("ode-LabeledTextBox");
-    defaultTextBoxColor = textbox.getElement().getStyle().getBorderColor();
-    textbox.setWidth("100%");
-    panel.add(textbox);
-    panel.setCellWidth(label, "40%");
-    panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
-
-    HorizontalPanel errorPanel = new HorizontalPanel();
-    errorLabel = new Label("");
-    errorPanel.add(errorLabel);
-
-    VerticalPanel vp = new VerticalPanel();
-    vp.add(panel);
-    vp.add(errorPanel);
-    vp.setHeight("85px");
-
-    initWidget(vp);
-
+    this(caption);
+    setValidator(validator);
     setWidth("100%");
   }
 
   public void setCaption(String caption) {
     captionLabel.setText(caption);
   }
+
   /**
    * Sets the content of the TextBox.
    *
@@ -101,6 +81,19 @@ public class LabeledTextBox extends Composite {
     textbox.setText(text);
   }
 
+  public void setValidator(Validator validator) {
+    this.validator = validator;
+    if (errorLabel == null) {
+      defaultTextBoxColor = textbox.getElement().getStyle().getBorderColor();
+      HorizontalPanel errorPanel = new HorizontalPanel();
+      errorLabel = new Label("");
+      errorPanel.add(errorLabel);
+      VerticalPanel vp = (VerticalPanel) getWidget();
+      vp.add(errorPanel);
+      vp.setHeight("85px");
+      vp.setWidth("100%");
+    }
+  }
   /**
    * Returns the current content of the TextBox.
    *

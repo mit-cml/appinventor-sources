@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.InlineHTML;
  */
 public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
 
+
   /**
    * Component type name.
    */

@@ -72,6 +72,8 @@
 	"Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "This text block does not contain a valid number",
 	"Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "You need to provide a valid component to this block's \"%1\" socket.",
 	"Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE": "This block needs a value block connected to its socket.",
+	"Blockly.Msg.EXTENSIONS": "Extensions",
+	"Blockly.Msg.EXTENSIONS_iOS": "Extensions are not currently supported by iOS devices.",
 	"Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Click the square to pick a color.",
 	"Blockly.Msg.LANG_COLOUR_BLACK": "black",
 	"Blockly.Msg.LANG_COLOUR_WHITE": "white",
@@ -809,6 +811,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "Network Error",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Reset",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "Companion Version Check",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "Your Companion App is out of date. Click 'OK' to start the update. Watch your ",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Your Companion App is out of date. Restart the Companion and use it to scan the QRCode below in order to update",
@@ -1203,6 +1206,9 @@
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL": "/reference/components/charts.html#Chart",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL": "/reference/components/charts.html#ChartData2D",
+
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL": "/reference/components/datascience.html#AnomalyDetect",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL": "/reference/components/datascience.html#Regression",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",

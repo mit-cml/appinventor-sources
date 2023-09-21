@@ -64,7 +64,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
   {
     // Display a barcode for an url pointing at our server's download servl}t
     String barcodeUrl = GWT.getHostPageBaseURL()
-                            + "b/" + Ode.getInstance().getNonce();
+        + "b/" + Ode.getInstance().getNonce();
     LOG.info("Barcode url is: " + barcodeUrl);
     new BarcodeDialogBox(node.getName(), barcodeUrl, isAab).center();
   }

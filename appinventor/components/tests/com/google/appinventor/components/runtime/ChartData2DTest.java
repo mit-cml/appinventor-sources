@@ -50,7 +50,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     super.setUp();
     chartComponent = new Chart(getForm());
     data = new ChartData2D(chartComponent);
-    model = data.chartDataModel;
+    model = data.dataModel;
 
     // The ExecutorService used by the ChartData component has
     // to be changed to a RoboExecutorService in order to
@@ -290,7 +290,7 @@ public class ChartData2DTest extends RobolectricTestBase {
   @Test
   public void testSetPointShape() {
     chartComponent.Type(ChartType.Scatter);
-    model = data.chartDataModel;
+    model = data.dataModel;
 
     IShapeRenderer renderer = ((ScatterDataSet)model.getDataset()).getShapeRenderer();
 

@@ -70,8 +70,7 @@ public final class ProjectManager {
     return projects;
   }
 
-  public List<Project> getProjectsWithoutFolder()
-  {
+  public List<Project> getProjectsWithoutFolder() {
     List<Project> projects = new ArrayList<Project>();
     for (Project project : projectsMap.values()) {
       if (project.getHomeFolder() == null) {

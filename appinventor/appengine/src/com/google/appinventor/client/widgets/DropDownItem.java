@@ -13,6 +13,9 @@ public class DropDownItem {
   String name;
   String caption;
   Command command;
+  String styleName = null;
+  String dependentStyleName = null;
+  boolean visible = true;
 
   @SuppressWarnings("unused")  // invoked by GWT
   public DropDownItem() {
@@ -22,6 +25,21 @@ public class DropDownItem {
     this.name = name;
     this.caption = caption;
     this.command = command;
+  }
+
+  public DropDownItem(String name, String caption, Command command, String style) {
+    this.name = name;
+    this.caption = caption;
+    this.command = command;
+    this.styleName = style;
+  }
+
+  public DropDownItem(String name, String caption, Command command, String style, boolean visible) {
+    this.name = name;
+    this.caption = caption;
+    this.command = command;
+    this.styleName = style;
+    this.visible = visible;
   }
 
   public void setName(String widgetName) {
@@ -38,6 +56,24 @@ public class DropDownItem {
 
   public void setCommand(Command command) {
     this.command = command;
+  }
+
+  public void setStyleName(String styleName) {this.styleName = styleName;}
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
+
+  public boolean getVisible() {
+    return visible;
+  }
+
+  public void setDependentStyleName(String dependentStyleName) {
+    this.dependentStyleName = dependentStyleName;
+  }
+
+  public String getDependentStyleName() {
+    return dependentStyleName;
   }
 
 }

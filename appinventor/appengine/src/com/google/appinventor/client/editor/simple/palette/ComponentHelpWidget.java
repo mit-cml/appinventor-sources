@@ -58,8 +58,13 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
-      String helpTextKey = external ? helpString : name;
-      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
+      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
+      String translatedHelpText = ComponentsTranslation.getComponentHelpString(helpTextKey);
+      if (!scd.getExternal() && translatedHelpText.equals(scd.getName())
+          && !scd.getHelpString().isEmpty()) {
+        translatedHelpText = scd.getHelpString();
+      }
+      HTML helpText = new HTML(translatedHelpText);
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the
@@ -170,19 +175,6 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
     versionName = scd.getVersionName();
     dateBuilt = scd.getDateBuilt();
     license = scd.getLicense();
-  }
-
-  public ComponentHelpWidget(String name_p, String helpString_p, String helpURL_p, Boolean external_p,
-                             int version_p, String versionName_p, String datebuilt_p, String license_p) {
-    super(imageResource);
-    name = name_p;
-    helpString = helpString_p;
-    helpURL = helpURL_p;
-    external = external_p;
-    version = version_p;
-    versionName = versionName_p;
-    dateBuilt = datebuilt_p;
-    license = license_p;
   }
 
   @Override

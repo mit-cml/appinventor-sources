@@ -38,6 +38,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 
 /**
@@ -198,18 +199,18 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(@Asset String path) {
     final String tempPath = (path == null) ? "" : path;
-    if (MediaUtil.isExternalFile(container.$context(), tempPath)
-        && container.$form().isDeniedPermission(READ_EXTERNAL_STORAGE)) {
-      container.$form().askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-        @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            VideoPlayer.this.Source(tempPath);
-          } else {
-            container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source", permission);
+    if (TiramisuUtil.requestVideoPermissions(container.$form(), path,
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            if (granted) {
+              VideoPlayer.this.Source(tempPath);
+            } else {
+              container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source",
+                  permission);
+            }
           }
-        }
-      });
+        })) {
       return;
     }
 
@@ -289,7 +290,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100. " +
       "Values less than 0 will be treated as 0, and values greater than 100 " +
-      "will be treated as 100.")
+      "will be treated as 100.",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     // clip volume to range [0, 100]
     vol = Math.max(vol, 0);

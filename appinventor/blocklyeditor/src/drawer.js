@@ -1033,6 +1033,30 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '</xml>'
       );
     }},
+    {matchingMutatorAttributes:{component_type:"AnomalyDetection", method_name:"DetectAnomalies"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG1"><block type="math_number"><title name="NUM">2</title></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
+    {matchingMutatorAttributes:{component_type:"Regression", method_name:"CalculateLineOfBestFitValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG2"><block type="helpers_dropdown"><mutation key="LOBFValues"></mutation><field name="OPTION">Slope</field></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
     {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"RemoveCol"},
     mutatorXMLStringFunction: function(mutatorAttributes) {
       return (

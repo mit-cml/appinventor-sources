@@ -217,8 +217,8 @@ public interface StorageIo {
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId project id
    * @param name new name
-   */
-	void setProjectName(String userId, long projectId, String name);
+   * */
+  void setProjectName(String userId, long projectId, String name);
 
   /**
    * Returns the date the project was last modified.

@@ -179,7 +179,7 @@ public abstract class Sprite extends VisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Enabled(boolean enabled) {
     timerInternal.Enabled(enabled);
   }
@@ -206,7 +206,7 @@ public abstract class Sprite extends VisibleComponent
    * @suppressdoc
    * @param userHeading degrees above the positive x-axis
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_HEADING + "")
@@ -245,7 +245,7 @@ public abstract class Sprite extends VisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_INTERVAL + "")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Interval(int interval) {
     timerInternal.Interval(interval);
   }
@@ -258,7 +258,8 @@ public abstract class Sprite extends VisibleComponent
    * milliseconds
    */
   @SimpleProperty(
-      description = "The number of pixels that the %type% should move every interval, if enabled.")
+      description = "The number of pixels that the %type% should move every interval, if enabled.",
+      category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_SPEED + "")
@@ -300,7 +301,7 @@ public abstract class Sprite extends VisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_VISIBLE ? "True" : "False")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void Visible(boolean visible) {
     this.visible = visible;
     registerChange();
@@ -361,7 +362,7 @@ public abstract class Sprite extends VisibleComponent
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void Y(double y) {
     updateY(y);
     registerChange();
@@ -379,7 +380,7 @@ public abstract class Sprite extends VisibleComponent
    *        in front of ones with lower numbers; if values are equal for
    *        sprites, either can go in front of the other
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = DEFAULT_Z + "")
   public void Z(double layer) {
@@ -545,7 +546,7 @@ public abstract class Sprite extends VisibleComponent
    * When a fling gesture (quick swipe) is made on the sprite: provides
    * the (x,y) position of the start of the fling, relative to the upper
    * left of the canvas. Also provides the speed (pixels per millisecond) and heading
-   * (0-360 degrees) of the fling, as well as the x velocity and y velocity
+   * (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
    * components of the fling's vector.
    *
    * @param x  x-coordinate of touched point
@@ -559,7 +560,7 @@ public abstract class Sprite extends VisibleComponent
       description = "Event handler called when a fling gesture (quick swipe) is made on " +
           "an enabled %type%. This provides the x and y coordinates of the start of the " +
           "fling (relative to the upper left of the canvas), the speed (pixels per millisecond), " +
-          "the heading (0-360 degrees), and the x and y velocity components of " +
+          "the heading (-180 to 180 degrees), and the x and y velocity components of " +
           "the fling's vector.")
   public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
     postEvent(this, "Flung", x, y, speed, heading, xvel, yvel);

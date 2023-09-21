@@ -39,7 +39,7 @@ public final class PropertiesBox extends Box {
   /**
    * Return the properties box.
    *
-   * @return  properties box
+   * @return properties box
    */
   public static PropertiesBox getPropertiesBox() {
     return INSTANCE;
@@ -57,9 +57,7 @@ public final class PropertiesBox extends Box {
         false,  // bodyPadding
         false); // highlightCaption
 
-    // UIBinder calls the private constructor, presumably through reflection, which
-    // disrupts the singleton pattern. This might not be the best way to deal with it.
-    INSTANCE = this;
+    setContent(designProperties);
   }
 
   /*
@@ -106,8 +104,10 @@ public final class PropertiesBox extends Box {
             name,
             property.getDefaultValue(),
             property.getCaption(),
+            property.getCategory(),
+            property.getDescription(),
             PropertiesUtil.createPropertyEditor(property.getEditorType(),
-                property.getDefaultValue(), formEditor , property.getEditorArgs()),
+                property.getDefaultValue(), formEditor, property.getEditorArgs()),
             property.getType(),
             property.getEditorType(),
             property.getEditorArgs()
@@ -141,8 +141,8 @@ public final class PropertiesBox extends Box {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-                                               components.get(0).getType() + ")");
+                                                components.get(0).getType() + ")");
+
     }
-    setContent(designProperties);
   }
 }

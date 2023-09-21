@@ -1,3 +1,7 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
@@ -7,6 +11,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+    <ui:with field="hasWriteAccess" type="java.lang.Boolean" />
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -15,26 +20,26 @@
         <actions:SwitchToProjectAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}">
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:NewAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}">
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:ImportProjectAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}">
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}"  visible="{hasWriteAccess}">
         <actions:ImportTemplateAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}">
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}"  visible="{hasWriteAccess}">
         <actions:DeleteAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}">
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}">
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAsAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}">
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
         <actions:CheckpointAction />
       </ai:DropDownItem>
       <hr />
@@ -45,13 +50,13 @@
         <actions:ExportAllProjectsAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
+      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
         <actions:DownloadKeystoreAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}">
+      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteKeystoreAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
@@ -67,7 +72,10 @@
       <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
         <yaactions:UsbAction />
       </ai:DropDownItem>
-      <hr />
+      <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
+                       dependentStyleName="needsChromebook">
+        <yaactions:ChromebookAction />
+      </ai:DropDownItem>
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction />
       </ai:DropDownItem>
@@ -77,7 +85,6 @@
       <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
         <yaactions:HardResetAction />
       </ai:DropDownItem>
-      <hr />
       <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" >
         <actions:AboutCompanionAction />
       </ai:DropDownItem>
@@ -88,18 +95,19 @@
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
-                       ui:field="buildDropDown" icon="system_security_update" align="left">
-      <ai:DropDownItem name="Barcode" caption="{messages.showExportAndroidApk}">
+                       ui:field="buildDropDown" icon="system_security_update" align="left"
+                       visible="{hasWriteAccess}">
+      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Download" caption="{messages.showExportAndroidAab}">
+      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
         <actions:BarcodeAction second="false" isAab="true" />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Barcode2" caption="{messages.showExportAndroidApk2}">
+      <ai:DropDownItem name="BuildApk2" caption="{messages.showExportAndroidApk2}">
         <actions:BarcodeAction second="true" isAab="false" />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Download2" caption="{messages.showExportAndroidAab2}">
+      <ai:DropDownItem name="BuildAab2" caption="{messages.showExportAndroidAab2}">
         <actions:BarcodeAction second="true" isAab="true" />
       </ai:DropDownItem>
       <hr />
@@ -110,33 +118,33 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
-                       ui:field="settingsDropDown" align="left" icon="settings">
+                       ui:field="settingsDropDown" align="left" icon="settings"
+                       visible="{hasWriteAccess}">
       <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
         <actions:DisableAutoloadAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}">
         <actions:SetFontRegularAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}">
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}">
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAsAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}">
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
         <actions:CheckpointAction />
       </ai:DropDownItem>
-      <hr />
       <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" >
         <actions:ShowSplashAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
+      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
+      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:DownloadKeystoreAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}">
+      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteKeystoreAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
@@ -144,6 +152,7 @@
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
                        ui:field="adminDropDown" icon="admin_panel_settings" align="left">
+
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction />
       </ai:DropDownItem>
@@ -151,6 +160,5 @@
         <actions:SwitchToUserAdminAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
-
   </ai:Toolbar>
 </ui:UiBinder>

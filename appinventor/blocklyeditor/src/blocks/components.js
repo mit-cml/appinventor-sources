@@ -705,6 +705,7 @@ Blockly.Blocks.component_method = {
 
     this.typeName = xmlElement.getAttribute('component_type');
     this.methodName = xmlElement.getAttribute('method_name');
+    this.shape = xmlElement.getAttribute('shape');
     var isGenericString = xmlElement.getAttribute('is_generic');
     this.isGeneric = isGenericString == 'true';
     if(!this.isGeneric) {
@@ -811,9 +812,20 @@ Blockly.Blocks.component_method = {
     }
 
     if (!methodTypeObject) {
-      this.setOutput(false);
-      this.setPreviousStatement(false);
-      this.setNextStatement(false);
+      if (this.shape === 'statement') {
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setOutput(false);
+      } else if (this.shape === 'value') {
+        this.setOutput(true);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+      } else {
+        // In theory this shouldn't happen unless there's a new input type added to Blockly
+        this.setOutput(false);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+      }
     } // methodType.returnType is a Yail type
     else if (methodTypeObject.returnType) {
       this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(methodTypeObject.returnType,Blockly.Blocks.Utilities.OUTPUT));
@@ -1273,10 +1285,12 @@ Blockly.Blocks.component_set_get = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    if (property) {
+      var helperType = Blockly.Blocks.Utilities
         .helperKeyToBlocklyType(property.helperKey, this);
-    if (helperType && helperType != blocklyType) {
-      check.push(helperType);
+      if (helperType && helperType != blocklyType) {
+        check.push(helperType);
+      }
     }
 
     return !check.length ? null : check;
@@ -1634,7 +1648,9 @@ Blockly.ComponentBlock.HELPURLS = {
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
   "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL,
   "CloudDB" : Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL,
@@ -1722,7 +1738,9 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL,
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
@@ -1818,6 +1836,8 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
   "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
@@ -1902,7 +1922,9 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL,
   "Map": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_HELPURL,
   "Chart": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
-  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL,
+  "ChartData2D": Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL,
+  "AnomalyDetection": Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL,
+  "Regression": Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL,
   "Circle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_CIRCLE_HELPURL,
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,

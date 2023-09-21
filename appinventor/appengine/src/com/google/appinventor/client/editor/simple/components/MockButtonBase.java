@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockButtonBase extends MockVisibleComponent {
+abstract class MockButtonBase extends MockVisibleComponent implements FormChangeListener {
   private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
@@ -78,7 +78,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
     deckPanel.add(image);
     deckPanel.showWidget(0);
     initComponent(deckPanel);
-
   }
 
   /**
@@ -122,9 +121,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
@@ -230,7 +226,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
-      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -241,6 +236,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
     }
+    setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
   }
@@ -360,4 +356,39 @@ abstract class MockButtonBase extends MockVisibleComponent {
     }
   }
 
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
+      setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
+      setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      updatePreferredSizeOfButton();
+      refreshForm();
+    }
+    else if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      updatePreferredSizeOfButton();
+      refreshForm();
+    }
+
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
+  }
 }

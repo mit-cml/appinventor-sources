@@ -571,6 +571,64 @@ public final class MockForm extends MockContainer {
   }
 
   /*
+   * Changes the preview of MockForm based on Android Holo, Android Material and iOS styles
+   */
+  private void changePreview() {
+    // this condition prevents adding multiple phoneBars and titleBars
+    if (changePreviewFlag)  {
+      responsivePanel.remove(phoneBar);
+      responsivePanel.remove(titleBar);
+    }
+
+    if (idxPhonePreviewStyle == -1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.removeStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 0) {
+      phoneBar = new PhoneBar(primaryDarkColor);
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidMaterial");
+    } else if (idxPhonePreviewStyle == 1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 2) {
+      phoneBar = new PhoneBar(blackIcons, idxPhoneSize, primaryColor);
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.addStyleDependentName("iOS");
+    }
+
+    // updating changes to the MockForm
+    if (changePreviewFlag) {
+      formWidget.remove(responsivePanel);
+      formWidget.remove(navigationBar);
+
+      ///////////////////////////////////////////////////////////////////
+      // Always need to add the phoneBar to the designer, then set the /
+      // visibility accordingly!                                       /
+      ///////////////////////////////////////////////////////////////////
+
+      responsivePanel.add(phoneBar);
+      phoneBar.setVisible(showStatusBar);
+      phoneBar.setVisibility(showStatusBar);
+      responsivePanel.add(titleBar);
+      responsivePanel.add(scrollPanel);
+      formWidget.add(responsivePanel);
+      formWidget.add(navigationBar);
+      if (idxPhonePreviewStyle != 2) {
+        titleBar.setActionBar(actionBar, false);
+      } else {
+        titleBar.setActionBar(true, true);
+        titleBar.changeBookmarkIcon(blackIcons);
+      }
+    }
+    changePreviewFlag = false;
+  }
+  /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
   private static int getVerticalScrollbarWidth() {
@@ -654,9 +712,11 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
+        "Appearance", "Specifies the width of the component on the screen.",
         PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+        "Appearance", "Specifies the height of the component on the screen.",
         PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
@@ -872,9 +932,10 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
-      if (editor.isLoadComplete()) {
-        ((YaFormEditor)editor).reloadComponentPalette(asJson);
-      }
+    }
+    
+    if (editor.isLoadComplete()) {
+      ((YaFormEditor)editor).reloadComponentPalette(asJson);
     }
   }
 

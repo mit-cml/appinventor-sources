@@ -388,6 +388,7 @@
     "Blockly.Msg.DIALOG_ENTER_VALUES": "Մուտքագրել արժեքները",
     "Blockly.Msg.REPL_OK_LOWER": "Լավ",
     "Blockly.Msg.REPL_OK": "Լավ",
+    "Blockly.Msg.REPL_RESET": "Վերականգնել",
     "Blockly.Msg.REPL_NETWORK_ERROR": "Ցանցային սխալ",
     "Blockly.Msg.HIDE_WARNINGS": "Թաքցնել զգուշացումները",
     "Blockly.Msg.SHOW_WARNINGS": "Ցույց տալ զգուշացումները",

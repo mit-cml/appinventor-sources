@@ -96,7 +96,7 @@ var PROTECT_ENUM_ANDROID = "(define-syntax protect-enum " +
 var PROTECT_ENUM_IOS = "#f))(define-syntax protect-enum " +
   "(syntax-rules () ((_ enum-value number-value) " +
   "(if (equal? \"\" (yail:invoke (yail:invoke AIComponentKit.Form 'getActiveForm) 'VersionName)) " +
-  "#'number-value #'enum-value))))(begin (begin #f";
+  "number-value enum-value))))(begin (begin #f";
 
 // Blockly is only loaded once now, so we can init this here.
 top.ReplState = new Blockly.ReplStateObj();
@@ -588,7 +588,11 @@ Blockly.ReplMgr.putYail = (function() {
                     var code = '(set! ' + symbol + ' (string-append ' + symbol + ' "' + item + '"))';
                     retval.push(code);
                 });
-                retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                if (rs.android) {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                } else {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')) "yail")');
+                }
                 retval.push('(set! ' + symbol + ' #!null)'); // so memory is gc'd
                 return retval;
             };
@@ -1458,15 +1462,25 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 if (rs.dialog) {      // Dialog won't be present when we connect via chromebook
                     rs.dialog.hide(); // Take down the QRCode dialog
                 }
-                // Keep the user informed about the connection
-                top.ConnectProgressBar_start();
-                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
+                    rs.dialog.hide();
+                    top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                    top.BlocklyPanel_indicateDisconnect();
+                    rs.connection = null;
+                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function() {
+                        ios_dialog.hide();
+                    });
+                    return;
+                }
+                // Keep the user informed about the connection
+                top.ConnectProgressBar_start();
+                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
                                           // HTTP
@@ -1501,6 +1515,11 @@ Blockly.ReplMgr.getFromRendezvous = function() {
         }
     };
     xmlhttp.send();
+};
+
+Blockly.ReplMgr.hasExtensions = function() {
+    var extensions = top.AssetManager_getExtensions();
+    return extensions.length > 0;
 };
 
 Blockly.ReplMgr.rendezvousDone = function() {
@@ -1890,9 +1909,9 @@ Blockly.ReplMgr.hardreset = function(formName, callback) {
 
 Blockly.ReplMgr.ehardreset = function(formName) {
     var context = this;
-    var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_OK, true, Blockly.Msg.REPL_CANCEL, 0, function(response) {
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_RESET, true, Blockly.Msg.REPL_CANCEL, 0, function(response) {
         dialog.hide();
-        if (response == Blockly.Msg.REPL_OK) {
+        if (response == Blockly.Msg.REPL_RESET) {
             context.hardreset(formName, function() {
                 var xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/emulatorreset/", true);

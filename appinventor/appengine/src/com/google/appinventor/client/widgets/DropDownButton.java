@@ -130,7 +130,14 @@ public class DropDownButton extends TextButton {
 
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
-        this.items.add(menu.addItem(item.caption, true, item.command));
+        MenuItem m = menu.addItem(item.caption, true, item.command);
+        if (item.dependentStyleName != null) {
+          m.addStyleDependentName(item.dependentStyleName);
+        }
+        if (!item.getVisible()) {
+          m.setVisible(false);
+        }
+        this.items.add(m);
       } else {
         menu.addSeparator();
       }
@@ -150,9 +157,10 @@ public class DropDownButton extends TextButton {
       }
     }
   }
+
   protected String makeText(String caption, Icon icon, boolean hasTriangle) {
     String text = "";
-    if(icon != null) {
+    if (icon != null) {
       text += icon.toString();
     }
     text+= caption;
@@ -161,17 +169,23 @@ public class DropDownButton extends TextButton {
     }
     return text;
   }
+
   public String getAlign() {
     return align;
   }
+
   public void setAlign(String align) {
     this.align = align;
   }
 
-  public Icon getIcon() { return icon; }
+  public Icon getIcon() {
+    return icon;
+  }
+
   public void setIcon(String iconName) {
     setIcon(new com.google.appinventor.client.components.Icon(iconName));
   }
+
   public void setIcon(Icon icon) {
     this.icon = icon;
     setHTML(makeText(caption, icon, true));
@@ -188,7 +202,13 @@ public class DropDownButton extends TextButton {
     if (item == null) {
       allItems.add(menu.addSeparator());
     } else {
-      MenuItem menuItem = menu.addItem(item.caption, true, item.command);
+      MenuItem menuItem = menu.addItem(item.caption, true, item.command, item.styleName);
+      if (item.dependentStyleName != null) {
+        menuItem.addStyleDependentName(item.dependentStyleName);
+      }
+      if (!item.getVisible()) {
+        menuItem.setVisible(false);
+      }
       itemsById.put(item.getName(), menuItem);
       items.add(menuItem);
       allItems.add(menuItem);
@@ -284,6 +304,10 @@ public class DropDownButton extends TextButton {
           menu.removeSeparator((MenuItemSeparator) object);
         }
         previousWasSeparator = true;
+      } else if (!object.isVisible()) {
+        // treat invisible objects as separators for this algorithm
+        it.remove();
+        menu.removeItem((MenuItem) object);
       } else {
         previousWasSeparator = false;
       }

@@ -415,8 +415,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
-      Ode.getInstance().refreshSourceStructure();
-      Ode.getInstance().refreshProperties();
     } else {
       LOG.severe("onComponentRenamed called when loadComplete is false");
     }
@@ -427,8 +425,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (loadComplete) {
       // TODO: SMRL Not sure this class should keep a pointer to source structure
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      Ode.getInstance().refreshSourceStructure();
-      Ode.getInstance().refreshProperties();
+      SourceStructureBox.getSourceStructureBox().show(form);
+      PropertiesBox.getPropertiesBox().show(this, true);
     } else {
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
@@ -770,15 +768,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     SourceStructureBox.getSourceStructureBox().setVisible(true);
 
     // Set the properties box's content.
-    // TODO: This should be a method on Ode
-    Ode.getInstance().refreshSourceStructure();
-    Ode.getInstance().refreshProperties();
+    SourceStructureBox.getSourceStructureBox().show(form);
+    PropertiesBox.getPropertiesBox().show(this, true);
 
     Ode.getInstance().showComponentDesigner();
   }
 
-
-  public void onFormStructureChange() {
+  private void onFormStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
 
     // Update source structure panel
@@ -876,15 +872,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     sourceStructureExplorer.clearTree();
     SourceStructureBox.getSourceStructureBox().setVisible(false);
 
-    // Hide the assets box.
-    AssetListBox assetListBox = AssetListBox.getAssetListBox();
-    assetListBox.setVisible(false);
-
-    // Clear and hide the properties box.
-    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
-    propertiesBox.clear();
-    propertiesBox.setVisible(false);
-
     Ode.getInstance().hideComponentDesigner();
   }
 
@@ -916,11 +903,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       // TODO: Refactor calls to to Source Structure
       cdbChangeListener.onComponentTypeAdded(componentTypes);
     }
-    //Update Mock Components
     updateMockComponents(componentTypes);
-    //Update the Properties Panel
-    Ode.getInstance().refreshProperties();
-    Ode.getInstance().refreshSourceStructure();
+    PropertiesBox.getPropertiesBox().show(this, true);
+    SourceStructureBox.getSourceStructureBox().show(form);
   }
 
   @Override
