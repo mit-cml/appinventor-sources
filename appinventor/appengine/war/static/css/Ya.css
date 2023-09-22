@@ -424,18 +424,23 @@ div.StatusPanel {
   padding-left: 5px;
 }
 
+.ode-ProjectListDate {
+  width: 200px;
+}
+
 .ode-ProjectHeaderRow>div {
   display: flex;
 }
 
 .ode-ProjectHeaderLabel {
-  width: 200px;
   /*display: flex;*/
   align-items: center;
   height: 40px;
+  display: inline-flex;
+  align-items: center;
 }
 
-.ode-ProjectHeaderName {
+.ode-ProjectListName {
   white-space: nowrap;
   width: max-content;
   height: 40px;
@@ -1713,7 +1718,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-radius: 10px;
   z-index: 1000;
   background-color: #FFF;
-  width: 400px;
+  width: 340px;
   box-shadow: 4px 4px 20px 7px rgba(0, 0, 0, 0.1);
   overflow: hidden !important;
 }
@@ -1730,7 +1735,6 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .gwt-Label {
   font-size: 14px;
-  white-space: nowrap
 }
 
 .ode-TreeLabel {
@@ -1770,7 +1774,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogContent td {
-  padding: 2px 35px;
+  padding: 2px 5px;
   font-size: 12px;
   color: #555;
 }
