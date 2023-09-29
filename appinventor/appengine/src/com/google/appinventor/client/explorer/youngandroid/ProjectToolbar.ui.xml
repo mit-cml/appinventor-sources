@@ -33,7 +33,7 @@
                             styleName="ode-ProjectListButton inline bleft"  tooltip="{messages.moveProjectMenuItem}">
                 <actions:MoveProjectsAction />
             </ai:ToolbarItem>
-            <ai:DropDownButton name="Export" caption="Export" icon="file_download" align="center" styleName="ode-ProjectListButton inline bcenter">
+            <ai:DropDownButton name="Export" caption="{messages.exportButton}" icon="file_download" align="center" styleName="ode-ProjectListButton inline bcenter">
                 <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
                     <actions:ExportProjectAction />
                 </ai:DropDownItem>

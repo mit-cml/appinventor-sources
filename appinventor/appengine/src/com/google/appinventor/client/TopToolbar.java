@@ -109,16 +109,6 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
-  public void updateMoveToTrash(String menu_item){
-    if (menu_item.equals("Move To Trash")) {
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
-    } else {
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
-    }
-  }
-
   interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
 
   private static final TopToolbarUiBinder UI_BINDER = GWT.create(TopToolbarUiBinder.class);
@@ -313,6 +303,9 @@ public class TopToolbar extends Composite {
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == 0) {  // We are in the Projects view
+      if (fileDropDown.getName() == "ProjectDesignOnly") {
+        fileDropDown.setVisible(false);
+      }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
@@ -328,6 +321,9 @@ public class TopToolbar extends Composite {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
       }
     } else { // We have to be in the Designer/Blocks view
+      if (fileDropDown.getName() == "ProjectDesignOnly") {
+        fileDropDown.setVisible(true);
+      }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);

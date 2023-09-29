@@ -15,18 +15,18 @@
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
-    <ai:DropDownButton name="Project" caption="{messages.projectsTabName}" styleName="ode-TopPanelButton" ui:field="fileDropDown" align="right" visible="false">
-      <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
+    <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName}" icon="inventory_2"
+                       styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" >
+      <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false">
         <actions:SwitchToProjectAction />
       </ai:DropDownItem>
-      <hr />
       <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:NewAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="false">
         <actions:ImportProjectAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}"  visible="{hasWriteAccess}">
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}"  visible="false">
         <actions:ImportTemplateAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}"  visible="{hasWriteAccess}">
@@ -43,21 +43,12 @@
         <actions:CheckpointAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
+      <ai:DropDownItem name="ExportProject" caption="{messages.exportButton}">
         <actions:ExportProjectAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}">
+      <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}"
+                       visible="false">
         <actions:ExportAllProjectsAction />
-      </ai:DropDownItem>
-      <hr />
-      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
-        <actions:UploadKeystoreAction />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
-        <actions:DownloadKeystoreAction />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
-        <actions:DeleteKeystoreAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
 
@@ -126,18 +117,7 @@
       <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}">
         <actions:SetFontRegularAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
-        <actions:SaveAction />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
-        <actions:SaveAsAction />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
-        <actions:CheckpointAction />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" >
-        <actions:ShowSplashAction />
-      </ai:DropDownItem>
+      <hr />
       <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction />
       </ai:DropDownItem>
