@@ -441,5 +441,8 @@
     "Blockly.Msg.VERTICAL_PARAMETERS": "パラメータを垂直に配置",
     "Blockly.Msg.HORIZONTAL_PARAMETERS": "パラメーターを水平方向に配置",
     "Blockly.Msg.DELETE_X_BLOCKS": "%1個のプロックを削除",
-    "Blockly.Msg.DELETE_ALL_BLOCKS": "この%1個のブロックを全部削除しますか？"
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "この%1個のブロックを全部削除しますか？",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "価値",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "キー",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "実行"
 }
