@@ -340,7 +340,7 @@
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ": "両方の数値が互いに等しくない場合はtrueを返します。",
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ": "両方の数値が互いに等しい場合はtrueを返します。",
     "Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP": "表示された数をレポートする",
-    "Blockly.Msg.LANG_CATEGORY_MATH": "Math",
+    "Blockly.Msg.LANG_CATEGORY_MATH": "数学",
     "Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_FALSE": "ブーリアン値falseを返します。",
     "Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE": "ブーリアン値trueを返します。",
     "Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP": "入力がfalseの場合、trueを返します。\n入力がtrueの場合はfalseを返します。",
@@ -444,5 +444,16 @@
     "Blockly.Msg.DELETE_ALL_BLOCKS": "この%1個のブロックを全部削除しますか？",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "価値",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "キー",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "実行"
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "実行",
+    "Blockly.Msg.SHOW": "ワークスペースコントロールを表示",
+    "Blockly.Msg.HIDE": "ワークスペースコントロールを非表示",
+    "Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE": "基数",
+    "Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT": "十六進数",
+    "Blockly.Msg.LANG_MATH_OCTAL_FORMAT": "八進数",
+    "Blockly.Msg.LANG_MATH_BINARY_FORMAT": "二進数",
+    "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "十進数",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "辞書の各項目について",
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT": "範囲内の数",
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "このテキストブロックは有効な番号が含まれていません。",
+    "Blockly.Msg.INLINE_INPUTS": "インラインをインプット"
 }
