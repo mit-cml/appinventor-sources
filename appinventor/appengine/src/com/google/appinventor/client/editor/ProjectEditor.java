@@ -101,9 +101,17 @@ public abstract class ProjectEditor extends Composite {
 
   public final void setScreenCheckboxState(String screen, Boolean isChecked) {
     screenHashMap.put(screen, isChecked);
+    changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+        getScreenCheckboxMapString()
+    );
   }
 
   public final Boolean getScreenCheckboxState(String screen) {
+    if (screenHashMap.size() == 0) {
+      buildScreenHashMap();
+    }
     return screenHashMap.get(screen);
   }
 
@@ -124,7 +132,11 @@ public abstract class ProjectEditor extends Composite {
     return screenCheckboxMap;
   }
 
-  public final void buildScreenHashMap(String screenCheckboxMap) {
+  public final void buildScreenHashMap() {
+    String screenCheckboxMap = getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+    );
     String[] pairs = screenCheckboxMap.split(" ");
     for (String pair : pairs) {
       String[] mapping = pair.split(":");

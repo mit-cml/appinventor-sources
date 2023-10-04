@@ -9,7 +9,6 @@ package com.google.appinventor.client.editor.youngandroid;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
@@ -83,6 +82,7 @@ import static com.google.appinventor.client.editor.simple.components.MockCompone
 public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaFormEditor.class.getName());
+  HiddenComponentsCheckbox hiddenComponentsCheckbox = HiddenComponentsCheckbox.getCheckbox();
 
   private static class FileContentHolder {
     private String content;
@@ -202,7 +202,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   public boolean shouldDisplayHiddenComponents() {
-    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
+    return projectEditor.getScreenCheckboxState(form.getTitle()) != null
+               && projectEditor.getScreenCheckboxState(form.getTitle());
   }
 
   // FileEditor methods
@@ -276,6 +277,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
+    hiddenComponentsCheckbox.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }

@@ -28,6 +28,10 @@
             <box:PaletteBox width="240px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="viewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
+              <g:FlowPanel>
+                <ed:HiddenComponentsCheckbox text="{messages.showInvisibleComponents}"
+                          styleName='ode-FormCheckboxLabel' />
+              </g:FlowPanel>
               <box:SourceStructureBox ui:field="sourceStructureBox" />
               <box:BlockSelectorBox />
               <g:FlowPanel>
