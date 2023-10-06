@@ -101,6 +101,8 @@ public class ProjectPropertiesDialogBox {
     projectProperties.setModal(true);
     projectProperties.setCaption(Ode.MESSAGES.projectPropertiesText());
 
+    categoryList.getElement().getStyle().setProperty("height", "400px");
+
     // Get current instance of YaProjectEditor
     this.projectEditor = projectEditor;
 
