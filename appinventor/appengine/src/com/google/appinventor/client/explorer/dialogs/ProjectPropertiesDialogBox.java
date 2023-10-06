@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client.explorer.dialogs;
 
+import com.google.appinventor.client.ComponentsTranslation;
+
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.Ode;
@@ -162,11 +164,11 @@ public class ProjectPropertiesDialogBox {
       propertyContainer.setStyleName("ode-propertyDialogPropertyContainer");
 
       // name of the EditableProperty
-      Label name = new Label(property.getName());
+      Label name = new Label(ComponentsTranslation.getPropertyName(property.getName()));
       name.setStyleName("ode-propertyDialogPropertyTitle");
 
       // Description of the property
-      Label description = new Label(property.getDescription());
+      Label description = new Label(ComponentsTranslation.getPropertyDescription(property.getDescription()));
       description.setStyleName("ode-propertyDialogPropertyDescription");
 
       // editor of the editor
