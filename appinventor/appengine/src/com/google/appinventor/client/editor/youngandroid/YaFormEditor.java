@@ -754,7 +754,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Ode.getInstance().showComponentDesigner();
   }
 
-  public void updateCurFormProjectProperty() {
+  public void refershCurrentPropertiesPanel() {
     PropertiesBox.getPropertiesBox().show(this, true);
   }
 

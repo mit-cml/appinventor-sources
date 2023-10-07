@@ -1442,10 +1442,10 @@ public final class MockForm extends MockContainer {
   }
 
   public void projectPropertyChanged() {
-    ((YaFormEditor) editor).updateCurFormProjectProperty();
+    ((YaFormEditor) editor).refershCurrentPropertiesPanel();
   }
 
-@Override
+  @Override
   public EditableProperties getProperties() {
     // Before we return the Properties object, we make sure that the
     // Sizing, ShowListsAsJson and TutorialURL properties have the
@@ -1489,7 +1489,7 @@ public final class MockForm extends MockContainer {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));    
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     }
     return properties;
   }

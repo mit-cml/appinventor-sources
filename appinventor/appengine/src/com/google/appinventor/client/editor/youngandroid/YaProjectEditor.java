@@ -131,7 +131,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    */
   public void openProjectPropertyDialog() {
     if (propertyDialogBox == null) {
-      propertyDialogBox = new ProjectPropertiesDialogBox();
+      propertyDialogBox = new ProjectPropertiesDialogBox(this);
     }
     String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     propertyDialogBox.showDialog(curScreen);

@@ -1673,6 +1673,8 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-propertyDialogPropertyContainer {
+  display: flex;
+  flex-flow: column;
   width: 100%;
 }
 
@@ -1687,14 +1689,15 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 14px;
   font-weight: 400;
   color: #797575;
-  margin-top: 6px;
+  margin-top: 18px;
+  line-height: 1.7;
 }
 
 .ode-propertyDialogPropertyEditor {
   min-height: 30px;
   height: 10%;
   width: 100%;
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .ode-projectPropertyCategoryTitlePanel option { 
@@ -1707,6 +1710,11 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-projectPropertyCategoryTitlePanel:focus  { 
   outline: none;
+}
+
+.ode-propertyDialogVerticalPanel {
+  display: flex;
+  flex-flow: column;
 }
 
 /* End of Project ProjectPropertiesDialogBox. */
