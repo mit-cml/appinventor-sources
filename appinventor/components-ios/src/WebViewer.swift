@@ -223,10 +223,6 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     processURL(url)
   }
 
- 
-  
-  
-  
   @objc open func WebViewStringChange(_ value: String) {
     EventDispatcher.dispatchEvent(of: self, called: "WebViewStringChange", arguments: value as NSString)
   }
