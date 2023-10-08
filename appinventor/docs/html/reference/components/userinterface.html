@@ -861,7 +861,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="PasswordTextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">PasswordTextBox</code> hint for the user.</dd>
-  <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
+  <dt id="PasswordTextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint text of the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
+    <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
   <dd>If true, then this <code class="highlighter-rouge">PasswordTextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
  decimal point and an optional leading minus sign. This applies to keyboard input only. Even
  if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
@@ -905,6 +907,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <dl class="methods">
   <dt id="PasswordTextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
+  <dt id="PasswordTextBox.SetCursorAt" class="method"><i></i> SetCursorAt()</dt>
+  <dd>Repositions the cursor of the <code class="highlighter-rouge">PasswordTextBox</code> to the given position.</dd>
+  <dt id="PasswordTextBox.SetCursorAtEnd" class="method"><i></i> SetCursorAtEnd()</dt>
+  <dd>Repositions the cursor to the end of the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
 </dl>
 
 <h2 id="Screen">Screen</h2>
@@ -1328,6 +1334,8 @@ having dark grey components.</li>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="TextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">TextBox</code> hint for the user.</dd>
+  <dt id="TextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint text of the <code class="highlighter-rouge">TextBox</code>.</dd>
   <dt id="TextBox.MultiLine" class="boolean"><em>MultiLine</em></dt>
   <dd>If true, then this <code class="highlighter-rouge">TextBox</code> accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1380,6 +1388,10 @@ having dark grey components.</li>
  keyboard when the users presses the Done key.</dd>
   <dt id="TextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">TextBox</code>.</dd>
+  <dt id="TextBox.SetCursorAt" class="method"><i></i> SetCursorAt()</dt>
+  <dd>Repositions the cursor of the <code class="highlighter-rouge">TextBox</code> to the given position.</dd>
+  <dt id="TextBox.SetCursorAtEnd" class="method"><i></i> SetCursorAtEnd()</dt>
+  <dd>Repositions the cursor to the end of the <code class="highlighter-rouge">TextBox</code>.</dd>
 </dl>
 
 <h2 id="TimePicker">TimePicker</h2>

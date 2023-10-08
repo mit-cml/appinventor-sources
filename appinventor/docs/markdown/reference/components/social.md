@@ -227,6 +227,9 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 {:id="EmailPicker.Hint" .text} *Hint*
 : `EmailPicker` hint for the user.
 
+{:id="EmailPicker.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the EmailPicker.
+
 {:id="EmailPicker.Text" .text} *Text*
 : The text in the `EmailPicker`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#EmailPicker.Enabled) property is false).
@@ -270,6 +273,12 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.
+
+{:id="EmailPicker.SetCursorAt" class="method"} <i/> SetCursorAt(*position*{:.number})
+: Repositions the cursor of the EmailPicker to the given position.
+
+{:id="EmailPicker.SetCursorAtEnd" class="method"} <i/> SetCursorAtEnd()
+: Repositions the cursor to the end of the EmailPicker.
 
 ## PhoneCall  {#PhoneCall}
 

@@ -934,6 +934,9 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the PasswordTextBox.
+
 {:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
 : If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
  decimal point and an optional leading minus sign. This applies to keyboard input only. Even
@@ -986,6 +989,12 @@ Users enter passwords in a password text box component, which hides the text tha
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
+
+{:id="PasswordTextBox.SetCursorAt" class="method"} <i/> SetCursorAt(*position*{:.number})
+: Repositions the cursor of the PasswordTextBox to the given position.
+
+{:id="PasswordTextBox.SetCursorAtEnd" class="method"} <i/> SetCursorAtEnd()
+: Repositions the cursor to the end of the PasswordTextBox.
 
 ## Screen  {#Screen}
 
@@ -1498,6 +1507,9 @@ Users enter text in a text box component.
 {:id="TextBox.Hint" .text} *Hint*
 : `TextBox` hint for the user.
 
+{:id="TextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the TextBox.
+
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
 : If true, then this `TextBox` accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1560,6 +1572,12 @@ Users enter text in a text box component.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.
+
+{:id="TextBox.SetCursorAt" class="method"} <i/> SetCursorAt(*position*{:.number})
+: Repositions the cursor of the TextBox to the given position.
+
+{:id="TextBox.SetCursorAtEnd" class="method"} <i/> SetCursorAtEnd()
+: Repositions the cursor to the end of the TextBox.
 
 ## TimePicker  {#TimePicker}
 

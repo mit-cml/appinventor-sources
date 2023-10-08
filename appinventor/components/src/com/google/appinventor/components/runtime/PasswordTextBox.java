@@ -19,6 +19,7 @@ import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 /**
  * Users enter passwords in a password text box component, which hides the text that has been typed in it.
@@ -81,6 +82,7 @@ public final class PasswordTextBox extends TextBoxBase {
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
     setPasswordInputType(acceptsNumbersOnly, visible);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**

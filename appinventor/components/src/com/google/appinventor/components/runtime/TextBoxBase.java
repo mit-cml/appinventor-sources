@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -48,16 +49,19 @@ public abstract class TextBoxBase extends AndroidViewComponent
   private int backgroundColor;
 
   // Backing for font typeface
-  private String fontTypeface;
+  protected String fontTypeface;
 
   // Backing for font bold
-  private boolean bold;
+  protected boolean bold;
 
   // Backing for font italic
-  private boolean italic;
+  protected boolean italic;
 
   // Backing for hint text
   private String hint;
+
+  // Backing for hint color
+  private int hintColor = 0xFF888888;
 
   // Backing for text color
   private int textColor;
@@ -432,6 +436,28 @@ public abstract class TextBoxBase extends AndroidViewComponent
     view.invalidate();
   }
 
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "Specifies the color of the hint of the %type%.")
+  public int HintColor() {
+    return hintColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
+  @SimpleProperty()
+  public void HintColor(int hintColor) {
+    this.hintColor = hintColor;
+    if (hintColor != 0xFF888888) {
+      view.setHintTextColor(hintColor);
+    } else {
+      if (isHighContrast || container.$form().HighContrast()) {
+        view.setHintTextColor(COLOR_YELLOW);
+      } else {
+        view.setHintTextColor(hintColorDefault);
+      }
+    }
+  }
+
   /**
    * Returns the textbox contents.
    *
@@ -506,6 +532,16 @@ public abstract class TextBoxBase extends AndroidViewComponent
     description = "Sets the %type% active.")
   public void RequestFocus() {
     view.requestFocus();
+  }
+
+  @SimpleFunction(description = "Repositions the cursor of the %type% to the given position.")
+  public void SetCursorAt(int position) {
+    view.setSelection(position);
+  }
+
+  @SimpleFunction(description = "Repositions the cursor to the end of the %type%.")
+  public void SetCursorAtEnd() {
+    SetCursorAt(view.getText().length());
   }
 
   // OnFocusChangeListener implementation

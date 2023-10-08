@@ -583,8 +583,12 @@ public class YaVersion {
   // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 225:
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 4
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 7
+  // - PASSWORD_TEXTBOX_VERSION was incremented to 7.
 
-  public static final int YOUNG_ANDROID_VERSION = 224;
+  public static final int YOUNG_ANDROID_VERSION = 225;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -920,7 +924,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For EMAILPICKER_COMPONENT_VERSION 3:
   // - RequestFocus function was added (via TextBoxBase)
-  public static final int EMAILPICKER_COMPONENT_VERSION = 3;
+  // For EMAILPICKER_COMPONENT_VERSION 4:
+  // - HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
+  public static final int EMAILPICKER_COMPONENT_VERSION = 4;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps
@@ -1254,9 +1260,11 @@ public class YaVersion {
   // - Added RequestFocus Function (via TextBoxBase)
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 4:
   // - Added PasswordVisible property
-  // For For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
   // - Added NumbersOnly property
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 5;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 6:
+  // - HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 6;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
@@ -1384,7 +1392,9 @@ public class YaVersion {
   // - RequestFocus method was added
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 6;
+  // For TEXTBOX_COMPONENT_VERSION 7:
+  // - HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
+  public static final int TEXTBOX_COMPONENT_VERSION = 7;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
