@@ -1957,7 +1957,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // RequestFocus was added
     3: "noUpgrade",
 
-    // AI2: HintColor was added
+    // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
     4: "noUpgrade"
 
   }, // End EmailPicker upgraders
@@ -2770,7 +2770,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // NumbersOnly was added
     5: "noUpgrade",
 
-    // HintColor was added
+    // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
     6: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
@@ -3141,7 +3141,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added ReadOnly property
     6: "noUpgrade",
 
-    // AI2: Added HintColor property
+    // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
     7: "noUpgrade"
   }, // End TextBox upgraders
 

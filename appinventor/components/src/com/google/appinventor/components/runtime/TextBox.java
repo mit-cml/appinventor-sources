@@ -21,7 +21,6 @@ import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 /**
  * Users enter text in a text box component.
@@ -126,7 +125,6 @@ public final class TextBox extends TextBoxBase {
     // TextBoxBase, but we might later be adding
     // other flavors of text boxes that might want their own defaults.
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
-    view.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
   }
 
   /**
@@ -215,7 +213,7 @@ public final class TextBox extends TextBoxBase {
   @SimpleProperty()
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;
-    view.setSingleLine(multiLine);
+    view.setSingleLine(!multiLine);
   }
 
   @SimpleProperty(

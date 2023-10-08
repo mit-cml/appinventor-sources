@@ -943,7 +943,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // HintColor property was added.
+      // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -1482,7 +1482,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-      // HintColor property was added.
+      // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
       srcCompVersion = 6;
     }
     return srcCompVersion;
@@ -1844,7 +1844,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
-      // HintColor property was added
+      // HintColor property, SetCursorAt method and SetCursorAtEnd method were added.
       srcCompVersion = 7;
     }
     return srcCompVersion;
