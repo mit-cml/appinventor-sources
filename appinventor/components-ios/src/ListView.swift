@@ -204,7 +204,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _listData.firstIndex(where: { $0["Text1"] == selection }) {
+      if let index = _elements.firstIndex(of: selection) {
+        _selectionIndex = Int32(index) + 1
+        _selection = selection
+        _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
+      } else if let index = _listData.firstIndex(where: { $0["Text1"] == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         print("selection index \(_selection)")
