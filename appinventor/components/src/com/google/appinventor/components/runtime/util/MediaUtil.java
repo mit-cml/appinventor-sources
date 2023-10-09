@@ -286,7 +286,7 @@ public class MediaUtil {
 
       case PRIVATE_DATA:
         return new FileInputStream(mediaPath);
-        
+
       case REPL_ASSET:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
           // App specific storage does not need read permission
