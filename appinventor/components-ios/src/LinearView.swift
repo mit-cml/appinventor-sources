@@ -263,6 +263,22 @@ public class LinearView: UIView {
     }
   }
 
+  open func resetView(){
+    widthFillParent = 0
+    widthFillParentConstraint?.isActive = false
+    widthFillParentConstraint = nil
+    _innerEqualConstraint.isActive = true
+    _innerHeadZero.isActive = false
+    _innerTailZero.isActive = false
+
+    heightFillParent = 0
+    heightFillParentConstraint?.isActive = false
+    heightFillParentConstraint = nil
+    _innerEqualConstraint.isActive = true
+    _innerHeadZero.isActive = false
+    _innerTailZero.isActive = false
+  }
+
   open func removeAllItems() {
     for item in _items {
       _inner.removeArrangedSubview(item.view)

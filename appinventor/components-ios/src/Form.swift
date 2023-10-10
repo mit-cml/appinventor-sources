@@ -258,6 +258,7 @@ let kMinimumToastWait = 10.0
     for subview in subviews {
       subview.removeFromSuperview()
     }
+    _linearView.resetView()
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()

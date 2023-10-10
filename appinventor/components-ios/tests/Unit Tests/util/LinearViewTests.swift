@@ -73,6 +73,35 @@ class LinearViewTests: XCTestCase {
     Button1.Width = kLengthFillParent
   }
 
+  func testAutomaticParent() {
+    testForm.clear()
+    let row1 = HorizontalArrangement(testForm)
+    row1.view.accessibilityIdentifier = "row1"
+    let row2 = HorizontalArrangement(testForm)
+    row2.view.accessibilityIdentifier = "row2"
+
+    row1.setHeightPercent(20)
+    row2.Height = kLengthPreferred
+
+    let Button1 = Button(row1)
+    Button1.Text = "Text for Button1"
+    let Button2 = Button(row1)
+    Button2.Text = "Text for Button2"
+
+    Button1.Height = kLengthFillParent
+    Button1.setWidthPercent(50)
+    Button2.Height = kLengthPreferred
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(0.2 * testForm.view.frame.height, row1.view.frame.height, accuracy: 1)
+    XCTAssertEqual(100.0, row2.view.frame.height)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+  }
+
   func testFillParent() {
     testForm.clear()
     let Button1 = Button(testForm)
