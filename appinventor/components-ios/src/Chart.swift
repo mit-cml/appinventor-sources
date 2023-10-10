@@ -125,7 +125,7 @@ import Charts
     }
   }
 
-  @objc open var PieRadius: Int32 {
+  @objc open var l: Int32 {
     get {
       return _pieRadius
     }
