@@ -264,6 +264,7 @@ public class LinearView: UIView {
   }
 
   open func resetView(){
+    /* Resets the all the width*/
     widthFillParent = 0
     widthFillParentConstraint?.isActive = false
     widthFillParentConstraint = nil
@@ -271,6 +272,7 @@ public class LinearView: UIView {
     _innerHeadZero.isActive = false
     _innerTailZero.isActive = false
 
+    /* Resets the all the height*/
     heightFillParent = 0
     heightFillParentConstraint?.isActive = false
     heightFillParentConstraint = nil
