@@ -96,6 +96,14 @@ public final class Main {
       System.exit(1);
     }
 
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
+    }
+
     AndroidBuildFactory.install();
     // TODO(ewpatton): Install iOS build factory once published
 

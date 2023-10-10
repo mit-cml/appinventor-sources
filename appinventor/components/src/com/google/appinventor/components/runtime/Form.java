@@ -2582,6 +2582,10 @@ public class Form extends AppInventorCompatActivity
     dimChanges.clear();
   }
 
+  public FrameLayout getFrameLayout() {
+    return frameLayout;
+  }
+
   public void deleteComponent(Object component) {
     if (component instanceof OnStopListener) {
       onStopListeners.remove(component);
