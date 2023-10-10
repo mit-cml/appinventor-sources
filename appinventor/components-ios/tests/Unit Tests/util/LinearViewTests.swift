@@ -102,6 +102,84 @@ class LinearViewTests: XCTestCase {
     #endif
   }
 
+  func testAutomaticParentswitch() {
+    testForm.clear()
+    let row1 = HorizontalArrangement(testForm)
+    row1.view.accessibilityIdentifier = "row1"
+    let row2 = HorizontalArrangement(testForm)
+    row2.view.accessibilityIdentifier = "row2"
+
+    row1.setHeightPercent(20)
+    row2.Height = kLengthPreferred
+
+    let Button1 = Button(row1)
+    Button1.Text = "Text for Button1"
+    let Button2 = Button(row1)
+    Button2.Text = "Text for Button2"
+
+    Button1.Height = kLengthFillParent
+    Button1.setWidthPercent(50)
+    Button2.Height = kLengthPreferred
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(0.2 * testForm.view.frame.height, row1.view.frame.height, accuracy: 1)
+    XCTAssertEqual(100.0, row2.view.frame.height)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+
+    testForm.clear()
+    let Button3 = Button(testForm)
+    Button3.Text = "Text for Button1"
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+
+    // Switch to fill parent on both axes
+    Button3.Height = kLengthFillParent
+    Button3.Width = kLengthFillParent
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+    XCTAssertEqual(0, Button3.view.frame.origin.x)
+    XCTAssertEqual(0, Button3.view.frame.origin.y)
+    XCTAssertEqual(testForm.view.frame.height, Button3.view.frame.height)
+    XCTAssertEqual(testForm.view.frame.width, Button3.view.frame.width)
+
+    testForm.clear()
+    let row3 = HorizontalArrangement(testForm)
+    row3.view.accessibilityIdentifier = "row3"
+    let row4 = HorizontalArrangement(testForm)
+    row4.view.accessibilityIdentifier = "row4"
+
+    row3.setHeightPercent(20)
+    row4.Height = kLengthPreferred
+
+    let Button4 = Button(row3)
+    Button4.Text = "Text for Button1"
+    let Button5 = Button(row3)
+    Button5.Text = "Text for Button2"
+
+    Button4.Height = kLengthFillParent
+    Button4.setWidthPercent(50)
+    Button5.Height = kLengthPreferred
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(0.2 * testForm.view.frame.height, row3.view.frame.height, accuracy: 1)
+    XCTAssertEqual(100.0, row4.view.frame.height)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+  }
+
   func testFillParent() {
     testForm.clear()
     let Button1 = Button(testForm)
