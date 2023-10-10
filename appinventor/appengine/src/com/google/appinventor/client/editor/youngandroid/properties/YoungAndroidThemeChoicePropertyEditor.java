@@ -25,6 +25,6 @@ public class YoungAndroidThemeChoicePropertyEditor extends ChoicePropertyEditor 
   };
 
   public YoungAndroidThemeChoicePropertyEditor() {
-    super(textAlignments, Ode.getInstance().isProjectLoaded());
+    super(textAlignments, false);
   }
 }

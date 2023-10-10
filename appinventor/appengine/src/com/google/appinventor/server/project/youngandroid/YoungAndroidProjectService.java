@@ -176,7 +176,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String themeName = youngAndroidParams.getThemeName();
     String blocksToolkit = youngAndroidParams.getBlocksToolkit();
 
-    LOG.info ("blocktoolkit: " + blocksToolkit);
     String newString = "#|\n$JSON\n" +
         "{\"authURL\":[]," +
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
@@ -193,7 +192,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" + 
         themeName +  "\",\"BlocksToolkit\":" + blocksToolkit +"}}\n|#";
     }
-    LOG.info("Here is the json for new project:" + newString);
     return newString;
   }
 
@@ -256,7 +254,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   @Override
   public long newProject(String userId, String projectName, NewProjectParameters params) {
-    LOG.info("Here are the params: " + params);
     NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
     String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
 

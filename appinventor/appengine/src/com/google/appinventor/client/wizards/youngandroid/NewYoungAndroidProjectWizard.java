@@ -89,11 +89,11 @@ public final class NewYoungAndroidProjectWizard {
     projectNameTextBox.setFocus(true);
 
     EditableProperties themes = new EditableProperties(false);
-    theme = new EditableProperty(themes, "theme", "Classic", "Theme", new YoungAndroidThemeChoicePropertyEditor(), 0x01, "", null);
+    theme = new EditableProperty(themes, "theme", MESSAGES.classicTheme(), "Theme", new YoungAndroidThemeChoicePropertyEditor(), 0x01, "", null);
     themeEditor.setProperty(theme);
 
     EditableProperties toolkits = new EditableProperties(false);
-    toolkit = new EditableProperty(toolkits, "blocks toolkit", "", "Blooks Toolkit", new SubsetJSONPropertyEditor(), 0x01, "", null);
+    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "", MESSAGES.blocksToolkitTitle(), new SubsetJSONPropertyEditor(), 0x01, "", null);
     blockstoolkitEditor.setProperty(toolkit);
 
     horizontalThemePanel.setCellWidth(themeLabel, "40%");
