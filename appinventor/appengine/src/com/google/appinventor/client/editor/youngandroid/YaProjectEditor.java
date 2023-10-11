@@ -625,7 +625,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    * To remove Component Files from the Project!
    * @param componentTypes
    */
-  public  void removeComponent(Map<String, String> componentTypes) {
+  public void removeComponent(Map<String, String> componentTypes) {
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
     Set<String> externalCompFolders = new HashSet<String>();

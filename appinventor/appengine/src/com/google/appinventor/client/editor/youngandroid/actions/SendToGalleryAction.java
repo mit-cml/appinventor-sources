@@ -35,6 +35,10 @@ public class SendToGalleryAction implements Command {
           + "Ignoring SendToGalleryAction.execute().");
       return;
     }
+    if (Ode.getInstance().getCurrentYoungAndroidProjectRootNode().hasExtensions()) {
+      ErrorReporter.reportError(MESSAGES.HasExtensionError());
+      return;
+    }
     boolean shouldRun;
     try {
       shouldRun = before.call();
