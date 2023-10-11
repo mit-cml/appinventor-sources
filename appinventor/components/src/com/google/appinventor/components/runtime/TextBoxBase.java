@@ -49,19 +49,19 @@ public abstract class TextBoxBase extends AndroidViewComponent
   private int backgroundColor;
 
   // Backing for font typeface
-  protected String fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
-  protected boolean bold;
+  private boolean bold;
 
   // Backing for font italic
-  protected boolean italic;
+  private boolean italic;
 
   // Backing for hint text
   private String hint;
 
   // Backing for hint color
-  private int hintColor = 0xFF888888;
+  private int hintColor = Component.COLOR_DEFAULT;
 
   // Backing for text color
   private int textColor;
@@ -447,7 +447,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty()
   public void HintColor(int hintColor) {
     this.hintColor = hintColor;
-    if (hintColor != 0xFF888888) {
+    if (hintColor != Component.COLOR_DEFAULT) {
       view.setHintTextColor(hintColor);
     } else {
       if (isHighContrast || container.$form().HighContrast()) {

@@ -82,7 +82,6 @@ public final class PasswordTextBox extends TextBoxBase {
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
     setPasswordInputType(acceptsNumbersOnly, visible);
-    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -141,6 +140,7 @@ public final class PasswordTextBox extends TextBoxBase {
     } else if(!acceptsNumbersOnly && !passwordVisible) {
       view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
+    TextViewUtil.setFontTypeface(container.$form(), view, this.FontTypeface(), this.FontBold(), this.FontItalic());
   }
 
 }
