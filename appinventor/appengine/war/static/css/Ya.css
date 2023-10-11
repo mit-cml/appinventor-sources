@@ -416,6 +416,7 @@ div.StatusPanel {
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
+  align-items: center;
   background-color: #f2f2f2;
   background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
