@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -216,7 +216,7 @@
   <dd>When a fling gesture (quick swipe) is made on the sprite: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling’s vector.</dd>
   <dt id="Ball.NoLongerCollidingWith">NoLongerCollidingWith(<em class="component">other</em>)</dt>
   <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
@@ -339,7 +339,7 @@
   <dd>When a fling gesture (quick swipe) is made on the canvas: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling’s vector. The value “flungSprite” is true if a sprite
  was located near the the starting point of the fling gesture.</dd>
   <dt id="Canvas.TouchDown">TouchDown(<em class="number">x</em>,<em class="number">y</em>)</dt>
@@ -482,7 +482,7 @@
   <dd>When a fling gesture (quick swipe) is made on the sprite: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling’s vector.</dd>
   <dt id="ImageSprite.NoLongerCollidingWith">NoLongerCollidingWith(<em class="component">other</em>)</dt>
   <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
@@ -603,7 +603,7 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"

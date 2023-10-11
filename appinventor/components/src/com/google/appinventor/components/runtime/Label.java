@@ -35,7 +35,8 @@ import android.widget.TextView;
     "specified through the <code>Text</code> property.  Other properties, " +
     "all of which can be set in the Designer or Blocks Editor, control " +
     "the appearance and placement of the text.",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/label.png")
 @SimpleObject
 public final class Label extends AndroidViewComponent implements AccessibleComponent{
 

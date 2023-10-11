@@ -37,7 +37,8 @@ import com.google.appinventor.components.runtime.util.YailList;
  */
 @DesignerComponent(version = YaVersion.RECTANGLE_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "Rectangle")
+    description = "Rectangles are polygons with fixed latitudes and longitudes for the north, south, east, and west boundaries. Moving a vertex of the Rectangle updates the appropriate edges accordingly.",
+    iconName = "images/rectangle.png")
 @SimpleObject
 public class Rectangle extends PolygonBase implements MapRectangle {
   private double east = 0;

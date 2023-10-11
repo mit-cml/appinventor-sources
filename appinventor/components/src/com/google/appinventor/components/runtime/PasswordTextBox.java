@@ -45,7 +45,8 @@ import android.widget.EditText;
     "<p>Text boxes are usually used with the <code>Button</code> " +
     "component, with the user clicking on the button when text entry is " +
     "complete.</p>",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/passwordTextBox.png")
 @SimpleObject
 public final class PasswordTextBox extends TextBoxBase {
     

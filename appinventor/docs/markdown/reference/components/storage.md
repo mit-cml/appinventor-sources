@@ -331,8 +331,8 @@ Spreadsheet is a non-visible component for storing and receiving data from
 {:id="Spreadsheet.ErrorOccurred"} ErrorOccurred(*errorMessage*{:.text})
 : Triggered whenever an API call encounters an error. Details about the error are in `errorMessage`.
 
-{:id="Spreadsheet.FinishedAddCol"} FinishedAddCol(*columnNumber*{:.number})
-: The callback event for the [`AddCol`](#Spreadsheet.AddCol) block, called once the
+{:id="Spreadsheet.FinishedAddColumn"} FinishedAddColumn(*columnNumber*{:.number})
+: The callback event for the [`AddColumn`](#Spreadsheet.AddColumn) block, called once the
  values on the table have been updated. Additionally, this returns the
  column number for the new column.
 
@@ -341,12 +341,18 @@ Spreadsheet is a non-visible component for storing and receiving data from
  values on the table have been updated. Additionally, this returns the
  row number for the new row.
 
+{:id="Spreadsheet.FinishedAddSheet"} FinishedAddSheet(*sheetName*{:.text})
+: The callback event for the addSheet block, called once the values on the table have been updated.
+
 {:id="Spreadsheet.FinishedClearRange"} FinishedClearRange()
 : The callback event for the [`ClearRange`](#Spreadsheet.ClearRange) block, called once the
  values on the table have been updated.
 
-{:id="Spreadsheet.FinishedRemoveCol"} FinishedRemoveCol()
-: The callback event for the [`RemoveCol`](#Spreadsheet.RemoveCol) block, called once the
+{:id="Spreadsheet.FinishedDeleteSheet"} FinishedDeleteSheet(*sheetName*{:.text})
+: The callback event for the DeleteSheet block, called once the values on the table have been updated.
+
+{:id="Spreadsheet.FinishedRemoveColumn"} FinishedRemoveColumn()
+: The callback event for the [`RemoveColumn`](#Spreadsheet.RemoveColumn) block, called once the
  values on the table have been updated.
 
 {:id="Spreadsheet.FinishedRemoveRow"} FinishedRemoveRow()
@@ -357,8 +363,8 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : The callback event for the [`WriteCell`](#Spreadsheet.WriteCell) block, called once the
  values on the table have been updated.
 
-{:id="Spreadsheet.FinishedWriteCol"} FinishedWriteCol()
-: The callback event for the [`WriteCol`](#Spreadsheet.WriteCol) block, called once the
+{:id="Spreadsheet.FinishedWriteColumn"} FinishedWriteColumn()
+: The callback event for the [`WriteColumn`](#Spreadsheet.WriteColumn) block, called once the
  values on the table have been updated.
 
 {:id="Spreadsheet.FinishedWriteRange"} FinishedWriteRange()
@@ -373,13 +379,9 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : The callback event for the [`ReadCell`](#Spreadsheet.ReadCell) block. The `cellData` is
  the text value in the cell.
 
-{:id="Spreadsheet.GotColData"} GotColData(*colDataList*{:.list})
-: The callback event for the [`ReadCol`](#Spreadsheet.ReadCol) block. The `colDataList` is a
+{:id="Spreadsheet.GotColumnData"} GotColumnData(*columnData*{:.list})
+: The callback event for the [`ReadColumn`](#Spreadsheet.ReadColumn) block. The `columnData` is a
  list of text cell-values in order of increasing row number.
-
-{:id="Spreadsheet.GotFilterResult"} GotFilterResult(*return_rows*{:.list},*return_data*{:.list})
-: The callbeck event for the [`ReadWithQuery`](#Spreadsheet.ReadWithQuery) block. The `response`
- is a list of rows, where each row satisfies the query.
 
 {:id="Spreadsheet.GotRangeData"} GotRangeData(*rangeData*{:.list})
 : The callback event for the [`ReadRange`](#Spreadsheet.ReadRange) block. The `rangeData` is
@@ -397,10 +399,10 @@ Spreadsheet is a non-visible component for storing and receiving data from
 
 {:.methods}
 
-{:id="Spreadsheet.AddCol" class="method"} <i/> AddCol(*sheetName*{:.text},*data*{:.list})
+{:id="Spreadsheet.AddColumn" class="method"} <i/> AddColumn(*sheetName*{:.text},*data*{:.list})
 : Given a list of values as `data`, appends the values to the next empty
  column of the sheet. It will always start from the top row and continue
- downwards. Once complete, it triggers the [`FinishedAddCol`](#Spreadsheet.FinishedAddCol)
+ downwards. Once complete, it triggers the [`FinishedAddColumn`](#Spreadsheet.FinishedAddColumn)
  callback event.
 
 {:id="Spreadsheet.AddRow" class="method"} <i/> AddRow(*sheetName*{:.text},*data*{:.list})
@@ -409,16 +411,22 @@ Spreadsheet is a non-visible component for storing and receiving data from
  continue to the right. Once complete, it triggers the [`FinishedAddRow`](#Spreadsheet.FinishedAddRow)
  callback event. Additionally, this returns the row number for the new row.
 
+{:id="Spreadsheet.AddSheet" class="method"} <i/> AddSheet(*sheetName*{:.text})
+: Adds a new sheet inside the Spreadsheet.
+
 {:id="Spreadsheet.ClearRange" class="method"} <i/> ClearRange(*sheetName*{:.text},*rangeReference*{:.text})
 : Empties the cells in the given range. Once complete, this block triggers
  the [`FinishedClearRange`](#Spreadsheet.FinishedClearRange) callback event.
 
-{:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*col*{:.number})
+{:id="Spreadsheet.DeleteSheet" class="method"} <i/> DeleteSheet(*sheetName*{:.text})
+: Deletes the specified sheet inside the Spreadsheet.
+
+{:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*column*{:.number})
 : Converts the integer representation of rows and columns to A1-Notation used
  in Google Sheets for a single cell. For example, row 1 and col 2
  corresponds to the string \"B1\".
 
-{:id="Spreadsheet.GetRangeReference" class="method returns text"} <i/> GetRangeReference(*row1*{:.number},*col1*{:.number},*row2*{:.number},*col2*{:.number})
+{:id="Spreadsheet.GetRangeReference" class="method returns text"} <i/> GetRangeReference(*row1*{:.number},*column1*{:.number},*row2*{:.number},*column2*{:.number})
 : Converts the integer representation of rows and columns for the corners of
  the range to A1-Notation used in Google Sheets. For example, selecting the
  range from row 1, col 2 to row 3, col 4 corresponds to the string "B1:D3".
@@ -427,17 +435,17 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : On the page with the provided sheetName, reads the cell at the given
  cellReference and triggers the [`GotCellData`](#Spreadsheet.GotCellData) callback event. The
  cellReference can be either a text block with A1-Notation, or the result of
- the [`getCellReference`](#Spreadsheet.getCellReference) block.
+ the [`GetCellReference`](#Spreadsheet.GetCellReference) block.
 
-{:id="Spreadsheet.ReadCol" class="method"} <i/> ReadCol(*sheetName*{:.text},*colNumber*{:.number})
+{:id="Spreadsheet.ReadColumn" class="method"} <i/> ReadColumn(*sheetName*{:.text},*column*{:.text})
 : On the page with the provided sheetName, reads the column at the given
- colNumber and triggers the [`GotColData`](#Spreadsheet.GotColData) callback event.
+ colNumber and triggers the [`GotColumnData`](#Spreadsheet.GotColumnData) callback event.
 
 {:id="Spreadsheet.ReadRange" class="method"} <i/> ReadRange(*sheetName*{:.text},*rangeReference*{:.text})
 : On the page with the provided sheetName, reads the cells at the given
  rangeReference and triggers the [`GotRangeData`](#Spreadsheet.GotRangeData) callback event. The
  rangeReference can be either a text block with A1-Notation, or the result
- of the [`getRangeReference`](#Spreadsheet.getRangeReference) block.
+ of the [`GetRangeReference`](#Spreadsheet.GetRangeReference) block.
 
 {:id="Spreadsheet.ReadRow" class="method"} <i/> ReadRow(*sheetName*{:.text},*rowNumber*{:.number})
 : On the page with the provided sheetName, reads the row at the given
@@ -453,11 +461,11 @@ Spreadsheet is a non-visible component for storing and receiving data from
 {:id="Spreadsheet.ReadWithPartialFilter" class="method"} <i/> ReadWithPartialFilter(*sheetName*{:.text},*colID*{:.number},*value*{:.text})
 : Filters a Google Sheet for rows where the given column number contains the provided value string.
 
-{:id="Spreadsheet.RemoveCol" class="method"} <i/> RemoveCol(*sheetName*{:.text},*colNumber*{:.number})
+{:id="Spreadsheet.RemoveColumn" class="method"} <i/> RemoveColumn(*sheetName*{:.text},*column*{:.text})
 : Deletes the column with the given column number from the table. This does
  not clear the column, but removes it entirely. The sheet's grid id can be
  found at the end of the url of the Google Sheets document, right after the
- "gid=". Once complete, it triggers the [`FinishedRemoveCol`](#Spreadsheet.FinishedRemoveCol)
+ "gid=". Once complete, it triggers the [`FinishedRemoveColumn`](#Spreadsheet.FinishedRemoveColumn)
  callback event.
 
 {:id="Spreadsheet.RemoveRow" class="method"} <i/> RemoveRow(*sheetName*{:.text},*rowNumber*{:.number})
@@ -472,11 +480,11 @@ Spreadsheet is a non-visible component for storing and receiving data from
  override any existing data in the cell with the one provided. Once complete,
  it triggers the [`FinishedWriteCell`](#Spreadsheet.FinishedWriteCell) callback event.
 
-{:id="Spreadsheet.WriteCol" class="method"} <i/> WriteCol(*sheetName*{:.text},*colNumber*{:.number},*data*{:.list})
+{:id="Spreadsheet.WriteColumn" class="method"} <i/> WriteColumn(*sheetName*{:.text},*column*{:.text},*data*{:.list})
 : Given a list of values as `data`, writes the values to the column with the
  given column number, overriding existing values from top down. (Note: It
  will not erase the entire column.) Once complete, it triggers the
- [`FinishedWriteCol`](#Spreadsheet.FinishedWriteCol) callback event.
+ [`FinishedWriteColumn`](#Spreadsheet.FinishedWriteColumn) callback event.
 
 {:id="Spreadsheet.WriteRange" class="method"} <i/> WriteRange(*sheetName*{:.text},*rangeReference*{:.text},*data*{:.list})
 : Given list of lists as `data`, writes the values to cells in the range. The
@@ -536,6 +544,9 @@ None
 
 {:id="TinyDB.ClearTag" class="method"} <i/> ClearTag(*tag*{:.text})
 : Clear the entry with the given `tag`{:.text.block}.
+
+{:id="TinyDB.GetEntries" class="method returns dictionary"} <i/> GetEntries()
+: Method to get all data in form of Dictionary
 
 {:id="TinyDB.GetTags" class="method returns any"} <i/> GetTags()
 : Return a list of all the tags in the data store.

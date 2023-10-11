@@ -303,7 +303,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     // Show Data Source Value only if the Data Source is non-null
     // and not of type MockDataFile or Web
     boolean showDataSourceValue = (dataSource != null
-        && !(dataSource instanceof MockDataFile || showWebColumns));
+        && !(dataSource instanceof MockDataFile || showWebColumns || showSheetsColumns));
 
     showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
   }

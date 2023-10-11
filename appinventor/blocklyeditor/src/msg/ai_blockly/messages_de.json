@@ -538,6 +538,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "Netzwerkfehler",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Netzwerkfehler in der Kommunikation mit dem Companion.<br />Versuche, den Companion neuzustarten und neu zu verbinden",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Zurücksetzen",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "Companion Version Check",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "Deine Companion App ist veraltet. Klicke 'OK', um das Update zu starten. Achte auf Deine ",
 	"Blockly.Msg.REPL_EMULATORS": "Emulator",

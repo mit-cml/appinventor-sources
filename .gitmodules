@@ -4,3 +4,6 @@
 [submodule "appinventor/lib/closure-library"]
 	path = appinventor/lib/closure-library
 	url = https://github.com/mit-cml/closure-library.git
+[submodule "appinventor/components-ios/SchemeKit/picrin"]
+	path = appinventor/schemekit/src/picrin
+	url = https://github.com/mit-cml/picrin.git

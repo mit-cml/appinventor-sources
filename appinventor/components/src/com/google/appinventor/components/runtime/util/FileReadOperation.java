@@ -5,13 +5,13 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.net.Uri;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * The FileReadOperation class is responsible for opening files for read operations.
@@ -62,6 +62,9 @@ public class FileReadOperation extends FileStreamOperation<InputStream> {
 
   @Override
   protected InputStream openFile() throws IOException {
+    if (scopedFile.getFileName().startsWith("content:")) {
+      return form.getContentResolver().openInputStream(Uri.parse(scopedFile.getFileName()));
+    }
     return FileUtil.openForReading(form, scopedFile);
   }
 }

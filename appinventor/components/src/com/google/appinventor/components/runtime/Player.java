@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -30,6 +32,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 
 // TODO: This implementation does nothing about releasing the Media
@@ -174,21 +177,19 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  @UsesPermissions(READ_EXTERNAL_STORAGE)
-  public void Source(String path) {
+  @UsesPermissions({READ_EXTERNAL_STORAGE, READ_MEDIA_AUDIO})
+  public void Source(@Asset String path) {
     final String tempPath = (path == null) ? "" : path;
-    if (MediaUtil.isExternalFile(form, tempPath)
-        && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
-      form.askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-        @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            Player.this.Source(tempPath);
-          } else {
-            form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
-          }
+    if (TiramisuUtil.requestAudioPermissions(form, path, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          Player.this.Source(tempPath);
+        } else {
+          form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
         }
-      });
+      }
+    })) {
       return;
     }
 
@@ -298,7 +299,8 @@ public final class Player extends AndroidNonvisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = "50")
   @SimpleProperty(
-      description = "Sets the volume to a number between 0 and 100")
+      description = "Sets the volume to a number between 0 and 100",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {

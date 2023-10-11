@@ -95,6 +95,11 @@ Blockly.Blocks['helpers_dropdown'] = {
         options.push([i18nName, option.name]);
       }
     }
+    if (this.shouldSortOptions()) {
+      options.sort(function(a, b) {
+        return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+      });
+    }
     return options;
   },
 
@@ -115,6 +120,10 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
     return options;
+  },
+
+  shouldSortOptions: function() {
+    return this.key_ === 'Permission';
   },
 
   typeblock: function() {

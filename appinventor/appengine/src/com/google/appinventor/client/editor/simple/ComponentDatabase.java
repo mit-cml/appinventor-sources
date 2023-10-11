@@ -353,7 +353,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         properties.get("iconName").asString().getString(),
         properties.containsKey("licenseName") ? properties.get("licenseName").asString().getString() : "",
         componentNode.toJson());
-    findComponentProperties(component, properties.get("properties").asArray());
+    findComponentProperties(component, properties.get("properties").asArray(),
+        properties.get("blockProperties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
     findComponentEvents(component, properties.get("events").asArray());
     findComponentMethods(component, properties.get("methods").asArray());
@@ -378,7 +379,19 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   /*
    * Enters property information into the component descriptor.
    */
-  private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
+  private void findComponentProperties(ComponentDefinition component,
+      JSONArray propertiesArray, JSONArray blockPropertiesArray) {
+    Map<String, String> descriptions = new HashMap<String, String>();
+    Map<String, String> categoryMap = new HashMap<String, String>();
+    for (JSONValue block : blockPropertiesArray.getElements()) {
+      Map<String, JSONValue> properties = block.asObject().getProperties();
+      String name = properties.get("name").asString().getString();
+      JSONValue categoryValue = properties.get("category");
+      if (categoryValue != null) {
+        categoryMap.put(name, categoryValue.asString().getString());
+      }
+      descriptions.put(name, properties.get("description").asString().getString());
+    }
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
 
@@ -391,10 +404,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
           editorArgsList.add(val.asString().getString());
       }
 
-      component.add(new PropertyDefinition(properties.get("name").asString().getString(),
+      String name = properties.get("name").asString().getString();
+      String category = categoryMap.get(name);
+      if ( category == null ) {
+        category = "Unspecified";
+      }
+      component.add(new PropertyDefinition(name,
           properties.get("defaultValue").asString().getString(),
-          properties.get("editorType").asString().getString(),
-          editorArgsList.toArray(new String[0])));
+          name, properties.get("editorType").asString().getString(),
+          editorArgsList.toArray(new String[0]),
+          category, descriptions.get(name)));
     }
   }
 

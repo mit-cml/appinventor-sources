@@ -136,6 +136,13 @@
     ((_ component-name)
      (lookup-in-current-form-environment 'component-name))))
 
+;;; (get-all-components comptype)
+;;; ==> (filter-type-in-current-form-environment 'comptype)
+(define-syntax get-all-components
+  (syntax-rules ()
+    ((_ component-type)
+     (filter-type-in-current-form-environment 'component-type))))
+
 ;; We'd like to do something like the following which could re-use existing components
 ;; and thereore avoid overriding property changes that the user might have made via
 ;; the REPL but it just didn't work.  Some components just wouldn't show up.  It seemed
@@ -815,6 +822,14 @@
         (gnu.mapping.Environment:get env name)
         default-value)))
 
+(define (filter-type-in-current-form-environment type :: gnu.mapping.Symbol)
+  (define-alias ComponentUtil <com.google.appinventor.components.runtime.util.ComponentUtil>)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (*:.form-environment *this-form*)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+                 *test-environment*)))
+  (sanitize-component-data (ComponentUtil:filterComponentsOfType env type))))
+
 (define (delete-from-current-form-environment name :: gnu.mapping.Symbol)
   (if (not (eq? *this-form* #!null))
       (gnu.mapping.Environment:remove (*:.form-environment *this-form*) name)
@@ -964,6 +979,16 @@
     ((_ lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
 
+(define-syntax mincomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-min-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax maxcomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-max-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
 (define-syntax sortkey_nondest
   (syntax-rules ()
     ((_ lambda-arg-name body-form list)
@@ -1005,6 +1030,7 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias Matcher <java.util.regex.Matcher>)
 (define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
 (define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
@@ -1456,6 +1482,7 @@
      ((equal? type 'text) (coerce-to-text arg))
      ((equal? type 'boolean) (coerce-to-boolean arg))
      ((equal? type 'list) (coerce-to-yail-list arg))
+     ((equal? type 'list-of-number) (coerce-to-number-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
      ((equal? type 'pair) (coerce-to-pair arg))
@@ -1464,6 +1491,16 @@
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+
+(define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
+  (cond
+    ((yail-list? l)
+      (let ((coerced (map coerce-to-number (yail-list-contents l))))
+        (if (all-coercible? coerced)
+          (apply make-yail-list coerced)
+          non-coercible-value)))
+    (else *non-coercible-value*)))
 
 (define (enum-type? type)
   (string-contains (symbol->string type) "Enum"))
@@ -2167,6 +2204,122 @@
                            (internal-binary-convert (remainder x 2))))))
 
 
+;;; MATH OPERATIONS ON LIST ;;;;
+
+;;; Calculate the average of the list
+(define (avg l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content )
+      0
+    (yail-divide (apply + l-content) (length l-content)))))
+
+;;; Multiplies all of the number inside a list
+(define (yail-mul yail-list-contents)
+  (if (null? yail-list-contents)
+    0
+  (apply * yail-list-contents)))
+
+;;; Calculate the Geometric mean of the list
+(define (gm l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content)
+      0
+    (expt (yail-mul l-content) (yail-divide 1 (length l-content))))))
+
+;;; Find the mode of the list
+(define (mode l)
+  (let ((l-content (yail-list-contents l)))
+    (let count-all-elements ((l-content l-content) (counters '()))
+      (if (null? l-content)
+          (let find-max-count ((counters counters) (best -1) (modes '() ))
+            (if (null? counters)
+                modes
+                (find-max-count
+                  (cdr counters)
+                  (let* ((counter (car counters)) (count (cdr counter)))
+                     (if (and (> count 0)  (or (= best -1) (> count best)))
+                         count
+                         best))
+                  (let* ((counter (car counters)) (count (cdr counter)) (element (car counter)))
+                     (cond  ((= count best)
+                              (append modes (list element)))
+                            ((> count best)
+                              (list element))
+                            (else modes))))))
+          (count-all-elements
+           (cdr l-content)
+           (let* ((x (car l-content))
+                  (counter (assoc x counters)))
+             (if (not counter)
+                 (cons (cons x 1) counters)
+                 (begin (set-cdr! counter (+ (cdr counter) 1))
+                        counters))))))))
+
+;;; Getting the largest element in a list
+(define (maxl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      -1/0             ; default is negative infinity
+      (apply max l-content))))
+
+
+;; Finding the minimum value of a list
+(define (minl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      1/0             ; default is positive infinity   
+      (apply min l-content))))
+
+(define (mean l-content)
+    (yail-divide (apply + l-content) (length l-content))
+)
+
+(define (sum-mean-square-diff lst av)
+  (if (null? lst)
+      0
+      (+  (* (- (car lst) av)
+             (- (car lst) av))
+          (sum-mean-square-diff (cdr lst) av)))
+)
+
+;;; Calculate the standard deviation
+(define (std-dev l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+      (sqrt
+          (yail-divide  
+            (sum-mean-square-diff lst (mean lst))
+            (length lst)))))
+)
+
+;;; Calculate the sample standard deviation
+(define (sample-std-dev lst)
+    (sqrt
+        (yail-divide
+            (sum-mean-square-diff lst (mean lst))
+            (- (length lst) 1)))
+)
+
+;;; Calculate standard error
+(define (std-err l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+
+      (yail-divide  
+          (sample-std-dev lst)
+          (sqrt (length lst)))))
+)
+
+;;; END of MATH OPERATIONS ON LIST ;;;;
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2588,7 +2741,7 @@ list, use the make-yail-list constructor with no arguments.
             "Bad arguement to typeof"))))
 
 (define (indexof element lst)
-  (yail-list-index object lst))
+  (yail-list-index element lst))
 
 (define (type-lt? type1 type2)
   (< (indexof type1 typeordering)
@@ -2771,35 +2924,35 @@ list, use the make-yail-list constructor with no arguments.
     ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
     (else (list-number-only (cdr lst)))))
 
-(define (list-min lst)
-  (cond ((null? lst) '())
-    ((null? (cdr lst)) (car lst))
-    ((is-leq? (car lst) (list-min (cdr lst))) (car lst))
-    (else (list-min (cdr lst)))))
+(define (list-min lessthan? min lst)
+  (if (null? lst)
+      min
+      (list-min lessthan?
+                (if (lessthan? min (car lst))
+                    min (car lst))
+                    (cdr lst))))
 
-(define (yail-list-minimum-number yail-list)
-  (let ((contents (yail-list-contents yail-list)))
-    (if (null? contents)
-      (signal-runtime-error
-        (format #f
-          "The list cannot be empty")
-        "Bad list argument to yail-list-minimum-number")
-      (list-min (list-number-only contents)))))
+(define (yail-list-min-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-min lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
 
-(define (list-max lst)
-  (cond ((null? lst) '())
-    ((null? (cdr lst)) (car lst))
-    ((is-leq? (list-max (cdr lst)) (car lst)) (car lst))
-    (else (list-max (cdr lst)))))
+(define (list-max lessthan? max lst)
+  (if (null? lst)
+      max
+      (list-max lessthan?
+                (if (lessthan? max (car lst))
+                    (car lst) max)
+                    (cdr lst))))
 
-(define (yail-list-maximum-number yail-list)
-  (let ((contents (yail-list-contents yail-list)))
-    (if (null? contents)
-      (signal-runtime-error
-        (format #f
-          "The list cannot be empty")
-        "Bad list argument to yail-list-maximum-number")
-      (list-max (list-number-only contents)))))
+(define (yail-list-max-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-max lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
 
 (define (yail-list-but-first yail-list)
   (let ((contents (yail-list-contents yail-list)))
@@ -2807,7 +2960,7 @@ list, use the make-yail-list constructor with no arguments.
                               (format #f
                                 "The list cannot be empty")
                               "Bad list argument to but-first"))
-      ((null? (cdr contents)) '())
+      ((null? (cdr contents)) (make-yail-list))
       (else (kawa-list->yail-list (cdr contents))))))
 
 (define (but-last lst)
@@ -3119,9 +3272,8 @@ Dictionary implementation.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at))))
+(define (string-split text at) 
+  (JavaStringUtils:split text (Pattern:quote at))) 
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
@@ -3157,7 +3309,7 @@ Dictionary implementation.
 ;;; It seems simpler for users to not use regexp patterns here, even though
 ;;; some people might want that feature.
 (define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (Matcher:quoteReplacement (replacement:toString))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))

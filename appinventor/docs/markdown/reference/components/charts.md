@@ -82,6 +82,14 @@ The Chart component plots data originating from it's attached Data components. F
 : Specifies the horizontal width of the `Chart` as a percentage
  of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
+{:id="Chart.XFromZero" .boolean} *XFromZero*
+: Determines whether the X axis origin is set at 0 or the minimum X value
+ across all data series.
+
+{:id="Chart.YFromZero" .boolean} *YFromZero*
+: Determines whether the Y axis origin is set at 0 or the minimum y value
+ across all data series.
+
 ### Events  {#Chart-Events}
 
 {:.events}
@@ -93,8 +101,12 @@ The Chart component plots data originating from it's attached Data components. F
 ### Methods  {#Chart-Methods}
 
 {:.methods}
-None
 
+{:id="Chart.SetDomain" class="method"} <i/> SetDomain(*minimum*{:.number},*maximum*{:.number})
+: Sets the minimum and maximum for the domain of the X axis.
+
+{:id="Chart.SetRange" class="method"} <i/> SetRange(*minimum*{:.number},*maximum*{:.number})
+: Sets the minimum and maximum for the range of the Y axis.
 
 ## ChartData2D  {#ChartData2D}
 
@@ -255,6 +267,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  and a false value otherwise. See [`AddEntry`](#ChartData2D.AddEntry)
  for an explanation of the valid entry values.
 
+{:id="ChartData2D.DrawLineOfBestFit" class="method"} <i/> DrawLineOfBestFit(*xList*{:.list},*yList*{:.list})
+: Draws the line of best fit.
+
 {:id="ChartData2D.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
  The returned value is a list, where each element of the list
@@ -267,6 +282,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.GetEntriesWithYValue" class="method returns list"} <i/> GetEntriesWithYValue(*y*{:.text})
 : Returns all entries of the data series matching the specified y value.
  For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
+
+{:id="ChartData2D.HighlightDataPoints" class="method"} <i/> HighlightDataPoints(*dataPoints*{:.list},*color*{:.number})
+: Highlights all given data points on the Chart in the color of choice.
 
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
@@ -293,7 +311,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
 
-{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*spreadsheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
 : Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of

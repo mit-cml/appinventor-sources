@@ -646,6 +646,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "Tinklo klaida",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Tinklo klaida jungiantis su „AI2 Companion“. Pabandykite iš naujo paleisti ir vėl prisijungti.",
 	"Blockly.Msg.REPL_OK": "Gerai",
+	"Blockly.Msg.REPL_RESET": "Nustatyti iš naujo",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "„AI2 Companion“ versijos tikrinimas",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "Jūsų „AI2 Companion“ programa neatnaujinta. Spustelėkite „Gerai“ norėdami atnaujinti. ",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Jūsų „AI2 Companion“ programa neatnaujinta. Iš naujo paleiskite „AI2 Companion“ ir naudokite jį nuskaitant QR kodą, kad galėtumėte atnaujinti",

@@ -41,7 +41,8 @@ import java.util.Calendar;
 @DesignerComponent(version = YaVersion.TIMEPICKER_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
     description = "<p>A button that, when clicked on, launches  a popup" +
-    " dialog to allow the user to select a time.</p>")
+    " dialog to allow the user to select a time.</p>",
+    iconName = "images/timePicker.png")
 @SimpleObject
 public class TimePicker extends ButtonBase {
 
