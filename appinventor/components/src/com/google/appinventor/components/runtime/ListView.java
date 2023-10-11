@@ -426,17 +426,22 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Removes Item from list at a given index
    */
-   @SimpleFunction(
+  @SimpleFunction(
       description = "Removes Item from list at a given index")
-    public void RemoveItemAtIndex(int index) {
-      if (!dictItems.isEmpty() && dictItems.size() > index) {
-        dictItems.remove(index);
-      }
-      if (!stringItems.isEmpty() && stringItems.size() > index) {
-        stringItems.remove(index);
-      }
-      setAdapterData();
+  public void RemoveItemAtIndex(int index) {
+    if (index < 1 || index > Math.max(dictItems.size(), stringItems.size())) {
+      container.$form().dispatchErrorOccurredEvent(this, "RemoveItemAtIndex",
+          ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
+      return;
     }
+    if (dictItems.size() >= index) {
+      dictItems.remove(index - 1);
+    }
+    if (stringItems.size() >= index) {
+      stringItems.remove(index - 1);
+    }
+    setAdapterData();
+  }
 
   /**
    * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
