@@ -216,6 +216,20 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Renames several projects.
+   *
+   * @param userId the user id
+   * @param projectIds IDs of projects to be renamed
+   * @param projectNames new project names
+   */
+	@Override
+  public void renameProjects(List<Long> projectIds, List<String> projectNames) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE)
+        .renameProjects(userId, projectIds, projectNames);
+  }
+
+  /**
    * Moves the project to trash.
    * @param projectId  project ID
    */

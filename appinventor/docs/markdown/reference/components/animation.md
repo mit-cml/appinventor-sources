@@ -108,7 +108,7 @@ A round 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react
 : When a fling gesture (quick swipe) is made on the sprite: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling's vector.
 
 {:id="Ball.NoLongerCollidingWith"} NoLongerCollidingWith(*other*{:.component})
@@ -255,7 +255,7 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 : When a fling gesture (quick swipe) is made on the canvas: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling's vector. The value "flungSprite" is true if a sprite
  was located near the the starting point of the fling gesture.
 
@@ -429,7 +429,7 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 : When a fling gesture (quick swipe) is made on the sprite: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling's vector.
 
 {:id="ImageSprite.NoLongerCollidingWith"} NoLongerCollidingWith(*other*{:.component})

@@ -94,6 +94,9 @@ public class StoredData {
     // TODO(): Make required
     long dateModified;
 
+    // Date project last built/exported as a runnable binary
+    long dateBuilt;
+
     // The specially formatted project history
     String history;
 

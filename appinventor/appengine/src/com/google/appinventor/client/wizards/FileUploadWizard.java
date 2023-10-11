@@ -22,16 +22,14 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FileUpload;
+
 import java.util.Collection;
 
 
@@ -39,7 +37,21 @@ import java.util.Collection;
  * Wizard for uploading individual files.
  *
  */
-public class FileUploadWizard extends Wizard {
+public class FileUploadWizard {
+  interface FileUploadWizardUiBinder extends UiBinder<Dialog, FileUploadWizard> {}
+
+  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER =
+      GWT.create(FileUploadWizardUiBinder.class);
+
+  @UiField Dialog uploadDialog;
+  @UiField FileUpload upload;
+  @UiField Button okButton;
+  @UiField Button cancelButton;
+
+  private final FolderNode folderNode;
+  private final Collection<String> acceptableTypes;
+  private final FileUploadedCallback fileUploadedCallback;
+
   /**
    * Interface for callback to execute after a file is uploaded.
    */
@@ -82,116 +94,105 @@ public class FileUploadWizard extends Wizard {
   public FileUploadWizard(final FolderNode folderNode,
       final Collection<String> acceptableTypes,
       final FileUploadedCallback fileUploadedCallback) {
-    super(MESSAGES.fileUploadWizardCaption(), true, false);
+    this.folderNode = folderNode;
+    this.acceptableTypes = acceptableTypes;
+    this.fileUploadedCallback = fileUploadedCallback;
 
-    // Initialize UI
-    final FileUpload upload = new FileUpload();
-    if (acceptableTypes != null) {
-      upload.getElement().setAttribute("accept", String.join(",", acceptableTypes));
+    UI_BINDER.createAndBindUi(this);
+
+    if (this.acceptableTypes != null) {
+      upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
-    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-    setStylePrimaryName("ode-DialogBox");
-    VerticalPanel panel = new VerticalPanel();
-    panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-    panel.add(upload);
-    addPage(panel);
+    uploadDialog.center();
+  }
 
-    // Create finish command (upload a file)
-    initFinishCommand(new Command() {
-      @Override
-      public void execute() {
-        String uploadFilename = upload.getFilename();
-        if (!uploadFilename.isEmpty()) {
-          final String filename = makeValidFilename(uploadFilename);
-          if(!TextValidators.isValidCharFilename(filename)){
-            createErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
-              Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
-            return;
-          } else if (!TextValidators.isValidLengthFilename(filename)){
-            createErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
-              Error.FILENAMEBADSIZE, folderNode, acceptableTypes, fileUploadedCallback);
-            return;
+  @UiHandler("cancelButton")
+  void cancelMove(ClickEvent e) {
+    uploadDialog.hide();
+  }
+
+  @UiHandler("okButton")
+  public void uploadFile(ClickEvent e) {
+    String uploadFilename = upload.getFilename();
+    uploadDialog.hide();
+    if (!uploadFilename.isEmpty()) {
+      final String filename = makeValidFilename(uploadFilename);
+      if (!TextValidators.isValidCharFilename(filename)) {
+        new FileUploadErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
+            FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
+        return;
+      } else if (!TextValidators.isValidLengthFilename(filename)) {
+        new FileUploadErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
+            FileUploadErrorCode.FILENAME_BAD_SIZE, folderNode, acceptableTypes, fileUploadedCallback);
+        return;
+      }
+      int nameLength = uploadFilename.length();
+      String fileEnd = uploadFilename.substring(nameLength - 4, nameLength);
+
+      if (".aia".equals(fileEnd.toLowerCase())) {
+        new FileUploadErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
+            FileUploadErrorCode.AIA_MEDIA_ASSET, folderNode, acceptableTypes, fileUploadedCallback);
+        return;
+      }
+      String fn = conflictingExistingFile(folderNode, filename);
+      if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
+        return;
+      } else {
+        String fileId = folderNode.getFileId() + "/" + filename;
+        // We delete all the conflicting files.
+        for (ProjectNode child : folderNode.getChildren()) {
+          if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
+            final ProjectNode node = child;
+            String filesToClose[] = {node.getFileId()};
+            Ode ode = Ode.getInstance();
+            ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
+            ode.getProjectService().deleteFile(ode.getSessionId(),
+                node.getProjectId(), node.getFileId(),
+                new OdeAsyncCallback<Long>(
+                    // message on failure
+                    MESSAGES.deleteFileError()) {
+                  @Override
+                  public void onSuccess(Long date) {
+                    Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
+                    Ode.getInstance().updateModificationDate(node.getProjectId(), date);
+
+                  }
+                });
           }
-          int nameLength = uploadFilename.length();
-          String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
+        }
+      }
+      ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
 
-          if (".aia".equals(fileEnd.toLowerCase())) {
-            createErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
-              Error.AIAMEDIAASSET, folderNode, acceptableTypes, fileUploadedCallback);
-            return;
-          }
-          String fn = conflictingExistingFile(folderNode, filename);
-          if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
-            return;
-          } else {
-            String fileId = folderNode.getFileId() + "/" + filename;
-            // We delete all the conflicting files.
-            for (ProjectNode child : folderNode.getChildren()) {
-              if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
-                final ProjectNode node = child;
-                String filesToClose [] = { node.getFileId()};
-                Ode ode = Ode.getInstance();
-                ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
-                ode.getProjectService().deleteFile(ode.getSessionId(),
-                    node.getProjectId(), node.getFileId(),
-                    new OdeAsyncCallback<Long>(
-                        // message on failure
-                        MESSAGES.deleteFileError()) {
-                      @Override
-                      public void onSuccess(Long date) {
-                        Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
-                        Ode.getInstance().updateModificationDate(node.getProjectId(), date);
-
-                      }
-                    });
-              }
-            }
-          }
-          ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
-
-          // Use the folderNode's project id and file id in the upload URL so that the file is
-          // uploaded into that project and that folder in our back-end storage.
-          String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-              ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-              folderNode.getFileId() + "/" + filename;
-          Uploader.getInstance().upload(upload, uploadUrl,
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+      // Use the folderNode's project id and file id in the upload URL so that the file is
+      // uploaded into that project and that folder in our back-end storage.
+      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+                             ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+                             folderNode.getFileId() + "/" + filename;
+      Uploader.getInstance().upload(upload, uploadUrl,
+          new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
             @Override
             public void onSuccess(UploadResponse uploadResponse) {
               switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                    fileUploadedCallback);
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
+                case SUCCESS:
+                  ErrorReporter.hide();
+                  onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                      fileUploadedCallback);
+                  break;
+                case FILE_TOO_LARGE:
+                  // The user can resolve the problem by
+                  // uploading a smaller file.
+                  ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                  break;
+                default:
+                  ErrorReporter.reportError(MESSAGES.fileUploadError());
+                  break;
               }
             }
           });
-        } else {
-          createErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
-              Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
-        }
-      }
-    });
-  }
-
-  @Override
-  public void show() {
-    super.show();
-    int width = 320;
-    int height = 40;
-    this.center();
-
-    setPixelSize(width, height);
-    super.setPagePanelHeight(40);
+    } else {
+      new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
+          FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
+    }
   }
 
   private String makeValidFilename(String uploadFilename) {
@@ -248,55 +249,5 @@ public class FileUploadWizard extends Wizard {
     }
   }
 
-  private void createErrorDialog(String title, String body, Error e,
-      final FolderNode folderNode, final Collection<String> acceptableTypes,
-      final FileUploadedCallback fileUploadedCallback) {
-    final DialogBox dialogBox = new DialogBox(false,true);
-    HTML message;
-    dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setHeight("150px");
-    dialogBox.setWidth("350px");
-    dialogBox.setGlassEnabled(true);
-    dialogBox.setAnimationEnabled(true);
-    dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
-    FlowPanel holder = new FlowPanel();
-    Button ok = new Button ("OK");
-    ok.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dialogBox.hide();
-        new FileUploadWizard(folderNode, acceptableTypes, fileUploadedCallback).show();
-      }
-    });
-    holder.add(ok);
-    dialogBox.setText(title);
-    message = new HTML(body);
-
-    switch(e) {
-      case AIAMEDIAASSET:
-        Button info = new Button ("More Info");
-        info.addClickListener(new ClickListener() {
-          public void onClick(Widget sender) {
-            Window.open(MESSAGES.aiaMediaAssetHelp(), "AIA Help", "");
-          }
-        });
-        holder.add(info);
-      case NOFILESELECETED:
-      case MALFORMEDFILENAME:
-      case FILENAMEBADSIZE:
-      default:
-        break;
-    }
-
-    message.setStyleName("DialogBox-message");
-    DialogBoxContents.add(message);
-    DialogBoxContents.add(holder);
-    dialogBox.setWidget(DialogBoxContents);
-    dialogBox.show();
-  }
-
 }
 
-enum Error {
-  AIAMEDIAASSET, NOFILESELECETED, MALFORMEDFILENAME, FILENAMEBADSIZE
-}

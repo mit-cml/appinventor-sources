@@ -45,7 +45,8 @@ import org.osmdroid.util.GeoPoint;
  */
 @DesignerComponent(version = YaVersion.CIRCLE_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "Circle")
+    description = "Circle",
+    iconName = "images/circle.png")
 @SimpleObject
 public class Circle extends PolygonBase implements MapCircle {
   /**

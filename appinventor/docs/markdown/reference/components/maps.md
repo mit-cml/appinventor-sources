@@ -528,7 +528,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  `when any ... StopDrag` event if one is provided.
 
 {:id="Map.GotFeatures"} GotFeatures(*url*{:.text},*features*{:.list})
-: The `GotFeatures` event is run when when a feature collection is successfully read from the
+: The `GotFeatures` event is run when a feature collection is successfully read from the
  given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
  feature descriptions that can be converted into components using the
  [`FeatureFromDescription`](#Map.FeatureFromDescription) method.

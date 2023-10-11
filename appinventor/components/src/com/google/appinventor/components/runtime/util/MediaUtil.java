@@ -7,6 +7,8 @@
 package com.google.appinventor.components.runtime.util;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -108,9 +110,12 @@ public class MediaUtil {
     }
 
     try {
-      new URL(mediaPath);
+      URL url = new URL(mediaPath);
       // It's a well formed URL.
       if (mediaPath.startsWith("file:")) {
+        if (url.getPath().startsWith("/android_asset/")) {
+          return MediaSource.ASSET;
+        }
         return MediaSource.FILE_URL;
       }
 
@@ -263,7 +268,11 @@ public class MediaUtil {
       throws IOException {
     switch (mediaSource) {
       case ASSET:
-        return getAssetsIgnoreCaseInputStream(form,mediaPath);
+        if (mediaPath.startsWith("file:")) {
+          mediaPath = mediaPath.substring(mediaPath.indexOf("/android_asset/")
+              + "/android_asset/".length());
+        }
+        return getAssetsIgnoreCaseInputStream(form, mediaPath);
 
       case REPL_ASSET:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
@@ -694,14 +703,16 @@ public class MediaUtil {
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         return soundPool.load(mediaPath, 1);
 
       case FILE_URL:
         if (isExternalFileUrl(form, mediaPath)
             || RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         return soundPool.load(fileUrlToFilePath(mediaPath), 1);
 
@@ -753,7 +764,8 @@ public class MediaUtil {
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         mediaPlayer.setDataSource(mediaPath);
         return;
@@ -761,7 +773,8 @@ public class MediaUtil {
       case FILE_URL:
         if (isExternalFileUrl(form, mediaPath)
             || RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         mediaPlayer.setDataSource(fileUrlToFilePath(mediaPath));
         return;
@@ -815,7 +828,8 @@ public class MediaUtil {
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_VIDEO : READ_EXTERNAL_STORAGE);
         }
         videoView.setVideoPath(mediaPath);
         return;
@@ -823,7 +837,8 @@ public class MediaUtil {
       case FILE_URL:
         if (isExternalFileUrl(form, mediaPath)
             || RUtil.needsFilePermission(form, mediaPath, null)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_VIDEO : READ_EXTERNAL_STORAGE);
         }
         videoView.setVideoPath(fileUrlToFilePath(mediaPath));
         return;

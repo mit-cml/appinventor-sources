@@ -235,7 +235,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   if (subsetJsonString.length > 0) {
     // TODO: All of this code should be cleaned up and moved into a separate
     //   function. Logs should be removed.
-    
+
     var subsetArray = [];
     var subsetBlocks = [];
     subsetArray = JSON.parse(subsetJsonString);
@@ -527,6 +527,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
     var xml = xmlUtils.helperKeyToXML(helper);
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
   }.bind(this));
+
+  // add the all components getter
+  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
+    component_type: typeName
+  }));
 
   return xmlArray;
 };
@@ -1028,6 +1033,30 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '</xml>'
       );
     }},
+    {matchingMutatorAttributes:{component_type:"AnomalyDetection", method_name:"DetectAnomalies"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG1"><block type="math_number"><title name="NUM">2</title></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
+    {matchingMutatorAttributes:{component_type:"Regression", method_name:"CalculateLineOfBestFitValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG2"><block type="helpers_dropdown"><mutation key="LOBFValues"></mutation><field name="OPTION">Slope</field></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
     {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"RemoveCol"},
     mutatorXMLStringFunction: function(mutatorAttributes) {
       return (

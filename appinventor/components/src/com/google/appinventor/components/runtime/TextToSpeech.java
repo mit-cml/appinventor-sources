@@ -441,6 +441,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.speak(message, loc);
   }
 
+  /**
+   * Stops any current speech.
+   */
+  @SimpleFunction
+  public void Stop() {
+    tts.stop();
+    AfterSpeaking(false);
+  }
 
   /**
    * Event to raise when Speak is invoked, before the message is spoken.

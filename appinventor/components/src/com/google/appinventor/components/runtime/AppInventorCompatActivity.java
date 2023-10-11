@@ -218,9 +218,9 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   }
 
   public static boolean isEmulator() {
-    return android.os.Build.PRODUCT.contains("google_sdk") ||  // Old emulator build (2.x)
-        android.os.Build.PRODUCT.equals("sdk") ||              // Honeycomb image (for testing)
-        android.os.Build.PRODUCT.contains("sdk_gphone");       // New emulator build (3.x)
+     return android.os.Build.PRODUCT.contains("google_sdk") ||  // Old emulator build (2.x)
+         android.os.Build.PRODUCT.equals("sdk") ||              // Honeycomb image (for testing)
+         android.os.Build.PRODUCT.contains("sdk_gphone");       // New emulator build (3.x)
   }
 
   @SuppressWarnings("unused") // Potentially useful for extensions adding custom activities

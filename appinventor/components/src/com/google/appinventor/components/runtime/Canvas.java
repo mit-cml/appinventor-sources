@@ -132,7 +132,8 @@ import java.util.Set;
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
     "and circles.</p>",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/canvas.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
@@ -416,10 +417,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     // to null whenever the canvas size or backgroundDrawable changes.
     private Bitmap scaledBackgroundBitmap;
 
-    // completeCache is created if the user calls getPixelColor().  It is set
+    // completeBitmap is created if the user calls getPixelColor().  It is set
     // back to null whenever the view is redrawn.  If available, it is used
     // when the Canvas is saved to a file.
-    private Bitmap completeCache;
+    private Bitmap completeBitmap;
 
     public CanvasView(Context context) {
       super(context);
@@ -433,27 +434,19 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
      * Create a bitmap showing the background (image or color) and drawing
      * (points, lines, circles, text) layer of the view but not any sprites.
      */
-    private Bitmap buildCache() {
-      // First, try building drawing cache.
-      setDrawingCacheEnabled(true);
-      destroyDrawingCache();      // clear any earlier versions we have requested
-      Bitmap cache = getDrawingCache();  // may return null if size is too large
-
-      // If drawing cache can't be built, build a cache manually.
-      if (cache == null) {
-        int width = getWidth();
-        int height = getHeight();
-        cache = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        android.graphics.Canvas c = new android.graphics.Canvas(cache);
-        layout(0, 0, width, height);
-        draw(c);
-      }
-      return cache;
+    private Bitmap createBitmap() {
+      int width = getWidth();
+      int height = getHeight();
+      Bitmap currentBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+      android.graphics.Canvas c = new android.graphics.Canvas(currentBitmap);
+      layout(0, 0, width, height);
+      draw(c);
+      return currentBitmap;
     }
 
     @Override
     public void onDraw(android.graphics.Canvas canvas0) {
-      completeCache = null;
+      completeBitmap = null;
 
       // This will draw the background image and color, if present.
       super.onDraw(canvas0);
@@ -721,8 +714,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         return Component.COLOR_NONE;
       }
 
-      // If the cache isn't available, try to avoid rebuilding it.
-      if (completeCache == null) {
+      // If the bitmap isn't available, try to avoid rebuilding it.
+      if (completeBitmap == null) {
         // If there are no visible sprites, just call getBackgroundPixelColor().
         boolean anySpritesVisible = false;
         for (Sprite sprite : sprites) {
@@ -740,12 +733,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         // If so, maybe we can just draw those sprites instead of building a full
         // cache of the view.
 
-        completeCache = buildCache();
+        completeBitmap = createBitmap();
       }
 
-      // Check the complete cache.
+      // Check the complete bitmap.
       try {
-        return completeCache.getPixel(x, y);
+        return completeBitmap.getPixel(x, y);
       } catch (IllegalArgumentException e) {
         // This should never occur, since we have checked bounds.
         Log.e(LOG_TAG,
@@ -795,7 +788,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   // access the bitmap of the canvas
 
   public Bitmap getBitmap() {
-    return view.buildCache();
+    return view.createBitmap();
   }
 
   public Activity getContext() {
@@ -1326,7 +1319,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * When a fling gesture (quick swipe) is made on the canvas: provides
    * the (x,y) position of the start of the fling, relative to the upper
    * left of the canvas. Also provides the speed (pixels per millisecond) and heading
-   * (0-360 degrees) of the fling, as well as the x velocity and y velocity
+   * (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
    * components of the fling's vector. The value "flungSprite" is true if a sprite
    * was located near the the starting point of the fling gesture.
    *
@@ -1695,7 +1688,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     new FileWriteOperation(form, this, method, scopedFile, false, false) {
       @Override
       protected boolean process(OutputStream stream) {
-        Bitmap bitmap = view.completeCache == null ? view.buildCache() : view.completeCache;
+        Bitmap bitmap = view.completeBitmap == null ? view.createBitmap() : view.completeBitmap;
         result.wakeup(bitmap.compress(format, 100, stream));
         return true;
       }

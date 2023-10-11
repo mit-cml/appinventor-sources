@@ -231,7 +231,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LATITUDE,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Latitude(double latitude) {
     Log.d(TAG, "Latitude");
     if (latitude < -90 || latitude > 90) {
@@ -262,7 +262,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Longitude(double longitude) {
     Log.d(TAG, "Longitude");
     if (longitude < -180 || longitude > 180) {
@@ -290,7 +290,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @param path a relative or absolute path, or a url, to an image asset to use for the marker.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ImageAsset(@Asset String path) {
     Log.d(TAG, "ImageAsset");
     this.imagePath = path;
@@ -320,7 +320,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = "3")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void AnchorHorizontal(@Options(HorizontalAlignment.class) int horizontal) {
     // Make sure the horizontal alignment is a valid HorizontalAlignment.
     HorizontalAlignment alignment = HorizontalAlignment.fromUnderlyingValue(horizontal);
@@ -368,7 +368,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = "3")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void AnchorVertical(@Options(VerticalAlignment.class) int vertical) {
     // Make sure the vertical alignment is a valid VerticalAlignment.
     VerticalAlignment alignment = VerticalAlignment.fromUnderlyingValue(vertical);

@@ -412,19 +412,23 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 <dl class="events">
   <dt id="Spreadsheet.ErrorOccurred">ErrorOccurred(<em class="text">errorMessage</em>)</dt>
   <dd>Triggered whenever an API call encounters an error. Details about the error are in <code class="highlighter-rouge">errorMessage</code>.</dd>
-  <dt id="Spreadsheet.FinishedAddCol">FinishedAddCol(<em class="number">columnNumber</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.AddCol"><code class="highlighter-rouge">AddCol</code></a> block, called once the
+  <dt id="Spreadsheet.FinishedAddColumn">FinishedAddColumn(<em class="number">columnNumber</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.AddColumn"><code class="highlighter-rouge">AddColumn</code></a> block, called once the
  values on the table have been updated. Additionally, this returns the
  column number for the new column.</dd>
   <dt id="Spreadsheet.FinishedAddRow">FinishedAddRow(<em class="number">rowNumber</em>)</dt>
   <dd>The callback event for the <a href="#Spreadsheet.AddRow"><code class="highlighter-rouge">AddRow</code></a> block, called once the
  values on the table have been updated. Additionally, this returns the
  row number for the new row.</dd>
+  <dt id="Spreadsheet.FinishedAddSheet">FinishedAddSheet(<em class="text">sheetName</em>)</dt>
+  <dd>The callback event for the addSheet block, called once the values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedClearRange">FinishedClearRange()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.ClearRange"><code class="highlighter-rouge">ClearRange</code></a> block, called once the
  values on the table have been updated.</dd>
-  <dt id="Spreadsheet.FinishedRemoveCol">FinishedRemoveCol()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.RemoveCol"><code class="highlighter-rouge">RemoveCol</code></a> block, called once the
+  <dt id="Spreadsheet.FinishedDeleteSheet">FinishedDeleteSheet(<em class="text">sheetName</em>)</dt>
+  <dd>The callback event for the DeleteSheet block, called once the values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedRemoveColumn">FinishedRemoveColumn()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.RemoveColumn"><code class="highlighter-rouge">RemoveColumn</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedRemoveRow">FinishedRemoveRow()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.RemoveRow"><code class="highlighter-rouge">RemoveRow</code></a> block, called once the
@@ -432,8 +436,8 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="Spreadsheet.FinishedWriteCell">FinishedWriteCell()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.WriteCell"><code class="highlighter-rouge">WriteCell</code></a> block, called once the
  values on the table have been updated.</dd>
-  <dt id="Spreadsheet.FinishedWriteCol">FinishedWriteCol()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.WriteCol"><code class="highlighter-rouge">WriteCol</code></a> block, called once the
+  <dt id="Spreadsheet.FinishedWriteColumn">FinishedWriteColumn()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.WriteColumn"><code class="highlighter-rouge">WriteColumn</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedWriteRange">FinishedWriteRange()</dt>
   <dd>The callback event for the <a href="#Spreadsheet.WriteRange"><code class="highlighter-rouge">WriteRange</code></a> block, called once the
@@ -444,12 +448,9 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="Spreadsheet.GotCellData">GotCellData(<em class="text">cellData</em>)</dt>
   <dd>The callback event for the <a href="#Spreadsheet.ReadCell"><code class="highlighter-rouge">ReadCell</code></a> block. The <code class="highlighter-rouge">cellData</code> is
  the text value in the cell.</dd>
-  <dt id="Spreadsheet.GotColData">GotColData(<em class="list">colDataList</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadCol"><code class="highlighter-rouge">ReadCol</code></a> block. The <code class="highlighter-rouge">colDataList</code> is a
+  <dt id="Spreadsheet.GotColumnData">GotColumnData(<em class="list">columnData</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadColumn"><code class="highlighter-rouge">ReadColumn</code></a> block. The <code class="highlighter-rouge">columnData</code> is a
  list of text cell-values in order of increasing row number.</dd>
-  <dt id="Spreadsheet.GotFilterResult">GotFilterResult(<em class="list">return_rows</em>,<em class="list">return_data</em>)</dt>
-  <dd>The callbeck event for the <a href="#Spreadsheet.ReadWithQuery"><code class="highlighter-rouge">ReadWithQuery</code></a> block. The <code class="highlighter-rouge">response</code>
- is a list of rows, where each row satisfies the query.</dd>
   <dt id="Spreadsheet.GotRangeData">GotRangeData(<em class="list">rangeData</em>)</dt>
   <dd>The callback event for the <a href="#Spreadsheet.ReadRange"><code class="highlighter-rouge">ReadRange</code></a> block. The <code class="highlighter-rouge">rangeData</code> is
  a list of rows, where the dimensions are the same as the rangeReference.</dd>
@@ -464,24 +465,28 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 <h3 id="Spreadsheet-Methods">Methods</h3>
 
 <dl class="methods">
-  <dt id="Spreadsheet.AddCol" class="method"><i></i> AddCol(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
+  <dt id="Spreadsheet.AddColumn" class="method"><i></i> AddColumn(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
   <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next empty
  column of the sheet. It will always start from the top row and continue
- downwards. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddCol"><code class="highlighter-rouge">FinishedAddCol</code></a>
+ downwards. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddColumn"><code class="highlighter-rouge">FinishedAddColumn</code></a>
  callback event.</dd>
   <dt id="Spreadsheet.AddRow" class="method"><i></i> AddRow(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
   <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next
  empty row of the sheet. It will always start from the left most column and
  continue to the right. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddRow"><code class="highlighter-rouge">FinishedAddRow</code></a>
  callback event. Additionally, this returns the row number for the new row.</dd>
+  <dt id="Spreadsheet.AddSheet" class="method"><i></i> AddSheet(<em class="text">sheetName</em>)</dt>
+  <dd>Adds a new sheet inside the Spreadsheet.</dd>
   <dt id="Spreadsheet.ClearRange" class="method"><i></i> ClearRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
   <dd>Empties the cells in the given range. Once complete, this block triggers
  the <a href="#Spreadsheet.FinishedClearRange"><code class="highlighter-rouge">FinishedClearRange</code></a> callback event.</dd>
-  <dt id="Spreadsheet.GetCellReference" class="method returns text"><i></i> GetCellReference(<em class="number">row</em>,<em class="number">col</em>)</dt>
+  <dt id="Spreadsheet.DeleteSheet" class="method"><i></i> DeleteSheet(<em class="text">sheetName</em>)</dt>
+  <dd>Deletes the specified sheet inside the Spreadsheet.</dd>
+  <dt id="Spreadsheet.GetCellReference" class="method returns text"><i></i> GetCellReference(<em class="number">row</em>,<em class="number">column</em>)</dt>
   <dd>Converts the integer representation of rows and columns to A1-Notation used
  in Google Sheets for a single cell. For example, row 1 and col 2
  corresponds to the string "B1".</dd>
-  <dt id="Spreadsheet.GetRangeReference" class="method returns text"><i></i> GetRangeReference(<em class="number">row1</em>,<em class="number">col1</em>,<em class="number">row2</em>,<em class="number">col2</em>)</dt>
+  <dt id="Spreadsheet.GetRangeReference" class="method returns text"><i></i> GetRangeReference(<em class="number">row1</em>,<em class="number">column1</em>,<em class="number">row2</em>,<em class="number">column2</em>)</dt>
   <dd>Converts the integer representation of rows and columns for the corners of
  the range to A1-Notation used in Google Sheets. For example, selecting the
  range from row 1, col 2 to row 3, col 4 corresponds to the string “B1:D3”.</dd>
@@ -489,15 +494,15 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>On the page with the provided sheetName, reads the cell at the given
  cellReference and triggers the <a href="#Spreadsheet.GotCellData"><code class="highlighter-rouge">GotCellData</code></a> callback event. The
  cellReference can be either a text block with A1-Notation, or the result of
- the <a href="#Spreadsheet.getCellReference"><code class="highlighter-rouge">getCellReference</code></a> block.</dd>
-  <dt id="Spreadsheet.ReadCol" class="method"><i></i> ReadCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>)</dt>
+ the <a href="#Spreadsheet.GetCellReference"><code class="highlighter-rouge">GetCellReference</code></a> block.</dd>
+  <dt id="Spreadsheet.ReadColumn" class="method"><i></i> ReadColumn(<em class="text">sheetName</em>,<em class="text">column</em>)</dt>
   <dd>On the page with the provided sheetName, reads the column at the given
- colNumber and triggers the <a href="#Spreadsheet.GotColData"><code class="highlighter-rouge">GotColData</code></a> callback event.</dd>
+ colNumber and triggers the <a href="#Spreadsheet.GotColumnData"><code class="highlighter-rouge">GotColumnData</code></a> callback event.</dd>
   <dt id="Spreadsheet.ReadRange" class="method"><i></i> ReadRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
   <dd>On the page with the provided sheetName, reads the cells at the given
  rangeReference and triggers the <a href="#Spreadsheet.GotRangeData"><code class="highlighter-rouge">GotRangeData</code></a> callback event. The
  rangeReference can be either a text block with A1-Notation, or the result
- of the <a href="#Spreadsheet.getRangeReference"><code class="highlighter-rouge">getRangeReference</code></a> block.</dd>
+ of the <a href="#Spreadsheet.GetRangeReference"><code class="highlighter-rouge">GetRangeReference</code></a> block.</dd>
   <dt id="Spreadsheet.ReadRow" class="method"><i></i> ReadRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
   <dd>On the page with the provided sheetName, reads the row at the given
  rowNumber and triggers the <a href="#Spreadsheet.GotRowData"><code class="highlighter-rouge">GotRowData</code></a> callback event.</dd>
@@ -508,11 +513,11 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Filters a Google Sheet for rows where the given column number matches the provided value.</dd>
   <dt id="Spreadsheet.ReadWithPartialFilter" class="method"><i></i> ReadWithPartialFilter(<em class="text">sheetName</em>,<em class="number">colID</em>,<em class="text">value</em>)</dt>
   <dd>Filters a Google Sheet for rows where the given column number contains the provided value string.</dd>
-  <dt id="Spreadsheet.RemoveCol" class="method"><i></i> RemoveCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>)</dt>
+  <dt id="Spreadsheet.RemoveColumn" class="method"><i></i> RemoveColumn(<em class="text">sheetName</em>,<em class="text">column</em>)</dt>
   <dd>Deletes the column with the given column number from the table. This does
  not clear the column, but removes it entirely. The sheet’s grid id can be
  found at the end of the url of the Google Sheets document, right after the
- “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveCol"><code class="highlighter-rouge">FinishedRemoveCol</code></a>
+ “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveColumn"><code class="highlighter-rouge">FinishedRemoveColumn</code></a>
  callback event.</dd>
   <dt id="Spreadsheet.RemoveRow" class="method"><i></i> RemoveRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
   <dd>Deletes the row with the given row number (1-indexed) from the table. This
@@ -524,11 +529,11 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Given text or a number as <code class="highlighter-rouge">data</code>, writes the value to the cell. It will
  override any existing data in the cell with the one provided. Once complete,
  it triggers the <a href="#Spreadsheet.FinishedWriteCell"><code class="highlighter-rouge">FinishedWriteCell</code></a> callback event.</dd>
-  <dt id="Spreadsheet.WriteCol" class="method"><i></i> WriteCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>,<em class="list">data</em>)</dt>
+  <dt id="Spreadsheet.WriteColumn" class="method"><i></i> WriteColumn(<em class="text">sheetName</em>,<em class="text">column</em>,<em class="list">data</em>)</dt>
   <dd>Given a list of values as <code class="highlighter-rouge">data</code>, writes the values to the column with the
  given column number, overriding existing values from top down. (Note: It
  will not erase the entire column.) Once complete, it triggers the
- <a href="#Spreadsheet.FinishedWriteCol"><code class="highlighter-rouge">FinishedWriteCol</code></a> callback event.</dd>
+ <a href="#Spreadsheet.FinishedWriteColumn"><code class="highlighter-rouge">FinishedWriteColumn</code></a> callback event.</dd>
   <dt id="Spreadsheet.WriteRange" class="method"><i></i> WriteRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>,<em class="list">data</em>)</dt>
   <dd>Given list of lists as <code class="highlighter-rouge">data</code>, writes the values to cells in the range. The
  number of rows and columns in the range must match the dimensions of your
@@ -581,6 +586,8 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Clear the entire data store.</dd>
   <dt id="TinyDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
   <dd>Clear the entry with the given <code class="text block highlighter-rouge">tag</code>.</dd>
+  <dt id="TinyDB.GetEntries" class="method returns dictionary"><i></i> GetEntries()</dt>
+  <dd>Method to get all data in form of Dictionary</dd>
   <dt id="TinyDB.GetTags" class="method returns any"><i></i> GetTags()</dt>
   <dd>Return a list of all the tags in the data store.</dd>
   <dt id="TinyDB.GetValue" class="method returns any"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>

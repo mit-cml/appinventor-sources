@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -24,7 +23,6 @@ import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -45,9 +43,12 @@ import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,6 +57,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -69,6 +71,14 @@ import java.util.Set;
  */
 public final class YaProjectEditor extends ProjectEditor implements ProjectChangeListener,
     ComponentDatabaseChangeListener {
+
+  private static final Logger LOG = Logger.getLogger(YaProjectEditor.class.getName());
+
+  @UiTemplate("YaProjectEditorClassic.ui.xml")
+  interface ClassicUi extends UiBinder<FlowPanel, YaProjectEditor> {}
+
+  @UiTemplate("YaProjectEditorCombined.ui.xml")
+  interface CombinedUi extends UiBinder<FlowPanel, YaProjectEditor> {}
 
   // FileEditors in a YA project come in sets. Every form in the project has 
   // a YaFormEditor for editing the UI, and a YaBlocksEditor for editing the 
@@ -149,7 +159,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           if (isScreen1(formName)) {
             screen1BlocksLoaded = true;
             if (readyToShowScreen1()) {
-              OdeLog.log("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
+              LOG.info("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
                   + formName + " for project " + newBlocksEditor.getProjectId());
               Ode.getInstance().getDesignToolbar().switchToScreen(newBlocksEditor.getProjectId(),
                   formName, DesignToolbar.View.FORM);
@@ -201,24 +211,22 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         if (isScreen1(formName)) {
           screen1Added = true;
           if (readyToShowScreen1()) {  // probably not yet but who knows?
-            OdeLog.log("YaProjectEditor.loadProject: switching to screen " + formName 
+            LOG.info("YaProjectEditor.loadProject: switching to screen " + formName
                 + " for project " + projectRootNode.getProjectId());
             Ode.getInstance().getDesignToolbar().switchToScreen(projectRootNode.getProjectId(), 
                 formName, DesignToolbar.View.FORM);
           }
         }
       } else if (editors.formEditor == null) {
-        OdeLog.wlog("Missing form editor for " + formName);
+        LOG.warning("Missing form editor for " + formName);
       } else {
-        OdeLog.wlog("Missing blocks editor for " + formName);
+        LOG.warning("Missing blocks editor for " + formName);
       }
     }
   }
   
   @Override
   protected void onShow() {
-    OdeLog.log("YaProjectEditor got onShow() for project " + projectId);
-    
     AssetListBox.getAssetListBox().getAssetList().refreshAssetList(projectId);
     
     DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
@@ -234,7 +242,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             DesignToolbar.View.BLOCKS);
       } else {
         // shouldn't happen!
-        OdeLog.elog("YaProjectEditor got onShow when selectedFileEditor" 
+        LOG.severe("YaProjectEditor got onShow when selectedFileEditor"
             + " is not a form editor or a blocks editor!");
         ErrorReporter.reportError("Internal error: can't switch file editors.");
       }
@@ -243,7 +251,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   @Override
   protected void onHide() {
-    OdeLog.log("YaProjectEditor: got onHide");
     AssetListBox.getAssetListBox().getAssetList().refreshAssetList(0);
 
     FileEditor selectedFileEditor = getSelectedFileEditor();
@@ -254,7 +261,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   
   @Override
   protected void onUnload() {
-    OdeLog.log("YaProjectEditor: got onUnload");
     super.onUnload();
     for (EditorSet editors : editorMap.values()) {
       editors.blocksEditor.prepareForUnload();
@@ -297,7 +303,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     // remove blocks and/or form editor if applicable. Remove screen from 
     // DesignToolbar. If the partner node to this one (blocks or form) was already 
     // removed, calling DesignToolbar.removeScreen a second time will be a no-op.
-    OdeLog.log("YaProjectEditor: got onProjectNodeRemoved for project "
+    LOG.info("YaProjectEditor: got onProjectNodeRemoved for project "
             + project.getProjectId() + ", node " + node.getFileId());
     String formName = null;
     if (node instanceof YoungAndroidFormNode) {
@@ -441,7 +447,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addFormEditor(YoungAndroidFormNode formNode) {
     final YaFormEditor newFormEditor = new YaFormEditor(this, formNode);
     final String formName = formNode.getFormName();
-    OdeLog.log("Adding form editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the blocks editor was already added.
       editorMap.get(formName).formEditor = newFormEditor;
@@ -462,7 +467,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         if (isScreen1(formName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
-            OdeLog.log("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen "
+            LOG.info("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen "
                 + formName + " for project " + newFormEditor.getProjectId());
             Ode.getInstance().getDesignToolbar().switchToScreen(newFormEditor.getProjectId(),
                 formName, DesignToolbar.View.FORM);
@@ -501,7 +506,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
     final YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, blocksNode);
     final String formName = blocksNode.getFormName();
-    OdeLog.log("Adding blocks editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the form editor was already added.
       editorMap.get(formName).blocksEditor = newBlocksEditor;
