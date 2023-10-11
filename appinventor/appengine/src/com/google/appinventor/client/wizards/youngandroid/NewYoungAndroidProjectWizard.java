@@ -131,28 +131,28 @@ public final class NewYoungAndroidProjectWizard {
 
 
   public void doCreateProject(String projectName) {
-      String packageName = StringUtils.getProjectPackage(
-          Ode.getInstance().getUser().getUserEmail(), projectName);
-      NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
-          packageName);
-      NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
-        @Override
-        public void execute(final Project project) {
-          Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-              if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
-                Scheduler.get().scheduleDeferred(this); // on other project
-              } else {
-                Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-              }
+    String packageName = StringUtils.getProjectPackage(
+        Ode.getInstance().getUser().getUserEmail(), projectName);
+    NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
+        packageName);
+    NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
+      @Override
+      public void execute(final Project project) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+          @Override
+          public void execute() {
+            if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
+              Scheduler.get().scheduleDeferred(this); // on other project
+            } else {
+              Ode.getInstance().openYoungAndroidProjectInDesigner(project);
             }
-          });
-        }
-      };
+          }
+        });
+      }
+    };
 
-      NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
-          parameters, callbackCommand);
-      Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
+    NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
+        parameters, callbackCommand);
+    Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
   }
 }
