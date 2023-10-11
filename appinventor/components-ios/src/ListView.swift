@@ -332,6 +332,23 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
+  // MARK: Methods
+
+  @objc open func RemoveItemAtIndex(_ index: Int32) {
+    if index < 1 || index > max(_listData.count, _elements.count) {
+      _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
+           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
+      return
+    }
+    if _listData.count >= index {
+      _listData.remove(at: Int(index - 1))
+    }
+    if _elements.count >= index {
+      _elements.remove(at: Int(index - 1))
+    }
+    _view.reloadData()
+  }
+
   // MARK: Events
 
   @objc open func AfterPicking() {
@@ -534,7 +551,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _listData.count
+    return _listData.isEmpty ? _elements.count : _listData.count
   }
 
   // MARK: UITableViewDelegate
