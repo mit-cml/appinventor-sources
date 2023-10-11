@@ -127,6 +127,7 @@ public final class TextBox extends TextBoxBase {
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
   }
 
+  
   /**
    * NumbersOnly property getter method.
    *
