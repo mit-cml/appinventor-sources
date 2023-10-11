@@ -822,6 +822,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             rxhr = null;
             top.usewebrtc = false;
+            rs.hasfetchassets = false;
             phonereceiving = false;
         },
         "resetcompanion" : function() {
@@ -835,6 +836,7 @@ Blockly.ReplMgr.putYail = (function() {
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
             rs.android = true;
+            rs.hasfetchassets = false;
             top.BlocklyPanel_indicateDisconnect();
             top.ConnectProgressBar_hide();
             engine.reset();
@@ -924,6 +926,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
         rs.connection = null;
         rs.didversioncheck = false;
         rs.isUSB = false;
+        rs.hasfetchassets = false;
         context.resetYail(false);
         top.BlocklyPanel_indicateDisconnect();
         // End reset companion state
@@ -1371,6 +1374,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     var me = this;
     rs.didversioncheck = false; // Re-check
     rs.isUSB = usb;
+    rs.hasfetchassets = false;
     var RefreshAssets = top.AssetManager_refreshAssets;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
@@ -1656,6 +1660,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
             rs.connection = null;
             rs.didversioncheck = false;
             rs.isUSB = false;
+            rs.hasfetchassets = false;
             me.resetYail(false);
             top.BlocklyPanel_indicateDisconnect();
             top.ConnectProgressBar_hide();
