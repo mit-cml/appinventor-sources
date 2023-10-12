@@ -584,6 +584,7 @@ public class YaVersion {
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 225:
+  // - WEB_COMPONENT_VERSION was incremented to 9
   // - EMAILPICKER_COMPONENT_VERSION was incremented to 4
   // - TEXTBOX_COMPONENT_VERSION was incremented to 7
   // - PASSWORD_TEXTBOX_VERSION was incremented to 7.
@@ -1544,7 +1545,9 @@ public class YaVersion {
   // - The XMLTextDecodeAsDictionary method was added.
   // For WEB_COMPONENT_VERSION 8:
   // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
-  public static final int WEB_COMPONENT_VERSION = 8;
+  // For WEB_COMPONENT_VERSION 9:
+  // - Added property ResponseTextEncoding
+  public static final int WEB_COMPONENT_VERSION = 9;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

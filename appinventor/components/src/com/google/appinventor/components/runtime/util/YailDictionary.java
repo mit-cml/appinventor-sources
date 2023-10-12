@@ -47,8 +47,12 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
     super();
   }
 
+  @SuppressWarnings("UseBulkOperation")  // Use of put handles type casting
   public YailDictionary(Map<Object, Object> prevMap) {
-    super(prevMap);
+    super();
+    for (Map.Entry<Object, Object> entry : prevMap.entrySet()) {
+      put(entry.getKey(), entry.getValue());
+    }
   }
 
   /**
@@ -148,7 +152,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
 
   @SuppressWarnings("WeakerAccess")  // Called from runtime.scm
   public static YailDictionary alistToDict(YailList alist) {
-    LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
+    YailDictionary map = new YailDictionary();
 
     for (Object o : ((LList) alist.getCdr())) {
       YailList currentPair = (YailList) o;
@@ -167,7 +171,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
       }
     }
 
-    return new YailDictionary(map);
+    return map;
   }
 
   private static YailList checkList(YailList list) {

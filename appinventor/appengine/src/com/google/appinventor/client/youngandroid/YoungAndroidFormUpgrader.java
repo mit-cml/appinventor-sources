@@ -1894,6 +1894,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 8.
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // The ResponseTextEncoding property was added.
+      // Properties related to this component have now been upgraded to version 9
+      srcCompVersion = 9;
+    }
     return srcCompVersion;
   }
 
