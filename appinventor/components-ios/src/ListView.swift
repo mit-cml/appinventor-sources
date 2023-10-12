@@ -534,7 +534,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _listData.count
+    return _listData.isEmpty ? _elements.count : _listData.count
   }
 
   // MARK: UITableViewDelegate
