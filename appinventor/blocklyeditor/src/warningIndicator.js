@@ -163,14 +163,6 @@ Blockly.WarningIndicator.prototype.init = function() {
   Blockly.browserEvents.bind(this.warningNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
   Blockly.browserEvents.bind(this.errorNavPrevious_, 'mousedown', this, function(e) { e.stopPropagation() });
   Blockly.browserEvents.bind(this.errorNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
-
-  // Stopping propagation of the mousedown event breaks touch events on tablets. We register here for touchend on the
-  // toggle button so that we can simulate a click event.
-  Blockly.browserEvents.bind(this.warningToggleGroup_, 'touchend', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
-  Blockly.browserEvents.bind(this.warningNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.browserEvents.bind(this.warningNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.browserEvents.bind(this.errorNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.browserEvents.bind(this.errorNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
 };
 
 /**

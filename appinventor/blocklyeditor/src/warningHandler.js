@@ -296,7 +296,9 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
 
   //check if there are any errors
   for(var i=0;i<errorTestArray.length;i++){
-    if(this[errorTestArray[i].name].call(this,block,errorTestArray[i])){
+    let errorObj = errorTestArray[i];
+    var errorFunc = this[errorObj.name] || errorObj.func;
+    if(errorFunc.call(this,block,errorObj)){
 
       //remove warning marker, if present
       if(block.warning) {
@@ -337,7 +339,9 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   }
   //if there are no errors, check for warnings
   for(var i=0;i<warningTestArray.length;i++){
-    if(this[warningTestArray[i].name].call(this,block,warningTestArray[i])){
+    var warningObj = warningTestArray[i];
+    var warningFunc = this[warningObj.name] || warningObj.func;
+    if(warningFunc.call(this,block,warningObj)){
       if(!block.hasWarning) {
         block.hasWarning = true;
         this.warningCount++;
@@ -785,3 +789,15 @@ Blockly.WarningHandler.prototype['checkReplErrors'] = function(block) {
   }
   return false;
 };
+
+// Part of the contract of a warning handler is that it has the following functions
+// which can be called by plugins which may define blocks that have their own error
+// checkers.
+
+Blockly.WarningHandler.prototype.setError = function(block, message) {
+  block.setErrorIconText(message);
+}
+
+Blockly.WarningHandler.prototype.setWarning = function(block, message) {
+  block.setWarningText(message);
+}
