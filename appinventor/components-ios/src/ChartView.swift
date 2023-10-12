@@ -6,6 +6,8 @@ import Charts
 
 public class ChartView {
   unowned let _chartComponent: Chart
+  private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
+  
   var form: Form {
     return _chartComponent.form!
   }
@@ -69,6 +71,7 @@ public class ChartView {
   public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
     var refreshTask: RefreshTask = RefreshTask(model.entries)
     // TODO: how to execute with Asynctask?
+    refreshTask.onPostExecute(result: <#T##ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>#>)
   }
   
   public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>, entries: Array<Charts.ChartDataEntry>) {
@@ -82,6 +85,7 @@ public class ChartView {
   // make RefreshTask
   private class RefreshTask {
     var _entries: Array<Charts.ChartDataEntry> = []
+    var _chart: ChartView
     public init(_ entries: Array<Charts.ChartDataEntry>) {
       _entries = entries
     }
@@ -90,9 +94,15 @@ public class ChartView {
     }
 
     public func onPostExecute(result: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
-      DispatchQueue.main.async() {
-        refresh(model: result, entries: _entries)
+      //Instance member '_workQueue' of type 'ChartView' cannot be used on instance of nested type 'ChartView.RefreshTask'
+      _chart._workQueue.async {
+        self._chart.refresh(model: result, entries: self._entries)
+
       }
+
+      /*DispatchQueue.main.async() {
+        refresh(model: result, entries: _entries)
+      }*/
     }
 
   }
