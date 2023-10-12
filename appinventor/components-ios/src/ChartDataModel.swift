@@ -49,6 +49,22 @@ open class ChartDataModel<E: Charts.ChartDataEntry, D: Charts.ChartData, V: Char
     let tupleSize = self.tupleSize
     let entries = elements.split(",")
     // MARK: Finish
+    print("tuplesize-1", tupleSize - 1)
+    
+    // entries.count - 1 because ranges are inclusive in Swift
+    for i in stride(from: tupleSize - 1, to: entries.count - 1, by: tupleSize) {
+      var tupleEntries: Array<String> = []
+      
+      // Iterate all over the tuple entries
+      // First entry is in  (i - tupleSize + 1)
+      for j in stride(from: tupleSize - 1, to: 0, by: -1) {
+        var index: Int = i - j
+        tupleEntries.append(entries[index])
+      }
+      
+      // Add entry from the parsed tuple
+      addEntryFromTuple(tupleEntries as! YailList<AnyObject>)
+    }
   }
 
   func importFromList(_ list: [AnyObject]) {
