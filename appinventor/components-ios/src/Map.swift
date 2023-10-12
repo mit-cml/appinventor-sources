@@ -987,7 +987,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
 
-  public func replaceFeature(from oldOverlay: MapOverlayShape, to newOverlay: MapOverlayShape) {
+  public func replaceFeature(from oldOverlay: MapOverlayShape?, to newOverlay: MapOverlayShape) {
     if let oldShapes = oldOverlay as? MapShapeCollection {
       if let last = oldShapes.shapes.last {
         if let newShapes = newOverlay as? MapShapeCollection {
@@ -1000,10 +1000,18 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       }
       mapView.removeOverlays(oldShapes.shapes)
     } else if let newShapes = newOverlay as? MapShapeCollection {
-      addCollection(newShapes, above: oldOverlay)
+      if let oldOverlay = oldOverlay {
+        addCollection(newShapes, above: oldOverlay)
+      } else {
+        mapView.addOverlays(newShapes.shapes)
+      }
     } else {
-      mapView.insertOverlay(newOverlay, above: oldOverlay)
-      mapView.removeOverlay(oldOverlay)
+      if let oldOverlay = oldOverlay{
+        mapView.insertOverlay(newOverlay, above: oldOverlay)
+        mapView.removeOverlay(oldOverlay)
+      } else {
+        mapView.addOverlay(newOverlay)
+      }
     }
   }
 
