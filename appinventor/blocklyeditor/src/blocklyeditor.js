@@ -478,12 +478,6 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   }
   workspace.drawer_ = new Blockly.Drawer(workspace, { scrollbars: true });
   workspace.flyout_ = workspace.drawer_.flyout_;
-  var flydown = new Blockly.Flydown(new Blockly.Options({scrollbars: false}));
-  // ***** [lyn, 10/05/2013] NEED TO WORRY ABOUT MULTIPLE BLOCKLIES! *****
-  workspace.flydown_ = flydown;
-  Blockly.utils.dom.insertAfter(flydown.createDom('g'), workspace.getBubbleCanvas());
-  flydown.init(workspace);
-  flydown.autoClose = true; // Flydown closes after selecting a block
   workspace.addWarningIndicator();
   workspace.addBackpack();
   Blockly.browserEvents.bind(workspace.svgGroup_, 'focus', workspace, workspace.markFocused);
