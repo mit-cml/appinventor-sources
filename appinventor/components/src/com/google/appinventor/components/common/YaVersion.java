@@ -584,6 +584,7 @@ public class YaVersion {
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 225:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 7
   // - WEB_COMPONENT_VERSION was incremented to 9
   public static final int YOUNG_ANDROID_VERSION = 225;
 
