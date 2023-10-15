@@ -90,11 +90,36 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open var Elements: [AnyObject] {
     get {
-      return _elements as [AnyObject]
+      if _listData.count > 0 {
+        return _listData as [AnyObject]
+      } else {
+        return _elements as [AnyObject]
+      }
     }
     set(elements) {
-      _elements = elements.toStringArray()
-      _automaticHeightConstraint.constant = _elements.isEmpty ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(_elements.count)
+      _elements = []
+      _listData = []
+      guard !elements.isEmpty else {
+        _view.reloadData()
+        return
+      }
+      if elements.first is YailDictionary {
+        for item in elements {
+          if let row = item as? YailDictionary {
+            if let rowDict = row as? [String:String] {
+              _listData.append(rowDict)
+            }
+          } else if let row = item as? String {
+            _listData.append(["Text1": row, "Text2": "", "Image": ""])
+          } else {
+            // Hmm...
+          }
+        }
+      } else {
+        _elements = elements.toStringArray()
+      }
+      let rows = max(_elements.count, _listData.count)
+      _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
       if let searchBar = _view.tableHeaderView as? UISearchBar {
         self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
       } else {
@@ -104,14 +129,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   @objc open var FontTypeface: String {
-      get {
-          return _fontTypeface
-      }
-      set(fontTypeface) {
-          _fontTypeface = fontTypeface
-        print(_fontTypeface)
-              _view.reloadData()
-      }
+    get {
+      return _fontTypeface
+    }
+    set(fontTypeface) {
+      _fontTypeface = fontTypeface
+      _view.reloadData()
+    }
   }
 
   @objc open var FontTypefaceDetail: String {
@@ -120,7 +144,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     set(FontTypefaceDetail) {
       _fontTypefaceDetail = FontTypefaceDetail
-      print(_fontTypeface)
       _view.reloadData()
     }
   }
@@ -138,10 +161,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     set(jsonString) {
       do {
-        print("JSON string: \(jsonString)")
-        let jsonObject = try getObjectFromJson(jsonString)
-        print("JSON object: \(jsonObject)")
-
         if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
           _listData = dictionaries.compactMap { dictionary in
             var item: [String: String] = [:]
@@ -180,7 +199,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     set(listViewLayoutMode) {
       _listViewLayoutMode = listViewLayoutMode
-      print("ListViewLayout \(ListViewLayout) " )
       _view.reloadData()
     }
   }
@@ -191,7 +209,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     set(orientation) {
       _orientation = orientation
-      print("Orientation \(Orientation)")
       _view.reloadData()
     }
   }
@@ -211,13 +228,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       } else if let index = _listData.firstIndex(where: { $0["Text1"] == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
-        print("selection index \(_selection)")
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
         _selection = ""
       }
-      print("Selection set: \(_selection)")
     }
   }
 
@@ -333,6 +348,30 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   // MARK: Methods
+
+  @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
+    return [
+      "Text1": mainText,
+      "Text2": detailText,
+      "Image": imageName
+    ] as YailDictionary
+  }
+
+  @objc open func GetDetailText(_ listElement: YailDictionary) -> String {
+    return listElement["Text2"] as? String ?? ""
+  }
+
+  @objc open func GetImageName(_ listElement: YailDictionary) -> String {
+    return listElement["Image"] as? String ?? ""
+  }
+
+  @objc open func GetMainText(_ listElement: YailDictionary) -> String {
+    return listElement["Text1"] as? String ?? ""
+  }
+
+  @objc open func Refresh() {
+    _view.reloadData()
+  }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
     if index < 1 || index > max(_listData.count, _elements.count) {
