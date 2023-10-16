@@ -762,7 +762,7 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_ACCENT_COLOR:
       case PROPERTY_NAME_THEME:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
-        return editor.isScreen1();
+        return false;
       }
 
       default: {
@@ -1439,6 +1439,10 @@ public final class MockForm extends MockContainer {
     } else {
       myVAlignmentPropertyEditor.enable();
     }
+  }
+
+  public void projectPropertyChanged() {
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
   }
 
   @Override
