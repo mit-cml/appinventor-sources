@@ -13,7 +13,7 @@ public class ProjectPropertiesAction implements Command {
   @Override
   public void execute() {
     YaProjectEditor projectEditor = (YaProjectEditor)Ode.getInstance().getEditorManager()
-      .getOpenProjectEditor(Ode.getInstance().getCurrentYoungAndroidProjectId());
+        .getOpenProjectEditor(Ode.getInstance().getCurrentYoungAndroidProjectId());
     projectEditor.openProjectPropertyDialog();
   }
 }

@@ -12,7 +12,6 @@ import static com.google.appinventor.client.editor.simple.components.MockCompone
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
@@ -754,7 +753,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Ode.getInstance().showComponentDesigner();
   }
 
-  public void refershCurrentPropertiesPanel() {
+  public void refreshCurrentPropertiesPanel() {
     PropertiesBox.getPropertiesBox().show(this, true);
   }
 

@@ -1442,7 +1442,7 @@ public final class MockForm extends MockContainer {
   }
 
   public void projectPropertyChanged() {
-    ((YaFormEditor) editor).refershCurrentPropertiesPanel();
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
   }
 
   @Override
