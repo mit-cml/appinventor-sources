@@ -307,7 +307,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         }
       } else {
         // Support legacy single-string ListViews
-        stringItems = ElementsUtil.elementsStrings(itemsList, "Listview");
+        stringItems = ElementsUtil.elementsStrings(itemsList, "ListView");
       }
     }
     setAdapterData();
