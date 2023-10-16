@@ -143,7 +143,7 @@ public class ListAdapterWithRecyclerView
     Arrays.fill(isVisible, Boolean.TRUE);
   }
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, String textMainFont, int backgroundColor, int selectionColor) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, List<String> stringItems, int textMainColor, float textMainSize, String textMainFont, int backgroundColor, int selectionColor) {
     // Legacy Support
     this.container = container;
     this.textMainSize = textMainSize;
@@ -167,8 +167,7 @@ public class ListAdapterWithRecyclerView
     // Build the list of strings into a list of dictionaries
     this.items = new ArrayList<>();
     // YailList is 1-indexed
-    for(int i = 1; i <= stringItems.size(); ++i) {
-      String itemString = YailList.YailListElementToString(stringItems.get(i));
+    for(String itemString : stringItems) {
       YailDictionary itemDict = new YailDictionary();
       itemDict.put(Component.LISTVIEW_KEY_MAIN_TEXT, itemString);
       this.items.add(itemDict);

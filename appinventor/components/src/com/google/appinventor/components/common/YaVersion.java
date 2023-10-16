@@ -584,6 +584,7 @@ public class YaVersion {
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 225:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 7
   // - WEB_COMPONENT_VERSION was incremented to 9
   public static final int YOUNG_ANDROID_VERSION = 225;
 
@@ -1145,7 +1146,9 @@ public class YaVersion {
   // - Added SelectionColor Property
   // For LISTVIEW_COMPONENT_VERSION 6:
   // - Added ...
-  public static final int LISTVIEW_COMPONENT_VERSION = 6;
+  // For LISTVIEW_COMPONENT_VERSION 7:
+  // - Added RemoveItemAtIndex method
+  public static final int LISTVIEW_COMPONENT_VERSION = 7;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

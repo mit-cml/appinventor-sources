@@ -787,6 +787,9 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.Refresh" class="method"} <i/> Refresh()
 : Reload the ListView to reflect any changes in the data.
 
+{:id="ListView.RemoveItemAtIndex" class="method"} <i/> RemoveItemAtIndex(*index*{:.number})
+: Removes Item from list at a given index
+
 ## Notifier  {#Notifier}
 
 The Notifier component displays alert messages and creates Android log entries through

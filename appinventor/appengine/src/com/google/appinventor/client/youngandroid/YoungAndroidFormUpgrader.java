@@ -1430,6 +1430,10 @@ public final class YoungAndroidFormUpgrader {
       // Added ...
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Added RemoveItemAtIndex method
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

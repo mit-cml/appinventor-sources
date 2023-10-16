@@ -128,6 +128,9 @@ import Foundation
   // ImageBot Errors
   case ERROR_IMAGEBOT_ERROR = 4300
 
+  // ListView Errors
+  case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
+
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
   case ERROR_CLOUDDB_JSON_MALFORMED = 104002
@@ -352,6 +355,10 @@ import Foundation
     // ImageBot Errors
     case .ERROR_IMAGEBOT_ERROR:
       return "Error from the ImageBot code: %d %@"
+
+    // ListView Errors
+    case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
+      return "The index %d is out of bounds for the list view."
 
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
