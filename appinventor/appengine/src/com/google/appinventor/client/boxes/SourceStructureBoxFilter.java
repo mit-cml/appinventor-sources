@@ -23,16 +23,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * Box implementation for source structure explorer (new style, with filters).
  */
-public final class SourceStructureBoxNew implements ISourceStructureBox {
+public final class SourceStructureBoxFilter implements ISourceStructureBox {
   private Integer view = 1;
 
   private final DropDownButton dropDownButton;
-  private final SourceStructureExplorer sourceStructureExplorer = new SourceStructureExplorer(false);
+  private final SourceStructureExplorer sourceStructureExplorer = new SourceStructureExplorer();
 
   /**
    * Creates new source structure explorer box.
    */
-  public SourceStructureBoxNew(SourceStructureBox container) {
+  public SourceStructureBoxFilter(SourceStructureBox container) {
     super();
 
     List<DropDownItem> items = new ArrayList<>();
@@ -105,7 +105,7 @@ public final class SourceStructureBoxNew implements ISourceStructureBox {
       MockForm form = ((YaFormEditor) Ode.getInstance().getCurrentFileEditor()).getForm();
       sourceStructureExplorer.updateTree(form.buildComponentsTree(view),
           form.getForm().getLastSelectedComponent().getSourceStructureExplorerItem());
-      SourceStructureBoxNew.this.setView(view);
+      SourceStructureBoxFilter.this.setView(view);
 
       updateSourceDropdownButtonCaption();
     }
