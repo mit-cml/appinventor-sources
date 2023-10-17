@@ -42,9 +42,7 @@ public class SourceStructureBox extends Box implements ISourceStructureBox {
         false); // removable
 
     // Creates the child instance according to the enabled features.
-    SUBINSTANCE = AppInventorFeatures.enableFutureFeatures()
-            ? new SourceStructureBoxNew(this)
-            : new SourceStructureBoxClassic();
+    SUBINSTANCE = new SourceStructureBoxFilter(this);
 
     setContent(SUBINSTANCE.getSourceStructureExplorer());
   }
