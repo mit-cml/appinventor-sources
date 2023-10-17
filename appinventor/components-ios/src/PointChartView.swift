@@ -4,17 +4,22 @@
 import Foundation
 import Charts
 
-open class PointChartView<E: Charts.ChartDataEntry, T: Charts.BarLineScatterCandleBubbleChartDataSet, D: Charts.BarLineScatterCandleBubbleChartDataSet, C: Charts.BarLineChartViewBase, V: PointChartView<E, T, D, C, V>> : AxisChartView<E, T, D, C, V> {
-  let data: D
-  let dataset: Charts.ChartDataSet
-  let view: V
-  var _entries = [E]()
-  var maximumTimeEntries: Int32 = 200
+open class PointChartView: AxisChartView {
   
-  init(data: D, dataset: Charts.ChartDataSet, view: V) {
-    self.data = data
-    self.dataset = dataset
-    self.view = view
+  override init(_ chartComponent: Chart) {
+    super.init(_chartComponent)
   }
-  
+
+  public override func initializeDefaultSettings() {
+    super.initializeDefaultSettings()
+    
+    // TODO: learn how to setLayoutParams
+    // Since the Chart is stored in a RelativeLayout, settings are needed to fill the Layout
+    var temp: GroupView = UILayoutGuide(
+    chart.layoutGuides = UILayoutGuide(
+  }
+      
+  public func getView() -> (UIView) {
+    return chart
+  }
 }

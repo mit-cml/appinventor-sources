@@ -4,9 +4,17 @@
 import Foundation
 import Charts
 
-class LineChartView: LineChartViewBase<LineChartView> {
-  init(data: Charts.LineChartData, view: Charts.LineChartView) {
-    super.init(data: data, view: view)
+class LineChartView: LineChartViewBase {
+  override init(_ chartComponent: Chart) {
+    super.init(_chartComponent)
+  }
+  
+  // TODO: interpret what is public ChartDataModel
+  override class ChartDataModel {
+    createChartModel() {
+      // TODO: why is self from aicompanion app
+      return LineChartDataModel(data: data as! LineChartData, view: self)
+    }
   }
 }
 

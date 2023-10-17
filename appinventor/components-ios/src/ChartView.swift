@@ -4,7 +4,7 @@
 import Foundation
 import Charts
 
-public class ChartView {
+open public class ChartView {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
   
@@ -71,7 +71,9 @@ public class ChartView {
   public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
     var refreshTask: RefreshTask = RefreshTask(model.entries)
     // TODO: how to execute with Asynctask?
-    refreshTask.onPostExecute(result: <#T##ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>#>)
+    
+    // how to execute the refreshTask with the chartDataModel argument
+    refreshTask.onPostExecute(result: model)
   }
   
   public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>, entries: Array<Charts.ChartDataEntry>) {

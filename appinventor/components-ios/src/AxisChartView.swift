@@ -25,8 +25,75 @@ open class AxisChartView : ChartView{
     super.init(_chartComponent)
   }
 
-  override initializeDefaultSettings() {
+
+  public override func initializeDefaultSettings() {
+    super.initializeDefaultSettings()
     
+    var chartView: ChartView = ChartView(_chartComponent)
+    // TODO: CANT FIND LEFT AND RIGHT AXIS, also many other errors with xFromZero and yFromZero
+      
+    chart.xAxis.labelPosition = XAxis.LabelPosition.bottom // Position X axis to the bottom
+    chart.rightAxis == false // Disable right Y axis so there's only one
+    
+    // set the granularities both for the X and the Y axis to 1
+    chart.xAxis.granularity = 1
+    chart.leftAxis.granularity = 1
+    
+    chart.xAxis.valueFormatter = ValueFormatter() {
+      func getFormattedValue(value: Float) -> (String) {
+        var integerValue: Int = Int(value.rounded())
+        
+        integerValue -= Int(chart.xAxis.axisMinimum)
+        
+        if integerValue >= 0 && integerValue < axisLabels.count {
+          return axisLabels[integerValue]
+        } else {
+          return String(value)
+        }
+      }
+    }
+    if _chartComponent.XFromZero {
+      chart.xAxis.axisMinimum = 0
+
+    }
+    if _chartComponent.YFromZerio {
+      chart.leftAxis.granularity = 1
+    }
   }
   
+  // sets whether the X origin should be fixed to 0
+  public func setXMinimum (zero: Bool) {
+    if zero {
+      chart.xAxis.axisMinimum = 0
+    } else {
+      chart.xAxis.resetCustomAxisMax()
+    }
+  }
+  
+  public func setYMinimum (zero: Bool) {
+    if zero {
+      chart.axisLeft.axisMinimum = 0
+    } else {
+      chart.axisLeft.resetCustomAxisMax()
+    }
+  }
+  
+  public func setXBounds (minimum: Double, maximum: Double) {
+    chart.xAxis.axisMinimum = minimum
+    chart.xAxis.axisMaximum = maximum
+  }
+  
+  public func setYBounds (minimum: Double, maximum: Double) {
+    chart.leftAxis.axisMinimum = minimum
+    chart.leftAxis.axisMaximum = maximum
+  }
+  
+  public func setGridEnabled(enabled: Bool) {
+    chart.xAxis.enabled = enabled
+    chart.leftAxis.enabled = enabled
+  }
+  
+  public func setLables(labels: Array<String>) {
+    self.axisLabels = labels
+  }
 }

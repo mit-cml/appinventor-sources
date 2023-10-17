@@ -4,17 +4,17 @@
 import Foundation
 import Charts
 
-open class LineChartViewBase<E: Charts.ChartDataEntry, D: Charts.ChartData, V: Charts.ChartViewBase> {
-  let data: D
-  let dataset: Charts.ChartDataSet
-  let view: V
-  var _entries = [E]()
-  var maximumTimeEntries: Int32 = 200
-  
-  init(data: D, dataset: Charts.ChartDataSet, view: V) {
-    self.data = data
-    self.dataset = dataset
-    self.view = view
+open class LineChartViewBase: PointChartView {
+
+  override init(_ chartComponent: Chart) {
+    super.init(_chartComponent)
+    
+    super.chart = LineChartView(Form)
+    
+    super.data = LineChartData()
+    super.chart.data = super.data
+    
+    initializeDefaultSettings()
   }
   
 }
