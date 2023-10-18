@@ -10,7 +10,6 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.youngandroid.actions.SendToGalleryAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
@@ -39,9 +38,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
-
-  private volatile boolean lockPublishButton = false; // Used to prevent double-clicking the
-                                                     // SendToGallery button
 
   /*
    * A Screen groups together the form editor and blocks editor for an
@@ -145,6 +141,7 @@ public class DesignToolbar extends Toolbar {
   @UiField ToolbarItem removeFormItem;
   @UiField ToolbarItem switchToDesign;
   @UiField ToolbarItem switchToBlocks;
+  @UiField ToolbarItem sendToGalleryItem;
   @UiField ToolbarItem projectPropertiesDialog;
 
   /**
@@ -158,18 +155,9 @@ public class DesignToolbar extends Toolbar {
       setVisibleItem(addFormItem, false);
       setVisibleItem(removeFormItem, false);
     }
-
     // Is the Gallery Enabled (new gallery)?
-    if (Ode.getSystemConfig().getGalleryEnabled() && !Ode.getInstance().getGalleryReadOnly()) {
-      add(new ToolbarItem(WIDGET_NAME_SENDTOGALLERY,
-          MESSAGES.publishToGalleryButton(), new SendToGalleryAction(() -> {
-            if (!lockPublishButton) {
-              lockPublishButton = true;
-              return true;
-            }
-            return false;
-          }, () -> lockPublishButton = false)));
-    }
+    setVisibleItem(sendToGalleryItem, Ode.getSystemConfig().getGalleryEnabled()
+        && !Ode.getInstance().getGalleryReadOnly());
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
