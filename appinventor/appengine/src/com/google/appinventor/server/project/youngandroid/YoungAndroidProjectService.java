@@ -169,6 +169,33 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\"}}\n|#";
   }
 
+  //when new project is created, checks for theme and toolkit
+  public static String getInitialFormPropertiesFileContents(String qualifiedName, NewYoungAndroidProjectParameters youngAndroidParams) {
+    final int lastDotPos = qualifiedName.lastIndexOf('.');
+    String packageName = qualifiedName.split("\\.")[2];
+    String formName = qualifiedName.substring(lastDotPos + 1);
+    String themeName = youngAndroidParams.getThemeName();
+    String blocksToolkit = youngAndroidParams.getBlocksToolkit();
+
+    String newString = "#|\n$JSON\n" +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
+        "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" + 
+        themeName + "\"}}\n|#";
+    if (blocksToolkit.length() >= 1){
+        newString = "#|\n$JSON\n" +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
+        "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" + 
+        themeName +  "\",\"BlocksToolkit\":" + blocksToolkit +"}}\n|#";
+    }
+    return newString;
+  }
+
   /**
    * Returns the initial contents of a Young Android blockly blocks file.
    */
@@ -228,6 +255,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   @Override
   public long newProject(String userId, String projectName, NewProjectParameters params) {
+    LOG.info("Here are the params: " + params);
     NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
     String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
 
@@ -237,7 +265,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileContents = builder.toProperties();
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
-    String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
+    String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName, youngAndroidParams);
 
     String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
     String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
@@ -256,6 +284,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Create new project
     return storageIo.createProject(userId, project, builder.build());
   }
+
 
   @Override
   public long copyProject(String userId, long oldProjectId, String newName) {

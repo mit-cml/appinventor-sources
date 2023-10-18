@@ -23,6 +23,6 @@ public class YoungAndroidThemeChoicePropertyEditor extends ChoicePropertyEditor 
   };
 
   public YoungAndroidThemeChoicePropertyEditor() {
-    super(textAlignments);
+    super(textAlignments, false);
   }
 }

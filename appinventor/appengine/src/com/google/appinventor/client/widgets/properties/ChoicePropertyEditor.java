@@ -101,6 +101,31 @@ public class ChoicePropertyEditor extends PropertyEditor {
     initWidget(dropDownButton);
   }
 
+  // For theme choice property editor
+  public ChoicePropertyEditor(Choice[] choices, Boolean projectLoaded) {
+    // Initialize UI
+    this.choices = choices;
+    List<DropDownItem> items = Lists.newArrayList();
+    for(final Choice choice : choices) {
+      items.add(new DropDownItem("Choice Property Editor", choice.caption, new Command() {
+        @Override
+        public void execute() {
+          boolean multiple = isMultipleValues();
+          setMultipleValues(false);
+          property.setValue(choice.value, multiple);
+          if (!projectLoaded){
+            updateValue();
+          }
+          
+        }
+      }));
+    }
+    dropDownButton = new DropDownButton("Choice Property Editor", choices[0].caption, items, false);
+    dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
+
+    initWidget(dropDownButton);
+  }
+
   /**
    * Creates a new instance of the property editor with choice names.
    * Each choice name is treated as both the caption and the value of a choice.
