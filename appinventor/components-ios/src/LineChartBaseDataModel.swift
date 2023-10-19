@@ -4,8 +4,12 @@
 import Foundation
 import Charts
 
-class LinechartBaseDataModel<V: Charts.ChartViewBase>: PointChartDataModel<V> {
-  init(data: Charts.LineChartData, view: V) {
-    super.init(data: data, dataset: LineChartDataSet(), view: view)
+class LinechartBaseDataModel: PointChartDataModel {
+  //<V: Charts.ChartViewBase>
+  init(data: Charts.LineChartData, view: Charts.ChartViewBase) {
+    super.init(data: data, view: view)
+    var dataset: LineChartDataSet = LineChartDataSet(Array<ChartDataEntry>)
+    data.dataSets = dataset
+    setDefaultStylingProperties()
   }
 }

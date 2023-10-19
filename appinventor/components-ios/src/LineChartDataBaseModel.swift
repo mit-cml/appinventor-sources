@@ -9,5 +9,11 @@ class LineChartBaseDataModel: PointChartDataModel {
     super.init(data: data, view: view)
     var dataset = LineChartDataSet()
   }
+  public override func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
+    var entry: ChartDataEntry = getEntryFromTuple(tuple)
+    if entry != nil { // TODO: how to compare it to nil
+      
+    }
+  }
 }
 

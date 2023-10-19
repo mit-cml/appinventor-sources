@@ -4,17 +4,16 @@
 import Foundation
 import Charts
 
-class LineChartView: LineChartViewBase {
+open class LineChartView: LineChartViewBase {
   override init(_ chartComponent: Chart) {
     super.init(_chartComponent)
   }
   
-  // TODO: interpret what is public ChartDataModel
-  override class ChartDataModel {
-    createChartModel() {
-      // TODO: why is self from aicompanion app
-      return LineChartDataModel(data: data as! LineChartData, view: self)
-    }
+  // TODO: fix self
+  // Cannot convert value of type 'AIComponentKit.LineChartView' to expected argument type 'Charts.LineChartView'
+  public override func createChartModel() -> ChartDataModel<ChartDataEntry, ChartData, ChartViewBase> {
+    return LineChartDataModel(data: data as! LineChartData, view: self) as! ChartDataModel<ChartDataEntry, ChartData, ChartViewBase>
   }
+
 }
 
