@@ -20,7 +20,7 @@ import Charts
   
 
   var _view = UIView()
-  var _chartView: ChartView?
+  var _chartView: ChartView<Charts.ChartViewBase>?
   var _type = ChartType.Line
   var _description = ""
   var _backgroundColor: UIColor = argbToColor(Color.none.int32)
@@ -157,7 +157,7 @@ import Charts
         view.heightAnchor.constraint(equalTo: newChartView.chart.heightAnchor)
       ])
       
-      if let newChartSubview = newChartView as? ChartView {
+      if let newChartSubview = newChartView as? ChartView<Charts.ChartViewBase> {
                 _view.insertSubview(newChartSubview, at: 0)
             }
       
@@ -174,7 +174,15 @@ import Charts
       }
     }
   }
-
+  
+  @objc open var YFromZero: Bool {
+    didSet {
+      if let chartView = _chartView as? AxisChartView {
+        chartView.setXMinimum(zero: YFromZero)
+      }
+    }
+  }
+  
   // MARK: Chart events
 
   @objc open func EntryClick(_ series: Component, _ x: AnyObject, _ y: Double) {
@@ -183,8 +191,17 @@ import Charts
   }
 
   // MARK: Private Implementation
-
-  public var chartView: ChartView? {
+  
+  // TODO: should I do this?
+  public func getXFromZero() -> Bool {
+    return XFromZero
+  }
+  
+  public func getYFromZero() -> Bool {
+    return YFromZero
+  }
+  
+  public var chartView: ChartView<Charts.ChartViewBase>? {
     return _chartView
   }
 
@@ -197,18 +214,18 @@ import Charts
     _chartView?.chart.notifyDataSetChanged()
   }
 
-  private func createChartView(for type: ChartType) -> ChartView {
+  private func createChartView(for type: ChartType) -> ChartView<Charts.ChartViewBase> {
     switch type {
     case .Line:
-      return LineChartView(frame: .zero) as! ChartView
+      return LineChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
     case .Scatter:
-      return ScatterChartView(frame: .zero) as! ChartView
+      return ScatterChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
     case .Area:
-      return LineChartView(frame: .zero) as! ChartView
+      return LineChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
     case .Bar:
-      return BarChartView(frame: .zero) as! ChartView
+      return BarChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
     case .Pie:
-      return PieChartView(frame: .zero) as! ChartView
+      return PieChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
     }
   }
 

@@ -15,10 +15,6 @@ open class ChartView<D: Charts.ChartViewBase> {
   
   var data: Charts.ChartData
   
-  // TODO: do I need to make a uiHandler?
-  // var uiHandler: Handler
-  
-
   public init(_ chartComponent: Chart) {
     _chartComponent = chartComponent
   }
@@ -49,9 +45,7 @@ open class ChartView<D: Charts.ChartViewBase> {
       chart.legend.enabled = newValue!
     }
   }
-  
-  // TODO: How would I make createChartModel abstract function in swift? Is this right?
-  
+    
   public func createChartModel() -> ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase> {
     preconditionFailure("This method must be overridden")
 
@@ -67,21 +61,10 @@ open class ChartView<D: Charts.ChartViewBase> {
    Refreshes the Chart View to react to styling changes
    */
   
-  // TODO: CHECK WHICH THIS IS RIGHT WAY TO DO CHARTS.INVALIDATE()
   public func refresh() {
     _workQueue.async {
       self.chart.notifyDataSetChanged()
     }
-    // chart.reloadInputViews()
-  }
-  
-  
-  public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
-    var refreshTask: RefreshTask = RefreshTask(model.entries)
-    // TODO: how to execute with Asynctask?
-    
-    // how to execute the refreshTask with the chartDataModel argument
-    refreshTask.onPostExecute(result: model)
   }
   
   public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>, entries: Array<Charts.ChartDataEntry>) {
@@ -89,7 +72,6 @@ open class ChartView<D: Charts.ChartViewBase> {
     dataset.replaceEntries(entries)
     chart.data?.notifyDataChanged()
     chart.notifyDataSetChanged()
-    //chart.reloadInputViews()
   }
   
   // make RefreshTask
@@ -106,18 +88,9 @@ open class ChartView<D: Charts.ChartViewBase> {
 
     public func onPostExecute(result: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
 
-      // TODO: is it workqueue or dispatchqueue.main.async
       _chartView._workQueue.async {
         self._chartView.refresh(model: result, entries: self._entries)
-
       }
-
-      /*DispatchQueue.main.async() {
-        self._chartView.refresh(model: result, entries: self._entries)
-      }*/
     }
-
   }
-  
-
 }

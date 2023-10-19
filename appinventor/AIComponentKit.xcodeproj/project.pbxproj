@@ -185,6 +185,7 @@
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
 		B48808CE2ACFB9030046DF4F /* AxisChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CD2ACFB9030046DF4F /* AxisChartView.swift */; };
+		B48808D02ADE4B070046DF4F /* LineChartDataBaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CF2ADE4B070046DF4F /* LineChartDataBaseModel.swift */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
 		C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */; };
 		C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */; };
@@ -444,6 +445,7 @@
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
 		B48808CD2ACFB9030046DF4F /* AxisChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxisChartView.swift; sourceTree = "<group>"; };
+		B48808CF2ADE4B070046DF4F /* LineChartDataBaseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartDataBaseModel.swift; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
 		C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalScrollArrangement.swift; sourceTree = "<group>"; };
@@ -652,6 +654,7 @@
 				06C791D02950E94500C1BB1B /* ChartView.swift */,
 				06C791D22950F1CC00C1BB1B /* ChartDataModel.swift */,
 				06C791D4295110E900C1BB1B /* LineChartDataModel.swift */,
+				B48808CF2ADE4B070046DF4F /* LineChartDataBaseModel.swift */,
 				B48808C72ACFB1AD0046DF4F /* LineChartView.swift */,
 				B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */,
 				B48808CB2ACFB3770046DF4F /* PointChartView.swift */,
@@ -1408,6 +1411,7 @@
 				06B215FE1DB95116000B3366 /* Web.swift in Sources */,
 				0655BEFB261E4BE600EBE3F6 /* Dictionary+Json.swift in Sources */,
 				041758532009417D007D2C31 /* String+ChopAffix.swift in Sources */,
+				B48808D02ADE4B070046DF4F /* LineChartDataBaseModel.swift in Sources */,
 				0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */,
 				CBC787022032272E005363A3 /* String+Replace.swift in Sources */,
 				06C8CE962A3B5EFA00C39EBC /* chat.pb.swift in Sources */,
