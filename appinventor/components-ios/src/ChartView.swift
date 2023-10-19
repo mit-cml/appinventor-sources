@@ -4,7 +4,7 @@
 import Foundation
 import Charts
 
-open public class ChartView {
+open class ChartView {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
   
@@ -15,6 +15,7 @@ open public class ChartView {
   
   var data: Charts.ChartData
   
+  // TODO: do I need to make a uiHandler?
   // var uiHandler: Handler
   
 
@@ -49,8 +50,12 @@ open public class ChartView {
     }
   }
   
-  // TODO: How would I make createChartModel in swift?
-  public var createChartModel : ChartDataModel = ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>(data: Charts.ChartData, dataset: Charts.ChartDataSet, view: ChartViewBase)
+  // TODO: How would I make createChartModel abstract function in swift? Is this right?
+  
+  public func createChartModel() -> ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase> {
+    preconditionFailure("This method must be overridden")
+
+  }
   
   public func initializeDefaultSettings() {
     // Center the Legend
@@ -62,9 +67,10 @@ open public class ChartView {
    Refreshes the Chart View to react to styling changes
    */
   
-  // TODO: CHECK IF THIS IS RIGHT WAY TO DO CHARTS.INVALIDATE()
+  // TODO: CHECK WHICH THIS IS RIGHT WAY TO DO CHARTS.INVALIDATE()
   public func refresh() {
-    chart.reloadInputViews()
+    chart.notifyDataSetChanged()
+    // chart.reloadInputViews()
   }
   
   
@@ -81,13 +87,13 @@ open public class ChartView {
     dataset.replaceEntries(entries)
     chart.data?.notifyDataChanged()
     chart.notifyDataSetChanged()
-    chart.reloadInputViews()
+    //chart.reloadInputViews()
   }
   
   // make RefreshTask
   private class RefreshTask {
     var _entries: Array<Charts.ChartDataEntry> = []
-    var _chart: ChartView
+    var _chartView: ChartView
     public init(_ entries: Array<Charts.ChartDataEntry>) {
       _entries = entries
     }
@@ -96,14 +102,15 @@ open public class ChartView {
     }
 
     public func onPostExecute(result: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
-      //Instance member '_workQueue' of type 'ChartView' cannot be used on instance of nested type 'ChartView.RefreshTask'
-      _chart._workQueue.async {
-        self._chart.refresh(model: result, entries: self._entries)
+
+      // TODO: is it workqueue or dispatchqueue.main.async
+      _chartView._workQueue.async {
+        self._chartView.refresh(model: result, entries: self._entries)
 
       }
 
       /*DispatchQueue.main.async() {
-        refresh(model: result, entries: _entries)
+        self._chartView.refresh(model: result, entries: self._entries)
       }*/
     }
 
