@@ -368,7 +368,7 @@
     "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP": "この画面が開かれたときに、通常は複数画面アプリの別の画面によって渡された値を返します。値が渡されなかった場合は、空のテキストを返します。",
     "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT": "開始値を取得",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT": "値で画面を開く 'Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP ='複数画面アプリで新しい画面を開き、開始値をその画面に渡します。",
-    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "複数画面アプリで新しい画面を開きます。",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "複数画面アプリで新しい画面を開く。Screen1に戻るためにこのブロックを使用するべきではありません。代わりにclose screen（クローズ　スクリーン）ブロックを使用してください。",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "スクリーンを開く",
     "Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP": "接続されたコードブロックを実行し、戻り値（存在する場合）を無視します。戻り値を持つプロシージャを呼び出す必要があるが値は必要ない場合に役立ちます。",
     "Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT": "評価するが無視する",
@@ -634,5 +634,8 @@
     "Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP": "乱数生成で出された数値を指定します",
     "Blockly.Msg.LANG_TEXT_COMPARE_GT": " ＞",
     "Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
-    "Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "＝"
+    "Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "＝",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP": "複数画面アプリで新しい画面を開き、その画面に開始値をパスしてください。",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "’実行'セクションのブロックを、のディクショナリの各キー/値の項目に対して実行する。与えられた変数名を使用して、現在のディクショナリ項目のキー/値を参照する。",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "ディクショナリの%3（余りが３桁まで） の %2 （余りが２桁まで）を持つそれぞれの%1（余りが１桁まで） に対して"
 }
