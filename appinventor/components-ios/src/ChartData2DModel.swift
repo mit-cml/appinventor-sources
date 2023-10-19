@@ -2,11 +2,11 @@
 // Copyright © 2022 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
-import Charts
+import DGCharts
 
 open class ChartData2DModel: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase> {
-  init(data: Charts.ChartData, view: Charts.ChartViewBase) {
-    super.init(data: data, dataset: Charts.ChartDataSet, view: view)
+  init(data: DGCharts.ChartData, view: DGCharts.ChartViewBase) {
+    super.init(data: data, dataset: DGCharts.ChartDataSet, view: view)
   }
   
   public func getTupleSize() -> Int {

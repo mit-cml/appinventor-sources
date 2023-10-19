@@ -30,7 +30,7 @@ target 'SchemeKit' do
     pod 'GEOSwift', '~> 3.1.0'
     pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
     pod 'Zip', '~> 2.1'
-    pod 'Charts', '~> 4.1.0'
+    pod 'DGCharts', '~> 5.0.0'
 
     target 'AIComponentKitTests' do
     end
@@ -52,7 +52,7 @@ target 'SchemeKit' do
       pod 'GEOSwift', '~> 3.1.0'
       pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
       pod 'Zip', '~> 2.1'
-      pod 'Charts', '~> 4.1.0'
+      pod 'DGCharts', '~> 5.0.0'
 
       target 'AICompanionAppTests' do
         inherit! :search_paths

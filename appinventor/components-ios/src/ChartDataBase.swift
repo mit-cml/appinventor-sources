@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Charts
+import DGCharts
 
 @objc class ChartDataBase: NSObject, Component, DataSourceChangeListener, ChartViewDelegate {
   func copy(with zone: NSZone? = nil) -> Any {

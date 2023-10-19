@@ -2,7 +2,7 @@
 // Copyright © 2023 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
-import Charts
+import DGCharts
 
 open class LineChartView: LineChartViewBase {
   override init(_ chartComponent: Chart) {

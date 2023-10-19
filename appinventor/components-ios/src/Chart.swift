@@ -2,7 +2,7 @@
 // Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import Charts
+import DGCharts
 
 @objc enum ChartType: Int32 {
   case Line = 0

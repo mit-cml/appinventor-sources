@@ -1,6 +1,0 @@
-framework module Charts {
-  umbrella header "Charts-umbrella.h"
-
-  export *
-  module * { export * }
-}

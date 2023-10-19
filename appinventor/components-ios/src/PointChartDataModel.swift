@@ -2,7 +2,7 @@
 // Copyright © 2022 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
-import Charts
+import DGCharts
 
 open class PointChartDataModel: ChartData2DModel {
   // <E: Charts.ChartDataEntry, D: BarLineScatterCandleBubbleChartData, V: ChartViewBase>

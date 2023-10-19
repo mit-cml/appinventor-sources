@@ -2,9 +2,9 @@
 // Copyright © 2022 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
-import Charts
+import DGCharts
 
-open class ChartView<D: Charts.ChartViewBase> {
+open class ChartView<D: DGCharts.ChartViewBase> {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
   
@@ -13,7 +13,7 @@ open class ChartView<D: Charts.ChartViewBase> {
   }
   var chart: D
   
-  var data: Charts.ChartData
+  var data: DGCharts.ChartData
   
   public init(_ chartComponent: Chart) {
     _chartComponent = chartComponent
@@ -46,7 +46,7 @@ open class ChartView<D: Charts.ChartViewBase> {
     }
   }
     
-  public func createChartModel() -> ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase> {
+  public func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase> {
     preconditionFailure("This method must be overridden")
 
   }
@@ -67,7 +67,7 @@ open class ChartView<D: Charts.ChartViewBase> {
     }
   }
   
-  public func refresh(model: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>, entries: Array<Charts.ChartDataEntry>) {
+  public func refresh(model: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>, entries: Array<DGCharts.ChartDataEntry>) {
     var dataset : ChartDataSet = model.dataset
     dataset.replaceEntries(entries)
     chart.data?.notifyDataChanged()
@@ -78,15 +78,15 @@ open class ChartView<D: Charts.ChartViewBase> {
   private class RefreshTask {
     var _entries: Array<Charts.ChartDataEntry> = []
     unowned var _chartView: ChartView
-    public init(_ owner: ChartView, _ entries: Array<Charts.ChartDataEntry>) {
+    public init(_ owner: ChartView, _ entries: Array<DGCharts.ChartDataEntry>) {
       _entries = entries
       _chartView = owner
     }
-    public func doInBackGround(chartDataModels: Array<ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>>) -> ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>{
+    public func doInBackGround(chartDataModels: Array<ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>>) -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>{
       return chartDataModels[0]
     }
 
-    public func onPostExecute(result: ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>) {
+    public func onPostExecute(result: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>) {
 
       _chartView._workQueue.async {
         self._chartView.refresh(model: result, entries: self._entries)
