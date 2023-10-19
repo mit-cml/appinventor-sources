@@ -631,5 +631,8 @@
     "Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_COLLAPSED_TEXT": "渡された指定値をテキストで取得する",
     "Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD": "範囲内のラジアンの値を返す\n[π, +π）の度数引数（アーギュメントの(arg)の度数）に対応する。",
     "Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG": "引数 ラジアンに対応する\n[0, 360) の範囲の度数値を返します。",
-    "Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP": "乱数生成で出された数値を指定します"
+    "Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP": "乱数生成で出された数値を指定します",
+    "Blockly.Msg.LANG_TEXT_COMPARE_GT": " ＞",
+    "Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
+    "Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "＝"
 }
