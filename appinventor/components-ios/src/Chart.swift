@@ -32,6 +32,7 @@ import Charts
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     setDelegate(self)
+    parent.add(self)
   }
 
   @objc open override var view: UIView {
@@ -147,13 +148,29 @@ import Charts
       _chartView?.chart.removeFromSuperview()
       _type = newValue
       _chartView = newChartView
+
+      view.addSubview(newChartView.chart)
+      NSLayoutConstraint.activate([
+        view.topAnchor.constraint(equalTo: newChartView.chart.topAnchor),
+        view.leadingAnchor.constraint(equalTo: newChartView.chart.leadingAnchor),
+        view.widthAnchor.constraint(equalTo: newChartView.chart.widthAnchor),
+        view.heightAnchor.constraint(equalTo: newChartView.chart.heightAnchor)
+      ])
       
-      if let newChartSubview = newChartView as? UIView {
+      if let newChartSubview = newChartView as? ChartView {
                 _view.insertSubview(newChartSubview, at: 0)
             }
       
       if shouldReinitialize {
         reinitializeChart()
+      }
+    }
+  }
+
+  @objc open var XFromZero: Bool {
+    didSet {
+      if let chartView = _chartView as? AxisChartView {
+        chartView.setXMinimum(zero: XFromZero)
       }
     }
   }

@@ -8,7 +8,7 @@ import Charts
  * Base class for Chart Views (Chart UI) for Charts types that
  * have an axis.
  */
-open class AxisChartView : ChartView{
+open class AxisChartView : ChartView<Charts.BarLineChartViewBase> {
   
   // List containing Strings to use for the X Axis of the Axis Chart.
   // The first entry corresponds to an x value of 0, the second to
@@ -31,9 +31,9 @@ open class AxisChartView : ChartView{
     
     var chartView: ChartView = ChartView(_chartComponent)
     // TODO: CANT FIND LEFT AND RIGHT AXIS, also many other errors with xFromZero and yFromZero
-      
+
     chart.xAxis.labelPosition = XAxis.LabelPosition.bottom // Position X axis to the bottom
-    chart.rightAxis == false // Disable right Y axis so there's only one
+    chart.rightAxis.enabled = false // Disable right Y axis so there's only one
     
     // set the granularities both for the X and the Y axis to 1
     chart.xAxis.granularity = 1
@@ -56,7 +56,7 @@ open class AxisChartView : ChartView{
       chart.xAxis.axisMinimum = 0
 
     }
-    if _chartComponent.YFromZerio {
+    if _chartComponent.YFromZero {
       chart.leftAxis.granularity = 1
     }
   }
@@ -72,9 +72,9 @@ open class AxisChartView : ChartView{
   
   public func setYMinimum (zero: Bool) {
     if zero {
-      chart.axisLeft.axisMinimum = 0
+      chart.leftAxis.axisMinimum = 0
     } else {
-      chart.axisLeft.resetCustomAxisMax()
+      chart.leftAxis.resetCustomAxisMax()
     }
   }
   

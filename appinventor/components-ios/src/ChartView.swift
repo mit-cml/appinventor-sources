@@ -4,14 +4,14 @@
 import Foundation
 import Charts
 
-open class ChartView {
+open class ChartView<D: Charts.ChartViewBase> {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
   
   var form: Form {
     return _chartComponent.form!
   }
-  var chart: Charts.ChartViewBase
+  var chart: D
   
   var data: Charts.ChartData
   
@@ -69,7 +69,9 @@ open class ChartView {
   
   // TODO: CHECK WHICH THIS IS RIGHT WAY TO DO CHARTS.INVALIDATE()
   public func refresh() {
-    chart.notifyDataSetChanged()
+    _workQueue.async {
+      self.chart.notifyDataSetChanged()
+    }
     // chart.reloadInputViews()
   }
   
@@ -93,9 +95,10 @@ open class ChartView {
   // make RefreshTask
   private class RefreshTask {
     var _entries: Array<Charts.ChartDataEntry> = []
-    var _chartView: ChartView
-    public init(_ entries: Array<Charts.ChartDataEntry>) {
+    unowned var _chartView: ChartView
+    public init(_ owner: ChartView, _ entries: Array<Charts.ChartDataEntry>) {
       _entries = entries
+      _chartView = owner
     }
     public func doInBackGround(chartDataModels: Array<ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>>) -> ChartDataModel<Charts.ChartDataEntry, Charts.ChartData, Charts.ChartViewBase>{
       return chartDataModels[0]
