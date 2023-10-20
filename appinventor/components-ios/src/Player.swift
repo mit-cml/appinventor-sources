@@ -57,6 +57,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
       if let player = _player, let observer = observer {
         NotificationCenter.default.removeObserver(observer, name: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem)
+        self.observer = nil
       }
       guard !path.isEmpty else {
         _player?.pause()
@@ -83,16 +84,6 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
         resourceUrl = URL(fileURLWithPath: path)
       }
       let player = AVPlayer(url: resourceUrl)
-      observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-          object: player.currentItem, queue: .main) { [weak self] _ in
-        self?.Completed()
-        if self?._loop == true {
-          self?._player?.seek(to: CMTime.zero)
-          self?._player?.play()
-        } else {
-          self?._wasPlaying = false
-        }
-      }
       _player = player
       player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.new], context: &self.context)
     }
@@ -170,6 +161,24 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
     }
     pendingPlay = false
     _wasPlaying = true
+    // If there is an existing observer, we need to clear it out first
+    if let observer = observer {
+      NotificationCenter.default.removeObserver(observer, name: .AVPlayerItemDidPlayToEndTime,
+          object: player.currentItem)
+    }
+    // Register the new observer to handle post-playback functionality
+    observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+        object: player.currentItem, queue: .main) { [weak self] _ in
+      self?.Completed()
+      if self?._loop == true {
+        self?._player?.seek(to: CMTime.zero)
+        self?._player?.play()
+      } else {
+        self?._wasPlaying = false
+        self?._player?.seek(to: CMTime.zero)
+        self?.state = .Prepared
+      }
+    }
     player.play()
     state = .Playing
   }
