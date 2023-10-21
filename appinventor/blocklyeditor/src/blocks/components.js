@@ -1367,22 +1367,19 @@ Blockly.Blocks.component_set_get = {
 
       // Filter out all deprecated properties for both get and set
       var deprecatedProperties = []
-      goog.object.forEach(componentDb.types_[component.typeName].properties, function (prop) {
-        if (prop.deprecated) {
-          deprecatedProperties.push(prop.name);
+      var allCurrentProperties = componentDb.types_[component.typeName].properties;
+      for (var prop in allCurrentProperties) {
+        if (allCurrentProperties[prop].deprecated) {
+          deprecatedProperties.push(allCurrentProperties[prop].name);
         }
-      });
+      }
 
       var setters = componentDb.getSetterNamesForType(component.typeName),
           getters = componentDb.getGetterNamesForType(component.typeName),
           k;
 
-      var filteredSetters = goog.array.filter(setters, function (item) {
-        return !goog.array.contains(deprecatedProperties, item);
-      });
-      var filteredGetters = goog.array.filter(getters, function (item) {
-        return !goog.array.contains(deprecatedProperties, item);
-      });
+      var filteredSetters = setters.filter(function (prop) { return !deprecatedProperties.includes(prop)})
+      var filteredGetters = getters.filter(function (prop) { return !deprecatedProperties.includes(prop)})
 
       for(k=0; k<filteredSetters.length; k++) {
         pushBlock(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET, 'set', filteredSetters[k],
