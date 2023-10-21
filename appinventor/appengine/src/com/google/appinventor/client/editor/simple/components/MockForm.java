@@ -762,7 +762,7 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_ACCENT_COLOR:
       case PROPERTY_NAME_THEME:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
-        return editor.isScreen1();
+        return false;
       }
 
       default: {
@@ -1341,7 +1341,17 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree() {
-    return buildTree();
+    return buildComponentsTree(1);
+  }
+
+  /**
+   * Builds a tree of the component hierarchy of the form for display in the
+   * {@code SourceStructureExplorer}.
+   *
+   * @return  tree showing the component hierarchy of the form
+   */
+  public TreeItem buildComponentsTree(Integer view) {
+    return buildTree(view);
   }
 
   // PropertyChangeListener implementation
@@ -1439,6 +1449,10 @@ public final class MockForm extends MockContainer {
     } else {
       myVAlignmentPropertyEditor.enable();
     }
+  }
+
+  public void projectPropertyChanged() {
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
   }
 
   @Override

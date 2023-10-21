@@ -174,8 +174,6 @@ public class SourceStructureExplorer extends Composite {
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(scrollPanel);
-    panel.add(new Label());
-    panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
   }

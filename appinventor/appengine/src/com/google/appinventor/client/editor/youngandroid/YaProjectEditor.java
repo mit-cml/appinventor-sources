@@ -20,6 +20,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
+import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -121,6 +122,20 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private boolean screen1FormLoaded = false;
   private boolean screen1BlocksLoaded = false;
   private boolean screen1Added = false;
+
+   // variable which open the ProjectPropertyDialog(per project)
+  private ProjectPropertiesDialogBox propertyDialogBox = null;
+
+  /**
+   * Opens the project property dialog
+   */
+  public void openProjectPropertyDialog() {
+    if (propertyDialogBox == null) {
+      propertyDialogBox = new ProjectPropertiesDialogBox(this);
+    }
+    String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+    propertyDialogBox.showDialog(curScreen);
+  }
 
   /**
    * Returns a project editor factory for {@code YaProjectEditor}s.
@@ -625,7 +640,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    * To remove Component Files from the Project!
    * @param componentTypes
    */
-  public  void removeComponent(Map<String, String> componentTypes) {
+  public void removeComponent(Map<String, String> componentTypes) {
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
     Set<String> externalCompFolders = new HashSet<String>();

@@ -416,6 +416,7 @@ div.StatusPanel {
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
+  align-items: center;
   background-color: #f2f2f2;
   background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
@@ -1091,6 +1092,7 @@ select.ode-PropertyEditor[disabled] {
   color: black;
   border: 1px solid gray;
   padding: 2px;
+  z-index: 1000;
 }
 
 .ode-ColorChoicePropertyEditor {
@@ -1646,6 +1648,75 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* End of NoProjectsDialogBox. */
+
+/* Start Of ProjectPropertiesDialogBox. */
+.ode-propertyDialogContainer  {
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.ode-projectPropertyCategoryTitlePanel {
+  margin-top: 18px;
+  width: 180px;
+  border-radius: 0px;
+  border: 0px;
+  border-right: 2px solid black;
+  padding-right: 20px;
+  outline: none;
+}
+
+.ode-propertyDialogPropertiesScrollPanel {
+  height: 400px;
+  width: 600px;
+  padding-bottom: 40px;
+  padding-right: 30px;
+}
+
+.ode-propertyDialogPropertyContainer {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+}
+
+.ode-propertyDialogPropertyTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #413f3f;
+  margin-top: 18px;
+}
+
+.ode-propertyDialogPropertyDescription {
+  font-size: 14px;
+  font-weight: 400;
+  color: #797575;
+  margin-top: 18px;
+}
+
+.ode-propertyDialogPropertyEditor {
+  min-height: 30px;
+  height: 10%;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.ode-projectPropertyCategoryTitlePanel option { 
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.ode-projectPropertyCategoryTitlePanel:focus  { 
+  outline: none;
+}
+
+.ode-propertyDialogVerticalPanel {
+  display: flex;
+  flex-flow: column;
+}
+
+/* End of Project ProjectPropertiesDialogBox. */
 
 .ode-DialogBox {
   background-color: white;
@@ -3070,4 +3141,10 @@ div.dropdiv p {
 
 .listItem:nth-child(2n + 0) {
   background: rgba(200, 200, 200, 0.1);
+}
+
+.components-tree-filter {
+  margin-top: 1px;
+  margin-left: 1px;
+  font-size: 11px;
 }

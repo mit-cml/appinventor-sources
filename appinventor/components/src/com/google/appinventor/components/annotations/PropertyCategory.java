@@ -52,7 +52,13 @@ public enum PropertyCategory {
    * Token property of CloudDB, where App Inventor autopopulates the token and that should be
    * sufficient for most users.
    */
-  ADVANCED("Advanced");
+  ADVANCED("Advanced"),
+
+  GENERAL("General"),
+
+  THEMING("Theming"),
+
+  PUBLISHING("Publishing");
 
   private final String name;
 
