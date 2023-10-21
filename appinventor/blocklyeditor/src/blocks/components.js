@@ -542,37 +542,33 @@ Blockly.Blocks.component_event = {
 
     componentDb.forEachInstance(function(instance) {
       types[instance.typeName] = true;
-      componentDb.forEventInType(instance.typeName, function(eventDesc, eventName) {
-        if (!eventDesc.deprecated) {
-          tb.push({
-            translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instance.name + '.' +
-                componentDb.getInternationalizedEventName(eventName),
-            mutatorAttributes: {
-              component_type: instance.typeName,
-              instance_name: instance.name,
-              event_name: eventName
-            }
-          });
-        }
+      componentDb.forEventInType(instance.typeName, function(_, eventName) {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instance.name + '.' +
+            componentDb.getInternationalizedEventName(eventName),
+          mutatorAttributes: {
+            component_type: instance.typeName,
+            instance_name: instance.name,
+            event_name: eventName
+          }
+        });
       });
     });
 
     delete types['Form'];
 
     Object.keys(types).forEach(function(typeName) {
-      componentDb.forEventInType(typeName, function(eventDesc, eventName) {
-        if (!eventDesc.deprecated) {
-          tb.push({
-            translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE +
-                componentDb.getInternationalizedComponentType(typeName) +  '.' +
-                componentDb.getInternationalizedEventName(eventName),
-            mutatorAttributes: {
-              component_type: typeName,
-              is_generic: true,
-              event_name: eventName
-            }
-          });
-        }
+      componentDb.forEventInType(typeName, function(_, eventName) {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE +
+            componentDb.getInternationalizedComponentType(typeName) +  '.' +
+            componentDb.getInternationalizedEventName(eventName),
+          mutatorAttributes: {
+            component_type: typeName,
+            is_generic: true,
+            event_name: eventName
+          }
+        });
       });
     });
 
@@ -950,38 +946,34 @@ Blockly.Blocks.component_method = {
     var typeNameDict = {};
     componentDb.forEachInstance(function(instance) {
       typeNameDict[instance.typeName] = true;
-      componentDb.forMethodInType(instance.typeName, function(methodDef, methodName) {
-        if (!methodDef.deprecated) {
-          tb.push({
-            translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instance.name +
-                '.' + componentDb.getInternationalizedMethodName(methodName),
-            mutatorAttributes: {
-              component_type: instance.typeName,
-              instance_name: instance.name,
-              method_name: methodName,
-              is_generic: 'false'
-            }
-          });
-        }
+      componentDb.forMethodInType(instance.typeName, function(_, methodName) {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instance.name +
+          '.' + componentDb.getInternationalizedMethodName(methodName),
+          mutatorAttributes: {
+            component_type: instance.typeName,
+            instance_name: instance.name,
+            method_name: methodName,
+            is_generic: 'false'
+          }
+        });
       });
     });
 
     delete typeNameDict['Form'];
 
     Object.keys(typeNameDict).forEach(function (typeName) {
-      componentDb.forMethodInType(typeName, function (methodDef, methodName) {
-        if (!methodDef.deprecated) {
-          tb.push({
-            translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL +
-                componentDb.getInternationalizedComponentType(typeName) + '.' +
-                componentDb.getInternationalizedMethodName(methodName),
-            mutatorAttributes: {
-              component_type: typeName,
-              method_name: methodName,
-              is_generic: 'true'
-            }
-          });
-        }
+      componentDb.forMethodInType(typeName, function (_, methodName) {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL +
+              componentDb.getInternationalizedComponentType(typeName) + '.' +
+              componentDb.getInternationalizedMethodName(methodName),
+          mutatorAttributes: {
+            component_type: typeName,
+            method_name: methodName,
+            is_generic: 'true'
+          }
+        });
       });
     });
 
