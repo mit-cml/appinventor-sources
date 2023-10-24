@@ -1511,7 +1511,7 @@ Users enter text in a text box component.
  [`Text`](#TextBox.Text) property.
 
 {:id="TextBox.ReadOnly" .boolean} *ReadOnly*
-: Whether the TextBox is read-only. By default, this is `true`{:.logic.block}.
+: Whether the TextBox is read-only. By default, this is `false`{:.logic.block}.
 
 {:id="TextBox.Text" .text} *Text*
 : The text in the `TextBox`, which can be set by the programmer in the Designer or Blocks Editor,
