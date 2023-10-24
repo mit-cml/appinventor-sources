@@ -263,7 +263,7 @@ public class LinearView: UIView {
     }
   }
 
-  open func resetView(){
+  open func resetView() {
     /* Resets the all the width*/
     widthFillParent = 0
     widthFillParentConstraint?.isActive = false
@@ -278,10 +278,6 @@ public class LinearView: UIView {
     _innerEqualConstraint.isActive = false
     _innerHeadZero.isActive = true
     _innerTailZero.isActive = false
-
-    /* Resets the outer constraints*/
-    /* This line was causing the problem for the button centering*/
-    //_outerEqualConstraint.isActive = false
   }
 
   open func removeAllItems() {
