@@ -280,7 +280,8 @@ public class LinearView: UIView {
     _innerTailZero.isActive = false
 
     /* Resets the outer constraints*/
-    _outerEqualConstraint.isActive = false
+    /* This line was causing the problem for the button centering*/
+    //_outerEqualConstraint.isActive = false
   }
 
   open func removeAllItems() {
