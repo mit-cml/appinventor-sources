@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
-             xmlns:c="urn:import:com.google.appinventor.client.components"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
@@ -9,8 +8,7 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
         <!-- Projects Menu -->
         <ai:Toolbar styleName="ya-ProjectToolbar">
-
-            <g:Label text="{messages.projectsTabName}" styleName="ya-ProjectName"
+            <g:Label text="{messages.projectsTabName2}" styleName="ya-ProjectName"
                      ui:field="projectLabel" />
             <g:Label text="{messages.trashButton}" styleName="ya-ProjectName" visible="false"
                      ui:field="trashLabel" />
@@ -48,7 +46,7 @@
             <ai:ToolbarItem name="Restore" icon="restore" caption="{messages.restoreProjectButton}" align="right" styleName="ode-ProjectListButton inline bleft">
                 <actions:RestoreProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Projects" caption="{messages.projectsTabName}" align="right" styleName="ode-ProjectListButton inline bcenter">
+            <ai:ToolbarItem name="Projects" caption="{messages.projectsTabName2}" align="right" styleName="ode-ProjectListButton inline bcenter">
                 <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="right" styleName="ode-ProjectListButton inline bleft">

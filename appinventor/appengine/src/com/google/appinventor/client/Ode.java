@@ -450,12 +450,14 @@ public class Ode implements EntryPoint {
     paletteBox.setVisible(false);
     sourceStructureBox.setVisible(false);
     propertiesBox.setVisible(false);
+    HiddenComponentsCheckbox.getCheckbox().setVisible(false);
   }
 
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
+    HiddenComponentsCheckbox.getCheckbox().setVisible(true);
   }
 
   /**
