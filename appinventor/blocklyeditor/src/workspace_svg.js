@@ -61,7 +61,7 @@ Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
  */
 Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 
-/** 
+/**
  * Whether the workspace elements are hidden
  * @type {boolean}
  */
@@ -890,7 +890,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       return res;
     }
 
-    // 3.Component event handlers, lexicographically sorted by 
+    // 3.Component event handlers, lexicographically sorted by
     // type name, instance name, then event name
     if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName) {
       if (a.typeName == b.typeName) {
@@ -906,9 +906,9 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
     }
 
-    // 4. For Component blocks, sorted internally first by type, 
-    // whether they are generic (generics precede specifics), 
-    // then by instance name (for specific blocks), 
+    // 4. For Component blocks, sorted internally first by type,
+    // whether they are generic (generics precede specifics),
+    // then by instance name (for specific blocks),
     // then by method/property name.
     if (a.category == "Component" && b.category == "Component") {
       var geneA = ',2';
@@ -933,7 +933,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       if (res == 0) {
         if (a.instanceName && b.instanceName) {
           res = compareStrTextNum(a.instanceName, b.instanceName);
-        } 
+        }
         // Compare property names
         var prop_method_A = a.propertyName || a.methodName;
         var prop_method_B = b.propertyName || b.methodName;
@@ -1191,7 +1191,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       }
     });
   };
-  menuOptions.splice(3, 0, clearUnusedBlocks);  
+  menuOptions.splice(3, 0, clearUnusedBlocks);
 
 };
 
@@ -1496,66 +1496,6 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
   }
 };
 */
-
-/**
- * Scroll the workspace to center on the given block.
- * @param {?string} id ID of block center on.
- * @public
- */
-// TODO: This is code from a later version of Blockly. Remove on next Blockly update.
-Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
-  if (!this.scrollbar) {
-    console.warn('Tried to scroll a non-scrollable workspace.');
-    return;
-  }
-
-  var block = this.getBlockById(id);
-  if (!block) {
-    return;
-  }
-
-  // XY is in workspace coordinates.
-  var xy = block.getRelativeToSurfaceXY();
-  // Height/width is in workspace units.
-  var heightWidth = block.getHeightWidth();
-
-  // Find the enter of the block in workspace units.
-  var blockCenterY = xy.y + heightWidth.height / 2;
-
-  // In RTL the block's position is the top right of the block, not top left.
-  var multiplier = this.RTL ? -1 : 1;
-  var blockCenterX = xy.x + (multiplier * heightWidth.width / 2);
-
-  // Workspace scale, used to convert from workspace coordinates to pixels.
-  var scale = this.scale;
-
-  // Center in pixels.  0, 0 is at the workspace origin.  These numbers may
-  // be negative.
-  var pixelX = blockCenterX * scale;
-  var pixelY = blockCenterY * scale;
-
-  var metrics = this.getMetrics();
-
-  // Scrolling to here would put the block in the top-left corner of the
-  // visible workspace.
-  var scrollToBlockX = pixelX - metrics.contentLeft;
-  var scrollToBlockY = pixelY - metrics.contentTop;
-
-  // viewHeight and viewWidth are in pixels.
-  var halfViewWidth = metrics.viewWidth / 2;
-  var halfViewHeight = metrics.viewHeight / 2;
-
-  // Put the block in the center of the visible workspace instead.
-  var scrollToCenterX = scrollToBlockX - halfViewWidth;
-  var scrollToCenterY = scrollToBlockY - halfViewHeight;
-
-  Blockly.hideChaff();
-  var event = new AI.Events.WorkspaceMove(this.id);
-  this.scrollbar.set(scrollToCenterX, scrollToCenterY);
-  event.recordNew();
-  Blockly.Events.fire(event);
-
-};
 
 /*
 * Refresh the state of the backpack. Called from BlocklyPanel.java
