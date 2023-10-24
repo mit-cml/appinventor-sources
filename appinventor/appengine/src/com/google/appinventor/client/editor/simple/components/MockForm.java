@@ -1357,10 +1357,6 @@ public final class MockForm extends MockContainer {
     return buildTree(view);
   }
 
-  public Integer getView() {
-    return this.view;
-  }
-
   // PropertyChangeListener implementation
 
   @Override
