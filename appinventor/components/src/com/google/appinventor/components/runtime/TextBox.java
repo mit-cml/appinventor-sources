@@ -219,14 +219,14 @@ public final class TextBox extends TextBoxBase {
 
   @SimpleProperty(
     category = PropertyCategory.BEHAVIOR,
-    description = "Whether the %type% is read-only. By default, this is true."
+    description = "Whether the %type% is read-only. By default, this is false."
   )
   public boolean ReadOnly() {
     return readOnly;
   }
 
   /**
-   * Whether the %type% is read-only. By default, this is `true`{:.logic.block}.
+   * Whether the %type% is read-only. By default, this is `false`{:.logic.block}.
    * @param readOnly
    */
   @DesignerProperty(
