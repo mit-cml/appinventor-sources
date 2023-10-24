@@ -19,12 +19,17 @@ goog.require('goog.Timer');
 
 /**
  * Class for a warning indicator.
- * @param {!Function} getMetrics A function that returns workspace's metrics.
- * @constructor
+ * @implements {Blockly.IPositionable}
  */
-Blockly.WarningIndicator = function(workspace) {
-  this.workspace_ = workspace;
-};
+Blockly.WarningIndicator = class {
+  /**
+   * Create a warning indicator.
+   * @param workspace
+   */
+  constructor(workspace) {
+    this.workspace_ = workspace;
+  }
+}
 
 /**
  * Height of the warning indicator.
@@ -147,9 +152,13 @@ Blockly.WarningIndicator.prototype.createDom = function() {
  * Initialize the warning indicator.
  */
 Blockly.WarningIndicator.prototype.init = function() {
-  this.position_();
+  this.workspace_.getComponentManager().addComponent({
+    component: this,
+    weight: 2,
+    capabilities: [Blockly.ComponentManager.Capability.POSITIONABLE],
+  });
   // If the document resizes, reposition the warning indicator.
-  Blockly.browserEvents.bind(window, 'resize', this, this.position_);
+  // Blockly.browserEvents.bind(window, 'resize', this, this.position_);
   Blockly.browserEvents.bind(this.warningToggleGroup_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
   Blockly.browserEvents.bind(this.warningNavPrevious_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavPrevious);
   Blockly.browserEvents.bind(this.warningNavNext_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavNext);
@@ -196,10 +205,10 @@ Blockly.WarningIndicator.prototype.dispose = function() {
 
 /**
  * Move the warning indicator to the bottom-left corner.
+ * @param {Blockly.MetricsManager.UiMetrics} metrics The workspace metrics.
  * @private
  */
-Blockly.WarningIndicator.prototype.position_ = function() {
-  var metrics = this.workspace_.getMetrics();
+Blockly.WarningIndicator.prototype.position_ = function(metrics) {
   if (!metrics) {
     // There are no metrics available (workspace is probably not visible).
     return;
@@ -207,9 +216,9 @@ Blockly.WarningIndicator.prototype.position_ = function() {
   if (Blockly.RTL) {
     this.left_ = this.MARGIN_SIDE_;
   } else {
-    this.left_ = metrics.absoluteLeft + this.MARGIN_SIDE_;
+    this.left_ = metrics.absoluteMetrics.left + this.MARGIN_SIDE_;
   }
-  this.top_ = metrics.viewHeight + metrics.absoluteTop -
+  this.top_ = metrics.viewMetrics.height + metrics.absoluteMetrics.top -
       (this.INDICATOR_HEIGHT_) - this.MARGIN_BOTTOM_;
   this.svgGroup_.setAttribute('transform',
       'translate(' + this.left_ + ',' + this.top_ + ')');
@@ -272,3 +281,21 @@ Blockly.WarningIndicator.prototype.onclickErrorNavNext = function() {
   Blockly.hideChaff();
   this.workspace_.getWarningHandler().nextError();
 };
+
+// Blockly.IPositionable implementation
+
+/**
+ * Positions the warning inicator.
+ * It is positioned in the lower left corner of the workspace.
+ * @param metrics The workspace metrics.
+ * @param savedPositions List of rectangles that
+ *     are already on the workspace.
+ */
+Blockly.WarningIndicator.prototype.position = function(metrics, savedPositions) {
+  this.position_(metrics);
+}
+
+Blockly.WarningIndicator.prototype.getBoundingRectangle = function() {
+  var width = 120;  // TODO: this is a guess
+  return new Blockly.utils.Rect(this.left_, this.left_ + width, this.top_, this.top_ + this.INDICATOR_HEIGHT_)
+}
