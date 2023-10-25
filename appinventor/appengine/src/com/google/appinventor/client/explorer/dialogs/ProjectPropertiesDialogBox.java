@@ -24,6 +24,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -168,7 +169,7 @@ public class ProjectPropertiesDialogBox {
       name.setStyleName("ode-propertyDialogPropertyTitle");
 
       // Description of the property
-      Label description = new Label(ComponentsTranslation.getPropertyDescription(property.getDescription()));
+      HTML description = new HTML(ComponentsTranslation.getPropertyDescription(property.getDescription()));
       description.setStyleName("ode-propertyDialogPropertyDescription");
 
       // editor of the editor

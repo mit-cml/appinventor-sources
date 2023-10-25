@@ -1663,6 +1663,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-right: 2px solid black;
   padding-right: 20px;
   outline: none;
+  overflow: auto;
 }
 
 .ode-propertyDialogPropertiesScrollPanel {
