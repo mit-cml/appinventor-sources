@@ -43,7 +43,7 @@
       <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
         <actions:CheckpointAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="ProjectProperties" caption="{messages.projectPropertiesMenuItem}">
+      <ai:DropDownItem name="ProjectProperties" caption="{messages.projectPropertiesMenuItem}" visible="{hasWriteAccess}">
         <yaactions:ProjectPropertiesAction />
       </ai:DropDownItem>
       <hr />
