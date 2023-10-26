@@ -109,17 +109,13 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
-  interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
-
-  private static final TopToolbarUiBinder UI_BINDER = GWT.create(TopToolbarUiBinder.class);
-
   public TopToolbar() {
 
     // The boolean needs to be reversed here so it is true when items need to be visible.
     // UIBinder can't negate the boolean itself.
     hasWriteAccess = !Ode.getInstance().isReadOnly();
 
-    initWidget(UI_BINDER.createAndBindUi(this));
+    initWidget(UIStyle.bindTopToolbar(this));
     if (iamChromebook) {
       RootPanel.getBodyElement().addClassName("onChromebook");
     }

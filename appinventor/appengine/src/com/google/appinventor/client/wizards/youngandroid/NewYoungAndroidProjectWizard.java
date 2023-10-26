@@ -8,6 +8,7 @@ package com.google.appinventor.client.wizards.youngandroid;
 
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UIStyle;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -43,7 +44,8 @@ import java.util.logging.Logger;
  */
 public final class NewYoungAndroidProjectWizard {
   interface NewYoungAndroidProjectWizardUiBinder extends UiBinder<Dialog, NewYoungAndroidProjectWizard> {}
-  private static final NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder.class);
+  private static final NewYoungAndroidProjectWizardUiBinder UI_BINDER =
+      GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
   private static final Logger LOG = Logger.getLogger(NewYoungAndroidProjectWizard.class.getName());
 
   // UI element for project name
@@ -56,6 +58,7 @@ public final class NewYoungAndroidProjectWizard {
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
+//    UIStyle.UI_BINDER.createAndBindUi(this);
     UI_BINDER.createAndBindUi(this);
     projectNameTextBox.setValidator(new Validator() {
       @Override

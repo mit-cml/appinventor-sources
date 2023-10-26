@@ -7,6 +7,7 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UIStyle;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
@@ -57,6 +58,7 @@ public class ProjectToolbar extends Toolbar {
     // Is the new gallery enabled
     galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
     populateToolbar(UI_BINDER.createAndBindUi(this));
+//    populateToolbar(UIStyle.bindProjectToobar(this));
 
     if (galleryEnabled) {
       setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, true);

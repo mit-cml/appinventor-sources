@@ -924,8 +924,10 @@ public class Ode implements EntryPoint {
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
-    OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
-    FlowPanel mainPanel = uiBinder.createAndBindUi(this);
+//    OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
+//    FlowPanel mainPanel = uiBinder.createAndBindUi(this);
+
+    FlowPanel mainPanel = UIStyle.getOdeMain(this);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
