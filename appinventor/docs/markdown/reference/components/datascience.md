@@ -57,11 +57,11 @@ None
 A data science component to apply different regression models.
  The component only requires a data source to apply the model on.
 
- The component is only responsible for the statistical calculations and
+   The component is only responsible for the statistical calculations and
  provides the following properties for line of best fit:
  "slope", "Yintercept", "correlation coefficient", and "predictions"
 
- To draw the line of best fit use the drawing block in ChartData2D component
+   To draw the line of best fit use the drawing block in ChartData2D component
 
 
 

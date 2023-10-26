@@ -592,8 +592,11 @@ public class YaVersion {
   // - EMAILPICKER_COMPONENT_VERSION was incremented to 7
   // - TEXTBOX_COMPONENT_VERSION was incremented to 14
   // - PASSWORD_TEXTBOX_VERSION was incremented to 7
-
-  public static final int YOUNG_ANDROID_VERSION = 227;
+  // - CHART_COMPONENT_VERSION was incremented to 3
+  // - TRENDLINE_COMPONENT_VERSION was introduced
+  // For YOUNG_ANDROID_VERSION 228:
+  // - Renamed LineOfBestFit to Trendline
+  public static final int YOUNG_ANDROID_VERSION = 228;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -870,7 +873,9 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 2:
   // - The XFromZero and YFromZero properties were added
   // - The SetDomain and SetRange methods were added
-  public static final int CHART_COMPONENT_VERSION = 2;
+  // For CHART_COMPONENT_VERSION 3:
+  // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
+  public static final int CHART_COMPONENT_VERSION = 3;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
@@ -1476,6 +1481,10 @@ public class YaVersion {
   // - Added the UpdateDone event
   //   to control its use
   public static final int CLOUDDB_COMPONENT_VERSION = 2;
+
+  // For TRENDLINE_COMPONENT_VERSION 1:
+  // - Initial implementation
+  public static final int TRENDLINE_COMPONENT_VERSION = 1;
 
   // For TWITTER_COMPONENT_VERSION 2:
   // - The Authorize method and IsAuthorized event handler were added to support

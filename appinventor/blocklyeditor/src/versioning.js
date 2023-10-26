@@ -185,6 +185,13 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
     blocksRep = Blockly.Versioning.renameComponentType("GoogleSheets", "Spreadsheet")(blocksRep);
   }
 
+  if ((versionTags.length === 0 ||
+       parseInt(versionTags[0].getAttribute('ya-version'), 10) <= 227) &&
+       systemYoungAndroidVersion >= 228) {
+    // Trendline was introduced as LineOfBestFit in 227 but renamed in 228
+    blocksRep = Blockly.Versioning.renameComponentType('LineOfBestFit', 'Trendline')(blocksRep);
+  }
+
   // --------------------------------------------------------------------------------
   // Upgrade components based on pre-upgrade version numbers
   var preUpgradeComponentVersionDict = Blockly.Versioning.makeComponentVersionDict(preUpgradeFormJsonObject);
@@ -1837,7 +1844,10 @@ Blockly.Versioning.AllUpgradeMaps =
   }, // End Canvas upgraders
 
   "Chart": {
-    2: "noUpgrade"
+    // AI2: The SetDomain and SetRange methods were added.
+    2: "noUpgrade",
+    // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
+    3: "noUpgrade"
 
   }, // End Chart upgraders
 

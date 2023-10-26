@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -51,6 +51,9 @@ public class MockChartLayout extends MockLayout {
       // When dropping a MockDataFile onto a MockChart, the
       // DataFile should be attached to this Mock Chart container.
       ((MockChart) container).addDataFile((MockDataFile) source);
+      return true;
+    } else if (source instanceof MockTrendline) {
+      container.addComponent(source);
       return true;
     }
 

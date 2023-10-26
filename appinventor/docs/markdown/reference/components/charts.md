@@ -10,6 +10,7 @@ Table of Contents:
 
 * [Chart](#Chart)
 * [ChartData2D](#ChartData2D)
+* [Trendline](#Trendline)
 
 ## Chart  {#Chart}
 
@@ -101,6 +102,17 @@ The Chart component plots data originating from it's attached Data components. F
 ### Methods  {#Chart-Methods}
 
 {:.methods}
+
+{:id="Chart.ExtendDomainToInclude" class="method"} <i/> ExtendDomainToInclude(*x*{:.number})
+: Extends the domain of the chart to include the provided x value. If x is already within the
+ bounds of the domain, this method has no effect.
+
+{:id="Chart.ExtendRangeToInclude" class="method"} <i/> ExtendRangeToInclude(*y*{:.number})
+: Extends the range of the chart to include the provided y value. If y is already within the
+ bounds of the range, this method has no effect.
+
+{:id="Chart.ResetAxes" class="method"} <i/> ResetAxes()
+: Resets the axes of the chart to their original bounds.
 
 {:id="Chart.SetDomain" class="method"} <i/> SetDomain(*minimum*{:.number},*maximum*{:.number})
 : Sets the minimum and maximum for the domain of the X axis.
@@ -267,9 +279,6 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  and a false value otherwise. See [`AddEntry`](#ChartData2D.AddEntry)
  for an explanation of the valid entry values.
 
-{:id="ChartData2D.DrawLineOfBestFit" class="method"} <i/> DrawLineOfBestFit(*xList*{:.list},*yList*{:.list})
-: Draws the line of best fit.
-
 {:id="ChartData2D.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
  The returned value is a list, where each element of the list
@@ -347,3 +356,78 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.RemoveEntry" class="method"} <i/> RemoveEntry(*x*{:.text},*y*{:.text})
 : Removes an entry with the specified x and y value, provided it exists.
  See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry values.
+
+## Trendline  {#Trendline}
+
+The Trendline component can be used to visualize the trend of a data series represented by a
+ ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
+ instance, either set the ChartData property in the design view of the app or use the setter
+ block. The Trendline will update automatically if its associated ChartData2D is changed.
+
+
+
+### Properties  {#Trendline-Properties}
+
+{:.properties}
+
+{:id="Trendline.ChartData" .component .wo} *ChartData*
+: The data series for which to compute the line of best fit.
+
+{:id="Trendline.Color" .color} *Color*
+: The color of the line of best fit.
+
+{:id="Trendline.CorrelationCoefficient" .number .ro .bo} *CorrelationCoefficient*
+: The correlation coefficient of the trendline to the data.
+
+{:id="Trendline.Extend" .boolean} *Extend*
+: Whether to extend the line of best fit beyond the data.
+
+{:id="Trendline.LinearCoefficient" .number .ro .bo} *LinearCoefficient*
+: The coefficient of the linear term in the trendline.
+
+{:id="Trendline.Model" .com.google.appinventor.components.common.BestFitModelEnum} *Model*
+: The model to use for the line of best fit.
+
+{:id="Trendline.Predictions" .list .ro .bo} *Predictions*
+: The predictions for the trendline.
+
+{:id="Trendline.QuadraticCoefficient" .number .ro .bo} *QuadraticCoefficient*
+: The coefficient of the quadratic term in the trendline, if any.
+
+{:id="Trendline.RSquared" .number .ro .bo} *RSquared*
+: The r-squared coefficient of determination for the trendline.
+
+{:id="Trendline.Results" .dictionary .ro .bo} *Results*
+: Obtain a copy of the most recent values computed by the line of best fit.
+
+{:id="Trendline.StrokeStyle" .com.google.appinventor.components.common.StrokeStyleEnum} *StrokeStyle*
+: The style of the best fit line.
+
+{:id="Trendline.StrokeWidth" .number} *StrokeWidth*
+: The width of the best fit line.
+
+{:id="Trendline.Visible" .boolean} *Visible*
+: Whether the line of best fit is visible.
+
+{:id="Trendline.XIntercepts" .any .ro .bo} *XIntercepts*
+: The X-intercepts of the trendline (where the line crosses the X-axis), if any. Possible
+ values are NaN (no intercept), a single value (one intercept), or a list of values.
+
+{:id="Trendline.YIntercept" .number .ro .bo} *YIntercept*
+: The Y-intercept of the trendline (constant term).
+
+### Events  {#Trendline-Events}
+
+{:.events}
+
+{:id="Trendline.Updated"} Updated(*results*{:.dictionary})
+: Event indicating that the line of best fit has been updated.
+
+### Methods  {#Trendline-Methods}
+
+{:.methods}
+
+{:id="Trendline.GetResultValue" class="method returns any"} <i/> GetResultValue(*value*{:.text})
+: Get the field of the most recent values computed by the line of best fit. The available
+ values vary based on the model used. For example, a linear model will have slope and
+ Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.
