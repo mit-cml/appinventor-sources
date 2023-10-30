@@ -118,10 +118,10 @@ public abstract class ButtonBase extends AndroidViewComponent
   private Bitmap backgroundBitmap;
 
   // This is the original outline provider created for the button.
-  private ViewOutlineProvider defaultOutlineProvider;
+  private Object defaultOutlineProvider;
 
   // This is the original state animator created for the button.
-  private StateListAnimator defaultStateAnimator;
+  private Object defaultStateAnimator;
 
   //Whether or not the button is in high contrast mode
   private boolean isHighContrast = false;
@@ -568,8 +568,8 @@ public abstract class ButtonBase extends AndroidViewComponent
         view.setOutlineProvider(null);
         view.setStateListAnimator(null);
       } else {
-        view.setOutlineProvider(defaultOutlineProvider);
-        view.setStateListAnimator(defaultStateAnimator);
+        view.setOutlineProvider((ViewOutlineProvider) defaultOutlineProvider);
+        view.setStateListAnimator((StateListAnimator) defaultStateAnimator);
       }
     }
 
