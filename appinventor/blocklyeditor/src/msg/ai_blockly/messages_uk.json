@@ -172,7 +172,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE": "розмір словника",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE": "ключ є у словнику?",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP": "Перевити, чи є ключ у словнику.",
-    "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "Чи наявний ключ %1 у словнику %2?.",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "Чи наявний ключ %1 у словнику %2",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "отримати значення зі словника",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP": "Повертає список усіх значень у словнику.",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "словник",
@@ -721,5 +721,6 @@
     "Blockly.Msg.HIDE": "Приховати елементи керування робочою областю",
     "Blockly.Msg.CLEAN_UP": "Видалити блоки",
     "Blockly.Msg.REDO": "Повторити",
-    "Blockly.Msg.UNDO": "Касувати"
+    "Blockly.Msg.UNDO": "Касувати",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Використовується в блоці «Список значень для варіативного шляху», є спеціальною ланкою шляху (стандартні ланки: ключ словника та індекс елемента у списку), вказує системі створити всі можливі варіанти накладання заданого шляху на деревоподібну структуру даних (JSON, XML), при цьому спеціальна ланка шляху накладається по черзі на всі елементи списку або ключі словника, які знаходяться всередині вузла структури даних, що відповідає цій спеціальній ланці."
 }
