@@ -659,5 +659,6 @@
     "Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP": "それ（何か）が数字かどうかをテストする。",
     "Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP": "文字列が基数10の正の整数を表すかどうかを調べる。",
     "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP": "指定された桁数の10進数でフォーマット（書式化）された数値を返す。",
-    "Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP": "上界（上限値）と下界（下限値）の間のランダムな整数を返します。\n領域は2**30（2の30乗）より小さくなるように切り取られます。"
+    "Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP": "上界（上限値）と下界（下限値）の間のランダムな整数を返します。\n領域は2**30（2の30乗）より小さくなるように切り取られます。",
+    "Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST": "テキスト 'at' の最初の出現位置を分割点として、与えられたテキストを2つの部分に分割する。\n分割点の前の部分と、分割点の後の部分からなる 2 項目のリストを返します。\n’apple（アップル）,banana（バナナ）,cherry（チェリー）,dogfood（ドッグフード）'をカンマを分割点として分割します。\n2つの項目からなるリストを返します：1つ目はテキスト 'apple（アップル）’ で、2つ目はテキスト’banana（バナナ）,cherry（チェリー）,dogfood（ドッグフード）'である。\n’apple（アップル）’が分割点なので、’apple（アップル）'の後のカンマは結果に現れないことに注意してください。"
 }
