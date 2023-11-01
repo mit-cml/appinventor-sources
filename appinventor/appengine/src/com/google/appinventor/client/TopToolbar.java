@@ -10,22 +10,13 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
-import com.google.appinventor.client.actions.WindowOpenAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.common.version.AppInventorFeatures;
-import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.common.base.Strings;
-import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignProject;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.common.version.AppInventorFeatures;
-import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -86,12 +77,14 @@ public class TopToolbar extends Composite {
 
   private static final Logger LOG = Logger.getLogger(TopToolbar.class.getName());
 
-  @UiField DropDownButton fileDropDown;
-  @UiField DropDownButton connectDropDown;
-  @UiField DropDownButton buildDropDown;
-  @UiField DropDownButton settingsDropDown;
-  @UiField DropDownButton adminDropDown;
-  @UiField (provided = true) final Boolean hasWriteAccess;
+  @UiField protected DropDownButton fileDropDown;
+  @UiField protected DropDownButton connectDropDown;
+  @UiField protected DropDownButton buildDropDown;
+  @UiField protected DropDownButton settingsDropDown;
+  @UiField protected DropDownButton adminDropDown;
+  @UiField (provided = true) Boolean hasWriteAccess;
+
+  protected boolean readOnly;
 
   /**
    * This flag is set to true when a check for the android.keystore file is in progress.
@@ -109,13 +102,13 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
+  interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
+
+  private static final TopToolbarUiBinder UI_BINDER = GWT.create(TopToolbarUiBinder.class);
+
   public TopToolbar() {
 
-    // The boolean needs to be reversed here so it is true when items need to be visible.
-    // UIBinder can't negate the boolean itself.
-    hasWriteAccess = !Ode.getInstance().isReadOnly();
-
-    initWidget(UIStyle.bindTopToolbar(this));
+    bindUI();
     if (iamChromebook) {
       RootPanel.getBodyElement().addClassName("onChromebook");
     }
@@ -162,6 +155,21 @@ public class TopToolbar extends Composite {
     return MESSAGES;
   }
 
+  public void bindUI() {
+    // The boolean needs to be reversed here so it is true when items need to be visible.
+    // UIBinder can't negate the boolean itself.
+    LOG.info("bindUI Original");
+    readOnly = Ode.getInstance().isReadOnly();
+    hasWriteAccess = !readOnly;
+
+    initWidget(UI_BINDER.createAndBindUi(this));
+    fileDropDown = fileDropDown;
+    connectDropDown = connectDropDown;
+    buildDropDown = buildDropDown;
+    settingsDropDown = settingsDropDown;
+    adminDropDown = adminDropDown;
+  }
+
   public void updateMoveToTrash(boolean moveToTrash) {
     if (moveToTrash) {
       // Move projects from trash.
@@ -175,9 +183,11 @@ public class TopToolbar extends Composite {
   }
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
-    boolean allowDelete = hasWriteAccess && numSelectedProjects > 0;
+    LOG.info("UpdateMenuState");
+    boolean allowDelete = readOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
+    LOG.info("Update fileDropDown");
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
     fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
     String exportProjectLabel = numSelectedProjects > 1
@@ -185,7 +195,7 @@ public class TopToolbar extends Composite {
         : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
-    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
+    fileDropDown.setItemEnabledById(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
   public void updateKeystoreStatus(boolean present) {
@@ -290,7 +300,7 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
-    if (!hasWriteAccess) {
+    if (readOnly) {
       // This may be too simple
       return;
     }
@@ -303,12 +313,12 @@ public class TopToolbar extends Composite {
         fileDropDown.setVisible(false);
       }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
-      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
-      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
+      fileDropDown.setItemEnabledById(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
+      fileDropDown.setItemEnabled(WIDGET_NAME_EXPORTPROJECT, false);
+      fileDropDown.setItemEnabledById(MESSAGES.saveMenuItem(), false);
+      fileDropDown.setItemEnabledById(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);

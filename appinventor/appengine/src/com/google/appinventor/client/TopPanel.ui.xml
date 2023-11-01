@@ -8,6 +8,7 @@
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -17,7 +18,7 @@
     <g:HTML>
       <img srcset="" src="/static/images/codi_long.png" ui:field="logo" />
     </g:HTML>
-    <ode:TopToolbar ui:field="topToolbar" />
+    <GSoC:TopToolbarGSoC ui:field="topToolbar" />
     <g:FlowPanel ui:field="rightPanel">
       <g:FlowPanel styleName="ode-TopPanelAccount">
         <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"

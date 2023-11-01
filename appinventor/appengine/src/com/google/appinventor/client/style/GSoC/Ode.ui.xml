@@ -6,12 +6,12 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
-             xmlns:ex="urn:import:com.google.appinventor.client.explorer.youngandroid.style.GSoC"
+             xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
-             ui:generateLocales="default" xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC">
+             ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-Root">
     <ode:TopPanel ui:field="topPanel" />
