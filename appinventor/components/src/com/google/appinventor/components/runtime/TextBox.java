@@ -102,6 +102,9 @@ public final class TextBox extends TextBoxBase {
   // If true, then text box is multiline
   private boolean multiLine;
 
+  // If true, then text is hidden
+  private boolean passwordMode;
+
   // If true, then text box is read-only
   private boolean readOnly;
 
@@ -115,6 +118,7 @@ public final class TextBox extends TextBoxBase {
     NumbersOnly(false);
     MultiLine(false);
     ReadOnly(false);
+    PasswordMode(false);
 
     // We need to set the IME options here.  Otherwise, Android's default
     // behavior is that the action button will be Done or Next, depending on
@@ -215,6 +219,38 @@ public final class TextBox extends TextBoxBase {
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;
     view.setSingleLine(!multiLine);
+  }
+
+  /**
+   * PasswordMode property getter method.
+   *
+   * @return {@code true} indicates that the text-box hides the text typed in it,
+   *          {@code false} indicates that it shows the text
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "If true, then this text box does not show any text typed in it.  ")
+  public boolean PasswordMode() {
+    return passwordMode;
+  }
+
+  /**
+   * PasswordMode property setter method.
+   *
+   * @param passwordMode true if text is to be hidden.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void PasswordMode(boolean passwordMode) {
+    if(passwordMode)
+    {
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
+    else
+    {
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+    }
+    this.passwordMode = passwordMode;
   }
 
   @SimpleProperty(
