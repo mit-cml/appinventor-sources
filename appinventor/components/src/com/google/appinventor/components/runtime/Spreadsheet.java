@@ -2050,16 +2050,12 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     for (int i = 0; i < keyColumns.size(); i++) {
       String columnName = keyColumns.getString(i);
       YailList column;
-      if (useHeaders) {
-        column = getColumn(columnName);
-      } else {
-        int colIndex = 0;
-        for (char c : columnName.toCharArray()) {
-          colIndex *= 26;
-          colIndex += c - 'A';
-        }
-        column = getColumn(colIndex);
+      int colIndex = 0;
+      for (char c : columnName.toCharArray()) {
+        colIndex *= 26;
+        colIndex += c - 'A';
       }
+      column = getColumn(colIndex);
       resultingColumns.add(column);
     }
 
