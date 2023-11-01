@@ -14,7 +14,7 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-Root">
-    <ode:TopPanel ui:field="topPanel" />
+    <GSoC:TopPanelGSoC ui:field="topPanel" />
     <g:Label text="GSoC Template Placeholder" />
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
       <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
