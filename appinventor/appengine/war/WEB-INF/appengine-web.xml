@@ -104,7 +104,7 @@
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
          AppScale.Keep it blank when deploy on GAE -->
-    <property name="appengine.host" value="" />
+    <property name="appengine.host" value="localhost:8888" />
 
     <!-- Interval is seconds between checking for a message of the day.
          Set set to 0 to disable checking for a MOTD.  If you do enable
