@@ -2845,7 +2845,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: - The PlayInForeground property was added.
     // - The OtherPlayerStarted event was added.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // - The PlaybackSpeed property was added.
+    7 : "noUpgrade"
 
   }, // End Player upgraders
 
