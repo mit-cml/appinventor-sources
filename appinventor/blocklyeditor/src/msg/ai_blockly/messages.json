@@ -5,6 +5,7 @@
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS": "This is a duplicate key - the current value has been overwritten ",
 	"Blockly.Msg.UNDO": "Undo",
 	"Blockly.Msg.REDO": "Redo",
 	"Blockly.Msg.CLEAN_UP": "Clean up Blocks",
