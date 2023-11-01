@@ -35,19 +35,18 @@ public class ProjectListItem extends Composite {
   private static final ProjectListItemUiBinder UI_BINDER =
       GWT.create(ProjectListItemUiBinder.class);
 
-  @UiField
-  FlowPanel container;
-  @UiField Label nameLabel;
-  @UiField Label dateModifiedLabel;
-  @UiField Label dateCreatedLabel;
-  @UiField CheckBox checkBox;
+  @UiField protected FlowPanel container;
+  @UiField protected Label nameLabel;
+  @UiField protected Label dateModifiedLabel;
+  @UiField protected Label dateCreatedLabel;
+  @UiField protected CheckBox checkBox;
 
 
   private final Project project;
   private ProjectSelectionChangeHandler changeHandler;
 
   public ProjectListItem(Project project) {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     this.getElement().setAttribute("data-exporturl",
         "application/octet-stream:" + project.getProjectName() + ".aia:"
             + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
@@ -61,6 +60,10 @@ public class ProjectListItem extends Composite {
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
+  }
+
+  public void bindUI() {
+    initWidget(UI_BINDER.createAndBindUi(this));
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {

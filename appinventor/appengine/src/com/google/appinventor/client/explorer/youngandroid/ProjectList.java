@@ -42,9 +42,9 @@ import java.util.logging.Logger;
 public class ProjectList extends Composite implements FolderManagerEventListener,
     ProjectManagerEventListener {
   interface ProjectListUiBinder extends UiBinder<FlowPanel, ProjectList> {}
+  private static final ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
 
   private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
-  private static final ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
 
   private enum SortField {
     NAME,
@@ -65,15 +65,14 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   private boolean projectsLoaded = false;
 
   // UI elements
-  @UiField
-  CheckBox selectAllCheckBox;
-  @UiField FlowPanel container;
-  @UiField InlineLabel projectNameSortDec;
-  @UiField InlineLabel projectNameSortAsc;
-  @UiField InlineLabel createDateSortDec;
-  @UiField InlineLabel createDateSortAsc;
-  @UiField InlineLabel modDateSortDec;
-  @UiField InlineLabel modDateSortAsc;
+  @UiField protected CheckBox selectAllCheckBox;
+  @UiField protected FlowPanel container;
+  @UiField protected InlineLabel projectNameSortDec;
+  @UiField protected InlineLabel projectNameSortAsc;
+  @UiField protected InlineLabel createDateSortDec;
+  @UiField protected InlineLabel createDateSortAsc;
+  @UiField protected InlineLabel modDateSortDec;
+  @UiField protected InlineLabel modDateSortAsc;
 
   /**
    * Creates a new ProjectList
@@ -83,13 +82,17 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     sortField = SortField.DATE_MODIFIED;
     sortOrder = SortOrder.DESCENDING;
 
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindIU();
     refreshSortIndicators();
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
     setIsTrash(false);
+  }
+
+  public void bindIU(){
+    initWidget(UI_BINDER.createAndBindUi(this));
   }
 
   @SuppressWarnings("unused")
@@ -221,7 +224,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
     folder.clearProjectList();
     for (final Project project : projects) {
-      ProjectListItem item = new ProjectListItem(project);
+      ProjectListItem item = createProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
       folder.addProjectListItem(item);
       container.add(item);
@@ -232,6 +235,10 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     if (isTrash && folder.getProjects().isEmpty()) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
+  }
+
+  public ProjectListItem createProjectListItem(Project p) {
+   return new ProjectListItem(p) ;
   }
 
   public boolean isSelected() {

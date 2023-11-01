@@ -120,9 +120,6 @@ public class Ode implements EntryPoint {
 
   private static final Logger LOG = Logger.getLogger(Ode.class.getName());
 
-  public Ode() throws Exception {
-  }
-
   interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
 
   // Global instance of the Ode object
@@ -207,25 +204,26 @@ public class Ode implements EntryPoint {
    *  |+-------------------------------------------+|
    *  +---------------------------------------------+
    */
-  @UiField(provided = true) DeckPanel deckPanel;
-  @UiField(provided = true) FlowPanel overDeckPanel;
-  @UiField TutorialPanel tutorialPanel;
+  @UiField(provided = true) protected DeckPanel deckPanel;
+  @UiField(provided = true) protected FlowPanel overDeckPanel;
+  @UiField protected TutorialPanel tutorialPanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
-  @UiField TopPanel topPanel;
-  @UiField StatusPanel statusPanel;
-  @UiField FlowPanel workColumns;
-  @UiField FlowPanel structureAndAssets;
-  @UiField ProjectToolbar projectToolbar;
-  @UiField (provided = true) ProjectListBox projectListbox;
-  @UiField DesignToolbar designToolbar;
-  @UiField PaletteBox paletteBox = PaletteBox.getPaletteBox();
-  @UiField (provided = true) ViewerBox viewerBox = ViewerBox.getViewerBox();
-  @UiField (provided = true) AssetListBox assetListBox = AssetListBox.getAssetListBox();
-  @UiField (provided = true) SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-  @UiField (provided = true) PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField protected TopPanel topPanel;
+  @UiField protected StatusPanel statusPanel;
+  @UiField protected FlowPanel workColumns;
+  @UiField protected FlowPanel structureAndAssets;
+  @UiField protected ProjectToolbar projectToolbar;
+  @UiField (provided = true) protected ProjectListBox projectListbox;
+  @UiField protected DesignToolbar designToolbar;
+  @UiField protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
+  @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField (provided = true) protected SourceStructureBox sourceStructureBox =
+      SourceStructureBox.getSourceStructureBox();
+  @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
