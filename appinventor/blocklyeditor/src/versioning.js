@@ -2768,7 +2768,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // NumbersOnly was added
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Text Watcher events were added
+    6: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -3136,7 +3139,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI3: Added ReadOnly property
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // Text Watcher events were added
+    7: "noUpgrade"
 
   }, // End TextBox upgraders
 

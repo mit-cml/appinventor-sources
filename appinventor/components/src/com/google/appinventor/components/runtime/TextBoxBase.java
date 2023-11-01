@@ -6,8 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.text.Editable;
+import android.text.TextWatcher;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -37,7 +37,7 @@ import android.widget.EditText;
 
 @SimpleObject
 public abstract class TextBoxBase extends AndroidViewComponent
-    implements OnFocusChangeListener, AccessibleComponent {
+    implements OnFocusChangeListener, AccessibleComponent, TextWatcher {
 
   protected final EditText view;
 
@@ -95,6 +95,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
+    view.addTextChangedListener(this);
 
     defaultTextBoxDrawable = view.getBackground();
 
@@ -136,6 +137,60 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @Override
   public View getView() {
     return view;
+  }
+
+  @Override
+  public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    BeforeTextChanged(charSequence.toString(), i, i1, i2);
+  }
+
+  @Override
+  public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    OnTextChanged(charSequence.toString(), i, i1, i2);
+  }
+
+  @Override
+  public void afterTextChanged(Editable editable) {
+    AfterTextChanged();
+  }
+
+  /**
+   * This means that the characters are about to be replaced with some new text. The text is uneditable.
+   * This event is used when you need to take a look at the old text which is about to change.
+   *
+   * @param oldText the old text
+   * @param start   is the start index of text that is about to be deleted
+   * @param count   is the length of the text that is about to be deleted
+   * @param after   is the length of the text that is about to be added
+   */
+  @SimpleEvent(description = "Event raised when the characters are about to be replaced with some new text. "
+      + "This event is used when you need to take a look at the old text which is about to change.")
+  public void BeforeTextChanged(String oldText, int start, int count, int after) {
+    EventDispatcher.dispatchEvent(this, "BeforeTextChanged", oldText, start, count, after);
+  }
+
+  /**
+   * Changes have been made, some characters have just been replaced. The text is uneditable.
+   * This event is used when you need to see which characters in the text are new.
+   *
+   * @param newText the new text
+   * @param start   is the start index of the text that just got added, This is the same as the start of BeforeTextChanged.
+   * @param before  is the length of the text that just got deleted, This is the same as the count of BeforeTextChanged.
+   * @param count   is the length of the text that just got added, This is the same as the after of BeforeTextChanged.
+   */
+  @SimpleEvent(description = "Changes have been made, some characters have just been replaced. "
+      + "This event is used when you need to see which characters in the text are new.")
+  public void OnTextChanged(String newText, int start, int before, int count) {
+    EventDispatcher.dispatchEvent(this, "OnTextChanged", newText, start, before, count);
+  }
+
+  /**
+   * The same as OnTextChanged, except now the text box is editable.
+   * This event is used when you need to see and possibly edit new text.
+   */
+  @SimpleEvent(description = "Event raised when the text of %type% has been changed.")
+  public void AfterTextChanged()  {
+    EventDispatcher.dispatchEvent(this, "AfterTextChanged");
   }
 
   /**
