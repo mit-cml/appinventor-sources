@@ -4,6 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
+import WebKit
 
 open class PosenetExtension: NonvisibleComponent {
   // fileprivate let LOG_TAG: String = PosenetExtension
@@ -15,7 +16,7 @@ open class PosenetExtension: NonvisibleComponent {
   fileprivate final let _BACK_CAMERA: String = "Back"
   fileprivate final let _FRONT_CAMERA: String = "Front"
   
-  fileprivate var _webview: Webview?  // HELP: webview?
+  fileprivate var _webview: WKWebView!
   fileprivate var _keyPoints = Dictionary<String, [String]>()
   fileprivate var _minPoseConfidence: Double = 0.1
   fileprivate var _minPartConfidence: Double = 0.5
@@ -25,8 +26,24 @@ open class PosenetExtension: NonvisibleComponent {
   fileprivate var _backgroundImage: String = ""
   
   
-  public override init(_ parent: ComponentContainer) {
-    // TODO
+//  public override init(_ parent: ComponentContainer) {
+//    // TODO
+//  }
+  
+  
+  private func configureWebView(_ webview: WKWebView) -> Void {
+    let contentController = WKUserContentController()
+    let tfjsSource = getJavascript(path: "/assets/index", pathType: "html")
+    let tfjsScript = WKUserScript(
+      source: tfjsSource,
+      injectionTime: .atDocumentEnd,
+      forMainFrameOnly: true)
+    contentController.addUserScript(tfjsScript)
+    let webConfiguration = WKWebViewConfiguration()
+    webConfiguration.userContentController = contentController
+    // Create a new webview?
+    _webview = WKWebView(frame: CGRect.zero, configuration: webConfiguration)
+
   }
   
   // MARK: PoseNet Properties
@@ -106,6 +123,18 @@ open class PosenetExtension: NonvisibleComponent {
   
   // MARK: PoseNet Methods
   
+  func getJavascript(path: String, pathType: String) -> String {
+     if let filepath = Bundle.main.path(forResource: path, ofType: pathType) {
+         do {
+             return try String(contentsOfFile: filepath)
+         } catch {
+             return ""
+         }
+     } else {
+        return ""
+     }
+  }
+  
   @objc open func Initialize() -> Void {
     if let unwrapped = _webview {
       _initialized = true
@@ -113,19 +142,28 @@ open class PosenetExtension: NonvisibleComponent {
   }
   
   // NO Mutability?
-  @objc open func AddIfValid(
-    _ point1: [String],
-    _ point2: [String],
-    _ skeleton: [[String]]
-  ) {
-    if point1.count == 2 && point2.count == 2 {
-      var newPoint = [point1, point2].flatMap { $0 }
-      skeleton.append(newPoint)
-    }
-  }
+//  @objc open func AddIfValid(
+//    _ point1: [String],
+//    _ point2: [String],
+//    _ skeleton: [[String]]
+//  ) {
+//    if point1.count == 2 && point2.count == 2 {
+//      var newPoint = [point1, point2].flatMap { $0 }
+//      skeleton.append(newPoint)
+//    }
+//  }
   
   
   
+//  fileprivate class AppinventorTFJS {
+//    
+//    open func ready() -> Void {
+//      
+//    }
+//  }
+//  
+//  
+//  
   
   
 }
