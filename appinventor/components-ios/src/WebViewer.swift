@@ -318,6 +318,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   }
   
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    guard message.name == "webString" else {
+      return  // Message intended for someone else...
+    }
     if let string = message.body as? String {
       _webViewString = string
       DispatchQueue.main.async {
