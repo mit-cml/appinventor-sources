@@ -9,7 +9,7 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
   override init(data: DGCharts.LineChartData, view: LineChartView) {
     super.init(data: data, view: view)
     var dataset: LineChartDataSet = LineChartDataSet(entries: chartDataEntry, label: " ")
-    self.data.dataSets = dataset
+    self.data.dataSets = [dataset]
     setDefaultStylingProperties()
   }
   
@@ -26,14 +26,14 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
           index += 1
         }
       }
-      entries.insert(entry, at: index)
+      _entries.insert(entry, at: index)
     }
   }
   
-  public override func setColors(_ colors: Array<Int>) {
+  public override func setColors(_ colors: [Int32]) {
     super.setColors(colors)
-    if type(of: dataset) == DGCharts.LineChartDataSet {
-      
+    if let dataset = dataset as? DGCharts.LineChartDataSet {
+      //dataset.setColors(<#T##colors: NSUIColor...##NSUIColor#>)
     }
   }
 }
