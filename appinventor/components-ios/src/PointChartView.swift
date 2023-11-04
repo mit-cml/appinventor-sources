@@ -7,7 +7,7 @@ import DGCharts
 open class PointChartView: AxisChartView {
   
   override init(_ chartComponent: Chart) {
-    super.init(_chartComponent)
+    super.init(chartComponent)
   }
 
   public override func initializeDefaultSettings() {
@@ -19,7 +19,7 @@ open class PointChartView: AxisChartView {
     //chart.layoutGuides = UILayoutGuide()
   }
       
-  public func getView() -> (UIView) {
+  override public func getView() -> (UIView) {
     return chart
   }
 }

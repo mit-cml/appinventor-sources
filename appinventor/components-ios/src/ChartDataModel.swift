@@ -10,16 +10,15 @@ enum EntryCriterion {
   case YValue
 }
 
-open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, V: DGCharts.ChartViewBase> {
+open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, V: ChartView<DGCharts.ChartViewBase>> {
   let data: D
-  let dataset: DGCharts.ChartDataSet
+  var dataset: DGCharts.ChartDataSet?
   let view: V
   var _entries = [E]()
   var maximumTimeEntries: Int32 = 200
 
-  init(data: D, dataset: DGCharts.ChartDataSet, view: V) {
+  init(data: D, view: V) {
     self.data = data
-    self.dataset = dataset
     self.view = view
   }
 
@@ -32,17 +31,17 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, V: 
   }
 
   func setColor(_ argb: Int32) {
-    dataset.setColor(argbToColor(argb))
+    dataset?.setColor(argbToColor(argb))
   }
 
   func setColors(_ argb: [Int32]) {
-    dataset.setColors(argb.map({ color in
+    dataset?.setColors(argb.map({ color in
       return argbToColor(color)
     }), alpha: 1.0)
   }
 
   func setLabel(_ text: String) {
-    dataset.label = text
+    dataset?.label = text
   }
 
   func setElements(_ elements: String) {

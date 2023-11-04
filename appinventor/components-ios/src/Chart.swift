@@ -181,7 +181,7 @@ import DGCharts
   @objc open var YFromZero: Bool {
     didSet {
       if let chartView = _chartView as? AxisChartView {
-        chartView.setXMinimum(zero: YFromZero)
+        chartView.setYMinimum(zero: YFromZero)
       }
     }
   }

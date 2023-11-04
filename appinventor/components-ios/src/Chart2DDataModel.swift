@@ -4,9 +4,9 @@
 import Foundation
 import DGCharts
 
-open class Chart2DDataModel: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase> {
-  init(data: DGCharts.ChartData, view: DGCharts.ChartViewBase) {
-    super.init(data: data, dataset: dataset, view: view)
+open class Chart2DDataModel: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, ChartView<DGCharts.ChartViewBase>> {
+  override init(data: DGCharts.ChartData, view: ChartView<DGCharts.ChartViewBase>) {
+    super.init(data: data, view: view)
   }
   
   public func getTupleSize() -> Int {

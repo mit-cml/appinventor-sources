@@ -6,7 +6,7 @@ import DGCharts
 
 class LineChartBaseDataModel: PointChartDataModel {
   var chartDataEntry: Array<ChartDataEntry> = []
-  init(data: DGCharts.LineChartData, view: DGCharts.LineChartView) {
+  init(data: DGCharts.LineChartData, view: LineChartView) {
     super.init(data: data, view: view)
     var dataset: LineChartDataSet = LineChartDataSet(entries: chartDataEntry, label: " ")
     self.data.dataSets = dataset

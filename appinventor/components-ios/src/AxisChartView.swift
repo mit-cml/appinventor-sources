@@ -22,7 +22,7 @@ open class AxisChartView : ChartView<DGCharts.BarLineChartViewBase> {
    * @param chartComponent Chart component to link View to
    */
   override init(_ chartComponent: Chart) {
-    super.init(_chartComponent)
+    super.init(chartComponent)
   }
 
 
@@ -92,6 +92,7 @@ open class AxisChartView : ChartView<DGCharts.BarLineChartViewBase> {
       _axisLabels = axisLabels
     }
     
+    // this is getFormattedValue(), IOS version
     public func stringForValue(_ value: Double, entry: DGCharts.ChartDataEntry, dataSetIndex: Int, viewPortHandler: DGCharts.ViewPortHandler?) -> String {
       var integerValue: Int = Int(value.rounded())
       
@@ -103,18 +104,5 @@ open class AxisChartView : ChartView<DGCharts.BarLineChartViewBase> {
         return String(value)
       }
     }
-    
-    /*func getFormattedValue(value: Float) -> (String) {
-      var integerValue: Int = Int(value.rounded())
-      
-      integerValue -= Int(chart.xAxis.axisMinimum)
-      
-      if integerValue >= 0 && integerValue < axisLabels.count {
-        return axisLabels[integerValue]
-      } else {
-        return String(value)
-      }
-    }*/
-    
   }
 }

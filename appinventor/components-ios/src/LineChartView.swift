@@ -6,7 +6,7 @@ import DGCharts
 
 open class LineChartView: LineChartViewBase {
   override init(_ chartComponent: Chart) {
-    super.init(_chartComponent)
+    super.init(chartComponent)
   }
   
   // TODO: fix self
