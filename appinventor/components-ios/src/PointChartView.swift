@@ -13,10 +13,10 @@ open class PointChartView: AxisChartView {
   public override func initializeDefaultSettings() {
     super.initializeDefaultSettings()
     
-    // TODO: learn how to setLayoutParams()
+    // TODO: learn how to setLayoutParams(), until now don't write
     // Since the Chart is stored in a RelativeLayout, settings are needed to fill the Layout
-    var temp: View
-    chart.layoutGuides = UILayoutGuide()
+    //var temp: View
+    //chart.layoutGuides = UILayoutGuide()
   }
       
   public func getView() -> (UIView) {

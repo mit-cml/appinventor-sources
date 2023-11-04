@@ -20,7 +20,7 @@ import DGCharts
   
 
   var _view = UIView()
-  var _chartView: ChartView<Charts.ChartViewBase>?
+  var _chartView: ChartView<DGCharts.ChartViewBase>?
   var _type = ChartType.Line
   var _description = ""
   var _backgroundColor: UIColor = argbToColor(Color.none.int32)
@@ -28,6 +28,9 @@ import DGCharts
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
+  var _XFromZero = false
+  var _YFromZero = false
+
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -156,10 +159,9 @@ import DGCharts
         view.widthAnchor.constraint(equalTo: newChartView.chart.widthAnchor),
         view.heightAnchor.constraint(equalTo: newChartView.chart.heightAnchor)
       ])
-      
-      if let newChartSubview = newChartView as? ChartView<Charts.ChartViewBase> {
-                _view.insertSubview(newChartSubview, at: 0)
-            }
+      if let newChartSubview = newChartView as? ChartView<DGCharts.ChartViewBase> {
+        _view.insertSubview(newChartSubview.getView(), at: 0)
+      }
       
       if shouldReinitialize {
         reinitializeChart()
@@ -173,6 +175,7 @@ import DGCharts
         chartView.setXMinimum(zero: XFromZero)
       }
     }
+    
   }
   
   @objc open var YFromZero: Bool {
@@ -194,38 +197,38 @@ import DGCharts
   
   // TODO: should I do this?
   public func getXFromZero() -> Bool {
-    return XFromZero
+    return _XFromZero
   }
   
   public func getYFromZero() -> Bool {
-    return YFromZero
+    return _YFromZero
   }
   
-  public var chartView: ChartView<Charts.ChartViewBase>? {
+  public var chartView: ChartView<DGCharts.ChartViewBase>? {
     return _chartView
   }
 
-//  private func createChartModel() -> ChartDataModel<ChartDataEntry, ChartData, ChartViewBase>? {
-//    return _chartView?.chart.createChartModel()
-//  }
+  private func createChartModel() -> ChartDataModel<ChartDataEntry, ChartData, ChartViewBase>? {
+    return _chartView?.createChartModel()
+  }
 
   public func refresh() {
     _chartView?.chart.data?.notifyDataChanged()
     _chartView?.chart.notifyDataSetChanged()
   }
 
-  private func createChartView(for type: ChartType) -> ChartView<Charts.ChartViewBase> {
+  private func createChartView(for type: ChartType) -> ChartView<DGCharts.ChartViewBase> {
     switch type {
     case .Line:
-      return LineChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
+      return LineChartView(self) as! ChartView<DGCharts.ChartViewBase>
     case .Scatter:
-      return ScatterChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
+      return ScatterChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
     case .Area:
-      return LineChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
+      return LineChartView(self) as! ChartView<DGCharts.ChartViewBase>
     case .Bar:
-      return BarChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
+      return BarChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
     case .Pie:
-      return PieChartView(frame: .zero) as! ChartView<Charts.ChartViewBase>
+      return PieChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
     }
   }
 

@@ -10,14 +10,14 @@ enum EntryCriterion {
   case YValue
 }
 
-open class ChartDataModel<E: Charts.ChartDataEntry, D: Charts.ChartData, V: Charts.ChartViewBase> {
+open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, V: DGCharts.ChartViewBase> {
   let data: D
-  let dataset: Charts.ChartDataSet
+  let dataset: DGCharts.ChartDataSet
   let view: V
   var _entries = [E]()
   var maximumTimeEntries: Int32 = 200
 
-  init(data: D, dataset: Charts.ChartDataSet, view: V) {
+  init(data: D, dataset: DGCharts.ChartDataSet, view: V) {
     self.data = data
     self.dataset = dataset
     self.view = view

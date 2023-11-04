@@ -4,7 +4,7 @@
 import Foundation
 import DGCharts
 
-open class PointChartDataModel: ChartData2DModel {
+open class PointChartDataModel: Chart2DDataModel {
   // <E: Charts.ChartDataEntry, D: BarLineScatterCandleBubbleChartData, V: ChartViewBase>
   // TODO: shouldn't this be a ChartView, not a ChartViewBase? ChartViewBase does not have form has a var
   init(data: BarLineScatterCandleBubbleChartData, view: PointChartView) {
@@ -19,7 +19,7 @@ open class PointChartDataModel: ChartData2DModel {
       var y: Double = Double(yValue) ?? -1
       return ChartDataEntry(x: x, y: y)
       // TODO: change ERROR MESSAGE, do I need to add error messages
-      view.form?.form?.dispatchErrorOccurredEvent(chart, "GetEntryFromTuple", ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO, xValue, yValue)
+      //view.form?.form?.dispatchErrorOccurredEvent(chart, "GetEntryFromTuple", ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO, xValue, yValue)
 
     } catch {
     }

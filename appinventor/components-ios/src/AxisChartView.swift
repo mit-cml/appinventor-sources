@@ -92,7 +92,7 @@ open class AxisChartView : ChartView<DGCharts.BarLineChartViewBase> {
       _axisLabels = axisLabels
     }
     
-    public func stringForValue(_ value: Double, entry: Charts.ChartDataEntry, dataSetIndex: Int, viewPortHandler: Charts.ViewPortHandler?) -> String {
+    public func stringForValue(_ value: Double, entry: DGCharts.ChartDataEntry, dataSetIndex: Int, viewPortHandler: DGCharts.ViewPortHandler?) -> String {
       var integerValue: Int = Int(value.rounded())
       
       integerValue -= Int(_chartView.xAxis.axisMinimum)

@@ -51,6 +51,11 @@ open class ChartView<D: DGCharts.ChartViewBase> {
 
   }
   
+  public func getView() -> UIView {
+    preconditionFailure("This method must be overridden")
+
+  }
+  
   public func initializeDefaultSettings() {
     // Center the Legend
     chart.legend.horizontalAlignment = Legend.HorizontalAlignment.center
@@ -76,7 +81,7 @@ open class ChartView<D: DGCharts.ChartViewBase> {
   
   // make RefreshTask
   private class RefreshTask {
-    var _entries: Array<Charts.ChartDataEntry> = []
+    var _entries: Array<DGCharts.ChartDataEntry> = []
     unowned var _chartView: ChartView
     public init(_ owner: ChartView, _ entries: Array<DGCharts.ChartDataEntry>) {
       _entries = entries

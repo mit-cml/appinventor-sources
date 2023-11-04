@@ -9,10 +9,9 @@ open class LineChartViewBase: PointChartView {
   override init(_ chartComponent: Chart) {
     super.init(_chartComponent)
     
-    super.chart = LineChartView(Form)
-    
-    super.data = LineChartData()
-    super.chart.data = super.data
+    chart = DGCharts.LineChartView() // do i need to add a form
+    data = DGCharts.LineChartData()
+    chart.data = data
     
     initializeDefaultSettings()
   }
