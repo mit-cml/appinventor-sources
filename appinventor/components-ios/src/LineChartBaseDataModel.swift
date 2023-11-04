@@ -4,9 +4,9 @@
 import Foundation
 import DGCharts
 
-class LineChartBaseDataModel: PointChartDataModel {
+class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCharts.LineChartData, DGCharts.LineChartView, LineChartView> {
   var chartDataEntry: Array<ChartDataEntry> = []
-  init(data: DGCharts.LineChartData, view: LineChartView) {
+  override init(data: DGCharts.LineChartData, view: LineChartView) {
     super.init(data: data, view: view)
     var dataset: LineChartDataSet = LineChartDataSet(entries: chartDataEntry, label: " ")
     self.data.dataSets = dataset

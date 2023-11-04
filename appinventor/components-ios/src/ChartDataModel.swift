@@ -10,7 +10,7 @@ enum EntryCriterion {
   case YValue
 }
 
-open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, V: ChartView<DGCharts.ChartViewBase>> {
+open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.ChartViewBase, V: ChartView<C>> {
   let data: D
   var dataset: DGCharts.ChartDataSet?
   let view: V

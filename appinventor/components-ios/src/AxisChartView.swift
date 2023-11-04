@@ -8,8 +8,8 @@ import DGCharts
  * Base class for Chart Views (Chart UI) for Charts types that
  * have an axis.
  */
-open class AxisChartView : ChartView<DGCharts.BarLineChartViewBase> {
-  
+open class AxisChartView<D: DGCharts.BarLineChartViewBase> : ChartView<D> {
+
   // List containing Strings to use for the X Axis of the Axis Chart.
   // The first entry corresponds to an x value of 0, the second to
   // an x value of 1, and so on.

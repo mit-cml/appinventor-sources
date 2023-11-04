@@ -4,10 +4,10 @@
 import Foundation
 import DGCharts
 
-open class PointChartDataModel: Chart2DDataModel {
+open class PointChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.BarLineChartViewBase, V: PointChartView<C>>: Chart2DDataModel<E, D, C, V> {
   // <E: Charts.ChartDataEntry, D: BarLineScatterCandleBubbleChartData, V: ChartViewBase>
   // TODO: shouldn't this be a ChartView, not a ChartViewBase? ChartViewBase does not have form has a var
-  init(data: BarLineScatterCandleBubbleChartData, view: PointChartView) {
+  override init(data: D, view: V) {
     super.init(data: data, view: view)
   }
   public func getEntryFromTuple(tuple: YailList<AnyObject>) -> ChartDataEntry {

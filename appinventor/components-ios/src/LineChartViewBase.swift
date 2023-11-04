@@ -4,10 +4,10 @@
 import Foundation
 import DGCharts
 
-open class LineChartViewBase: PointChartView {
+open class LineChartViewBase: PointChartView<DGCharts.LineChartView> {
 
   override init(_ chartComponent: Chart) {
-    super.init(_chartComponent)
+    super.init(chartComponent)
     
     chart = DGCharts.LineChartView() // do i need to add a form
     data = DGCharts.LineChartData()

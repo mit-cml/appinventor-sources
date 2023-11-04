@@ -4,8 +4,8 @@
 import Foundation
 import DGCharts
 
-open class Chart2DDataModel: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, ChartView<DGCharts.ChartViewBase>> {
-  override init(data: DGCharts.ChartData, view: ChartView<DGCharts.ChartViewBase>) {
+open class Chart2DDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.ChartViewBase, V: ChartView<C>>: ChartDataModel<E, D, C, V> {
+  override init(data: D, view: V) {
     super.init(data: data, view: view)
   }
   
