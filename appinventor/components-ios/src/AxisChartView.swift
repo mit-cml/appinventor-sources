@@ -31,53 +31,53 @@ open class AxisChartView<D: DGCharts.BarLineChartViewBase> : ChartView<D> {
     
     var chartView: ChartView = ChartView(_chartComponent)
 
-    chart.xAxis.labelPosition = XAxis.LabelPosition.bottom // Position X axis to the bottom
-    chart.rightAxis.enabled = false // Disable right Y axis so there's only one
+    chart?.xAxis.labelPosition = XAxis.LabelPosition.bottom // Position X axis to the bottom
+    chart?.rightAxis.enabled = false // Disable right Y axis so there's only one
     
     // set the granularities both for the X and the Y axis to 1
-    chart.xAxis.granularity = 1
-    chart.leftAxis.granularity = 1
+    chart?.xAxis.granularity = 1
+    chart?.leftAxis.granularity = 1
     
-    chart.xAxis.valueFormatter = AppInventorValueFormatter(chart, axisLabels) as! any AxisValueFormatter
+    chart?.xAxis.valueFormatter = AppInventorValueFormatter(chart!, axisLabels) as! any AxisValueFormatter
     if _chartComponent.XFromZero {
-      chart.xAxis.axisMinimum = 0
+      chart?.xAxis.axisMinimum = 0
 
     }
     if _chartComponent.YFromZero {
-      chart.leftAxis.granularity = 1
+      chart?.leftAxis.granularity = 1
     }
   }
   
   // sets whether the X origin should be fixed to 0
   public func setXMinimum (zero: Bool) {
     if zero {
-      chart.xAxis.axisMinimum = 0
+      chart?.xAxis.axisMinimum = 0
     } else {
-      chart.xAxis.resetCustomAxisMax()
+      chart?.xAxis.resetCustomAxisMax()
     }
   }
   
   public func setYMinimum (zero: Bool) {
     if zero {
-      chart.leftAxis.axisMinimum = 0
+      chart?.leftAxis.axisMinimum = 0
     } else {
-      chart.leftAxis.resetCustomAxisMax()
+      chart?.leftAxis.resetCustomAxisMax()
     }
   }
   
   public func setXBounds (minimum: Double, maximum: Double) {
-    chart.xAxis.axisMinimum = minimum
-    chart.xAxis.axisMaximum = maximum
+    chart?.xAxis.axisMinimum = minimum
+    chart?.xAxis.axisMaximum = maximum
   }
   
   public func setYBounds (minimum: Double, maximum: Double) {
-    chart.leftAxis.axisMinimum = minimum
-    chart.leftAxis.axisMaximum = maximum
+    chart?.leftAxis.axisMinimum = minimum
+    chart?.leftAxis.axisMaximum = maximum
   }
   
   public func setGridEnabled(enabled: Bool) {
-    chart.xAxis.enabled = enabled
-    chart.leftAxis.enabled = enabled
+    chart?.xAxis.enabled = enabled
+    chart?.leftAxis.enabled = enabled
   }
   
   public func setLabels(labels: Array<String>) {

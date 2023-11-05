@@ -28,6 +28,9 @@ import DGCharts
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
+  var XFromZero = false
+  var YFromZero = false
+
 
 
   public override init(_ parent: ComponentContainer) {
@@ -169,18 +172,22 @@ import DGCharts
 
   @objc open var XFromZero: Bool {
     didSet {
-      if let chartView = _chartView as? AxisChartView {
+      (chartView as! AxisChartView<DGCharts.BarLineChartViewBase>).setXMinimum(zero: XFromZero)
+
+      
+      /*if let chartView = _chartView as? AxisChartView {
         chartView.setXMinimum(zero: XFromZero)
-      }
+      }*/
     }
     
   }
   
   @objc open var YFromZero: Bool {
     didSet {
+      /*
       if let chartView = _chartView as? AxisChartView {
         chartView.setYMinimum(zero: YFromZero)
-      }
+      }*/
     }
   }
   
