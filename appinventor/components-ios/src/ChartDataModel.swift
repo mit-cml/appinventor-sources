@@ -79,7 +79,7 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
   }
 
   func getTuplesFromColumns(_ columns: YailList<AnyObject>, _ hasHeaders: Bool) -> YailList<AnyObject> {
-          
+    fatalError("Not implemented yet")
   }
 
   func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
@@ -111,14 +111,17 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
   }
 
   func getEntryFromTuple(_ tuple: YailList<AnyObject>) -> E {
-    
+    fatalError("Not implemented yet")
+
   }
 
   func getTupleFromEntry(_ entry: E) -> YailList<AnyObject> {
+    fatalError("Not implemented yet")
 
   }
 
   func findEntryIndex(_ entry: E) -> Int32 {
+    fatalError("Not implemented yet")
 
   }
 

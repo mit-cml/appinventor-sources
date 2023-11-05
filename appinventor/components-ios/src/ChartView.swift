@@ -11,9 +11,9 @@ open class ChartView<D: DGCharts.ChartViewBase> {
   var form: Form {
     return _chartComponent.form!
   }
-  var chart: D
+  var chart: D?
   
-  var data: DGCharts.ChartData
+  var data: DGCharts.ChartData?
   
   public init(_ chartComponent: Chart) {
     _chartComponent = chartComponent
@@ -21,32 +21,32 @@ open class ChartView<D: DGCharts.ChartViewBase> {
 
   public var backgroundColor: UIColor? {
     get {
-      return chart.backgroundColor
+      return chart?.backgroundColor
     }
     set {
-      chart.backgroundColor = newValue
+      chart?.backgroundColor = newValue
     }
   }
   
   public var cDescription: String? {
     get {
-      return chart.chartDescription.text
+      return chart?.chartDescription.text
     }
     set {
-      chart.chartDescription.text = newValue
+      chart?.chartDescription.text = newValue
     }
   }
   
   public var legendEnabled: Bool? {
     get {
-      return chart.legend.enabled
+      return chart?.legend.enabled
     }
     set {
-      chart.legend.enabled = newValue!
+      chart?.legend.enabled = newValue!
     }
   }
     
-  public func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase> {
+  public func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>> {
     preconditionFailure("This method must be overridden")
 
   }
@@ -58,8 +58,8 @@ open class ChartView<D: DGCharts.ChartViewBase> {
   
   public func initializeDefaultSettings() {
     // Center the Legend
-    chart.legend.horizontalAlignment = Legend.HorizontalAlignment.center
-    chart.legend.wordWrapEnabled = true // Wrap Legend entries in case of many entries
+    chart?.legend.horizontalAlignment = Legend.HorizontalAlignment.center
+    chart?.legend.wordWrapEnabled = true // Wrap Legend entries in case of many entries
   }
   
   /*
@@ -68,15 +68,15 @@ open class ChartView<D: DGCharts.ChartViewBase> {
   
   public func refresh() {
     _workQueue.async {
-      self.chart.notifyDataSetChanged()
+      self.chart?.notifyDataSetChanged()
     }
   }
   
-  public func refresh(model: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>, entries: Array<DGCharts.ChartDataEntry>) {
-    var dataset : ChartDataSet = model.dataset
+  public func refresh(model: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>, entries: Array<DGCharts.ChartDataEntry>) {
+    var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
     dataset.replaceEntries(entries)
-    chart.data?.notifyDataChanged()
-    chart.notifyDataSetChanged()
+    chart?.data?.notifyDataChanged()
+    chart?.notifyDataSetChanged()
   }
   
   // make RefreshTask
@@ -87,11 +87,11 @@ open class ChartView<D: DGCharts.ChartViewBase> {
       _entries = entries
       _chartView = owner
     }
-    public func doInBackGround(chartDataModels: Array<ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>>) -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>{
+    public func doInBackGround(chartDataModels: Array<ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>>) -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>{
       return chartDataModels[0]
     }
 
-    public func onPostExecute(result: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase>) {
+    public func onPostExecute(result: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>) {
 
       _chartView._workQueue.async {
         self._chartView.refresh(model: result, entries: self._entries)

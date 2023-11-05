@@ -28,8 +28,6 @@ import DGCharts
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
-  var _XFromZero = false
-  var _YFromZero = false
 
 
   public override init(_ parent: ComponentContainer) {
@@ -84,7 +82,7 @@ import DGCharts
     }
     set {
       _description = newValue
-      _chartView?.chart.chartDescription.text = _description
+      _chartView?.chart?.chartDescription.text = _description
     }
   }
 
@@ -125,7 +123,7 @@ import DGCharts
     }
     set {
       _legendEnabled = newValue
-      _chartView?.chart.legend.enabled = _legendEnabled
+      _chartView?.chart?.legend.enabled = _legendEnabled
     }
   }
 
@@ -148,16 +146,16 @@ import DGCharts
     set {
       let shouldReinitialize = _chartView != nil
       let newChartView = createChartView(for: newValue)
-      _chartView?.chart.removeFromSuperview()
+      _chartView?.chart?.removeFromSuperview()
       _type = newValue
       _chartView = newChartView
 
-      view.addSubview(newChartView.chart)
+      view.addSubview(newChartView.chart!)
       NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: newChartView.chart.topAnchor),
-        view.leadingAnchor.constraint(equalTo: newChartView.chart.leadingAnchor),
-        view.widthAnchor.constraint(equalTo: newChartView.chart.widthAnchor),
-        view.heightAnchor.constraint(equalTo: newChartView.chart.heightAnchor)
+        view.topAnchor.constraint(equalTo: newChartView.chart!.topAnchor),
+        view.leadingAnchor.constraint(equalTo: newChartView.chart!.leadingAnchor),
+        view.widthAnchor.constraint(equalTo: newChartView.chart!.widthAnchor),
+        view.heightAnchor.constraint(equalTo: newChartView.chart!.heightAnchor)
       ])
       if let newChartSubview = newChartView as? ChartView<DGCharts.ChartViewBase> {
         _view.insertSubview(newChartSubview.getView(), at: 0)
@@ -194,27 +192,19 @@ import DGCharts
   }
 
   // MARK: Private Implementation
-  
-  // TODO: should I do this?
-  public func getXFromZero() -> Bool {
-    return _XFromZero
-  }
-  
-  public func getYFromZero() -> Bool {
-    return _YFromZero
-  }
+ 
   
   public var chartView: ChartView<DGCharts.ChartViewBase>? {
     return _chartView
   }
 
-  private func createChartModel() -> ChartDataModel<ChartDataEntry, ChartData, ChartViewBase>? {
+  private func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>? {
     return _chartView?.createChartModel()
   }
 
   public func refresh() {
-    _chartView?.chart.data?.notifyDataChanged()
-    _chartView?.chart.notifyDataSetChanged()
+    _chartView?.chart?.data?.notifyDataChanged()
+    _chartView?.chart?.notifyDataSetChanged()
   }
 
   private func createChartView(for type: ChartType) -> ChartView<DGCharts.ChartViewBase> {
