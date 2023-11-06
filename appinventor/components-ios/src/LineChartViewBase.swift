@@ -11,7 +11,7 @@ open class LineChartViewBase: PointChartView<DGCharts.LineChartView> {
     
     chart = DGCharts.LineChartView() // do i need to add a form
     data = DGCharts.LineChartData()
-    chart.data = data
+    chart?.data = data
     
     initializeDefaultSettings()
   }

@@ -185,6 +185,7 @@
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
 		B48808CE2ACFB9030046DF4F /* AxisChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CD2ACFB9030046DF4F /* AxisChartView.swift */; };
 		B49FD9BC2AF6E1690049FA79 /* LineChartBaseDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49FD9BB2AF6E1690049FA79 /* LineChartBaseDataModel.swift */; };
+		B49FD9BE2AF894E40049FA79 /* LineType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49FD9BD2AF894E40049FA79 /* LineType.swift */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
 		C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */; };
 		C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */; };
@@ -444,6 +445,7 @@
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
 		B48808CD2ACFB9030046DF4F /* AxisChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxisChartView.swift; sourceTree = "<group>"; };
 		B49FD9BB2AF6E1690049FA79 /* LineChartBaseDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartBaseDataModel.swift; sourceTree = "<group>"; };
+		B49FD9BD2AF894E40049FA79 /* LineType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineType.swift; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
 		C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalScrollArrangement.swift; sourceTree = "<group>"; };
@@ -644,6 +646,7 @@
 			isa = PBXGroup;
 			children = (
 				068F9857289A2FD600E2883F /* Chart.swift */,
+				B49FD9BD2AF894E40049FA79 /* LineType.swift */,
 				068F9859289A320200E2883F /* ChartData2D.swift */,
 				068F985B289A323400E2883F /* ChartDataBase.swift */,
 				068F985F289A344C00E2883F /* DataSource.swift */,
@@ -1418,6 +1421,7 @@
 				CBC7868A202A28D8005363A3 /* MapFactory.swift in Sources */,
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
 				DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */,
+				B49FD9BE2AF894E40049FA79 /* LineType.swift in Sources */,
 				06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */,
 				080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */,
 				DE2EE36A20DBD3B700927587 /* LineString.swift in Sources */,

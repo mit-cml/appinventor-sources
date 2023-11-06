@@ -16,7 +16,8 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
   public override func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
     var entry: ChartDataEntry = getEntryFromTuple(tuple)
     if entry != nil { // TODO: how to compare it to nil
-      var index: Int = entries.index(of: entry)!
+      // TODO: DO I NEED TO DO THE BINARY SEARCH
+      var index: Int = entries.firstIndex(of: entry)!
       if index < 0 {
         index = -index - 1
       } else {
@@ -30,10 +31,49 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
     }
   }
   
-  public override func setColors(_ colors: [Int32]) {
+  public override func setColor(_ argb: UIColor) {
+    super.setColor(argb)
+    if let dataset = dataset as? DGCharts.LineChartDataSet {
+      dataset.setCircleColor(argb) // also update the circle color
+    }
+  }
+  
+  public override func setColors(_ colors: [NSUIColor]) {
     super.setColors(colors)
     if let dataset = dataset as? DGCharts.LineChartDataSet {
-      //dataset.setColors(<#T##colors: NSUIColor...##NSUIColor#>)
+      dataset.circleColors = colors
+      // is this fine because set doesn't work
+    }
+  }
+  
+  public override func setDefaultStylingProperties() {
+    if let dataset = dataset as? DGCharts.LineChartDataSet {
+      dataset.drawCircleHoleEnabled = false // also update the circle color
+    }
+  }
+  
+  public func setLineType(_ type: LineType) throws {
+    if let dataset = dataset as? DGCharts.LineChartDataSet {
+      dataset.drawCircleHoleEnabled = false // also update the circle color
+      
+      switch type {
+      case LineType.Linear:
+        dataset.mode = LineChartDataSet.Mode.linear
+        break
+
+      case LineType.Curved:
+        dataset.mode = LineChartDataSet.Mode.cubicBezier
+        break
+
+      case LineType.Stepped:
+        dataset.mode = LineChartDataSet.Mode.stepped
+        break
+
+      default:
+        throw ErrorMessage()
+      }
+    } else {
+      return
     }
   }
 }

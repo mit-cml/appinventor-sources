@@ -20,6 +20,6 @@ open class PointChartView<D: DGCharts.BarLineChartViewBase>: AxisChartView<D> {
   }
       
   override public func getView() -> (UIView) {
-    return chart
+    return chart!
   }
 }
