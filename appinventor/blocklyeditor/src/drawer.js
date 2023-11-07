@@ -34,15 +34,8 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
     this.options = new Blockly.Options(opt_options);
   }
   this.workspace_ = parentWorkspace;
-  this.flyout_ = new Blockly.VerticalFlyout(this.options);
-  var flyoutGroup = this.flyout_.createDom('g'),
-      svg = this.workspace_.getParentSvg();
-  if (this.workspace_.svgGroup_.nextSibling == null) {
-    svg.appendChild(flyoutGroup);
-  } else {
-    svg.insertBefore(flyoutGroup, this.workspace_.svgGroup_.nextSibling);
-  }
-  this.flyout_.init(parentWorkspace);
+  this.flyout_ = this.workspace_.getFlyout();
+  this.flyout_.setAutoClose(true);
   this.lastComponent = null;
 };
 

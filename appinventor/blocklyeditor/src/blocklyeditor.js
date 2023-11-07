@@ -277,6 +277,10 @@ Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
  */
 Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   var options = {
+    'toolbox': {
+      'kind': 'flyoutToolbox',
+      'contents': []
+    },
     'readOnly': readOnly,
     'rtl': rtl,
     'collapse': true,
@@ -379,7 +383,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     //workspace.addChangeListener(workspaceChanged);
   }
   workspace.drawer_ = new Blockly.Drawer(workspace, { scrollbars: true });
-  workspace.flyout_ = workspace.drawer_.flyout_;
+  workspace.flyout_ = workspace.getFlyout();
   workspace.addWarningIndicator();
   workspace.addBackpack();
   Blockly.browserEvents.bind(workspace.svgGroup_, 'focus', workspace, workspace.markFocused);
