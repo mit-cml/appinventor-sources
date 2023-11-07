@@ -9,8 +9,6 @@ open class LineChartView: LineChartViewBase {
     super.init(chartComponent)
   }
   
-  // TODO: fix self
-  // Cannot convert value of type 'AIComponentKit.LineChartView' to expected argument type 'Charts.LineChartView'
   public override func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>> {
     return LineChartDataModel(data: data as! LineChartData, view: self) as! ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>
   }

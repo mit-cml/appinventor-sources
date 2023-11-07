@@ -27,6 +27,7 @@ import DGCharts
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
+  var _dataComponents: Array<ChartDataBase> = []
 
 
 
@@ -226,7 +227,13 @@ import DGCharts
   }
 
   private func reinitializeChart() {
-
+    for dataComponent in _dataComponents {
+      // must implement initChartData() first
+    }
   }
+  func addDataComponent(_ dataComponent: ChartDataBase) {
+    _dataComponents.append(dataComponent)
+  }
+
 
 }
