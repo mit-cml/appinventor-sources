@@ -74,22 +74,22 @@ public class ElementsUtil {
     return YailList.makeList(stringItems);
   }
 
-  public static int selectionIndexInStringList(int index, List<String> items){
-    if (index < 0 || index >= items.size()) {
+  public static int selectionIndexInStringList(int index, List<String> items) {
+    if (index < 1 || index > items.size()) {
       return 0;
     } else {
       return index;
     }
   }
 
-  public static String setSelectionFromIndexInStringList(int index, List<String> items){
-    if (index < 0 || index >= items.size()) {
+  public static String setSelectionFromIndexInStringList(int index, List<String> items) {
+    if (index < 1 || index > items.size()) {
       return "";
     }
-    return items.get(index);
+    return items.get(index - 1);
   }
 
-  public static int setSelectedIndexFromValueInStringList(String value, List<String> items){
+  public static int setSelectedIndexFromValueInStringList(String value, List<String> items) {
     // Now, we need to change SelectionIndex to correspond to Selection.
     // If multiple Selections have the same SelectionIndex, use the first.
     // If none do, arbitrarily set the SelectionIndex to its default value
@@ -97,7 +97,7 @@ public class ElementsUtil {
     for (int i = 0; i < items.size(); i++) {
       // The comparison is case-sensitive to be consistent with yail-equal?.
       if (items.get(i).equals(value)) {
-        return i;
+        return i + 1;
       }
     }
     return 0;
