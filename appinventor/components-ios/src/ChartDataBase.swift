@@ -9,16 +9,14 @@
 import Foundation
 import DGCharts
 
-@available(iOS 13.0, *)
 @objc class ChartDataBase: NSObject, Component, DataSourceChangeListener, ChartViewDelegate {
 
   var _chartDataModel: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>?
   var _container: Chart
-  var _threadRunner: SerialExecutor?
-  
-  public init(_ chartContainer: Chart) {
-    super.init()
+
+  @objc public init(_ chartContainer: Chart) {
     self._container = chartContainer
+    super.init()
     chartContainer.addDataComponent(self)
     initChartData()
     // do i need the executor
@@ -43,10 +41,4 @@ import DGCharts
 
   func initChartData() {
   }
-  @available(iOS 13.0, *)
-  func setExecutorService(_ service: SerialExecutor) {
-    _threadRunner = service
-  }
-  
-
 }

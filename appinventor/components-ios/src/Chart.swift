@@ -32,12 +32,16 @@ import DGCharts
 
 
 
-  public override init(_ parent: ComponentContainer) {
+  @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
     YFromZero = false
     super.init(parent)
     setDelegate(self)
     parent.add(self)
+  }
+
+  @objc open func Initialize() {
+    self.Type = self.Type
   }
 
   @objc open override var view: UIView {
@@ -173,7 +177,7 @@ import DGCharts
 
   @objc open var XFromZero: Bool {
     didSet {
-      if let chartView = _chartView as? AxisChartView {
+      if let chartView = (_chartView as AnyObject) as? AxisChartView {
         chartView.setXMinimum(zero: XFromZero)
       }
     }
@@ -182,7 +186,7 @@ import DGCharts
   
   @objc open var YFromZero: Bool {
     didSet {
-      if let chartView = _chartView as? AxisChartView {
+      if let chartView = (_chartView as AnyObject) as? AxisChartView {
         chartView.setYMinimum(zero: YFromZero)
       }
     }
@@ -214,15 +218,18 @@ import DGCharts
   private func createChartView(for type: ChartType) -> ChartView<DGCharts.ChartViewBase> {
     switch type {
     case .Line:
-      return LineChartView(self) as! ChartView<DGCharts.ChartViewBase>
+      return (LineChartView(self) as AnyObject) as! ChartView<DGCharts.ChartViewBase>
     case .Scatter:
-      return ScatterChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
+      //return ScatterChartView(frame: .zero)
+      fatalError("whoops")
     case .Area:
-      return LineChartView(self) as! ChartView<DGCharts.ChartViewBase>
+      return (LineChartView(self) as AnyObject) as! ChartView<DGCharts.ChartViewBase>
     case .Bar:
-      return BarChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
+      //return BarChartView(frame: .zero)
+      fatalError("whoops")
     case .Pie:
-      return PieChartView(frame: .zero) as! ChartView<DGCharts.ChartViewBase>
+      //return PieChartView(frame: .zero)
+      fatalError("whoops")
     }
   }
 

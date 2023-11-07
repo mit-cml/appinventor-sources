@@ -38,7 +38,7 @@ open class AxisChartView<D: DGCharts.BarLineChartViewBase> : ChartView<D> {
     chart?.xAxis.granularity = 1
     chart?.leftAxis.granularity = 1
     
-    chart?.xAxis.valueFormatter = AppInventorValueFormatter(chart!, axisLabels) as! any AxisValueFormatter
+    chart?.xAxis.valueFormatter = AppInventorValueFormatter(chart!, axisLabels)
     if _chartComponent.XFromZero {
       chart?.xAxis.axisMinimum = 0
 
@@ -84,7 +84,7 @@ open class AxisChartView<D: DGCharts.BarLineChartViewBase> : ChartView<D> {
     self.axisLabels = labels
   }
   
-  public class AppInventorValueFormatter : ValueFormatter {
+  public class AppInventorValueFormatter : AxisValueFormatter {
     unowned var _chartView: BarLineChartViewBase
     var _axisLabels: Array<String>
     public init(_ owner: BarLineChartViewBase, _ axisLabels: Array<String>) {
@@ -103,6 +103,10 @@ open class AxisChartView<D: DGCharts.BarLineChartViewBase> : ChartView<D> {
       } else {
         return String(value)
       }
+    }
+
+    public func stringForValue(_ value: Double, axis: DGCharts.AxisBase?) -> String {
+      return String(value)
     }
   }
 }

@@ -52,7 +52,7 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
     }
   }
   
-  public func setLineType(_ type: LineType) throws {
+  public func setLineType(_ type: LineType) {
     if let dataset = dataset as? DGCharts.LineChartDataSet {
       dataset.drawCircleHoleEnabled = false // also update the circle color
       
@@ -68,9 +68,6 @@ class LineChartBaseDataModel: PointChartDataModel<DGCharts.ChartDataEntry, DGCha
       case LineType.Stepped:
         dataset.mode = LineChartDataSet.Mode.stepped
         break
-
-      default:
-        throw ErrorMessage()
       }
     } else {
       return

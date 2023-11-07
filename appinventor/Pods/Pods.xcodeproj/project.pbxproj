@@ -5098,7 +5098,6 @@
 				2AA8252109613B9D950EE7E84B14F7EB /* Validation.swift */,
 				A3ECDB7979D8E34364BEF45B627BE474 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -5653,7 +5652,7 @@
 			);
 			name = "Pods-AICompanionApp";
 			productName = Pods_AICompanionApp;
-			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */;
+			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		09DD83B7D075842A3A5105AD410BD38A /* BigInt */ = {
@@ -5671,7 +5670,7 @@
 			);
 			name = BigInt;
 			productName = BigInt;
-			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt */;
+			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		0BE9E64AA13AC5C466D0A556F4D15857 /* Base58Swift */ = {
@@ -5690,7 +5689,7 @@
 			);
 			name = Base58Swift;
 			productName = Base58Swift;
-			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */;
+			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2349E173F60A2065FC65E52DD215DFF0 /* SwiftSVG */ = {
@@ -5708,7 +5707,7 @@
 			);
 			name = SwiftSVG;
 			productName = SwiftSVG;
-			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */;
+			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		30950EABCD5EFA0462FC017837EB16BE /* ZXingObjC */ = {
@@ -5726,7 +5725,7 @@
 			);
 			name = ZXingObjC;
 			productName = ZXingObjC;
-			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */;
+			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		31708EE6929C61C0EDA6F5DAE3AF9DB7 /* Zip */ = {
@@ -5744,7 +5743,7 @@
 			);
 			name = Zip;
 			productName = Zip;
-			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip */;
+			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3F2C1776D90B62B156DB52C41A5C419C /* SQLite.swift */ = {
@@ -5762,7 +5761,7 @@
 			);
 			name = SQLite.swift;
 			productName = SQLite;
-			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */;
+			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		4C553636806882CA884CCB37C93B7A1D /* Pods-AICompanionAppTests */ = {
@@ -5783,7 +5782,7 @@
 			);
 			name = "Pods-AICompanionAppTests";
 			productName = Pods_AICompanionAppTests;
-			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */;
+			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		6083682834ABE0AE7BD1CBF06CADD036 /* CocoaAsyncSocket */ = {
@@ -5801,7 +5800,7 @@
 			);
 			name = CocoaAsyncSocket;
 			productName = CocoaAsyncSocket;
-			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */;
+			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		62884CF888628EFA13EA1613B8C94267 /* PSSRedisClient */ = {
@@ -5820,7 +5819,7 @@
 			);
 			name = PSSRedisClient;
 			productName = PSSRedisClient;
-			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */;
+			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		739D73E5703F6F4ED0DB0A7A83146E9F /* Pods-SchemeKitTests */ = {
@@ -5838,7 +5837,7 @@
 			);
 			name = "Pods-SchemeKitTests";
 			productName = "Pods-SchemeKitTests";
-			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */;
+			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		759D0F22224FF87BBDA4723538A5F811 /* DGCharts */ = {
@@ -5874,7 +5873,7 @@
 			);
 			name = geos;
 			productName = geos;
-			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos */;
+			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		8C2C70E07119861A924AFFBB4EDB90F8 /* Pods-AICompanionApp-AICompanionAppUITests */ = {
@@ -5910,7 +5909,7 @@
 			);
 			name = "Pods-AICompanionApp-AICompanionAppUITests";
 			productName = Pods_AICompanionApp_AICompanionAppUITests;
-			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */;
+			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		A5F702E0DA383BC1479572581615A916 /* SwiftProtobuf */ = {
@@ -5928,7 +5927,7 @@
 			);
 			name = SwiftProtobuf;
 			productName = SwiftProtobuf;
-			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */;
+			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		AD904F32069787EFB2DFFE05EB82F5BD /* GCDWebServer */ = {
@@ -5946,7 +5945,7 @@
 			);
 			name = GCDWebServer;
 			productName = GCDWebServer;
-			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */;
+			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B990BD87169C76A3ED3FE8A9258D91A3 /* Toast-Swift */ = {
@@ -5964,7 +5963,7 @@
 			);
 			name = "Toast-Swift";
 			productName = Toast_Swift;
-			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */;
+			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C4DDD4DFF9E11EB5409BA8CED6FAEA6B /* Pods-AIComponentKit-AIComponentKitTests */ = {
@@ -5999,7 +5998,7 @@
 			);
 			name = "Pods-AIComponentKit-AIComponentKitTests";
 			productName = Pods_AIComponentKit_AIComponentKitTests;
-			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */;
+			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D1DAECCFA739F2B9F26311F0AA6D96D5 /* KTVJSONWebToken */ = {
@@ -6017,7 +6016,7 @@
 			);
 			name = KTVJSONWebToken;
 			productName = KTVJSONWebToken;
-			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken */;
+			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D9511E908172FC0635D8A6BF87724844 /* Pods-SchemeKit */ = {
@@ -6034,7 +6033,7 @@
 			);
 			name = "Pods-SchemeKit";
 			productName = "Pods-SchemeKit";
-			productReference = 568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */;
+			productReference = 568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E1AD339F31EABB0CEE96DD92C4E0BC03 /* Pods-AIComponentKit */ = {
@@ -6069,7 +6068,7 @@
 			);
 			name = "Pods-AIComponentKit";
 			productName = Pods_AIComponentKit;
-			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */;
+			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EAAA1AD3A8A1B59AB91319EE40752C6D /* Alamofire */ = {
@@ -6087,7 +6086,7 @@
 			);
 			name = Alamofire;
 			productName = Alamofire;
-			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */;
+			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EBEEF85FCA1109D5280B062D0A876D5A /* GEOSwift */ = {
@@ -6106,7 +6105,7 @@
 			);
 			name = GEOSwift;
 			productName = GEOSwift;
-			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */;
+			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -7879,7 +7878,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Zip/Zip-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -7935,7 +7934,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/PSSRedisClient/PSSRedisClient-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -8173,7 +8172,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Toast-Swift/Toast-Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Toast-Swift/Toast-Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Toast-Swift/Toast-Swift.modulemap";
 				PRODUCT_MODULE_NAME = Toast_Swift;
@@ -8205,7 +8204,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket.modulemap";
 				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
@@ -8237,7 +8236,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftProtobuf/SwiftProtobuf-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf.modulemap";
 				PRODUCT_MODULE_NAME = SwiftProtobuf;
@@ -8364,7 +8363,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Zip/Zip-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -8396,7 +8395,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Base58Swift/Base58Swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Base58Swift/Base58Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Base58Swift/Base58Swift.modulemap";
 				PRODUCT_MODULE_NAME = Base58Swift;
@@ -8429,7 +8428,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/PSSRedisClient/PSSRedisClient-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -8536,8 +8535,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -8560,7 +8558,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken.modulemap";
 				PRODUCT_MODULE_NAME = KTVJSONWebToken;
@@ -8592,7 +8590,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -8624,7 +8622,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/ZXingObjC/ZXingObjC-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/ZXingObjC/ZXingObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZXingObjC/ZXingObjC.modulemap";
 				PRODUCT_MODULE_NAME = ZXingObjC;
@@ -8657,7 +8655,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -8722,7 +8720,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GEOSwift/GEOSwift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -8755,7 +8753,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SwiftSVG/SwiftSVG-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SwiftSVG/SwiftSVG-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftSVG/SwiftSVG.modulemap";
 				PRODUCT_MODULE_NAME = SwiftSVG;
@@ -9210,7 +9208,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/geos/geos-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/geos/geos-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/geos/geos.modulemap";
 				PRODUCT_MODULE_NAME = geos;
@@ -9341,7 +9339,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GCDWebServer/GCDWebServer-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GCDWebServer/GCDWebServer.modulemap";
 				PRODUCT_MODULE_NAME = GCDWebServer;
@@ -9373,7 +9371,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GEOSwift/GEOSwift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -9405,7 +9403,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/SQLite.swift/SQLite.swift-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/SQLite.swift/SQLite.swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SQLite.swift/SQLite.swift.modulemap";
 				PRODUCT_MODULE_NAME = SQLite;

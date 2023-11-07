@@ -8,23 +8,12 @@ public enum LineType: Int32, CaseIterable {
   case Curved = 1
   case Stepped = 2
   
-  var LOOKUP : [Int32 : LineType] {
+  static var LOOKUP : [Int32 : LineType] {
+    var table: [Int32 : LineType] = [:]
     for val in LineType.allCases {
-      LOOKUP[val.rawValue] = val
-      return LOOKUP
+      table[val.rawValue] = val
     }
+    return table
   }
-  /*
-  var LOOKUP: [Int32 : LineType] {
-    get {
-      return LOOKUP
-    }
-    set {
-      for val in LineType.allCases {
-        LOOKUP[val.rawValue] = val
-      
-      }
-    }
-  }*/
 }
 
