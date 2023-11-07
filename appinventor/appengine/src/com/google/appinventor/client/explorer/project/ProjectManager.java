@@ -40,15 +40,18 @@ public final class ProjectManager {
   public ProjectManager() {
     projectsMap = new HashMap<Long, Project>();
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
+  }
+
+  public void loadProjects() {
     Ode.getInstance().getProjectService().getProjectInfos(
-      new OdeAsyncCallback<List<UserProject>>(
-        MESSAGES.projectInformationRetrievalError()) {
-        @Override
-        public void onSuccess(List<UserProject> projectInfos) {
-          for (UserProject projectInfo : projectInfos) {
-            addProject(projectInfo);
-          }
-          fireProjectsLoaded();
+        new OdeAsyncCallback<List<UserProject>>(
+            MESSAGES.projectInformationRetrievalError()) {
+          @Override
+          public void onSuccess(List<UserProject> projectInfos) {
+            for (UserProject projectInfo : projectInfos) {
+              addProject(projectInfo);
+            }
+            fireProjectsLoaded();
         }
       });
   }

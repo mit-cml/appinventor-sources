@@ -8,7 +8,6 @@ package com.google.appinventor.client.wizards.youngandroid;
 
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.UIStyle;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,8 +30,6 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
-
-import java.util.logging.Logger;
 
 import java.util.logging.Logger;
 
