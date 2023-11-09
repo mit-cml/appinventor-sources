@@ -168,6 +168,10 @@ let kMinimumToastWait = 10.0
     view.accessibilityIdentifier = String(describing: type(of: self))
   }
 
+  open func add(_ component: NonvisibleComponent) {
+    _components.append(component)
+  }
+
   open func add(_ component: ViewComponent) {
     _components.append(component)
     _linearView.addItem(LinearViewItem(component.view))

@@ -80,6 +80,14 @@ public interface ProjectService extends RemoteService {
   void deleteProject(long projectId);
 
   /**
+   * Renames several projects.
+   *
+   * @param projectIds IDs of projects to be renamed
+   * @param projectNames new project names
+   */
+  void renameProjects(List<Long> projectIds, List<String> projectNames);
+
+  /**
    * Moves the project to trash.
    * @param projectId  project ID
    */

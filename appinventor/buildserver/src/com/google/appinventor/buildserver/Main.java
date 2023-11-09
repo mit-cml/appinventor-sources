@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -24,9 +24,6 @@ import org.kohsuke.args4j.spi.StringArrayOptionHandler;
  * @author markf@google.com (Mark Friedman)
  */
 public final class Main {
-
-  public final static String APK_EXTENSION_VALUE = "apk";
-  public final static String AAB_EXTENSION_VALUE = "aab";
 
   static class CommandLineOptions {
     @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
@@ -117,7 +114,7 @@ public final class Main {
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir,
                                          null,
-                                         AAB_EXTENSION_VALUE.equals(commandLineOptions.ext));
+                                         commandLineOptions.ext);
     System.exit(result.getResult());
   }
 

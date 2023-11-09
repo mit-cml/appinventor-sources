@@ -7,16 +7,16 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mock for the non-visible ImageBot component. This needs a separate mock
@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 public class MockImageBot extends MockNonVisibleComponent {
-
+  private static final Logger LOG = Logger.getLogger(MockImageBot.class.getName());
   public static final String TYPE = "ImageBot";
 
   private static final String PROPERTY_NAME_TOKEN = "Token";
@@ -108,7 +108,7 @@ public class MockImageBot extends MockNonVisibleComponent {
    * because the tokens are identical. Someday this may change, but not today!
    */
   private void getTokenFromServer() {
-    OdeLog.log("getTokenFromServer Called");
+    LOG.info("getTokenFromServer Called");
     Ode.getInstance().getTokenAuthService().getChatBotToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
@@ -116,7 +116,7 @@ public class MockImageBot extends MockNonVisibleComponent {
         if (tokenProperty != null) {
           String existingToken = tokenProperty.getValue();
           if (!existingToken.isEmpty()) {
-            OdeLog.log("bailing on getTokenFromServer existingToken = " + existingToken);
+            LOG.info("bailing on getTokenFromServer existingToken = " + existingToken);
             return;             // If we have a value, don't over-write it
           }
         }

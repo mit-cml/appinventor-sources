@@ -142,6 +142,7 @@
 		06E59EB11D92D16100C42804 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB01D92D16100C42804 /* Button.swift */; };
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
+		06E624A629F698EC007DA752 /* TextToSpeechTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E624A529F698EC007DA752 /* TextToSpeechTests.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EF26592998A94600D6093C /* ComponentUtil.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
@@ -382,6 +383,7 @@
 		06E59EB01D92D16100C42804 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		06E59EB21D92D19600C42804 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
+		06E624A529F698EC007DA752 /* TextToSpeechTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextToSpeechTests.swift; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06EF26592998A94600D6093C /* ComponentUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentUtil.swift; sourceTree = "<group>"; };
@@ -963,6 +965,7 @@
 			children = (
 				CB8539242075549A009E9030 /* ClockTests.swift */,
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
+				06E624A529F698EC007DA752 /* TextToSpeechTests.swift */,
 				0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */,
 				DE68A88C20B4971400233AF9 /* XMLTests.swift */,
 				0681C4B226024E6800F70BC6 /* WebTests.swift */,
@@ -1432,6 +1435,7 @@
 				06A623862507BDA800961743 /* CoercionTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
 				06009FF62280723F00E4EC4A /* ImageTests.swift in Sources */,
+				06E624A629F698EC007DA752 /* TextToSpeechTests.swift in Sources */,
 				DE68A88D20B4971400233AF9 /* XMLTests.swift in Sources */,
 				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
 				064F224927342A3300CFA04B /* MapTests.swift in Sources */,

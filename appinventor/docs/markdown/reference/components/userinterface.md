@@ -787,6 +787,9 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.Refresh" class="method"} <i/> Refresh()
 : Reload the ListView to reflect any changes in the data.
 
+{:id="ListView.RemoveItemAtIndex" class="method"} <i/> RemoveItemAtIndex(*index*{:.number})
+: Removes Item from list at a given index
+
 ## Notifier  {#Notifier}
 
 The Notifier component displays alert messages and creates Android log entries through
@@ -1040,7 +1043,8 @@ Top-level component containing all other components in the program.
  to a form behind it in the activity stack.
 
 {:id="Screen.DefaultFileScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultFileScope*
-: Specifies the default scope used when components access files. Note that the [`File`](#File)
+: Specifies the default scope used when components access files. Note that the
+ <a href="/reference/components/storage.html#File" target="_blank">File</a>
  component has its own property for controlling file scopes.
 
 {:id="Screen.Height" .number .ro .bo} *Height*

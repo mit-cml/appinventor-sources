@@ -87,7 +87,8 @@ import org.osmdroid.util.BoundingBox;
     "location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed " +
     "to save the current Map coordinates to its properties. Lastly, if the Map is moved to a " +
     "different location, for example to add Markers off-screen, then the &quot;Reset Map to " +
-    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
+    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>",
+    iconName = "images/map.png")
 @SimpleObject
 @UsesAssets(fileNames = "location.png, marker.svg")
 @UsesPermissions({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
@@ -537,7 +538,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM,
       defaultValue = "1")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScaleUnits(@Options(ScaleUnits.class) int units) {
     // Make sure units is a valid ScaleUnits.
     ScaleUnits scaleUnits = ScaleUnits.fromUnderlyingValue(units);

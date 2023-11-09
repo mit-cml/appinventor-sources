@@ -56,6 +56,11 @@ public interface ProjectServiceAsync {
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#renameProjects(List<Long>, List<String>)
+   */
+  void renameProjects(List<Long> projectIds, List<String> projectNames, AsyncCallback<Void> callback);
+
+  /**
    * @see ProjectService@loginToGallery()
    */
 

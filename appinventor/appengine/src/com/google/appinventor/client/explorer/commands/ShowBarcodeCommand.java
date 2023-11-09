@@ -8,7 +8,6 @@ package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -34,6 +34,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author markf@google.com (Mark Friedman)
  */
 public class ShowBarcodeCommand extends ChainableCommand {
+
+  private static final Logger LOG = Logger.getLogger(ShowBarcodeCommand.class.getName());
 
   // The build target
   private String target;
@@ -62,7 +64,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
     // Display a barcode for an url pointing at our server's download servlet
     String barcodeUrl = GWT.getHostPageBaseURL()
         + "b/" + Ode.getInstance().getNonce();
-    OdeLog.log("Barcode url is: " + barcodeUrl);
+    LOG.info("Barcode url is: " + barcodeUrl);
     new BarcodeDialogBox(node.getName(), barcodeUrl, isAab).center();
   }
 

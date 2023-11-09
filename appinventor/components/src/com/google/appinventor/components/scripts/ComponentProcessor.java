@@ -833,6 +833,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         return WRITE_ONLY;
       }
     }
+
+    protected PropertyCategory getCategory() {
+      return propertyCategory;
+    }
   }
 
   /**
@@ -2524,6 +2528,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             // name. This is an overridden property without the SimpleProperty annotation and we
             // need to remove it.
             componentInfo.properties.remove(propertyName);
+            if (designerProperty == null) {
+              componentInfo.designerProperties.remove(propertyName);
+            }
           }
         }
       } else {

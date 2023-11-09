@@ -33,6 +33,10 @@ goog.inherits(AI.Blockly.FieldProcedureName, Blockly.FieldTextInput);
  * @override
  */
 AI.Blockly.FieldProcedureName.prototype.setValue = function(newValue) {
+  if (this.sourceBlock_ && this.sourceBlock_.isInFlyout) {
+    // Do not take action for blocks in flyouts
+    return;
+  }
   var oldValue = this.getValue();
   AI.Blockly.FieldProcedureName.superClass_.setValue.call(this, newValue);
   newValue = this.getValue();

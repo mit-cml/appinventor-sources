@@ -683,7 +683,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
   @Test
   public void testCriterionSatisfiedAll() {
     Entry entry = createEntry(1f, 3f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.All;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.All;
     final float value = 5f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
@@ -697,7 +697,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
   @Test
   public void testCriterionSatisfiedXMatch() {
     Entry entry = createEntry(1f, 4f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.XValue;
     final float value = 1f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
@@ -711,7 +711,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
   @Test
   public void testCriterionSatisfiedXNoMatch() {
     Entry entry = createEntry(5f, 2f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.XValue;
     final float value = 2f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
@@ -725,7 +725,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
   @Test
   public void testCriterionSatisfiedYMatch() {
     Entry entry = createEntry(2f, 4f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.YValue;
     final float value = 4f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
@@ -739,7 +739,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
   @Test
   public void testCriterionSatisfiedYNoMatch() {
     Entry entry = createEntry(7f, 15f);
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.YValue;
     final float value = 14f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
@@ -769,7 +769,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
 
     YailList expected = YailList.makeList(expectedTuples);
     final float value = 8f;
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.XValue;
 
     YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);
@@ -800,7 +800,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
 
     YailList expected = YailList.makeList(expectedTuples);
     final float value = 1f;
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.YValue;
 
     YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);
@@ -824,7 +824,7 @@ public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel<?,
     YailList expected = new YailList();
 
     final float value = 4f;
-    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final DataModel.EntryCriterion criterion = DataModel.EntryCriterion.YValue;
 
     YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);

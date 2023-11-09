@@ -576,9 +576,17 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 223:
   // - IMAGEBOT_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 224:
+  // - ANOMALY_COMPONENT_VERSION was introduced
+  // - CHATBOT_COMPONENT_VERSION was incremented to 2
+  // - FILEPICKER_COMPONENT_VERSION was introduced
+  // - IMAGEBOT_COMPONENT_VERSION was incremented to 2
+  // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
-
-  public static final int YOUNG_ANDROID_VERSION = 224;
+  // - TINYDB_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 225:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 7
+  // - WEB_COMPONENT_VERSION was incremented to 9
+  public static final int YOUNG_ANDROID_VERSION = 225;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -675,9 +683,9 @@ public class YaVersion {
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 31;
+  public static final int TARGET_SDK_VERSION = 33;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 12.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 13.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -741,6 +749,8 @@ public class YaVersion {
   // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
   // - Extras property was added to accept a list of key-value pairs to put to the intent
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
+
+  public static final int ANOMALY_COMPONENT_VERSION = 1;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -857,8 +867,10 @@ public class YaVersion {
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
-  //For CHATBOT_COMPONENT_VERSION: Initial Version
-  public static final int CHATBOT_COMPONENT_VERSION = 1;
+  // For CHATBOT_COMPONENT_VERSION: Initial Version
+  // For CHATBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made visible in the designer view
+  public static final int CHATBOT_COMPONENT_VERSION = 2;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -931,6 +943,8 @@ public class YaVersion {
   // - The WritePermission property was added.
   // - The LegacyMode property was removed. Use DefaultScope instead.
   public static final int FILE_COMPONENT_VERSION = 4;
+
+  public static final int FILEPICKER_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -1049,7 +1063,9 @@ public class YaVersion {
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
 
-  public static final int IMAGEBOT_COMPONENT_VERSION = 1;
+  // For IMAGEBOT_COMPONENT_VERSION 2:
+  // - The ApiKey property was made available in the designer
+  public static final int IMAGEBOT_COMPONENT_VERSION = 2;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1130,7 +1146,9 @@ public class YaVersion {
   // - Added SelectionColor Property
   // For LISTVIEW_COMPONENT_VERSION 6:
   // - Added ...
-  public static final int LISTVIEW_COMPONENT_VERSION = 6;
+  // For LISTVIEW_COMPONENT_VERSION 7:
+  // - Added RemoveItemAtIndex method
+  public static final int LISTVIEW_COMPONENT_VERSION = 7;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1299,6 +1317,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
+  // For REGRESSION_COMPONENT_VERSION 2:
+  // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
+  public static final int REGRESSION_COMPONENT_VERSION = 2;
+
   public static final int SHARING_COMPONENT_VERSION = 1;
 
   // For SLIDER_COMPONENT_VERSION 1:
@@ -1340,7 +1362,14 @@ public class YaVersion {
   // - The FinishedAddCol event was renamed to FinishedAddColumn
   // - The RemoveCol method was renamed to RemoveColumn
   // - The FinishedRemoveCol event was renamed to FinishedRemoveColumn
-  public static final int SPREADSHEET_COMPONENT_VERSION = 2;
+
+  // For SPREADSHEET_COMPONENT_VERSION 3:
+  // - Added the AddSheet block
+  // - Added the FinishedAddSheet event
+  // - Added the DeleteSheet block
+  // - Added the FinishedDeleteSheet event
+
+  public static final int SPREADSHEET_COMPONENT_VERSION = 3;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1406,7 +1435,9 @@ public class YaVersion {
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
-  public static final int TINYDB_COMPONENT_VERSION = 2;
+  // For TINYDB_COMPONENT_VERSION 3:
+  // - Added GetEntries method
+  public static final int TINYDB_COMPONENT_VERSION = 3;
 
   // For TINYWEBDB_COMPONENT_VERSION 2:
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
@@ -1507,7 +1538,9 @@ public class YaVersion {
   // - The XMLTextDecodeAsDictionary method was added.
   // For WEB_COMPONENT_VERSION 8:
   // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
-  public static final int WEB_COMPONENT_VERSION = 8;
+  // For WEB_COMPONENT_VERSION 9:
+  // - Added property ResponseTextEncoding
+  public static final int WEB_COMPONENT_VERSION = 9;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
@@ -1599,12 +1632,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.67";
+  public static final String PREFERRED_COMPANION = "2.68";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.67", "2.67u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.68", "2.68u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

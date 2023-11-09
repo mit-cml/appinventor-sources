@@ -7,13 +7,15 @@ import Foundation
 import XCTest
 @testable import AIComponentKit
 
-class FileTests: XCTestCase {
-  var file: File = File(Form())
+class FileTests: AppInventorTestCase {
+  var file: File!
   var createdFile: String? = nil
   let fileManager = FileManager()
   
   override func setUp() {
-    file = File(Form())
+    super.setUp()
+    file = File(form)
+    XCTAssertTrue(addComponent(file, named: "File1"))
   }
   
   override func tearDown() {
@@ -28,10 +30,12 @@ class FileTests: XCTestCase {
   func testSaveFileAssetError() {
     let fileName = "//testfile.txt"
     let fileText = "this file should not be saved"
+    expectToReceiveEvent(on: form, named: "ErrorOccurred")
+    expectNotToReceiveEvent(on: file, named: "AfterFileSaved")
+
     file.SaveFile(fileText, fileName)
-    
-    sleep(2)
-    XCTAssertFalse(fileExists(fileName), "Asset File should not be created.")
+
+    verify()
   }
   
   func testFileSavePublic() {
@@ -50,22 +54,25 @@ class FileTests: XCTestCase {
   func testFileNewFileAssetError() {
     let fileName = "//testfile.txt"
     let fileText = "this file should not be saved"
+    expectToReceiveEvent(on: form, named: "ErrorOccurred")
+    expectNotToReceiveEvent(on: file, named: "AfterFileSaved")
+
     file.AppendToFile(fileText, fileName)
     
-    sleep(2)
+    verify()
     XCTAssertFalse(fileExists(fileName), "Asset File should not exist created.")
   }
   
   func testFileAppendNewFilePublic() {
     let fileName = "/filePublicAppendNew.txt"
     let fileText = "this is a public file"
-    baseTestFileSave(fileName: fileName, fileText: fileText)
+    baseTestFileAppendNew(fileName: fileName, fileText: fileText)
   }
   
   func testFileAppendNewFilePrivate() {
     let fileName = "filePrivateAppendNew.txt"
     let fileText = "this is a private file"
-    baseTestFileSave(fileName: fileName, fileText: fileText, isPublic: false)
+    baseTestFileAppendNew(fileName: fileName, fileText: fileText, isPublic: false)
   }
   
   func testFileAppendFilePublic() {
@@ -85,20 +92,21 @@ class FileTests: XCTestCase {
   // TODO: update to assert that error was dispatched
   func testFileDeleteAssetError() {
     let fileName = "//testfile.txt"
+
+    expectToReceiveEvent(on: form, named: "ErrorOccurred")
     file.Delete(fileName)
     
-    sleep(2)
-    XCTAssertFalse(fileExists(fileName), "Asset File should not be created.")
+    verify()
+    XCTAssertFalse(fileExists(fileName), "Asset File should not be deleted.")
   }
   
   func testFileDeletePublic() {
     let fileName = "/filePublic.txt"
     let fileText = "this is a public file"
     baseTestFileSave(fileName: fileName, fileText: fileText)
-    
+
     file.Delete(fileName)
-    
-    sleep(2)
+
     XCTAssertFalse(fileExists(fileName), "Public file should have been deleted.")
   }
   
@@ -106,10 +114,9 @@ class FileTests: XCTestCase {
     let fileName = "/filePriv.txt"
     let fileText = "this is a private file"
     baseTestFileSave(fileName: fileName, fileText: fileText, isPublic: false)
-    
+
     file.Delete(fileName)
     
-    sleep(2)
     XCTAssertFalse(fileExists(fileName), "Private file should have been deleted.")
   }
   
@@ -118,10 +125,11 @@ class FileTests: XCTestCase {
     let fileName = "/filePublic.txt"
     let fileText = "this is a public file"
     baseTestFileSave(fileName: fileName, fileText: fileText)
-    
+
+    expectToReceiveEvent(on: file, named: "GotText")
     file.ReadFrom(fileName)
     
-    sleep(2)
+    verify()
   }
   
   // TODO: update to test that GotText was called with proper text
@@ -129,37 +137,43 @@ class FileTests: XCTestCase {
     let fileName = "filePublic.txt"
     let fileText = "this is a private file"
     baseTestFileSave(fileName: fileName, fileText: fileText, isPublic: false)
+    expectToReceiveEvent(on: file, named: "GotText")
     
     file.ReadFrom(fileName)
     
-    sleep(2)
+    verify()
   }
   
   // MARK: Base Test Functions
   private func baseTestFileSave(fileName: String, fileText: String, isPublic: Bool = true) {
+    expectToReceiveEvent(on: file, named: "AfterFileSaved")
+
     file.SaveFile(fileText, fileName)
     createdFile = fileName
-    
-    sleep(2)
+
+    verify()
     XCTAssertTrue(fileExists(fileName), "\(isPublic ? "Public" : "Private") file should have been created.")
     XCTAssertTrue(fileTextMatches(fileName, fileText), "Text did not match expected text")
   }
   
   private func baseTestFileAppendNew(fileName: String, fileText: String, isPublic: Bool = true) {
+    expectToReceiveEvent(on: file, named: "AfterFileSaved")
+
     file.AppendToFile(fileText, fileName)
     createdFile = fileName
-    
-    sleep(2)
+
+    verify()
     XCTAssertTrue(fileExists(fileName), "\(isPublic ? "Public" : "Private") file should be created.")
     XCTAssertTrue(fileTextMatches(fileName, fileText), "Text did not match expected text")
   }
   
   private func baseTestFileAppend(fileName: String, originalText: String, appendingText: String, isPublic: Bool = true) {
     baseTestFileSave(fileName: fileName, fileText: originalText, isPublic: isPublic)
-    
+    expectToReceiveEvent(on: file, named: "AfterFileSaved")
+
     file.AppendToFile(appendingText, fileName)
-    
-    sleep(2)
+
+    verify()
     XCTAssertTrue(fileExists(fileName), "\(isPublic ? "Public" : "Private") file should exist.")
     XCTAssertTrue(fileTextMatches(fileName, originalText + appendingText), "Text did not match new appended text")
   }

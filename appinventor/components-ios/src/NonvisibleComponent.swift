@@ -10,6 +10,8 @@ open class NonvisibleComponent: NSObject, Component {
 
   @objc public init(_ container: ComponentContainer) {
     self._form = container.form
+    super.init()
+    _form?.add(self)
   }
 
   open func copy(with zone: NSZone? = nil) -> Any {

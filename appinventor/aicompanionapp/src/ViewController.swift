@@ -72,6 +72,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+    self.delegate = self
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -384,5 +385,22 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
                                  "No WiFi", "Continue without WiFi", "Exit", false)
     }
+  }
+}
+
+extension ViewController: UINavigationControllerDelegate {
+  public func navigationController(_ navigationController: UINavigationController,
+      animationControllerFor operation: UINavigationController.Operation,
+      from fromVC: UIViewController,
+      to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    guard let oldForm = fromVC as? Form, let newForm = toVC as? Form else {
+      return nil
+    }
+    oldForm.onPause()
+    if operation == .pop {
+      oldForm.onDestroy()
+    }
+    newForm.onResume()
+    return nil
   }
 }

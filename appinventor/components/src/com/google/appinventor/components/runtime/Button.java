@@ -22,7 +22,8 @@ import com.google.appinventor.components.common.YaVersion;
     description = "Button with the ability to detect clicks.  Many aspects " +
     "of its appearance can be changed, as well as whether it is clickable " +
     "(<code>Enabled</code>), can be changed in the Designer or in the Blocks " +
-    "Editor.")
+    "Editor.",
+    iconName = "images/button.png")
 @SimpleObject
 public final class Button extends ButtonBase {
 

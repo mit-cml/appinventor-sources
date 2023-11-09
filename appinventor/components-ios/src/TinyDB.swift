@@ -60,6 +60,27 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 
+  @objc open func GetEntries() -> YailDictionary {
+    let result = YailDictionary()
+    do {
+      let statement = try _database.run("SELECT _key, _value FROM \(_namespace)")
+      for row in statement {
+        guard let key = row[0] as? NSString else {
+          continue
+        }
+        guard let valueAsString = row[1] as? String else {
+          continue
+        }
+        if let value = try getObjectFromJson(valueAsString) {
+          result[key] = value
+        }
+      }
+    } catch {
+      NSLog("Unable to read from TinyDB")
+    }
+    return result
+  }
+
   @objc open func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
     do {
       if let value = try _database.pluck(_table.select(_value).filter(_key == tag)),

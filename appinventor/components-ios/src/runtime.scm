@@ -308,6 +308,7 @@
      ((equal? type 'text) (coerce-to-text arg))
      ((equal? type 'boolean) (coerce-to-boolean arg))
      ((equal? type 'list) (coerce-to-yail-list arg))
+     ((equal? type 'list-of-number) (coerce-to-number-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
      ((equal? type 'pair) (coerce-to-pair arg))

@@ -58,7 +58,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE,
       defaultValue = "App")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public void DefaultScope(FileScope scope) {
     this.scope = scope;
   }

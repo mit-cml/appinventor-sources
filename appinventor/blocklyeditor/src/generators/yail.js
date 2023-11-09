@@ -463,9 +463,44 @@ Blockly.Yail.getPropertySetterString = function(componentName, componentType, pr
   // ComponentProcessor to enforce that newer components/extensions always have both a designer
   // and block definition.
   var propType = Blockly.Yail.YAIL_QUOTE + (propDef ? propDef.type : "any");
-  var value = Blockly.Yail.getPropertyValueString(propertyValue, propType);
+  var value;
+  if (propertyName === 'ApiKey') {
+    value = Blockly.Yail.obfuscateProperty(propertyValue);
+  } else {
+    value = Blockly.Yail.getPropertyValueString(propertyValue, propType);
+  }
   code = code.concat(value + Blockly.Yail.YAIL_SPACER + propType + Blockly.Yail.YAIL_CLOSE_BLOCK);
   return code;
+};
+
+/**
+ * Obfuscate a designer property's value.
+ *
+ * @param text the original text to be obfuscated
+ * @returns {string} the deobfuscation code following the same logic as the obfuscated_text block
+ */
+Blockly.Yail.obfuscateProperty = function(text) {
+  var confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
+  var setupObfuscation = function(input, confounder) {
+    // The algorithm below is also implemented in scheme in runtime.scm
+    // If you change it here, you have to change it there!
+    // Note: This algorithm is like xor, if applied to its output
+    // it regenerates it input.
+    var acc = [];
+    // First make sure the confounder is long enough...
+    while (confounder.length < input.length) {
+      confounder += confounder;
+    }
+    for (var i = 0; i < input.length; i++) {
+      var c = (input.charCodeAt(i) ^ confounder.charCodeAt(i)) & 0xFF;
+      var b = (c ^ input.length - i) & 0xFF;
+      var b2 = ((c >> 8) ^ i) & 0xFF;
+      acc.push(String.fromCharCode((b2 << 8 | b) & 0xFF));
+    }
+    return acc.join('');
+  }
+  var encoded = setupObfuscation(text, confounder);
+  return '(text-deobfuscate ' + [encoded, confounder].map(Blockly.Yail.quote_).join(' ') + ')';
 };
 
 /**

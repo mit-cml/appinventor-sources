@@ -50,7 +50,12 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
-      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
+      String translatedHelpText = ComponentsTranslation.getComponentHelpString(helpTextKey);
+      if (!scd.getExternal() && translatedHelpText.equals(scd.getName())
+          && !scd.getHelpString().isEmpty()) {
+        translatedHelpText = scd.getHelpString();
+      }
+      HTML helpText = new HTML(translatedHelpText);
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the

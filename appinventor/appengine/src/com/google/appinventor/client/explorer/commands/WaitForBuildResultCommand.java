@@ -11,7 +11,6 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.output.MessagesOutput;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -26,6 +25,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -35,10 +35,11 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author markf@google.com (Mark Friedman)
  */
 public class WaitForBuildResultCommand extends ChainableCommand {
+  private static final Logger LOG = Logger.getLogger(WaitForBuildResultCommand.class.getName());
+
   // The build target
   private final String target;
   private static final int WAIT_INTERVAL_MILLIS = 10000;
-  private final MessagesOutput messagesOutput;
   private final String buildRequestTime;
 
   /**
@@ -60,7 +61,6 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   public WaitForBuildResultCommand(String target, ChainableCommand nextCommand) {
     super(nextCommand);
     this.target = target;
-    messagesOutput = MessagesOutput.getMessagesOutput();
     buildRequestTime = DateTimeFormat.getMediumDateTimeFormat().format(new Date());
   }
 
@@ -74,8 +74,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     final Ode ode = Ode.getInstance();
-    messagesOutput.clear();
-    messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(), buildRequestTime));
+    LOG.info(MESSAGES.buildRequestedMessage(node.getName(), buildRequestTime));
 
     OdeAsyncCallback<RpcResult> callback =
         new OdeAsyncCallback<RpcResult>(
@@ -83,9 +82,9 @@ public class WaitForBuildResultCommand extends ChainableCommand {
             MESSAGES.buildError()) {
       @Override
       public void onSuccess(RpcResult result) {
-        messagesOutput.addMessages("Waiting for " + getElapsedMillis() / 1000 + " seconds.");
-        messagesOutput.addMessages(result.getOutput());
-        messagesOutput.addMessages(result.getError());
+        LOG.info("Waiting for " + getElapsedMillis() / 1000 + " seconds.");
+        LOG.info(result.getOutput());
+        LOG.info(result.getError());
         Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,
                             node.getName(), getElapsedMillis());
         if (result.succeeded()) {
@@ -96,7 +95,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
           String errorMsg = result.getError();
           // This is not an internal App Inventor bug. The error should be
           // reported in a yellow info box.
-          ErrorReporter.reportInfo(MESSAGES.buildFailedError() + 
+          ErrorReporter.reportInfo(MESSAGES.buildFailedError() +
               (errorMsg.isEmpty() ? "" : " " + errorMsg));
           executionFailedOrCanceled();
         } else if (result.getResult() == 2) {
