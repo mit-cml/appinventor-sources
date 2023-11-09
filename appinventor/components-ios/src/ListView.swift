@@ -402,8 +402,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
     if indexPath.row < _elements.count {
       cell.textLabel?.text = _elements[indexPath.row]
-      cell.textLabel?.numberOfLines = 1
-      cell.textLabel?.lineBreakMode = .byTruncatingTail
+      cell.textLabel?.numberOfLines = 0
+      cell.textLabel?.lineBreakMode = .byWordWrapping
     } else {
       let listDataIndex = indexPath.row - _elements.count
       if _listViewLayoutMode == 1{
@@ -528,13 +528,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
       }
 
-      if ((_listData[listDataIndex]["Text1"]?.contains("\n")) != nil) {
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.lineBreakMode = .byWordWrapping
-      } else {
-        cell.textLabel?.numberOfLines = 1
-        cell.textLabel?.lineBreakMode = .byTruncatingTail
-      }
+      cell.textLabel?.numberOfLines = 0
+      cell.textLabel?.lineBreakMode = .byWordWrapping
     }
 
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
