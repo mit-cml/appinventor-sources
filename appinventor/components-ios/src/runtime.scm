@@ -314,7 +314,20 @@
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'any) arg)
+     ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+(define (enum-type? type)
+  (string-contains (symbol->string type) "Enum"))
+
+(define (enum? arg)
+  (instance? arg AIComponentKit.OptionList))
+
+(define (coerce-to-enum arg type)
+  (if (and (enum? arg)
+       (apply yail:isa (list arg (string->symbol (string-replace-all (string-replace-all (symbol->string type) "Enum" "") "com.google.appinventor.components.common" "AIComponentKit")))))
+      arg
+      (or (yail:invoke (string->symbol (string-replace-all (string-replace-all (symbol->string type) "Enum" "") "com.google.appinventor.components.common" "AIComponentKit")) 'fromUnderlyingValue arg) *non-coercible-value*)))
 
 (define (coerce-to-text arg)
   (if (eq? arg *the-null-value*)
