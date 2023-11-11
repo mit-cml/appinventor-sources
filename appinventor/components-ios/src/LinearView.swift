@@ -274,10 +274,8 @@ public class LinearView: UIView {
     heightFillParentConstraint?.isActive = false
     heightFillParentConstraint = nil
 
-    /* Resets the inner constraints*/
-    _innerEqualConstraint.isActive = false
-    _innerHeadZero.isActive = true
-    _innerTailZero.isActive = false
+    updatePositioningConstraints()
+    updatePriorities()
   }
 
   open func removeAllItems() {
