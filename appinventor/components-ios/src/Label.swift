@@ -14,10 +14,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
   fileprivate var _hasMargins = false
   fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
-  fileprivate var _fontSize: Float64 = 0
+  fileprivate var _fontSize = kFontSizeDefault
   fileprivate var _isBigText = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _userFontSize = kFontSizeDefault
   public var HighContrast: Bool = false
   
   public override init(_ parent: ComponentContainer) {
@@ -33,7 +32,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     parent.add(self)
     Height = kLengthPreferred
     Width = kLengthPreferred
-    FontSize = Float64(kFontSizeDefault)
+    FontSize = kFontSizeDefault
   }
 
   func updateFontSize() {
@@ -41,13 +40,13 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       updateFormattedContent()
     } else {
       if form?.BigDefaultText == true {
-        if _userFontSize == kFontSizeDefault {
+        if _fontSize == kFontSizeDefault {
           _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
         } else {
-          _view.font = _view.font.withSize(CGFloat(_userFontSize))
+          _view.font = _view.font.withSize(CGFloat(_fontSize))
         }
       } else {
-        _view.font = _view.font.withSize(CGFloat(_userFontSize))
+        _view.font = _view.font.withSize(CGFloat(_fontSize))
       }
     }
     _view.sizeToFit()
@@ -139,12 +138,12 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     }
   }
   
-  @objc public var FontSize: Float64 {
+  @objc public var FontSize: Float {
     get {
-      return _fontSize
+      return Float(_view.font.pointSize)
     }
     set(size) {
-      _userFontSize = Float(size)
+      _fontSize = size
       updateFontSize()
     }
   }
@@ -236,7 +235,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       let data = ("<div style=\"\(style)\">" + _htmlContent + "</div>").data(using: .utf8) ?? Data()
       var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
       options[NSAttributedString.DocumentReadingOptionKey.documentType] =
-        NSAttributedString.DocumentType.html
+          NSAttributedString.DocumentType.html
+      options[NSAttributedString.DocumentReadingOptionKey.characterEncoding] =
+          NSUTF8StringEncoding
       _view.attributedText = try? NSAttributedString(data: data,
                                                      options: options,
                                                      documentAttributes: nil)
