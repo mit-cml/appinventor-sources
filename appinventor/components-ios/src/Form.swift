@@ -25,6 +25,7 @@ let kMinimumToastWait = 10.0
   fileprivate var _aboutScreen: String?
   fileprivate var _appName: String?
   fileprivate var _accentColor: Int32 = Int32(bitPattern: 0xFFFF4081)
+  fileprivate var _defaultFileScope = FileScope.App
   fileprivate var _primaryColor: Int32 = Int32(bitPattern: 0xFF3F51B5)
   fileprivate var _primaryColorDark: Int32 = Int32(bitPattern: 0xFF303F9F)
   fileprivate var _scrollable = false
@@ -500,7 +501,16 @@ let kMinimumToastWait = 10.0
       
     }
   }
-  
+
+  @objc open var DefaultFileScope: FileScope {
+    get {
+      return _defaultFileScope
+    }
+    set {
+      _defaultFileScope = newValue
+    }
+  }
+
   @objc open var DeviceDensity: Float {
     get {
       return deviceDensity

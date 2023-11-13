@@ -339,4 +339,20 @@ class RuntimeTests: XCTestCase {
     XCTAssertNil(interpreter.exception)
     XCTAssertEqual("{}", label.Text)
   }
+
+  func testEnum() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(enum? (static-field AIComponentKit.FileScope 'Shared))"))
+    XCTAssertNil(interpreter.exception)
+  }
+
+  func testEnums() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    form.environment["Screen1"] = form
+    interpreter.setCurrentForm(form)
+    interpreter.evalForm("(set-and-coerce-property! 'Screen1 'DefaultFileScope \"Shared\" 'com.google.appinventor.components.common.FileScopeEnum)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual(FileScope.Shared, form.DefaultFileScope)
+  }
 }
