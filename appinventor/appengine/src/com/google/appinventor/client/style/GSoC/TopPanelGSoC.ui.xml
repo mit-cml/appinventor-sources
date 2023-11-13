@@ -6,7 +6,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
-             xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
              xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
@@ -16,7 +15,7 @@
   <ui:with field="config" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-TopPanel">
     <g:HTML>
-      <img srcset="" src="/static/images/codi_long.png" ui:field="logo" />
+      <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
     </g:HTML>
     <GSoC:TopToolbarGSoC ui:field="topToolbar" />
     <g:FlowPanel ui:field="rightPanel">

@@ -39,24 +39,22 @@ import java.util.logging.Logger;
  *
  * @author markf@google.com (Mark Friedman)
  */
-public final class NewYoungAndroidProjectWizard {
+public class NewYoungAndroidProjectWizard {
   interface NewYoungAndroidProjectWizardUiBinder extends UiBinder<Dialog, NewYoungAndroidProjectWizard> {}
-  private static final NewYoungAndroidProjectWizardUiBinder UI_BINDER =
-      GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+
   private static final Logger LOG = Logger.getLogger(NewYoungAndroidProjectWizard.class.getName());
 
   // UI element for project name
-  @UiField Dialog addDialog;
-  @UiField Button addButton;
-  @UiField Button cancelButton;
-  @UiField LabeledTextBox projectNameTextBox;
+  @UiField protected Dialog addDialog;
+  @UiField protected Button addButton;
+  @UiField protected Button cancelButton;
+  @UiField protected LabeledTextBox projectNameTextBox;
 
   /**
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
-//    UIStyle.UI_BINDER.createAndBindUi(this);
-    UI_BINDER.createAndBindUi(this);
+    bindUI();
     projectNameTextBox.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
@@ -93,18 +91,25 @@ public final class NewYoungAndroidProjectWizard {
         projectNameTextBox.validate();
       }
     });
+  }
 
+  public void bindUI() {
+    NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+    UI_BINDER.createAndBindUi(this);
+  }
+
+  public void show() {
     addDialog.center();
     projectNameTextBox.setFocus(true);
   }
 
   @UiHandler("cancelButton")
-  void cancelAdd(ClickEvent e) {
+  protected void cancelAdd(ClickEvent e) {
     addDialog.hide();
   }
 
   @UiHandler("addButton")
-  void addProject(ClickEvent e) {
+  protected void addProject(ClickEvent e) {
     String projectName = projectNameTextBox.getText().trim();
     projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
     TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);

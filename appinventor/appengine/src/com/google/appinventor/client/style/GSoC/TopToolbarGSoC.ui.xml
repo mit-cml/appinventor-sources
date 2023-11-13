@@ -14,7 +14,6 @@
     <ui:with field="hasWriteAccess" type="java.lang.Boolean" />
 
   <ai:Toolbar styleName="ode-TopToolbar">
-    <g:Label text="GSoC" />
     <!-- Projects Menu -->
     <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName2}" icon="inventory_2"
                        styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" >
@@ -22,7 +21,7 @@
         <actions:SwitchToProjectAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
-        <actions:NewAction />
+        <actions:NewProjectAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="false">
         <actions:ImportProjectAction />

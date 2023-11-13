@@ -12,64 +12,41 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <ui:with field="config" type="com.google.appinventor.client.OdeMessages" />
-  <g:FlowPanel styleName="ode-TopPanel" >
+  <g:FlowPanel styleName="ode-TopPanel" ui:field="header">
     <g:HTML>
-      <img srcset="" src="/static/images/codi_long.png" ui:field="logo" />
+      <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
     </g:HTML>
-    <ode:TopToolbar ui:field="topToolbar" />
+    <ode:TopToolbar ui:field="topToolbar"/>
     <g:FlowPanel ui:field="rightPanel">
       <g:FlowPanel styleName="ode-TopPanelAccount">
-        <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
-                 ui:field="readOnly"  />
-        <!-- Help Menu -->
-        <ai:DropDownButton name="Help" caption="{messages.helpTabName}" styleName="ode-TopPanelButton"
-                           ui:field="helpDropDown" align="right" icon="help">
-          <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
-            <actions:AboutAction />
-          </ai:DropDownItem>
-          <hr />
-          <ai:DropDownItem name="Guide" caption="{messages.guideTabName}" >
-            <actions:OpenGuideAction />
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Feedback" caption="{messages.feedbackTabName}">
-            <actions:OpenFeedbackAction />
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}" >
-            <actions:OpenLinkAction link_name="Library"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}" >
-            <actions:OpenLinkAction link_name="GetStarted"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}" >
-            <actions:OpenLinkAction link_name="Extensions"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}" >
-            <actions:OpenLinkAction link_name="Tutorials"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" >
-            <actions:OpenLinkAction link_name="Troubleshooting"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" >
-            <actions:OpenLinkAction link_name="Forums"/>
-          </ai:DropDownItem>
-          <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
-        </ai:DropDownButton>
-
         <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
-          <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
-                             ui:field="languageDropDown" icon="language" />
-          <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
-                             ui:field="accountButton" icon="logout">
-            <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
-              <actions:SignOutAction />
-            </ai:DropDownItem>
-            <ai:DropDownItem name="Signout" ui:field="deleteAccountItem"
-                             caption="{messages.deleteAccountLink}">
-              <actions:DeleteAccountAction />
-            </ai:DropDownItem>
-          </ai:DropDownButton>
+          <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
+                   ui:field="readOnly"/>
+          <ai:TextButton text="{messages.myProjectsTabName}" styleName="ode-TopPanelButton" ui:field="myProjects" >
+            <actions:SwitchToProjectAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton" ui:field="viewTrash" >
+            <actions:TrashAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenGuideAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenFeedbackAction />
+          </ai:TextButton>
         </g:FlowPanel>
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="languageDropDown" />
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="accountButton">
+          <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
+            <actions:SignOutAction />
+          </ai:DropDownItem>
+          <ai:DropDownItem name="DeleteAccount" caption="{messages.deleteAccountLink}"
+                           ui:field="deleteAccountItem" styleName="ode-ContextMenuItem-Red">
+            <actions:DeleteAccountAction />
+          </ai:DropDownItem>
+        </ai:DropDownButton>
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

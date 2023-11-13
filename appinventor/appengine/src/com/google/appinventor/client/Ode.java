@@ -808,7 +808,6 @@ public class Ode implements EntryPoint {
               }
             });
             editorManager = new EditorManager();
-            projectListbox = ProjectListBox.getProjectListBox();
 
             final Runnable after = new Runnable() {
               @Override
@@ -818,10 +817,8 @@ public class Ode implements EntryPoint {
             };
 
             // Initialize UI
-//            initializeUi();
-//            topPanel.showUserEmail(user.getUserEmail());
             String UserPreferenceStyle = Window.Location.getParameter("ui");
-            if (UserPreferenceStyle.equals("modern")) {
+            if ("modern".equals(UserPreferenceStyle)) {
               GWT.runAsync(new RunAsyncCallback() {
                 @Override
                 public void onFailure(Throwable reason) {
@@ -968,9 +965,8 @@ public class Ode implements EntryPoint {
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
-    // TODO: Tidy up user preferency variable
-    LOG.info("Creating Mainpanel");
-    LOG.info("Mainpanel style name = " + Window.Location.getParameter("ui"));
+    // TODO: Tidy up user preference variable
+    projectListbox = ProjectListBox.getProjectListBox();
     FlowPanel mainPanel = uiFactory.createOde(this, Window.Location.getParameter("ui"));
 
     deckPanel.showWidget(0);

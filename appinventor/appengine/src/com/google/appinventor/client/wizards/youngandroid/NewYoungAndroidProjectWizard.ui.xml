@@ -16,8 +16,8 @@
             <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
                               stylePrimaryName="ode-LabeledTextBox" />
             <g:FlowPanel styleName="buttonRow" >
-                <g:Button ui:field='cancelButton' text='{messages.cancelButton}' styleName="ode-ProjectListButton"   />
-                <g:Button ui:field='addButton' text='{messages.okButton}' styleName="ode-ProjectListButton"  />
+                <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
+                <g:Button ui:field='addButton' text='{messages.okButton}' />
             </g:FlowPanel>
         </g:FlowPanel>
     </wiz:Dialog>

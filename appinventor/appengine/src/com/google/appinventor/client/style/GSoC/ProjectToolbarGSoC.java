@@ -14,31 +14,12 @@ public class ProjectToolbarGSoC extends ProjectToolbar {
   interface ProjectToolbarUiBinderGSoC extends UiBinder<Toolbar, ProjectToolbarGSoC> {}
   private static final ProjectToolbarUiBinderGSoC UI_BINDER =
       GWT.create(ProjectToolbarUiBinderGSoC.class);
-  @UiField public Label projectLabel;
-  @UiField public Label trashLabel;
+  @UiField Label projectLabel;
+  @UiField Label trashLabel;
 
   public void bindProjectToolbar() {
     populateToolbar(UI_BINDER.createAndBindUi(this));
-    LOG.info("Populated Toolbar");
+    super.projectLabel = projectLabel;
+    super.trashLabel = trashLabel;
   }
-
-  public void projectLabel_setVisible(boolean visible) {
-    LOG.info("ProjectToolbar GSoC projectLabel visible " + visible);
-    projectLabel.setVisible(visible);
-  }
-
-  public void trashLabel_setVisible(boolean visible) {
-    LOG.info("ProjectToolbar GSoC trashlabel visible " + visible);
-    trashLabel.setVisible(visible);
-  }
-//  public void setButtonVisible(String widgetName, boolean visible) {
-//    LOG.info("ProjectToolbar GSoC setButtonVisible " + widgetName + " " + visible);
-//    setButtonVisible(widgetName, visible);
-//  }
-//
-//  @Override
-//  public void setButtonEnabled(String widgetName, boolean enabled) {
-//    LOG.info("ProjectToolbar GSoC setButtonEnabled " + widgetName + " " + enabled);
-//    setButtonEnabled(widgetName, enabled);
-//  }
 }

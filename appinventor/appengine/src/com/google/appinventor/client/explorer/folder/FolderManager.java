@@ -58,7 +58,7 @@ public final class FolderManager {
     }
 
     LOG.info("folderJSON - " + folderJSON);
-    globalFolder = new ProjectFolder(folderJSON, null);
+    globalFolder = Ode.getUiFactory().createProjectFolder(folderJSON, null);
     LOG.info("Creating Trash Folder");
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
     checkForUnassignedProjects();
@@ -75,7 +75,7 @@ public final class FolderManager {
   }
 
   public ProjectFolder createFolder(String name, ProjectFolder parent) {
-    ProjectFolder folder = new ProjectFolder(name, System.currentTimeMillis(),
+    ProjectFolder folder = Ode.getUiFactory().createProjectFolder(name, System.currentTimeMillis(),
         System.currentTimeMillis(), parent);
     parent.addChildFolder(folder);
     while ((parent = parent.getParentFolder()) != null) {
@@ -120,10 +120,10 @@ public final class FolderManager {
 
   private void initializeFolders() {
     LOG.info("Initializing folders for new user");
-    globalFolder = new ProjectFolder(FolderJSONKeys.GLOBAL_FOLDER, System.currentTimeMillis(),
-        null);
-    trashFolder = new ProjectFolder(FolderJSONKeys.TRASH_FOLDER, System.currentTimeMillis(),
-        globalFolder);
+    globalFolder = Ode.getUiFactory().createProjectFolder(FolderJSONKeys.GLOBAL_FOLDER,
+        System.currentTimeMillis(),null);
+    trashFolder = Ode.getUiFactory().createProjectFolder(FolderJSONKeys.TRASH_FOLDER,
+        System.currentTimeMillis(), globalFolder);
     globalFolder.addChildFolder(trashFolder);
 
     for (Project project : Ode.getInstance().getProjectManager().getProjects("")) {

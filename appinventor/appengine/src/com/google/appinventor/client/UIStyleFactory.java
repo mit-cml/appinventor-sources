@@ -1,7 +1,13 @@
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
+import com.google.appinventor.client.explorer.youngandroid.ProjectList;
+import com.google.appinventor.client.style.GSoC.NewYoungAndroidProjectWizardGSoC;
+import com.google.appinventor.client.style.GSoC.UIFactoryGSoC;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -13,10 +19,7 @@ public class UIStyleFactory {
   @UiTemplate("style/GSoC/Ode.ui.xml")
   interface OdeUiBinderGSoC extends UiBinder<FlowPanel, Ode> {}
 
-  @UiTemplate("TopToolbar.ui.xml")
-  public interface TopToolbarUiBinderTest extends UiBinder<Toolbar, TopToolbar> {}
-
-  public static FlowPanel createOde(Ode target, String style) {
+  public FlowPanel createOde(Ode target, String style) {
     if (style == "modern") {
       OdeUiBinderGSoC ui_binder = GWT.create(OdeUiBinderGSoC.class);
       return ui_binder.createAndBindUi(target);
@@ -25,9 +28,23 @@ public class UIStyleFactory {
     return ui_binder.createAndBindUi(target);
   }
 
-  public FlowPanel createTopToolbar(TopToolbar target) {
-    TopToolbarUiBinderTest ui_binder =
-        GWT.create(TopToolbarUiBinderTest.class);
-    return ui_binder.createAndBindUi(target);
+  public ProjectList createProjectList() {
+    return new ProjectList();
+  }
+
+  public ProjectFolder createProjectFolder(String name, long dateCreated, long dateModified, ProjectFolder parent) {
+    return new ProjectFolder(name, dateCreated, dateModified, parent);
+  }
+
+  public ProjectFolder createProjectFolder(String name, long dateCreated, ProjectFolder parent) {
+    return new ProjectFolder(name, dateCreated, parent);
+  }
+
+  public ProjectFolder createProjectFolder(JSONObject json, ProjectFolder parent) {
+    return new ProjectFolder(json, parent);
+  }
+
+  public NewYoungAndroidProjectWizard createNewYoungAndroidProjectWizard() {
+    return new NewYoungAndroidProjectWizard();
   }
 }

@@ -161,13 +161,7 @@ public class TopToolbar extends Composite {
     LOG.info("bindUI Original");
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
-
     initWidget(UI_BINDER.createAndBindUi(this));
-    fileDropDown = fileDropDown;
-    connectDropDown = connectDropDown;
-    buildDropDown = buildDropDown;
-    settingsDropDown = settingsDropDown;
-    adminDropDown = adminDropDown;
   }
 
   public void updateMoveToTrash(boolean moveToTrash) {

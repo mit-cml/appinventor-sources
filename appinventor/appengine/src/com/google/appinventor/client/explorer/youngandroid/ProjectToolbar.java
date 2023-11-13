@@ -67,15 +67,6 @@ public class ProjectToolbar extends Toolbar {
   {
     populateToolbar(UI_BINDER.createAndBindUi(this));
   }
-  protected void projectLabel_setVisible(boolean visible)
-  {
-    projectLabel.setVisible(visible);
-  }
-
-  protected void trashLabel_setVisible(boolean visible)
-  {
-    trashLabel.setVisible(visible);
-  }
 
   public void setTrashTabButtonsVisible(boolean visible) {
     LOG.info("setTrashTabButtonsVisible");
@@ -83,7 +74,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
     setButtonVisible(WIDGET_NAME_DELETE_FROM_TRASH, visible);
     //TODO: This needs to be refactored to be configurable
-    trashLabel_setVisible(visible);
+    trashLabel.setVisible(visible);
     updateButtons();
   }
 
@@ -98,7 +89,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible("Move", visible);
     setButtonVisible("Publish", visible);
     setDropDownButtonVisible("Export", visible);
-    projectLabel_setVisible(visible);
+    projectLabel.setVisible(visible);
   }
 
   /**
