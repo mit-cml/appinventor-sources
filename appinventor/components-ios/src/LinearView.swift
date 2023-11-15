@@ -274,6 +274,10 @@ public class LinearView: UIView {
     heightFillParentConstraint?.isActive = false
     heightFillParentConstraint = nil
 
+    _innerEqualConstraint.isActive = true
+    _innerHeadZero.isActive = false
+    _innerTailZero.isActive = false
+
     updatePositioningConstraints()
     updatePriorities()
   }
