@@ -11,7 +11,7 @@ import DGCharts
 
 @objc class ChartDataBase: NSObject, Component, DataSourceChangeListener, ChartViewDelegate {
 
-  var _chartDataModel: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>?
+  var _chartDataModel: ChartDataModel?
   var _container: Chart
 
   @objc public init(_ chartContainer: Chart) {

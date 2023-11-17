@@ -9,8 +9,8 @@ open class LineChartView: LineChartViewBase {
     super.init(chartComponent)
   }
   
-  public override func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>> {
-    return LineChartDataModel(data: data as! LineChartData, view: self) as! ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>
+  public override func createChartModel() -> ChartDataModel {
+    return LineChartDataModel(data: data as! LineChartData, view: self) as ChartDataModel
   }
 
 }

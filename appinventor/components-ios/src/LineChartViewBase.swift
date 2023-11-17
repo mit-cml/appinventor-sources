@@ -4,7 +4,7 @@
 import Foundation
 import DGCharts
 
-open class LineChartViewBase: PointChartView<DGCharts.LineChartView> {
+open class LineChartViewBase: PointChartView {
 
   override init(_ chartComponent: Chart) {
     super.init(chartComponent)

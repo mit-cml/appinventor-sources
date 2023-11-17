@@ -19,7 +19,7 @@ import DGCharts
   
 
   var _view = UIView()
-  var _chartView: ChartView<DGCharts.ChartViewBase>?
+  var _chartView: ChartView?
   var _type = ChartType.Line
   var _description = ""
   var _backgroundColor: UIColor = argbToColor(Color.none.int32)
@@ -100,10 +100,13 @@ import DGCharts
     }
     set {
       _gridEnabled = newValue
-      if let chartView = _chartView as? BarLineChartViewBase {
+      if let chartView = _chartView as? AxisChartView {
+        chartView.setGridEnabled(enabled: newValue)
+      }
+      /*if let chartView = _chartView as? BarLineChartViewBase {
         chartView.xAxis.drawGridLinesEnabled = newValue
         chartView.leftAxis.drawGridLinesEnabled = newValue
-      }
+      }*/
     }
   }
 
@@ -165,7 +168,7 @@ import DGCharts
         view.widthAnchor.constraint(equalTo: newChartView.chart!.widthAnchor),
         view.heightAnchor.constraint(equalTo: newChartView.chart!.heightAnchor)
       ])
-      if let newChartSubview = newChartView as? ChartView<DGCharts.ChartViewBase> {
+      if let newChartSubview = newChartView as? ChartView {
         _view.insertSubview(newChartSubview.getView(), at: 0)
       }
       
@@ -202,11 +205,11 @@ import DGCharts
   // MARK: Private Implementation
  
   
-  public var chartView: ChartView<DGCharts.ChartViewBase>? {
+  public var chartView: ChartView? {
     return _chartView
   }
 
-  private func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>? {
+  private func createChartModel() -> ChartDataModel? {
     return _chartView?.createChartModel()
   }
 
@@ -215,15 +218,15 @@ import DGCharts
     _chartView?.chart?.notifyDataSetChanged()
   }
 
-  private func createChartView(for type: ChartType) -> ChartView<DGCharts.ChartViewBase> {
+  private func createChartView(for type: ChartType) -> ChartView {
     switch type {
     case .Line:
-      return (LineChartView(self) as AnyObject) as! ChartView<DGCharts.ChartViewBase>
+      return LineChartView(self) as ChartView
     case .Scatter:
       //return ScatterChartView(frame: .zero)
       fatalError("whoops")
     case .Area:
-      return (LineChartView(self) as AnyObject) as! ChartView<DGCharts.ChartViewBase>
+      return (LineChartView(self) as AnyObject) as! ChartView
     case .Bar:
       //return BarChartView(frame: .zero)
       fatalError("whoops")

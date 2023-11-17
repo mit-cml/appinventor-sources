@@ -4,7 +4,7 @@
 import Foundation
 import DGCharts
 
-open class PointChartView<D: DGCharts.BarLineChartViewBase>: AxisChartView<D> {
+open class PointChartView: AxisChartView {
 
   override init(_ chartComponent: Chart) {
     super.init(chartComponent)

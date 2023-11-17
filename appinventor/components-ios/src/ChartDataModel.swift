@@ -9,15 +9,15 @@ enum EntryCriterion {
   case XValue
   case YValue
 }
-
-open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.ChartViewBase, V: ChartView<C>> {
-  let data: D
+// <E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.ChartViewBase, V: ChartView>
+open class ChartDataModel {
+  let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?
-  let view: V
-  var _entries = [E]()
+  let view: ChartView
+  var _entries = [DGCharts.ChartDataEntry]()
   var maximumTimeEntries: Int32 = 200
 
-  init(data: D, view: V) {
+  init(data: DGCharts.ChartData, view: ChartView) {
     self.data = data
     self.view = view
   }
@@ -26,7 +26,7 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
     return 0
   }
 
-  func tupleFromEntry(entry: E) -> YailList<AnyObject> {
+  func tupleFromEntry(entry: DGCharts.ChartDataEntry) -> YailList<AnyObject> {
     return YailList()
   }
   
@@ -48,7 +48,6 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
   func setElements(_ elements: String) {
     let tupleSize = self.tupleSize
     let entries = elements.split(",")
-    // MARK: Finish
     print("tuplesize-1", tupleSize - 1)
     
     // entries.count - 1 because ranges are inclusive in Swift
@@ -102,7 +101,7 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
   }
 
   func removeEntryFromTuple(_ tuple: YailList<AnyObject>) {
-    var entry: E = getEntryFromTuple(tuple)
+    var entry: DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
     if entry != nil {
       var index: Int32 = findEntryIndex(entry)
       removeEntry(Int(index))
@@ -117,7 +116,7 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
   }
 
   func doesEntryExist(_ tuple: YailList<AnyObject>) -> Bool {
-    var entry : E = getEntryFromTuple(tuple)
+    var entry : DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
     var index: Int32 = findEntryIndex(entry)
     return index >= 0
   }
@@ -136,21 +135,21 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
     return findEntriesByCriterion("0", EntryCriterion.All)
   }
 
-  func isEntryCriterionSatisfied(_ entry: E, _ criterion: EntryCriterion, value: String) -> Bool {
+  func isEntryCriterionSatisfied(_ entry: DGCharts.ChartDataEntry, _ criterion: EntryCriterion, value: String) -> Bool {
     return false
   }
 
-  func getEntryFromTuple(_ tuple: YailList<AnyObject>) -> E {
+  func getEntryFromTuple(_ tuple: YailList<AnyObject>) -> DGCharts.ChartDataEntry {
     fatalError("Abstract")
 
   }
 
-  func getTupleFromEntry(_ entry: E) -> YailList<AnyObject> {
+  func getTupleFromEntry(_ entry: DGCharts.ChartDataEntry) -> YailList<AnyObject> {
     fatalError("Abstract")
 
   }
 
-  func findEntryIndex(_ entry: E) -> Int32 {
+  func findEntryIndex(_ entry: DGCharts.ChartDataEntry) -> Int32 {
     for (index, currentEntry) in entries.enumerated() {
       if areEntriesEqual(currentEntry, entry){
         return Int32(index)
@@ -184,11 +183,11 @@ open class ChartDataModel<E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: 
     return "\(index)"
   }
 
-  func areEntriesEqual(_ e1: E, _ e2: E) -> Bool {
+  func areEntriesEqual(_ e1: DGCharts.ChartDataEntry, _ e2: DGCharts.ChartDataEntry) -> Bool {
     return e1 == e2
   }
 
-  public var entries: [E] {
+  public var entries: [DGCharts.ChartDataEntry] {
     return self._entries
   }
 }

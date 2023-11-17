@@ -4,14 +4,14 @@
 import Foundation
 import DGCharts
 
-open class ChartView<D: DGCharts.ChartViewBase> {
+open class ChartView {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
   
   var form: Form {
     return _chartComponent.form!
   }
-  var chart: D?
+  var chart: DGCharts.ChartViewBase?
   
   var data: DGCharts.ChartData?
   
@@ -46,7 +46,7 @@ open class ChartView<D: DGCharts.ChartViewBase> {
     }
   }
     
-  public func createChartModel() -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>> {
+  public func createChartModel() -> ChartDataModel {
     preconditionFailure("This method must be overridden")
 
   }
@@ -72,7 +72,7 @@ open class ChartView<D: DGCharts.ChartViewBase> {
     }
   }
   
-  public func refresh(model: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>, entries: Array<DGCharts.ChartDataEntry>) {
+  public func refresh(model: ChartDataModel, entries: Array<DGCharts.ChartDataEntry>) {
     var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
     dataset.replaceEntries(entries)
     chart?.data?.notifyDataChanged()
@@ -87,11 +87,11 @@ open class ChartView<D: DGCharts.ChartViewBase> {
       _entries = entries
       _chartView = owner
     }
-    public func doInBackGround(chartDataModels: Array<ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>>) -> ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>{
+    public func doInBackGround(chartDataModels: Array<ChartDataModel>) -> ChartDataModel{
       return chartDataModels[0]
     }
 
-    public func onPostExecute(result: ChartDataModel<DGCharts.ChartDataEntry, DGCharts.ChartData, DGCharts.ChartViewBase, ChartView<DGCharts.ChartViewBase>>) {
+    public func onPostExecute(result: ChartDataModel) {
 
       _chartView._workQueue.async {
         self._chartView.refresh(model: result, entries: self._entries)
