@@ -17,7 +17,8 @@ class LineChartBaseDataModel: PointChartDataModel {
     var entry: ChartDataEntry = getEntryFromTuple(tuple)
     if entry != nil { // TODO: how to compare it to nil
       // TODO: DO I NEED TO DO THE BINARY SEARCH
-      var index: Int = entries.firstIndex(of: entry)!
+      // var index: Int = entries.firstIndex(of: entry)!
+      var index: Int = binarySearch(entry, entries) // I made this, must check
       if index < 0 {
         index = -index - 1
       } else {
