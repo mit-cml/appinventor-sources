@@ -11,6 +11,7 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
+  <ui:with field="style" />
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-Root">
     <GSoC:TopPanelGSoC ui:field="topPanel" />

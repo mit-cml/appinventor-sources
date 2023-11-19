@@ -37,6 +37,9 @@
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
     -->
+    <ai:ToolbarItem name="ToggleLightDarkMode" caption="UI Settings">
+        <actions:UISettingsAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />

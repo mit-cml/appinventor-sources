@@ -70,12 +70,15 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -107,6 +110,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.Resources;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -223,6 +228,10 @@ public class Ode implements EntryPoint {
   @UiField (provided = true) protected SourceStructureBox sourceStructureBox =
       SourceStructureBox.getSourceStructureBox();
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+
+  // mode
+  @UiField(provided=true)
+  static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -817,8 +826,8 @@ public class Ode implements EntryPoint {
             };
 
             // Initialize UI
-            String UserPreferenceStyle = Window.Location.getParameter("ui");
-            if ("modern".equals(UserPreferenceStyle)) {
+            Boolean UserPreferenceStyle = Ode.getUserNewLayout();
+            if (UserPreferenceStyle) {
               GWT.runAsync(new RunAsyncCallback() {
                 @Override
                 public void onFailure(Throwable reason) {
@@ -967,6 +976,25 @@ public class Ode implements EntryPoint {
 
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.getProjectListBox();
+    // OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
+    if (Ode.getUserDarkThemeEnabled()){
+      if (Ode.getUserNewLayout()){
+        style = Resources.INSTANCE.stylemodernDark();
+      }
+      else{
+        style = Resources.INSTANCE.styleclassicDark();
+      }
+    }else{
+      if (Ode.getUserNewLayout()){
+        style = Resources.INSTANCE.stylemodernLight();
+      }
+      else{
+        style = Resources.INSTANCE.styleclassicLight();
+      }
+    }
+
+    // style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleDark() : Resources.INSTANCE.styleLight();
+    style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, Window.Location.getParameter("ui"));
 
     deckPanel.showWidget(0);
@@ -1324,6 +1352,77 @@ public class Ode implements EntryPoint {
         @Override
         public void execute() {
           // Reload for the new font to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
+  }
+
+  /**
+   * Returns the dark theme setting.
+   *
+   * @return true if the user has opted to use a dark theme, false otherwise
+   */
+  public static boolean getUserDarkThemeEnabled() {
+    // String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+    //         getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    // if (value == null){
+    //   return false;
+    // }
+    // return Boolean.parseBoolean(value);
+    return false;
+  }
+
+  /**
+   * Set user dark theme setting.
+   *
+   * @param enabled new value for the user's UI preference
+   */
+  public static void setUserDarkThemeEnabled(boolean enabled) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+                    "" + enabled);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the UI preferences to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
+  }
+
+  /**
+   * Returns user new layout usage setting.
+   *
+   * @return true if the user has opted to use the new UI, false otherwise
+   */
+  public static boolean getUserNewLayout() {
+    // String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+    //         getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    // return Boolean.parseBoolean(value);
+    return true;
+  }
+
+  /**
+   * Set user new layout usage setting.
+   *
+   * @param newLayout new value for the user's UI preference
+   */
+  public static void setUserNewLayout(boolean newLayout) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+                    "" + newLayout);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the UI preferences to take effect. We
           // do this here because we need to make sure that
           // the user settings were saved before we terminate
           // this browsing session. This is particularly important
@@ -2471,4 +2570,35 @@ public class Ode implements EntryPoint {
     }
   }-*/;
 
+  public interface Resources extends ClientBundle {
+
+    public static final Resources INSTANCE =  GWT.create(Resources.class);
+
+    @Source({
+      "com/google/appinventor/client/light.css",
+      "com/google/appinventor/client/variableColors.css"
+    })
+    Style styleclassicLight();
+
+    @Source({
+      "com/google/appinventor/client/dark.css",
+      "com/google/appinventor/client/variableColors.css"
+    })
+    Style styleclassicDark();
+
+    @Source({
+      "com/google/appinventor/client/light.css",
+      "com/google/appinventor/client/style/GSoC/modern.css"
+    })
+    Style stylemodernLight();
+
+    @Source({
+      "com/google/appinventor/client/dark.css",
+      "com/google/appinventor/client/style/GSoC/modern.css"
+    })
+    Style stylemodernDark();
+
+    public interface Style extends CssResource {
+    }
+  }
 }
