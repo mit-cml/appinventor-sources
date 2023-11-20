@@ -31,6 +31,8 @@ import android.widget.VideoView;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -292,7 +294,21 @@ public class MediaUtil {
           // App specific storage does not need read permission
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
-        return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        try {
+          return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        } catch (Exception e) {
+          // URI.create can throw IllegalArgumentException under certain cirumstances
+          // on certain platforms. This crashes the Companion, which makes our crash
+          // statistics that big-G looks at, look not so good. So turn them into any
+          // Exception into an IOException which we handle without crashing.
+          if (SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
+            Log.d(LOG_TAG, "Error in REPL_ASSET Fetching: " + Log.getStackTraceString(e));
+            FroyoUtil.throwIOException(e);
+            // doesn't return
+          } else {
+            throw new IOException(e);
+          }
+        }
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
