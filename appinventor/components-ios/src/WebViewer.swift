@@ -223,6 +223,40 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     processURL(url)
   }
 
+  //reload
+  @objc open func Reload() {
+    _view.reload()
+  }
+
+  //Stoploading
+  @objc open func StopLoading() {
+    _view.stopLoading()
+  }
+
+  //ClearCookies
+  @objc open func ClearCookies() {
+    let dataStore = _view.configuration.websiteDataStore
+    let dataTypes = Set([WKWebsiteDataTypeCookies])
+
+    dataStore.fetchDataRecords(ofTypes: dataTypes) { records in
+      dataStore.removeData(ofTypes: dataTypes, for: records) {
+      }
+    }
+  }
+
+  //RunJavaScript
+  @objc open func RunJavaScript(_ js: String) {
+    _view.evaluateJavaScript(js) { (result, error) in
+      if let error = error {
+        // Handle the JavaScript evaluation error
+        print("JavaScript evaluation error: \(error)")
+      } else if let result = result {
+        // Handle the JavaScript result
+        print("JavaScript result: \(result)")
+      }
+    }
+  }
+
   @objc open func WebViewStringChange(_ value: String) {
     EventDispatcher.dispatchEvent(of: self, called: "WebViewStringChange", arguments: value as NSString)
   }
