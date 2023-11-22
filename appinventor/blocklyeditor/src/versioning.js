@@ -2413,7 +2413,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
     // AI2:
     // - Added ...
-    6: "noUpgrade"
+    6: "noUpgrade",
+    // AI2:
+    // - Added RemoveItemAtList method
+    7: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -3386,7 +3389,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added ResponseTextEncoding property
+    9: "noUpgrade"
 
   }, // End Web upgraders
 

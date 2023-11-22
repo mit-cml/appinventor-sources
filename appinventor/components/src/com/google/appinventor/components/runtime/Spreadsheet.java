@@ -1806,7 +1806,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
-              cleanRangeReference = URLEncoder.encode(sheetName + "!", "UTF-8");
+              cleanRangeReference = URLEncoder.encode(sheetName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
               ErrorOccurred("ReadRange: Error occurred encoding the query. UTF-8 is unsupported?");
               return;
@@ -1814,7 +1814,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
             // Formats the data into the URL to read the range
             String getUrl = String.format(
-                "https://docs.google.com/spreadsheets/d/%s/export?format=csv&sheet=%s",
+                "https://docs.google.com/spreadsheets/d/%s/gviz/tq?tqx=out:csv&sheet=%s",
                 spreadsheetID, cleanRangeReference);
 
             // Make the HTTP Request

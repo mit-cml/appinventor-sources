@@ -747,6 +747,11 @@ yail_invoke(pic_state *pic) {
   
   NSMutableArray *argTypes = [NSMutableArray arrayWithCapacity:argc];
   SCMMethod *method = nil;
+  if (pic_sym_p(pic, native_object)) {
+    // Convert the symbol to the class/protocol/instance it names
+    yail_resolve_native_symbol(pic, native_object);
+    native_object = pic_weak_ref(pic, pic->globals, native_object);
+  }
   int isStatic = yail_native_class_p(pic, native_object) ? 1 : 0;
   if (yail_native_method_p(pic, native_method)) {
     method = yail_native_method_ptr(pic, native_method)->method_;
@@ -1471,7 +1476,7 @@ yail_static_field(pic_state *pic) {
 
   NSInvocation *invocation = [method staticInvocation];
   [invocation invoke];
-  id result = nil;
+  __unsafe_unretained id result = nil;
   [invocation getReturnValue:&result];
   return yail_make_native_instance(pic, result);
 }

@@ -1430,6 +1430,10 @@ public final class YoungAndroidFormUpgrader {
       // Added ...
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Added RemoveItemAtIndex method
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1881,6 +1885,11 @@ public final class YoungAndroidFormUpgrader {
       // The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
       // No properties need to be modified to upgrade to version 8.
       srcCompVersion = 8;
+    }
+    if (srcCompVersion < 9) {
+      // The ResponseTextEncoding property was added.
+      // Properties related to this component have now been upgraded to version 9
+      srcCompVersion = 9;
     }
     return srcCompVersion;
   }

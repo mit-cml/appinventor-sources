@@ -161,8 +161,8 @@ open class PolygonMarker: Marker {
         newOverlay.feature = self
         _overlay = newOverlay
       }
-      if let old = oldOverlay, let new = self._overlay {
-        map?.replaceFeature(from: old, to: new)
+      if let new = self._overlay {
+        map?.replaceFeature(from: oldOverlay, to: new)
       }
     }
   }

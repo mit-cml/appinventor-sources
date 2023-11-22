@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,10 +28,11 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
-import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,7 +57,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MediaUtil {
 
-  private enum MediaSource { ASSET, REPL_ASSET, SDCARD, FILE_URL, URL, CONTENT_URI, CONTACT_URI }
+  private enum MediaSource {
+    ASSET,
+    REPL_ASSET,
+    SDCARD,
+    FILE_URL,
+    URL,
+    CONTENT_URI,
+    CONTACT_URI,
+    PRIVATE_DATA
+  }
 
   private static final String LOG_TAG = "MediaUtil";
 
@@ -107,6 +117,8 @@ public class MediaUtil {
 
     } else if (mediaPath.startsWith("content://")) {
       return MediaSource.CONTENT_URI;
+    } else if (mediaPath.startsWith("/data/")) {
+      return MediaSource.PRIVATE_DATA;
     }
 
     try {
@@ -274,12 +286,29 @@ public class MediaUtil {
         }
         return getAssetsIgnoreCaseInputStream(form, mediaPath);
 
+      case PRIVATE_DATA:
+        return new FileInputStream(mediaPath);
+
       case REPL_ASSET:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
           // App specific storage does not need read permission
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
-        return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        try {
+          return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        } catch (Exception e) {
+          // URI.create can throw IllegalArgumentException under certain cirumstances
+          // on certain platforms. This crashes the Companion, which makes our crash
+          // statistics that big-G looks at, look not so good. So turn them into any
+          // Exception into an IOException which we handle without crashing.
+          if (SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
+            Log.d(LOG_TAG, "Error in REPL_ASSET Fetching: " + Log.getStackTraceString(e));
+            FroyoUtil.throwIOException(e);
+            // doesn't return
+          } else {
+            throw new IOException(e);
+          }
+        }
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
