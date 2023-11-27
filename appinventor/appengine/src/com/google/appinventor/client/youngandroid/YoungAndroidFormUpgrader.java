@@ -1195,6 +1195,7 @@ public final class YoungAndroidFormUpgrader {
         // Previously, projects were Classic by default, so we need to reflect this.
         componentProperties.put("Theme", new ClientJsonString("Classic"));
       }
+      srcCompVersion = 31;
     }
 
     return srcCompVersion;
