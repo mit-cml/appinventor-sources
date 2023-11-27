@@ -1183,6 +1183,19 @@ public final class YoungAndroidFormUpgrader {
       // The DefaultFileScope property was added.
       srcCompVersion = 30;
     }
+    if (srcCompVersion < 31) {
+      // The default theme was switched to DeviceDefault
+      if (componentProperties.containsKey("Theme")) {
+        String value = ((ClientJsonString)componentProperties.get("Theme")).getString();
+        if (value.equals("AppTheme.Light.DarkActionBar")) {
+          // AppTheme.Light.DarkActionBar is now the default theme, so we can remove it
+          componentProperties.remove("Theme");
+        }
+      } else {
+        // Previously, projects were Classic by default, so we need to reflect this.
+        componentProperties.put("Theme", new ClientJsonString("Classic"));
+      }
+    }
 
     return srcCompVersion;
   }

@@ -3013,7 +3013,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 30:
     // - DefaultFileScope designer property was added
-    30: "noUpgrade"
+    30: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 31:
+    // - The default theme was changed in the designer. No block changes required.
+    31: "noUpgrade"
 
   }, // End Screen
 

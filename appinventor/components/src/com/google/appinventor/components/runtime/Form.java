@@ -415,7 +415,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-  private void defaultPropertyValues() {
+  protected void defaultPropertyValues() {
     if (isRepl()) {
       ActionBar(actionBarEnabled);
     } else {
@@ -437,7 +437,6 @@ public class Form extends AppInventorCompatActivity
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
-    Theme(ComponentConstants.DEFAULT_THEME);
     BackgroundColor(Component.COLOR_DEFAULT);
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
