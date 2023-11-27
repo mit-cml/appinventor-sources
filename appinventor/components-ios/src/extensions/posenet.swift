@@ -7,7 +7,7 @@ import Foundation
 import WebKit
 
 
-open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
+open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate {
   fileprivate final let _ERROR_WEBVIEWER_NOT_SET: String =
   "You must specify a WebViewer using the WebViewer designer property before you can call"
   fileprivate final let _ERROR_JSON_PARSE_FAILED: Int = 101
@@ -16,9 +16,10 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
   fileprivate final let _BACK_CAMERA: String = "Back"
   fileprivate final let _FRONT_CAMERA: String = "Front"
   
-  fileprivate var _webview: WKWebView?  // Double check ! syntax
+  fileprivate var _webview: WKWebView?
+  fileprivate var _webviewer: WebViewer?
   private var _webviewerApiSource: String = ""
-  private var _webviewerApi: WKUserScript? // double check ! syntax
+  private var _webviewerApi: WKUserScript?
   
   fileprivate var _keyPoints: [String: [String]] = [:]
   fileprivate var _minPoseConfidence: Double = 0.1
@@ -32,9 +33,12 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
     case webviewerNotSet
   }
   
-  
+  /**
+      Creates a new Posenet Extension.
+   */
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
+    // TODO: Hardware Acceleration?
     _keyPoints["nose"] = []
     _keyPoints["leftEye"] = []
     _keyPoints["rightEye"] = []
@@ -52,46 +56,102 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
     _keyPoints["rightKnee"] = []
     _keyPoints["leftAnkle"] = []
     _keyPoints["rightAnkle"] = []
+    print("created posenet extension")
   }
   
   /**
-   Configure the current webview. Add a WKScriptMessageHandler
-   to handle the following Javascript calls necessary for
-   Posenet Extension:
-          ready()
-          reportImage(String dataURL)
-          reportResult(String result)
-          error(int errorCode, String errorMessage)
-   Equivalent to the @Javascript interface in the Android Posenet Extension.
+     Configure the current webview. Add a WKScriptMessageHandler
+     to handle the following Javascript calls necessary for
+     Posenet Extension within userContentController(_ :didRecieve:):
+            ready()
+            reportImage(String dataURL)
+            reportResult(String result)
+            error(int errorCode, String errorMessage)
+     Equivalent to the @JavascriptInterface in the Android Posenet Extension.
    */
   private func configureWebView(_ webview: WKWebView) {
     self._webview = webview
     let config = webview.configuration
-    // config.defaultWebpagePreferences.allowsContentJavaScript = true
     let controller = config.userContentController
-    controller.add(self, name: "ready")
-    controller.add(self, name: "reportImage")
-    controller.add(self, name: "reportResult")
-    controller.add(self, name: "error")
+    controller.add(self, name: "PosenetExtension")
   }
   
   
+  /**
+    Implements WKUIDelegate protocol to handle camera and video permissions.
+  */
+  @available(iOS 15.0, *)
+  public func webView(_ webView: WKWebView,
+              requestMediaCapturePermissionFor
+              origin: WKSecurityOrigin,initiatedByFrame
+              frame: WKFrameInfo,type: WKMediaCaptureType,
+              decisionHandler: @escaping (WKPermissionDecision) -> Void) {
+                decisionHandler(.grant)
+  }
+  
+  /**
+   Configures Javascript interface. TFJS app.js file has been
+   edited such that it directly calls userContentController.
+   Generic implementation yet to be built.
+   */
+  open func userContentController(
+    _ userContentController: WKUserContentController,
+    didReceive message: WKScriptMessage
+  ) {
+    if message.name == "PosenetExtension" {
+      guard let dict = message.body as? [String: Any],
+            let functionCall = dict["functionCall"] as? String,
+            let args = dict["args"] else {
+        print("JSON Error message not recieved")
+        return
+      }
+      if functionCall == "ready" {
+        ModelReady()
+        if _enabled {
+          MinPartConfidence = _minPartConfidence
+          MinPoseConfidence = _minPoseConfidence
+          UseCamera = _cameraMode
+        }
+      }
+      if functionCall == "reportResult" {
+        do {
+          let result = try getYailObjectFromJson(args as? String, true)
+          print(result)
+        } catch {
+          print("Error parsing JSON from web view")
+          Error(_ERROR_JSON_PARSE_FAILED as AnyObject, "Error parsing JSON from web view" as AnyObject)
+        }
+      }
+      if functionCall == "reportImage" {
+        // baackground image?
+        VideoUpdated()
+      }
+      if functionCall == "error" {
+        //        let (errorCode, errorMessage) = args
+        print("Error function to be called")
+        
+      }
+    }
+  }
+    
+    
   // MARK: PoseNet Properties
   
   
-//  @objc open var WebViewer: WebViewer {
-//    get {
-//      return _webviewer
-//    }
-//    set {
-//      if 
-//    }
-//  }
-//  
-  
-  
-  
-  
+  @objc open var WebViewer: WebViewer {
+    get {
+      return _webviewer!
+    }
+    set {
+      configureWebView(newValue.view as! WKWebView)
+      print("configurewebview called")
+      if let url = Bundle.main.url(forResource: "index", withExtension: "html") {
+        let request = URLRequest(url: url)
+        _webview?.load(request)
+      }
+    }
+  }
+      
   @objc open var MinPoseConfidence: Double {
     get {
       return _minPoseConfidence
@@ -124,7 +184,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
     }
   }
   
-  @objc open var KeyPoints: [String] {
+  @objc open var KeyPoints: [[String]] {
     get {
       var keyPoints: [[String]] = []
       for point in _keyPoints.values {
@@ -132,14 +192,12 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
           keyPoints.append(point)
         }
       }
-      // TODO: build yaillist?
-      // HELP: what is YailList.makelist returning?
-      // returning flat array?
-      return keyPoints.flatMap { $0 }
+      return keyPoints
     }
   }
   
-  @objc open var Skeleton: [String] {
+  @objc open var Skeleton: [[String]] {
+    var skeleton: [[String]] = []
     let lWrist = _keyPoints["leftWrist"]
     let lElbow = _keyPoints["leftElbow"]
     let lShoulder = _keyPoints["leftShoulder"]
@@ -152,15 +210,88 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
     let rHip = _keyPoints["rightHip"]
     let rKnee = _keyPoints["rightKnee"]
     let rAnkle = _keyPoints["rightAnkle"]
-    
-    // TODO: generate correct return value
-    return []
+    skeleton.append(lWrist!)
+    skeleton.append(lElbow!)
+    skeleton.append(lShoulder!)
+    skeleton.append(rShoulder!)
+    skeleton.append(rElbow!)
+    skeleton.append(rWrist!)
+    skeleton.append(lHip!)
+    skeleton.append(lKnee!)
+    skeleton.append(lAnkle!)
+    skeleton.append(rHip!)
+    skeleton.append(rKnee!)
+    skeleton.append(rAnkle!)
+    return skeleton
   }
   
-  // TODO: add all body part properties and find YailList representation
+  @objc open var Nose: [String] {
+    return _keyPoints["nose"]!
+  }
   
+  @objc open var LeftEye: [String] {
+    return _keyPoints["leftEye"]!
+  }
   
+  @objc open var RightEye: [String] {
+    return _keyPoints["rightEye"]!
+  }
   
+  @objc open var LeftEar: [String] {
+    return _keyPoints["leftEar"]!
+  }
+  
+  @objc open var RightEar: [String] {
+    return _keyPoints["rightEar"]!
+  }
+  
+  @objc open var LeftShoulder: [String] {
+    return _keyPoints["leftShoulder"]!
+  }
+  
+  @objc open var RightShoulder: [String] {
+    return _keyPoints["rightShoulder"]!
+  }
+  
+  @objc open var LeftElbow: [String] {
+    return _keyPoints["leftElbow"]!
+  }
+  
+  @objc open var RightElbow: [String] {
+    return _keyPoints["rightElbow"]!
+  }
+  
+  @objc open var LeftWrist: [String] {
+    return _keyPoints["leftWrist"]!
+  }
+  
+  @objc open var RightWrist: [String] {
+    return _keyPoints["rightWrist"]!
+  }
+  
+  @objc open var LeftHip: [String] {
+    return _keyPoints["leftHip"]!
+  }
+  
+  @objc open var RightHip: [String] {
+    return _keyPoints["rightHip"]!
+  }
+  
+  @objc open var LeftKnee: [String] {
+    return _keyPoints["leftKnee"]!
+  }
+  
+  @objc open var RightKnee: [String] {
+    return _keyPoints["rightKnee"]!
+  }
+  
+  @objc open var LeftAnkle: [String] {
+    return _keyPoints["leftAnkle"]!
+  }
+  
+  @objc open var RightAnkle: [String] {
+    return _keyPoints["rightAnkle"]!
+  }
   
   @objc open var BackgroundImage: String {
       return _backgroundImage
@@ -198,7 +329,8 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
           }
         }
       } else {
-          // TODO: figure out what form is
+        // No Error.Extension_Error?
+        _form?.dispatchErrorOccurredEvent(self, "UseCamera", 3300, "Invalid camera selection. Must be either 'Front' or 'Back'.")
       }
     }
   }
@@ -207,28 +339,61 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
   // MARK: PoseNet Methods
   
   
-  open func userContentController(
-    _ userContentController: WKUserContentController,
-    didReceive message: WKScriptMessage
-  ) {
-    if message.name == "ready" {
-      if _enabled {
-        MinPartConfidence = _minPartConfidence
-        MinPoseConfidence = _minPoseConfidence
-        UseCamera = _cameraMode
-      }
-    }
-    if message.name == "reportImage" {
-      // TODO: Finish out the javascript interface here
-    }
-  }
-  
   @objc open func initialize() {
     if _webview != nil {
       _initialized = true
     }
   }
   
+  @objc open func ModelReady() {
+    EventDispatcher.dispatchEvent(of: self, called: "ModelReady")
+    print("dispatched ModelReady")
+  }
+  
+  @objc open func Error(_ errorCode: AnyObject, _ errorMessage: AnyObject) { //TODO: What to do about anyobject? Should be int and String
+    EventDispatcher.dispatchEvent(of: self, called: "Error", arguments: errorCode, errorMessage)
+    print("dispatched Error")
+  }
+  
+  @objc open func PoseUpdated() {
+    EventDispatcher.dispatchEvent(of: self, called: "PoseUpdated")
+    print("dispatched PoseUpdated")
+  }
+  
+  @objc open func VideoUpdated() {
+    EventDispatcher.dispatchEvent(of: self, called: "VideoUpdated")
+    print("dispatched VideoUpdated")
+  }
+  
+  
+  @objc open func onDelete() {
+    if _initialized && _webview != nil {
+      _webview?.evaluateJavaScript("teardown();", completionHandler: nil)
+      _webview = nil
+    }
+  }
+  
+  @objc open func onPause() {
+    if _initialized && _webview != nil {
+      _webview?.evaluateJavaScript("stopVideo();", completionHandler: nil)
+    }
+  }
+  
+  @objc open func onResume() {
+    if _initialized && _enabled && _webview != nil {
+      _webview?.evaluateJavaScript("startVideo();", completionHandler: nil)
+    }
+  }
+  
+  @objc open func onStop() {
+    if _initialized && _webview != nil {
+      _webview?.evaluateJavaScript("teardown();", completionHandler: nil)
+      _webview = nil
+    }
+  }
+  
+  
+  // Error Handling
   private func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
     guard let _webview = _webview else {
       throw IllegalStateError.webviewerNotSet
@@ -246,10 +411,5 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler {
       print("Error: Not a valid method")
     }
   }
-  
-  
-  
-  
-  
-  
+ 
 }

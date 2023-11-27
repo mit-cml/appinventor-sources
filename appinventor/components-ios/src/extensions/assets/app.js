@@ -21,7 +21,7 @@ let running = false;
 
 async function setupCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA,
+    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO:
       ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     return;
   }
@@ -83,9 +83,11 @@ function detectPoseInRealTime(video, net) {
 
     poses.forEach(({score, keypoints}) => {
       const dataURL = canvas.toDataURL();
-      PosenetExtension.reportImage(dataURL);
+        window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'reportImage', 'args': dataURL})
+      // PosenetExtension.reportImage(dataURL); //TODO:
       if (score >= minPoseConfidence) {
-        PosenetExtension.reportResult(JSON.stringify(keypoints));
+          window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'reportResult', 'args': JSON.stringify(keypoints)})
+        // PosenetExtension.reportResult(JSON.stringify(keypoints)); //TODO:
       }
     });
 
@@ -119,7 +121,7 @@ async function runModel() {
   try {
     video = await loadVideo();
   } catch (e) {
-    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA,
+    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO
       ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     throw e;
   }
@@ -158,5 +160,6 @@ navigator.getUserMedia = navigator.getUserMedia ||
 
 loadModel().then(model => {
   net = model;
-  PosenetExtension.ready();
+    window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'ready', 'args': })
+ // PosenetExtension.ready();
 });
