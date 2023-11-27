@@ -586,7 +586,9 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 225:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 7
   // - WEB_COMPONENT_VERSION was incremented to 9
-  public static final int YOUNG_ANDROID_VERSION = 225;
+  // For YOUNG_ANDROID_VERSION 226:
+  // - FORM_COMPONENT_VERSION was incremented to 31
+  public static final int YOUNG_ANDROID_VERSION = 226;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1018,7 +1020,9 @@ public class YaVersion {
   // - Adds Permission dropdown block.
   // For FORM_COMPONENT_VERSION 30:
   // - Add DefaultFileScope designer property.
-  public static final int FORM_COMPONENT_VERSION = 30;
+  // For FORM_COMPONENT_VERSION 31:
+  // - The default theme was changed to Device Default.
+  public static final int FORM_COMPONENT_VERSION = 31;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
