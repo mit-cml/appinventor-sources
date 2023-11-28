@@ -21,7 +21,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript?
   
-  fileprivate var _keyPoints: [String: [String]] = [:]
+  fileprivate var _keyPoints: [String: [Double]] = [:]
   fileprivate var _minPoseConfidence: Double = 0.1
   fileprivate var _minPartConfidence: Double = 0.5
   fileprivate lazy var _cameraMode: String = _FRONT_CAMERA
@@ -191,9 +191,9 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
     }
   }
   
-  @objc open var KeyPoints: [[String]] {
+  @objc open var KeyPoints: [[Double]] {
     get {
-      var keyPoints: [[String]] = []
+      var keyPoints: [[Double]] = []
       for point in _keyPoints.values {
         if point.count == 2 {
           keyPoints.append(point)
@@ -203,8 +203,8 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
     }
   }
   
-  @objc open var Skeleton: [[String]] {
-    var skeleton: [[String]] = []
+  @objc open var Skeleton: [[Double]] {
+    var skeleton: [[Double]] = []
     let lWrist = _keyPoints["leftWrist"]
     let lElbow = _keyPoints["leftElbow"]
     let lShoulder = _keyPoints["leftShoulder"]
@@ -232,71 +232,71 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
     return skeleton
   }
   
-  @objc open var Nose: [String] {
+  @objc open var Nose: [Double] {
     return _keyPoints["nose"]!
   }
   
-  @objc open var LeftEye: [String] {
+  @objc open var LeftEye: [Double] {
     return _keyPoints["leftEye"]!
   }
   
-  @objc open var RightEye: [String] {
+  @objc open var RightEye: [Double] {
     return _keyPoints["rightEye"]!
   }
   
-  @objc open var LeftEar: [String] {
+  @objc open var LeftEar: [Double] {
     return _keyPoints["leftEar"]!
   }
   
-  @objc open var RightEar: [String] {
+  @objc open var RightEar: [Double] {
     return _keyPoints["rightEar"]!
   }
   
-  @objc open var LeftShoulder: [String] {
+  @objc open var LeftShoulder: [Double] {
     return _keyPoints["leftShoulder"]!
   }
   
-  @objc open var RightShoulder: [String] {
+  @objc open var RightShoulder: [Double] {
     return _keyPoints["rightShoulder"]!
   }
   
-  @objc open var LeftElbow: [String] {
+  @objc open var LeftElbow: [Double] {
     return _keyPoints["leftElbow"]!
   }
   
-  @objc open var RightElbow: [String] {
+  @objc open var RightElbow: [Double] {
     return _keyPoints["rightElbow"]!
   }
   
-  @objc open var LeftWrist: [String] {
+  @objc open var LeftWrist: [Double] {
     return _keyPoints["leftWrist"]!
   }
   
-  @objc open var RightWrist: [String] {
+  @objc open var RightWrist: [Double] {
     return _keyPoints["rightWrist"]!
   }
   
-  @objc open var LeftHip: [String] {
+  @objc open var LeftHip: [Double] {
     return _keyPoints["leftHip"]!
   }
   
-  @objc open var RightHip: [String] {
+  @objc open var RightHip: [Double] {
     return _keyPoints["rightHip"]!
   }
   
-  @objc open var LeftKnee: [String] {
+  @objc open var LeftKnee: [Double] {
     return _keyPoints["leftKnee"]!
   }
   
-  @objc open var RightKnee: [String] {
+  @objc open var RightKnee: [Double] {
     return _keyPoints["rightKnee"]!
   }
   
-  @objc open var LeftAnkle: [String] {
+  @objc open var LeftAnkle: [Double] {
     return _keyPoints["leftAnkle"]!
   }
   
-  @objc open var RightAnkle: [String] {
+  @objc open var RightAnkle: [Double] {
     return _keyPoints["rightAnkle"]!
   }
   
@@ -348,6 +348,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
   
   @objc open func Initialize() {
     if _webview != nil {
+      print("initialized")
       _initialized = true
     }
   }
