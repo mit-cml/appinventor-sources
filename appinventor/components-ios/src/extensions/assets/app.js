@@ -21,8 +21,9 @@ let running = false;
 
 async function setupCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO:
-      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
+      window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'error', args: })
+//    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO:
+//      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     return;
   }
 
@@ -83,10 +84,10 @@ function detectPoseInRealTime(video, net) {
 
     poses.forEach(({score, keypoints}) => {
       const dataURL = canvas.toDataURL();
-        window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'reportImage', 'args': dataURL})
+        window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'reportImage', args: dataURL})
       // PosenetExtension.reportImage(dataURL); //TODO:
       if (score >= minPoseConfidence) {
-          window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'reportResult', 'args': JSON.stringify(keypoints)})
+          window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'reportResult', args: JSON.stringify(keypoints)})
         // PosenetExtension.reportResult(JSON.stringify(keypoints)); //TODO:
       }
     });
@@ -107,8 +108,9 @@ async function loadModel() {
       quantBytes: defaultQuantBytes
     });
   } catch (e) {
-    PosenetExtension.error(ERROR_MODEL_LOAD,
-      ERRORS[ERROR_MODEL_LOAD]);
+      window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'error', args: })
+//    PosenetExtension.error(ERROR_MODEL_LOAD,
+//      ERRORS[ERROR_MODEL_LOAD]);
     throw e;
   }
 }
@@ -121,8 +123,9 @@ async function runModel() {
   try {
     video = await loadVideo();
   } catch (e) {
-    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO
-      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
+      window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'error', 'args': })
+//    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO
+//      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     throw e;
   }
 

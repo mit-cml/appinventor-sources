@@ -98,6 +98,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
     _ userContentController: WKUserContentController,
     didReceive message: WKScriptMessage
   ) {
+    print("recieving content")
     if message.name == "PosenetExtension" {
       guard let dict = message.body as? [String: Any],
             let functionCall = dict["functionCall"] as? String,
@@ -106,6 +107,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
         return
       }
       if functionCall == "ready" {
+        print("Model Ready")
         ModelReady()
         if _enabled {
           MinPartConfidence = _minPartConfidence
@@ -114,6 +116,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
         }
       }
       if functionCall == "reportResult" {
+        print("Reporting Result")
         do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
@@ -123,10 +126,12 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
         }
       }
       if functionCall == "reportImage" {
+        print("Reporting Image")
         // baackground image?
         VideoUpdated()
       }
       if functionCall == "error" {
+        // TODO: Error function
         //        let (errorCode, errorMessage) = args
         print("Error function to be called")
         
@@ -145,9 +150,11 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
     set {
       configureWebView(newValue.view as! WKWebView)
       print("configurewebview called")
-      if let url = Bundle.main.url(forResource: "index", withExtension: "html") {
+      if let url = Bundle(for: PosenetExtension.self).url(forResource: "assets/index", withExtension: "html") {
         let request = URLRequest(url: url)
+        print(request)
         _webview?.load(request)
+        print("request loaded")
       }
     }
   }
@@ -339,7 +346,7 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
   // MARK: PoseNet Methods
   
   
-  @objc open func initialize() {
+  @objc open func Initialize() {
     if _webview != nil {
       _initialized = true
     }
@@ -393,7 +400,6 @@ open class PosenetExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDe
   }
   
   
-  // Error Handling
   private func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
     guard let _webview = _webview else {
       throw IllegalStateError.webviewerNotSet

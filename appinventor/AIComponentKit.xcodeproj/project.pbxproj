@@ -247,8 +247,8 @@
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
+		8B5950ED2B156FF900436713 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 8B5950EC2B156FF900436713 /* assets */; };
 		8B77A2E92AE1EFD9009F09B2 /* posenet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77A2E82AE1EFD9009F09B2 /* posenet.swift */; };
-		8BC7BED32AF2F0690036DD18 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 8BC7BED22AF2F0680036DD18 /* assets */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
 		C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */; };
 		C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */; };
@@ -570,8 +570,8 @@
 		681D59062A84139E007B5DB5 /* OptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionList.swift; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+EllipticalArc.swift"; sourceTree = "<group>"; };
+		8B5950EC2B156FF900436713 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		8B77A2E82AE1EFD9009F09B2 /* posenet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = posenet.swift; sourceTree = "<group>"; };
-		8BC7BED22AF2F0680036DD18 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
@@ -1221,7 +1221,7 @@
 		8B77A2E72AE1EFBF009F09B2 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
-				8BC7BED22AF2F0680036DD18 /* assets */,
+				8B5950EC2B156FF900436713 /* assets */,
 				8B77A2E82AE1EFD9009F09B2 /* posenet.swift */,
 			);
 			path = extensions;
@@ -1403,7 +1403,6 @@
 				069D1CB32C9C4FF000C0CA96 /* mobilenet_group9-shard1of1 in Resources */,
 				069D1CD32C9C4FF000C0CA96 /* mobilenet_group12-shard1of1 in Resources */,
 				069D1CE42C9C50B700C0CA96 /* personal_image_classifier.js in Resources */,
-				8BC7BED32AF2F0690036DD18 /* assets in Resources */,
 				064E097E233BDBE400884FEF /* Media.xcassets in Resources */,
 				069D1CAC2C9C4FF000C0CA96 /* mobilenet_group31-shard1of1 in Resources */,
 				069D1CCC2C9C4FF000C0CA96 /* mobilenet_group8-shard1of1 in Resources */,
@@ -1472,6 +1471,7 @@
 				069D1CA62C9C4FF000C0CA96 /* mobilenet_group34-shard1of1 in Resources */,
 				069D1CB12C9C4FF000C0CA96 /* mobilenet_group38-shard1of1 in Resources */,
 				069D1CC52C9C4FF000C0CA96 /* mobilenet_group22-shard1of1 in Resources */,
+				8B5950ED2B156FF900436713 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
