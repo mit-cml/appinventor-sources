@@ -822,11 +822,18 @@ Blockly.ReplMgr.putYail = (function() {
             }
             rxhr = null;
             top.usewebrtc = false;
-            rs.hasfetchassets = false;
+            rs = top.ReplState;
+            if (rs) {
+                rs.hasfetchassets = false;
+            }
             phonereceiving = false;
         },
         "resetcompanion" : function() {
             console.log("reseting companion");
+            rs = top.ReplState;
+            if (!rs) {
+                return;  // ReplState not yet configured, so nothing to do
+            }
             rs.state = Blockly.ReplMgr.rsState.IDLE;
             rs.connection = null;
             rs.extensionurl = undefined;
@@ -1423,7 +1430,9 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
             }
         }
         try {
-            top.webrtcdata.send("#DONE#"); // This should kill the companion
+            if (top.webrtcdata) {
+                top.webrtcdata.send("#DONE#"); // This should kill the companion
+            }
         } catch (err) {
             console.log("webrtcdata: Error: " + err);
         }
