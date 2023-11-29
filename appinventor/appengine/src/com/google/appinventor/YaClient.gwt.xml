@@ -159,6 +159,10 @@
   <extend-property name="locale" values="hy"/>
   <!-- Catalan -->
   <extend-property name="locale" values="ca"/>
+  <!-- Ukranian -->
+  <extend-property name="locale" values="uk"/>
+  <!-- Japanese -->
+  <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
 </module>
