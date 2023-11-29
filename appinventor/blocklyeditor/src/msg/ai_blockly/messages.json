@@ -316,7 +316,6 @@
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO": "Return the modulo.",
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER": "Return the remainder.",
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT": "Return the quotient.",
-	"Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT": "/reference/blocks/math.html#quotient",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM": "random integer",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM": "from",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO": "to",
@@ -543,7 +542,6 @@
 	"Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT": "join items using separator %1 list %2",
 	"Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP": "Returns text with list elements joined with separator",
 
-	"Blockly.Msg.LANG_LISTS_MAP_HELPURL" : "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#map",
 	"Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP" : "make new list from",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM" : "mapping each",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR" : "item",
@@ -551,7 +549,6 @@
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_COLLAPSED_TEXT" : "map list",
 	"Blockly.Msg.LANG_LISTS_MAP_TOOLTIP" : "Maps each item in the list to a new item. Use the given variable name to refer to the current list item.",
 
-	"Blockly.Msg.LANG_LISTS_FILTER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#filter",
 	"Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER": "make new filtered list from ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM": "keeping each ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR": "item",
@@ -560,7 +557,6 @@
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_COLLAPSED_TEXT": "filter list",
 	"Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP": "Keeps each item in the list satisfying the block in the \"test\" section. Use the given variable name to refer to the current list item.",
 
-	"Blockly.Msg.LANG_LISTS_REDUCE_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#reduce",
 	"Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE": "reduce",
 	"Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INLIST": "list",
 	"Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INITIAL_ANSWER": "starting with initialAnswer",
@@ -571,12 +567,10 @@
 	"Blockly.Msg.LANG_LISTS_REDUCE_INPUT_COLLAPSED_TEXT": "reduce list",
 	"Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP": "Reduces the list to a single value by combining the list elements using the block in the body section. If the list is empty, initialAnswer is returned. Otherwise, the function is first applied to initialAnswer and the first list item, and then on the accumulating answer and the next list item. This continues until the end of the list.",
 
-	"Blockly.Msg.LANG_LISTS_SORT_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sort",
 	"Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT": "make new sorted list from",
 	"Blockly.Msg.LANG_LISTS_SORT_TOOLTIP": "Sorts list in ascending order.",
 	"Blockly.Msg.LANG_LISTS_SORT_TYPEBLOCK": "sort list",
 
-	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithcomparator",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT": "make new sorted list from",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1": "item1",
@@ -586,14 +580,12 @@
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COLLAPSED_TEXT": "sort list using comparator",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP": "Sorts list using a comparison function that takes in two list items. The comparison function returns true or false and determines the ordering of list items.",
 
-	"Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithkey",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT": "make new sorted list from",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY": "using key called on each ",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_VAR": "item",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT": "sort list using key",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP": "Sorts list using a key function that is applied to each list item prior to sorting. The value returned by the key function is used for sorting.",
 
-	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#minnumber",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN": "minimum value in the list",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_VAR1": "item1",
@@ -603,7 +595,6 @@
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_TYPEBLOCK": "minimum using comparator",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP": "Returns minimum number in the list",
 
-	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#maxnumber",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX": "maximum value in the list",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_VAR1": "item1",
@@ -613,33 +604,30 @@
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_TYPEBLOCK": "maximum using comparator",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP": "Returns maximum number in the list",
 
-	"Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butfirst",
 	"Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST": "all but first of list",
 	"Blockly.Msg.LANG_LISTS_BUT_FIRST_TOOLTIP": "Returns everything except the first value of the list",
 
-	"Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butlast",
+
 	"Blockly.Msg.LANG_LISTS_BUT_LAST_INPUT_BUT_LAST": "all but last of list",
 	"Blockly.Msg.LANG_LISTS_BUT_LAST_TOOLTIP": "Returns everything except the last value of the list",
 
-	"Blockly.Msg.LANG_LISTS_SLICE_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#slices",
 	"Blockly.Msg.LANG_LISTS_SLICE_INPUT": "slice list %1 index1 %2 index2 %3",
 	"Blockly.Msg.LANG_LISTS_SLICE_TITLE_SLICE": "slice list",
 	"Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP": "Returns list values from index1 up to but not including index2",
 
 	"Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Dictionaries",
 	"Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "create empty dictionary",
-	"Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_EMPTY_HELPURL": "/reference/blocks/dictionaries.html#create-empty-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "make a dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP": "Create a dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_HELPURL": "/reference/blocks/dictionaries.html#make-a-dictionary",
+
+
 
 	"Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD": "dict",
 	"Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP": "Add, remove, or reorder sections to reconfigure this dictionary block.",
 
 	"Blockly.Msg.LANG_DICTIONARIES_PAIR_TITLE": "pair",
 	"Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP": "Add a pair to the dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_PAIR_HELPURL": "/reference/blocks/dictionaries.html#pair",
 
 	"Blockly.Msg.LANG_DICTIONARIES_PAIR_INPUT": "key %1 value %2",
 	"Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TOOLTIP": "Creates a pair with the key and value provided.",
@@ -648,82 +636,67 @@
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT": "set value for key %1 in dictionary %2 to %3",
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "set value for key in dictionary to",
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Set a pair in a dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "remove entry for key %2 from dictionary %1",
 	"Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "remove entry for key from dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP": "Delete a pair in a dictionary given its key.",
-	"Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_HELPURL": "/reference/blocks/dictionaries.html#delete-entry-for-key",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "get value for key %1 in dictionary %2 or if not found %3",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP": "Returns the value in the dictionary associated with the key.",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "get value for key in dictionary",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-for-key",
-
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "get value at key path %1 in dictionary %2 or if not found %3",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "Returns the value in the nested dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "get value for key path in dictionary",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-at-key-path",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT": "set value for key path %1 in dictionary %2 to %3",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "Sets the value at a path in a tree starting from the given dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "set value for key path in dictionary to",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key-path",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "get value at key path %1 in dictionary %2 or if not found %3",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "Returns the value in the nested dictionary.",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "get value for key path in dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "get",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "keys",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Returns a list of all of the keys in the dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_HELPURL": "/reference/blocks/dictionaries.html#get-keys",
+
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK": "get dictionary keys",
 
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "values",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP": "Returns a list of all of the values in the dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_HELPURL": "/reference/blocks/dictionaries.html#get-values",
+
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "get dictionary values",
 
 	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "is key in dictionary? key %1 dictionary %2",
 	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP": "Check if a key is in a dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE": "is key in dict?",
-	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_HELPURL": "/reference/blocks/dictionaries.html#is-key-in-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE": "size of dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP": "Returns the number of key-value pairs in the dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_LENGTH_HELPURL": "/reference/blocks/dictionaries.html#size-of-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE": "list of pairs to dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_INPUT": "pairs",
 	"Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TOOLTIP": "Converts a list of pairs to a dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_HELPURL": "/reference/blocks/dictionaries.html#list-of-pairs-to-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TITLE": "dictionary to list of pairs",
 	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TOOLTIP": "Converts a dictionary to a list of pairs.",
-	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_HELPURL": "/reference/blocks/dictionaries.html#dictionary-to-list-of-pairs",
 
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_TITLE": "copy dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_TOOLTIP": "Returns a shallow copy of the dictionary",
-	"Blockly.Msg.LANG_DICTIONARIES_COPY_HELPURL": "/reference/blocks/dictionaries.html#copy-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_INPUT": "merge into dictionary %1 from dictionary %2",
 	"Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP": "Copies the pairs of the 'From' dictionary into the 'To' dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "combine dictionaries",
-	"Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_HELPURL": "/reference/blocks/dictionaries.html#merge-into-dictionary",
 
 	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "list by walking key path %1 in dictionary or list %2",
 	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "Starts from the given dictionary and follows it and its children's keys based on the given path, returning a list of nodes found at the end of the walk.",
-	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_HELPURL": "/reference/blocks/dictionaries.html#list-by-walking-key-path",
 
 	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "walk all at level",
 	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Used in the list by walking key path block, explores every node at a given level on the walk.",
-	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_HELPURL": "/reference/blocks/dictionaries.html#walk-all-at-level",
 
 	"Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "is a dictionary? %1",
 	"Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TOOLTIP": "Tests if something is a dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_IS_DICT_HELPURL": "/reference/blocks/dictionaries.html#is-a-dictionary",
 
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT": "initialize global",
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME": "name",
@@ -798,7 +771,6 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET": "set ",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": " to",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "of component",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL": "",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY": "every",
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
@@ -865,9 +837,9 @@
 	"Blockly.Msg.REPL_MORE_INFORMATION": "More Information",
 	"Blockly.Msg.REPL_NO_LEGACY": "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).",
 	"Blockly.Msg.REPL_SECURE_CONNECTION": "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work",
-        "Blockly.Msg.REPL_POPUP_TITLE": "Popup Needed",
-        "Blockly.Msg.REPL_POPUP_MESSAGE": "Please click the \"Continue\" button below",
-        "Blockly.Msg.REPL_POPUP_CONTINUE": "Continue",
+	"Blockly.Msg.REPL_POPUP_TITLE": "Popup Needed",
+	"Blockly.Msg.REPL_POPUP_MESSAGE": "Please click the \"Continue\" button below",
+	"Blockly.Msg.REPL_POPUP_CONTINUE": "Continue",
 	"Blockly.Msg.WARNING_DELETE_X_BLOCKS": "Are you sure you want to delete all %1 of these blocks?",
 	"Blockly.Msg.GENERATE_YAIL": "Generate Yail",
 	"Blockly.Msg.DO_IT": "Do It",
@@ -891,6 +863,16 @@
 	"Blockly.Msg.DIALOG_UNBOUND_VAR": "Unbound Variables",
 	"Blockly.Msg.DIALOG_SUBMIT": "Submit",
 	"Blockly.Msg.DIALOG_ENTER_VALUES": "Enter values for:",
+
+	"Blockly.Msg.LANG_LISTS_MAP_HELPURL" : "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#map",
+	"Blockly.Msg.LANG_LISTS_FILTER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#filter",
+	"Blockly.Msg.LANG_LISTS_REDUCE_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#reduce",
+	"Blockly.Msg.LANG_LISTS_SORT_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sort",
+	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithcomparator",
+	"Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithkey",
+	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#minnumber",	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#maxnumber",	"Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butfirst",	"Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butlast",	"Blockly.Msg.LANG_LISTS_SLICE_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#slices",	"Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_EMPTY_HELPURL": "/reference/blocks/dictionaries.html#create-empty-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_HELPURL": "/reference/blocks/dictionaries.html#make-a-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_PAIR_HELPURL": "/reference/blocks/dictionaries.html#pair",
+		"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key",
+	"Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_HELPURL": "/reference/blocks/dictionaries.html#delete-entry-for-key",	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-for-key",	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-at-key-path",	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key-path",	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_HELPURL": "/reference/blocks/dictionaries.html#get-keys",	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_HELPURL": "/reference/blocks/dictionaries.html#get-values",	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_HELPURL": "/reference/blocks/dictionaries.html#is-key-in-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_LENGTH_HELPURL": "/reference/blocks/dictionaries.html#size-of-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_HELPURL": "/reference/blocks/dictionaries.html#list-of-pairs-to-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_HELPURL": "/reference/blocks/dictionaries.html#dictionary-to-list-of-pairs",	"Blockly.Msg.LANG_DICTIONARIES_COPY_HELPURL": "/reference/blocks/dictionaries.html#copy-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_HELPURL": "/reference/blocks/dictionaries.html#merge-into-dictionary",	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_HELPURL": "/reference/blocks/dictionaries.html#list-by-walking-key-path",	"Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_HELPURL": "/reference/blocks/dictionaries.html#walk-all-at-level",	"Blockly.Msg.LANG_DICTIONARIES_IS_DICT_HELPURL": "/reference/blocks/dictionaries.html#is-a-dictionary",	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL": "",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_HELPURL": "/reference/components/storage.html#Spreadsheet",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_PROPERTIES_HELPURL": "/reference/components/storage.html#Spreadsheet",
@@ -976,6 +958,7 @@
 	"Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SE": "/reference/blocks/math.html#se",
 	"Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_MODULO": "/reference/blocks/math.html#modulo",
 	"Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_REMAINDER": "/reference/blocks/math.html#remainder",
+	"Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT": "/reference/blocks/math.html#quotient",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL": "/reference/blocks/math.html#randomint",
 	"Blockly.Msg.LANG_MATH_RANDOM_FLOAT_HELPURL": "/reference/blocks/math.html#randomfrac",
 	"Blockly.Msg.LANG_MATH_RANDOM_SEED_HELPURL": "/reference/blocks/math.html#randomseed",
