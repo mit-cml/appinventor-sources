@@ -72,6 +72,11 @@ open class ChartView {
     }
   }
   
+  public func refresh(model: ChartDataModel) {
+    var refreshTask : RefreshTask = RefreshTask(self, model.entries)
+    refreshTask.onPostExecute(result: model) // how to do execute
+  }
+  
   public func refresh(model: ChartDataModel, entries: Array<DGCharts.ChartDataEntry>) {
     var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
     dataset.replaceEntries(entries)

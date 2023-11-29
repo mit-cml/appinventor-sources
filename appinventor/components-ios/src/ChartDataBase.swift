@@ -13,6 +13,10 @@ import DGCharts
 
   var _chartDataModel: ChartDataModel?
   var _container: Chart
+  var _color: UIColor
+  var _label: String
+
+  
 
   @objc public init(_ chartContainer: Chart) {
     self._container = chartContainer
@@ -20,6 +24,28 @@ import DGCharts
     chartContainer.addDataComponent(self)
     initChartData()
     // do i need the executor
+  }
+  
+  @objc open var Color: UIColor {
+    get {
+      return _color
+    }
+    set {
+      _color = newValue
+      _chartDataModel?.setColor(_color)
+     refreshChart()
+    }
+  }
+  
+  @objc open var Label: String {
+    get {
+      return _label
+    }
+    set {
+      _label = newValue
+      _chartDataModel?.setLabel(newValue)
+     refreshChart()
+    }
   }
   
   // TODO: CANT FIND WHERE COPY IS DEFINED IN JAVA CODE
@@ -40,5 +66,32 @@ import DGCharts
   var dispatchDelegate: HandlesEventDispatching?
 
   func initChartData() {
+    _chartDataModel = _container.chartView?.createChartModel()
+    
+    // set default values
+    Color = uiColorFromHex(rgbValue: 0xFF000000)
+    Label = ""
+    
+    //do i need gesture recognizers
+    //_chartDataModel?.view.chart?.gestureRecognizers =
+    //_chartDataModel?.view.chart?.gest
+  }
+  
+  func uiColorFromHex(rgbValue: Int) -> UIColor {
+      
+      // &  binary AND operator to zero out other color values
+      // >>  bitwise right shift operator
+      // Divide by 0xFF because UIColor takes CGFloats between 0.0 and 1.0
+      
+      let red =   CGFloat((rgbValue & 0xFF0000) >> 16) / 0xFF
+      let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 0xFF
+      let blue =  CGFloat(rgbValue & 0x0000FF) / 0xFF
+      let alpha = CGFloat(1.0)
+      
+      return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+  }
+  
+  func refreshChart() {
+    _container.chartView?.refresh()
   }
 }

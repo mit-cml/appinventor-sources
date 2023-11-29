@@ -241,6 +241,7 @@ import DGCharts
       // must implement initChartData() first
     }
   }
+
   func addDataComponent(_ dataComponent: ChartDataBase) {
     _dataComponents.append(dataComponent)
   }
