@@ -17,13 +17,19 @@
             <g:FlowPanel>
                 <!-- <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" /> -->
                 <g:Label text="{messages.selectMode}" />
-                <g:Button ui:field='darkModeButton' text='{messages.toggleTheme}'/>
+                <!-- <g:Button ui:field='darkModeButton' text='{messages.toggleTheme}'/> -->
+                <g:FlowPanel>
+                    <g:RadioButton ui:field='lightModeRadioButton' name='theme' text='Light Mode'/>
+                    <g:RadioButton ui:field='darkModeRadioButton' name='theme' text='Dark Mode'/>
+                </g:FlowPanel>
             </g:FlowPanel>
             <g:FlowPanel>
                 <!-- <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" /> -->
                 <g:Label text="{messages.selectLayout}" />
-                <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
-                <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}'/>
+                <g:FlowPanel>
+                    <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
+                    <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}'/>
+                </g:FlowPanel>
             </g:FlowPanel>
             <g:FlowPanel styleName="buttonRow" >
                 <g:Button ui:field="cancelButton" text='{messages.cancelButton}'  />

@@ -130,7 +130,9 @@ public class Ode implements EntryPoint {
   private static Ode instance;
 
   // Application level image bundle
-  private static final Images IMAGES = GWT.create(Images.class);
+  // private static final Images IMAGES = GWT.create(Images.class);
+  private static Images IMAGES = GWT.create(LightNewImages.class);
+  // private static Images IMAGES;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -317,6 +319,21 @@ public class Ode implements EntryPoint {
   public static ProjectEditor getCurrentProjectEditor() {
     return instance.editorManager.getOpenProjectEditor(getCurrentProjectID());
   }
+  /**
+   * Sets instance of the aggregate image bundle for the application.
+   *
+   * @return  image bundle
+   */
+  public static void setImageBundle(boolean darkMode, boolean newLayout) {
+    LOG.info("setting image bundle for new layout light");
+    if (!darkMode && newLayout){
+      IMAGES =  GWT.create(LightNewImages.class);
+    }
+    else{
+      IMAGES =  GWT.create(LightClassicImages.class);
+    }
+    LOG.info(" finished setting image bundle for new layout light");
+  }
 
   /**
    * Returns instance of the aggregate image bundle for the application.
@@ -324,6 +341,10 @@ public class Ode implements EntryPoint {
    * @return  image bundle
    */
   public static Images getImageBundle() {
+    // if (!Ode.getUserDarkThemeEnabled() && Ode.getUserNewLayout()){
+    //   IMAGES =  GWT.create(LightNewImages.class);
+    // }
+    LOG.info("getting image bundle");
     return IMAGES;
   }
 
@@ -977,25 +998,27 @@ public class Ode implements EntryPoint {
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.getProjectListBox();
     // OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
-    if (Ode.getUserDarkThemeEnabled()){
-      if (Ode.getUserNewLayout()){
+    String layout;
+    if (Ode.getUserNewLayout()){
+      layout = "modern";
+      if (Ode.getUserDarkThemeEnabled()){
+        style = Resources.INSTANCE.stylemodernDark();
+      } else{
         style = Resources.INSTANCE.stylemodernDark();
       }
-      else{
+    }
+    else{
+      layout = "classic";
+      if (Ode.getUserDarkThemeEnabled()){
         style = Resources.INSTANCE.styleclassicDark();
-      }
-    }else{
-      if (Ode.getUserNewLayout()){
-        style = Resources.INSTANCE.stylemodernLight();
-      }
-      else{
+      } else{
         style = Resources.INSTANCE.styleclassicLight();
       }
     }
 
     // style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleDark() : Resources.INSTANCE.styleLight();
     style.ensureInjected();
-    FlowPanel mainPanel = uiFactory.createOde(this, Window.Location.getParameter("ui"));
+    FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -1367,13 +1390,13 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use a dark theme, false otherwise
    */
   public static boolean getUserDarkThemeEnabled() {
-    // String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-    //         getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
-    // if (value == null){
-    //   return false;
-    // }
-    // return Boolean.parseBoolean(value);
-    return false;
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    if (value == null){
+      return false;
+    }
+    return Boolean.parseBoolean(value);
+    // return false;
   }
 
   /**
@@ -1382,20 +1405,21 @@ public class Ode implements EntryPoint {
    * @param enabled new value for the user's UI preference
    */
   public static void setUserDarkThemeEnabled(boolean enabled) {
+    Ode.setImageBundle(enabled, Ode.getUserNewLayout());
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
                     "" + enabled);
-    userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the UI preferences to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
+    // userSettings.saveSettings(new Command() {
+    //     @Override
+    //     public void execute() {
+    //       // Reload for the UI preferences to take effect. We
+    //       // do this here because we need to make sure that
+    //       // the user settings were saved before we terminate
+    //       // this browsing session. This is particularly important
+    //       // for Firefox
+    //       Window.Location.reload();
+    //     }
+    //   });
   }
 
   /**
@@ -1404,10 +1428,10 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use the new UI, false otherwise
    */
   public static boolean getUserNewLayout() {
-    // String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-    //         getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
-    // return Boolean.parseBoolean(value);
-    return true;
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    return Boolean.parseBoolean(value);
+    // return true;
   }
 
   /**
@@ -1416,20 +1440,24 @@ public class Ode implements EntryPoint {
    * @param newLayout new value for the user's UI preference
    */
   public static void setUserNewLayout(boolean newLayout) {
+    Ode.setImageBundle(Ode.getUserDarkThemeEnabled(), newLayout);
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
                     "" + newLayout);
+  }
+
+  public static void saveUserDesignSettings(){
     userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the UI preferences to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
+      @Override
+      public void execute() {
+        // Reload for the UI preferences to take effect. We
+        // do this here because we need to make sure that
+        // the user settings were saved before we terminate
+        // this browsing session. This is particularly important
+        // for Firefox
+        Window.Location.reload();
+      }
+    });
   }
 
   /**
@@ -2573,7 +2601,7 @@ public class Ode implements EntryPoint {
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
-
+    
     @Source({
       "com/google/appinventor/client/light.css",
       "com/google/appinventor/client/variableColors.css"
@@ -2587,13 +2615,13 @@ public class Ode implements EntryPoint {
     Style styleclassicDark();
 
     @Source({
-      "com/google/appinventor/client/light.css",
+      "com/google/appinventor/client/style/GSoC/lightModern.css",
       "com/google/appinventor/client/style/GSoC/modern.css"
     })
     Style stylemodernLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css",
+      "com/google/appinventor/client/style/GSoC/darkModern.css",
       "com/google/appinventor/client/style/GSoC/modern.css"
     })
     Style stylemodernDark();

@@ -557,6 +557,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-RadioButton {
+  margin: 4px;
 }
 .gwt-RadioButton-disabled {
   color: #888;

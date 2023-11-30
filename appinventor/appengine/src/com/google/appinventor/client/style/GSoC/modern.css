@@ -48,7 +48,7 @@ they get cut off in Windows.
   body {
     font-family: Roboto, Helvetica, Arial, sans-serif;
     /* TODO(opensource): Change to commented version below once we're ready */
-    background: lightgrey url(../images/squairy_light.png);
+    background: lightgrey background-image;
   }
   
   .dyslexic * {
@@ -2421,12 +2421,12 @@ they get cut off in Windows.
     bottom: 0;
     right: 0;
     position: absolute;
-    background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));
+    /* background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));
     background-image: -webkit-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
     background-image: -moz-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
     background-image: -ms-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-    background-image: -o-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-    background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1));
+    background-image: -o-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));*/
+    background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1)); 
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='#ffffff');
   }
   .gallery-card-content .gallery-subtitle {
