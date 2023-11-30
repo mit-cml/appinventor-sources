@@ -130,9 +130,7 @@ public class Ode implements EntryPoint {
   private static Ode instance;
 
   // Application level image bundle
-  // private static final Images IMAGES = GWT.create(Images.class);
-  private static Images IMAGES = GWT.create(LightNewImages.class);
-  // private static Images IMAGES;
+  private static final Images IMAGES = GWT.create(Images.class);
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -319,21 +317,6 @@ public class Ode implements EntryPoint {
   public static ProjectEditor getCurrentProjectEditor() {
     return instance.editorManager.getOpenProjectEditor(getCurrentProjectID());
   }
-  /**
-   * Sets instance of the aggregate image bundle for the application.
-   *
-   * @return  image bundle
-   */
-  public static void setImageBundle(boolean darkMode, boolean newLayout) {
-    LOG.info("setting image bundle for new layout light");
-    if (!darkMode && newLayout){
-      IMAGES =  GWT.create(LightNewImages.class);
-    }
-    else{
-      IMAGES =  GWT.create(LightClassicImages.class);
-    }
-    LOG.info(" finished setting image bundle for new layout light");
-  }
 
   /**
    * Returns instance of the aggregate image bundle for the application.
@@ -341,10 +324,6 @@ public class Ode implements EntryPoint {
    * @return  image bundle
    */
   public static Images getImageBundle() {
-    // if (!Ode.getUserDarkThemeEnabled() && Ode.getUserNewLayout()){
-    //   IMAGES =  GWT.create(LightNewImages.class);
-    // }
-    LOG.info("getting image bundle");
     return IMAGES;
   }
 
@@ -1405,7 +1384,6 @@ public class Ode implements EntryPoint {
    * @param enabled new value for the user's UI preference
    */
   public static void setUserDarkThemeEnabled(boolean enabled) {
-    Ode.setImageBundle(enabled, Ode.getUserNewLayout());
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
                     "" + enabled);
@@ -1440,7 +1418,6 @@ public class Ode implements EntryPoint {
    * @param newLayout new value for the user's UI preference
    */
   public static void setUserNewLayout(boolean newLayout) {
-    Ode.setImageBundle(Ode.getUserDarkThemeEnabled(), newLayout);
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
                     "" + newLayout);
