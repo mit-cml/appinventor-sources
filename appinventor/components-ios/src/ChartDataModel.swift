@@ -67,7 +67,18 @@ open class ChartDataModel {
   }
 
   func importFromList(_ list: [AnyObject]) {
-
+    for entry in list {
+      var tuple : YailList<AnyObject>?
+      if let entry = entry as? YailList<AnyObject> {
+        tuple = entry
+      } else if let entry = entry as? Array<AnyObject> {
+        tuple = entry as? YailList<AnyObject>
+      }
+      
+      if tuple != nil {
+        addEntryFromTuple(tuple!)
+      }
+    }
   }
 
   func removeValues(_ list: [AnyObject]) {
@@ -89,11 +100,49 @@ open class ChartDataModel {
   }
 
   func importFromColumns(_ columns: YailList<AnyObject>, _ hasHeaders: Bool) {
+    // bet a yaillist of tuples from the specified columns
+    var tuples: YailList<AnyObject> = getTuplesFromColumns(columns, hasHeaders)
+    
+    // use the generated tuple list in the importFromList method to import the data
+    importFromList(tuples as [AnyObject])
 
   }
 
   func getTuplesFromColumns(_ columns: YailList<AnyObject>, _ hasHeaders: Bool) -> YailList<AnyObject> {
-    fatalError("Not implemented yet")
+    // code substituting determineMaximumListSize
+    var entries: Int = 0
+    for row in columns {
+      if let row = row as? Array<AnyObject> {
+        if row.count > entries {
+          entries = row.count
+        }
+      }
+    }
+    // swift code follows java from here
+    var row: Int =  entries
+    var tuples: Array<YailList<AnyObject>> = []
+    for i in stride(from: hasHeaders ? 1 : 0, to: row, by: 1) {
+      var tupleElements: Array<String> = []
+      for j in stride(from: 0, to: columns.count, by: 1) {
+        var value = columns[j]
+        if let value = value as? YailList<AnyObject> {
+          tupleElements.append(getDefaultValue(i - 1))
+          continue
+        }
+        // safe cast value to YailList
+        var column: YailList<AnyObject> = value as! YailList<AnyObject>
+        if column.count > i { // Entry exists in column
+          tupleElements.append("\(column[i+1])") //TODO: SHOULD I DO i+1 like getString() func or not
+        } else if column.count == 0 { // column empty
+          tupleElements.append(getDefaultValue(i - 1))
+        } else { // column too small
+          tupleElements.append("")
+        }
+      }
+      var tuple: YailList<AnyObject> = tupleElements as! YailList<AnyObject>
+      tuples.append(tuple)
+    }
+    return tuples as! YailList<AnyObject>
   }
 
   func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
@@ -136,7 +185,36 @@ open class ChartDataModel {
   }
 
   func isEntryCriterionSatisfied(_ entry: DGCharts.ChartDataEntry, _ criterion: EntryCriterion, value: String) -> Bool {
-    return false
+    var criterionSatisfied: Bool = false
+    switch criterion {
+    case .All:
+      criterionSatisfied = true
+      break
+
+    case .XValue:
+      if let entry = entry as? PieChartDataEntry {
+        var pieEntry : PieChartDataEntry = entry
+        criterionSatisfied = pieEntry.label == value
+      } else {
+        var xValue: Float = Float(value)!
+        var compareValue: Float = Float(entry.x)
+        if let entry = entry as? BarChartDataEntry {
+          compareValue = Float(floor(compareValue))
+        }
+        criterionSatisfied = (compareValue == xValue)
+      }
+      break
+
+    case .YValue:
+      var yValue: Float = Float(value)!
+      criterionSatisfied = (Float(entry.y) == yValue)
+      break
+      
+    default:
+      // should throw IllegalArgumentException
+      print("Unknown criterion \(criterion)")
+    }
+    return criterionSatisfied
   }
 
   func getEntryFromTuple(_ tuple: YailList<AnyObject>) -> DGCharts.ChartDataEntry {
@@ -180,6 +258,7 @@ open class ChartDataModel {
   }
 
   func getDefaultValue(_ index: Int) -> String {
+    // return value which directly corresponds to the index number
     return "\(index)"
   }
 

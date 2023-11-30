@@ -74,12 +74,14 @@ import DGCharts
 
   // MARK: Chart Properties
 
-  @objc open var BackgroundColor: Int32 {
+  // CHANGED THIS FROM INTO TO UICOLOR BC _backgroundColor is a UIColor
+  @objc open var BackgroundColor: UIColor {
     get {
-      return colorToArgb(_backgroundColor)
+      //return colorToArgb(_backgroundColor)
+      return _backgroundColor
     }
     set {
-      _backgroundColor = argbToColor(newValue)
+      //_backgroundColor = argbToColor(newValue)
       _chartView?.backgroundColor = _backgroundColor
     }
   }
@@ -240,6 +242,8 @@ import DGCharts
     for dataComponent in _dataComponents {
       // must implement initChartData() first
     }
+    Description = _description
+    BackgroundColor = _backgroundColor
   }
 
   func addDataComponent(_ dataComponent: ChartDataBase) {

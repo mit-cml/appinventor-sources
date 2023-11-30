@@ -13,8 +13,8 @@ import DGCharts
 
   var _chartDataModel: ChartDataModel?
   var _container: Chart
-  var _color: UIColor
-  var _label: String
+  var _color: UIColor?
+  var _label: String?
 
   
 
@@ -28,18 +28,18 @@ import DGCharts
   
   @objc open var Color: UIColor {
     get {
-      return _color
+      return _color!
     }
     set {
       _color = newValue
-      _chartDataModel?.setColor(_color)
+      _chartDataModel?.setColor(_color!)
      refreshChart()
     }
   }
   
   @objc open var Label: String {
     get {
-      return _label
+      return _label!
     }
     set {
       _label = newValue
