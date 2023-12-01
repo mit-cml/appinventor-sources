@@ -626,7 +626,7 @@
     "Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME": "crida sense resultat",
     "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX": "crida ",
     "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP": "Crida un procediment que retorna un valor.",
-    "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME": "Crida resultat",
+    "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME": "crida resultat",
     "Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE": "arguments",
     "Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE": "argument",
     "Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF": "Destaca procediment",
