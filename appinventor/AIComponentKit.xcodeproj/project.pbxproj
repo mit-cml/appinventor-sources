@@ -111,6 +111,15 @@
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
 		06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BA52A2203E845A00879F00 /* CsvUtilTests.swift */; };
+		06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA42A8BB72800C6C78D /* ASN1.swift */; };
+		06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA52A8BB72800C6C78D /* ServiceAccountTokenProvider.swift */; };
+		06C70BAA2A8BB72800C6C78D /* RSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA62A8BB72800C6C78D /* RSA.swift */; };
+		06C70BAB2A8BB72800C6C78D /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA72A8BB72800C6C78D /* JWT.swift */; };
+		06C70BAE2A8BB73600C6C78D /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BAC2A8BB73500C6C78D /* Token.swift */; };
+		06C70BAF2A8BB73600C6C78D /* TokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BAD2A8BB73600C6C78D /* TokenProvider.swift */; };
+		06C70BB12A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BB02A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift */; };
+		06C70BB42A8BCF9D00C6C78D /* OAuth2CallbackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 06C70BB22A8BCF9D00C6C78D /* OAuth2CallbackHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BB32A8BCF9D00C6C78D /* OAuth2CallbackHelper.m */; };
 		06C8CE962A3B5EFA00C39EBC /* chat.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C8CE932A3B5EFA00C39EBC /* chat.pb.swift */; };
 		06C8CE982A3B5EFA00C39EBC /* ChatBot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C8CE952A3B5EFA00C39EBC /* ChatBot.swift */; };
 		06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C94A381D99D10400341AAE /* EventDispatcher.swift */; };
@@ -359,6 +368,15 @@
 		06B3747E1DC06F6B003888CB /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "Pods/../build/Release-iphoneos/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
 		06B5872B1DC02B190092C9DD /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetManager.swift; sourceTree = "<group>"; };
 		06BA52A2203E845A00879F00 /* CsvUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtilTests.swift; sourceTree = "<group>"; };
+		06C70BA42A8BB72800C6C78D /* ASN1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASN1.swift; sourceTree = "<group>"; };
+		06C70BA52A8BB72800C6C78D /* ServiceAccountTokenProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAccountTokenProvider.swift; sourceTree = "<group>"; };
+		06C70BA62A8BB72800C6C78D /* RSA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSA.swift; sourceTree = "<group>"; };
+		06C70BA72A8BB72800C6C78D /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
+		06C70BAC2A8BB73500C6C78D /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		06C70BAD2A8BB73600C6C78D /* TokenProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenProvider.swift; sourceTree = "<group>"; };
+		06C70BB02A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAccountAuthorizer.swift; sourceTree = "<group>"; };
+		06C70BB22A8BCF9D00C6C78D /* OAuth2CallbackHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OAuth2CallbackHelper.h; sourceTree = "<group>"; };
+		06C70BB32A8BCF9D00C6C78D /* OAuth2CallbackHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OAuth2CallbackHelper.m; sourceTree = "<group>"; };
 		06C8CE932A3B5EFA00C39EBC /* chat.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = chat.pb.swift; sourceTree = "<group>"; };
 		06C8CE952A3B5EFA00C39EBC /* ChatBot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatBot.swift; sourceTree = "<group>"; };
 		06C94A381D99D10400341AAE /* EventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
@@ -612,6 +630,22 @@
 			path = "components-ios/tests";
 			sourceTree = "<group>";
 		};
+		06C70BA32A8BB6A800C6C78D /* GoogleAuth */ = {
+			isa = PBXGroup;
+			children = (
+				06C70BA42A8BB72800C6C78D /* ASN1.swift */,
+				06C70BA72A8BB72800C6C78D /* JWT.swift */,
+				06C70BA62A8BB72800C6C78D /* RSA.swift */,
+				06C70BB02A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift */,
+				06C70BA52A8BB72800C6C78D /* ServiceAccountTokenProvider.swift */,
+				06C70BAC2A8BB73500C6C78D /* Token.swift */,
+				06C70BAD2A8BB73600C6C78D /* TokenProvider.swift */,
+				06C70BB22A8BCF9D00C6C78D /* OAuth2CallbackHelper.h */,
+				06C70BB32A8BCF9D00C6C78D /* OAuth2CallbackHelper.m */,
+			);
+			name = GoogleAuth;
+			sourceTree = "<group>";
+		};
 		06D151911DC4646000FC981E /* ui */ = {
 			isa = PBXGroup;
 			children = (
@@ -715,6 +749,7 @@
 			isa = PBXGroup;
 			children = (
 				0417585120093F24007D2C31 /* Extensions */,
+				06C70BA32A8BB6A800C6C78D /* GoogleAuth */,
 				06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */,
 				06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */,
 				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
@@ -1022,6 +1057,7 @@
 				0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */,
 				06DA9F561D8CFBAB00389B04 /* AIComponentKit-Bridging-Header.h in Headers */,
 				067D1B171D9B398E00A6190E /* RetValManager.h in Headers */,
+				06C70BB42A8BCF9D00C6C78D /* OAuth2CallbackHelper.h in Headers */,
 				06E59EA91D92C7E800C42804 /* NetworkUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1221,13 +1257,17 @@
 				"${BUILT_PRODUCTS_DIR}/Base58Swift/Base58Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
 				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework",
 				"${BUILT_PRODUCTS_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/PSSRedisClient/PSSRedisClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
@@ -1239,13 +1279,17 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Base58Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleAPIClientForREST.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KTVJSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PSSRedisClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
@@ -1263,6 +1307,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */,
+				06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */,
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
 				DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */,
 				0633F362297D0B1400C3C3E9 /* Translator.swift in Sources */,
@@ -1292,6 +1338,7 @@
 				06E59EAF1D92D14F00C42804 /* Sound.swift in Sources */,
 				088CAFD020DABB2E002B1B67 /* Ball.swift in Sources */,
 				06DA9F501D8CFBA200389B04 /* Form.swift in Sources */,
+				06C70BAA2A8BB72800C6C78D /* RSA.swift in Sources */,
 				060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */,
 				0633F360297D0AD700C3C3E9 /* tr.pb.swift in Sources */,
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
@@ -1322,6 +1369,7 @@
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
 				CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */,
 				DE97528D2034808A008CEBB9 /* FusiontablesControl.swift in Sources */,
+				06C70BAF2A8BB73600C6C78D /* TokenProvider.swift in Sources */,
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				DEB9C54E21010F2D0069BAD7 /* Overlays.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
@@ -1332,6 +1380,7 @@
 				06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */,
 				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
+				06C70BAE2A8BB73600C6C78D /* Token.swift in Sources */,
 				0417585520098566007D2C31 /* File.swift in Sources */,
 				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
 				DED1129F20E53D940051DEDC /* FeatureCollection.swift in Sources */,
@@ -1373,6 +1422,7 @@
 				065E429D2866BC5500479153 /* Navigation.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
 				062217F02A37767F00B89562 /* image.pb.swift in Sources */,
+				06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
 				DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */,
 				681D59052A84138A007B5DB5 /* FileScope.swift in Sources */,
@@ -1410,10 +1460,12 @@
 				0680ED591E012A2100732883 /* TableArrangement.swift in Sources */,
 				068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */,
 				06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */,
+				06C70BAB2A8BB72800C6C78D /* JWT.swift in Sources */,
 				086DC63221014C5900FDA182 /* Ev3Motors.swift in Sources */,
 				DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
 				DEA5C6E020E17FDA0083A49B /* Polygon.swift in Sources */,
+				06C70BB12A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift in Sources */,
 				CBC78688202A23F6005363A3 /* MapFeatureContainerBase.swift in Sources */,
 				CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */,
 				06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */,

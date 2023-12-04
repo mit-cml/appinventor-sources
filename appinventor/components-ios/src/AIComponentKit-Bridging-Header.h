@@ -7,5 +7,6 @@
 #import <AIComponentKit/NetworkUtils.h>
 #import <AIComponentKit/AppInvHTTPD.h>
 #import <AIComponentKit/RetValManager.h>
+#import <AIComponentKit/OAuth2CallbackHelper.h>
 #import <ZXingObjC/ZXingObjC.h>
 #import <SchemeKit/YailList.h>
