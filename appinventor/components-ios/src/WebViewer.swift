@@ -153,8 +153,19 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       let assetPath = AssetManager.shared.pathForExistingFileAsset(fileURL.lastPathComponent)
       if !assetPath.isEmpty {
         let assetURL = URL(fileURLWithPath: assetPath)
-        let url2 = NSURL(string: String(queryParameters), relativeTo: assetURL)!
-        _view.load(NSURLRequest(url: url2 as URL) as URLRequest)
+        let url2: NSURL?
+        if queryParameters.isEmpty {
+          url2 = assetURL as NSURL
+        } else {
+          url2 = NSURL(string: "\(assetURL)?\(queryParameters)")
+        }
+        guard let destinationUrl = url2 as? URL else {
+          form?.dispatchErrorOccurredEvent(self, "WebViewer",
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
+          return
+        }
+        _view.loadFileURL(destinationUrl, allowingReadAccessTo: destinationUrl.deletingLastPathComponent())
       } else {
         form?.dispatchErrorOccurredEvent(self, "WebViewer",
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
