@@ -131,9 +131,15 @@ public class PropertiesUtil {
     String componentType = mockComponent.getType();
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
+      String propertyDesc = ComponentsTranslation.getPropertyDescription(property.getName()
+          + "PropertyDescriptions");
+      if (propertyDesc.equals(property.getName() + "PropertyDescriptions")) {
+        propertyDesc = ComponentsTranslation.getPropertyDescription((componentType.equals("Form")
+             ? "Screen" : componentType) + "." + propertyDesc);
+      }
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
-          property.getCategory(), property.getDescription(),
+          ComponentsTranslation.getCategoryName(property.getCategory()), propertyDesc,
           property.getEditorType(), property.getEditorArgs(),
           PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor, property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "

@@ -518,6 +518,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     for (String category : categories) {
       outputCategory(category, sb);
     }
+    outputPropertyCategory("Appearance", sb);
+    outputPropertyCategory("Behavior", sb);
+    outputPropertyCategory("Unspecified", sb);
     sb.append("  return map;\n");
     sb.append("  }\n");
     sb.append("}\n");

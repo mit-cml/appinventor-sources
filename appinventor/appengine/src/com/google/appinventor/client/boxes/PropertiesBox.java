@@ -8,6 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -141,8 +142,7 @@ public final class PropertiesBox extends Box {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-          components.get(0).getType() + ")");
-
+          ComponentsTranslation.getComponentName(components.get(0).getType()) + ")");
     }
   }
 }
