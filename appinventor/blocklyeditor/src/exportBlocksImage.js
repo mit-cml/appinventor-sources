@@ -84,19 +84,12 @@ goog.require('goog.Timer');
     var clone = el.cloneNode(true);
     var width, height;
     if(el.tagName == 'svg') {
-      var box = el.getBoundingClientRect();
-      width = box.width ||
-        parseInt(clone.getAttribute('width') ||
-          clone.style.width ||
-          out$.getComputedStyle(el).getPropertyValue('width'));
-      height = box.height ||
-        parseInt(clone.getAttribute('height') ||
-          clone.style.height ||
-          out$.getComputedStyle(el).getPropertyValue('height'));
       var left = (parseFloat(optmetrics.contentLeft) - parseFloat(optmetrics.viewLeft)).toString();
       var top = (parseFloat(optmetrics.contentTop) - parseFloat(optmetrics.viewTop)).toString();
       var right = (parseFloat(optmetrics.contentWidth)).toString();
       var bottom = (parseFloat(optmetrics.contentHeight)).toString();
+      width = right;
+      height = bottom;
       clone.setAttribute("viewBox", left + " " + top + " " + right + " " + bottom);
     } else {
       var matrix = el.getScreenCTM();
@@ -219,7 +212,7 @@ goog.require('goog.Timer');
  *
  */
 Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
-  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
+  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).getParentSvg(), "blocks.png", metrics);
 }
 
 
