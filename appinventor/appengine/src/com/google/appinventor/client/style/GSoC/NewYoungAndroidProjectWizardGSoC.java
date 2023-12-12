@@ -30,12 +30,12 @@ public class NewYoungAndroidProjectWizardGSoC extends NewYoungAndroidProjectWiza
     super.projectNameTextBox = projectNameTextBox;
   }
 
-  @UiHandler("cancelButton")
+  @Override
   protected void cancelAdd(ClickEvent e) {
     super.cancelAdd(e);
   }
 
-  @UiHandler("addButton")
+  @Override
   protected void addProject(ClickEvent e) {
     super.addProject(e);
   }
