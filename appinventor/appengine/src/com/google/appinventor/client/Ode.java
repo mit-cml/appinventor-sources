@@ -983,7 +983,7 @@ public class Ode implements EntryPoint {
       if (Ode.getUserDarkThemeEnabled()){
         style = Resources.INSTANCE.stylemodernDark();
       } else{
-        style = Resources.INSTANCE.stylemodernDark();
+        style = Resources.INSTANCE.stylemodernLight();
       }
     }
     else{

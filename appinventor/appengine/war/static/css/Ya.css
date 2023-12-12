@@ -110,7 +110,8 @@ div.StatusPanel {
   padding-bottom: 3px;
   font-size: small;
 }
-
+/*  not sure where background come from 
+if specific to layout then add to modern.css here */
 .ode-ContextMenuItem {
   min-width: 50px;
   padding: 4px 12px;
@@ -236,6 +237,16 @@ div.StatusPanel {
   border-radius: 4px;
   height: auto;
   width: 100%;
+}
+
+.ode-ProjectRow {
+  display: flex;
+  align-items: center;
+  grid-gap: 10px;
+  border-bottom: 0;
+  background-color: white;
+  width: 100%;
+  vertical-align: center;
 }
 
 .ode-ProjectRowUnHighlighted {
@@ -588,10 +599,16 @@ div.StatusPanel {
   margin: 0 2px;
 }
 
+.gwt-Tree .gwt-TreeItem span img {
+  height: 20px;
+  width: 20px;
+}
+
 .gwt-Tree .gwt-TreeItem {
   font-size: 12px;
   cursor: default;
   display: block !important;
+  height: 30px;
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
@@ -814,7 +831,7 @@ div.StatusPanel {
   width: auto;
   text-align: center;
   display: inline-block;
-  background-color-space: nowrap;
+  white-space: nowrap;
 
   -o-transition:color .2s ease-out, background-color .2s ease-in;
   -ms-transition:color .2s ease-out, background-color .2s ease-in;
@@ -1557,14 +1574,14 @@ input[type="checkbox"]:focus {
 .uneditable-textarea {
   cursor: not-allowed;
   background-color: #fcfcfc;
-  border-color: border-color;
+  /* border-color: border-color; */
   /* -webkit-box-shadow: inset 0 1px 2px shadow-color;
   -moz-box-shadow: inset 0 1px 2px shadow-color; */
 }
 
 .uneditable-input {
   overflow: hidden;
-  background-color-space: nowrap;
+  white-space: nowrap;
 }
 
 .uneditable-textarea {
@@ -1733,6 +1750,7 @@ input[type="checkbox"]:focus {
 .gallery-app-details .gwt-TabBar .gwt-TabBarItem-selected {
   padding: 5px 5px 5px 0;
 }
+/* left here */
 .gallery .gwt-TabBar .gwt-TabBarItem {
   font-weight: 100;
 }
@@ -1834,7 +1852,8 @@ input[type="checkbox"]:focus {
   padding: 15px 15px 15px 0;
 }
 .gallery-card-content .gallery-title {
-  color: panel-shadow;
+  /* ? */
+  color: panel-shadow; 
   display: block;
   font-size: 14px;
   font-weight: 900;
@@ -1845,7 +1864,7 @@ input[type="checkbox"]:focus {
   overflow: hidden;
   text-decoration: none;
   position: relative;
-  background-color-space: nowrap;
+  white-space: nowrap;
   cursor: auto;
 }
 .gallery-card-content .gallery-title:after {
@@ -1876,7 +1895,7 @@ input[type="checkbox"]:focus {
   overflow: hidden;
   text-decoration: none;
   position: relative;
-  background-color-space: nowrap;
+  white-space: nowrap;
   cursor: auto;
 }
 .gallery-meta {
@@ -2490,4 +2509,8 @@ div.dropdiv p {
 
 .listItem:nth-child(2n + 0) {
   background: rgba(200, 200, 200, 0.1);
+}
+/* for now */
+.ode-ProjectListButton{
+
 }

@@ -21,6 +21,9 @@
 @def container-shadow                   rgba(0,0,0,0.1);
 @def shadow-color                       rgba(0, 0, 0, 0.07);
 @def button-shadow-color                rgba(0, 0, 0, 0.15);
+@def context-menu-color                 #555;
+@def button-text                        #444;
+@def gwt-button-background              #A5CF47;
 
 /* Colors */
     /* orange */
