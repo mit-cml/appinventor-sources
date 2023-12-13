@@ -59,13 +59,13 @@ public class ProjectFolderGSoC extends ProjectFolder {
   }
 
   @SuppressWarnings("unused")
-  @UiHandler("checkBox")
+  @Override
   protected void toggleFolderSelection(ClickEvent e) {
     super.toggleFolderSelection(e);
   }
 
   @SuppressWarnings("unused")
-  @UiHandler("expandButton")
+  @Override
   protected void toggleExpandedState(ClickEvent e) {
     super.toggleExpandedState(e);
   }
