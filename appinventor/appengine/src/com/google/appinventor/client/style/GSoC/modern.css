@@ -69,10 +69,12 @@ they get cut off in Windows.
     padding-left: unset;
   }
   .ode-Box-content {
-    all:unset;
+    /*all:unset;*/
+    background-image: unset;
+    margin: unset;
   }
   .ode-Box-toolkit {
-    all: unset;
+    /*all: unset;*/
   }
   .ode-Box-header {
     /* all: unset; */
@@ -81,7 +83,7 @@ they get cut off in Windows.
   
   .ode-Box-header-caption,
   .ode-Box-header-caption-highlighted {
-    all: unset;
+    /*all: unset;*/
   }
   
   .ode-Box-header-caption {
@@ -225,7 +227,7 @@ they get cut off in Windows.
   }
   
   .ode-ProjectNameLabel {
-    all: unset;
+    /*all: unset;*/
     white-space: nowrap;
     width: max-content;
     height: 40px;
@@ -248,11 +250,12 @@ they get cut off in Windows.
   }
   
   .ode-ProjectTable {
-    all: unset;
+    /*all: unset;*/
     border: 1px solid border-color;
     border-radius: 4px;
     overflow: auto;
     height: auto;
+    width:auto;
   }
   
   .ode-ProjectRowHighlighted {
@@ -260,7 +263,7 @@ they get cut off in Windows.
   }
   
   .ode-ProjectRowUnHighlighted {
-    all: unset;
+    /*all: unset;*/
     display: flex;
     align-items: center;
     height: 30px;
@@ -274,7 +277,7 @@ they get cut off in Windows.
   }
   
   .ode-ProjectHeaderRow {
-    all: unset;
+    /*all: unset;*/
     display: flex;
     align-items: center;
     height: 40px;
@@ -375,11 +378,11 @@ they get cut off in Windows.
   
   
   .ode-TopPanel {
-    all: unset;
+    /*all: unset;*/
     display: grid;
     grid-template-columns: 1fr repeat(6, auto);
     align-items: center;
-    padding: 0 20px 4px;
+    padding: 0;
     border-bottom: 2px solid border-color;
     border-radius: 0 0 6px 6px;
     grid-gap: 5px;
@@ -431,13 +434,14 @@ they get cut off in Windows.
   }
   
   .ode-TopPanelAccount {
-    all: unset;
+    /*all: unset;*/
     flex-direction: row;
     display: flex;
     gap: 4px;
     margin-left: 4px;
-    padding-top: 5px
-  ;
+    padding-top: 5px;
+    font-size: unset;
+    padding-right: unset;
   }
   
   .right-spacer {
@@ -490,7 +494,7 @@ they get cut off in Windows.
   .ode-TopPanelButton,
   .ActionDropDown-Default,
   .ActionDropDown-Options {
-    all: unset;
+    /*all: unset;*/
     background-color: rgba(150, 150, 150, 0.1);
     border-color: transparent;
     border-radius: 4px;
@@ -506,6 +510,7 @@ they get cut off in Windows.
     font-weight: 500;
     font-size: 1.06em;
     white-space: nowrap;
+    height: unset;
   }
   
   .ode-TopPanelButton .html-face {
@@ -636,7 +641,11 @@ they get cut off in Windows.
     padding-left: 15px;
     padding-right: 20px;
   }
-  
+
+  .ya-Toolbar .ode-TextButton {
+    font-size: unset;
+  }
+
   .ya-Toolbar .ya-ProjectName {
     font-family: "Poppins", "Roboto", sans-serif;
     color: tab-bar-color;
@@ -663,7 +672,9 @@ they get cut off in Windows.
     background-color: gwt-button-background;
     border: 1px solid button-text;
     border-radius: 4px;
-  }
+    background-image: unset;
+    text-shadow: unset;
+    box-shadow: 1px 1px;  }
   
   .ode-TextButton-up-disabled,
   .gwt-Button-up-disabled {
@@ -674,10 +685,7 @@ they get cut off in Windows.
   .ode-TextButton:hover,
   .gwt-Button:hover {
     color: #333333;
-    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-    border-color: container-shadow container-shadow rgba(0, 0, 0, 0.25);
-    background-color: #e6e6e6;
-    /* *background-color: #d9d9d9; warning */
+    background-color: #7D9D36;
     transition: background-position 0.1s linear;
   }
   
@@ -706,6 +714,7 @@ they get cut off in Windows.
   
   .ode-PanelButtons .ode-TextButton {
     width: fit-content;
+    font-size: unset;
   }
   
   .ode-BlocksDesignerButton {
@@ -734,7 +743,7 @@ they get cut off in Windows.
   }
   
   /* Palette */
-  
+
   .gwt-StackPanelItem div {
     all: unset;
     position: relative;
@@ -752,6 +761,12 @@ they get cut off in Windows.
   }
   
   /* Overrides for gwt.css */
+
+  .gwt-StackPanel {
+    border-bottom: 1px solid #bbbbbb;
+    border-top: 1px solid #bbbbbb;
+  }
+
   .gwt-StackPanel .gwt-StackPanelContent {
     padding: 0px;
   }
@@ -1063,11 +1078,10 @@ they get cut off in Windows.
   /* End of NoProjectsDialogBox. */
   
   .ode-DialogBox {
-    all: unset;
+    /*all: unset;*/
     border-radius: 10px;
     z-index: 1000;
     background-color: background-color;
-    width: 340px;
     box-shadow: 4px 4px 20px 7px container-shadow;
     overflow: hidden !important;
   }

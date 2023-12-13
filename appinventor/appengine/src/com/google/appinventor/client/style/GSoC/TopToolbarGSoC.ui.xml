@@ -111,6 +111,9 @@
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
                        ui:field="settingsDropDown" align="left" icon="settings"
                        visible="{hasWriteAccess}">
+      <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
+        <actions:UISettingsAction />
+      </ai:DropDownItem>
       <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
         <actions:DisableAutoloadAction />
       </ai:DropDownItem>
