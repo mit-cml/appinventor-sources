@@ -2,9 +2,6 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
-import com.google.appinventor.client.style.GSoC.NewYoungAndroidProjectWizardGSoC;
-import com.google.appinventor.client.style.GSoC.UIFactoryGSoC;
-import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;

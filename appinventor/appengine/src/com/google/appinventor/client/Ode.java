@@ -16,6 +16,7 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
@@ -34,6 +35,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.style.GSoC.ImagesGSoC;
 import com.google.appinventor.client.style.GSoC.UIFactoryGSoC;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
@@ -124,13 +126,12 @@ public class Ode implements EntryPoint {
 
   private static final Logger LOG = Logger.getLogger(Ode.class.getName());
 
-  interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
-
   // Global instance of the Ode object
   private static Ode instance;
 
   // Application level image bundle
-  private static final Images IMAGES = GWT.create(Images.class);
+  private static Images IMAGES = GWT.create(Images.class);
+  public static Boolean UserPreferenceStyle = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -826,7 +827,7 @@ public class Ode implements EntryPoint {
             };
 
             // Initialize UI
-            Boolean UserPreferenceStyle = Ode.getUserNewLayout();
+            UserPreferenceStyle = Ode.getUserNewLayout();
             if (UserPreferenceStyle) {
               GWT.runAsync(new RunAsyncCallback() {
                 @Override
@@ -836,6 +837,8 @@ public class Ode implements EntryPoint {
 
                 @Override
                 public void onSuccess() {
+                  IMAGES = GWT.create(ImagesGSoC.class);
+                  SimpleComponentDescriptor.resetImageBundle();
                   uiFactory = new UIFactoryGSoC();
                   CLog("Using modern UI");
                   initializeUi(after);
@@ -850,6 +853,7 @@ public class Ode implements EntryPoint {
 
                 @Override
                 public void onSuccess() {
+                  SimpleComponentDescriptor.resetImageBundle();
                   uiFactory = new UIStyleFactory();
                   CLog("Using classic UI");
                   initializeUi(after);
