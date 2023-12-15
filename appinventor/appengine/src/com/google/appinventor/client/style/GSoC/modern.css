@@ -627,8 +627,7 @@ they get cut off in Windows.
     background-color: rgba(167, 36, 122, 0.21);
   }
   
-  .gwt-Tree .gwt-TreeItem span:hover,
-  .gwt-Tree .gwt-TreeItem-selected span {
+  .gwt-Tree .gwt-TreeItem span:hover {
     color: rgba(167, 36, 122, 0.21);
   }
   

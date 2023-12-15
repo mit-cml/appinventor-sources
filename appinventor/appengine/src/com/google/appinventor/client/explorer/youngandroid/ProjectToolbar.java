@@ -36,9 +36,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
-//  @UiField(provided=true)
   public final boolean isReadOnly;
-//  @UiField(provided=true)
   public final boolean galleryEnabled;
   @UiField public Label projectLabel;
   @UiField public Label trashLabel;
