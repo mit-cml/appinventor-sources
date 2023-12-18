@@ -180,7 +180,7 @@ if specific to layout then add to modern.css here */
 
 .ode-BoxResizeControl {
   /* Override glass panel to 90% opacity (= 10% transparency) */
-  filter: alpha(opacity = 90) !important; IE
+  filter: alpha(opacity = 90) !important;
   opacity: 0.9 !important; /* non-IE */
   padding: 10px;
 }
@@ -354,10 +354,7 @@ if specific to layout then add to modern.css here */
   padding-right: 4px;
   padding-left: 4px;
   align-items: center;
-  /* background-image: -moz-linear-gradient(top, top-panel-background, top-panel-background );
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(top-panel-background ));
-  background-image: -webkit-linear-gradient(top, top-panel-background, top-panel-background );
-  background-image: -o-linear-gradient(top, top-panel-background, top-panel-background );  */
+  background-color: #f2f2f2;
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='top-panel-end-color', GradientType=0);
   *zoom: 1;
@@ -435,7 +432,7 @@ if specific to layout then add to modern.css here */
   -o-transition:color .2s ease-out, background .2s ease-in;
   -ms-transition:color .2s ease-out, background .2s ease-in;
   -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in; */
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
   /* ...and now override with proper CSS property*/
   transition:color .2s ease-out, background .2s ease-in;
 }
@@ -854,6 +851,7 @@ if specific to layout then add to modern.css here */
   min-width: 150px;
   font-size: small;
   padding: 2px;
+  z-index: 1000;
 }
 
 .ode-ColorChoicePropertyEditor {
@@ -1281,6 +1279,76 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* End of NoProjectsDialogBox. */
+
+/* Start Of ProjectPropertiesDialogBox. */
+.ode-propertyDialogContainer  {
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.ode-projectPropertyCategoryTitlePanel {
+  margin-top: 18px;
+  width: 180px;
+  border-radius: 0px;
+  border: 0px;
+  border-right: 2px solid black;
+  padding-right: 20px;
+  outline: none;
+  overflow: auto;
+}
+
+.ode-propertyDialogPropertiesScrollPanel {
+  height: 400px;
+  width: 600px;
+  padding-bottom: 40px;
+  padding-right: 30px;
+}
+
+.ode-propertyDialogPropertyContainer {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+}
+
+.ode-propertyDialogPropertyTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #413f3f;
+  margin-top: 18px;
+}
+
+.ode-propertyDialogPropertyDescription {
+  font-size: 14px;
+  font-weight: 400;
+  color: #797575;
+  margin-top: 18px;
+}
+
+.ode-propertyDialogPropertyEditor {
+  min-height: 30px;
+  height: 10%;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.ode-projectPropertyCategoryTitlePanel option { 
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.ode-projectPropertyCategoryTitlePanel:focus  { 
+  outline: none;
+}
+
+.ode-propertyDialogVerticalPanel {
+  display: flex;
+  flex-flow: column;
+}
+
+/* End of Project ProjectPropertiesDialogBox. */
 
 .ode-DialogBox {
   z-index: 1000;
@@ -2513,4 +2581,10 @@ div.dropdiv p {
 /* for now */
 .ode-ProjectListButton{
 
+}
+
+.components-tree-filter {
+  margin-top: 1px;
+  margin-left: 1px;
+  font-size: 11px;
 }

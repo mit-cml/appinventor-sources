@@ -208,8 +208,7 @@ There are two servers in App Inventor, the main server that deals with project i
 
 ### Running the main server
 
-    $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh
-            --port=8888 --address=0.0.0.0 appengine/build/war/
+    $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh --port=8888 --address=0.0.0.0 appengine/build/war/
 
 Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard drive you have placed the Google Cloud SDK.
 

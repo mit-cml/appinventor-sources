@@ -23,6 +23,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
@@ -1853,7 +1854,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
-              throw new IOException("FATAL Error, external component in gallery app");
+              throw new GalleryExtensionException();
             }
             if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
               it.remove();

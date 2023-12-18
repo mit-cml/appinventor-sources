@@ -1364,22 +1364,36 @@ Blockly.Blocks.component_set_get = {
     }
 
     componentDb.forEachInstance(function(component) {
+
+      // Filter out all deprecated properties for both get and set
+      var deprecatedProperties = []
+      var allCurrentProperties = componentDb.types_[component.typeName].properties;
+      for (var prop in allCurrentProperties) {
+        if (allCurrentProperties[prop].deprecated) {
+          deprecatedProperties.push(allCurrentProperties[prop].name);
+        }
+      }
+
       var setters = componentDb.getSetterNamesForType(component.typeName),
           getters = componentDb.getGetterNamesForType(component.typeName),
           k;
-      for(k=0;k<setters.length;k++) {
-        pushBlock(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET, 'set', setters[k],
+
+      var filteredSetters = setters.filter(function (prop) { return !deprecatedProperties.includes(prop)})
+      var filteredGetters = getters.filter(function (prop) { return !deprecatedProperties.includes(prop)})
+
+      for(k=0; k<filteredSetters.length; k++) {
+        pushBlock(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET, 'set', filteredSetters[k],
           component.typeName, component.name, false);
       }
-      for(k=0;k<getters.length;k++) {
-        pushBlock('', 'get', getters[k], component.typeName, component.name, false);
+      for(k=0; k<filteredGetters.length; k++) {
+        pushBlock('', 'get', filteredGetters[k], component.typeName, component.name, false);
       }
-      for(k=0;k<setters.length;k++) {
-        pushGenericBlock(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET, 'set', setters[k],
+      for(k=0; k<filteredSetters.length; k++) {
+        pushGenericBlock(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET, 'set', filteredSetters[k],
           component.typeName);
       }
-      for(k=0;k<getters.length;k++) {
-        pushGenericBlock('', 'get', getters[k], component.typeName);
+      for(k=0; k<filteredGetters.length; k++) {
+        pushGenericBlock('', 'get', filteredGetters[k], component.typeName);
       }
     });
 

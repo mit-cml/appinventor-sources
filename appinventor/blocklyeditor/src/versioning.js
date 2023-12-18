@@ -2413,7 +2413,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
     // AI2:
     // - Added ...
-    6: "noUpgrade"
+    6: "noUpgrade",
+    // AI2:
+    // - Added RemoveItemAtList method
+    7: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -3010,7 +3013,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 30:
     // - DefaultFileScope designer property was added
-    30: "noUpgrade"
+    30: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 31:
+    // - The default theme was changed in the designer. No block changes required.
+    31: "noUpgrade"
 
   }, // End Screen
 
@@ -3386,7 +3393,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added ResponseTextEncoding property
+    9: "noUpgrade"
 
   }, // End Web upgraders
 

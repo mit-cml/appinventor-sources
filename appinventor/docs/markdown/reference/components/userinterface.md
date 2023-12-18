@@ -787,6 +787,9 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.Refresh" class="method"} <i/> Refresh()
 : Reload the ListView to reflect any changes in the data.
 
+{:id="ListView.RemoveItemAtIndex" class="method"} <i/> RemoveItemAtIndex(*index*{:.number})
+: Removes Item from list at a given index
+
 ## Notifier  {#Notifier}
 
 The Notifier component displays alert messages and creates Android log entries through
@@ -1511,7 +1514,7 @@ Users enter text in a text box component.
  [`Text`](#TextBox.Text) property.
 
 {:id="TextBox.ReadOnly" .boolean} *ReadOnly*
-: Whether the TextBox is read-only. By default, this is `true`{:.logic.block}.
+: Whether the TextBox is read-only. By default, this is `false`{:.logic.block}.
 
 {:id="TextBox.Text" .text} *Text*
 : The text in the `TextBox`, which can be set by the programmer in the Designer or Blocks Editor,

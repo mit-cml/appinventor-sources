@@ -5,7 +5,34 @@
 
 import Foundation
 
+/**
+ * Creates a `DateFormatter` object for the given `str`.
+ *
+ * @param str The date format string
+ * @returns A new DateFormatter object configured with the given string
+ */
+fileprivate func makeFormat(_ str: String) -> DateFormatter {
+  let date = DateFormatter()
+  date.dateFormat = str
+  return date
+}
+
 open class Clock: NonvisibleComponent, LifecycleDelegate {
+  /**
+   * The list of valid date formatters for processing strings into dates.
+   */
+  private static let DATE_FORMATTERS = [
+    makeFormat("MM/dd/yyyy hh:mm:ss a"),
+    makeFormat("MM/dd/yyyy HH:mm:ss"),
+    makeFormat("MM/dd/yyyy hh:mm a"),
+    makeFormat("MM/dd/yyyy HH:mm"),
+    makeFormat("MM/dd/yyyy"),
+    makeFormat("hh:mm:ss a"),
+    makeFormat("HH:mm:ss"),
+    makeFormat("hh:mm a"),
+    makeFormat("HH:mm")
+  ]
+
   fileprivate var _timer: Timer?
   fileprivate var _interval: Int32 = 1000
   fileprivate var _enabled = false
@@ -64,17 +91,17 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func MakeInstant(_ from: String) throws -> Date {
-    guard let components = dateParser(from) else {
+    guard let date = dateParser(from) else {
       _form?.dispatchErrorOccurredEvent(self, "MakeInstant",
           ErrorMessage.ERROR_ILLEGAL_DATE.code,
           ErrorMessage.ERROR_ILLEGAL_DATE.message)
       throw YailRuntimeError("Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm", "Sorry to be so picky.")
     }
     
-    return _calendar.date(from: components)!
+    return date
   }
   
-  @objc public static func MakeInstantFromMillis(_ millis: Int64) -> Date {
+  @objc public func MakeInstantFromMillis(_ millis: Int64) -> Date {
     return Date(timeIntervalSince1970: TimeInterval(Double(millis) / 1000.0))
   }
 
@@ -252,23 +279,13 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
     return dateFormatter.string(from: instant)
   }
   
-  private func dateParser(_ from: String) -> DateComponents? {
-    let dayTimeFormat = DateFormatter()
-    dayTimeFormat.dateFormat = "MM/dd/yyyy hh:mm:ss"
-    let dayFormat = DateFormatter()
-    dayFormat.dateFormat = "MM/dd/yyyy"
-    let timeFormat = DateFormatter()
-    timeFormat.dateFormat = "hh:mm"
-    
-    if let date = dayTimeFormat.date(from: from) {
-      return _calendar.dateComponents([.month, .day, .year, .hour, .minute, .second], from: date)
-    } else if let date = dayFormat.date(from: from) {
-      return _calendar.dateComponents([.month, .day, .year], from: date)
-    } else if let date = timeFormat.date(from: from) {
-      return _calendar.dateComponents([.hour, .minute], from: date)
-    } else {
-      return nil
+  private func dateParser(_ from: String) -> Date? {
+    for format in Clock.DATE_FORMATTERS {
+      if let date = format.date(from: from) {
+        return date
+      }
     }
+    return nil
   }
   
   // MARK: Clock Events

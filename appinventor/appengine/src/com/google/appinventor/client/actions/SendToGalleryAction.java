@@ -25,36 +25,53 @@ public class SendToGalleryAction implements Command {
 
   @Override
   public void execute() {
+    if (lockPublishButton) {
+      return;                   // De-bounce the publish button
+    }
     if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() != 1) {
         ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
-      } else {
-        if (!lockPublishButton) {
-          lockPublishButton = true;
-          Project project = selectedProjects.get(0);
-          Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
-              new OdeAsyncCallback<RpcResult>(
-                  MESSAGES.GallerySendingError()) {
-                @Override
-                public void onSuccess(RpcResult result) {
-                  lockPublishButton = false;
-                  if (result.getResult() == RpcResult.SUCCESS) {
-                    Window.open(result.getOutput(), "_blank", "");
-                  } else {
-                    ErrorReporter.reportError(result.getError());
-                  }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                  lockPublishButton = false;
-                  super.onFailure(t);
-                }
-              });
-        }
+        lockPublishButton = false;
+        return;
       }
+      Project project = selectedProjects.get(0);
+      sendToGallery(project);
+    } else {
+      if (Ode.getInstance().getCurrentYoungAndroidProjectRootNode().hasExtensions()) {
+        ErrorReporter.reportError(MESSAGES.HasExtensionError());
+        lockPublishButton = false;
+        return;
+      }
+      Project project = Ode.getCurrentProject();
+      sendToGallery(project);
     }
   }
+
+  private void sendToGallery(Project project) {
+    lockPublishButton = true;
+    Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
+      new OdeAsyncCallback<RpcResult>(
+        MESSAGES.GallerySendingError()) {
+        @Override
+        public void onSuccess(RpcResult result) {
+          lockPublishButton = false;
+          if (result.getResult() == RpcResult.SUCCESS) {
+            Window.open(result.getOutput(), "_blank", "");
+          } else if (result.getResult() == RpcResult.GALLERY_HAS_EXTENSION) {
+            ErrorReporter.reportError(MESSAGES.HasExtensionError());
+          } else {
+            ErrorReporter.reportError(result.getError());
+          }
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+          lockPublishButton = false;
+          super.onFailure(t);
+        }
+      });
+  }
+
 }

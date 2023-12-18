@@ -167,6 +167,16 @@ public class ReplForm extends Form {
   }
 
   @Override
+  protected void defaultPropertyValues() {
+    super.defaultPropertyValues();
+    // Previously this was set in the {@link Form#defaultPropertyValues()}. However, in compiled
+    // apps we do not want to reset the theme since it is provided in the AndroidManifest.xml.
+    // In the companion though we do want to reset the theme in case we are switching from a project
+    // with a different theme than the default one to one that uses the default.
+    Theme(ComponentConstants.DEFAULT_THEME);
+  }
+
+  @Override
   protected void onResume() {
     super.onResume();
   }

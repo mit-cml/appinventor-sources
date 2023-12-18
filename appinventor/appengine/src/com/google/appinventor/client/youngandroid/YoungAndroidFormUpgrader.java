@@ -1183,6 +1183,20 @@ public final class YoungAndroidFormUpgrader {
       // The DefaultFileScope property was added.
       srcCompVersion = 30;
     }
+    if (srcCompVersion < 31) {
+      // The default theme was switched to DeviceDefault
+      if (componentProperties.containsKey("Theme")) {
+        String value = ((ClientJsonString)componentProperties.get("Theme")).getString();
+        if (value.equals("AppTheme.Light.DarkActionBar")) {
+          // AppTheme.Light.DarkActionBar is now the default theme, so we can remove it
+          componentProperties.remove("Theme");
+        }
+      } else {
+        // Previously, projects were Classic by default, so we need to reflect this.
+        componentProperties.put("Theme", new ClientJsonString("Classic"));
+      }
+      srcCompVersion = 31;
+    }
 
     return srcCompVersion;
   }
@@ -1429,6 +1443,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // Added ...
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Added RemoveItemAtIndex method
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1881,6 +1899,11 @@ public final class YoungAndroidFormUpgrader {
       // The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
       // No properties need to be modified to upgrade to version 8.
       srcCompVersion = 8;
+    }
+    if (srcCompVersion < 9) {
+      // The ResponseTextEncoding property was added.
+      // Properties related to this component have now been upgraded to version 9
+      srcCompVersion = 9;
     }
     return srcCompVersion;
   }

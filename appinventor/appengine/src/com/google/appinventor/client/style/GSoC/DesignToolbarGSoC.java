@@ -20,6 +20,8 @@ public class DesignToolbarGSoC extends DesignToolbar {
   @UiField protected ToolbarItem removeFormItem;
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
+  @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem projectPropertiesDialog;
 
 
   @Override

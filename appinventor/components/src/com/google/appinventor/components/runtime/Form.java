@@ -415,7 +415,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-  private void defaultPropertyValues() {
+  protected void defaultPropertyValues() {
     if (isRepl()) {
       ActionBar(actionBarEnabled);
     } else {
@@ -437,7 +437,6 @@ public class Form extends AppInventorCompatActivity
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
-    Theme(ComponentConstants.DEFAULT_THEME);
     BackgroundColor(Component.COLOR_DEFAULT);
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
@@ -1373,7 +1372,7 @@ public class Form extends AppInventorCompatActivity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE,
       defaultValue = "App")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  @SimpleProperty(category = PropertyCategory.GENERAL, userVisible = false)
   public void DefaultFileScope(FileScope scope) {
     this.defaultFileScope = scope;
   }
@@ -1851,7 +1850,7 @@ public class Form extends AppInventorCompatActivity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
-  @SimpleProperty(userVisible = false, category = PropertyCategory.APPLICATION)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.GENERAL)
   public void Icon(String name) {
     // We don't actually need to do anything.
   }
@@ -1867,7 +1866,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false,
     description = "An integer value which must be incremented each time a new Android "
     +  "Application Package File (APK) is created for the Google Play Store.",
-    category = PropertyCategory.APPLICATION)
+    category = PropertyCategory.PUBLISHING)
   public void VersionCode(int vCode) {
     // We don't actually need to do anything.
   }
@@ -1883,7 +1882,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false,
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.",
-    category = PropertyCategory.APPLICATION)
+    category = PropertyCategory.PUBLISHING)
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
@@ -1905,7 +1904,7 @@ public class Form extends AppInventorCompatActivity
           "If set to responsive, screen layouts will use the actual resolution of the device.  " +
           "See the documentation on responsive design in App Inventor for more information. " +
           "This property appears on Screen1 only and controls the sizing for all screens in the app.",
-      category = PropertyCategory.APPLICATION)
+      category = PropertyCategory.GENERAL)
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
@@ -1942,7 +1941,7 @@ public class Form extends AppInventorCompatActivity
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
     defaultValue = "True", alwaysSend = true)
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
+  @SimpleProperty(category = PropertyCategory.GENERAL, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
     description = "If false, lists will be converted to strings using Lisp "
       + "notation, i.e., as symbols separated by spaces, e.g., (a 1 b2 (c "
@@ -1967,7 +1966,7 @@ public class Form extends AppInventorCompatActivity
    *   **Note:** This property appears only in Screen1 and the value for Screen1 determines the
    * behavior for all screens in the app.
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  @SimpleProperty(category = PropertyCategory.GENERAL, userVisible = false)
   public boolean ShowListsAsJson() {
     return showListsAsJson;
   }
@@ -1983,7 +1982,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false,
       description = "This is the display name of the installed application in the phone." +
           "If the AppName is blank, it will be set to the name of the project when the project is built.",
-      category = PropertyCategory.APPLICATION)
+      category = PropertyCategory.GENERAL)
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1991,7 +1990,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
   @SimpleProperty(userVisible = false, description = "This is the primary color used for " +
-      "Material UI elements, such as the ActionBar.", category = PropertyCategory.APPEARANCE)
+      "Material UI elements, such as the ActionBar.", category = PropertyCategory.THEMING)
   public void PrimaryColor(final int color) {
     setPrimaryColor(color);
   }
@@ -2009,7 +2008,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR)
   @SimpleProperty(userVisible = false, description = "This is the primary color used for darker " +
-      "elements in Material UI.", category = PropertyCategory.APPEARANCE)
+      "elements in Material UI.", category = PropertyCategory.THEMING)
   public void PrimaryColorDark(int color) {
     primaryColorDark = color;
   }
@@ -2027,7 +2026,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = ComponentConstants.DEFAULT_ACCENT_COLOR)
   @SimpleProperty(userVisible = false, description = "This is the accent color used for " +
-      "highlights and other user interface accents.", category = PropertyCategory.APPEARANCE)
+      "highlights and other user interface accents.", category = PropertyCategory.THEMING)
   public void AccentColor(int color) {
     accentColor = color;
   }
@@ -2057,13 +2056,8 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
       defaultValue = ComponentConstants.DEFAULT_THEME)
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.",
-      category = PropertyCategory.APPLICATION)
+      category = PropertyCategory.THEMING)
   public void Theme(String theme) {
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
-      backgroundColor = Component.COLOR_WHITE;
-      setBackground(frameLayout);
-      return;  // Only "Classic" is supported below SDK 11 due to minSDK in AppCompat
-    }
     if (usesDefaultBackground) {
       if (theme.equalsIgnoreCase("AppTheme") && !isClassicMode()) {
         backgroundColor = Component.COLOR_BLACK;
@@ -2120,7 +2114,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false,
     description = "A URL to use to populate the Tutorial Sidebar while "
     + "editing a project. Used as a teaching aid.",
-    category = PropertyCategory.APPLICATION)
+    category = PropertyCategory.GENERAL)
   public void TutorialURL(String url) {
     // We don't actually do anything This property is stored in the
     // project properties file
@@ -2132,7 +2126,7 @@ public class Form extends AppInventorCompatActivity
     description = "A JSON string representing the subset for the screen. Authors of template apps "
       + "can use this to control what components, designer properties, and blocks are available "
       + "in the project.",
-    category = PropertyCategory.APPLICATION)
+    category = PropertyCategory.GENERAL)
   public void BlocksToolkit(String json) {
     // We don't actually do anything. This property is stored in the
     // project properties file

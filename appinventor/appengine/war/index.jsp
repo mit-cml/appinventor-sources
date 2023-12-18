@@ -13,7 +13,9 @@
         }
      return;
    }
-   response.setHeader("Strict-Transport-Security", "max-age=3600");
+   if (AppInventorFeatures.enableHttpRedirect()) {
+       response.setHeader("Strict-Transport-Security", "max-age=3600");
+   }
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
 <!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->

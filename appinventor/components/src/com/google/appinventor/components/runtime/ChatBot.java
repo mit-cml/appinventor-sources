@@ -256,6 +256,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     HttpsURLConnection connection = null;
     ensureSslSockFactory();
     String iToken;
+    int responseCode = -1;   // A reasonable default
     try {
       Log.d(LOG_TAG, "performRequest: apiKey = " + apiKey);
       if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
@@ -289,7 +290,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
           connection.setRequestMethod("POST");
           connection.setDoOutput(true);
           request.writeTo(connection.getOutputStream());
-          final int responseCode = connection.getResponseCode();
+          responseCode = connection.getResponseCode();
           ChatBotToken.response response = ChatBotToken.response.parseFrom(connection.getInputStream());
           String returnText;
           if (responseCode == 200) {
@@ -297,7 +298,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
             this.uuid = response.getUuid();
             GotResponse(returnText);
           } else {
-            returnText = getResponseContent(connection, false);
+            returnText = getResponseContent(connection, true);
             ErrorOccurred(responseCode, returnText);
           }
         } finally {
@@ -313,9 +314,9 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         } catch  (IOException ee) {
           returnText = "Error Fetching from ChatBot";
         }
-        ErrorOccurred(404, returnText);
+        ErrorOccurred(responseCode, returnText);
       } else {
-        ErrorOccurred(400, "Error talking to ChatBot proxy");
+        ErrorOccurred(responseCode, "Error talking to ChatBot proxy");
       }
     }
   }

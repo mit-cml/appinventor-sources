@@ -25,6 +25,7 @@ let kMinimumToastWait = 10.0
   fileprivate var _aboutScreen: String?
   fileprivate var _appName: String?
   fileprivate var _accentColor: Int32 = Int32(bitPattern: 0xFFFF4081)
+  fileprivate var _defaultFileScope = FileScope.App
   fileprivate var _primaryColor: Int32 = Int32(bitPattern: 0xFF3F51B5)
   fileprivate var _primaryColorDark: Int32 = Int32(bitPattern: 0xFF303F9F)
   fileprivate var _scrollable = false
@@ -167,6 +168,10 @@ let kMinimumToastWait = 10.0
     view.accessibilityIdentifier = String(describing: type(of: self))
   }
 
+  open func add(_ component: NonvisibleComponent) {
+    _components.append(component)
+  }
+
   open func add(_ component: ViewComponent) {
     _components.append(component)
     _linearView.addItem(LinearViewItem(component.view))
@@ -258,6 +263,7 @@ let kMinimumToastWait = 10.0
     for subview in subviews {
       subview.removeFromSuperview()
     }
+    _linearView.resetView()
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
@@ -462,9 +468,16 @@ let kMinimumToastWait = 10.0
       return _backgroundImage
     }
     set(path) {
-      if let image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
-        _linearView.backgroundColor = UIColor(patternImage: image)
+      if path == _backgroundImage {
+        // Already using this image
+        return
+      } else if path != "", let image = AssetManager.shared.imageFromPath(path: path) {
+        _linearView.image = image
         _backgroundImage = path
+      } else {
+        _backgroundImage = ""
+        _linearView.image = nil
+        _linearView.backgroundColor = argbToColor(_backgroundColor)
       }
     }
   }
@@ -496,7 +509,16 @@ let kMinimumToastWait = 10.0
       
     }
   }
-  
+
+  @objc open var DefaultFileScope: FileScope {
+    get {
+      return _defaultFileScope
+    }
+    set {
+      _defaultFileScope = newValue
+    }
+  }
+
   @objc open var DeviceDensity: Float {
     get {
       return deviceDensity
