@@ -33,5 +33,6 @@ public class DesignToolbarGSoC extends DesignToolbar {
     super.removeFormItem = removeFormItem;
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
+    super.sendToGalleryItem = sendToGalleryItem;
   }
 }

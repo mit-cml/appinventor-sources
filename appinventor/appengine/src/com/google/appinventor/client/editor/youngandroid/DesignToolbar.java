@@ -141,7 +141,6 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
-  @UiField protected ToolbarItem projectPropertiesDialog;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
