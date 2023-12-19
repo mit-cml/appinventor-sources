@@ -11,7 +11,7 @@
  */
 
 import Foundation
-import AVKit
+import AVFoundation
 
 private let kMaxPlayDelayRetries: Int32 = 10
 private let kPlayDelayLength = TimeInterval(0.050)
@@ -30,14 +30,13 @@ enum PlayerState {
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-open class Player: NonvisibleComponent, LifecycleDelegate {
+open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate {
   fileprivate var _sourcePath: String = ""
-  private var _player: AVPlayer? = nil
+  private var _player: AVAudioPlayer? = nil
   fileprivate var _loop: Bool = false
   fileprivate var _playOnlyInForeground: Bool = false
   fileprivate var _wasPlaying = false
   private var state = PlayerState.Initial
-  private var observer: NSObjectProtocol? = nil
   private var pendingPlay = false
   private var context = 0
 
@@ -54,10 +53,8 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
     set(path) {
       _sourcePath = path
       state = .Initial
-      if let player = _player, let observer = observer {
-        NotificationCenter.default.removeObserver(observer, name: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem)
-        self.observer = nil
+      if let player = _player {
+        player.delegate = nil
       }
       guard !path.isEmpty else {
         _player?.pause()
@@ -83,9 +80,17 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
         }
         resourceUrl = URL(fileURLWithPath: path)
       }
-      let player = AVPlayer(url: resourceUrl)
-      _player = player
-      player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.new], context: &self.context)
+      do {
+        let player = try AVAudioPlayer(contentsOf: resourceUrl)
+        player.numberOfLoops = Loop ? -1 : 0
+        if player.prepareToPlay() {
+          state = .Prepared
+        }
+        player.delegate = self
+        _player = player
+      } catch {
+        print("Foo: \(error)")
+      }
     }
   }
 
@@ -100,12 +105,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
 
   @objc open var IsPlaying: Bool {
     get {
-      if #available(iOS 10.0, *) {
-        return _player?.timeControlStatus == AVPlayer.TimeControlStatus.playing
-      } else {
-        // Fallback on earlier versions
-        return _wasPlaying
-      }
+      return _player?.isPlaying ?? false
     }
   }
 
@@ -144,9 +144,9 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
       return
     }
     guard state == .Prepared || state == .PausedByUser || state == .PausedByEvent else {
-      if let error = player.error {
+      if state == .Error {
         state = .Error
-        print("Unable to prepare to play audio: \(error)")
+        print("Unable to prepare to play audio")
         _form?.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA,
             _sourcePath)
       } else {
@@ -161,24 +161,6 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
     }
     pendingPlay = false
     _wasPlaying = true
-    // If there is an existing observer, we need to clear it out first
-    if let observer = observer {
-      NotificationCenter.default.removeObserver(observer, name: .AVPlayerItemDidPlayToEndTime,
-          object: player.currentItem)
-    }
-    // Register the new observer to handle post-playback functionality
-    observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-        object: player.currentItem, queue: .main) { [weak self] _ in
-      self?.Completed()
-      if self?._loop == true {
-        self?._player?.seek(to: CMTime.zero)
-        self?._player?.play()
-      } else {
-        self?._wasPlaying = false
-        self?._player?.seek(to: CMTime.zero)
-        self?.state = .Prepared
-      }
-    }
     player.play()
     state = .Playing
   }
@@ -203,7 +185,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
       return
     }
     player.pause()
-    player.seek(to: CMTime.zero)
+    player.currentTime = 0
     _wasPlaying = false
     state = .PausedByUser
   }
@@ -294,5 +276,24 @@ open class Player: NonvisibleComponent, LifecycleDelegate {
     player.pause()
     state = .PausedByEvent
     _player = nil
+  }
+
+  // MARK: AVAudioPlayerDelegate
+
+  public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    state = .Prepared
+    DispatchQueue.main.async {
+      self.Completed()
+    }
+  }
+
+  public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+    guard let error = error else {
+      return
+    }
+    self.state = .Error
+    DispatchQueue.main.async {
+      self.PlayerError("\(error)")
+    }
   }
 }
