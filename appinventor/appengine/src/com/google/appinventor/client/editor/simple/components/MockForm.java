@@ -427,7 +427,7 @@ public final class MockForm extends MockContainer {
     responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
-    phoneBar = new PhoneBar();
+    changePreview();
     responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
     responsivePanel.add(titleBar);
@@ -495,6 +495,7 @@ public final class MockForm extends MockContainer {
 
     idxPhonePreviewStyle = idx;
     changePreviewFlag = true;
+    changePreview();
     setPhoneStyle();
     updateScreenSize();
   }
@@ -1021,9 +1022,9 @@ public final class MockForm extends MockContainer {
     }
     if (theme.equals("AppTheme")) {
       blackIcons = false;
-      formWidget.addStyleDependentName("Dark");
+      formWidget.setStylePrimaryName("ode-SimpleMockFormDark");
     } else {
-      formWidget.removeStyleDependentName("Dark");
+      formWidget.setStylePrimaryName("ode-SimpleMockForm");
     }
 
     // Resetting the MockForm with new preview styles
