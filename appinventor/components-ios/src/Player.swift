@@ -39,6 +39,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
   private var state = PlayerState.Initial
   private var pendingPlay = false
   private var context = 0
+  private var _userVolume: Int32 = 50
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -82,12 +83,13 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       }
       do {
         let player = try AVAudioPlayer(contentsOf: resourceUrl)
+        _player = player
         player.numberOfLoops = Loop ? -1 : 0
+        player.volume = Float(_userVolume) / 100.0
+        player.delegate = self
         if player.prepareToPlay() {
           state = .Prepared
         }
-        player.delegate = self
-        _player = player
       } catch {
         print("Foo: \(error)")
       }
@@ -100,6 +102,9 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
     }
     set(shouldLoop) {
       _loop = shouldLoop
+      if let player = _player {
+        player.numberOfLoops = shouldLoop ? -1 : 0
+      }
     }
   }
 
@@ -123,7 +128,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       if let fVolume = _player?.volume {
         return Int32(fVolume * 100.0)
       } else {
-        return 0
+        return _userVolume
       }
     }
     set(vol) {
@@ -133,6 +138,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       } else if (vol > 100) {
         vol = 100
       }
+      _userVolume = vol
       _player?.volume = Float(vol) / 100.0
     }
   }
@@ -154,11 +160,10 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       }
       return
     }
-    if #available(iOS 10.0, *) {
-      // We need to switch the audiosession to playback mode in case the phone is in silent mode
-      // Otherwise, no sound will play.
-      try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-    }
+    // We need to switch the audiosession to playback mode in case the phone is in silent mode
+    // Otherwise, no sound will play.
+    try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+    try? AVAudioSession.sharedInstance().setActive(true)
     pendingPlay = false
     _wasPlaying = true
     player.play()
