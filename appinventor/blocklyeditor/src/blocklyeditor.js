@@ -293,6 +293,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
       blockDragger: top.MultiselectBlockDragger,
+      metricsManager: top.ScrollMetricsManager,
     },
     baseBlockDragger: top.ScrollBlockDragger,
     useDoubleClick: true,
@@ -312,6 +313,8 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   multiselectPlugin.init(options);
   var lexicalVariablesPlugin = top.LexicalVariablesPlugin;
   lexicalVariablesPlugin.init(workspace);
+  var searchPlugin = new top.WorkspaceSearch(workspace);
+  searchPlugin.init();
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
