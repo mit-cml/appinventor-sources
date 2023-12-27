@@ -413,13 +413,10 @@
 ;; Commented out -- we only send reports from the setting menu choice
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
-             (when ((this):toastAllowed)
-                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
-                     (send-error message)
-                     ((android.widget.Toast:makeText (this) message 5):show)))
-
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
+              (this):toastAllowed
+              (this):toastAllowed
               (ex:getMessage)
               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
               "End Application")))
