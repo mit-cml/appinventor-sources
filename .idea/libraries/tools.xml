@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="tools">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/dx.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/ddmlib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/apksigner.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/layoutlib-api-24.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/ddmlib_2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/bundletool-all-1.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/sdklib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/common-24.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/builder-model-1.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/sdk-common-24.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/tools/builder-1.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

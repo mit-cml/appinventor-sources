@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/appinventor/aimerger/aimerger.iml" filepath="$PROJECT_DIR$/appinventor/aimerger/aimerger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/aimerger_for_appinv_classic/aimerger_for_appinv_classic.iml" filepath="$PROJECT_DIR$/appinventor/aimerger_for_appinv_classic/aimerger_for_appinv_classic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/appengine/appengine.iml" filepath="$PROJECT_DIR$/appinventor/appengine/appengine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/appinventor-sources.iml" filepath="$PROJECT_DIR$/.idea/appinventor-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/blocklyeditor/blocklyeditor.iml" filepath="$PROJECT_DIR$/appinventor/blocklyeditor/blocklyeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/buildserver/buildserver.iml" filepath="$PROJECT_DIR$/appinventor/buildserver/buildserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/common/common.iml" filepath="$PROJECT_DIR$/appinventor/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/components/components.iml" filepath="$PROJECT_DIR$/appinventor/components/components.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appinventor/misc/misc.iml" filepath="$PROJECT_DIR$/appinventor/misc/misc.iml" />
+    </modules>
+  </component>
+</project>

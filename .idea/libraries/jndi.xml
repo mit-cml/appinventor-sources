@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="jndi">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-util-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-all-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-xml-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-commons-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-analysis-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-tree-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-debug-all-5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

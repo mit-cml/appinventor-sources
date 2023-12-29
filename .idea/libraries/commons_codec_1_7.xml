@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="commons-codec-1.7">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/commons-codec/commons-codec-1.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

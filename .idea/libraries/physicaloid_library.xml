@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="physicaloid-library">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/physicaloid/physicaloid-library.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="jsp2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-el-api-8.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-spec-1.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-annotations-api-8.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/xalan.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-el-8.0.9.M3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-9.2.10.v20150310.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-8.0.9.M3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-impl-1.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/ecj-4.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-jsp-api-8.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/serializer.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-jstlel-1.2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

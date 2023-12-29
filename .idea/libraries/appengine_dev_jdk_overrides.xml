@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="appengine-dev-jdk-overrides">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/override/appengine-dev-jdk-overrides.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="robolectric-3.3.2-all-deps">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/robolectric/robolectric-3.3.2-all-deps.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

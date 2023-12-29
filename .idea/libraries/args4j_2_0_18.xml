@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="args4j-2.0.18">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/args4j/args4j-2.0.18.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

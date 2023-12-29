@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="appengine-local-endpoints">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/appengine-local-endpoints/v1/appengine-local-endpoints.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

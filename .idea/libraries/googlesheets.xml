@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="googlesheets">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/opencensus-contrib-http-util-0.26.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/jetty-6.1.26.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/opencensus-api-0.26.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/googlesheets.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/jetty-util-6.1.26.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/googlesheets/grpc-context-1.29.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

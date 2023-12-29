@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="objectify-3.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/objectify-3.1/objectify-3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

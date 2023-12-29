@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="customtinywebdb1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/docs/html/reference/other/tinywebdbassets/customtinywebdb.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
