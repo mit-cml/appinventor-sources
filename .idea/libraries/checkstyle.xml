@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="checkstyle">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/checkstyle/appinventor-checks.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/checkstyle/checkstyle.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

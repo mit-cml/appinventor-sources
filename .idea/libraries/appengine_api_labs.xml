@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="appengine-api-labs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

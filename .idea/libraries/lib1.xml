@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="lib1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jersey-multipart-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/wadl-cmdline.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jaxb-xjc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/localizer.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jaxb-impl-2.1.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jdom-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/http-20070405.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/activation-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/wadl-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/asm-3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/wadl2java.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jackson-core-asl-1.9.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/mail-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/grizzly-servlet-webserver-1.9.18-i.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/FastInfoset-1.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jettison-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/rome-0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jersey-bundle-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/stax-api-1.0-2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jsr311-api-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/buildserver/lib/jaxb-api-2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

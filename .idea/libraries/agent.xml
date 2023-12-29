@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="agent">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agentimpl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agent.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

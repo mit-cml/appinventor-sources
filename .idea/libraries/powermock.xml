@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="powermock">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/javassist-3.18.0-GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/easymock-3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/objenesis-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/cglib-nodep-2.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

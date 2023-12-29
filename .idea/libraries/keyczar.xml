@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="keyczar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/keyczar/keyczar-0.66-080111-java-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/keyczar/KeyczarTool.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

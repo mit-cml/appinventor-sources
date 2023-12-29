@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ecj-4.5.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/ecj/ecj-4.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

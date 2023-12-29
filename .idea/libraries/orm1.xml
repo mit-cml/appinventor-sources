@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="orm1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-enhancer-1.1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/jdo2-api-2.3-eb.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-core-1.1.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-jpa-1.1.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/asm-5.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

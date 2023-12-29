@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="osmdroid-5.6.6">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/osmdroid/osmdroid-5.6.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

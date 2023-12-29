@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="charba">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/charba/charba-2.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/charba/charba-2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

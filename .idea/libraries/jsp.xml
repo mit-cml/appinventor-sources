@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="jsp">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-el-6.0.29.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-6.0.29.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-1.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-launcher-1.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-tomcat-juli-6.0.29.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

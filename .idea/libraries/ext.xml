@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="ext">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-vm-runtime.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/gson.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
