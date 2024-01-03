@@ -389,6 +389,7 @@ they get cut off in Windows.
     overflow: hidden;
     min-height: 48px;
     margin-bottom: 4px;
+    background-color: background-color;
   }
   
   /*.ode-Logo {
