@@ -52,6 +52,10 @@ None
  Z-score against the threshold. If a data point's Z-score is greater than the threshold,
  the data point is labeled as anomaly.
 
+{:id="AnomalyDetection.DetectAnomaliesInChartData" class="method returns list"} <i/> DetectAnomaliesInChartData(*chartData*{:.component},*threshold*{:.number})
+: Detects anomalies in the given chart data object by comparing Y values to the threshold based
+ on their standard deviation to the mean.
+
 ## Regression  {#Regression}
 
 A data science component to apply different regression models.

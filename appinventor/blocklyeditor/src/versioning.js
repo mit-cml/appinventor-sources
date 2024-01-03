@@ -1601,6 +1601,12 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ActivityStarter upgraders
 
+  "AnomalyDetection": {
+    // AI2: The AnomalyDetection.DetectAnomaliesInChartData method was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
+  }, // End AnomalyDetection upgraders
+
   "Ball": {
 
     // AI1: The PointTowards method was added (for all sprites).

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2023-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -80,6 +80,20 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
       }
     }
     return anomalies;
+  }
+
+  /**
+   * Detects anomalies in the given chart data object by comparing Y values to the threshold based
+   * on their standard deviation to the mean.
+   *
+   * @param chartData the ChartData2D object containing the data
+   * @param threshold the threshold for the z-score to indicate an anomaly
+   * @return a list of anomalies in the form of a list of pairs (anomaly index, anomaly value)
+   */
+  @SimpleFunction
+  public List<List<?>> DetectAnomaliesInChartData(final ChartData2D chartData, double threshold) {
+    List<Double> values = chartData.getYValues();
+    return DetectAnomalies(YailList.makeList(values), threshold);
   }
 
   /**

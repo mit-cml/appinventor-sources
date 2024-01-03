@@ -231,6 +231,14 @@ public final class ChartData2D extends ChartDataBase {
     }
   }
 
+  public List<Double> getYValues() {
+    List<Double> yValues = new ArrayList<>();
+    for (Entry entry : dataModel.getEntries()) {
+      yValues.add((double) entry.getY());
+    }
+    return yValues;
+  }
+
   private void resetHighlightAtIndex(int index) {
     List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
     defaultColors.remove(index);

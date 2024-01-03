@@ -760,7 +760,9 @@ public class YaVersion {
   // - Extras property was added to accept a list of key-value pairs to put to the intent
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
-  public static final int ANOMALY_COMPONENT_VERSION = 1;
+  // For ANOMALY_COMPONENT_VERSION 2:
+  // - The DetectAnomaliesInChartData method was added.
+  public static final int ANOMALY_COMPONENT_VERSION = 2;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)

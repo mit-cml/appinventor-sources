@@ -244,6 +244,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ActivityStarter")) {
         srcCompVersion = upgradeActivityStarterProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("AnomalyDetection")) {
+        srcCompVersion = upgradeAnomalyDetectionProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Ball")) {
         srcCompVersion = upgradeBallProperties(componentProperties, srcCompVersion);
 
@@ -556,6 +559,16 @@ public final class YoungAndroidFormUpgrader {
       }
 
       srcCompVersion = 6;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeAnomalyDetectionProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The AnomalyDetection.DetectAnomaliesInChartData method was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
