@@ -1153,6 +1153,18 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
     }
     block.setCommentText(text);
     block.comment.setVisible(true);
+    if((block.category == "Colors"&&block.type != "color_split_color")||(block.category == "Component" && block.propertyName == "BackgroundColor")) {
+        var intValue = Number(value);
+        if (intValue < 0) {
+            intValue = 0xFFFFFFFF + intValue + 1;
+        }
+        hexString = intValue.toString(16).toUpperCase();
+        while(hexString.length < 8) {
+            hexString = '0' + hexString;
+        }
+        hexString = hexString.substring(2) + hexString.substring(0,2);
+        block.comment.bubble_.setColour("#" + hexString);
+    }
 };
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb) {

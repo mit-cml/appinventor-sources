@@ -198,6 +198,20 @@ Blockly.Blocks['color_make_color'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_MAKE_COLOUR }]
 };
 
+Blockly.Blocks['color_make_color_string'] = {
+  category: "Colors",
+  helpUrl: Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_HELPURL,
+  init: function() {
+    this.setColour(Blockly.COLOR_CATEGORY_HUE);
+    this.appendValueInput('COLORHEX')
+      .appendField(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_STRING)
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_STRING_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_STRING }]
+};
+
 Blockly.Blocks['color_split_color'] = {
   category: "Colors",
   helpUrl: Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_HELPURL,

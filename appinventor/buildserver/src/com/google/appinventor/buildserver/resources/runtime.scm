@@ -3389,6 +3389,17 @@ Dictionary implementation.
                                     *color-green-position*)
      (bitwise-arithmetic-shift-left (bitwise-and blue *max-color-component*)
                                     *color-blue-position*))))
+(define (ret-hex color-string-fin)
+   (math-convert-hex-dec (string-append (substring color-string-fin 7 9) (substring color-string-fin 1 7))))
+
+(define (make-color-string color-string)
+   (cond
+       ((not (string=? (substring color-string 0 1) "#")) (signal-runtime-error "Color must start with # symbol" "Invalid Color Input"))
+       ((= (string-length color-string) 7) (ret-hex (string-append color-string "ff" )))
+       ((= (string-length color-string) 9) (ret-hex color-string) )
+       ( else (signal-runtime-error "Input String must be of length 7 or 9 characters" "Invalid Color Input"))
+   )
+)
 
 (define (split-color color)
   (let ((intcolor (make-exact-yail-integer color)))

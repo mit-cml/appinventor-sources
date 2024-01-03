@@ -1351,6 +1351,19 @@ public class YailEvalTest extends TestCase {
     testMakeColorCase(0xff020304, "258", "-253", "4", "");
   }
 
+  public void testMakeColorStringCase(int color, String colorString) throws Throwable {
+    assertEquals(color, ((IntNum) scheme.eval(
+        String.format("(call-yail-primitive make-color-string (*list-for-runtime* \"%s\")" +
+              " '(text) \"make-color-string\")", colorString))).intValue());
+  }
+
+  public void testMakeColorString() throws Throwable {
+    testMakeColorStringCase(0x01020304, "#02030401");
+    testMakeColorStringCase(0x0f0a0b0c, "#0a0b0c0f");
+    testMakeColorStringCase(0xffff0000, "#ff0000ff");  // red
+
+  }
+
   // The input to split-color is the actual parameter color.
   // The expected outputs are the actual parameters red, green, blue, and alpha.
   private void testSplitColorCase(int red, int green, int blue, int alpha, int color)
