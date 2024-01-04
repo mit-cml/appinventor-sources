@@ -6,8 +6,10 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
+             xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
              xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -29,10 +31,16 @@
             <box:ViewerBox ui:field="viewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
               <g:FlowPanel>
-                <ed:HiddenComponentsCheckbox text="{messages.showInvisibleComponents}"
-                          styleName='ode-FormCheckboxLabel' />
+                <widgets:Toolbar styleName="ya-Toolbar-minimal">
+                  <widgets:ToolbarItem name="ProjectPropertiesDialog" caption="{messages.projectPropertiesText}"
+                                       align="left" >
+                    <ya:ProjectPropertiesAction />
+                  </widgets:ToolbarItem>
+                </widgets:Toolbar>
               </g:FlowPanel>
               <box:SourceStructureBox ui:field="sourceStructureBox" />
+              <ed:HiddenComponentsCheckbox text="{messages.showInvisibleComponents}"
+                                           styleName='ode-FormCheckboxLabel' />
               <box:BlockSelectorBox />
               <g:FlowPanel>
                 <g:Label text="{messages.assetListBoxCaption}" styleName="ode-AssetsTitle" />

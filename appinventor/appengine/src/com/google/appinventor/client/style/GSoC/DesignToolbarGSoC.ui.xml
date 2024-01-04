@@ -32,14 +32,10 @@
                     tooltip="{messages.addFormButton}">
       <ya:AddFormAction />
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="RemoveForm" icon="delete_forever" ui:field="removeFormItem"
-                    align="center"  styleName="ode-ProjectListButton bright primary danger"
+    <ai:ToolbarItem name="RemoveForm" icon="remove" ui:field="removeFormItem"
+                    align="center" styleName="ode-ProjectListButton inline bright primary"
                     tooltip="{messages.removeFormButton}">
       <ya:RemoveFormAction />
-    </ai:ToolbarItem>
-    <ai:ToolbarItem name="ProjectPropertiesDialog" caption="{messages.projectPropertiesText}" ui:field="projectPropertiesDialog"
-                    align="center">
-      <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
                     ui:field="sendToGalleryItem" align="center">

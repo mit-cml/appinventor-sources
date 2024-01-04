@@ -642,7 +642,29 @@ they get cut off in Windows.
     padding-right: 20px;
   }
 
-  .ya-Toolbar .ode-TextButton {
+.ya-Toolbar-minimal {
+  margin: 2px;
+}
+
+.ya-Toolbar-minimal .ode-TextButton {
+  text-align: left;
+  border:0;
+  font-size: 14px;
+  cursor: pointer;
+  display: block !important;
+  height: 30px;
+  margin-bottom: -10px;
+  background-color: white;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  box-shadow: unset;
+}
+
+.ya-Toolbar-minimal .ode-TextButton:hover  {
+  color: rgba(167, 36, 122, 0.21);
+  background-color: unset;
+}
+
+.ya-Toolbar .ode-TextButton {
     font-size: unset;
   }
 
