@@ -223,6 +223,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/regression.png", images.regression());
     bundledImages.put("images/anomaly.png", images.anomalyDetection());
     bundledImages.put("images/filepicker.png", images.file());
+    bundledImages.put("images/trendline.png", images.trendline());
 
     imagesInitialized = true;
   }

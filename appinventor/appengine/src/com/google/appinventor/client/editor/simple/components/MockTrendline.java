@@ -26,10 +26,15 @@ public class MockTrendline extends MockComponent implements MockChart.MockChartC
   private boolean extend = true;
   private String method = "Linear";
 
+  /**
+   * Creates a new MockTrendline component.
+   *
+   * @param editor the editor that contains the Trendline
+   */
   public MockTrendline(SimpleEditor editor) {
-    super(editor, TYPE, new Image(images.chartData2D()));
+    super(editor, TYPE, new Image(images.trendline()));
 
-    iconWidget = new Image(images.chartData2D());
+    iconWidget = new Image(images.trendline());
     iconWidget.setHeight("60");
     iconWidget.setWidth("60");
 

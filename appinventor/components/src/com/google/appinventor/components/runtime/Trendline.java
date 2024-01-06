@@ -49,7 +49,7 @@ import java.util.Map;
 @DesignerComponent(version = YaVersion.TRENDLINE_COMPONENT_VERSION,
     description = "A component that predicts a best fit model for a given data series.",
     category = ComponentCategory.CHARTS,
-    iconName = "images/web.png")
+    iconName = "images/trendline.png")
 @UsesLibraries("commons-math3.jar")
 public class Trendline implements ChartComponent, DataSourceChangeListener {
   private static final String LOG_TAG = Trendline.class.getSimpleName();
@@ -365,7 +365,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   /**
    * Sets the stroke style from a string representation, such as by the designer.
    */
-  @SuppressWarnings("checkstyle:MethodName")
+  @SuppressWarnings({"unused", "checkstyle:MethodName"})  // called from YAIL
   public void StrokeStyle(String value) {
     try {
       StrokeStyle(Integer.parseInt(value));
