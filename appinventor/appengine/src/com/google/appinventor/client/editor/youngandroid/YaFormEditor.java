@@ -82,7 +82,6 @@ import static com.google.appinventor.client.editor.simple.components.MockCompone
 public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaFormEditor.class.getName());
-  HiddenComponentsCheckbox hiddenComponentsCheckbox = HiddenComponentsCheckbox.getCheckbox();
 
   private static class FileContentHolder {
     private String content;
@@ -167,7 +166,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Create UI elements for the designer panels.
     nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();
     componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);
-    visibleComponentsPanel = new SimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
+    visibleComponentsPanel = Ode.getUiFactory()
+                                 .createSimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
     componentDatabaseChangeListeners.add(visibleComponentsPanel);
     DockPanel componentsPanel = new DockPanel();
     componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
@@ -277,7 +277,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
-    hiddenComponentsCheckbox.show(form);
+    HiddenComponentsCheckbox.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }

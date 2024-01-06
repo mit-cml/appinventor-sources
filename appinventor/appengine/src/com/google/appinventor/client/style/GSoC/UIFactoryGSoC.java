@@ -1,6 +1,9 @@
 package com.google.appinventor.client.style.GSoC;
 
 import com.google.appinventor.client.UIStyleFactory;
+import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -34,6 +37,11 @@ public class UIFactoryGSoC extends UIStyleFactory {
   public NewYoungAndroidProjectWizard createNewYoungAndroidProjectWizard() {
     return new NewYoungAndroidProjectWizardGSoC();
   }
-}
+
+  @Override
+  public SimpleVisibleComponentsPanel createSimpleVisibleComponentsPanel
+      (YaFormEditor editor, SimpleNonVisibleComponentsPanel nonVisPanel) {
+    return new SimpleVisibleComponentsPanelGSoC(editor, nonVisPanel);
+  }}
 
 

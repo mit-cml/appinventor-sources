@@ -19,6 +19,7 @@ public class HiddenComponentsCheckbox extends CheckBox {
   // by Ode and thus can be placed anywhere in a UIBinder layout.
   private HiddenComponentsCheckbox() {
     if (INSTANCE != null) {
+      LOG.warning("Attempted to create second instance of HiddenComponentsCheckbox singleton");
       ErrorReporter.reportError("Attempted to create second instance of HiddenComponentsCheckbox singleton");
     } else {
       addClickHandler(new ClickHandler() {
@@ -31,25 +32,30 @@ public class HiddenComponentsCheckbox extends CheckBox {
     }
   }
 
-  public static HiddenComponentsCheckbox getCheckbox() {
+  public static void checkInstance() {
     if (INSTANCE == null) {
       INSTANCE = new HiddenComponentsCheckbox();
     }
-    return INSTANCE;
   }
 
-  public void show(MockForm form) {
-    this.form = form;
-    setValue(Ode.getCurrentProjectEditor().getScreenCheckboxState(form.getTitle()));
+  public static void show(MockForm form) {
+    checkInstance();
+    INSTANCE.form = form;
+    INSTANCE.setValue(Ode.getCurrentProjectEditor().getScreenCheckboxState(form.getTitle()));
+  }
+
+  public static void setVisibility(boolean visible) {
+    checkInstance();
+    INSTANCE.setVisible(visible);
   }
 
   // TODO: This should not require navigating through Ode
-  void toggleHiddenComponents(ClickEvent e) {
+  public static void toggleHiddenComponents(ClickEvent e) {
     LOG.info("Received checkbox click");
-    if (form != null) {
+    if (INSTANCE.form != null) {
       LOG.info("Updating hidden components");
-      Ode.getCurrentProjectEditor().setScreenCheckboxState(form.getTitle(), getValue());
-      form.doRefresh();
+      Ode.getCurrentProjectEditor().setScreenCheckboxState(INSTANCE.form.getTitle(), INSTANCE.getValue());
+      INSTANCE.form.doRefresh();
     }
   }
 }

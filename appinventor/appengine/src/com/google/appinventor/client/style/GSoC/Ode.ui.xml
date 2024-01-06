@@ -39,8 +39,6 @@
                 </widgets:Toolbar>
               </g:FlowPanel>
               <box:SourceStructureBox ui:field="sourceStructureBox" />
-              <ed:HiddenComponentsCheckbox text="{messages.showInvisibleComponents}"
-                                           styleName='ode-FormCheckboxLabel' />
               <box:BlockSelectorBox />
               <g:FlowPanel>
                 <g:Label text="{messages.assetListBoxCaption}" styleName="ode-AssetsTitle" />

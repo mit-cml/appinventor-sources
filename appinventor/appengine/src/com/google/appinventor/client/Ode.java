@@ -231,8 +231,7 @@ public class Ode implements EntryPoint {
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // mode
-  @UiField(provided=true)
-  static Resources.Style style;
+  @UiField(provided=true) static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -463,14 +462,14 @@ public class Ode implements EntryPoint {
     paletteBox.setVisible(false);
     sourceStructureBox.setVisible(false);
     propertiesBox.setVisible(false);
-    HiddenComponentsCheckbox.getCheckbox().setVisible(false);
+    HiddenComponentsCheckbox.setVisibility(false);
   }
 
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
-    HiddenComponentsCheckbox.getCheckbox().setVisible(true);
+    HiddenComponentsCheckbox.setVisibility(true);
   }
 
   /**

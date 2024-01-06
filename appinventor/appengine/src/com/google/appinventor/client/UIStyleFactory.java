@@ -1,5 +1,8 @@
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -43,5 +46,10 @@ public class UIStyleFactory {
 
   public NewYoungAndroidProjectWizard createNewYoungAndroidProjectWizard() {
     return new NewYoungAndroidProjectWizard();
+  }
+
+  public SimpleVisibleComponentsPanel createSimpleVisibleComponentsPanel
+      (YaFormEditor editor, SimpleNonVisibleComponentsPanel nonVisPanel) {
+    return new SimpleVisibleComponentsPanel(editor, nonVisPanel);
   }
 }

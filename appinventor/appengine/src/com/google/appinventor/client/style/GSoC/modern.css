@@ -16,7 +16,12 @@ they get cut off in Windows.
   
   body {
     background: lightgrey background-image;
+    font-family: Poppins, Helvetica, Arial, sans-serif;
   }
+  .dyslexic * {
+    font-family: OpenDyslexic, Poppins, Helvetica, Arial, sans-serif;
+  }
+
 
   /* For the TOS Form*/
   .floatingBox {
@@ -134,7 +139,7 @@ they get cut off in Windows.
     padding: 4px 10px;
     transition: background 0.2s, opacity 0.1s;
     color: button-text;
-    font-family: 'Poppins', 'Roboto', sans-serif;
+    font-family: 'Poppins', Helvetica, sans-serif;
     font-weight: 500;
     font-size: 1.06em;
     white-space: nowrap;
@@ -238,7 +243,7 @@ they get cut off in Windows.
   
   .ode-ProjectFieldLabel {
     /* all: unset; */
-    font-family: 'Roboto', sans-serif;
+    font-family: Poppins, Helvetica, sans-serif;
     font-weight: 400;
     font-size: 1.1em;
     color: tab-bar-color;
@@ -326,7 +331,6 @@ they get cut off in Windows.
     align-items: center;
     height: 40px;
     display: inline-flex;
-    align-items: center;
     font-size: unset !important;
   }
   
@@ -342,7 +346,7 @@ they get cut off in Windows.
   .ode-CheckpointProjectTable {
     border: 1px solid darkgray;
   }
-  
+
   /*
    * ComponentList
    */
@@ -507,7 +511,7 @@ they get cut off in Windows.
     padding: 4px 10px;
     transition: background 0.2s, opacity 0.1s;
     color: button-text;
-    font-family: "Poppins", "Roboto", sans-serif;
+    font-family: "Poppins", Helvetica, sans-serif;
     font-weight: 500;
     font-size: 1.06em;
     white-space: nowrap;
@@ -655,7 +659,7 @@ they get cut off in Windows.
   height: 30px;
   margin-bottom: -10px;
   background-color: white;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: Poppins, Helvetica, Arial, sans-serif;
   box-shadow: unset;
 }
 
@@ -669,7 +673,7 @@ they get cut off in Windows.
   }
 
   .ya-Toolbar .ya-ProjectName {
-    font-family: "Poppins", "Roboto", sans-serif;
+    font-family: "Poppins", Helvetica, sans-serif;
     color: tab-bar-color;
     font-weight: 500;
     font-size: 1.4em;
@@ -687,7 +691,7 @@ they get cut off in Windows.
     padding: 4px 10px;
     transition: background 0.2s, opacity 0.1s;
     color: button-text;
-    font-family: 'Poppins', 'Roboto', sans-serif;;
+    font-family: 'Poppins', Helvetica, Arial, sans-serif;
     font-weight: 500;
     font-size: 1.06em;
     white-space: nowrap;
@@ -922,7 +926,24 @@ they get cut off in Windows.
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0); */
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
   }
-  
+
+  .ode-SimpleFormDesigner {
+    padding: 2px;
+  }
+
+  .ode-SimpleFormDesignerToolbar {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ode-SimpleFormDesigner .gwt-CheckBox {
+    font-size: 12px;
+  }
+
+  .ode-SimpleFormDesigner .gwt-ListBox {
+    margin-right: 10px;
+  }
+
   .ode-SimpleMockForm {
     background-color: #d2e0a6;
     border: 2px solid tab-bar-color;
@@ -951,8 +972,18 @@ they get cut off in Windows.
   .ode-SimpleMockFormNavigationBarLandscape {
     background-color: tab-bar-color;
   }
-  
-  .ode-SimpleMockContainer {
+
+  .ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
+  .ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
+  .ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
+    flex-direction: column;
+  }
+
+  .ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm {
+    width: 320px;
+  }
+
+.ode-SimpleMockContainer {
     border: 2px solid tab-bar-color;
   }
   

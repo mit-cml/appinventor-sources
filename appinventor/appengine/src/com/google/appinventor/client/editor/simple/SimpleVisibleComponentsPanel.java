@@ -6,7 +6,10 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.widgets.Toolbar;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -19,8 +22,11 @@ import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.ListBox;
@@ -33,12 +39,13 @@ import java.util.logging.Logger;
  * Panel in the Simple design editor holding visible Simple components.
  *
  */
-public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
+public class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
   // UI elements
   private static final Logger LOG = Logger.getLogger(SimpleVisibleComponentsPanel.class.getName());
-  private final VerticalPanel phoneScreen;
-  private final ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
-  private final ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
+  interface SimpleVisibleComponentsPanelUiBinder extends UiBinder<VerticalPanel, SimpleVisibleComponentsPanel> {}
+  @UiField protected VerticalPanel phoneScreen;
+  @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
+  @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
   private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
   private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
 
@@ -46,7 +53,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   // non-visible components onto the form, but we show them in the non-visible
   // components panel)
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
-  private final ProjectEditor projectEditor;
+  protected final ProjectEditor projectEditor;
 
   private MockForm form;
 
@@ -59,13 +66,43 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   
   public SimpleVisibleComponentsPanel(final SimpleEditor editor,
       SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
+
     this.nonVisibleComponentsPanel = nonVisibleComponentsPanel;
     projectEditor = editor.getProjectEditor();
 
-    // Initialize UI
-    phoneScreen = new VerticalPanel();
-    phoneScreen.setStylePrimaryName("ode-SimpleFormDesigner");
+    initializeListboxes();
 
+    bindUI();
+
+    listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        int idx = Integer.parseInt(listboxPhoneTablet.getSelectedValue());
+        int width = drop_lst[idx][0];
+        int height = drop_lst[idx][1];
+        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
+        // here, we can change settings by putting val into it
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
+        changeFormPreviewSize(idx, width, height);
+      }
+    });
+    listboxPhonePreview.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        int idx = Integer.parseInt(listboxPhonePreview.getSelectedValue());
+        String val = drop_lst_phone_preview[idx];
+        // here, we can change settings by putting chosenStyle value into it
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
+        changeFormPhonePreview(idx, val);
+      }
+    });
+    initWidget(phoneScreen);
+  }
+
+  protected void initializeListboxes() {
+    // Initialize UI
     listboxPhoneTablet = new ListBox() {
       @Override
       protected void onLoad() {
@@ -81,31 +118,13 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         }
       }
     };
-    listboxPhoneTablet.addItem("Phone size");
-    listboxPhoneTablet.addItem("Tablet size");
-    listboxPhoneTablet.addItem("Monitor size");
-    listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        int idx = listboxPhoneTablet.getSelectedIndex();
-        int width = drop_lst[idx][0];
-        int height = drop_lst[idx][1];
-        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
-        // here, we can change settings by putting val into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
-        changeFormPreviewSize(idx, width, height);
-      }
-    });
-
-    phoneScreen.add(listboxPhoneTablet);
 
     listboxPhonePreview = new ListBox() {
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.
         String previewStyle = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
         boolean classic = (previewStyle.equals("Classic"));
         listboxPhonePreview.setVisible(!classic);
         if (classic) {
@@ -115,28 +134,15 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         }
       }
     };
-    listboxPhonePreview.addItem("Android 5+ Devices");
-    listboxPhonePreview.addItem("Android 3.0-4.4.2 Devices");
-    listboxPhonePreview.addItem("iOS 13 Devices");
-    listboxPhonePreview.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        int idx = listboxPhonePreview.getSelectedIndex();
-        String val = drop_lst_phone_preview[idx];
-        // here, we can change settings by putting chosenStyle value into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
-        changeFormPhonePreview(idx, val);
-      }
-    });
+  }
 
-    phoneScreen.add(listboxPhonePreview);
-
-    initWidget(phoneScreen);
+  protected void bindUI() {
+    SimpleVisibleComponentsPanelUiBinder UI_BINDER = GWT.create(SimpleVisibleComponentsPanelUiBinder.class);
+    UI_BINDER.createAndBindUi(this);
   }
 
   // get width and height stored in user settings, and change the preview size.
-  private void getUserSettingChangeSize() {
+  protected void getUserSettingChangeSize() {
     String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
     int idx = 0;
@@ -160,7 +166,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   }
 
   // get Phone Preview stored in user settings, and change the preview style.
-  private void getUserSettingChangePreview() {
+  protected void getUserSettingChangePreview() {
     String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
     int idx = 0;
@@ -178,52 +184,20 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     changeFormPhonePreview(idx, val);
   }
 
-  private void changeFormPreviewSize(int idx, int width, int height) {
+  protected void changeFormPreviewSize(int idx, int width, int height) {
 
     if (form == null)
       return;
 
     form.changePreviewSize(width, height, idx);
-
-    String info = " (" + height + "," + width + ")";
-    if (idx == 0) {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
-      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-    } else if (idx == 1) {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
-      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-    } else {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
-      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-    }
-    // change settings
   }
 
-  private void changeFormPhonePreview(int idx, String chosenVal) {
+  protected void changeFormPhonePreview(int idx, String chosenVal) {
 
     if (form == null)
       return;
 
     form.changePhonePreview(idx, chosenVal);
-
-    String info = " (" + chosenVal + ")";
-    if (idx == 0) {
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewAndroidMaterial() + info);
-      listboxPhonePreview.setItemText(1, MESSAGES.previewAndroidHolo());
-      listboxPhonePreview.setItemText(2, MESSAGES.previewIOS());
-    } else if (idx == 1) {
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewAndroidHolo() + info);
-      listboxPhonePreview.setItemText(0, MESSAGES.previewAndroidMaterial());
-      listboxPhonePreview.setItemText(2, MESSAGES.previewIOS());
-    } else if (idx == 2){
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewIOS() + info);
-      listboxPhonePreview.setItemText(0, MESSAGES.previewAndroidMaterial());
-      listboxPhonePreview.setItemText(1, MESSAGES.previewAndroidHolo());
-    }
-    // change settings
   }
 
   public void enableTabletPreviewCheckBox(boolean enable){
