@@ -104,7 +104,7 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
             if(Blockly.common.getSelected() && Blockly.common.getSelected().workspace && Blockly.common.getSelected().workspace!=Blockly.common.getMainWorkspace()){
               Blockly.common.getSelected().unselect();
             }
-            blocks[i].mutator.setVisible(false);
+            blocks[i].mutator.setBubbleVisible(false);
           }
         }
       }
