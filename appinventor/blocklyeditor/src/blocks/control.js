@@ -262,6 +262,33 @@ Blockly.Blocks['controls_forRange'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP);
   },
+  referenceResults: function(name, prefix, env) {
+    let loopVar = this.getFieldValue('VAR');
+    // Invariant: Blockly.showPrefixToUser must also be true!
+    if (Blockly.usePrefixInCode) {
+      loopVar =
+          (Blockly.possiblyPrefixMenuNameWith(Blockly.loopRangeParameterPrefix))(
+              loopVar);
+    }
+    const newEnv = env.concat([loopVar]);
+    const startResults = LexicalVariable.referenceResult(
+        this.getInputTargetBlock('START'), name, prefix, env);
+    const endResults = LexicalVariable.referenceResult(
+        this.getInputTargetBlock('END'), name, prefix, env);
+    const stepResults = LexicalVariable.referenceResult(
+        this.getInputTargetBlock('STEP'), name, prefix, env);
+    const doResults = LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DO'), name, prefix, newEnv);
+    const nextResults = LexicalVariable.referenceResult(
+        LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    return [startResults, endResults, stepResults, doResults, nextResults];
+  },
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('DO') == child) {
+      const lexVar = this.getFieldValue('VAR');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
+  },
   getVars: function () {
     return [this.getFieldValue('VAR')];
   },
@@ -353,6 +380,23 @@ Blockly.Blocks['controls_forEach'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP);
   },
+  referenceResults: function(name, prefix, env) {
+    let loopVar = this.getFieldValue('VAR');
+    // Invariant: Blockly.showPrefixToUser must also be true!
+    if (Blockly.usePrefixInCode) {
+      loopVar = (Blockly.possiblyPrefixMenuNameWith(Blockly.loopParameterPrefix))(
+          loopVar);
+    }
+    const newEnv = env.concat([loopVar]);
+    const listResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('LIST'), name, prefix, env);
+    const doResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DO'), name, prefix, newEnv);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        Blockly.LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    return [listResults, doResults, nextResults];
+  },
+  withLexicalVarsAndPrefix: Blockly.Blocks.controls_forRange.withLexicalVarsAndPrefix,
   getVars: function () {
     return [this.getFieldValue('VAR')];
   },

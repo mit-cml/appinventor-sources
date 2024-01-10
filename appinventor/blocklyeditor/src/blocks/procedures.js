@@ -97,6 +97,13 @@ Blockly.Blocks['procedures_defnoreturn'] = {
                           // the list of names declared in the local declaration block.
     this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
   },
+  withLexicalVarsAndPrefix: function(_, proc) {
+    const params = this.declaredNames();
+    // not arguments_ instance var
+    for (let i = 0; i < params.length; i++) {
+      proc(params[i], this.lexicalVarPrefix);
+    }
+  },
   onchange: function () {
     this.arguments_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
   },
@@ -500,6 +507,7 @@ Blockly.Blocks['procedures_defreturn'] = {
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
   },
+  withLexicalVarsAndPrefix: Blockly.Blocks.procedures_defnoreturn.withLexicalVarsAndPrefix,
   onchange: Blockly.Blocks.procedures_defnoreturn.onchange,
   // [lyn, 11/24/12] return list of procedure body (if there is one)
   updateParams_: Blockly.Blocks.procedures_defnoreturn.updateParams_,

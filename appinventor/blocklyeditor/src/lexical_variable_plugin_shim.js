@@ -189,4 +189,5 @@ Blockly.LexicalVariable.eventParameterDict = function (block) {
 
 // Copy the shared properties from the Shared object of the Lexical Variables Plugin to Blockly
 Blockly = Object.assign(Blockly, lexVarPlugin.Shared);
-Blockly.yailSeparator = Blockly.prefixSeparator;
+Blockly.prefixSeparator = Blockly.yailSeparator;
+Blockly.usePrefixInCode = Blockly.usePrefixInYail;
