@@ -59,6 +59,7 @@
     './src/blocks/text.js',
     './src/blocks/lists.js',
     './src/blocks/math.js',
+    './src/blocks/colors.js',
     './src/blocks/utilities.js',
     './src/blocks/components.js',
     './src/blocks/dictionaries.js',
