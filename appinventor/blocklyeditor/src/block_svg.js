@@ -128,7 +128,6 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
   } else {
     if (this.error) {
       this.removeIcon(this.error.getType());
-      this.error.dispose();
       this.error = null;
       changedState = true;
     }
