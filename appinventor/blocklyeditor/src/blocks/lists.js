@@ -13,6 +13,7 @@
 goog.provide('Blockly.Blocks.lists');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.Blockly.Mixins');
 
 Blockly.Blocks['lists_create_with'] = {
   // Create a list with any number of elements of any type.
@@ -37,78 +38,6 @@ Blockly.Blocks['lists_create_with'] = {
   },
   compose: Blockly.compose,
   saveConnections: Blockly.saveConnections,
-  /**
-   *
-   * @param {Blockly.RenderedConnection} connection
-   */
-  findInputIndexForConnection: function (connection) {
-    if (!connection.targetConnection) {
-      return null;
-    }
-
-    var connectionIndex = -1;
-    for (var i = 0, input; (input = this.inputList[i]); i++) {
-      if (input.connection == connection) {
-        connectionIndex = i;
-        break;
-      }
-    }
-
-    if (connectionIndex == this.inputList.length - 1) {
-      // this connection is the last one and already has a block in it, so
-      // we should add a new connection at the end.
-      return this.inputList.length;
-    }
-
-    var nextInput = this.inputList[connectionIndex + 1];
-    var nextConnection = nextInput.connection && nextInput.connection.targetConnection;
-    if (nextConnection && !nextConnection.getSourceBlock().isInsertionMarker()) {
-      // there's a block connected to the next input, so we should add a
-      // connection before that one.
-      return connectionIndex + 1;
-    }
-
-    return null;
-  },
-  onPendingConnection: function (connection) {
-    var insertIndex = this.findInputIndexForConnection(connection);
-    if (insertIndex === null) {
-      return;
-    }
-    if (!this.tempinput) {
-      this.tempinput = this.appendValueInput('TEMPADD');
-      this.tempinput.init();
-    }
-    var originalIndex = this.inputList.indexOf(this.tempinput);
-    if (insertIndex === 0) {
-      this.tempinput.fields[0] = this.inputList[0].fields.splice(0, 1)[0];
-    } else if (originalIndex === 0) {
-      this.inputList[0].fields[0] = this.tempinput.fields.splice(0, 1)[0];
-    }
-    if (originalIndex !== insertIndex) {
-      this.moveNumberedInputBefore(originalIndex, insertIndex);
-    }
-  },
-  finalizeConnections: function () {
-    if (!this.tempinput) {
-      return;  // No pending connection.
-    }
-    if (this.tempinput.connection.targetConnection) {
-      var repeatingInputName = this.repeatingInputName;
-      this.inputList.forEach(function (input, i) {
-        input.name = repeatingInputName + i;
-      });
-    } else if (this.tempinput) {
-      this.removeInput('TEMPADD');
-    }
-    this.tempinput = undefined;
-    for (var i = this.inputList.length - 1; i >= 0; i--) {
-      if (!this.inputList[i].connection.targetConnection) {
-        this.inputList.splice(i, 1);
-      }
-    }
-    this.itemCount_ = this.inputList.length;
-  },
   addEmptyInput: function(){
     this.appendDummyInput(this.emptyInputName)
       .appendField(Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE);
@@ -130,6 +59,8 @@ Blockly.Blocks['lists_create_with'] = {
       { translatedName: Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE,
         mutatorAttributes: { items: 0 } }]
 };
+
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_create_with'], AI.Blockly.Mixins.DynamicConnections);
 
 Blockly.Blocks['lists_create_with_item'] = {
   // Add items.

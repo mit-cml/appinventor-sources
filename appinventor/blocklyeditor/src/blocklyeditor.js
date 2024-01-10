@@ -267,6 +267,54 @@ Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
   }
 };
 
+goog.provide('AI.Blockly.ContextMenuItems');
+
+AI.Blockly.ContextMenuItems.registerExportBlocksOption = function() {
+  var menuItem = {
+    id: 'appinventor_export_blocks',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.WORKSPACE,
+    preconditionFn: function(scope) {
+      return scope.workspace.getAllBlocks().length ? 'enabled' : 'hidden';
+    },
+    displayText: Blockly.Msg.EXPORT_IMAGE,
+    callback: function() {
+      Blockly.ExportBlocksImage.onclickExportBlocks(Blockly.common.getMainWorkspace().getMetrics());
+    },
+    weight: 100
+  };
+  Blockly.ContextMenuRegistry.registry.register(menuItem);
+};
+
+AI.Blockly.ContextMenuItems.registerWorkspaceControlsOption = function() {
+  var menuItem = {
+    id: 'appinventor_workspaceControls',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.WORKSPACE,
+    preconditionFn: function() {
+      return 'enabled';
+    },
+    displayText: function(scope) {
+      return scope.workspace.chromeHidden ? Blockly.Msg.SHOW : Blockly.Msg.HIDE;
+    },
+    callback: function(scope) {
+      var displayStyle = scope.workspace.chromeHidden ? 'block' : 'none';
+      scope.workspace.backpack_.svgGroup_.style.display = displayStyle;
+      scope.workspace.trashcan.svgGroup_.style.display = displayStyle;
+      scope.workspace.zoomControls_.svgGroup_.style.display = displayStyle;
+      scope.workspace.warningIndicator_.svgGroup_.style.display = displayStyle;
+      scope.workspace.chromeHidden = !scope.workspace.chromeHidden;
+    },
+    weight: 100
+  };
+  Blockly.ContextMenuRegistry.registry.register(menuItem);
+};
+
+AI.Blockly.ContextMenuItems.registerAll = function() {
+  AI.Blockly.ContextMenuItems.registerExportBlocksOption();
+  AI.Blockly.ContextMenuItems.registerWorkspaceControlsOption();
+}
+
+AI.Blockly.ContextMenuItems.registerAll();
+
 /**
  * Create a new Blockly workspace but without initializing its DOM.
  * @param container The container that will host the Blockly workspace
@@ -307,6 +355,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       crossTab: true,
       menu: true,
     },
+    renderer: 'geras2_renderer',
   };
   var workspace = Blockly.inject(container, options);
   var multiselectPlugin = new top.Multiselect(workspace);

@@ -45,6 +45,8 @@
     "./src/input.js",
     "./src/field_event_flydown.js",
     "./src/utils_xml.js",
+    "./src/mixins/dynamic_connections.js",
+    "./src/mixins/mixins.js",
 
     // Dialog Utiltiy
     "./src/util.js",
@@ -61,9 +63,12 @@
     './src/blocks/math.js',
     './src/blocks/colors.js',
     './src/blocks/utilities.js',
+    './src/blocks/colors.js',
     './src/blocks/components.js',
     './src/blocks/dictionaries.js',
     './src/blocks/helpers.js',
+    './src/mixins/dynamic_connections.js',
+    './src/mixins/mixins.js',
 
     //generator files
     "./src/generators/yail.js",
@@ -93,7 +98,7 @@
   "output-charset": "UTF-8",
   "mode": "SIMPLE",
   "experimental-compiler-options": {
-    "languageIn": "ECMASCRIPT5"
+    "languageIn": "ECMASCRIPT6"
   },
   "dependency_mode": "PRUNE_LEGACY",
   "closure-library" : "../lib/closure-library/closure/goog",
