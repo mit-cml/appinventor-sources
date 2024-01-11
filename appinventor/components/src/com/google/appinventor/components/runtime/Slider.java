@@ -436,14 +436,30 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
   }
 
+  /**
+   * Event raised when the user has started a touch gesture on Slider.
+   */
+  @SimpleEvent(description = "Event raised when the user has started a touch gesture on Slider.")
+  public void StartTracking() {
+      EventDispatcher.dispatchEvent(this, "StartTracking");
+  }
+
+  /**
+   * Event raised when the user has finished a touch gesture on Slider.
+   */
+  @SimpleEvent(description = "Event raised when the user has finished a touch gesture on Slider.")
+  public void StopTracking() {
+      EventDispatcher.dispatchEvent(this, "StopTracking");
+  }
+
   @Override
   public void onStartTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+      StartTracking();
   }
 
   @Override
   public void onStopTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+    StopTracking();
   }
 
   /**
