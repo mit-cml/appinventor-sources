@@ -660,16 +660,19 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
   return this.flydown_;
 };
 
-Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
-  this.flydown_ && this.flydown_.hide();
-  this.typeBlock_ && this.typeBlock_.hide();
-  if (!opt_allowToolbox) {  // Fixes #1269
-    this.backpack_ && this.backpack_.hide();
+Blockly.WorkspaceSvg.prototype.hideChaff = (function(func) {
+  return function(opt_allowToolbox) {
+    this.flydown_ && this.flydown_.hide();
+    this.typeBlock_ && this.typeBlock_.hide();
+    if (!opt_allowToolbox) {  // Fixes #1269
+      this.backpack_ && this.backpack_.hide();
+    }
+    if (this.scrollbar) {
+      this.scrollbar.setContainerVisible(true);
+    }
+    func.apply(this, arguments);
   }
-  if (this.scrollbar) {
-    this.scrollbar.setContainerVisible(true);
-  }
-};
+})(Blockly.WorkspaceSvg.prototype.hideChaff);
 
 /**
  * Mark this workspace as the currently focused main workspace.
