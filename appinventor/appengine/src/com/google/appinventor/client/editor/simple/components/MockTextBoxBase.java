@@ -7,6 +7,8 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.designer.DesignerChangeListener;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -22,7 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author sharon@google.com (Sharon Perl)
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener{
+abstract class MockTextBoxBase extends MockWrapper implements DesignerChangeListener {
 
   // GWT widget used to mock a Simple TextBox
   private final TextBox textBoxWidget;
@@ -43,12 +45,12 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
   @Override
   protected void onAttach() {
         super.onAttach();
-        ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+        ((YaFormEditor) editor).getForm().addDesignerChangeListener(this);
   }
   @Override
   protected void onDetach() {
         super.onDetach();
-        ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+        ((YaFormEditor) editor).getForm().removeDesignerChangeListener(this);
   }
   /**
    * Class that extends TextBox so we can use a protected constructor.

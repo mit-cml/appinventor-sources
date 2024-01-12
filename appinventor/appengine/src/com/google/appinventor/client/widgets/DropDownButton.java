@@ -14,6 +14,7 @@ import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
+
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -35,14 +36,13 @@ public class DropDownButton extends TextButton {
   private String name = "";
   private final ContextMenu menu = new ContextMenu();
   private final Map<String, MenuItem> itemsById = new HashMap<>();
-  private final List<MenuItem> items = new ArrayList<MenuItem>();
-  private final List<UIObject> allItems = new ArrayList<UIObject>();
-  private boolean rightAlign = false;
+  private final List<MenuItem> items = new ArrayList<>();
+  private final List<UIObject> allItems = new ArrayList<>();
+  private boolean rightAlign;
   private String align = "left";
   private Icon icon = null;
-  boolean hasTriangle = false;
   private String caption = "";
-
+  private MenuItemSeparator separator = null;
 
   /**
    * A subclass of PZAwarePositionCallback designed to position the ContextMenu
@@ -194,6 +194,10 @@ public class DropDownButton extends TextButton {
     for (MenuItem item : items) {
       menu.removeItem(item);
     }
+    if (separator != null) {
+      menu.removeSeparator(separator);
+      separator = null;
+    }
     items.clear();
   }
 
@@ -201,7 +205,11 @@ public class DropDownButton extends TextButton {
     if (item == null) {
       allItems.add(menu.addSeparator());
     } else {
-      MenuItem menuItem = menu.addItem(item.caption, true, item.command, item.styleName);
+      String content = item.caption;
+      if (item.icon != null) {
+        content = "<img src=\"" + item.icon.getUrl() + "\">&nbsp;" + content;
+      }
+      MenuItem menuItem = menu.addItem(content, true, item.command, item.styleName);
       if (item.dependentStyleName != null) {
         menuItem.addStyleDependentName(item.dependentStyleName);
       }
@@ -230,7 +238,8 @@ public class DropDownButton extends TextButton {
 
   public void removeItem(String itemName) {
     for (MenuItem item : items) {
-      if (item.getText().equals(itemName)) {
+      String strippedItemText = item.getText().replaceAll("^\\s+", "");
+      if (strippedItemText.equals(itemName)) {
         menu.removeItem(item);
         items.remove(item);
         allItems.remove(item);
@@ -258,6 +267,19 @@ public class DropDownButton extends TextButton {
         item.setEnabled(enabled);
         break;
       }
+    }
+  }
+
+  public void addSeparator() {
+    if (separator == null) {
+      separator = menu.addSeparator();
+    }
+  }
+
+  public void removeSeparator() {
+    if (separator != null) {
+      menu.removeSeparator(separator);
+      separator = null;
     }
   }
 
@@ -323,6 +345,13 @@ public class DropDownButton extends TextButton {
         item.setVisible(enabled);
         break;
       }
+    }
+  }
+
+  public void setItemVisibleById(String id, boolean visible) {
+    MenuItem item = itemsById.get(id);
+    if (item != null) {
+      item.setVisible(visible);
     }
   }
 

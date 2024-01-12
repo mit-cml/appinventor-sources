@@ -39,6 +39,8 @@
     <equals arg1="${release}" arg2="true" />
   </condition>
 
+  <property name="vm.mx" value="3G" />
+
   <scriptdef name="generateguid" language="javascript">
     <attribute name="property" />
     <![CDATA[
@@ -170,11 +172,11 @@
         <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/blocks/blockly.js" />
 
     <!-- Move Blockly translations into place -->
-    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
-    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
+    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/blocks/i18n"/>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/blocks/i18n">
       <fileset dir="${build.dir}/blocklyeditor/msg">
         <include name="*.json"/>
       </fileset>
@@ -628,7 +630,7 @@
         <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx3G"/>
+      <jvmarg value="-Xmx${vm.mx}"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg value="-war"/>

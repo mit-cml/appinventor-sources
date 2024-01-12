@@ -243,6 +243,13 @@ public class Toolbar extends FlowPanel {
     }
   }
 
+  protected void addDropDownButtonSeparator(String dropDownName) {
+    final DropDownButton button = dropDownButtonMap.get(dropDownName);
+    if (button != null) {
+      button.addSeparator();
+    }
+  }
+
   /**
    * Removes an item from a drop down button if it exists.
    *
@@ -253,6 +260,13 @@ public class Toolbar extends FlowPanel {
     final DropDownButton button = dropDownButtonMap.get(dropDownName);
     if (button != null) {
       button.removeItem(itemName);
+    }
+  }
+
+  protected void removeDropDownButtonSeparator(String dropDownName) {
+    final DropDownButton button = dropDownButtonMap.get(dropDownName);
+    if (button != null) {
+      button.removeSeparator();
     }
   }
   
@@ -284,5 +298,12 @@ public class Toolbar extends FlowPanel {
    */
   protected void setDropDownButtonCaption(String widgetName, String caption) {
     dropDownButtonMap.get(widgetName).setText(caption + " " + DROP_DOWN_TRIANGLE);
+  }
+
+  protected void setDropDownItemHtml(String dropDownName, String itemName, String newHtml) {
+    final DropDownButton button = dropDownButtonMap.get(dropDownName);
+    if (button != null) {
+      button.setItemHtmlById(itemName, newHtml);
+    }
   }
 }
