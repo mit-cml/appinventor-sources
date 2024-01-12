@@ -261,6 +261,7 @@ Blockly.Blocks['controls_forRange'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   referenceResults: function(name, prefix, env) {
     let loopVar = this.getFieldValue('VAR');
@@ -486,6 +487,16 @@ Blockly.Blocks['controls_for_each_dict'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
+  },
+
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('DO') == child) {
+      let lexVar = this.getFieldValue('KEY');
+      proc(lexVar, this.lexicalVarPrefix);
+      lexVar = this.getFieldValue('VALUE');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
   },
 
   getVars: function () {

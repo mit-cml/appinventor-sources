@@ -491,8 +491,15 @@ Blockly.Blocks['lists_map'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('TO') == child) {
+      const lexVar = this.getFieldValue('VAR');
+      proc(lexVar, this.lexicalVarPrefix);
+     }
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -613,6 +620,15 @@ Blockly.Blocks['lists_reduce'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
+  },
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('COMBINE') == child) {
+      let lexVar = this.getFieldValue('VAR1');
+      proc(lexVar, this.lexicalVarPrefix);
+      lexVar = this.getFieldValue('VAR2');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
   },
   getVars: function() {
     var names = []
@@ -696,8 +712,17 @@ Blockly.Blocks['lists_sort_comparator'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('COMPARE') == child) {
+      let lexVar = this.getFieldValue('VAR1');
+      proc(lexVar, this.lexicalVarPrefix);
+      lexVar = this.getFieldValue('VAR2');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -751,8 +776,15 @@ Blockly.Blocks['lists_sort_key'] = {
     this.setOutput(true, null);
     this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('KEY') == child) {
+      const lexVar = this.getFieldValue('VAR');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -812,8 +844,10 @@ Blockly.Blocks['lists_minimum_value'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: Blockly.Blocks.lists_map.withLexicalVarsAndPrefix,
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -873,8 +907,17 @@ Blockly.Blocks['lists_maximum_value'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('COMPARE') == child) {
+      let lexVar = this.getFieldValue('VAR1');
+      proc(lexVar, this.lexicalVarPrefix);
+      lexVar = this.getFieldValue('VAR2');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
