@@ -96,6 +96,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
                           // Other methods guarantee the invariant that this variable contains
                           // the list of names declared in the local declaration block.
     this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   withLexicalVarsAndPrefix: function(_, proc) {
     const params = this.declaredNames();
