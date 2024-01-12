@@ -937,6 +937,9 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the PasswordTextBox.
+
 {:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
 : If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
  decimal point and an optional leading minus sign. This applies to keyboard input only. Even
@@ -983,9 +986,21 @@ Users enter passwords in a password text box component, which hides the text tha
 : Event raised when the `PasswordTextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="PasswordTextBox.OnTextChanged"} OnTextChanged()
+: Event raised when the text of the PasswordTextBox is changed, either by the user or the program.
+
 ### Methods  {#PasswordTextBox-Methods}
 
 {:.methods}
+
+{:id="PasswordTextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
+
+{:id="PasswordTextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the PasswordTextBox.
+
+{:id="PasswordTextBox.MoveCursorToFront" class="method"} <i/> MoveCursorToFront()
+: Repositions the cursor to the front of the PasswordTextBox.
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
@@ -1501,6 +1516,9 @@ Users enter text in a text box component.
 {:id="TextBox.Hint" .text} *Hint*
 : `TextBox` hint for the user.
 
+{:id="TextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the TextBox.
+
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
 : If true, then this `TextBox` accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1553,6 +1571,9 @@ Users enter text in a text box component.
 : Event raised when the `TextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="TextBox.OnTextChanged"} OnTextChanged()
+: Event raised when the text of the TextBox is changed, either by the user or the program.
+
 ### Methods  {#TextBox-Methods}
 
 {:.methods}
@@ -1560,6 +1581,15 @@ Users enter text in a text box component.
 {:id="TextBox.HideKeyboard" class="method"} <i/> HideKeyboard()
 : Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
  keyboard when the users presses the Done key.
+
+{:id="TextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
+
+{:id="TextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the TextBox.
+
+{:id="TextBox.MoveCursorToFront" class="method"} <i/> MoveCursorToFront()
+: Repositions the cursor to the front of the TextBox.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.

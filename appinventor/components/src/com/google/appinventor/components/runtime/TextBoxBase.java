@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -24,6 +25,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 //import com.google.appinventor.components.runtime.parameters.BooleanReferenceParameter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
@@ -37,7 +40,7 @@ import android.widget.EditText;
 
 @SimpleObject
 public abstract class TextBoxBase extends AndroidViewComponent
-    implements OnFocusChangeListener, AccessibleComponent {
+    implements OnFocusChangeListener, TextWatcher, AccessibleComponent {
 
   protected final EditText view;
 
@@ -58,6 +61,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   // Backing for hint text
   private String hint;
+
+  // Backing for hint color
+  private int hintColor = Component.COLOR_DEFAULT;
 
   // Backing for text color
   private int textColor;
@@ -92,6 +98,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     if (Build.VERSION.SDK_INT >= 24 /* Nougat */ ) {
       EclairUtil.disableSuggestions(textview);
     }
+
+    // Listen to text changes
+    view.addTextChangedListener(this);
 
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
@@ -156,6 +165,11 @@ public abstract class TextBoxBase extends AndroidViewComponent
       + "as if the user touches a different text box.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
+  }
+
+  @SimpleEvent(description = "Event raised when the text of the %type% is changed, either by the user or the program.")
+  public void OnTextChanged() {
+    EventDispatcher.dispatchEvent(this, "OnTextChanged");
   }
 
   /**
@@ -432,6 +446,28 @@ public abstract class TextBoxBase extends AndroidViewComponent
     view.invalidate();
   }
 
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Specifies the color of the hint of the %type%.")
+  public int HintColor() {
+    return hintColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
+  @SimpleProperty()
+  public void HintColor(int hintColor) {
+    this.hintColor = hintColor;
+    if (hintColor != Component.COLOR_DEFAULT) {
+      view.setHintTextColor(hintColor);
+    } else {
+      if (isHighContrast || container.$form().HighContrast()) {
+        view.setHintTextColor(COLOR_YELLOW);
+      } else {
+        view.setHintTextColor(hintColorDefault);
+      }
+    }
+  }
+
   /**
    * Returns the textbox contents.
    *
@@ -499,6 +535,30 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
   }
 
+  @SimpleFunction(description = "Repositions the cursor of the TextBox before the character at the given" +
+   " 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved" +
+   " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.")
+  public void MoveCursorTo(int position) {
+    int len = view.getText().toString().length();
+    if (position > len) {
+      view.setSelection(len);
+    } else if (position <= 1) {
+      view.setSelection(0);
+    } else {
+      view.setSelection(position - 1);
+    }
+  }
+
+  @SimpleFunction(description = "Repositions the cursor to the end of the %type%.")
+  public void MoveCursorToEnd() {
+    MoveCursorTo(view.getText().length());
+  }
+
+  @SimpleFunction(description = "Repositions the cursor to the front of the %type%.")
+  public void MoveCursorToFront() {
+    MoveCursorTo(1);
+  }
+
   /**
    * Request focus to current `%type%`.
    */
@@ -509,6 +569,19 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   // OnFocusChangeListener implementation
+
+  @Override
+  public void onTextChanged(CharSequence s, int start, int before, int count) {
+    OnTextChanged();
+  }
+
+  @Override
+  public void afterTextChanged(Editable s) {
+  }
+
+  @Override
+  public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+  }
 
   @Override
   public void onFocusChange(View previouslyFocused, boolean gainFocus) {

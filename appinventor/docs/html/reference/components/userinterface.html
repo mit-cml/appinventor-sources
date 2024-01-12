@@ -863,6 +863,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="PasswordTextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">PasswordTextBox</code> hint for the user.</dd>
+  <dt id="PasswordTextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint text of the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
   <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
   <dd>If true, then this <code class="highlighter-rouge">PasswordTextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
  decimal point and an optional leading minus sign. This applies to keyboard input only. Even
@@ -900,11 +902,22 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="PasswordTextBox.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">PasswordTextBox</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="PasswordTextBox.OnTextChanged">LostFocus()</dt>
+  <dd>Event raised when the text of the <code class="highlighter-rouge">PasswordTextBox</code> is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="PasswordTextBox-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="PasswordTextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo()</dt>
+  <dd>Repositions the cursor of the <code class="highlighter-rouge">PasswordTextBox</code> before the character at the given
+  1-indexed position. If the given position is larger than the length of the
+  <code class="highlighter-rouge">PasswordTextBox</code>, the cursor will be moved to the end of the text; and if the given
+  position is smaller or equal to 1, the cursor will be moved to the front.</dd>
+  <dt id="PasswordTextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
+  <dt id="PasswordTextBox.MoveCursorToFront" class="method"><i></i> MoveCursorToFront()</dt>
+  <dd>Repositions the cursor to the front of the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
   <dt id="PasswordTextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
 </dl>
@@ -1330,6 +1343,8 @@ having dark grey components.</li>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="TextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">TextBox</code> hint for the user.</dd>
+  <dt id="TextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint text of the <code class="highlighter-rouge">TextBox</code>.</dd>
   <dt id="TextBox.MultiLine" class="boolean"><em>MultiLine</em></dt>
   <dd>If true, then this <code class="highlighter-rouge">TextBox</code> accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1372,6 +1387,8 @@ having dark grey components.</li>
   <dt id="TextBox.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">TextBox</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="TextBox.OnTextChanged">LostFocus()</dt>
+  <dd>Event raised when the text of the <code class="highlighter-rouge">TextBox</code> is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="TextBox-Methods">Methods</h3>
@@ -1380,6 +1397,15 @@ having dark grey components.</li>
   <dt id="TextBox.HideKeyboard" class="method"><i></i> HideKeyboard()</dt>
   <dd>Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
  keyboard when the users presses the Done key.</dd>
+  <dt id="TextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo()</dt>
+  <dd>Repositions the cursor of the <code class="highlighter-rouge">TextBox</code> before the character at the given
+  1-indexed position. If the given position is larger than the length of the
+  <code class="highlighter-rouge">TextBox</code>, the cursor will be moved to the end of the text; and if the given
+  position is smaller or equal to 1, the cursor will be moved to the front.</dd>
+  <dt id="TextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the <code class="highlighter-rouge">TextBox</code>.</dd>
+  <dt id="TextBox.MoveCursorToFront" class="method"><i></i> MoveCursorToFront()</dt>
+  <dd>Repositions the cursor to the front of the <code class="highlighter-rouge">TextBox</code>.</dd>
   <dt id="TextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">TextBox</code>.</dd>
 </dl>

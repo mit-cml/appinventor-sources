@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -139,6 +140,7 @@ public final class PasswordTextBox extends TextBoxBase {
     } else if(!acceptsNumbersOnly && !passwordVisible) {
       view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
+    TextViewUtil.setFontTypeface(container.$form(), view, this.FontTypeface(), this.FontBold(), this.FontItalic());
   }
 
 }
