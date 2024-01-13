@@ -417,7 +417,7 @@
               (this)
               (this):toastAllowed
               (this):toastAllowed
-              (ex:getMessage)
+              (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))
               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
               "End Application")))
 
