@@ -15,6 +15,7 @@ goog.provide('Blockly.Blocks.lists');
 goog.require('Blockly.Blocks.Utilities');
 goog.require('Blockly.NameSet');
 goog.require('AI.Blockly.Mixins');
+goog.require('AI.Blockly.FieldFlydown');
 
 Blockly.Blocks['lists_create_with'] = {
   // Create a list with any number of elements of any type.

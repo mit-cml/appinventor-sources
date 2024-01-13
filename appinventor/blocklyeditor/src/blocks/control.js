@@ -35,6 +35,7 @@
 
 goog.provide('Blockly.Blocks.control');
 
+goog.require('AI.Blockly.FieldFlydown');
 goog.require('Blockly.Blocks.Utilities');
 goog.require('Blockly.Substitution');
 

@@ -27,7 +27,7 @@ Blockly.FieldGlobalFlydown = lexVarPlugin.FieldGlobalFlydown;
 /**
  * FieldParameterFlydown
  */
-// Note: Not sure why there is no // goog.provide in the original App Inventor code for this
+goog.provide('AI.Blockly.FieldLexicalVariable');
 Blockly.FieldLexicalVariable = lexVarPlugin.FieldLexicalVariable;
 
 /**
