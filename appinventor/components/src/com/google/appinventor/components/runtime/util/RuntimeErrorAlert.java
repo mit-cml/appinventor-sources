@@ -28,11 +28,11 @@ public final class RuntimeErrorAlert {
                            final String message,
                            final String title,
                            final String buttonText) {
-    alert(context, /* only alert dialog */ 0, message, title, buttonText);
+    alert(context, /* only alert dialog */ false, message, title, buttonText);
   }
 
   public static void alert(final Object context,
-                           int activity,
+                           boolean toast,
                            String message,
                            String title,
                            String buttonText) {
@@ -41,25 +41,20 @@ public final class RuntimeErrorAlert {
       // do not pass null, or it will result in a crash
       message = title + " <No error message>";
     }
-    switch (activity) {
-      case 0:
-        AlertDialog alertDialog = new AlertDialog.Builder((Context) context).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(message);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, buttonText, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-            ((Activity) context).finish();
-          }});
-        alertDialog.show();
-        break;
-      case 1:
-        Toast.makeText((Context) context, message, Toast.LENGTH_SHORT).show();
-        RetValManager.sendError(message);
-        break;
-      default:
-        // ignore, do nothing, sometimes when isRepl,
-        // but not toastAllowed
-        break;
+
+    if (toast) {
+      Toast.makeText((Context) context, message, Toast.LENGTH_SHORT).show();
+      RetValManager.sendError(message);
+    } else {
+      AlertDialog alertDialog = new AlertDialog.Builder((Context) context).create();
+      alertDialog.setTitle(title);
+      alertDialog.setMessage(message);
+      alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, buttonText, new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+          ((Activity) context).finish();
+        }});
+      alertDialog.show();
     }
+
   }
 }
