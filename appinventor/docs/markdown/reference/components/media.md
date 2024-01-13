@@ -10,6 +10,7 @@ Table of Contents:
 
 * [Camcorder](#Camcorder)
 * [Camera](#Camera)
+* [FilePicker](#FilePicker)
 * [ImagePicker](#ImagePicker)
 * [Player](#Player)
 * [Sound](#Sound)
@@ -85,6 +86,135 @@ None
 
 {:id="Camera.TakePicture" class="method"} <i/> TakePicture()
 : Takes a picture, then raises the [`AfterPicture`](#Camera.AfterPicture) event.
+
+## FilePicker  {#FilePicker}
+
+The <code>FilePicker</code> component is a button-like component that when clicked
+ by the user will prompt them to select a file from the system. The picker
+ can also be programmatically opened by calling its
+ <a href="/reference/components/media.html#FilePicker.Open" target="_blank">Open</a> method.
+ Using the FilePicker requires Android 4.4 or higher or iOS 11 or higher.
+
+
+
+### Properties  {#FilePicker-Properties}
+
+{:.properties}
+
+{:id="FilePicker.Action" .com.google.appinventor.components.common.FileActionEnum} *Action*
+: Sets the desired action for the FilePicker. One of:
+
+     - Pick Existing File: Open an existing file
+     - Pick Directory: Open an existing directory
+     - Pick New File: Create a new file for saving
+
+{:id="FilePicker.BackgroundColor" .color} *BackgroundColor*
+: Specifies the `FilePicker`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#FilePicker.Image) has been set, the color
+ change will not be visible until the [`Image`](#FilePicker.Image) is removed.
+
+{:id="FilePicker.Enabled" .boolean} *Enabled*
+: Specifies whether the `FilePicker` should be active and clickable.
+
+{:id="FilePicker.FontBold" .boolean} *FontBold*
+: Specifies whether the text of the `FilePicker` should be bold.
+ Some fonts do not support bold.
+
+{:id="FilePicker.FontItalic" .boolean} *FontItalic*
+: Specifies whether the text of the `FilePicker` should be italic.
+ Some fonts do not support italic.
+
+{:id="FilePicker.FontSize" .number} *FontSize*
+: Specifies the text font size of the `FilePicker`, measured in sp(scale-independent pixels).
+
+{:id="FilePicker.FontTypeface" .text .do} *FontTypeface*
+: Specifies the text font face of the `FilePicker` as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
+
+{:id="FilePicker.Height" .number .bo} *Height*
+: Specifies the `FilePicker`'s vertical height, measured in pixels.
+
+{:id="FilePicker.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `FilePicker`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="FilePicker.Image" .text} *Image*
+: Specifies the path of the `FilePicker`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#FilePicker.BackgroundColor) specified, only the `Image` will be visible.
+
+{:id="FilePicker.MimeType" .text} *MimeType*
+: Sets the desired MIME type for picking a file.
+
+{:id="FilePicker.Selection" .text .ro .bo} *Selection*
+: Returns the selected file, possibly as a content URI.
+
+{:id="FilePicker.Shape" .number .do} *Shape*
+: Specifies the shape of the `FilePicker`. The valid values for this property are `0` (default),
+ `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+ [`Image`](#FilePicker.Image) is used.
+
+{:id="FilePicker.ShowFeedback" .boolean} *ShowFeedback*
+: Specifies if a visual feedback should be shown when a `FilePicker` with an assigned
+ [`Image`](#FilePicker.Image) is pressed.
+
+{:id="FilePicker.Text" .text} *Text*
+: Specifies the text displayed by the `FilePicker`.
+
+{:id="FilePicker.TextAlignment" .number .do} *TextAlignment*
+: Specifies the alignment of the `FilePicker`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
+
+{:id="FilePicker.TextColor" .color} *TextColor*
+: Specifies the text color of the `FilePicker` as an alpha-red-green-blue
+ integer.
+
+{:id="FilePicker.Visible" .boolean} *Visible*
+: Specifies whether the `FilePicker` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `FilePicker` is showing and `false`{:.logic.block} if hidden.
+
+{:id="FilePicker.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `FilePicker`, measured in pixels.
+
+{:id="FilePicker.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `FilePicker` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#FilePicker-Events}
+
+{:.events}
+
+{:id="FilePicker.AfterPicking"} AfterPicking()
+: Event to be raised after the `FilePicker` activity returns its
+ result and the properties have been filled in.
+
+{:id="FilePicker.BeforePicking"} BeforePicking()
+: Event to raise when the `FilePicker` is clicked or the picker is shown
+ using the [`Open`](#FilePicker.Open) method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.
+
+{:id="FilePicker.GotFocus"} GotFocus()
+: Indicates the cursor moved over the `FilePicker` so it is now possible
+ to click it.
+
+{:id="FilePicker.LostFocus"} LostFocus()
+: Indicates the cursor moved away from the `FilePicker` so it is now no
+ longer possible to click it.
+
+{:id="FilePicker.TouchDown"} TouchDown()
+: Indicates that the `FilePicker` was pressed down.
+
+{:id="FilePicker.TouchUp"} TouchUp()
+: Indicates that the `FilePicker` has been released.
+
+### Methods  {#FilePicker-Methods}
+
+{:.methods}
+
+{:id="FilePicker.Open" class="method"} <i/> Open()
+: Opens the `FilePicker`, as though the user clicked on it.
 
 ## ImagePicker  {#ImagePicker}
 
@@ -504,6 +634,9 @@ The `TextToSpeech` component speaks a given text aloud. You can set the pitch
 
 {:id="TextToSpeech.Speak" class="method"} <i/> Speak(*message*{:.text})
 : Speaks the given message.
+
+{:id="TextToSpeech.Stop" class="method"} <i/> Stop()
+: Stops any current speech.
 
 ## Translator  {#Translator}
 

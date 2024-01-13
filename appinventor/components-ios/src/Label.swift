@@ -5,7 +5,7 @@
 
 import Foundation
 
-public final class Label: ViewComponent, AbstractMethodsForViewComponent {
+public final class Label: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
   fileprivate var _view: UILabel
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface = Typeface.normal
@@ -14,7 +14,10 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _hasMargins = false
   fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
-  fileprivate var _fontSize: Float64 = 0
+  fileprivate var _fontSize = kFontSizeDefault
+  fileprivate var _isBigText = false
+  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  public var HighContrast: Bool = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -29,6 +32,25 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     Height = kLengthPreferred
     Width = kLengthPreferred
+    FontSize = kFontSizeDefault
+  }
+
+  func updateFontSize() {
+    if _htmlFormat {
+      updateFormattedContent()
+    } else {
+      if form?.BigDefaultText == true {
+        if _fontSize == kFontSizeDefault {
+          _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
+        } else {
+          _view.font = _view.font.withSize(CGFloat(_fontSize))
+        }
+      } else {
+        _view.font = _view.font.withSize(CGFloat(_fontSize))
+      }
+    }
+    _view.sizeToFit()
+    updateFormattedContent()
   }
   
   public override var view: UIView {
@@ -116,18 +138,13 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  @objc public var FontSize: Float64 {
+  @objc public var FontSize: Float {
     get {
-      return _fontSize
+      return Float(_view.font.pointSize)
     }
     set(size) {
       _fontSize = size
-      if _htmlFormat {
-        updateFormattedContent()
-      } else {
-        _view.font = _view.font.withSize(CGFloat(size))
-      }
-      _view.sizeToFit()
+      updateFontSize()
     }
   }
   
@@ -148,6 +165,16 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
+  @objc public var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
+    }
+  }
+
   @objc public var Text: String {
     get {
       return _view.text ?? ""
@@ -208,7 +235,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       let data = ("<div style=\"\(style)\">" + _htmlContent + "</div>").data(using: .utf8) ?? Data()
       var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
       options[NSAttributedString.DocumentReadingOptionKey.documentType] =
-        NSAttributedString.DocumentType.html
+          NSAttributedString.DocumentType.html
+      options[NSAttributedString.DocumentReadingOptionKey.characterEncoding] =
+          NSUTF8StringEncoding
       _view.attributedText = try? NSAttributedString(data: data,
                                                      options: options,
                                                      documentAttributes: nil)

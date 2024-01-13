@@ -25,6 +25,10 @@ AI.Blockly.FieldProcedureName = class extends Blockly.FieldTextInput {
   setValue(newValue) {
     var oldValue = this.getValue();
     super.setValue(newValue);
+    if (this.sourceBlock_ && this.sourceBlock_.isInFlyout) {
+      // Do not take action for blocks in flyouts
+      return;
+    }
     newValue = this.getValue();
     if (typeof newValue === 'string' && this.sourceBlock_) {
       var procDb = this.sourceBlock_.workspace.getProcedureDatabase();

@@ -7,9 +7,9 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -19,6 +19,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Image;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for button based mock components.
@@ -26,6 +27,7 @@ import com.google.gwt.user.client.ui.Image;
  * @author lizlooney@google.com (Liz Looney)
  */
 abstract class MockButtonBase extends MockVisibleComponent implements FormChangeListener {
+  private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
 
@@ -59,7 +61,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       @Override
       public void onError(ErrorEvent event) {
         if (imagePropValue != null && !imagePropValue.isEmpty()) {
-          OdeLog.elog("Error occurred while loading image " + imagePropValue);
+          LOG.severe("Error occurred while loading image " + imagePropValue);
         }
         refreshForm();
       }
@@ -76,7 +78,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     deckPanel.add(image);
     deckPanel.showWidget(0);
     initComponent(deckPanel);
-
   }
 
   @Override
@@ -132,9 +133,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
@@ -240,7 +238,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
-      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -251,6 +248,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
     }
+    setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
   }
@@ -384,7 +382,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       refreshForm();
     }
 
-    }
+  }
 
   @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {

@@ -5,13 +5,13 @@
 
 import Foundation
 
-public class Switch: ViewComponent, AbstractMethodsForViewComponent {
+public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
+  public var HighContrast: Bool = false
   fileprivate var _view = UIView()
   fileprivate var _text = UILabel()
   fileprivate var _switch = UISwitch()
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface: Int32 = Typeface.normal.rawValue
-
   fileprivate var _backgroundColor = Color.default.int32
   fileprivate var _trackColorActive = Color.default.int32
   fileprivate var _thumbColorActive = Color.default.int32
@@ -21,6 +21,8 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _bold = false
   fileprivate var _italic = false
   fileprivate var _hasMargins = false
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _isBigText = false
   
   public override init(_ parent: ComponentContainer) {
     _switch.isOn = false
@@ -54,6 +56,18 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     _view.heightAnchor.constraint(greaterThanOrEqualTo: _switch.heightAnchor).isActive = true
     _text.heightAnchor.constraint(greaterThanOrEqualTo: _view.heightAnchor).isActive = true
     _view.clipsToBounds = true
+  }
+
+  func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
+      } else {
+        _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(_userFontSize))
+      }
+    } else {
+      _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(_userFontSize))
+    }
   }
 
   open override var view: UIView {
@@ -163,7 +177,8 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
       return Float32(_text.font.pointSize)
     }
     set(size) {
-      _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(size))
+      _userFontSize = size
+      updateFontSize()
     }
   }
   
@@ -173,6 +188,16 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(newTypeface) {
       
+    }
+  }
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
   

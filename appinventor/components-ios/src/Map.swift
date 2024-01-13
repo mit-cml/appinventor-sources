@@ -11,7 +11,7 @@ import Alamofire
 
 private let ERROR_INVALID_NUMBER: String = "%s is not a valid number."
 private let ERROR_LATITUDE_OUT_OF_BOUNDS: String = "Latitude %f is out of bounds."
-private let  ERROR_LONGITUDE_OUT_OF_BOUNDS: String = "Longitude %f is out of bounds."
+private let ERROR_LONGITUDE_OUT_OF_BOUNDS: String = "Longitude %f is out of bounds."
 private let DEFAULT_CENTER: String = "42.359144, -71.093612"
 
 private let MAX_ZOOM_LEVEL: Int = 18
@@ -21,7 +21,7 @@ private let kFingerSize: CGFloat = 1.0
 private let ZOOM_LEVEL_0 = 80082944.031721031553788
 
 func altitude(from zoom: Double) -> CLLocationDistance {
-  return ZOOM_LEVEL_0 / pow(2.0, zoom - 1.0)
+  return ZOOM_LEVEL_0 / pow(2.0, zoom)
 }
 
 enum AIMapType: Int32 {
@@ -206,14 +206,14 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
    * Code is handled asynchronously to ensure that values from the companion are processed first
    */
   @objc open func Initialize() {
-    if self._zoomLevelUpdate == nil {
-      self.ZoomLevel = 13
+    if _zoomLevelUpdate == nil {
+      ZoomLevel = 13
     }
-    if self._centerUpdate == nil {
-      self.CenterFromString(DEFAULT_CENTER, animated: false)
+    if _centerUpdate == nil {
+      CenterFromString(DEFAULT_CENTER, animated: false)
     }
-    self.setNeedsUpdate(animated: false)
-    self._initialized = true
+    setNeedsUpdate(animated: false)
+    _initialized = true
   }
 
   private func setupZoomControls() {
@@ -828,41 +828,47 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
    * handles the issue where there are multiple updates occuring + animating that are interacting with
    * with each other.  This will make it such that only the last update(s) are passed and set on the map.
    */
-  private func setNeedsUpdate(animated: Bool = true) {
-    if !_updatePending {
+  private func setNeedsUpdate(animated: Bool = true, force: Bool = false) {
+    if force {
+      performUpdate(animated: animated)
+    } else if !_updatePending {
       _updatePending = true
       DispatchQueue.main.async {
-        if let boundingBox = self._boundingBoxUpdate {
-          let region = MKCoordinateRegion.init(boundingBox)
-          let zoom = self.mapView.calculateZoomLevelFromRegion(region: region)
-          /**
-           * We first set from the centerUpdate and zoomLevel as those are set to nil once we set a
-           * boundingBox.  Therefore, those will be nil unless they've been updated following the
-           * boundingBox being set.  We want to set the most recent update(s), and therefore, we
-           * attempt to set with the centerUpdate and zoomLevel update first, only pulling from the
-           * boundingBox if those are nil.
-           */
-
-          let distance = altitude(from: zoom)
-          let pitch = self.mapView.camera.pitch
-          let camera = MKMapCamera(lookingAtCenter: self._centerUpdate ?? region.center,
-              fromDistance: distance, pitch: pitch, heading: CLLocationDirection(self._rotation))
-          self.mapView.setCamera(camera, animated: true)
-        } else {
-          self._zoomDidChange = self._zoomLevelUpdate != nil
-
-          let distance = altitude(from: Double(self._zoomLevel))
-          let pitch = self.mapView.camera.pitch
-          let camera = MKMapCamera(lookingAtCenter: self._centerUpdate ?? self.mapView.centerCoordinate,
-              fromDistance: distance, pitch: pitch, heading: CLLocationDirection(self._rotation))
-          self.mapView.setCamera(camera, animated: true)
-        }
-        self._updatePending = false
-        self._zoomLevelUpdate = nil
-        self._centerUpdate = nil
-        self._boundingBoxUpdate = nil
+        self.performUpdate(animated: animated)
       }
     }
+  }
+
+  private func performUpdate(animated: Bool = true) {
+    if let boundingBox = _boundingBoxUpdate {
+      let region = MKCoordinateRegion.init(boundingBox)
+      let zoom = mapView.calculateZoomLevelFromRegion(region: region)
+      /**
+       * We first set from the centerUpdate and zoomLevel as those are set to nil once we set a
+       * boundingBox.  Therefore, those will be nil unless they've been updated following the
+       * boundingBox being set.  We want to set the most recent update(s), and therefore, we
+       * attempt to set with the centerUpdate and zoomLevel update first, only pulling from the
+       * boundingBox if those are nil.
+       */
+
+      let distance = altitude(from: zoom)
+      let pitch = mapView.camera.pitch
+      let camera = MKMapCamera(lookingAtCenter: _centerUpdate ?? region.center,
+          fromDistance: distance, pitch: pitch, heading: CLLocationDirection(_rotation))
+      mapView.setCamera(camera, animated: animated)
+    } else {
+      _zoomDidChange = _zoomLevelUpdate != nil
+
+      let distance = altitude(from: Double(_zoomLevel))
+      let pitch = mapView.camera.pitch
+      let camera = MKMapCamera(lookingAtCenter: _centerUpdate ?? mapView.centerCoordinate,
+          fromDistance: distance, pitch: pitch, heading: CLLocationDirection(_rotation))
+      mapView.setCamera(camera, animated: animated)
+    }
+    _updatePending = false
+    _zoomLevelUpdate = nil
+    _centerUpdate = nil
+    _boundingBoxUpdate = nil
   }
 
   /**
@@ -981,7 +987,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
 
-  public func replaceFeature(from oldOverlay: MapOverlayShape, to newOverlay: MapOverlayShape) {
+  public func replaceFeature(from oldOverlay: MapOverlayShape?, to newOverlay: MapOverlayShape) {
     if let oldShapes = oldOverlay as? MapShapeCollection {
       if let last = oldShapes.shapes.last {
         if let newShapes = newOverlay as? MapShapeCollection {
@@ -994,10 +1000,18 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       }
       mapView.removeOverlays(oldShapes.shapes)
     } else if let newShapes = newOverlay as? MapShapeCollection {
-      addCollection(newShapes, above: oldOverlay)
+      if let oldOverlay = oldOverlay {
+        addCollection(newShapes, above: oldOverlay)
+      } else {
+        mapView.addOverlays(newShapes.shapes)
+      }
     } else {
-      mapView.insertOverlay(newOverlay, above: oldOverlay)
-      mapView.removeOverlay(oldOverlay)
+      if let oldOverlay = oldOverlay{
+        mapView.insertOverlay(newOverlay, above: oldOverlay)
+        mapView.removeOverlay(oldOverlay)
+      } else {
+        mapView.addOverlay(newOverlay)
+      }
     }
   }
 
@@ -1249,7 +1263,8 @@ private class ZoomButton: UIButton {
   }
 
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   override var isEnabled: Bool {

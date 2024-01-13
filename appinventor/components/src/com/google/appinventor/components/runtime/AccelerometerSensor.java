@@ -473,7 +473,8 @@ public int getDeviceDefaultOrientation() {
     "you to update your project, you can also just set this property to “true” " +
     "and our compensation code will be deactivated. Note: We recommend that " +
     "you update your project as we may remove this property in a future " +
-    "release.")
+    "release.",
+    category = PropertyCategory.BEHAVIOR)
   public void LegacyMode(boolean legacyMode) {
     this.legacyMode = legacyMode;
   }

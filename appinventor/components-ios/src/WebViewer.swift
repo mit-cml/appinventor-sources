@@ -153,8 +153,19 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       let assetPath = AssetManager.shared.pathForExistingFileAsset(fileURL.lastPathComponent)
       if !assetPath.isEmpty {
         let assetURL = URL(fileURLWithPath: assetPath)
-        let url2 = NSURL(string: String(queryParameters), relativeTo: assetURL)!
-        _view.load(NSURLRequest(url: url2 as URL) as URLRequest)
+        let url2: NSURL?
+        if queryParameters.isEmpty {
+          url2 = assetURL as NSURL
+        } else {
+          url2 = NSURL(string: "\(assetURL)?\(queryParameters)")
+        }
+        guard let destinationUrl = url2 as? URL else {
+          form?.dispatchErrorOccurredEvent(self, "WebViewer",
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
+          return
+        }
+        _view.loadFileURL(destinationUrl, allowingReadAccessTo: destinationUrl.deletingLastPathComponent())
       } else {
         form?.dispatchErrorOccurredEvent(self, "WebViewer",
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
@@ -221,6 +232,40 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
 
   @objc open func GoToUrl(_ url: String) {
     processURL(url)
+  }
+
+  //reload
+  @objc open func Reload() {
+    _view.reload()
+  }
+
+  //Stoploading
+  @objc open func StopLoading() {
+    _view.stopLoading()
+  }
+
+  //ClearCookies
+  @objc open func ClearCookies() {
+    let dataStore = _view.configuration.websiteDataStore
+    let dataTypes = Set([WKWebsiteDataTypeCookies])
+
+    dataStore.fetchDataRecords(ofTypes: dataTypes) { records in
+      dataStore.removeData(ofTypes: dataTypes, for: records) {
+      }
+    }
+  }
+
+  //RunJavaScript
+  @objc open func RunJavaScript(_ js: String) {
+    _view.evaluateJavaScript(js) { (result, error) in
+      if let error = error {
+        // Handle the JavaScript evaluation error
+        print("JavaScript evaluation error: \(error)")
+      } else if let result = result {
+        // Handle the JavaScript result
+        print("JavaScript result: \(result)")
+      }
+    }
   }
 
   @objc open func WebViewStringChange(_ value: String) {
@@ -318,6 +363,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   }
   
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    guard message.name == "webString" else {
+      return  // Message intended for someone else...
+    }
     if let string = message.body as? String {
       _webViewString = string
       DispatchQueue.main.async {

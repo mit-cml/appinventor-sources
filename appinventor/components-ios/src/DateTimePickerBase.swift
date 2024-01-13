@@ -30,7 +30,8 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   override func setupViews() {
@@ -96,7 +97,8 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   @objc func setDateTime(_ calendar: Calendar) {

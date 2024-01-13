@@ -18,17 +18,22 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.AddSheetRequest;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesResponse;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -45,10 +50,13 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IOUtils;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
+import gnu.math.DFloNum;
+import gnu.math.IntNum;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -179,7 +187,15 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     this.activity = componentContainer.$context();
   }
 
-  private int getSheetID(Sheets sheetsSvcParam, String sheetName) {
+  private synchronized void updateSheetID(String sheetName, int sheetId) {
+    sheetIdMap.put(sheetName, sheetId);
+  }
+
+  private synchronized void removeSheetID(String sheetName) {
+    sheetIdMap.remove(sheetName);
+  }
+
+  private synchronized int getSheetID(Sheets sheetsSvcParam, String sheetName) {
     if (sheetIdMap.containsKey(sheetName)) {
       return sheetIdMap.get(sheetName);
     } else {
@@ -208,7 +224,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /* Getter and Setters for Properties */
 
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String CredentialsJson() {
     return credentialsPath;
   }
@@ -220,7 +236,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     this.credentialsPath = credentialsPath;
   }
 
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String SpreadsheetID() {
     return spreadsheetID;
   }
@@ -246,8 +262,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * in {@link com.google.appinventor.client.editor.simple.components.MockSpreadsheet}
    * and consists of the current App Inventor project name.
    */
-  @SimpleProperty(
-    userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public String ApplicationName() {
     return applicationName;
   }
@@ -339,7 +354,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage);
+        if (!EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage)) {
+          // Dispatch to screen if the event handler does not exist.
+          form.dispatchErrorOccurredEvent(Spreadsheet.this, "ErrorOccurred",
+              ErrorMessages.ERROR_SPREADSHEET_ERROR,  errorMessage);
+        }
       }
     });
   }
@@ -652,8 +671,127 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleEvent(
     description="The callback event for the WriteRow block, called after the " +
       "values on the table have finished updating")
-  public void FinishedWriteRow () {
+  public void FinishedWriteRow() {
     EventDispatcher.dispatchEvent(this, "FinishedWriteRow");
+  }
+
+  /**
+   * Adds a new sheet inside the Spreadsheet.
+   *
+   * @param sheetName the name of the new sheet to create
+   */
+  @SimpleFunction
+  public void AddSheet(final String sheetName) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("AddSheet: " + "SpreadsheetID is empty.");
+      return;
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+      ErrorOccurred("AddSheet: " + "Credentials JSON is required.");
+      return;
+    }
+    // Run the API call asynchronously
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Sheets sheetsService = getSheetsService();
+          AddSheetRequest addSheetRequest = new AddSheetRequest()
+              .setProperties(new SheetProperties()
+                  //set title of new sheet as user parameter
+                  .setTitle(sheetName)
+              );
+          List<Request> requests = new ArrayList<>();
+          requests.add(new Request().setAddSheet(addSheetRequest));
+          BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
+              .setRequests(requests);
+          BatchUpdateSpreadsheetResponse response =
+              sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+          updateSheetID(sheetName,
+              response.getReplies().get(0).getAddSheet().getProperties().getSheetId());
+
+          // Run the callback event block
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              FinishedAddSheet(sheetName);
+            }
+          });
+
+        } catch (final Exception e) {
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              Log.e(LOG_TAG, "Error occurred in AddSheet", e);
+              ErrorOccurred("AddSheet: " + e.getMessage());
+            }
+          });
+
+        }
+      }
+    });
+  }
+
+  @SimpleEvent(description = "The callback event for the addSheet block, called once the "
+      + "values on the table have been updated.")
+  public void FinishedAddSheet(final String sheetName) {
+    EventDispatcher.dispatchEvent(this, "FinishedAddSheet", sheetName);
+  }
+
+  /**
+   * Deletes the specified sheet inside the Spreadsheet.
+   *
+   * @param sheetName the name of the sheet to delete
+   */
+  @SimpleFunction
+  public void DeleteSheet(final String sheetName) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("DeleteSheet: " + "SpreadsheetID is empty.");
+      return;
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+      ErrorOccurred("DeleteSheet: " + "Credentials JSON is required.");
+      return;
+    }
+    // Run the API call asynchronously
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Sheets sheetsService = getSheetsService();
+          DeleteSheetRequest deleteSheetRequest = new DeleteSheetRequest()
+              .setSheetId(getSheetID(sheetsService, sheetName));
+          List<Request> requests = new ArrayList<>();
+          requests.add(new Request().setDeleteSheet(deleteSheetRequest));
+          BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
+              .setRequests(requests);
+          sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
+          removeSheetID(sheetName);
+
+          // Run the callback event block
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              FinishedDeleteSheet(sheetName);
+            }
+          });
+
+        } catch (final Exception e) {
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              Log.e(LOG_TAG, "Error occurred in DeleteSheet", e);
+              ErrorOccurred("DeleteSheet: " + e.getMessage());
+            }
+          });
+
+        }
+      }
+    });
+  }
+
+  @SimpleEvent(description = "The callback event for the DeleteSheet block, called once the "
+      + "values on the table have been updated.")
+  public void FinishedDeleteSheet(final String sheetName) {
+    EventDispatcher.dispatchEvent(this, "FinishedDeleteSheet", sheetName);
   }
 
   /**
@@ -676,9 +814,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     }
 
     // Generates the 2D list, which are the values to assign to the range
-    LList rowValues = (LList) data.getCdr();
     List<List<Object>> values = new ArrayList<>();
-    List<Object> row = new ArrayList<Object>(rowValues);
+    List<Object> row = sanitizeList(data);
     values.add(row);
 
     // Sets the 2D list above to be the values in the body of the API Call
@@ -961,7 +1098,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // Generates the body, which are the values to assign to the range
     List<List<Object>> values = new ArrayList<>();
     for (Object o : (LList) data.getCdr()) {
-      List<Object> r = new ArrayList<>(Collections.singletonList(o));
+      List<Object> r = new ArrayList<>(Collections.singletonList(sanitizeObject(o)));
       values.add(r);
     }
 
@@ -1030,7 +1167,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     List<List<Object>> values = new ArrayList<>();
     for (Object o : (LList) data.getCdr()) {
       List<Object> r = new ArrayList<Object>();
-      r.add(o);
+      r.add(sanitizeObject(o));
       values.add(r);
     }
     final ValueRange body = new ValueRange()
@@ -1325,7 +1462,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // Form the body as a 2D list of Strings, with only one string
     final ValueRange body = new ValueRange()
       .setValues(Arrays.asList(
-        Arrays.asList(data)
+        Arrays.asList(sanitizeObject(data))
       ));
     Log.d(LOG_TAG, "Writing Cell: " + rangeRef);
 
@@ -1525,9 +1662,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
         continue;
       YailList row = (YailList) elem;
       // construct the row that we will add to the list of rows
-      List<Object> r = new ArrayList<Object>();
-      for (Object o : (LList) row.getCdr())
-        r.add(o);
+      List<Object> r = sanitizeList(row);
       values.add(r);
       // Catch rows of unequal length
       if (cols == -1) cols = r.size();
@@ -1671,7 +1806,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
-              cleanRangeReference = URLEncoder.encode(sheetName + "!", "UTF-8");
+              cleanRangeReference = URLEncoder.encode(sheetName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
               ErrorOccurred("ReadRange: Error occurred encoding the query. UTF-8 is unsupported?");
               return;
@@ -1679,7 +1814,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
             // Formats the data into the URL to read the range
             String getUrl = String.format(
-                "https://docs.google.com/spreadsheets/d/%s/export?format=csv&sheet=%s",
+                "https://docs.google.com/spreadsheets/d/%s/gviz/tq?tqx=out:csv&sheet=%s",
                 spreadsheetID, cleanRangeReference);
 
             // Make the HTTP Request
@@ -1929,5 +2064,31 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     }
 
     return YailList.makeList(resultingColumns);
+  }
+
+  private static List<Object> sanitizeList(YailList source) {
+    List<Object> result = new ArrayList<>();
+    for (Object o : (LList) source.getCdr()) {
+      result.add(sanitizeObject(o));
+    }
+    return result;
+  }
+
+  private static Object sanitizeObject(Object o) {
+    if (o instanceof Boolean) {
+      return o;
+    } else if (o instanceof IntNum) {
+      return ((IntNum) o).longValue();
+    } else if (o instanceof DFloNum) {
+      return ((DFloNum) o).doubleValue();
+    } else if (o instanceof Integer || o instanceof Long) {
+      return o;
+    } else if (o instanceof Number) {
+      return ((Number) o).doubleValue();
+    } else if (o instanceof String) {
+      return o;
+    } else {
+      return o.toString();
+    }
   }
 }

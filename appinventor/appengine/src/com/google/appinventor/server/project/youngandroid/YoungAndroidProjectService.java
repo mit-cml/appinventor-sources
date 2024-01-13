@@ -17,6 +17,7 @@ import com.google.appinventor.server.FileExporterImpl;
 import com.google.appinventor.server.FileImporter;
 import com.google.appinventor.server.FileImporterException;
 import com.google.appinventor.server.FileImporterImpl;
+import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.flags.Flag;
@@ -453,6 +454,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
+   * Renames several projects.
+   *
+   * @param userId the user id
+   * @param projectIds IDs of projects to be renamed
+   * @param projectNames new project names
+   */
+	@Override
+  public void renameProjects(String userId, List<Long> projectIds, List<String> projectNames) {
+    for (int i = 0; i < projectIds.size(); ++i) {
+      storageIo.setProjectName(userId, projectIds.get(i), projectNames.get(i));
+    }
+  }
+
+  /**
    * Constructs a RpcResult object that indicates that a file was too big to send.
    *
    * @param size size of the aia
@@ -485,10 +500,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Store the userId and projectId based on the nonce
 
     storageIo.storeNonce(nonce, userId, projectId);
+    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
 
     // Delete the existing build output files, if any, so that future attempts to get it won't get
     // old versions.
-    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
@@ -676,6 +691,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String returl = readContent(connection.getInputStream()); // Need to drain any response
         return new RpcResult(0, returl, "");
       }
+    } catch (GalleryExtensionException e) {
+      return new RpcResult(RpcResult.GALLERY_HAS_EXTENSION, "", "");
     } catch (Exception e) {
       throw CrashReport.createAndLogError(LOG, null, e.getMessage(), e);
     }

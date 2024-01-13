@@ -15,11 +15,10 @@ class OnboardViewController: UIViewController {
     "Select Connect then AI Companion to start a connection",
     "Scan the code to finish the connection"
   ]
+  var onCompletionHandler: (() -> Void)? = nil
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    // Do any additional setup after loading the view.
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     configure()
   }
 
@@ -35,11 +34,18 @@ class OnboardViewController: UIViewController {
 
   private func configure() {
     // Set up onboarding scrollview
-    let windowFrame = UIApplication.shared.keyWindow!.frame
-    var bottomAnchor = view.bottomAnchor
-    if #available(iOS 11, *) {
-      bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
+    var window: UIWindow? = nil
+    if #available(iOS 13, *) {
+      window = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first
+    } else {
+      window = UIApplication.shared.keyWindow
     }
+
+    guard let windowFrame = window?.frame else {
+      // We don't have a window?
+      return
+    }
+    let bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
 
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     holderView.addSubview(scrollView)
@@ -118,7 +124,7 @@ class OnboardViewController: UIViewController {
   @objc func didTapButton(_ button: UIButton) {
     guard button.tag < titles.count else {
       SystemVariables.newUser = false
-      dismiss(animated: true, completion: nil)
+      dismiss(animated: true, completion: self.onCompletionHandler)
       return
     }
     scrollView.setContentOffset(CGPoint(x: holderView.frame.size.width * CGFloat(button.tag), y: 0), animated: true)

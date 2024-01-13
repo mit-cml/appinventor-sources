@@ -69,7 +69,7 @@ description = "The TextToSpeech component speaks a given text aloud.  You can se
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, ActivityResultListener  */{
+    implements Component, OnStopListener, OnResumeListener, OnDestroyListener, OnClearListener {
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
@@ -441,6 +441,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.speak(message, loc);
   }
 
+  /**
+   * Stops any current speech.
+   */
+  @SimpleFunction
+  public void Stop() {
+    tts.stop();
+    AfterSpeaking(false);
+  }
 
   /**
    * Event to raise when Speak is invoked, before the message is spoken.
@@ -479,4 +487,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.onDestroy();
   }
 
+  @Override
+  public void onClear() {
+    tts.onDestroy();
+  }
 }

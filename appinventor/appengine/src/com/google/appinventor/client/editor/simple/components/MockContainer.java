@@ -89,11 +89,26 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   @Override
   protected TreeItem buildTree() {
+    return this.buildTree(1);
+  }
+
+  protected TreeItem buildTree(Integer view) {
     TreeItem itemNode = super.buildTree();
+    //hide all containers except form if only nonvisible components are to be shown
+    //in such a case, we need only the form's treeItem because all non-visible components are attached to it
+    itemNode.setVisible(view != 3 || isForm());
 
     // Recursively build the tree for child components
     for (MockComponent child : children) {
-      itemNode.addItem(child.buildTree());
+      TreeItem childNode = child.buildTree();
+      boolean isVisible = true;
+      if (view == 2 && child instanceof MockNonVisibleComponent) {
+        isVisible = false;
+      } else if (view == 3 && child instanceof MockVisibleComponent) {
+        isVisible = false;
+      }
+      childNode.setVisible(isVisible);
+      itemNode.addItem(childNode);
     }
 
     itemNode.setState(expanded);

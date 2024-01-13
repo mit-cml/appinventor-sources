@@ -8,15 +8,13 @@ package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all project editors.
@@ -37,6 +36,7 @@ import java.util.TreeMap;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class ProjectEditor extends Composite {
+  private static final Logger LOG = Logger.getLogger(ProjectEditor.class.getName());
 
   protected final ProjectRootNode projectRootNode;
   protected final long projectId;
@@ -69,11 +69,8 @@ public abstract class ProjectEditor extends Composite {
 
     deckPanel = new DeckPanel();
 
-    VerticalPanel panel = new VerticalPanel();
-    panel.add(deckPanel);
     deckPanel.setSize("100%", "100%");
-    panel.setSize("100%", "100%");
-    initWidget(panel);
+    initWidget(deckPanel);
     // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");
   }
@@ -161,7 +158,7 @@ public abstract class ProjectEditor extends Composite {
     openFileEditors.put(fileId, fileEditor);
     fileIds.add(beforeIndex, fileId);
     deckPanel.insert(fileEditor, beforeIndex);
-    OdeLog.log("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+    LOG.info("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
 
   }
 
@@ -181,12 +178,12 @@ public abstract class ProjectEditor extends Composite {
     int index = deckPanel.getWidgetIndex(fileEditor);
     if (index == -1) {
       if (fileEditor != null) {
-        OdeLog.wlog("Can't find widget for fileEditor " + fileEditor.getFileId());
+        LOG.warning("Can't find widget for fileEditor " + fileEditor.getFileId());
       } else {
-        OdeLog.wlog("Not expecting selectFileEditor(null)");
+        LOG.warning("Not expecting selectFileEditor(null)");
       }
     }
-    OdeLog.log("ProjectEditor: got selectFileEditor for " 
+    LOG.info("ProjectEditor: got selectFileEditor for "
         + ((fileEditor == null) ? null : fileEditor.getFileId())
         +  " selectedFileEditor is " 
         + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
@@ -235,7 +232,7 @@ public abstract class ProjectEditor extends Composite {
     for (String fileId : closeFileIds) {
       FileEditor fileEditor = openFileEditors.remove(fileId);
       if (fileEditor == null) {
-        OdeLog.elog("File editor is unexpectedly null for " + fileId);
+        LOG.severe("File editor is unexpectedly null for " + fileId);
         continue;
       }
       int index = deckPanel.getWidgetIndex(fileEditor);
@@ -274,7 +271,7 @@ public abstract class ProjectEditor extends Composite {
     Settings settings = projectSettings.getSettings(category);
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
-      OdeLog.log("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
+      LOG.info("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
                  " => " + newValue);
       settings.changePropertyValue(name, newValue);
       // Deal with the Tutorial Panel
@@ -307,15 +304,15 @@ public abstract class ProjectEditor extends Composite {
    */
 
   public final void recordLocationSetting(String componentName, String newValue) {
-    OdeLog.log("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
+    LOG.info("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
     locationHashMap.put(componentName, newValue);
     recomputeLocationPermission();
   }
 
-  private final void recomputeLocationPermission() {
+  private void recomputeLocationPermission() {
     String usesLocation = "False";
     for (String c : locationHashMap.values()) {
-      OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+      LOG.info("ProjectEditor:recomputeLocationPermission: " + c);
       if (c.equals("True")) {
         usesLocation = "True";
         break;
@@ -326,7 +323,7 @@ public abstract class ProjectEditor extends Composite {
   }
 
   public void clearLocation(String componentName) {
-    OdeLog.log("ProjectEditor:clearLocation: clearing " + componentName);
+    LOG.info("ProjectEditor:clearLocation: clearing " + componentName);
     locationHashMap.remove(componentName);
     recomputeLocationPermission();
   }
@@ -352,7 +349,7 @@ public abstract class ProjectEditor extends Composite {
     // already-opened project is re-opened.
     // This is different from the ProjectEditor method loadProject, which is called to load the
     // project just after the editor is created.
-    OdeLog.log("ProjectEditor: got onLoad for project " + projectId);
+    LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
                                                     SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
@@ -370,7 +367,7 @@ public abstract class ProjectEditor extends Composite {
     Ode ode = Ode.getInstance();
     ode.setTutorialVisible(false);
     ode.getDesignToolbar().setTutorialToggleVisible(false);
-    OdeLog.log("ProjectEditor: got onUnload for project " + projectId);
+    LOG.info("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();
     onHide();
   }

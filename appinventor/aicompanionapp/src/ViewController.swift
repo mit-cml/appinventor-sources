@@ -62,6 +62,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
+  private var didWifiCheck = false
 
   private static var _interpreterInitialized = false
 
@@ -71,6 +72,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+    self.delegate = self
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -111,7 +113,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         let runtime = try! String(contentsOfFile: url)
         interpreter.evalForm(runtime)
         if interpreter.exception != nil {
-          fatalError("Unable to initialize runtime: \(interpreter.exception!)")
+          let title = "Error"
+          let message = "Unable to initialize runtime: \(interpreter.exception!)"
+          let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+          let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+          alertController.addAction(okAction)
+          if let topController = UIApplication.shared.keyWindow?.rootViewController {
+            topController.present(alertController, animated: true, completion: nil)
+          }
+          return interpreter
         }
         ViewController._interpreterInitialized = true
       }
@@ -169,7 +179,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
-      checkWifi()
     }
   }
 
@@ -210,7 +219,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     let code = phoneStatus.setHmacSeedReturnCode(text)
     NSLog("Seed = \(text)")
     NSLog("Code = \(code)")
-    let url = URL(string: "https://rendezvous.appinventor.mit.edu/rendezvous/");
+    let url = URL(string: "https://\(kDefaultRendezvousServer)/rendezvous/");
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
@@ -236,7 +245,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           return
         }
         DispatchQueue.main.async {
-          self.phoneStatus.startWebRTC("rendezvous.appinventor.mit.edu", responseContent)
+          self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent)
         }
       } else {
         var responseContent = ""
@@ -349,6 +358,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           self.onboardingScreen = nil
         })
       }
+      if !self.didWifiCheck {
+        DispatchQueue.main.async {
+          self.checkWifi()
+        }
+      }
       return
     }
 
@@ -357,13 +371,36 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     vc.modalPresentationStyle = .fullScreen
     present(vc, animated: true)
     onboardingScreen = vc
+    vc.onCompletionHandler = {
+      if !self.didWifiCheck {
+        self.checkWifi()
+      }
+    }
   }
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {
+    self.didWifiCheck = true
     if PhoneStatus.GetWifiIpAddress().hasPrefix("Error") {
       notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
                                  "No WiFi", "Continue without WiFi", "Exit", false)
     }
+  }
+}
+
+extension ViewController: UINavigationControllerDelegate {
+  public func navigationController(_ navigationController: UINavigationController,
+      animationControllerFor operation: UINavigationController.Operation,
+      from fromVC: UIViewController,
+      to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    guard let oldForm = fromVC as? Form, let newForm = toVC as? Form else {
+      return nil
+    }
+    oldForm.onPause()
+    if operation == .pop {
+      oldForm.onDestroy()
+    }
+    newForm.onResume()
+    return nil
   }
 }

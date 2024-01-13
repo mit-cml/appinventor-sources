@@ -12,6 +12,7 @@ import android.text.TextUtils;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -130,7 +131,8 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
   @SimpleProperty(description = "Set the API Key to use with Yandex. " +
       "You do not need to set this if you are using the MIT system because " +
       "MIT has its own key builtin. If set, the key provided here will be " +
-      "used instead")
+      "used instead",
+      category = PropertyCategory.BEHAVIOR)
   public void ApiKey(String apiKey) {
   }
 

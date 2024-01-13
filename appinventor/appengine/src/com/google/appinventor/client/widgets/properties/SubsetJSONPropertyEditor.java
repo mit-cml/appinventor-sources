@@ -5,14 +5,16 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -51,7 +53,6 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -89,27 +90,27 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     invisibleFilePanel.setVisible(false);
     invisibleFilePanel.show();
 
-    List<DropDownButton.DropDownItem> items = Lists.newArrayList();
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.allButton(), new Command() {
+    List<DropDownItem> items = Lists.newArrayList();
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.allButton(), new Command() {
       @Override
       public void execute() {
         property.setValue("");
         updateValue();
       }}));
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
       @Override
       public void execute() {
         matchProject();
         property.setValue(createJSONString());
         updateValue();
       }}));
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
       public void execute() {
         file.click();
       }}));
 
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.viewAndModifyButton(), new Command() {
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.viewAndModifyButton(), new Command() {
       @Override
       public void execute() {
         showCustomSubsetPanel();

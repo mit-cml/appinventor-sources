@@ -228,7 +228,7 @@ class RuntimeTests: XCTestCase {
     let interpreter = try getInterpreterForTesting()
     let form = Form()
     interpreter.setCurrentForm(form)
-    XCTAssertEqual("[\"\", \"1\", \"0\", \"0\", \"1\", \"0\"]",
+    XCTAssertEqual("[\"1\", \"0\", \"0\", \"1\", \"0\"]",
         interpreter.evalForm("(get-display-representation (string-split \"10010\" \"\"))"))
     XCTAssertEqual("[\"apple\", \"banana\", \"cantalope\"]",
         interpreter.evalForm("(get-display-representation (string-split \"apple,banana,cantalope\" \",\"))"))
@@ -338,5 +338,21 @@ class RuntimeTests: XCTestCase {
     interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (call-yail-primitive make-yail-dictionary (*list-for-runtime* ) '() \"make a dictionary\") 'text)")
     XCTAssertNil(interpreter.exception)
     XCTAssertEqual("{}", label.Text)
+  }
+
+  func testEnum() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(enum? (static-field AIComponentKit.FileScope 'Shared))"))
+    XCTAssertNil(interpreter.exception)
+  }
+
+  func testEnums() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    form.environment["Screen1"] = form
+    interpreter.setCurrentForm(form)
+    interpreter.evalForm("(set-and-coerce-property! 'Screen1 'DefaultFileScope \"Shared\" 'com.google.appinventor.components.common.FileScopeEnum)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual(FileScope.Shared, form.DefaultFileScope)
   }
 }

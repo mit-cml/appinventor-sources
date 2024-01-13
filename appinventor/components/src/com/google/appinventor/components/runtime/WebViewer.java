@@ -110,7 +110,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<br />And if the Web page contains Javascript that executes the command " +
         "<br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
         "<br />then the value of the WebViewString property will be " +
-        "<br /><em>hello from Javascript</em>. ")
+        "<br /><em>hello from Javascript</em>. ",
+    iconName = "images/webviewer.png")
 
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
@@ -480,7 +481,8 @@ public final class WebViewer extends AndroidViewComponent {
       defaultValue = "False")
   @SimpleProperty(userVisible = false,
       description = "Whether or not to give the application permission to use the Javascript geolocation API. " +
-          "This property is available only in the designer.")
+          "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
   public void UsesLocation(boolean uses) {
     // We don't actually do anything here (the work is in the MockWebViewer)
   }
@@ -509,7 +511,7 @@ public final class WebViewer extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(userVisible = true)
+  @SimpleProperty(userVisible = true, category = PropertyCategory.BEHAVIOR)
   public void PromptforPermission(boolean prompt) {
     this.prompt = prompt;
   }

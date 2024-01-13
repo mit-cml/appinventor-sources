@@ -78,6 +78,13 @@ public class InternalTextToSpeech implements ITextToSpeech {
     speak(message, loc, 0);
   }
 
+  @Override
+  public void stop() {
+    if (tts != null) {
+      tts.stop();
+    }
+  }
+
   public boolean isInitialized() {
     return isTtsInitialized;
   }

@@ -6,8 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.animation.StateListAnimator;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.view.ViewOutlineProvider;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -24,13 +26,20 @@ import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.view.MotionEvent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -104,6 +113,16 @@ public abstract class ButtonBase extends AndroidViewComponent
   // could not be loaded, this is null.
   private Drawable backgroundImageDrawable;
 
+  // This is the bitmap from backgroundImageDrawable
+  // obtained using BitmapDrawable's getBitmap() method.
+  private Bitmap backgroundBitmap;
+
+  // This is the original outline provider created for the button.
+  private Object defaultOutlineProvider;
+
+  // This is the original state animator created for the button.
+  private Object defaultStateAnimator;
+
   //Whether or not the button is in high contrast mode
   private boolean isHighContrast = false;
 
@@ -138,6 +157,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     defaultColorStateList = view.getTextColors();
     defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
     defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      defaultOutlineProvider = view.getOutlineProvider();
+      defaultStateAnimator = view.getStateListAnimator();
+    }
 
     // Adds the component to its designated container
     container.$add(this);
@@ -441,9 +464,41 @@ public abstract class ButtonBase extends AndroidViewComponent
       }
       TextViewUtil.setMinSize(view, defaultButtonMinWidth, defaultButtonMinHeight);
     } else {
-      // If there is a background image
-      ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
-      TextViewUtil.setMinSize(view, 0, 0);
+      if ((shape == Component.BUTTON_SHAPE_DEFAULT)) {
+        ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+      } else {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        backgroundBitmap = ((BitmapDrawable) backgroundImageDrawable).getBitmap();
+        float displayDensity = view.getContext().getResources().getDisplayMetrics().density;
+        int shapeHeight = Math.round(backgroundImageDrawable.getIntrinsicHeight() * displayDensity);
+        int shapeWidth = Math.round(backgroundImageDrawable.getIntrinsicWidth() * displayDensity);
+
+        Bitmap result = Bitmap.createBitmap(shapeWidth, shapeHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+
+        switch (shape) {
+          case Component.BUTTON_SHAPE_ROUNDED:
+            canvas.drawRoundRect(new RectF(0, 0,shapeWidth, shapeHeight), 100f, 100f, paint);
+            //100f was used because the rounded feature could not be seen with 10f in companion, emulator, and phone. 
+            break;
+          case Component.BUTTON_SHAPE_RECT:
+            canvas.drawRect(new RectF(0, 0, shapeWidth, shapeHeight), paint);
+            break;
+          case Component.BUTTON_SHAPE_OVAL:
+            canvas.drawOval(new RectF(0, 0, shapeWidth, shapeHeight), paint);
+            break;
+          default:
+            throw new IllegalArgumentException();
+        }
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        canvas.drawBitmap(backgroundBitmap, null, new Rect(0, 0, shapeWidth, shapeHeight), paint);
+
+        ViewUtil.setBackgroundImage(view, new BitmapDrawable(result));
+      }
     }
   }
 
@@ -496,6 +551,10 @@ public abstract class ButtonBase extends AndroidViewComponent
         throw new IllegalArgumentException();
     }
 
+    if (backgroundColor != Component.COLOR_DEFAULT && !container.$form().HighContrast()) {
+      drawable.getPaint().setColor(backgroundColor);
+    }
+
     // Set drawable to the background of the button.
     if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
@@ -503,17 +562,26 @@ public abstract class ButtonBase extends AndroidViewComponent
       ViewUtil.setBackgroundDrawable(view, drawable);
     }
 
+    // Hides the button shadow on Material UI if the background is NONE
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (backgroundColor == Component.COLOR_NONE) {
+        view.setOutlineProvider(null);
+        view.setStateListAnimator(null);
+      } else {
+        view.setOutlineProvider((ViewOutlineProvider) defaultOutlineProvider);
+        view.setStateListAnimator((StateListAnimator) defaultStateAnimator);
+      }
+    }
+
     if (backgroundColor == Component.COLOR_NONE) {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
-    }
-    else if (backgroundColor == Component.COLOR_DEFAULT) {
+    } else if (backgroundColor == Component.COLOR_DEFAULT) {
       if (isHighContrast || container.$form().HighContrast()) {
         view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
       } else {
         view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
       }
-    }
-    else {
+    } else {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
     }
 
