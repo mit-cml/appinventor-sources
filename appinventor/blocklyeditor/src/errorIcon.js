@@ -39,10 +39,12 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
   constructor(block) {
     super(block);
     this.text_ = {};
+    this.textBubble = null;
+    this.bubbleSize = new Blockly.utils.Size(160, 80);
   }
 
   getType() {
-    return AI.ErrorIcon.ICON_TYPE;
+    return AI.ErrorIcon.TYPE;
   }
 
   initView(listener) {
@@ -69,6 +71,7 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
       // X fills circle vvv
       //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.svgRoot);
+    Blockly.utils.dom.addClass(this.svgRoot, 'blockly-icon-error');
   }
 
   getSize() {
@@ -88,7 +91,7 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
   }
 
   isVisible() {
-    return !!this.bubble_;
+    return !!this.textBubble;
   }
 
   setBubbleVisible(visible) {
@@ -96,15 +99,15 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
       return;
     }
     if (visible) {
-      this.bubble_ = new Blockly.bubbles.TextBubble(
+      this.textBubble = new Blockly.bubbles.TextBubble(
         this.getText(),
         this.sourceBlock.workspace,
         this.getAnchorLocation(),
         this.getBubbleOwnerRect());
-      this.bubble_.setColour(this.sourceBlock.style.colourPrimary);
+      this.textBubble.setColour(this.sourceBlock.style.colourPrimary);
     } else {
-      this.bubble_.dispose();
-      this.bubble_ = null;
+      this.textBubble.dispose();
+      this.textBubble = null;
     }
     Blockly.Events.fire(
       new (Blockly.Events.get(Blockly.Events.BUBBLE_OPEN))(
@@ -123,20 +126,20 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
 
   dispose() {
     super.dispose();
-    if (this.bubble_) {
-      this.bubble_.dispose();
+    if (this.textBubble) {
+      this.textBubble.dispose();
     }
   }
 
   onLocationChange(blockOrigin) {
     super.onLocationChange(blockOrigin);
-    if (this.bubble_) {
-      this.bubble_.setAnchorLocation(this.getAnchorLocation());
+    if (this.textBubble) {
+      this.textBubble.setAnchorLocation(this.getAnchorLocation());
     }
   }
 
   isBubbleVisible() {
-    return !!this.bubble_;
+    return !!this.textBubble;
   }
 
   onClick() {
@@ -156,7 +159,7 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
    * @param {string} id Error id.
    */
   setText(text, id) {
-    if (this.text_[id] == text) {
+    if (this.text_[id] === text) {
       return;
     }
     if (text) {
@@ -192,10 +195,12 @@ AI.ErrorIcon.ICON_RADIUS = 8;
 /**
  * Type for the Error icon.
  */
-AI.ErrorIcon.ICON_TYPE = new Blockly.icons.IconType('error');
+AI.ErrorIcon.TYPE = new Blockly.icons.IconType('error');
 
 /**
  * Size of the Error icon.
  */
 AI.ErrorIcon.SIZE = new Blockly.utils.Size(
   AI.ErrorIcon.ICON_RADIUS * 2, AI.ErrorIcon.ICON_RADIUS * 2);
+
+Blockly.icons.registry.register(AI.ErrorIcon.TYPE, AI.ErrorIcon);
