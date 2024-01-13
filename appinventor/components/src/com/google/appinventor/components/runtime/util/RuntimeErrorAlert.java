@@ -23,6 +23,14 @@ public final class RuntimeErrorAlert {
 
   private static final String TAG = "RuntimeErrorAlert";
 
+
+  public static void alert(final Object context,
+                           final String message,
+                           final String title,
+                           final String buttonText) {
+    alert(context, false, true, message, title, buttonText);
+  }
+
   public static void alert(final Object context,
                            boolean sendError,
                            boolean toastAllowed,
