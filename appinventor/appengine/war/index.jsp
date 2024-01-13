@@ -48,6 +48,7 @@
         <h2> App Inventor needs JavaScript enabled to run.</h2>
       </div>
     </noscript>
+    <script type="text/javascript" src="static/js/locale.js"></script>
   </head>
 
   <!-- ODE scripts -->
@@ -63,9 +64,6 @@
       </ul>
     </div>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
-    <script type="text/javascript">
-
-    </script>
     <script type="text/javascript" src="static/js/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="https://unpkg.com/@mit-app-inventor/blockly-plugin-workspace-multiselect@0.1.11/dist/index.js"></script>
     <script type="text/javascript" src="static/js/scroll-options.js"></script>

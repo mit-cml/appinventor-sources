@@ -11,7 +11,7 @@
 
 'use strict';
 
-goog.provide('Blockly.ExportBlocksImage');
+goog.provide('AI.Blockly.ExportBlocksImage');
 goog.require('goog.Timer');
 
 
@@ -218,7 +218,7 @@ goog.require('goog.Timer');
  * Call to initiate blockly SVG conversion to PNG
  *
  */
-Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
+AI.Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
   saveSvgAsPng((opt_workspace || Blockly.common.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
 }
 
@@ -227,7 +227,7 @@ Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace)
  * Get the workspace as an image URI
  *
  */
-Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
+AI.Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
   var theUri;
   var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var metrics = workspace.getMetrics();

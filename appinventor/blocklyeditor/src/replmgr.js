@@ -29,6 +29,20 @@ goog.require('goog.crypt.base64');
 goog.require('AI.Blockly.Util');
 goog.require('AI.Events');
 
+// YAIL generator
+goog.require('Blockly.Yail');  // must be first
+goog.require('Blockly.Yail.color');
+goog.require('Blockly.Yail.componentblock');
+goog.require('Blockly.Yail.control');
+goog.require('Blockly.Yail.dictionaries');
+goog.require('Blockly.Yail.helpers');
+goog.require('Blockly.Yail.lists');
+goog.require('Blockly.Yail.logic');
+goog.require('Blockly.Yail.math');
+goog.require('Blockly.Yail.procedures');
+goog.require('Blockly.Yail.text');
+goog.require('Blockly.Yail.variables');
+
 if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {};
 Blockly.ReplMgr.yail = null;
 

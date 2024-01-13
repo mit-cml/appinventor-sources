@@ -12,6 +12,8 @@
 
 'use strict';
 
+goog.require('Blockly.constants');
+
 Blockly.utils.colour.setHsvSaturation(0.7);
 Blockly.CONTROL_CATEGORY_HUE = "#B18E35";  // [177, 143, 53]
 Blockly.LOGIC_CATEGORY_HUE = "#77AB41";  // [119, 171, 65]

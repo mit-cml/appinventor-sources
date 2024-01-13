@@ -76,7 +76,11 @@ function myStringify (obj) {
 'use strict';
 
 goog.provide('Blockly.Blocks.lexicalvariables');
+
+goog.require('AI.Blockly.FieldGlobalFlydown');
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.NameSet');
+goog.require('Blockly.Substitution');
 goog.require('goog.dom');
 
 /**
@@ -671,7 +675,7 @@ Blockly.Blocks['local_declaration_expression'] = {
   bodyInputName: 'RETURN',
   init: function() {
     this.initLocals();
-    this.appendIndentedValueInput('RETURN')
+    this.appendInputFromRegistry('indented_input', 'RETURN')
         .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN);
     // Create plug for expression output
     this.setOutput(true, null);

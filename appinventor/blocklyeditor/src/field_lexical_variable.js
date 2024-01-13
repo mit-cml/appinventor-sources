@@ -51,6 +51,12 @@
  *  [lyn, 11/10/12] getGlobalNames and getNamesInScope
  */
 
+goog.provide('Blockly.FieldLexicalVariable');
+
+goog.require('Blockly.FieldFlydown');
+goog.require('Blockly.NameSet');
+goog.require('Blockly.Substitution');
+
 // Get all global names
 
 /**

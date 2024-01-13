@@ -3,6 +3,8 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+goog.provide('Blockly.Yail.helpers');
+
 Blockly.Yail['helpers_dropdown'] = function() {
   var optionList = this.workspace.getComponentDatabase()
       .getOptionList(this.key_);

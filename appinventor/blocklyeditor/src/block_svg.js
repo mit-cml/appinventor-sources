@@ -14,6 +14,7 @@
 goog.provide('AI.Blockly.BlockSvg');
 
 // App Inventor extensions to Blockly
+goog.require('AI.Blockly.Block');
 goog.require('AI.ErrorIcon');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
@@ -118,7 +119,7 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
     throw 'Warnings not supported.';
   }
   var changedState = false;
-  if (goog.isString(text)) {
+  if (typeof text === 'string') {
     if (!this.error) {
       this.error = new AI.ErrorIcon(this);
       this.addIcon(this.error);

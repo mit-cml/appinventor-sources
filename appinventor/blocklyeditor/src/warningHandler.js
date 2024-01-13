@@ -15,6 +15,7 @@
 goog.provide('AI.Blockly.WarningHandler');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.FieldLexicalVariable');
 
 Blockly.WarningHandler = function(workspace) {
   this.workspace = workspace;

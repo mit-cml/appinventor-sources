@@ -13,6 +13,7 @@
 goog.provide('Blockly.Blocks.lists');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.NameSet');
 goog.require('AI.Blockly.Mixins');
 
 Blockly.Blocks['lists_create_with'] = {
@@ -490,7 +491,7 @@ Blockly.Blocks['lists_map'] = {
                      'VAR')
       .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_TO)
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('TO');
+    this.appendInputFromRegistry('indented_input', 'TO')
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
     this.setInputsInline(false);
@@ -553,7 +554,7 @@ Blockly.Blocks['lists_filter'] = {
                    'VAR')
       .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING)
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('TEST')
+    this.appendInputFromRegistry('indented_input', 'TEST')
         .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_TEST);
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP);
@@ -619,7 +620,7 @@ Blockly.Blocks['lists_reduce'] = {
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR2')
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('COMBINE');
+    this.appendInputFromRegistry('indented_input', 'COMBINE')
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP);
     this.setInputsInline(false);
@@ -711,7 +712,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
                    'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR2)
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('COMPARE');
+    this.appendInputFromRegistry('indented_input', 'COMPARE')
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
     this.setInputsInline(false);
@@ -775,7 +776,7 @@ Blockly.Blocks['lists_sort_key'] = {
                                                      Blockly.FieldFlydown.DISPLAY_BELOW),
                    'VAR')
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('KEY');
+    this.appendInputFromRegistry('indented_input', 'KEY')
     this.setOutput(true, null);
     this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
     this.setInputsInline(false);
@@ -843,7 +844,7 @@ Blockly.Blocks['lists_minimum_value'] = {
                  'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR2)
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('COMPARE');
+    this.appendInputFromRegistry('indented_input', 'COMPARE')
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP);
     this.setInputsInline(false);
@@ -906,7 +907,7 @@ Blockly.Blocks['lists_maximum_value'] = {
                    'VAR2')
       .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR2)
       .setAlign(Blockly.inputs.Align.RIGHT);
-    this.appendIndentedValueInput('COMPARE');
+    this.appendInputFromRegistry('indented_input', 'COMPARE')
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP);
     this.setInputsInline(false);

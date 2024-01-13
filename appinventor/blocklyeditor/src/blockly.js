@@ -14,19 +14,41 @@
 goog.provide('AI.Blockly');
 
 // App Inventor extensions to Blockly
-goog.require('Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlock');
 goog.require('AI.Blockly.WorkspaceSvg');
+
+/**
+ * Constant indicating a horizontal arrangement.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_HORIZONTAL = 0;
+
+/**
+ * Constant indicating a vertical arrangement.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_VERTICAL = 1;
+
+/**
+ * Constant indicating arrangement by cateogry.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_CATEGORY = 2;
 
 /**
  * ENUM for an indented value input.  Similar to next_statement but with value
  * input shape.
- * @const
+ * @const {number}
  */
 Blockly.INDENTED_VALUE = 6;
 
 /**
  * Path to Blockly's directory.  Can be relative, absolute, or remote.
  * Used for loading additional resources.
+ * @const {string}
  */
 Blockly.pathToBlockly = './';
 

@@ -14,6 +14,7 @@
 
 goog.provide('Blockly.Blocks.helpers');
 
+goog.require('AI.Blockly.FieldInvalidDropdown');
 goog.require('Blockly.Blocks.Utilities');
 
 Blockly.COLOUR_HELPERS = "#BF4343";

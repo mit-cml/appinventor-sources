@@ -13,6 +13,8 @@
 
 goog.provide('AI.Blockly.Block');
 
+goog.require('goog.asserts');
+
 Blockly.Block.mutationToDom = function() {
   var container = details.mutationToDomFunc ? details.mutationToDomFunc()
     : document.createElement('mutation');
@@ -62,7 +64,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
     if (field instanceof Blockly.Field) {
       this.appendField(field);
     } else {
-      goog.asserts.assert(goog.isArray(field));
+      goog.asserts.assert(Array.isArray(field));
       this.appendField(field[1], field[0]);
     }
   }
@@ -217,5 +219,3 @@ Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
   }
   return text;
 };
-
-Blockly.Block.prototype.appendIndentedValueInput = Blockly.Block.prototype.appendValueInput;

@@ -963,11 +963,11 @@ public class BlocklyPanel extends HTMLPanel {
    * @param backpack JSON-serialized backpack contents.
    */
   public static native void setInitialBackpack(String backpack)/*-{
-    $wnd.Blockly.Backpack.contents = JSON.parse(backpack);
+    $wnd.AI.Blockly.Backpack.contents = JSON.parse(backpack);
   }-*/;
 
   public static native void setSharedBackpackId(String backPackId)/*-{
-    $wnd.Blockly.Backpack.backPackId = backPackId;
+    $wnd.AI.Blockly.Backpack.backPackId = backPackId;
   }-*/;
 
   /**

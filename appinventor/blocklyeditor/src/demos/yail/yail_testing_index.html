@@ -46,9 +46,9 @@ function start() {
   // [lyn, 2015/01/02] Logging interferes with equality tests.
   Blockly.Versioning.setLogging(false);
 
-  // [lyn, 2015/01/02] All BlocklyEvalTests fail in Blockly.TypeBlock.hide
+  // [lyn, 2015/01/02] All BlocklyEvalTests fail in AI.Blockly.TypeBlock.hide
   // so I've redefined it to avoid errors.
-  Blockly.TypeBlock.hide = function () {};
+  AI.Blockly.TypeBlock.hide = function () {};
 
   Blockly.showPrefixToUser = true;
   Blockly.usePrefixInYail = false;

@@ -61,9 +61,12 @@
 
 goog.provide('Blockly.Blocks.procedures');
 
-goog.require('Blockly.Blocks.Utilities');
-goog.require('goog.dom');
 goog.require('AI.Blockly.FieldProcedureName');
+goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.FieldProcedure');
+goog.require('Blockly.NameSet');
+goog.require('Blockly.Substitution');
+goog.require('goog.dom');
 
 Blockly.ProcedureNameDropdown = class extends Blockly.FieldDropdown {
   constructor(menuGenerator, validator, config) {
@@ -501,7 +504,7 @@ Blockly.Blocks['procedures_defreturn'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE)
         .appendField(new AI.Blockly.FieldProcedureName(name), 'NAME');
     this.horizontalParameters = true; // horizontal by default
-    this.appendIndentedValueInput('RETURN')
+    this.appendInputFromRegistry('indented_input', 'RETURN')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
     this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP);

@@ -36,6 +36,7 @@
 goog.provide('Blockly.Blocks.control');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.Substitution');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.

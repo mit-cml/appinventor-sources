@@ -13,6 +13,7 @@
 goog.provide('Blockly.Blocks.text');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.FieldTextBlockInput');
 
 Blockly.Blocks['text'] = {
   // Text value.

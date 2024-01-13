@@ -23,7 +23,7 @@ goog.require('Blockly.TranslationMethods');
 goog.require('Blockly.TranslationParams');
 
 // App Inventor extensions to Blockly
-goog.require('Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlock');
 
 if (Blockly.Component === undefined) Blockly.Component = {};
 if (Blockly.ComponentTypes === undefined) Blockly.ComponentTypes = {};
@@ -33,7 +33,7 @@ Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
     return;
   }
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
   //get type name for instance
   var typeName = Blockly.Component.instanceNameToTypeName(name);
   Blockly.ComponentInstances.addInstance(name, uid, typeName);
@@ -55,7 +55,7 @@ Blockly.Component.add = function(name, uid) {
  */
 Blockly.Component.rename = function(oldname, newname, uid) {
   console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
   if (!Blockly.ComponentInstances.haveInstance(oldname, uid)) {
     console.log("Renaming, No such Component instance " + oldname + " aborting");
     return;
@@ -100,7 +100,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
  */
 Blockly.Component.remove = function(type, name, uid) {
   console.log("Got call to Blockly.Component.remove(" + type + ", " + name + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
 
   // Delete instances of this type of block from the workspace
   var allblocks = Blockly.common.getMainWorkspace().getAllBlocks();
