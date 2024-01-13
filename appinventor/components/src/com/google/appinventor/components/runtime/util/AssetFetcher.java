@@ -150,7 +150,7 @@ public class AssetFetcher {
           inError = true;
           form.runOnUiThread(new Runnable() {
             public void run() {
-              RuntimeErrorAlert.alert(Form.getActiveForm(), false, true,
+              RuntimeErrorAlert.alert(Form.getActiveForm(),
                   "Unable to load file: " + fileName,
                   "Error!", "End Application");
             }

@@ -412,14 +412,15 @@
          ;; The call below is a no-op unless we are in the wireless repl
 ;; Commented out -- we only send reports from the setting menu choice
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
-         (if isrepl
-             (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
-              (this)
-              (this):toastAllowed
-              (this):toastAllowed
-              (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))
-              (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
-              "End Application")))
+            (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
+            (this)                                 ;; context
+            ;; only show toast if companion or
+            ;; runtime dialog if compiled app
+            ;; 0 => alert dialog, 1 => Toast+Report, other => ignore
+            (if (not isrepl) (0) (if ((this):toastAllowed) (1) (2)))              ;; activity
+            (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))     ;; message
+            (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")   ;; title
+            "End Application"))    ;; buttonText
 
 
        ;; For the HandlesEventDispatching interface
