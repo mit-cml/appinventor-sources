@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -60,7 +61,8 @@ public final class CircularProgress extends AndroidViewComponent {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_BLUE)
-  @SimpleProperty(description = "Change the indeterminate color of the circular progress bar.")
+  @SimpleProperty(description = "Change the indeterminate color of the circular progress bar.",
+      category = PropertyCategory.APPEARANCE)
   public void Color(int color) {
     this.indeterminateColor = color;
     Drawable drawable = progressBar.getIndeterminateDrawable();

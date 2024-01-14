@@ -15,7 +15,13 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.util.Log;
 import android.widget.ProgressBar;
-import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -74,7 +80,8 @@ public final class LinearProgress extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "0")
   @SimpleProperty(description = "Set the lower range of the progress bar to min. "
-      + "This function works only for devices with API >= 26")
+      + "This function works only for devices with API >= 26",
+      category = PropertyCategory.BEHAVIOR)
   public void Minimum(int value) {
     if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       progressBar.setMin(value);
@@ -90,7 +97,8 @@ public final class LinearProgress extends AndroidViewComponent {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "100")
-  @SimpleProperty(description = "Set the upper range of the progress bar max.")
+  @SimpleProperty(description = "Set the upper range of the progress bar max.",
+      category = PropertyCategory.BEHAVIOR)
   public void Maximum(int value) {
     progressBar.setMax(value);
     Log.i(LOG_TAG, "setMax = " + value);
@@ -125,7 +133,8 @@ public final class LinearProgress extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLUE)
-  @SimpleProperty(description = "Change the progress color of the progress bar.")
+  @SimpleProperty(description = "Change the progress color of the progress bar.",
+      category = PropertyCategory.APPEARANCE)
   public void ProgressColor(int color) {
     this.progressColor = color;
     Drawable drawable = progressBar.getProgressDrawable();
@@ -144,7 +153,8 @@ public final class LinearProgress extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLUE)
-  @SimpleProperty(description = "Change the indeterminate color of the progress bar.")
+  @SimpleProperty(description = "Change the indeterminate color of the progress bar.",
+      category = PropertyCategory.APPEARANCE)
   public void IndeterminateColor(int color) {
     this.indeterminateColor = color;
     Drawable drawable = progressBar.getProgressDrawable();
@@ -165,7 +175,8 @@ public final class LinearProgress extends AndroidViewComponent {
       defaultValue = "True")
   @SimpleProperty(description = "Change the indeterminate mode for this progress bar. "
       + "In indeterminate mode, the progress is ignored and the "
-      + "progress bar shows an infinite animation instead.")
+      + "progress bar shows an infinite animation instead.",
+      category = PropertyCategory.BEHAVIOR)
   public void Indeterminate(boolean enabled) {
     progressBar.setIndeterminate(enabled);
     Log.i(LOG_TAG, "Indeterminate is: " + enabled);
