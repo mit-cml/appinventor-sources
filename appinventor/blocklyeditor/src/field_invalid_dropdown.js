@@ -51,7 +51,7 @@ Blockly.FieldInvalidDropdown.prototype.doValueInvalid_ = function(invalidValue) 
 
   // TODO: Remove the rest of this function after Blockly update.
   this.text_ = this.selectedOption_[0];
-  this.size_.width = 0;
+  this.isDirty_ = true;
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
     this.sourceBlock_.bumpNeighbours();
