@@ -114,6 +114,7 @@ directly from a file to the Chart. The component may also be dragged and dropped
 selected and parsed successfully to create ChartData components automatically from the file onto the Chart.
 
 
+
 ### Properties  {#DataFile-Properties}
 
 {:.properties}
