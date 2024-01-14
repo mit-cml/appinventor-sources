@@ -267,7 +267,7 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : Event raised when the `EmailPicker` is no longer selected for input, such
  as if the user touches a different text box.
 
-{:id="EmailPicker.OnTextChanged"} OnTextChanged()
+{:id="EmailPicker.TextChanged"} TextChanged()
 : Event raised when the text of the EmailPicker is changed, either by the user or the program.
 
 ### Methods  {#EmailPicker-Methods}

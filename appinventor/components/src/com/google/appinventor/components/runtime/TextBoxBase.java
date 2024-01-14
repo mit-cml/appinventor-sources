@@ -168,8 +168,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   @SimpleEvent(description = "Event raised when the text of the %type% is changed, either by the user or the program.")
-  public void OnTextChanged() {
-    EventDispatcher.dispatchEvent(this, "OnTextChanged");
+  public void TextChanged() {
+    EventDispatcher.dispatchEvent(this, "TextChanged");
   }
 
   /**
@@ -572,7 +572,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
-    OnTextChanged();
+    TextChanged();
   }
 
   @Override

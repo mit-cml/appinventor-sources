@@ -929,7 +929,7 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 3:
   // - RequestFocus function was added (via TextBoxBase)
   // For EMAILPICKER_COMPONENT_VERSION 4:
-  // - OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
   public static final int EMAILPICKER_COMPONENT_VERSION = 4;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
@@ -1271,7 +1271,7 @@ public class YaVersion {
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
   // - Added NumbersOnly property
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 6:
-  // - OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 6;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
@@ -1401,7 +1401,7 @@ public class YaVersion {
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
   // For TEXTBOX_COMPONENT_VERSION 7:
-  // - OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
   public static final int TEXTBOX_COMPONENT_VERSION = 7;
 
   // For TEXTING_COMPONENT_VERSION 2:

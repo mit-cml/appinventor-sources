@@ -986,7 +986,7 @@ Users enter passwords in a password text box component, which hides the text tha
 : Event raised when the `PasswordTextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
-{:id="PasswordTextBox.OnTextChanged"} OnTextChanged()
+{:id="PasswordTextBox.TextChanged"} TextChanged()
 : Event raised when the text of the PasswordTextBox is changed, either by the user or the program.
 
 ### Methods  {#PasswordTextBox-Methods}
@@ -1571,7 +1571,7 @@ Users enter text in a text box component.
 : Event raised when the `TextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
-{:id="TextBox.OnTextChanged"} OnTextChanged()
+{:id="TextBox.TextChanged"} TextChanged()
 : Event raised when the text of the TextBox is changed, either by the user or the program.
 
 ### Methods  {#TextBox-Methods}

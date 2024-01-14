@@ -943,7 +943,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -1500,7 +1500,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-      // OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
       srcCompVersion = 6;
     }
     return srcCompVersion;
@@ -1862,7 +1862,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
-      // OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
       srcCompVersion = 7;
     }
     return srcCompVersion;

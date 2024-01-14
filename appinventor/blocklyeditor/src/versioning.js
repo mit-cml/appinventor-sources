@@ -1957,10 +1957,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // RequestFocus was added
     3: "noUpgrade",
 
-    // OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
     4: [
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
-      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd")]
+      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
 
   }, // End EmailPicker upgraders
 
@@ -2775,10 +2776,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // NumbersOnly was added
     5: "noUpgrade",
 
-    // OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
     6: [
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
-      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd")]
+      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
 
   }, // End PasswordTextBox upgraders
 
@@ -3152,10 +3154,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added ReadOnly property
     6: "noUpgrade",
 
-    // AI2: OnTextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
+    // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
     7: [
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
-      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd")]
+      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
 
   }, // End TextBox upgraders
 
