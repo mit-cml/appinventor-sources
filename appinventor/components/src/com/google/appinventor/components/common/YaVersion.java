@@ -588,11 +588,12 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 9
   // For YOUNG_ANDROID_VERSION 226:
   // - FORM_COMPONENT_VERSION was incremented to 31
+  // For YOUNG_ANDROID_VERSION 227:
   // - EMAILPICKER_COMPONENT_VERSION was incremented to 4
   // - TEXTBOX_COMPONENT_VERSION was incremented to 7
   // - PASSWORD_TEXTBOX_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 226;
+  public static final int YOUNG_ANDROID_VERSION = 227;
 
   // ............................... Blocks Language Version Number ...............................
 

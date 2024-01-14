@@ -77,6 +77,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
   //Whether or not the button is in big text mode
   private boolean isBigText = false;
 
+  // Keeps track of the previous text of the TextBox for the TextChanged event
+  private String lastText;
+
   //The default text color of the textbox hint, according to theme
   private int hintColorDefault;
 
@@ -493,6 +496,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       "programmer in the Designer or Blocks Editor, or it can be entered by " +
       "the user (unless the <code>Enabled</code> property is false).")
   public void Text(String text) {
+    lastText = view.getText().toString();
     TextViewUtil.setText(view, text);
   }
 
@@ -572,7 +576,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
-    TextChanged();
+    if (!lastText.equals(view.getText().toString())) {
+      TextChanged();
+    }
   }
 
   @Override
