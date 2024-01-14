@@ -76,7 +76,7 @@ public final class LinearProgress extends AndroidViewComponent {
   @SimpleProperty(description = "Set the lower range of the progress bar to min. "
       + "This function works only for devices with API >= 26")
   public void Minimum(int value) {
-    if (VERSION.SDK_INT >= 26) {
+    if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       progressBar.setMin(value);
       Log.i(LOG_TAG, "setMin = " + value);
     } else {
@@ -86,7 +86,7 @@ public final class LinearProgress extends AndroidViewComponent {
 
   @SimpleProperty
   public int Minimum() {
-    return VERSION.SDK_INT >= 26 ? progressBar.getMin() : 0;
+    return VERSION.SDK_INT >= Build.VERSION_CODES.O ? progressBar.getMin() : 0;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "100")
