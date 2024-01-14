@@ -17,6 +17,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -72,6 +73,7 @@ public final class CircularProgress extends AndroidViewComponent {
   }
 
   @SimpleProperty
+  @IsColor
   public int Color() {
     return this.indeterminateColor;
   }
