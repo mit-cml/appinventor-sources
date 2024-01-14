@@ -119,6 +119,9 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
   if (!AI.ErrorIcon) {
     throw 'Warnings not supported.';
   }
+  if (this.isDeadOrDying()) {
+    return;  // do not process errors if the block is being destroyed
+  }
   var changedState = false;
   if (typeof text === 'string') {
     if (!this.error) {
