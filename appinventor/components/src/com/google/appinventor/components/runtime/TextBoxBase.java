@@ -574,6 +574,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   // OnFocusChangeListener implementation
 
+  /* Detects for any text changes. Downside is that, all amendments to the text of the TextBox
+  * must be done through the Text() property.*/
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
     if (!lastText.equals(view.getText().toString())) {
