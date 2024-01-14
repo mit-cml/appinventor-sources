@@ -654,7 +654,9 @@ public class BlocklyPanel extends HTMLPanel {
         block.rename(e.oldValue, e.newValue);
       }
       cb(e);
-      if (workspace.rendered && !e.isTransient) {
+      if (workspace.rendered &&
+          (!@com.google.appinventor.client.editor.youngandroid.events.EventHelper::isTransient(*)(e) ||
+            e.type == 'finished_loading')) {
         var handler = this.getWarningHandler();
         if (handler) {
           // [lyn 12/31/2013] Check for duplicate component event handlers before
@@ -691,6 +693,11 @@ public class BlocklyPanel extends HTMLPanel {
       $wnd.Blockly.ReplMgr.pollYail(workspace);
     }
     workspace.fireChangeListener(new $wnd.AI.Events.ScreenSwitch(parts[0], parts[1]));
+    var handler = workspace.getWarningHandler();
+    if (handler) {
+      handler.determineDuplicateComponentEventHandlers();
+      workspace.requestErrorChecking();
+    }
   }-*/;
 
   // [lyn, 2014/10/27] added formJson for upgrading

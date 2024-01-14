@@ -22,8 +22,13 @@ public final class EventHelper {
     if (!event) {
       // null events are transient
       return true;
-    } else if (event.isTransient) {
+    } else if (event.isTransient || event.isUiEvent) {
       // transient events are transient
+      return true;
+    } else if (event.type == 'selected' || event.type == 'drag' ||
+        event.type == 'block_field_intermediate_change' || event.type == 'bubble_open' ||
+        event.type == 'click' || event.type == 'finished_loading') {
+      // Blockly selected events are transient
       return true;
     } else if (event.type == 'ui') {
       // Blockly ui events are transient if they are selection changes, clicks, opening of mutator
