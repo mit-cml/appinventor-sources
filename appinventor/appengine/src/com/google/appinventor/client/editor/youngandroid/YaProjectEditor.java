@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockTwitter;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
@@ -729,10 +730,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Resets any warnings that should be given when a project is loaded
   // For now this is just the deprecation warning for the
-  // FusiontablesControl component.
+  // FusiontablesControl and Twitter components.
 
   private void resetProjectWarnings() {
     MockFusionTablesControl.resetWarning();
+    MockTwitter.resetWarning();
   }
 
   private void resetExternalComponents() {
