@@ -41,7 +41,7 @@ function start() {
 
   // --- Begin Blockly Initialization
 
-  Blockly.mainWorkspace = Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false);
+  Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
 
   // [lyn, 2015/01/02] Logging interferes with equality tests.
   Blockly.Versioning.setLogging(false);
@@ -175,7 +175,7 @@ function start() {
     document.getElementById('formFile').addEventListener('change', handleLoadForm, false);
     document.getElementById('blocksFile').addEventListener('change', handleLoadBlocks, false);
     initComponentTypes();
-    Blockly.mainWorkspace.getComponentDatabase().populateTypes(componentTypeJson);
+    Blockly.common.getMainWorkspace().getComponentDatabase().populateTypes(componentTypeJson);
 }
 
 function initComponentTypes() {
@@ -236,7 +236,7 @@ function getFormComponents(formJson) {
 }
 
 function defineComponents(componentJsonObj) {
-    Blockly.mainWorkspace.addComponent(componentJsonObj.Uuid, componentJsonObj.$Name, componentJsonObj.$Type);
+    Blockly.common.getMainWorkspace().addComponent(componentJsonObj.Uuid, componentJsonObj.$Name, componentJsonObj.$Type);
 //    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
 //            componentJsonObj.$Name, componentJsonObj.Uuid);
     if (componentJsonObj.$Components) {
@@ -254,19 +254,19 @@ function setOutput(text) {
 }
 
 function toXml() {
-    var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+    var xmlDom = Blockly.Xml.workspaceToDom(Blockly.common.getMainWorkspace());
     var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
     setOutput(xmlText);
 }
 
 function toAppYail() {
-    var code = AI.Yail.getFormYail(formJson, "fakepackagename", false, Blockly.mainWorkspace);
+    var code = AI.Yail.getFormYail(formJson, "fakepackagename", false, Blockly.common.getMainWorkspace());
     setOutput(code);
     return code;
 }
 
 function toReplYail() {
-    var code = AI.Yail.getFormYail(formJson, "fakepackagename", true, Blockly.mainWorkspace);
+    var code = AI.Yail.getFormYail(formJson, "fakepackagename", true, Blockly.common.getMainWorkspace());
     setOutput(code);
     return code;
 }
@@ -471,7 +471,7 @@ function blockFromMutation(type, mutation) {
   mutation = mutation || ''
   var block_text = "<xml><block type='" + type + "'>" + mutation + "</block></xml>";
   var block_xml = Blockly.Xml.textToDom(block_text);
-  return Blockly.Xml.domToBlock(block_xml.firstElementChild, Blockly.mainWorkspace);
+  return Blockly.Xml.domToBlock(block_xml.firstElementChild, Blockly.common.getMainWorkspace());
 }
 
 /**

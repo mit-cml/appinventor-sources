@@ -211,7 +211,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
  *     associated with the block which is possibly deprecated.
  */
 Blockly.ComponentBlock.checkDeprecated = function(block, data) {
-  if (data && data.deprecated && block.workspace == Blockly.mainWorkspace) {
+  if (data && data.deprecated && block.workspace == Blockly.common.getMainWorkspace()) {
     block.setDisabled(true);
   }
 }
@@ -541,7 +541,7 @@ Blockly.Blocks.component_event = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
     var types = {};
 
@@ -946,7 +946,7 @@ Blockly.Blocks.component_method = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
     var typeNameDict = {};
     componentDb.forEachInstance(function(instance) {
@@ -1334,7 +1334,7 @@ Blockly.Blocks.component_set_get = {
     return false;
   },
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     function pushBlock(prefix, mode, property, typeName, instanceName) {
@@ -1500,7 +1500,7 @@ Blockly.Blocks.component_component_block = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {
@@ -1564,7 +1564,7 @@ Blockly.Blocks['component_all_component_block'] = {
   },
 
   typeblock : function() {
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {

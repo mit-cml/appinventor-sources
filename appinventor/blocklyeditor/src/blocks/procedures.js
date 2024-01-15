@@ -403,7 +403,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
 
     var procDb = workspace.getProcedureDatabase();
-    if (editable && procDb && workspace == Blockly.mainWorkspace) {
+    if (editable && procDb && workspace == Blockly.common.getMainWorkspace()) {
       // only remove for the top-level workspaces, not flyouts/flydowns
       procDb.removeProcedure(this.id);
     }

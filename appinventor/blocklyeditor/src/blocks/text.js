@@ -43,7 +43,7 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, o
   }
 
   var block = myConnection.sourceBlock_;
-  var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
+  var shouldIgnoreError = Blockly.common.getMainWorkspace().isLoading;
   var value = opt_value || block.getFieldValue('TEXT');
 
   for (var i = 0; i < otherTypeArray.length; i++) {

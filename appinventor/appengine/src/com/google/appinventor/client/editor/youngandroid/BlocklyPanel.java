@@ -980,7 +980,9 @@ public class BlocklyPanel extends HTMLPanel {
    * Cancel an ongoing drag operation.
    */
   public static native void terminateDrag()/*-{
-    if ($wnd.Blockly) $wnd.Blockly.terminateDrag_();
+    if ($wnd.Blockly && $wnd.Blockly.common.getMainWorkspace()) {
+      $wnd.Blockly.common.getMainWorkspace().cancelCurrentGesture();
+    }
   }-*/;
 
   /**

@@ -684,7 +684,7 @@ AI.Yail.getDebuggingYail = function() {
     code.push(AI.Yail.blockToCode(globalBlocks[i]));
   }
 
-  var blocks = Blockly.mainWorkspace.getTopBlocks(true);
+  var blocks = Blockly.common.getMainWorkspace().getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
 
     // generate Yail for each top-level language block

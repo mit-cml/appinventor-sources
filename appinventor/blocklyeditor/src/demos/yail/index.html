@@ -115,7 +115,7 @@ function setOutput(text) {
 }
 
 function toXml() {
-  var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  var xmlDom = Blockly.Xml.workspaceToDom(Blockly.common.getMainWorkspace());
   var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
   setOutput(xmlText);
 }

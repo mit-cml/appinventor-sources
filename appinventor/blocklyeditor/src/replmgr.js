@@ -116,8 +116,6 @@ var PROTECT_ENUM_IOS = "#f))(define-syntax protect-enum " +
 top.ReplState = new Blockly.ReplStateObj();
 top.ReplState.phoneState = {};
 
-// Blockly.mainWorkSpace --- hold the main workspace
-
 Blockly.ReplMgr.isConnected = function() {
     return top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
 };
@@ -1762,7 +1760,7 @@ Blockly.ReplMgr.loadExtensions = function() {
              */
             if (xmlhttp.readyState === 4 && (this.status === 200 || this.status === 404 || !this.status)) {
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-                Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+                Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
             } else if (xmlhttp.readyState === 4) {
                 rs.state = Blockly.ReplMgr.rsState.IDLE;
                 top.BlocklyPanel_indicateDisconnect();

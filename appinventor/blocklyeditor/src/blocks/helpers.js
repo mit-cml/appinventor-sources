@@ -128,7 +128,7 @@ Blockly.Blocks['helpers_dropdown'] = {
   },
 
   typeblock: function() {
-    var db = Blockly.mainWorkspace.getComponentDatabase();
+    var db = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     db.forEachOptionList(function(optionList) {
@@ -195,7 +195,7 @@ Blockly.Blocks['helpers_screen_names'] = {
   typeblock: function() {
     var tb = [];
 
-    var screens = Blockly.mainWorkspace.getScreenList();
+    var screens = Blockly.common.getMainWorkspace().getScreenList();
     for (var i = 0, screen; (screen = screens[i]); i++) {
       tb.push({
         translatedName: Blockly.Msg.LANG_SCREENS_TITLE + screen,
@@ -317,8 +317,8 @@ Blockly.Blocks['helpers_assets'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var assets = Blockly.mainWorkspace.getAssetList();
+    var tb = [];
+    var assets = Blockly.common.getMainWorkspace().getAssetList();
     for (var i = 0, asset; (asset = assets[i]); i++) {
       tb.push({
         translatedName: asset,

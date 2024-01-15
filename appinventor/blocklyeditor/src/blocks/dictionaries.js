@@ -78,7 +78,7 @@ Blockly.Blocks['dictionaries_create_with'] = {
         delete oldValues[itemBlock.valueConnection_.sourceBlock_.id];
       } else if (Blockly.Events.isEnabled()) {  // false if we are loading a project
         // auto-fill the empty socket with a pair block
-        var pairBlock = Blockly.mainWorkspace.newBlock('pair');
+        var pairBlock = Blockly.common.getMainWorkspace().newBlock('pair');
         pairBlock.initSvg();
         input.connection.connect(pairBlock.outputConnection);
       }
