@@ -44,7 +44,7 @@
 // Blocklies["5066549580791808_Screen1"].mainWorkspace.getTopBlocks();
 
 // Get the appropraite block, and then run
-// Blockly.Yail.BlocktoCode1(block)
+// AI.Yail.BlocktoCode1(block)
 
 
 // (3) Whether or not the block returns a value
@@ -60,7 +60,7 @@
 var expected =
   "(call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\")";
 
-var delayedGenerator = function () { return Blockly.Yail.lists_create_with ; } ;
+var delayedGenerator = function () { return AI.Yail.lists_create_with ; } ;
 
 var blockName = 'lists_create_with';
 

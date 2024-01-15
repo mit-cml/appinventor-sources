@@ -43,7 +43,7 @@ exports.execute =  function (){
           if (dropdownOp) {testBlock.setFieldValue(dropdownOp, 'OP');}
           yailForBlock = generator.call(testBlock);
           if (doesReturn) {
-            if ((yailForBlock.length !== 2) || (yailForBlock[1] !== Blockly.Yail.ORDER_ATOMIC) ) {
+            if ((yailForBlock.length !== 2) || (yailForBlock[1] !== AI.Yail.ORDER_ATOMIC) ) {
               return false;
             } else {
               generatedYail = yailForBlock[0];

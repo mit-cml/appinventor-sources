@@ -25,7 +25,7 @@ var expected =
          \"add items to list\")                     \
    ";
 
-var delayedGenerator = function () { return Blockly.Yail.lists_add_items ; } ;
+var delayedGenerator = function () { return AI.Yail.lists_add_items ; } ;
 
 var blockName = 'lists_add_items' ;
 

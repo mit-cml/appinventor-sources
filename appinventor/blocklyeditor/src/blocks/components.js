@@ -12,12 +12,10 @@
 
 'use strict';
 
-goog.provide('AI.Blockly.Blocks.components');
-goog.provide('AI.Blockly.ComponentBlock');
+goog.provide('AI.Blocks.components');
 goog.require('AI.Blockly.FieldEventFlydown');
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.BlockUtils');
 
-Blockly.Blocks.components = {};
 Blockly.ComponentBlock = {};
 
 /*
@@ -835,7 +833,7 @@ Blockly.Blocks.component_method = {
       }
     } // methodType.returnType is a Yail type
     else if (methodTypeObject.returnType) {
-      this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(methodTypeObject.returnType,Blockly.Blocks.Utilities.OUTPUT));
+      this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType(methodTypeObject.returnType,AI.BlockUtils.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
@@ -878,8 +876,8 @@ Blockly.Blocks.component_method = {
   getParamBlocklyType : function(param) {
     var check = [];
 
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        param.type, Blockly.Blocks.Utilities.INPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        param.type, AI.BlockUtils.INPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -889,7 +887,7 @@ Blockly.Blocks.component_method = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(param.helperKey, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -899,8 +897,8 @@ Blockly.Blocks.component_method = {
 
   getReturnBlocklyType : function(methodObj) {
     var check = [];
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        methodObj.returnType, Blockly.Blocks.Utilities.OUTPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        methodObj.returnType, AI.BlockUtils.OUTPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -910,7 +908,7 @@ Blockly.Blocks.component_method = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(methodObj.returnHelperKey, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -1257,9 +1255,9 @@ Blockly.Blocks.component_set_get = {
   },
 
   setTypeCheck : function() {
-    var inputOrOutput = Blockly.Blocks.Utilities.OUTPUT;
+    var inputOrOutput = AI.BlockUtils.OUTPUT;
     if(this.setOrGet == "set") {
-      inputOrOutput = Blockly.Blocks.Utilities.INPUT;
+      inputOrOutput = AI.BlockUtils.INPUT;
     }
 
     var newType = this.getPropertyBlocklyType(this.propertyName,inputOrOutput);
@@ -1280,7 +1278,7 @@ Blockly.Blocks.component_set_get = {
     if (property) {
       yailType = property.type;
     }
-    var blocklyType = Blockly.Blocks.Utilities
+    var blocklyType = AI.BlockUtils
         .YailTypeToBlocklyType(yailType, inputOrOutput);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
@@ -1292,7 +1290,7 @@ Blockly.Blocks.component_set_get = {
     }
 
     if (property) {
-      var helperType = Blockly.Blocks.Utilities
+      var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(property.helperKey, this);
       if (helperType && helperType != blocklyType) {
         check.push(helperType);
@@ -1557,7 +1555,7 @@ Blockly.Blocks['component_all_component_block'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY)
       .appendField(this.componentTypeDropDown, Blockly.ComponentBlock.COMPONENT_TYPE_SELECTOR);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.OUTPUT));
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkComponentTypeNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title

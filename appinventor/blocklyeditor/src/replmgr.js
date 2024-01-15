@@ -30,18 +30,18 @@ goog.require('AI.Blockly.Util');
 goog.require('AI.Events');
 
 // YAIL generator
-goog.require('Blockly.Yail');  // must be first
-goog.require('Blockly.Yail.color');
-goog.require('Blockly.Yail.componentblock');
-goog.require('Blockly.Yail.control');
-goog.require('Blockly.Yail.dictionaries');
-goog.require('Blockly.Yail.helpers');
-goog.require('Blockly.Yail.lists');
-goog.require('Blockly.Yail.logic');
-goog.require('Blockly.Yail.math');
-goog.require('Blockly.Yail.procedures');
-goog.require('Blockly.Yail.text');
-goog.require('Blockly.Yail.variables');
+goog.require('AI.Yail');  // must be first
+goog.require('AI.Yail.color');
+goog.require('AI.Yail.componentblock');
+goog.require('AI.Yail.control');
+goog.require('AI.Yail.dictionaries');
+goog.require('AI.Yail.helpers');
+goog.require('AI.Yail.lists');
+goog.require('AI.Yail.logic');
+goog.require('AI.Yail.math');
+goog.require('AI.Yail.procedures');
+goog.require('AI.Yail.text');
+goog.require('AI.Yail.variables');
 
 if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {};
 Blockly.ReplMgr.yail = null;
@@ -167,16 +167,16 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
     var componentNames = [];
     if (formProperties) {
         if (formName != 'Screen1')
-            code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
+            code.push(AI.Yail.getComponentRenameString("Screen1", formName));
         var sourceType = jsonObject.Source;
         if (sourceType == "Form") {
-            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, nameConverter, workspace.getComponentDatabase()));
+            code = code.concat(AI.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, nameConverter, workspace.getComponentDatabase()));
         } else {
             throw "Source type " + sourceType + " is invalid.";
         }
 
         // Fetch all of the components in the form, this may result in duplicates
-        componentNames = Blockly.Yail.getDeepNames(formProperties, componentNames);
+        componentNames = AI.Yail.getDeepNames(formProperties, componentNames);
         // Remove the duplicates
         var uniqueNames = componentNames.filter(function(elem, pos) {
             return componentNames.indexOf(elem) == pos;});
@@ -188,11 +188,11 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
             // We need to send all of the component cruft (sorry)
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
-            this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
+            this.putYail(AI.Yail.YAIL_CLEAR_FORM);
             // Tell the Companion the current form name
-            this.putYail(Blockly.Yail.YAIL_SET_FORM_NAME_BEGIN + formName + Blockly.Yail.YAIL_SET_FORM_NAME_END);
+            this.putYail(AI.Yail.YAIL_SET_FORM_NAME_BEGIN + formName + AI.Yail.YAIL_SET_FORM_NAME_END);
             this.putYail(code);
-            this.putYail(Blockly.Yail.YAIL_INIT_RUNTIME);
+            this.putYail(AI.Yail.YAIL_INIT_RUNTIME);
             phoneState.componentYail = code;
         }
     }
@@ -240,7 +240,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
         if (block.disabled) {
             if (block.type == 'component_event' && !didEmitEvent(block)) {
                 // We do need do remove disabled event handlers, though
-                var code = Blockly.Yail.disabledEventBlockToCode(block);
+                var code = AI.Yail.disabledEventBlockToCode(block);
                 if (phoneState.blockYail[block.id] != code) {
                     this.putYail(code, block, success, failure);
                     phoneState.blockYail[block.id] = code;
@@ -260,7 +260,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
         if (block.type == 'component_event') {
             willEmitEvent(block);
         }
-        var tempyail = Blockly.Yail.blockToCode(block);
+        var tempyail = AI.Yail.blockToCode(block);
         if (phoneState.blockYail[block.id] != tempyail) { // Only send changed yail
             this.putYail(tempyail, block, success, failure);
             phoneState.blockYail[block.id] = tempyail;
@@ -269,7 +269,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
 
     // need to do this after the blocks have been defined
     if (needinitialize) {
-        this.putYail(Blockly.Yail.getComponentInitializationString(formName, componentNames));
+        this.putYail(AI.Yail.getComponentInitializationString(formName, componentNames));
     }
 };
 
@@ -1745,7 +1745,7 @@ Blockly.ReplMgr.loadExtensions = function() {
         // Need to trigger the loading of extensions here
         rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
         var extensionJson = JSON.stringify(top.AssetManager_getExtensions());
-        extensionJson = Blockly.Yail.quotifyForREPL(extensionJson);
+        extensionJson = AI.Yail.quotifyForREPL(extensionJson);
         var yailstring = "(AssetFetcher:loadExtensions " +
           extensionJson + ")";
         console.log("Blockly.ReplMgr.loadExtensions: Yail = " + yailstring);

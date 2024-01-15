@@ -23,7 +23,7 @@
 
 goog.provide('AI.Blockly.Versioning');
 
-goog.require('Blockly.Substitution');
+goog.require('AI.Substitution');
 goog.require('goog.dom');
 goog.require('goog.dom.xml');
 

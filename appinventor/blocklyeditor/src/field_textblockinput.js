@@ -12,9 +12,9 @@
 
 'use strict';
 
-goog.provide('Blockly.FieldTextBlockInput');
+goog.provide('AI.FieldTextBlockInput');
 
-Blockly.FieldTextBlockInput = class extends Blockly.FieldTextInput {
+AI.FieldTextBlockInput = class extends Blockly.FieldTextInput {
   constructor(text, opt_changeHandler) {
     super(text);
     this.changeHandler_ = opt_changeHandler;
@@ -25,7 +25,7 @@ Blockly.FieldTextBlockInput = class extends Blockly.FieldTextInput {
  * Set the text in this field.
  * @param {string} text New text.
  */
-Blockly.FieldTextBlockInput.prototype.setText = function(text) {
+AI.FieldTextBlockInput.prototype.setText = function(text) {
   if (text == null) {
     // No change if null.
     return;

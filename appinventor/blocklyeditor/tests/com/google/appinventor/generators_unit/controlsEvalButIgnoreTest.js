@@ -17,7 +17,7 @@ var expected =
     (begin #f \"ignored\")    \
      ";
 
-var delayedGenerator = function () { return Blockly.Yail.controls_eval_but_ignore ; } ;
+var delayedGenerator = function () { return AI.Yail.controls_eval_but_ignore ; } ;
 
 var blockName = 'controls_eval_but_ignore' ;
 

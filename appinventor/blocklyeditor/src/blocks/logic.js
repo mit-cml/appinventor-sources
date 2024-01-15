@@ -10,14 +10,14 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.logic');
+goog.provide('AI.Blocks.logic');
 
 Blockly.Blocks['logic_boolean'] = {
   // Boolean data type: true and false.
   category: 'Logic',
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
     var thisBlock = this;
@@ -71,7 +71,7 @@ Blockly.Blocks['logic_false'] = {
   category: 'Logic',
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_boolean.OPERATORS), 'BOOL');
     this.setFieldValue('FALSE', 'BOOL');
@@ -93,9 +93,9 @@ Blockly.Blocks['logic_negate'] = {
   helpUrl: Blockly.Msg.LANG_LOGIC_NEGATE_HELPURL,
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('BOOL')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT);
     this.setTooltip(Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP);
   },
@@ -111,7 +111,7 @@ Blockly.Blocks['logic_compare'] = {
   },
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('A');
     this.appendValueInput('B')
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
@@ -167,11 +167,11 @@ Blockly.Blocks['logic_operation'] = {
      */
     this.lastMutator = null;
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('A')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT));
     this.appendValueInput('B')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(this.opField, 'OP');
     this.setFieldValue(op, 'OP');
     this.setInputsInline(true);
@@ -294,7 +294,7 @@ Blockly.Blocks['logic_operation'] = {
   addInput: function (inputNum) {
     var name = inputNum > 1 ? this.repeatingInputName + inputNum : ['A', 'B'][inputNum];
     var input = this.appendValueInput(name)
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT));
     if (this.getInputsInline()) {
       if (inputNum === 1) {
         this.makeDropdown(input);

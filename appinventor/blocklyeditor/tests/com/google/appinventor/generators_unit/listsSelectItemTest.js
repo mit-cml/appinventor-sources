@@ -25,7 +25,7 @@ var expected =
     ";
 
 
-var delayedGenerator = function () { return Blockly.Yail.lists_select_item ; } ;
+var delayedGenerator = function () { return AI.Yail.lists_select_item ; } ;
 
 var blockName = 'lists_select_item' ;
 

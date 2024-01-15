@@ -33,11 +33,11 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.control');
+goog.provide('AI.Blocks.control');
 
 goog.require('AI.Blockly.FieldFlydown');
-goog.require('Blockly.Blocks.Utilities');
-goog.require('Blockly.Substitution');
+goog.require('AI.BlockUtils');
+goog.require('AI.Substitution');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.
@@ -46,7 +46,7 @@ Blockly.Blocks['controls_if'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('IF0')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_IF);
     this.appendStatementInput('DO0')
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
@@ -182,7 +182,7 @@ Blockly.Blocks['controls_if'] = {
     // Rebuild block.
     for (var i = 1; i <= this.elseifCount_; i++) {
       this.appendValueInput('IF' + i)
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('boolean', Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('boolean', AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
       this.appendStatementInput('DO' + i)
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
@@ -244,17 +244,17 @@ Blockly.Blocks['controls_forRange'] = {
     // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.inputs.Align.RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('START')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR, true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START)
         .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('END')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END)
         .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('STEP')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP)
         .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendStatementInput('DO')
@@ -372,7 +372,7 @@ Blockly.Blocks['controls_forEach'] = {
     // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.inputs.Align.RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR,
             true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
@@ -470,8 +470,8 @@ Blockly.Blocks['controls_for_each_dict'] = {
 
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    var checkTypeDict = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        'dictionary', Blockly.Blocks.Utilities.INPUT);
+    var checkTypeDict = AI.BlockUtils.YailTypeToBlocklyType(
+        'dictionary', AI.BlockUtils.INPUT);
     var keyField = new Blockly.FieldParameterFlydown(
         Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
         true, Blockly.FieldFlydown.DISPLAY_BELOW);
@@ -603,7 +603,7 @@ Blockly.Blocks['controls_while'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST)
         .setAlign(Blockly.inputs.Align.RIGHT);
@@ -626,7 +626,7 @@ Blockly.Blocks['controls_choose'] = {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST)
         .setAlign(Blockly.inputs.Align.RIGHT);
@@ -697,7 +697,7 @@ Blockly.Blocks['controls_openAnotherScreen'] = {
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME)
         .setAlign(Blockly.inputs.Align.RIGHT)
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
   },
@@ -711,7 +711,7 @@ Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREENNAME')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
         .setAlign(Blockly.inputs.Align.RIGHT);
@@ -787,7 +787,7 @@ Blockly.Blocks['controls_getPlainStartText'] = {
   helpUrl: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
@@ -802,7 +802,7 @@ Blockly.Blocks['controls_closeScreenWithPlainText'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
         .setAlign(Blockly.inputs.Align.RIGHT);

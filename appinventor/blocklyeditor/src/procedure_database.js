@@ -81,7 +81,7 @@ Blockly.ProcedureDatabase.defaultValue = ['', 'none'];
  * @returns {!string[]}
  */
 Blockly.ProcedureDatabase.prototype.getNames = function(returnValue) {
-  return Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_).map(function(v) { return v[0]; });
+  return AI.Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_).map(function(v) { return v[0]; });
 };
 
 /**
@@ -90,7 +90,7 @@ Blockly.ProcedureDatabase.prototype.getNames = function(returnValue) {
  * @returns {!Array.<Array.<string>>}
  */
 Blockly.ProcedureDatabase.prototype.getMenuItems = function(returnValue) {
-  return Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_);
+  return AI.Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_);
 };
 
 /**

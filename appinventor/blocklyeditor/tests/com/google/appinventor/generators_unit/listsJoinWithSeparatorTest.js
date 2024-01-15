@@ -44,7 +44,7 @@
 // Blocklies["5066549580791808_Screen1"].mainWorkspace.getTopBlocks();
 
 // Get the appropraite block, and then run
-// Blockly.Yail.BlocktoCode1(block)
+// AI.Yail.BlocktoCode1(block)
 
 
 // (3) Whether or not the block returns a value
@@ -61,7 +61,7 @@ var expected =
   "(call-yail-primitive yail-list-join-with-separator (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\") \"\") '(list text) \"join with separator\")";
 
 
-var delayedGenerator = function () { return Blockly.Yail.lists_join_with_separator; } ;
+var delayedGenerator = function () { return AI.Yail.lists_join_with_separator; } ;
 
 var blockName = 'lists_join_with_separator';
 

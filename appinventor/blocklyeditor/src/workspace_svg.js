@@ -636,7 +636,7 @@ Blockly.WorkspaceSvg.prototype.saveBlocksFile = function(prettify) {
  * @returns String containing YAIL to be sent to the phone.
  */
 Blockly.WorkspaceSvg.prototype.getFormYail = function(formJson, packageName, opt_repl) {
-  return Blockly.Yail.getFormYail(formJson, packageName, !!opt_repl, this);
+  return AI.Yail.getFormYail(formJson, packageName, !!opt_repl, this);
 };
 
 /**

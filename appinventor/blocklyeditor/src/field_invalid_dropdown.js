@@ -84,7 +84,7 @@ Blockly.FieldInvalidDropdown.prototype.doValueUpdate_ = function(newValue) {
     }
   }
   this.text_ = this.selectedOption_[0];
-  this.size_.width = 0;
+  this.isDirty_ = true;
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
     this.sourceBlock_.bumpNeighbours();

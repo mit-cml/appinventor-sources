@@ -260,13 +260,13 @@ function toXml() {
 }
 
 function toAppYail() {
-    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", false, Blockly.mainWorkspace);
+    var code = AI.Yail.getFormYail(formJson, "fakepackagename", false, Blockly.mainWorkspace);
     setOutput(code);
     return code;
 }
 
 function toReplYail() {
-    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", true, Blockly.mainWorkspace);
+    var code = AI.Yail.getFormYail(formJson, "fakepackagename", true, Blockly.mainWorkspace);
     setOutput(code);
     return code;
 }

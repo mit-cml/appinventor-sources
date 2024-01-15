@@ -10,10 +10,10 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.text');
+goog.provide('AI.Blocks.text');
 
-goog.require('Blockly.Blocks.Utilities');
-goog.require('Blockly.FieldTextBlockInput');
+goog.require('AI.BlockUtils');
+goog.require('AI.FieldTextBlockInput');
 
 Blockly.Blocks['text'] = {
   // Text value.
@@ -53,7 +53,7 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, o
       if (shouldIgnoreError) {
         // Error may be noted by WarningHandler's checkInvalidNumber
         return true;
-      } else if (Blockly.Blocks.Utilities.NUMBER_REGEX.test(value)) {
+      } else if (AI.BlockUtils.NUMBER_REGEX.test(value)) {
         // Value passes a floating point regex
         return !isNaN(parseFloat(value));
       }
@@ -92,7 +92,7 @@ Blockly.Blocks['text_join'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_JOIN_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendValueInput('ADD0')
         .appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
     this.appendValueInput('ADD1');
@@ -114,7 +114,7 @@ Blockly.Blocks['text_join'] = {
         .appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
   },
   addInput: function (inputNum) {
-    var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+    var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
     if (inputNum === 0) {
       input.appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
     }
@@ -146,9 +146,9 @@ Blockly.Blocks['text_length'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_LENGTH_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
     this.appendValueInput('VALUE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH);
     this.setTooltip(Blockly.Msg.LANG_TEXT_LENGTH_TOOLTIP);
   },
@@ -161,9 +161,9 @@ Blockly.Blocks['text_isEmpty'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_ISEMPTY_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('VALUE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY);
     this.setTooltip(Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP);
   },
@@ -176,12 +176,12 @@ Blockly.Blocks['text_compare'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_COMPARE_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('TEXT1')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE);
     this.appendValueInput('TEXT2')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     var thisBlock = this;
@@ -238,9 +238,9 @@ Blockly.Blocks['text_trim'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_TRIM_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP);
   },
@@ -256,9 +256,9 @@ Blockly.Blocks['text_changeCase'] = {
   },
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     var thisBlock = this;
     this.setTooltip(function () {
@@ -307,8 +307,8 @@ Blockly.Blocks['text_starts_at'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_STARTS_AT_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
+    var checkTypeText = AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT,
         ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
         ['PIECE', checkTypeText, Blockly.inputs.Align.RIGHT],
@@ -329,7 +329,7 @@ Blockly.Blocks['text_contains'] = {
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
 
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
     var getType = utils.YailTypeToBlocklyType;
     var dropdown = new Blockly.FieldDropdown(
         Blockly.Blocks.text_contains.OPERATORS(),
@@ -400,7 +400,7 @@ Blockly.Blocks['text_contains'] = {
  * @this {!Blockly.BlockSvg}
  */
 Blockly.Blocks.text_contains.adjustToMode = function (mode) {
-  var utils = Blockly.Blocks.Utilities;
+  var utils = AI.BlockUtils;
   var getType = utils.YailTypeToBlocklyType;
 
   if (mode == 'CONTAINS') {
@@ -453,13 +453,13 @@ Blockly.Blocks['text_split'] = {
   },
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.OUTPUT));
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_split.dropdown_onchange), 'OP')
         .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT);
     this.appendValueInput('AT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME')
         .setAlign(Blockly.inputs.Align.RIGHT);
   },
@@ -509,10 +509,10 @@ Blockly.Blocks['text_split'] = {
 // Change the name and type of ARG2 and set tooltop depending on mode
 Blockly.Blocks.text_split.adjustToMode = function (mode, block) {
   if (mode == 'SPLITATFIRST' || mode == 'SPLIT') {
-    block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+    block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
     block.setFieldValue(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME');
   } else if (mode == 'SPLITATFIRSTOFANY' || mode == 'SPLITATANY') {
-    block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT));
+    block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT));
     block.setFieldValue(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT_LIST, 'ARG2_NAME');
   }
   ;
@@ -557,9 +557,9 @@ Blockly.Blocks['text_split_at_spaces'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.OUTPUT));
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE);
     this.setTooltip(Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP);
   },
@@ -572,9 +572,9 @@ Blockly.Blocks['text_segment'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_SEGMENT_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
-    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
-    var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    var checkTypeText = AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT);
+    var checkTypeNumber = AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_SEGMENT_INPUT,
         ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
         ['START', checkTypeNumber, Blockly.inputs.Align.RIGHT],
@@ -592,8 +592,8 @@ Blockly.Blocks['text_replace_all'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
-    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    var checkTypeText = AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT,
         ['TEXT', checkTypeText, Blockly.inputs.Align.RIGHT],
         ['SEGMENT', checkTypeText, Blockly.inputs.Align.RIGHT],
@@ -613,7 +613,7 @@ Blockly.Blocks['obfuscated_text'] = {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
         Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
-    var textInput = new Blockly.FieldTextBlockInput('');
+    var textInput = new AI.FieldTextBlockInput('');
     textInput.onFinishEditing_ = Blockly.Blocks.text
         .bumpBlockOnFinishEdit.bind(this);
     this.appendDummyInput()
@@ -644,7 +644,7 @@ Blockly.Blocks['text_is_string'] = {
     this.appendValueInput('ITEM')
       .appendField(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE)
       .appendField(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE}]
@@ -656,9 +656,9 @@ Blockly.Blocks['text_reverse'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_REVERSE_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendValueInput('VALUE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_TEXT_REVERSE_INPUT);
     this.setTooltip(Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP);
   },
@@ -674,9 +674,9 @@ Blockly.Blocks['text_replace_mappings'] = {
   },
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
-    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
-    var checkTypeMap = Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary", Blockly.Blocks.Utilities.INPUT);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    var checkTypeText = AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT);
+    var checkTypeMap = AI.BlockUtils.YailTypeToBlocklyType("dictionary", AI.BlockUtils.INPUT);
 
     this.appendValueInput('MAPPINGS')
       .setCheck(checkTypeMap)

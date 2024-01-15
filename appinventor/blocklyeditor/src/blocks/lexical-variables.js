@@ -75,12 +75,12 @@ function myStringify (obj) {
 
 'use strict';
 
-goog.provide('Blockly.Blocks.lexicalvariables');
+goog.provide('AI.Blocks.lexicalvariables');
 
 goog.require('AI.Blockly.FieldGlobalFlydown');
-goog.require('Blockly.Blocks.Utilities');
-goog.require('Blockly.NameSet');
-goog.require('Blockly.Substitution');
+goog.require('AI.BlockUtils');
+goog.require('AI.NameSet');
+goog.require('AI.Substitution');
 goog.require('goog.dom');
 
 /**

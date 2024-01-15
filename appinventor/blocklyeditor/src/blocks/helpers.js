@@ -12,10 +12,10 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.helpers');
+goog.provide('AI.Blocks.helpers');
 
 goog.require('AI.Blockly.FieldInvalidDropdown');
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.BlockUtils');
 
 Blockly.COLOUR_HELPERS = "#BF4343";
 
@@ -60,8 +60,8 @@ Blockly.Blocks['helpers_dropdown'] = {
 
   getOutputType: function() {
     var check = [];
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        'enum', Blockly.Blocks.Utilities.OUTPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        'enum', AI.BlockUtils.OUTPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -71,7 +71,7 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities.helperKeyToBlocklyType(
+    var helperType = AI.BlockUtils.helperKeyToBlocklyType(
       { type: 'OPTION_LIST', key: this.key_ }, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -153,7 +153,7 @@ Blockly.Blocks['helpers_dropdown'] = {
 
 Blockly.Blocks['helpers_screen_names'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
     var dropdown = new Blockly.FieldInvalidDropdown(
         this.generateOptions.bind(this));
 
@@ -211,7 +211,7 @@ Blockly.Blocks['helpers_screen_names'] = {
 
 Blockly.Blocks['helpers_assets'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 

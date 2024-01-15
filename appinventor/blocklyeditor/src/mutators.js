@@ -10,7 +10,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.mutators');
+goog.provide('AI.Blocks.mutators');
 
 //container block for all mutators
 Blockly.Blocks['mutator_container'] = {

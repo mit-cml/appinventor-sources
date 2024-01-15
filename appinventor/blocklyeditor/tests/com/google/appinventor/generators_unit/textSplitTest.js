@@ -20,7 +20,7 @@ var expected =
            \"split\")                             \
      ";
 
-var delayedGenerator = function () { return Blockly.Yail.text_split ; } ;
+var delayedGenerator = function () { return AI.Yail.text_split ; } ;
 
 var blockName = 'text_split' ;
 

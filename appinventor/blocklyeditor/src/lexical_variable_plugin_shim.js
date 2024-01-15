@@ -1,5 +1,8 @@
 // Note: This file is a shim for the Lexical Variable Plugin
 
+goog.provide('AI.NameSet');
+goog.provide('AI.Substitution');
+
 var lexVarPlugin = top.LexicalVariablesPlugin;
 
 /**
@@ -189,5 +192,7 @@ Blockly.LexicalVariable.eventParameterDict = function (block) {
 
 // Copy the shared properties from the Shared object of the Lexical Variables Plugin to Blockly
 Blockly = Object.assign(Blockly, lexVarPlugin.Shared);
+Blockly.NameSet = lexVarPlugin.NameSet;
+Blockly.Substitution = lexVarPlugin.Substitution;
 Blockly.prefixSeparator = Blockly.yailSeparator;
 Blockly.usePrefixInCode = Blockly.usePrefixInYail;

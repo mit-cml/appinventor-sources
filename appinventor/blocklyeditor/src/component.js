@@ -17,11 +17,6 @@ goog.provide('AI.Blockly.Component');
 goog.provide('AI.Blockly.ComponentTypes');
 goog.provide('AI.Blockly.ComponentInstances');
 
-goog.require('Blockly.TranslationProperties');
-goog.require('Blockly.TranslationEvents');
-goog.require('Blockly.TranslationMethods');
-goog.require('Blockly.TranslationParams');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.TypeBlock');
 
@@ -69,7 +64,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
   Blockly.ComponentInstances[oldname] = null;
   delete Blockly.ComponentInstances[oldname];
 
-  console.log("Revised Blockly.ComponentInstances, Blockly.Language, Blockly.Yail for " + newname);
+  console.log("Revised Blockly.ComponentInstances, Blockly.Language, AI.Yail for " + newname);
 
   // Revise names, types, and block titles for all blocks containing newname in Blockly.common.getMainWorkspace()
   var blocks = Blockly.common.getMainWorkspace().getAllBlocks();

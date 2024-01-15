@@ -575,7 +575,7 @@ AI.Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             block.initSvg(); //Need to init the block before doing anything else
             if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
               //Need to make sure Procedure Block inputs are updated
-              Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
+              AI.Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
             }
           }
 
@@ -583,9 +583,9 @@ AI.Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             block.setFieldValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
             // change type checking for split blocks
             if (blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
-              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+              block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
             } else if (blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
-              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT));
+              block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT));
             }
           }
         } else {

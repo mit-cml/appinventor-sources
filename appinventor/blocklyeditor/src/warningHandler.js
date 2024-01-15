@@ -14,7 +14,7 @@
 
 goog.provide('AI.Blockly.WarningHandler');
 
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.BlockUtils');
 goog.require('AI.Blockly.FieldLexicalVariable');
 
 Blockly.WarningHandler = function(workspace) {
@@ -454,7 +454,7 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
   var value = block.getFieldValue('TEXT');
   if (targetChecks && targetChecks.indexOf('String') == -1 &&
       targetChecks.indexOf('Number') >= 0 &&
-      (value == '' || !Blockly.Blocks.Utilities.NUMBER_REGEX.test(value))) {
+      (value == '' || !AI.BlockUtils.NUMBER_REGEX.test(value))) {
     block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
     return true;
   }

@@ -59,13 +59,13 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.procedures');
+goog.provide('AI.Blocks.procedures');
 
 goog.require('AI.Blockly.FieldProcedureName');
-goog.require('Blockly.Blocks.Utilities');
-goog.require('Blockly.FieldProcedure');
-goog.require('Blockly.NameSet');
-goog.require('Blockly.Substitution');
+goog.require('AI.BlockUtils');
+goog.require('AI.Blockly.FieldProcedure');
+goog.require('AI.NameSet');
+goog.require('AI.Substitution');
 goog.require('goog.dom');
 
 Blockly.ProcedureNameDropdown = class extends Blockly.FieldDropdown {
@@ -396,7 +396,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
-      Blockly.AIProcedure.removeProcedureValues(name, workspace);
+      AI.Blockly.AIProcedure.removeProcedureValues(name, workspace);
     }
 
     // Call parent's destructor.
@@ -688,7 +688,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       return items.length > 0 ? items : ['',''];
     };
 
-    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn, AI.Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
@@ -700,8 +700,8 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn(false)[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
+    AI.Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),
+        this.getField("PROCNAME").getValue());
   },
   getProcedureCall: function() {
     return this.getFieldValue('PROCNAME');
@@ -896,7 +896,8 @@ Blockly.Blocks['procedures_callreturn'] = {
       return items.length > 0 ? items : ['',''];
     };
 
-    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.ProcedureNameDropdown(this.procNamesFxn,
+        AI.Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL)
@@ -907,8 +908,8 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn()[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
+    AI.Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),
+        this.getField("PROCNAME").getValue());
   },
   getProcedureCall: Blockly.Blocks.procedures_callnoreturn.getProcedureCall,
   renameProcedure: Blockly.Blocks.procedures_callnoreturn.renameProcedure,
