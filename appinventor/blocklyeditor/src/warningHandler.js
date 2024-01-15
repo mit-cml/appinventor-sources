@@ -462,9 +462,6 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
 // if so, create an error
 
 Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.common.getSelected() === block) {
-    return false;  // wait until the user is done dragging to check validity.
-  }
   if (Blockly_containedInLoop(block)) {
     return false;  // false means it is within a loop
   } else {

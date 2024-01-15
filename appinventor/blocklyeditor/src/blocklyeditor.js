@@ -994,7 +994,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     goog.dom.appendChild(p, ac_input_text);
     workspace.typeBlock_ = new AI.Blockly.TypeBlock(typeblockOpts, workspace);
     var workspaceChanged = function() {
-      if (Blockly.dragMode_ == Blockly.DRAG_NONE) {
+      if (this.workspace && !this.workspace.isDragging()) {
         var metrics = workspace.getMetrics();
         var edgeLeft = metrics.viewLeft + metrics.absoluteLeft;
         var edgeTop = metrics.viewTop + metrics.absoluteTop;

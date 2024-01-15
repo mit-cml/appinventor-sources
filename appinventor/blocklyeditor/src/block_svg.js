@@ -443,7 +443,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
     clearTimeout(this.setErrorText.pid_[id]);
     delete this.setErrorText.pid_[id];
   }
-  if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
+  if (this.workspace && this.workspace.isDragging()) {
     // Don't change the error text during a drag.
     // Wait until the drag finishes.
     var thisBlock = this;
