@@ -19,7 +19,6 @@ import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
-import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
@@ -515,7 +514,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private boolean readyToLoadProject() {
-    return BlocklyMsg.Loader.isTranslationLoaded() && externalComponentsLoaded;
+    return externalComponentsLoaded;
   }
 
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {

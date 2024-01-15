@@ -20,7 +20,6 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -703,12 +702,7 @@ public class Ode implements EntryPoint {
           loadBackpack();
           LOG.info("backpack: No shared backpack");
         } else {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setSharedBackpackId(backPackId);
-            }
-          });
+          BlocklyPanel.setSharedBackpackId(backPackId);
           LOG.info("Have a shared backpack backPackId = " + backPackId);
         }
 
@@ -1351,7 +1345,6 @@ public class Ode implements EntryPoint {
         userSettings.saveSettings(null);
       }
     }
-    BlocklyMsg.Loader.ensureTranslationsLoaded();
     return true;
   }
 
@@ -2317,12 +2310,7 @@ public class Ode implements EntryPoint {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
         @Override
         public void onSuccess(final String backpack) {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setInitialBackpack(backpack);
-            }
-          });
+          BlocklyPanel.setInitialBackpack(backpack);
         }
         @Override
         public void onFailure(Throwable caught) {

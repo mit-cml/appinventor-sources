@@ -40,7 +40,6 @@ public class BlocklyTranslationGenerator {
     // All untranslated strings for a given language should default to English, so merge the Blockly and App Inventor
     // translations into one master english file that will be used in all the other translations.
     JSONObject merged_english = merge_string_json(new ArrayList<JSONObject>(Arrays.asList(blockly_en_json, ai_en_json)));
-    FileUtils.writeStringToFile(new File(args[2].concat("/messages.json")), merged_english.toString());
     FileUtils.writeStringToFile(new File(args[2].concat("/messages.js")), "top.AI2 = {Msg: ".concat(merged_english.toString()).concat("};"));
 
     HashMap<String, String> blockly_files = new HashMap<String, String>();
@@ -75,7 +74,6 @@ public class BlocklyTranslationGenerator {
         JSONObject ai_lang_json = new JSONObject(new String(Files.readAllBytes(Paths.get(f.getPath()))).replaceAll("Blockly.Msg.", ""));
         json_to_merge.add(ai_lang_json);
         JSONObject merged_language = merge_string_json(json_to_merge);
-        FileUtils.writeStringToFile(new File(args[2].concat("/messages_").concat(lang_code).concat(".json")), merged_language.toString(2));
         FileUtils.writeStringToFile(new File(args[2].concat("/messages_").concat(lang_code).concat(".js")), "top.AI2 = {Msg: ".concat(merged_language.toString()).concat("};"));
       }
     }
