@@ -55,6 +55,14 @@ public class BlocklyTranslationGenerator {
           blockly_files.put("zh_TW", f.getPath());
         } else if ("pt-br".equals(lang_code)) {
           blockly_files.put("pt_BR", f.getPath());
+        } else if ("es".equals(lang_code)) {
+          blockly_files.put("es_ES", f.getPath());
+        } else if ("fr".equals(lang_code)) {
+          blockly_files.put("fr_FR", f.getPath());
+        } else if ("it".equals(lang_code)) {
+          blockly_files.put("it_IT", f.getPath());
+        } else if ("ko".equals(lang_code)) {
+          blockly_files.put("ko_KR", f.getPath());
         } else {
           blockly_files.put(lang_code.replace("-", "_"), f.getPath());
         }
