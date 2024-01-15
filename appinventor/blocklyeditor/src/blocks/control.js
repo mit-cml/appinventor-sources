@@ -274,16 +274,16 @@ Blockly.Blocks['controls_forRange'] = {
               loopVar);
     }
     const newEnv = env.concat([loopVar]);
-    const startResults = LexicalVariable.referenceResult(
+    const startResults = Blockly.LexicalVariable.referenceResult(
         this.getInputTargetBlock('START'), name, prefix, env);
-    const endResults = LexicalVariable.referenceResult(
+    const endResults = Blockly.LexicalVariable.referenceResult(
         this.getInputTargetBlock('END'), name, prefix, env);
-    const stepResults = LexicalVariable.referenceResult(
+    const stepResults = Blockly.LexicalVariable.referenceResult(
         this.getInputTargetBlock('STEP'), name, prefix, env);
-    const doResults = LexicalVariable.referenceResult(
+    const doResults = Blockly.LexicalVariable.referenceResult(
         this.getInputTargetBlock('DO'), name, prefix, newEnv);
-    const nextResults = LexicalVariable.referenceResult(
-        LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        Blockly.LexicalVariable.getNextTargetBlock(this), name, prefix, env);
     return [startResults, endResults, stepResults, doResults, nextResults];
   },
   withLexicalVarsAndPrefix: function(child, proc) {

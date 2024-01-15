@@ -140,7 +140,7 @@ Blockly.Blocks['lexical_variable_get'] = {
   },
   referenceResults: function(name, prefix, env) {
     const childrensReferenceResults = this.getChildren().map(function(blk) {
-      return LexicalVariable.referenceResult(blk, name, prefix, env);
+      return Blockly.LexicalVariable.referenceResult(blk, name, prefix, env);
     });
     let blocksToRename = [];
     let capturables = [];
@@ -703,9 +703,9 @@ Blockly.Blocks['local_declaration_expression'] = {
       }
     }
     const initResults = localInits.map(function(init) {
-      return LexicalVariable.referenceResult(init, name, prefix, env);
+      return Blockly.LexicalVariable.referenceResult(init, name, prefix, env);
     });
-    const returnResults = LexicalVariable.referenceResult(
+    const returnResults = Blockly.LexicalVariable.referenceResult(
         this.getInputTargetBlock('RETURN'), name, prefix, newEnv);
     return initResults.concat([returnResults]);
   },
