@@ -409,9 +409,6 @@ Blockly.WarningHandler.prototype['checkIfUndefinedBlock'] = function(block) {
 
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(block, params){
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.common.getSelected() === block) {
-    return false;  // wait until the user is done dragging to check validity.
-  }
   for(var i=0;i<params.dropDowns.length;i++){
     var dropDown = block.getField(params.dropDowns[i]);
     var dropDownList = dropDown.menuGenerator_();
