@@ -182,7 +182,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         block.walk(function(block) {
             if ((block.type === 'component_method' || block.type === 'component_set_get') &&
               block.instanceName === instanceName) {
-            makeGeneric(/** @type Blockly.BlockSvg */ block, varBlockDom);
+            makeGeneric(/** @type {Blockly.BlockSvg} */ (block), varBlockDom);
           }
         });
       } finally {

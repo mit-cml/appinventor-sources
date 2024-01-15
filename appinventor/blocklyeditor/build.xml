@@ -125,7 +125,8 @@
                       unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/closure-compiler/closure-compiler-v20211201.jar">
 			<arg line="--compilation_level ${compilation_level}"/>
-			<arg line="--language_out STABLE"/>
+			<arg line="--language_in ECMASCRIPT_NEXT"/>
+			<arg line="--language_out ECMASCRIPT_NEXT"/>
 			<arg line="--js_output_file ${public.build.dir}/blockly-all.js"/>
 			<arg line="${blockly.src.dir}/blockly_compressed.js"/>
 			<arg line="${blockly.plugin.dir}/block-lexical-variables-1.0.0.min.js"/>

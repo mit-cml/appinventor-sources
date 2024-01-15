@@ -14,7 +14,6 @@
 
 goog.provide('AI.Blockly.WarningIndicator');
 
-goog.require('Blockly.utils');
 goog.require('goog.Timer');
 
 

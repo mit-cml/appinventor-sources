@@ -11,19 +11,22 @@ goog.provide('AI.Blockly.FieldInvalidDropdown');
  * Dropdown field that allows you to display invalid options. Options that are
  * not available (invalid) are displayed, and the block is marked as a
  * badBlock().
- * @param {(!Array.<!Array>|!Function)} menuGenerator A non-empty array of
- *     options for a dropdown list, or a function which generates these options.
- * @param {!Array.<!Array>} opt_invalidOptions A list of invalid options with
- *     identically structure to the menuGenerator options list. These options
- *     will not be available in the dropdown, but the correct human-readable
- *     values will be displayed if they are set some other way (eg via xml).
- *     If an invalid value is set and it does not exist in the set of
- *     invalidOptions then the stringified version of that value will be
- *     displayed.
- * @param {Function=} opt_validator A change listener that is called when a new
- *     option is selected from the dropdown.
  */
 Blockly.FieldInvalidDropdown = class extends Blockly.FieldDropdown {
+  /**
+   * Create a new FieldInvalidDropdown.
+   * @param {(!Array.<!Array>|!Function)} menuGenerator A non-empty array of
+   *     options for a dropdown list, or a function which generates these options.
+   * @param {!Array.<!Array>} opt_invalidOptions A list of invalid options with
+   *     identically structure to the menuGenerator options list. These options
+   *     will not be available in the dropdown, but the correct human-readable
+   *     values will be displayed if they are set some other way (eg via xml).
+   *     If an invalid value is set and it does not exist in the set of
+   *     invalidOptions then the stringified version of that value will be
+   *     displayed.
+   * @param {Function=} opt_validator A change listener that is called when a new
+   *     option is selected from the dropdown.
+   */
   constructor(menuGenerator, opt_invalidOptions, opt_validator) {
     super(menuGenerator, opt_validator);
     this.invalidOptions_ = opt_invalidOptions || [];

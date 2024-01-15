@@ -7,8 +7,6 @@
  * Add additional "class methods" to Blockly.RenderedConnection
  */
 
-goog.require('Blockly.RenderedConnection');
-
 var oldConnect = Blockly.RenderedConnection.prototype.connect_;
 
 /**
