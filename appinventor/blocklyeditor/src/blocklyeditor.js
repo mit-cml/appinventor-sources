@@ -98,11 +98,11 @@ top.addEventListener('mousedown', function(e) {
     iframe.style.height = '100%';
     iframe.style.border = 'none';
     div.appendChild(iframe);
-    top.document.body.appendChild(div);
-    Blockly.WidgetDiv.dispose_ = function() {
+    Blockly.WidgetDiv.show(Blockly.BlocklyEditor, Blockly.common.getMainWorkspace().options.rtl, function() {
       Blockly.BlocklyEditor.HELP_IFRAME.parentNode.removeChild(Blockly.BlocklyEditor.HELP_IFRAME);
       Blockly.BlocklyEditor.HELP_IFRAME = null;
-    };
+    });
+    top.document.body.appendChild(div);
   }
   return true;
 }, true);
