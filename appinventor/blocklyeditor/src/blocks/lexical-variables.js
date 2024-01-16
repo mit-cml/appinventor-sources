@@ -194,7 +194,7 @@ Blockly.Blocks['lexical_variable_get'] = {
       }
     } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getValue()) {
       // Global variables
-      this.fieldVar_.setText(newTranslatedName);
+      this.fieldVar_.setValue(newTranslatedName);
       if (oldName === newName) {
         this.setFieldValue(newName, 'VAR');
       }
