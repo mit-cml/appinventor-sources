@@ -48,7 +48,7 @@ Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
   var helper = '';
   if (this.param.helperKey) {
     var xml = Blockly.Util.xml.valueWithHelperXML('VALUE', this.param.helperKey);
-    helper = Blockly.utils.xml.domToText(xml.firstChild);
+    helper = Blockly.Xml.domToText(xml.firstChild);
   }
 
   var getterSetterXML =

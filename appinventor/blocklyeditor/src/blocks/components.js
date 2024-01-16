@@ -62,10 +62,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   function makeGeneric(block, opt_replacementDom) {
     var instanceName = block.instanceName;
     var mutation = block.mutationToDom();
-    var oldMutation = Blockly.utils.xml.domToText(mutation);
+    var oldMutation = Blockly.Xml.domToText(mutation);
     mutation.setAttribute('is_generic', 'true');
     mutation.removeAttribute('instance_name');
-    var newMutation = Blockly.utils.xml.domToText(mutation);
+    var newMutation = Blockly.Xml.domToText(mutation);
     block.domToMutation(mutation);
     block.initSvg();  // block shape may have changed
     block.render();
@@ -82,7 +82,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
           '</block></xml>';
         opt_replacementDom = Blockly.utils.xml.textToDom(compBlockXml).firstElementChild;
       }
-      var replacement = Blockly.utils.xml.domToBlock(opt_replacementDom, block.workspace);
+      var replacement = Blockly.Xml.domToBlock(opt_replacementDom, block.workspace);
       replacement.initSvg();
       block.getInput('COMPONENT').connection.connect(replacement.outputConnection);
     }
@@ -109,10 +109,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         var instanceName = compBlock.instanceName;
         compBlock.dispose(true);
         var mutation = block.mutationToDom();
-        var oldMutation = Blockly.utils.xml.domToText(mutation);
+        var oldMutation = Blockly.Xml.domToText(mutation);
         mutation.setAttribute('instance_name', instanceName);
         mutation.setAttribute('is_generic', 'false');
-        var newMutation = Blockly.utils.xml.domToText(mutation);
+        var newMutation = Blockly.Xml.domToText(mutation);
         block.domToMutation(mutation);
         block.initSvg();  // block shape may have changed
         block.render();

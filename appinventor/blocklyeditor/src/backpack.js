@@ -342,8 +342,8 @@ AI.Blockly.Backpack.prototype.addToBackpack = function(block, store) {
   // Copy is made of the expanded block.
   var isCollapsed = block.collapsed_;
   block.setCollapsed(false);
-  var xmlBlock = Blockly.utils.xml.blockToDom(block);
-  Blockly.utils.xml.deleteNext(xmlBlock);
+  var xmlBlock = Blockly.Xml.blockToDom(block);
+  Blockly.Xml.deleteNext(xmlBlock);
   // Encode start position in XML.
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
@@ -356,7 +356,7 @@ AI.Blockly.Backpack.prototype.addToBackpack = function(block, store) {
     if (!bp_contents) {
       bp_contents = [];
     }
-    bp_contents.push("<xml>" + Blockly.utils.xml.domToText(xmlBlock) + "</xml>");
+    bp_contents.push("<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>");
     // We technically do not need to set the contents here since the contents are manipulated by
     // reference, but separating the setting from modifying allows us to use different, non-in-memory
     // storage in the future.
