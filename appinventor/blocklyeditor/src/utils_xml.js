@@ -118,7 +118,7 @@ Blockly.Util.xml.procedureCallerBlockString = function(procDeclBlock) {
   var mutationDom = procDeclBlock.mutationToDom();
   // Decl doesn't have name attribute, but caller does
   mutationDom.setAttribute('name', procName); 
-  blockString += Blockly.utils.xml.domToText(mutationDom);
+  blockString += Blockly.Xml.domToText(mutationDom);
   blockString += '</block>';
   return blockString;
 };

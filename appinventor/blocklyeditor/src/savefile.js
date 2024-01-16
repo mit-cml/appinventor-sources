@@ -64,5 +64,5 @@ Blockly.SaveFile.get = function(prettify, opt_workspace) {
   element.setAttribute('ya-version',top.YA_VERSION);
   element.setAttribute('language-version',top.BLOCKS_VERSION);
   xml.appendChild(element);
-  return prettify ? Blockly.utils.xml.domToPrettyText(xml) : Blockly.utils.xml.domToText(xml);
+  return prettify ? Blockly.Xml.domToPrettyText(xml) : Blockly.Xml.domToText(xml);
 };
