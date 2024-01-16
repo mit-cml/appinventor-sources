@@ -36,6 +36,7 @@ goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
 
 // App Inventor Blocks
+goog.require('AI.Blocks.mutators');
 goog.require('AI.Blocks.color');
 goog.require('AI.Blocks.components');
 goog.require('AI.Blocks.control');
@@ -47,7 +48,6 @@ goog.require('AI.Blocks.logic');
 goog.require('AI.Blocks.math');
 goog.require('AI.Blocks.procedures');
 goog.require('AI.Blocks.text');
-goog.require('AI.Blocks.mutators');
 
 // Make dragging a block from flyout work in any direction (default: 70)
 Blockly.Flyout.prototype.dragAngleRange_ = 360;
