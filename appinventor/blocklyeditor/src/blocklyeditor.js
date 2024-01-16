@@ -1164,7 +1164,8 @@ top.document.addEventListener('mousedown', function(e) {
   while (target) {
     var classes = target.classList;
     // Use 'contains' in case the elements gain extra classes in the future.
-    if (classes.contains('blocklyWidgetDiv') || classes.contains('blocklySvg') || classes.contains('gwt-TreeItem')) {
+    if (classes.contains('blocklyWidgetDiv') || classes.contains('blocklySvg')
+        || classes.contains('gwt-TreeItem') || classes.contains('blocklyDropDownDiv')) {
       return;
     }
     target = target.parentElement;
