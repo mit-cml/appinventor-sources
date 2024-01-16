@@ -116,7 +116,6 @@ Blockly.BlocklyEditor.makeMenuItemWithHelp = function(text, helpUrl) {
   a.target = '_blank';
   a.className = 'menu-help-item';
   a.style.position = 'absolute';
-  a.style.right = '5em';
   a.addEventListener('click', function(e) {
     if (!e.shiftKey && !e.metaKey) {
       e.preventDefault()
