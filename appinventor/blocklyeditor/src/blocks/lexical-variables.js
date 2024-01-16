@@ -148,7 +148,7 @@ Blockly.Blocks['lexical_variable_get'] = {
       blocksToRename = blocksToRename.concat(childrensReferenceResults[r][0]);
       capturables = capturables.concat(childrensReferenceResults[r][1]);
     }
-    const possiblyPrefixedReferenceName = this.getField('VAR').getText();
+    const possiblyPrefixedReferenceName = this.getField('VAR').getValue();
     const unprefixedPair = Blockly.unprefixName(possiblyPrefixedReferenceName);
     const referencePrefix = unprefixedPair[0];
     const referenceName = unprefixedPair[1];
@@ -192,7 +192,7 @@ Blockly.Blocks['lexical_variable_get'] = {
       if (oldName === this.getFieldValue('VAR')) {
         this.setFieldValue(newName, 'VAR');
       }
-    } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getText()) {
+    } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getValue()) {
       // Global variables
       this.fieldVar_.setText(newTranslatedName);
       if (oldName === newName) {

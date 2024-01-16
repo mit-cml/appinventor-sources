@@ -226,7 +226,7 @@ Blockly.Blocks['logic_operation'] = {
     var containerBlockName = 'mutator_container';
     var containerBlock = workspace.newBlock(containerBlockName);
     containerBlock.setColour(this.getColour());
-    containerBlock.setFieldValue(this.opField.getText(), 'CONTAINER_TEXT');
+    containerBlock.setFieldValue(this.opField.getValue(), 'CONTAINER_TEXT');
     containerBlock.initSvg();
     var connection = containerBlock.getInput('STACK').connection;
     for (var x = 0; x < this.itemCount_; x++) {
@@ -299,7 +299,7 @@ Blockly.Blocks['logic_operation'] = {
       if (inputNum === 1) {
         this.makeDropdown(input);
       } else if (inputNum > 1) {
-        var field = new Blockly.FieldLabel(this.opField.getText());
+        var field = new Blockly.FieldLabel(this.opField.getValue());
         input.appendField(field);
         field.init();
       } else if (this.itemCount_ === 1) {
@@ -340,7 +340,7 @@ Blockly.Blocks['logic_operation'] = {
         this.makeDropdown(binput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        var field = new Blockly.FieldLabel(this.opField.getText());
+        var field = new Blockly.FieldLabel(this.opField.getValue());
         input.appendField(field);
         field.init();
       }

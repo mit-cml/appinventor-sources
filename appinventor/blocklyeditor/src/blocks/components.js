@@ -507,8 +507,8 @@ Blockly.Blocks.component_event = {
   declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
     var names = [];
     for (var i = 0, param; param = this.getField('VAR' + i); i++) {
-      names.push(param.getText());
-      if (param.eventparam && param.eventparam != param.getText()) {
+      names.push(param.getValue());
+      if (param.eventparam && param.eventparam != param.getValue()) {
         names.push(param.eventparam);
       }
     }
@@ -518,7 +518,7 @@ Blockly.Blocks.component_event = {
   declaredVariables: function() {
     var names = [];
     for (var i = 0, param; param = this.getField('VAR' + i); i++) {
-      names.push(param.getText());
+      names.push(param.getValue());
     }
     return names;
   },
