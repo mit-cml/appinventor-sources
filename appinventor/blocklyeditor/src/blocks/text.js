@@ -120,9 +120,6 @@ Blockly.Blocks['text_join'] = {
     }
     return input;
   },
-  updateContainerBlock: function (containerBlock) {
-    containerBlock.inputList[0].fieldRow[0].setText(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
-  },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN}]
 
 };
