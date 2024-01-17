@@ -1,4 +1,4 @@
-<%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures" %>
+<%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures,msg.i18n" %>
 <%
    if (request.getScheme().equals("http") && Server.isProductionServer()
        && AppInventorFeatures.enableHttpRedirect()) {
@@ -16,6 +16,15 @@
    if (AppInventorFeatures.enableHttpRedirect()) {
        response.setHeader("Strict-Transport-Security", "max-age=3600");
    }
+  String locale = request.getParameter("locale");
+  if (locale == null || locale.isEmpty()) {
+    locale = "en";
+  }
+  String hash = i18n.mapping.getOrDefault(locale, "");
+  if (!hash.isEmpty()) {
+    hash = "_" + hash;
+  }
+  String translation = "static/js/messages" + hash + ".js";
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
 <!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
@@ -48,8 +57,7 @@
         <h2> App Inventor needs JavaScript enabled to run.</h2>
       </div>
     </noscript>
-    <script type="text/javascript" src="static/js/i18n.js"></script>
-    <script type="text/javascript" src="static/js/locale.js"></script>
+    <script type="text/javascript" src="<%=translation%>"></script>
   </head>
 
   <!-- ODE scripts -->

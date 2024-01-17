@@ -215,6 +215,10 @@
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+    <!-- Compile the Blockly translations map -->
+    <javac destdir="${build.war.dir}/WEB-INF/classes" srcdir="${public.build.dir}/../blocklyeditor" source="1.8" target="1.8">
+      <include name="msg/i18n.java"/>
+    </javac>
   </target>
 
   <!-- =====================================================================

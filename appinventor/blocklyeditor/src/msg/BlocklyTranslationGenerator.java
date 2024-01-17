@@ -51,8 +51,8 @@ public class BlocklyTranslationGenerator {
     JSONObject merged_english = merge_string_json(new ArrayList<JSONObject>(Arrays.asList(blockly_en_json, ai_en_json)));
     Map<String, String> fileHashes = new HashMap<String, String>();
     String contents;
-    contents = "top.AI2.Msg = " + merged_english + ";";
-    fileHashes.put("en", release ? hash64(contents) : "0");
+    contents = "top.AI2 = {Msg: " + merged_english + "};";
+    fileHashes.put("en", release ? hash64(contents) : "");
     writeFile(outDir, "en", contents);
 
     HashMap<String, String> blockly_files = new HashMap<String, String>();
@@ -87,13 +87,24 @@ public class BlocklyTranslationGenerator {
         JSONObject ai_lang_json = new JSONObject(new String(Files.readAllBytes(Paths.get(f.getPath()))).replaceAll("Blockly.Msg.", ""));
         json_to_merge.add(ai_lang_json);
         JSONObject merged_language = merge_string_json(json_to_merge);
-        contents = "top.AI2.Msg = " + merged_language + ";";
+        contents = "top.AI2 = {Msg: " + merged_language + "};";
         writeFile(outDir, lang_code, contents);
-        fileHashes.put(lang_code, release ? hash64(contents) : "0");
+        fileHashes.put(lang_code, release ? hash64(contents) : lang_code);
       }
     }
 
-    FileUtils.writeStringToFile(new File(outDir + "/i18n.js"), "top.AI2 = {i18n: ".concat(new JSONObject(fileHashes).toString()).concat("};"));
+    StringBuilder java = new StringBuilder("package msg;\n")
+        .append("import java.util.HashMap;\n")
+        .append("import java.util.Map;\n")
+        .append("public class i18n {\n")
+        .append("public static final Map<String, String> mapping;\n")
+        .append("static {\nmapping = new HashMap<String, String>();\n");
+    for (String lang : fileHashes.keySet()) {
+      java.append("mapping.put(\"").append(lang).append("\", \"").append(fileHashes.get(lang)).append("\");\n");
+    }
+    java.append("}\n}");
+
+    FileUtils.writeStringToFile(new File(outDir, "i18n.java"), java.toString());
   }
 
   // Merge a list of JSON objects.
@@ -128,11 +139,13 @@ public class BlocklyTranslationGenerator {
   }
 
   private static void writeFile(String dir, String lang, String contents) throws IOException {
-    String suffix = "en".equals(lang) ? "" : lang;
+    String suffix;
     if (release) {
-      suffix = hash64(contents);
+      suffix = "_" + hash64(contents);
+    } else {
+      suffix = "en".equals(lang) ? "" : "_" + lang;
     }
-    File file = new File(dir, "messages_" + suffix + ".js");
+    File file = new File(dir, "messages" + suffix + ".js");
     FileUtils.writeStringToFile(file, contents);
   }
 }
