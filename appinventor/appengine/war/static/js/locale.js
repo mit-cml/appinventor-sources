@@ -1,13 +1,22 @@
-(function() {
-  const userLocale = new URLSearchParams(window.location.search).get('locale') || '';
-  const el = document.createElement('script');
-  el.setAttribute('type', 'text/javascript');
-  if (userLocale === '' || userLocale === 'en') {
-    el.setAttribute('src', '/static/js/messages.js');
-  } else if (/^[a-z]{2}(_[A-Z]{2})?$/.test(userLocale)) {
-    el.setAttribute('src', '/static/js/messages_' + userLocale + '.js');
-  } else {
-    el.setAttribute('src', '/static/js/messages.js');
-  }
-  document.head.appendChild(el);
-})();
+let userLocale = new URLSearchParams(window.location.search).get('locale') || '';
+if (userLocale === 'es_ES') {
+  userLocale = 'es';
+} else if (userLocale === 'ko_KR') {
+  userLocale = 'ko';
+} else if (userLocale === 'fr_FR') {
+  userLocale = 'fr';
+} else if (userLocale === 'it_IT') {
+  userLocale = 'it';
+}
+let hash = '';
+if (AI2.i18n) {
+  hash = '_' + AI2.i18n[userLocale];
+} else if (userLocale === '' || userLocale === 'en') {
+  hash = '';
+} else {
+  hash = '_' + userLocale;
+}
+const el = document.createElement('script');
+el.setAttribute('type', 'text/javascript');
+el.setAttribute('src', '/static/js/messages' + hash + '.js');
+document.head.appendChild(el);

@@ -107,6 +107,7 @@
 			<arg value="${ai.i18n.src.dir}"/>
 			<arg value="${lib.dir}/blockly/msg/json"/>
 			<arg value="${BlocklyTranslations.dir}"/>
+			<arg value="${release}" />
 		</java>
 	</target>
 

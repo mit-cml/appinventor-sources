@@ -48,6 +48,7 @@
         <h2> App Inventor needs JavaScript enabled to run.</h2>
       </div>
     </noscript>
+    <script type="text/javascript" src="static/js/i18n.js"></script>
     <script type="text/javascript" src="static/js/locale.js"></script>
   </head>
 
