@@ -887,8 +887,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       cdbChangeListener.onComponentTypeAdded(componentTypes);
     }
     updateMockComponents(componentTypes);
-    PropertiesBox.getPropertiesBox().show(this, true);
-    SourceStructureBox.getSourceStructureBox().show(form);
+    if (form != null) {
+      // During the initial project load, form has not been initialized as extensions must be loaded
+      // first from the server.
+      PropertiesBox.getPropertiesBox().show(this, true);
+      SourceStructureBox.getSourceStructureBox().show(form);
+    }
   }
 
   @Override
