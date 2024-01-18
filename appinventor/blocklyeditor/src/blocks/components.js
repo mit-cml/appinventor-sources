@@ -229,6 +229,7 @@ Blockly.Blocks.component_event = {
 
   init: function() {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
 
   mutationToDom : function() {
@@ -521,6 +522,14 @@ Blockly.Blocks.component_event = {
       names.push(param.getValue());
     }
     return names;
+  },
+
+  withLexicalVarsAndPrefix: function(_, proc) {
+    const params = this.declaredNames();
+    // not arguments_ instance var
+    for (let i = 0; i < params.length; i++) {
+      proc(params[i], this.lexicalVarPrefix);
+    }
   },
 
   blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
