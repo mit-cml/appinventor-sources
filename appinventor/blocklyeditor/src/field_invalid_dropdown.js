@@ -31,118 +31,37 @@ Blockly.FieldInvalidDropdown = class extends Blockly.FieldDropdown {
     super(menuGenerator, opt_validator);
     this.invalidOptions_ = opt_invalidOptions || [];
   }
-}
 
-/**
- * Displays the invalid value and marks the block this field belongs to as a
- * badBlock();
- * @param {string} invalidValue The invalid value / unavailable option.
- */
-Blockly.FieldInvalidDropdown.prototype.doValueInvalid_ = function(invalidValue) {
-  this.value_ = invalidValue;
-  this.isDirty_ = true;
-  this.sourceBlock_ && this.sourceBlock_.badBlock();
+  /**
+   * Displays the invalid value and marks the block this field belongs to as a
+   * badBlock();
+   * @param {string} invalidValue The invalid value / unavailable option.
+   */
+  doValueInvalid_(invalidValue) {
+    this.value_ = invalidValue;
+    this.isDirty_ = true;
+    this.sourceBlock_ && this.sourceBlock_.badBlock();
 
-  this.selectedOption_ = [invalidValue, invalidValue];
-  for (var i = 0, option; (option = this.invalidOptions_[i]); i++) {
-    // Options are tuples of human-readable text and language-neutral values.
-    if (option[1] == invalidValue) {
-      this.selectedOption_ = option;
-      break;
+    this.selectedOption_ = [invalidValue, invalidValue];
+    for (let i = 0, option; (option = this.invalidOptions_[i]); i++) {
+      // Options are tuples of human-readable text and language-neutral values.
+      if (option[1] == invalidValue) {
+        this.selectedOption_ = option;
+        break;
+      }
     }
   }
 
-  // TODO: Remove the rest of this function after Blockly update.
-  this.text_ = this.selectedOption_[0];
-  this.isDirty_ = true;
-  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-    this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours();
+  /**
+   * Updates the value of this dropdown and removes badBlock() from the source
+   * block if it exists.
+   * @param {*} newValue  The value to be saved.
+   */
+  doValueUpdate_(newValue) {
+    super.doValueUpdate_(newValue);
+
+    // If we get here the value is valid. Make sure the block is not marked as bad.
+    this.sourceBlock_ && this.sourceBlock_.notBadBlock();
   }
 }
 
-/**
- * Updates the value of this dropdown and removes badBlock() from the source
- * block if it exists.
- * @param {*} newValue  The value to be saved.
- */
-Blockly.FieldInvalidDropdown.prototype.doValueUpdate_ = function(newValue) {
-  // TODO: Uncomment this after Blockly update.
-  //Blockly.FieldInvalidDropdown.superClass_.doValueUpdate_.call(this, newValue);
-  
-  // If we get here the value is valid. Make sure the block is not marked as bad.
-  this.sourceBlock_ && this.sourceBlock_.notBadBlock();
-
-  // TODO: Remove the rest of this function after Blockly update.
-  this.value_ = newValue;
-  var options = this.getOptions();
-  for (var i = 0, option; (option = options[i]); i++) {
-    // Options are tuples of human-readable text and language-neutral values.
-    if (option[1] == newValue) {
-      this.selectedOption_ = option;
-      break;
-    }
-  }
-  this.text_ = this.selectedOption_[0];
-  this.isDirty_ = true;
-  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-    this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours();
-  }
-}
-
-// TODO: Remove the rest of this file after the Blockly update.
-Blockly.FieldInvalidDropdown.prototype.setValue = function(newValue) {
-  var oldValue = this.getValue();
-  if (newValue === null) {
-    // Not a valid value to check.
-    return;
-  }
-
-  var validatedValue = this.doClassValidation_(newValue);
-  newValue = this.processValidation_(newValue, validatedValue);
-  if (newValue instanceof Error) {
-    return;
-  }
-
-  var localValidator = this.getValidator();
-  if (localValidator) {
-    validatedValue = localValidator.call(this, newValue);
-    newValue = this.processValidation_(newValue, validatedValue);
-    if (newValue instanceof Error) {
-      return;
-    }
-  }
-
-  var source = this.sourceBlock_;
-  if (source && Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.BlockChange(
-        source, 'field', this.name || null, oldValue, newValue));
-  }
-  this.doValueUpdate_(newValue);
-}
-
-Blockly.FieldInvalidDropdown.prototype.processValidation_ =
-  function(newValue, validatedValue) {
-    if (validatedValue === null) {
-      this.doValueInvalid_(newValue);
-      return Error();
-    }
-    return newValue;
-  };
-
-Blockly.FieldInvalidDropdown.prototype.doClassValidation_ = function(newValue) {
-  var isValueValid = false;
-  var options = this.getOptions();
-  for (var i = 0, option; (option = options[i]); i++) {
-    // Options are tuples of human-readable text and language-neutral values.
-    if (option[1] == newValue) {
-      isValueValid = true;
-      break;
-    }
-  }
-  if (!isValueValid) {
-    return null;
-  }
-  return /** @type {string} */ (newValue);
-}
