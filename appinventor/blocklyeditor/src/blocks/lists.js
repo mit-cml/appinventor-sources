@@ -560,8 +560,15 @@ Blockly.Blocks['lists_filter'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP);
     this.setInputsInline(false);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('TEST') == child) {
+      const lexVar = this.getFieldValue('VAR');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
