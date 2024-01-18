@@ -492,6 +492,27 @@ Blockly.Blocks['controls_for_each_dict'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
 
+  referenceResults: function(name, prefix, env) {
+    let keyVar = this.getFieldValue('KEY');
+    let valueVar = this.getFieldValue('VALUE');
+    if (Blockly.usePrefixInYail) {
+      const keyFunc = Blockly.possiblyPrefixMenuNameWith(
+          Blockly.loopKeyParameterPrefix);
+      const valueFunc = Blockly.possiblyPrefixMenuNameWith(
+          Blockly.loopValueParameterPrefix);
+      keyVar = keyFunc(keyVar);
+      valueVar = valueFunc(valueVar);
+    }
+    const newEnv = env.concat([keyVar, valueVar]);
+    const dictResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DICT'), name, prefix, env);
+    const doResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DO'), name, prefix, newEnv);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        this.getNextBlock(), name, prefix, env);
+    return [dictResults, doResults, nextResults];
+  },
+
   withLexicalVarsAndPrefix: function(child, proc) {
     if (this.getInputTargetBlock('DO') == child) {
       let lexVar = this.getFieldValue('KEY');
