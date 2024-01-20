@@ -10,6 +10,7 @@ import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
+import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,6 +65,18 @@ public class RunD8 extends DexTask implements AndroidTask {
       // Add the rest of the libraries in any order
       for (String lib : context.getComponentInfo().getUniqueLibsNeeded()) {
         inputs.add(preDexLibrary(context, new File(lib)));
+      }
+
+      // Add extension libraries
+      Set<String> addedExtJars = new HashSet<>();
+      for (String type : context.getExtCompTypes()) {
+        String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+            context.getExtTypePathCache())
+            + context.getResources().getSimpleAndroidRuntimeJarPath();
+        if (!addedExtJars.contains(sourcePath)) {
+          inputs.add(new File(sourcePath));
+          addedExtJars.add(sourcePath);
+        }
       }
 
       Files.walkFileTree(context.getPaths().getClassesDir().toPath(), new FileVisitor<Path>() {
