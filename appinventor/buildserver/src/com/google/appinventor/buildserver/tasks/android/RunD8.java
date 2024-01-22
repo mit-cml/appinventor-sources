@@ -163,6 +163,7 @@ public class RunD8 extends DexTask implements AndroidTask {
     List<String> arguments = new ArrayList<>();
     arguments.add("java");
     arguments.add("-Xmx" + context.getChildProcessRam() + "M");
+    arguments.add("-Xss8m");
     arguments.add("-cp");
     arguments.add(context.getResources().getD8Jar());
     arguments.add("com.android.tools.r8.D8");
