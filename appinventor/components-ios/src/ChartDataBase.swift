@@ -93,8 +93,14 @@ import DGCharts
   }
   
   func initChartData() {
+    print("entered intichartdata")
+    print("container", _container)
+    // this create chart model does not work
+    print("chartview in initchartdata", _container.chartView) //container not nil, chartview is null for some reason
     _chartDataModel = _container.chartView?.createChartModel()
-    
+    print("chartdatamodel", _chartDataModel)
+
+    print("passed createchartmodel")
     // set default values
     Color = uiColorFromHex(rgbValue: 0xFF000000)
     Label = ""
@@ -154,7 +160,9 @@ import DGCharts
   }
   
   func refreshChart() {
-    _container.chartView?.refresh()
+    _container.chartView?.refresh(model: _chartDataModel!)
+    // Thread 1: Fatal error: Unexpectedly found nil while unwrapping an Optional value
+    // chart data model is nill
   }
   
   /**

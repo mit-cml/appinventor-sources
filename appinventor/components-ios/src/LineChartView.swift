@@ -10,6 +10,8 @@ open class LineChartView: LineChartViewBase {
   }
   
   public override func createChartModel() -> ChartDataModel {
+    print("entered linechartview createchartmodel")
+    print("hellllo")
     return LineChartDataModel(data: data as! LineChartData, view: self) as ChartDataModel
   }
 
