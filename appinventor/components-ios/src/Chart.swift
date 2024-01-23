@@ -170,9 +170,8 @@ import DGCharts
         view.widthAnchor.constraint(equalTo: newChartView.chart!.widthAnchor),
         view.heightAnchor.constraint(equalTo: newChartView.chart!.heightAnchor)
       ])
-      if let newChartSubview = newChartView as? ChartView {
-        _view.insertSubview(newChartSubview.getView(), at: 0)
-      }
+      _view.insertSubview(newChartView.getView(), at: 0)
+      
       
       if shouldReinitialize {
         reinitializeChart()
@@ -240,10 +239,13 @@ import DGCharts
 
   private func reinitializeChart() {
     for dataComponent in _dataComponents {
-      // must implement initChartData() first
+      dataComponent.initChartData()
     }
     Description = _description
     BackgroundColor = _backgroundColor
+    LegendEnabled = _legendEnabled
+    GridEnabled = _gridEnabled
+    Labels = _labels
   }
 
   func addDataComponent(_ dataComponent: ChartDataBase) {
