@@ -38,6 +38,7 @@ goog.provide('AI.Blocks.control');
 goog.require('AI.Blockly.FieldFlydown');
 goog.require('AI.BlockUtils');
 goog.require('AI.Substitution');
+goog.require('AI.Blockly.Mixins');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.
@@ -492,130 +493,17 @@ Blockly.Blocks['controls_for_each_dict'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
 
-  referenceResults: function(name, prefix, env) {
-    let keyVar = this.getFieldValue('KEY');
-    let valueVar = this.getFieldValue('VALUE');
-    if (Blockly.usePrefixInYail) {
-      const keyFunc = Blockly.possiblyPrefixMenuNameWith(
-          Blockly.loopKeyParameterPrefix);
-      const valueFunc = Blockly.possiblyPrefixMenuNameWith(
-          Blockly.loopValueParameterPrefix);
-      keyVar = keyFunc(keyVar);
-      valueVar = valueFunc(valueVar);
-    }
-    const newEnv = env.concat([keyVar, valueVar]);
-    const dictResults = Blockly.LexicalVariable.referenceResult(
-        this.getInputTargetBlock('DICT'), name, prefix, env);
-    const doResults = Blockly.LexicalVariable.referenceResult(
-        this.getInputTargetBlock('DO'), name, prefix, newEnv);
-    const nextResults = Blockly.LexicalVariable.referenceResult(
-        this.getNextBlock(), name, prefix, env);
-    return [dictResults, doResults, nextResults];
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['KEY', 'key'], ['VALUE', 'value']];
   },
 
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('DO') == child) {
-      let lexVar = this.getFieldValue('KEY');
-      proc(lexVar, this.lexicalVarPrefix);
-      lexVar = this.getFieldValue('VALUE');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getScopedInputName: function() {
+    return 'DO';
   },
 
-  getVars: function () {
-    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
-  },
-
-  blocksInScope: function () {
-    var doBlock = this.getInputTargetBlock('DO');
-    if (doBlock) {
-      return [doBlock];
-    } else {
-      return [];
-    }
-  },
-
-  declaredNames: function () {
-    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
-  },
-
-  renameVar: function (oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
-      this.setFieldValue(newName, 'KEY');
-    }
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VALUE'))) {
-      this.setFieldValue(newName, 'VALUE');
-    }
-  },
-
-  renameBound: function (boundSubstitution, freeSubstitution) {
-    Blockly.LexicalVariable.renameFree(
-        this.getInputTargetBlock('DICT'), freeSubstitution);
-
-    var varFieldIds = ['KEY', 'VALUE'];
-
-    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
-      var oldVar = this.getFieldValue(fieldId);
-      var newVar = boundSubstitution.apply(oldVar);
-      if (newVar !== oldVar) {
-        this.renameVar(oldVar, newVar);
-        var keySubstitution = Blockly.Substitution.simpleSubstitution(
-            oldVar, newVar);
-        freeSubstitution = freeSubstitution.extend(keySubstitution);
-      } else {
-        freeSubstitution = freeSubstitution.remove([oldVar]);
-      }
-    }
-
-    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), modifiedSubstitution);
-
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
-    }
-  },
-
-  renameFree: function (freeSubstitution) {
-    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DO'));
-
-    var varFieldIds = ['KEY', 'VALUE'];
-    var boundSubstitution = new Blockly.Substitution();
-
-    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
-      var oldVar = this.getFieldValue(fieldId);
-      bodyFreeVars.deleteName(oldVar);
-      var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
-      if (renamedBodyFreeVars.isMember(oldVar)) {
-        var newVar = Blockly.FieldLexicalVariable.nameNotIn(
-            oldVar, renamedBodyFreeVars.toList());
-        var substitution = Blockly.Substitution.simpleSubstitution(
-            oldVar, newVar);
-        boundSubstitution.extend(substitution);
-      }
-    }
-  },
-
-  freeVariables: function () { // return the free variables of this block
-    var result = Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DO'));
-
-    // Remove bound variables from body free vars.
-    result.deleteName(this.getFieldValue('KEY'));
-    result.deleteName(this.getFieldValue('VALUE'));
-
-    result.unite(Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DICT')));
-
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
-    }
-
-    return result;
-  },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE}]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['controls_for_each_dict'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['controls_while'] = {
   // While condition.
