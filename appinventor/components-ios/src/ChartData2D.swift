@@ -4,5 +4,19 @@
 import Foundation
 
 @objc class ChartData2D: ChartDataBase {
-
+  
+  override init(_ chartContainer: Chart) {
+    super.init(chartContainer)
+    chartContainer.addDataComponent(self)
+    dataFileColumns = [" ", " "]
+    sheetColumns = [" ", " "]
+    webColumns = [" ", " "]
+  }
+  @objc func AddEntry(_ x: String, _ y: String){
+    // create a 2-tuple, and add the tuple to the Data series
+    var pair: YailList<AnyObject> = [x, y]
+    _chartDataModel?.addEntryFromTuple(pair)
+    // refresh chart with new data
+    refreshChart()
+  }
 }

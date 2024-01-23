@@ -9,7 +9,7 @@ enum EntryCriterion {
   case XValue
   case YValue
 }
-// <E: DGCharts.ChartDataEntry, D: DGCharts.ChartData, C: DGCharts.ChartViewBase, V: ChartView>
+
 open class ChartDataModel {
   let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?
@@ -109,7 +109,7 @@ open class ChartDataModel {
   }
 
   func getTuplesFromColumns(_ columns: YailList<AnyObject>, _ hasHeaders: Bool) -> YailList<AnyObject> {
-    // code substituting determineMaximumListSize
+    // code substituting determineMaximumListSize: determine the (max) row count of the specified columns
     var entries: Int = 0
     for row in columns {
       if let row = row as? Array<AnyObject> {
@@ -125,6 +125,7 @@ open class ChartDataModel {
       var tupleElements: Array<String> = []
       for j in stride(from: 0, to: columns.count, by: 1) {
         var value = columns[j]
+        // invalid column specified; add default value (minus one to compensate for skipped value)
         if let value = value as? YailList<AnyObject> {
           tupleElements.append(getDefaultValue(i - 1))
           continue
@@ -132,10 +133,13 @@ open class ChartDataModel {
         // safe cast value to YailList
         var column: YailList<AnyObject> = value as! YailList<AnyObject>
         if column.count > i { // Entry exists in column
+          // add entry from column
           tupleElements.append("\(column[i+1])") //TODO: SHOULD I DO i+1 like getString() func or not
         } else if column.count == 0 { // column empty
+          // use default value instead (we use an index minus one to compensate for the skipped initial value)
           tupleElements.append(getDefaultValue(i - 1))
         } else { // column too small
+          // add blank entry (""), up for teh addEntryFromTuple method to interpret
           tupleElements.append("")
         }
       }
@@ -187,7 +191,7 @@ open class ChartDataModel {
   func isEntryCriterionSatisfied(_ entry: DGCharts.ChartDataEntry, _ criterion: EntryCriterion, value: String) -> Bool {
     var criterionSatisfied: Bool = false
     switch criterion {
-    case .All:
+    case .All: // criterion satisfied no matter the value, sicne all entries should be returned
       criterionSatisfied = true
       break
 

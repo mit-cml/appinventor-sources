@@ -67,7 +67,7 @@ open class ChartView {
    */
   
   public func refresh() {
-    _workQueue.async {
+    DispatchQueue.main.async {
       self.chart?.notifyDataSetChanged()
     }
   }
