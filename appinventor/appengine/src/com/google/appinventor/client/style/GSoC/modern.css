@@ -295,18 +295,6 @@ they get cut off in Windows.
     font-size: 1.15em;
   }
   
-  /*.ode-ProjectHeaderRow:after {*/
-  /*  content: '';*/
-  /*  position: absolute;*/
-  /*  top: 2px;*/
-  /*  left: 0;*/
-  /*  z-index: -1;*/
-  /*  width: 100%;*/
-  /*  height: 100%;*/
-  /*  border-radius: inherit;*/
-  /*  background-color: border-color;*/
-  /*}*/
-  
   .ode-ProjectCheckBox {
     padding-right: 5px;
     padding-left: 20px;
@@ -655,29 +643,16 @@ they get cut off in Windows.
     padding-right: 20px;
   }
 
-.ya-Toolbar-minimal {
-  margin: 2px;
-}
+  .ya-Toolbar-minimal .ode-ProjectListButton {
+    margin: 10px;
+  }
 
-.ya-Toolbar-minimal .ode-TextButton {
-  text-align: left;
-  border:0;
-  font-size: 14px;
-  cursor: pointer;
-  display: block !important;
-  height: 30px;
-  margin-bottom: -10px;
-  background-color: white;
-  font-family: Poppins, Helvetica, Arial, sans-serif;
-  box-shadow: unset;
-}
+  .ode-ProjectListButton:hover {
+    background-color: top-panel-background-color;
+    color: rgba(167, 36, 122, 1);
+  }
 
-.ya-Toolbar-minimal .ode-TextButton:hover  {
-  color: rgba(167, 36, 122, 0.21);
-  background-color: unset;
-}
-
-.ya-Toolbar .ode-TextButton {
+  .ya-Toolbar .ode-TextButton {
     font-size: unset;
   }
 
@@ -1045,9 +1020,7 @@ they get cut off in Windows.
     background-color: background-color;
     box-shadow: 4px 4px 20px 7px container-shadow;
     overflow: hidden !important;
-    /*border-left: 4px solid #8fc202;*/
-    /*border-right: 4px solid #8fc202;*/
-    /*border-bottom: 4px solid #8fc202;*/
+    border: unset;
   }
   
   .ode-ComponentHelpPopup-TitleBar {
@@ -1058,12 +1031,8 @@ they get cut off in Windows.
     font-size: 14px;
     font-family: 'Poppins';
     font-weight: 500;
-  
-    /*background-color: #8fc202;*/
-    /*color: white;*/
-    /*font-weight: bold;*/
-    /*font-size: 13px;*/
-    /*padding: 5px 10px;*/
+    color: unset;
+    background-color: unset;
   }
   
   .ode-ComponentHelpPopup-Body {
@@ -1136,6 +1105,9 @@ they get cut off in Windows.
   .ode-DialogBox {
     /*all: unset;*/
     border-radius: 10px;
+    border-left: unset;
+    border-right: unset;
+    border-bottom: unset;
     z-index: 1000;
     background-color: background-color;
     box-shadow: 4px 4px 20px 7px container-shadow;
@@ -1168,10 +1140,6 @@ they get cut off in Windows.
     overflow: scroll;
   }
   
-  .ode-DialogBox .dialogTop {
-    /*background-color: rgba(150, 150, 150, 0.1);*/
-  }
-  
   .ode-DialogBox .Caption {
     padding: 10px 20px;
     text-align: center;
@@ -1180,6 +1148,12 @@ they get cut off in Windows.
     font-size: 18px;
     font-family: 'Poppins';
     font-weight: 500;
+    background-color: background-color;
+    color: context-menu-color;
+  }
+
+  .ode-DialogBox .dialogTop {
+    background-color: background-color;
   }
   
   .ode-DialogBox .dialogContent {
