@@ -101,6 +101,10 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
+  // TODO: Looking at FieldLexicalVariable.getLexicalNamesInScope in the lexical plug,
+  //       I don't think that this is ever called because it is a top-level block (i.e.,
+  //       has no parent).  If this is the case, then we can remove this method for this
+  //       block.
   withLexicalVarsAndPrefix: function(_, proc) {
     const params = this.declaredNames();
     // not arguments_ instance var
