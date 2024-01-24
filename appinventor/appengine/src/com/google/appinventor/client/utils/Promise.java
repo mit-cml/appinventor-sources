@@ -273,8 +273,11 @@ public class Promise<T> {
   }
 
   private static class Helper {
+    // This is a workaround for a GWT bug that prevents us from passing a
+    // varargs array to a native method since Promise[] and JsArray cannot
+    // have a common superclass.
     private static native JsArray<?> toArray(Promise<?>... promises)/*-{
-      return Array.prototype.slice.apply(arguments);
+      return promises;
     }-*/;
   }
 
