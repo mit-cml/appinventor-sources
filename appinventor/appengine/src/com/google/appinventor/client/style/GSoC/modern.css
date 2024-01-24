@@ -159,6 +159,10 @@ they get cut off in Windows.
   .ode-ProjectListButton-up-hovering {
     background-color: #7D9D36;
   }
+
+  .ode-ProjectListButton-up:hover {
+    background-color: #7D9D36;
+  }
   
   .ode-ProjectListButton:disabled {
     opacity: 0.5;
@@ -196,7 +200,12 @@ they get cut off in Windows.
     border-color: border-color;
     box-shadow: 1px 1px border-color;
   }
-  
+
+  .inline:hover {
+    background-color: top-panel-background-color;
+    color: rgba(167, 36, 122, 1);
+  }
+
   .action {
     background-color: background-color;
     border-color: border-color;
@@ -645,11 +654,6 @@ they get cut off in Windows.
 
   .ya-Toolbar-minimal .ode-ProjectListButton {
     margin: 10px;
-  }
-
-  .ode-ProjectListButton:hover {
-    background-color: top-panel-background-color;
-    color: rgba(167, 36, 122, 1);
   }
 
   .ya-Toolbar .ode-TextButton {
