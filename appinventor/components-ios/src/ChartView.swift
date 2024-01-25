@@ -73,15 +73,19 @@ open class ChartView {
   }
   
   public func refresh(model: ChartDataModel) {
-    var refreshTask : RefreshTask = RefreshTask(self, model.entries)
-    refreshTask.onPostExecute(result: model) // how to do execute
+    DispatchQueue.main.async {
+      var refreshTask : RefreshTask = RefreshTask(self, model.entries)
+      refreshTask.onPostExecute(result: model) // how to do execute
+    }
   }
   
   public func refresh(model: ChartDataModel, entries: Array<DGCharts.ChartDataEntry>) {
-    var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
-    dataset.replaceEntries(entries)
-    chart?.data?.notifyDataChanged()
-    chart?.notifyDataSetChanged()
+    DispatchQueue.main.async {
+      var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
+      dataset.replaceEntries(entries)
+      self.chart?.data?.notifyDataChanged()
+      self.chart?.notifyDataSetChanged()
+    }
   }
   
   // make RefreshTask

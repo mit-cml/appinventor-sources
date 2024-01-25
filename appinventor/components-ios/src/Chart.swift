@@ -38,6 +38,8 @@ import DGCharts
     super.init(parent)
     setDelegate(self)
     parent.add(self)
+    Width = 176
+    Height = 144
   }
 
   @objc open func Initialize() {
@@ -165,6 +167,7 @@ import DGCharts
       _chartView = newChartView
       print("chart view inside type", _chartView)
 
+      newChartView.chart?.translatesAutoresizingMaskIntoConstraints = false
       view.addSubview(newChartView.chart!)
       NSLayoutConstraint.activate([
         view.topAnchor.constraint(equalTo: newChartView.chart!.topAnchor),
@@ -175,9 +178,9 @@ import DGCharts
       _view.insertSubview(newChartView.getView(), at: 0)
       
       
-      if shouldReinitialize {
+      //if shouldReinitialize {
         reinitializeChart()
-      }
+      //}
     }
   }
 
