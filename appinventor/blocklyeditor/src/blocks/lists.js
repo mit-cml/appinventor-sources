@@ -498,44 +498,16 @@ Blockly.Blocks['lists_map'] = {
     this.setInputsInline(false);
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR', Blockly.localNamePrefix]];
+  },
+  getScopedInputName: function() {
+    return 'TO';
+  },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('TO') == child) {
-      const lexVar = this.getFieldValue('VAR');
-      proc(lexVar, this.lexicalVarPrefix);
-     }
-  },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  blocksInScope: function() {
-    var toBlock = this.getInputTargetBlock('TO');
-    if (toBlock) {
-      return [toBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
-  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAP_INPUT_COLLAPSED_TEXT }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_map'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_filter'] = {
   // Filter the list
@@ -563,44 +535,15 @@ Blockly.Blocks['lists_filter'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('TEST') == child) {
-      const lexVar = this.getFieldValue('VAR');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR', Blockly.localNamePrefix]];
   },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  blocksInScope: function() {
-    var testBlock = this.getInputTargetBlock('TEST');
-    if (testBlock) {
-      return [testBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
+  getScopedInputName: function() {
+    return 'TEST';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_FILTER_INPUT_COLLAPSED_TEXT }]
 };
-
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_filter'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_reduce'] = {
   // Reduce the list
@@ -634,51 +577,15 @@ Blockly.Blocks['lists_reduce'] = {
     this.setInputsInline(false);
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('COMBINE') == child) {
-      let lexVar = this.getFieldValue('VAR1');
-      proc(lexVar, this.lexicalVarPrefix);
-      lexVar = this.getFieldValue('VAR2');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR1', Blockly.localNamePrefix], ['VAR2', Blockly.localNamePrefix]];
   },
-  getVars: function() {
-    var names = []
-    names.push(this.getFieldValue('VAR1'));
-    names.push(this.getFieldValue('VAR2'));
-    return names;
-  },
-  blocksInScope: function() {
-    var combineBlock = this.getInputTargetBlock('COMBINE');
-    if (combineBlock) {
-      return [combineBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return this.getVars();
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR1'))) {
-      this.setFieldValue(newName, 'VAR1');
-    }
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR2'))) {
-      this.setFieldValue(newName, 'VAR2');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
+  getScopedInputName: function() {
+    return 'COMBINE';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_reduce'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_sort'] = {
   // Sort the list in ascending order
@@ -727,45 +634,15 @@ Blockly.Blocks['lists_sort_comparator'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('COMPARE') == child) {
-      let lexVar = this.getFieldValue('VAR1');
-      proc(lexVar, this.lexicalVarPrefix);
-      lexVar = this.getFieldValue('VAR2');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR1', Blockly.localNamePrefix], ['VAR2', Blockly.localNamePrefix]];
   },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  blocksInScope: function() {
-    var compareBlock = this.getInputTargetBlock('COMPARE');
-    if (compareBlock) {
-      return [compareBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
+  getScopedInputName: function() {
+    return 'COMPARE';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COLLAPSED_TEXT }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_sort_comparator'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_sort_key'] = {
   // Sorting the list using the key, a proxy value user creates with expressions.
@@ -791,43 +668,15 @@ Blockly.Blocks['lists_sort_key'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('KEY') == child) {
-      const lexVar = this.getFieldValue('VAR');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR', Blockly.localNamePrefix]];
   },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  blocksInScope: function() {
-    var keyBlock = this.getInputTargetBlock('KEY');
-    if (keyBlock) {
-      return [keyBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
+  getScopedInputName: function() {
+    return 'KEY';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_sort_key'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_minimum_value'] = {
   // Minimum value in the list
@@ -859,38 +708,15 @@ Blockly.Blocks['lists_minimum_value'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: Blockly.Blocks.lists_map.withLexicalVarsAndPrefix,
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR1', Blockly.localNamePrefix], ['VAR2', Blockly.localNamePrefix]];
   },
-  blocksInScope: function() {
-    var compareBlock = this.getInputTargetBlock('COMPARE');
-    if (compareBlock) {
-      return [compareBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw Error("Violation of invariant: procedure declaration has nonempty free variables: " + result.toString());
-    }
+  getScopedInputName: function() {
+    return 'COMPARE';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_TYPEBLOCK }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_minimum_value'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_maximum_value'] = {
   // Maximum value in the list
@@ -922,45 +748,15 @@ Blockly.Blocks['lists_maximum_value'] = {
     this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
   saveConnections: Blockly.saveConnections,
-  withLexicalVarsAndPrefix: function(child, proc) {
-    if (this.getInputTargetBlock('COMPARE') == child) {
-      let lexVar = this.getFieldValue('VAR1');
-      proc(lexVar, this.lexicalVarPrefix);
-      lexVar = this.getFieldValue('VAR2');
-      proc(lexVar, this.lexicalVarPrefix);
-    }
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['VAR1', Blockly.localNamePrefix], ['VAR2', Blockly.localNamePrefix]];
   },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  blocksInScope: function() {
-    var compareBlock = this.getInputTargetBlock('COMPARE');
-    if (compareBlock) {
-      return [compareBlock];
-    } else {
-      return [];
-    }
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
-    }
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-    // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw Error("Violation of invariant: procedure declaration has nonempty free variables: " + result.toString());
-    }
+  getScopedInputName: function() {
+    return 'COMPARE';
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_NUMBER_TYPEBLOCK }]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_maximum_value'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['lists_but_first'] = {
   // Return the list without the first item
