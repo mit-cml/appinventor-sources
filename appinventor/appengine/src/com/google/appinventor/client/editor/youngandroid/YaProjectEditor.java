@@ -198,7 +198,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
       if (source instanceof YoungAndroidFormNode) {
         addFormEditor((YoungAndroidFormNode) source);
-      } else if (source instanceof YoungAndroidBlocksNode) {
+      }
+    }
+    for (ProjectNode source: projectRootNode.getAllSourceNodes()) {
+      if (source instanceof YoungAndroidBlocksNode) {
         addBlocksEditor((YoungAndroidBlocksNode) source);
       }
     }
@@ -515,7 +518,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     final String formName = blocksNode.getFormName();
     if (editorMap.containsKey(formName)) {
       // This happens if the form editor was already added.
-      editorMap.get(formName).blocksEditor = newBlocksEditor;
+      EditorSet pair = editorMap.get(formName);
+      pair.blocksEditor = newBlocksEditor;
+      newBlocksEditor.setFormEditor(pair.formEditor);
     } else {
       EditorSet editors = new EditorSet();
       editors.blocksEditor = newBlocksEditor;
