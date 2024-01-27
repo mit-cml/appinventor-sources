@@ -665,6 +665,10 @@ div.StatusPanel {
   color: #888;
 }
 
+.ode-StatusPanel span.gwt-InlineLabel-accessibility {
+  margin-left: 2em;
+}
+
 /*
  * Non-visible component panel
  */
