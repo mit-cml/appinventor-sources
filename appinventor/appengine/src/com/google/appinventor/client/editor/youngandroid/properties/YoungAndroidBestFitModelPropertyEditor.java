@@ -13,7 +13,7 @@ public class YoungAndroidBestFitModelPropertyEditor extends ChoicePropertyEditor
   private static final Choice[] bestFitModels = new Choice[] {
     new Choice(MESSAGES.fitModelLinear(), "Linear"),
     new Choice(MESSAGES.fitModelQuadratic(), "Quadratic"),
-    new Choice(MESSAGES.fitModelCubic(), "Cubic"),
+    //new Choice(MESSAGES.fitModelCubic(), "Cubic"),
     new Choice(MESSAGES.fitModelExponential(), "Exponential"),
     new Choice(MESSAGES.fitModelLogarithmic(), "Logarithmic")
   };
