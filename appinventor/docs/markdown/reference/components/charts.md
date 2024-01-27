@@ -69,7 +69,7 @@ The Chart component plots data originating from it's attached Data components. F
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
 
-{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .do} *Type*
+{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
 
 {:id="Chart.Visible" .boolean} *Visible*

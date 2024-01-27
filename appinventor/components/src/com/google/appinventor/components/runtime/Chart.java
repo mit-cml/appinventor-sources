@@ -144,13 +144,14 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
-   * Returns the type of the Chart.
+   * Specifies the type of the Chart, which determines how to visualize the data.
    *
    * @return the current type of the chart
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      userVisible = false)
+      description = "Specifies the chart's type (area, bar, pie, scatter), "
+          + "which determines how to visualize the data.")
   public ChartType Type() {
     return type;
   }
@@ -163,9 +164,6 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
       defaultValue = "0")
-  @SimpleProperty(description = "Specifies the chart's type (area, bar, "
-      + "pie, scatter), which determines how to visualize the data.",
-      userVisible = false)
   public void Type(ChartType type) {
     // Keep track whether a ChartView already exists,
     // in which case it will have to be reinitialized.

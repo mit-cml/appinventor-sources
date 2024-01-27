@@ -877,6 +877,7 @@ public class YaVersion {
   // - The SetDomain and SetRange methods were added
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
+  // - The Type getter block was made visible
   public static final int CHART_COMPONENT_VERSION = 3;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
