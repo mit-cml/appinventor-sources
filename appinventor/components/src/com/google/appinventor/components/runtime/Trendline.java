@@ -475,6 +475,18 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   // region Methods
 
   /**
+   * Disconnect the Trendline from a previously associated ChartData2D.
+   */
+  @SimpleFunction
+  public void DisconnectFromChartData() {
+    if (chartData != null) {
+      chartData.removeDataSourceChangeListener(this);
+    }
+    lastResults.clear();
+    container.refresh();
+  }
+
+  /**
    * Get the field of the most recent values computed by the line of best fit. The available
    * values vary based on the model used. For example, a linear model will have slope and
    * Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.
