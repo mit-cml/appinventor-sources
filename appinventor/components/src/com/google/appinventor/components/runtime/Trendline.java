@@ -50,7 +50,7 @@ import java.util.Map;
  * Exponential. Depending on which model you use, certain properties of the Trendline component
  * will provide relevant values.
  *
- *   * Linear: y = m*x + b, where a is LinearCoefficient and b is YIntercept
+ *   * Linear: y = m*x + b, where m is LinearCoefficient and b is YIntercept
  *   * Quadratic: y = a\*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
  *     LinearCoefficient, and c is YIntercept
  *   * Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient
