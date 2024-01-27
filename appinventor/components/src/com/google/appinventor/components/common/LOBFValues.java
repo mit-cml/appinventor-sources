@@ -20,9 +20,11 @@ public enum LOBFValues implements OptionList<String> {
   Predictions("predictions"),
   AllValues("all values"),
   QuadraticCoefficient("Quadratic Coefficient"),
-  ExponentialCoefficient("Exponential Coefficient"),
-  LogarithmCoefficient("Logarithm Coefficient"),
-  Intercept("intercept"),
+  LinearCoefficient("slope"),
+  ExponentialCoefficient("a"),
+  ExponentialBase("b"),
+  LogarithmCoefficient("b"),
+  LogarithmConstant("a"),
   XIntercepts("Xintercepts"),
   RSquared("r^2");
 

@@ -230,7 +230,23 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public double CorrelationCoefficient() {
-    return (Double) lastResults.get("correlation coefficient");
+    return resultOrNan((Double) lastResults.get("correlation coefficient"));
+  }
+
+  /**
+   * The base of the exponential term in the equation y = a*b^x.
+   */
+  @SimpleProperty
+  public double ExponentialBase() {
+    return resultOrNan((Double) lastResults.get("b"));
+  }
+
+  /**
+   * The coefficient of the exponential term in the equation y = a*b^x.
+   */
+  @SimpleProperty
+  public double ExponentialCoefficient() {
+    return resultOrNan((Double) lastResults.get("a"));
   }
 
   /**
@@ -257,7 +273,23 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public double LinearCoefficient() {
-    return (Double) lastResults.get("slope");
+    return resultOrNan((Double) lastResults.get("slope"));
+  }
+
+  /**
+   * The coefficient of the logarithmic term in the equation y = a + b*ln(x).
+   */
+  @SimpleProperty
+  public double LogarithmCoefficient() {
+    return resultOrNan((Double) lastResults.get("b"));
+  }
+
+  /**
+   * The constant term in the logarithmic equation y = a + b*ln(x).
+   */
+  @SimpleProperty
+  public double LogarithmConstant() {
+    return resultOrNan((Double) lastResults.get("a"));
   }
 
   /**
@@ -317,7 +349,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public double QuadraticCoefficient() {
-    return (Double) lastResults.get("x^2");
+    return resultOrZero((Double) lastResults.get("x^2"));
   }
 
   /**
@@ -325,7 +357,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public YailDictionary Results() {
-    return new YailDictionary(lastResults);
+    return new YailDictionary(lastResults, ENUM_KEY_TRANSFORMER);
   }
 
   /**
@@ -333,7 +365,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public double RSquared() {
-    return (Double) lastResults.get("r^2");
+    return resultOrNan((Double) lastResults.get("r^2"));
   }
 
   /**
@@ -421,7 +453,8 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    */
   @SimpleProperty
   public Object XIntercepts() {
-    return lastResults.get("Xintercepts");
+    Object result = lastResults.get("Xintercepts");
+    return result == null ? Double.NaN : result;
   }
 
   /**
@@ -525,6 +558,14 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       return (color & 0x00FFFFFF) | ((alpha / 2) << 24);
     }
     return color;
+  }
+
+  private static double resultOrNan(Double value) {
+    return value == null ? Double.NaN : value;
+  }
+
+  private static double resultOrZero(Double value) {
+    return value == null ? 0.0 : value;
   }
 
   private class ScatterChartBestFitDataSet extends ScatterDataSet implements

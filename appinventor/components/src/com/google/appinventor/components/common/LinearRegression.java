@@ -68,6 +68,7 @@ public class LinearRegression implements TrendlineCalculator {
     resultDic.put("correlation coefficient", corr);
     resultDic.put("predictions", predictions);
     resultDic.put("Xintercepts", slope == 0 ? Double.NaN : -intercept / slope);
+    resultDic.put("r^2", corr * corr);
 
     return resultDic;
   }
