@@ -45,6 +45,20 @@ import java.util.Map;
  * ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
  * instance, either set the ChartData property in the design view of the app or use the setter
  * block. The Trendline will update automatically if its associated ChartData2D is changed.
+ *
+ * There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ * Exponential. Depending on which model you use, certain properties of the Trendline component
+ * will provide relevant values.
+ *
+ *   * Linear: y = m*x + b, where a is LinearCoefficient and b is YIntercept
+ *   * Quadratic: y = a\*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+ *     LinearCoefficient, and c is YIntercept
+ *   * Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient
+ *   * Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+ *     ExponentialBase
+ *
+ * For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ * block.
  */
 @DesignerComponent(version = YaVersion.TRENDLINE_COMPONENT_VERSION,
     description = "A component that predicts a best fit model for a given data series.",

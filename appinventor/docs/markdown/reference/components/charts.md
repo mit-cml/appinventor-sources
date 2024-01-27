@@ -364,6 +364,20 @@ The Trendline component can be used to visualize the trend of a data series repr
  instance, either set the ChartData property in the design view of the app or use the setter
  block. The Trendline will update automatically if its associated ChartData2D is changed.
 
+ There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.
+
+   * Linear: y = m*x + b, where a is LinearCoefficient and b is YIntercept
+   * Quadratic: y = a\*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+     LinearCoefficient, and c is YIntercept
+   * Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient
+   * Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+     ExponentialBase
+
+ For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.
+
 
 
 ### Properties  {#Trendline-Properties}
@@ -379,11 +393,23 @@ The Trendline component can be used to visualize the trend of a data series repr
 {:id="Trendline.CorrelationCoefficient" .number .ro .bo} *CorrelationCoefficient*
 : The correlation coefficient of the trendline to the data.
 
+{:id="Trendline.ExponentialBase" .number .ro .bo} *ExponentialBase*
+: The base of the exponential term in the equation y = a*b^x.
+
+{:id="Trendline.ExponentialCoefficient" .number .ro .bo} *ExponentialCoefficient*
+: The coefficient of the exponential term in the equation y = a*b^x.
+
 {:id="Trendline.Extend" .boolean} *Extend*
 : Whether to extend the line of best fit beyond the data.
 
 {:id="Trendline.LinearCoefficient" .number .ro .bo} *LinearCoefficient*
 : The coefficient of the linear term in the trendline.
+
+{:id="Trendline.LogarithmCoefficient" .number .ro .bo} *LogarithmCoefficient*
+: The coefficient of the logarithmic term in the equation y = a + b*ln(x).
+
+{:id="Trendline.LogarithmConstant" .number .ro .bo} *LogarithmConstant*
+: The constant term in the logarithmic equation y = a + b*ln(x).
 
 {:id="Trendline.Model" .com.google.appinventor.components.common.BestFitModelEnum} *Model*
 : The model to use for the line of best fit.
@@ -426,6 +452,9 @@ The Trendline component can be used to visualize the trend of a data series repr
 ### Methods  {#Trendline-Methods}
 
 {:.methods}
+
+{:id="Trendline.DisconnectFromChartData" class="method"} <i/> DisconnectFromChartData()
+: Disconnect the Trendline from a previously associated ChartData2D.
 
 {:id="Trendline.GetResultValue" class="method returns any"} <i/> GetResultValue(*value*{:.text})
 : Get the field of the most recent values computed by the line of best fit. The available

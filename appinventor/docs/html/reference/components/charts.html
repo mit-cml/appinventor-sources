@@ -448,6 +448,22 @@ numerical values are returned.</li>
  instance, either set the ChartData property in the design view of the app or use the setter
  block. The Trendline will update automatically if its associated ChartData2D is changed.</p>
 
+<p>There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.</p>
+
+<ul>
+  <li>Linear: y = m*x + b, where a is LinearCoefficient and b is YIntercept</li>
+  <li>Quadratic: y = a*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+LinearCoefficient, and c is YIntercept</li>
+  <li>Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient</li>
+  <li>Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+ExponentialBase</li>
+</ul>
+
+<p>For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.</p>
+
 <h3 id="Trendline-Properties">Properties</h3>
 
 <dl class="properties">
@@ -457,10 +473,18 @@ numerical values are returned.</li>
   <dd>The color of the line of best fit.</dd>
   <dt id="Trendline.CorrelationCoefficient" class="number ro bo"><em>CorrelationCoefficient</em></dt>
   <dd>The correlation coefficient of the trendline to the data.</dd>
+  <dt id="Trendline.ExponentialBase" class="number ro bo"><em>ExponentialBase</em></dt>
+  <dd>The base of the exponential term in the equation y = a*b^x.</dd>
+  <dt id="Trendline.ExponentialCoefficient" class="number ro bo"><em>ExponentialCoefficient</em></dt>
+  <dd>The coefficient of the exponential term in the equation y = a*b^x.</dd>
   <dt id="Trendline.Extend" class="boolean"><em>Extend</em></dt>
   <dd>Whether to extend the line of best fit beyond the data.</dd>
   <dt id="Trendline.LinearCoefficient" class="number ro bo"><em>LinearCoefficient</em></dt>
   <dd>The coefficient of the linear term in the trendline.</dd>
+  <dt id="Trendline.LogarithmCoefficient" class="number ro bo"><em>LogarithmCoefficient</em></dt>
+  <dd>The coefficient of the logarithmic term in the equation y = a + b*ln(x).</dd>
+  <dt id="Trendline.LogarithmConstant" class="number ro bo"><em>LogarithmConstant</em></dt>
+  <dd>The constant term in the logarithmic equation y = a + b*ln(x).</dd>
   <dt id="Trendline.Model" class="com google appinventor components common BestFitModelEnum"><em>Model</em></dt>
   <dd>The model to use for the line of best fit.</dd>
   <dt id="Trendline.Predictions" class="list ro bo"><em>Predictions</em></dt>
@@ -494,6 +518,8 @@ numerical values are returned.</li>
 <h3 id="Trendline-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="Trendline.DisconnectFromChartData" class="method"><i></i> DisconnectFromChartData()</dt>
+  <dd>Disconnect the Trendline from a previously associated ChartData2D.</dd>
   <dt id="Trendline.GetResultValue" class="method returns any"><i></i> GetResultValue(<em class="text">value</em>)</dt>
   <dd>Get the field of the most recent values computed by the line of best fit. The available
  values vary based on the model used. For example, a linear model will have slope and
