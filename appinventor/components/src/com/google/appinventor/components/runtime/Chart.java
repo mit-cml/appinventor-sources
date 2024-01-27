@@ -504,7 +504,7 @@ public class Chart extends AndroidViewComponent
       } else {
         return;
       }
-      refresh();
+      view.invalidate();
     }
   }
 
@@ -525,7 +525,7 @@ public class Chart extends AndroidViewComponent
       } else {
         return;
       }
-      refresh();
+      view.invalidate();
     }
   }
 

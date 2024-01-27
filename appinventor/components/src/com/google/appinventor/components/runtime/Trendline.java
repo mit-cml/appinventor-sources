@@ -167,7 +167,6 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       Log.d(LOG_TAG, "lastResults = " + lastResults);
     }
     if (initialized) {
-      container.refresh();
       final YailDictionary results = new YailDictionary(lastResults, ENUM_KEY_TRANSFORMER);
       container.$form().runOnUiThread(new Runnable() {
         @Override
