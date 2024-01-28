@@ -182,7 +182,7 @@ Blockly.Blocks['lexical_variable_get'] = {
       }
     }
     if (this.eventparam) {  // also capture untranslated param names
-      capturables.push(block.eventparam);
+      capturables.push(this.eventparam);
     }
     return [[blocksToRename, capturables]];
   },
