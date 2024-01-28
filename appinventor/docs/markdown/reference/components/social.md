@@ -278,10 +278,10 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
 
 {:id="EmailPicker.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the EmailPicker.
+: Repositions the cursor to the end of the EmailPicker's text.
 
-{:id="EmailPicker.MoveCursorToFront" class="method"} <i/> MoveCursorToFront()
-: Repositions the cursor to the front of the EmailPicker.
+{:id="EmailPicker.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the EmailPicker's text.
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.

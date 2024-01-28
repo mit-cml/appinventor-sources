@@ -997,10 +997,10 @@ Users enter passwords in a password text box component, which hides the text tha
 : Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
 
 {:id="PasswordTextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the PasswordTextBox.
+: Repositions the cursor to the end of the PasswordTextBox's text.
 
-{:id="PasswordTextBox.MoveCursorToFront" class="method"} <i/> MoveCursorToFront()
-: Repositions the cursor to the front of the PasswordTextBox.
+{:id="PasswordTextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the PasswordTextBox's text.
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
@@ -1586,10 +1586,10 @@ Users enter text in a text box component.
 : Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
 
 {:id="TextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the TextBox.
+: Repositions the cursor to the end of the TextBox's text.
 
-{:id="TextBox.MoveCursorToFront" class="method"} <i/> MoveCursorToFront()
-: Repositions the cursor to the front of the TextBox.
+{:id="TextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the TextBox's text.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.

@@ -102,9 +102,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
       EclairUtil.disableSuggestions(textview);
     }
 
-    // Listen to text changes
-    view.addTextChangedListener(this);
-
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
 
@@ -141,6 +138,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
 
     Text("");
+    // Listen to text changes
+    view.addTextChangedListener(this);
+
     TextColor(Component.COLOR_DEFAULT);
     BackgroundColor(Component.COLOR_DEFAULT);
   }
@@ -553,13 +553,13 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
   }
 
-  @SimpleFunction(description = "Repositions the cursor to the end of the %type%.")
+  @SimpleFunction(description = "Repositions the cursor to the end of the %type%'s text.")
   public void MoveCursorToEnd() {
     MoveCursorTo(view.getText().length());
   }
 
-  @SimpleFunction(description = "Repositions the cursor to the front of the %type%.")
-  public void MoveCursorToFront() {
+  @SimpleFunction(description = "Repositions the cursor to the start of the %type%'s text.")
+  public void MoveCursorToStart() {
     MoveCursorTo(1);
   }
 
