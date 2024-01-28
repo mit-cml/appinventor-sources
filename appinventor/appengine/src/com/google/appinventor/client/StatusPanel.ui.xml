@@ -10,7 +10,5 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-StatusPanel" ui:field="footer">
     <g:Anchor text="{messages.privacyTermsLink}" target="_blank" ui:field="tosLink" />
-    <g:InlineLabel text="{messages.accessibilityLabel}" addStyleDependentNames="accessibility" />
-    <g:Anchor text="accessibility.mit.edu" target="blank" href="https://accessibility.mit.edu" />
   </g:FlowPanel>
 </ui:UiBinder>
