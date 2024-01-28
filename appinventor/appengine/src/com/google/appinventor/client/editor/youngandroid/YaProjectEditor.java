@@ -91,7 +91,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Maps form name -> editors for this form
   private final Map<String, EditorSet> editorMap = new HashMap<>();
-
+  
   // List of External Components
   private final List<String> externalComponents = new ArrayList<>();
 
