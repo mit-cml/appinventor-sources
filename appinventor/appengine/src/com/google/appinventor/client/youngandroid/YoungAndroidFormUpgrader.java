@@ -942,9 +942,9 @@ public final class YoungAndroidFormUpgrader {
       // RequestFocus function was added (via TextBoxBase)
       srcCompVersion = 3;
     }
-    if (srcCompVersion < 4) {
-      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-      srcCompVersion = 4;
+    if (srcCompVersion < 7) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1499,9 +1499,9 @@ public final class YoungAndroidFormUpgrader {
       // Added NumbersOnly property
       srcCompVersion = 5;
     }
-    if (srcCompVersion < 6) {
-      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-      srcCompVersion = 6;
+    if (srcCompVersion < 7) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1861,9 +1861,9 @@ public final class YoungAndroidFormUpgrader {
       // ReadOnly property was added
       srcCompVersion = 6;
     }
-    if (srcCompVersion < 7) {
-      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-      srcCompVersion = 7;
+    if (srcCompVersion < 14) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 14;
     }
     return srcCompVersion;
   }
