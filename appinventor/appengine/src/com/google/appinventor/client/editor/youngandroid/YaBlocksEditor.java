@@ -97,7 +97,7 @@ public final class YaBlocksEditor extends FileEditor
   private final SourceStructureExplorer sourceStructureExplorer;
 
   // Panel that is used as the content of the palette box
-  private final YoungAndroidPalettePanel palettePanel;
+  private YoungAndroidPalettePanel palettePanel;
 
   // Blocks area. Note that the blocks area is a part of the "document" in the
   // browser (via the deckPanel in the ProjectEditor). So if the document changes (which happens
@@ -157,8 +157,19 @@ public final class YaBlocksEditor extends FileEditor
     // Listen for selection events for built-in drawers
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
 
+    project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
+    project.addProjectChangeListener(this);
+    onProjectLoaded(project);
+  }
+
+  /**
+   * Sets the form editor associated with this blocks editor.
+   *
+   * @param editor the form editor
+   */
+  public void setFormEditor(YaFormEditor editor) {
     // Create palettePanel, which will be used as the content of the PaletteBox.
-    myFormEditor = projectEditor.getFormFileEditor(blocksNode.getFormName());
+    myFormEditor = editor;
     if (myFormEditor != null) {
       palettePanel = new YoungAndroidPalettePanel(myFormEditor);
       palettePanel.loadComponents(new DropTargetProvider() {
@@ -173,10 +184,6 @@ public final class YaBlocksEditor extends FileEditor
       palettePanel = null;
       LOG.warning("Can't get form editor for blocks: " + getFileId());
     }
-
-    project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
-    project.addProjectChangeListener(this);
-    onProjectLoaded(project);
   }
 
   // FileEditor methods

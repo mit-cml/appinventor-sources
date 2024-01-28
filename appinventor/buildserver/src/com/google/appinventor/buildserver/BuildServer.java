@@ -16,11 +16,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
-
+import java.net.URI;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -786,6 +786,14 @@ public class BuildServer {
       System.exit(1);
     }
 
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
+    }
+
     // Add a Shutdown Hook. In a container swarm, the swarm orchestrator
     // may choose to shutdown a container (running a buildserver) as part
     // of load balancing and other maintenance tasks. It will send a
@@ -828,15 +836,16 @@ public class BuildServer {
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
     int port = commandLineOptions.port;
-    SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
+    final ResourceConfig rc = new ResourceConfig(BuildServer.class);
+    GrizzlyHttpServerFactory.createHttpServer(URI.create("http://0.0.0.0:" + port + "/"), rc);
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
     LOG.info("App Inventor Build Server - Version: " + GitBuildId.getVersion());
     LOG.info("App Inventor Build Server - Git Fingerprint: " + GitBuildId.getFingerprint());
     LOG.info("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
-      LOG.info("Maximum simultanous builds = unlimited!");
+      LOG.info("Maximum simultaneous builds = unlimited!");
     } else {
-      LOG.info("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
+      LOG.info("Maximum simultaneous builds = " + commandLineOptions.maxSimultaneousBuilds);
     }
     LOG.info("Visit: http://" + hostAddress + ":" + port +
       "/buildserver/health for server health");

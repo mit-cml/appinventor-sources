@@ -6,6 +6,11 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.utils.Promise.reject;
+import static com.google.appinventor.client.utils.Promise.rejectWithReason;
+import static com.google.appinventor.client.utils.Promise.resolve;
+import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
+
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -29,34 +34,36 @@ import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
+
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
-import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
-import com.google.appinventor.shared.rpc.component.ComponentService;
-import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
@@ -100,7 +107,6 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -550,21 +556,15 @@ public class Ode implements EntryPoint {
         // Alternatively, it is an invalid projectId. In which case,
         // nothing happens since if the listener eventually fires
         // it will not match the projectId.
-        projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-          @Override
-          public void onProjectAdded(Project project) {
-            if (project.getProjectId() == projectId) {
-              projectManager.removeProjectManagerEventListener(this);
-              openYoungAndroidProjectInDesigner(project);
-            }
-          }
-          @Override
-          public void onProjectsLoaded() {
-            // we only get here iff onProjectAdded is never called with the target project id
-            projectManager.removeProjectManagerEventListener(this);
+        projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+          Project loadedProject = projectManager.getProject(projectId);
+          if (loadedProject != null) {
+            openYoungAndroidProjectInDesigner(loadedProject);
+          } else {
             switchToProjectsView();  // the user will need to select a project...
             ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
+          return null;
         });
       }
     }
@@ -670,186 +670,6 @@ public class Ode implements EntryPoint {
     // We call this below to initialize the ConnectProgressBar
     ConnectProgressBar.getInstance();
 
-    // Get user information.
-    OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-
-      @Override
-      public void onSuccess(Config result) {
-        config = result;
-        user = result.getUser();
-        isReadOnly = user.isReadOnly();
-
-        // Arrange to redirect to the new gallery, which is run as a
-        // separate server when we are started with a galleryId flag
-        // We process this as soon as we have the system config
-        // because we need the system config to tell us where the
-        // gallery is located!
-
-        String galleryId = Window.Location.getParameter("galleryId");
-        if (galleryId != null) {
-          // This will replace us with the gallery server, displaying the app in question
-          Window.open(config.getGalleryLocation() + "?galleryid=" + galleryId, "_self", null);
-          // Never get here...(?)
-          return;
-        }
-
-        // load the user's backpack if we are not using a shared
-        // backpack
-
-        final String backPackId = user.getBackpackId();
-        if (backPackId == null || backPackId.isEmpty()) {
-          loadBackpack();
-          LOG.info("backpack: No shared backpack");
-        } else {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setSharedBackpackId(backPackId);
-            }
-          });
-          LOG.info("Have a shared backpack backPackId = " + backPackId);
-        }
-
-        // Setup noop timer (if enabled)
-        int noop = config.getNoop();
-        if (noop > 0) {
-          // If we have a noop time, setup a timer to do the noop
-          Timer t = new Timer() {
-              @Override
-              public void run() {
-                userInfoService.noop(new AsyncCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void e) {
-                    }
-                    @Override
-                    public void onFailure(Throwable e) {
-                    }
-                  });
-              }
-            };
-            t.scheduleRepeating(1000*60*noop);
-        }
-
-        // If user hasn't accepted terms of service, ask them to.
-        if (!user.getUserTosAccepted() && !isReadOnly) {
-          // We expect that the redirect to the TOS page should be handled
-          // by the onFailure method below. The server should return a
-          // "forbidden" error if the TOS wasn't accepted.
-          ErrorReporter.reportError(MESSAGES.serverUnavailable());
-          return;
-        }
-
-        splashConfig = result.getSplashConfig();
-        secondBuildserver = result.getSecondBuildserver();
-        // The code below is invoked if we do not have a second buildserver
-        // configured. It sets the warnedBuild1 flag to true which inhibits
-        // the display of the dialog box used when building. This means that
-        // if no second buildserver is configured, there is no dialog box
-        // displayed when the build menu items are invoked.
-        if (!secondBuildserver) {
-          warnedBuild1 = true;
-        }
-
-        if (result.getRendezvousServer() != null) {
-          setRendezvousServer(result.getRendezvousServer(), true);
-        } else {
-          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);
-        }
-
-        userSettings = new UserSettings(user);
-        userSettings.loadSettings(new Command() {
-          @Override
-          public void execute() {
-
-            // Initialize project and editor managers
-            // The project manager loads the user's projects asynchronously
-            folderManager = new FolderManager();
-            projectManager = new ProjectManager();
-            projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-              @Override
-              public void onProjectsLoaded() {
-                projectManager.removeProjectManagerEventListener(this);
-                // Set up the folder manager after all projects are loaded
-                folderManager.loadFolders();
-                // This handles any built-in templates stored in /war
-                // Retrieve template data stored in war/templates folder and
-                // and save it for later use in TemplateUploadWizard
-                OdeAsyncCallback<String> templateCallback =
-                    new OdeAsyncCallback<String>(
-                        // failure message
-                        MESSAGES.createProjectError()) {
-                      @Override
-                      public void onSuccess(String json) {
-                        // Save the templateData
-                        TemplateUploadWizard.initializeBuiltInTemplates(json);
-
-                        if (!handleQueryString() && shouldAutoloadLastProject()) {
-                          openPreviousProject();
-                        }
-                      }
-                    };
-                Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
-              }
-            });
-            editorManager = new EditorManager();
-            projectListbox = ProjectListBox.getProjectListBox();
-
-            // Initialize UI
-            initializeUi();
-            topPanel.showUserEmail(user.getUserEmail());
-
-          }
-        });
-      }
-
-      private boolean isSet(String str) {
-        return str != null && !str.equals("");
-      }
-
-      private String makeUri(String base) {
-        String[] params = new String[] { "locale", "repo", "galleryId", "autoload", "ng" };
-        String separator = "?";
-        StringBuilder sb = new StringBuilder(base);
-        for (String param : params) {
-          String value = Window.Location.getParameter(param);
-          if (isSet(value)) {
-            sb.append(separator);
-            sb.append(param);
-            sb.append("=");
-            sb.append(value);
-            separator = "&";
-          }
-        }
-        return sb.toString();
-      }
-
-      @Override
-      public void onFailure(Throwable caught) {
-        if (caught instanceof StatusCodeException) {
-          StatusCodeException e = (StatusCodeException) caught;
-          int statusCode = e.getStatusCode();
-          switch (statusCode) {
-            case Response.SC_UNAUTHORIZED:
-              // unauthorized => not on whitelist
-              // getEncodedResponse() gives us the message that we wrote in
-              // OdeAuthFilter.writeWhitelistErrorMessage().
-              Window.alert(e.getEncodedResponse());
-              return;
-            case Response.SC_FORBIDDEN:
-              // forbidden => need tos accept
-              Window.open(makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
-              return;
-            case Response.SC_PRECONDITION_FAILED:
-              Window.Location.replace(makeUri("/login/"));
-              return;           // likely not reached
-          }
-        }
-        super.onFailure(caught);
-      }
-    };
-
     // The call below begins an asynchronous read of the user's settings
     // When the settings are finished reading, various settings parsers
     // will be called on the returned JSON object. They will call various
@@ -864,8 +684,60 @@ public class Ode implements EntryPoint {
     // This call also stores our sessionId in the backend. This will be checked
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
-
-    userInfoService.getSystemConfig(sessionId, callback);
+    Promise.<Config>call(MESSAGES.serverUnavailable(),
+        c -> userInfoService.getSystemConfig(sessionId, c))
+        .then(result -> {
+          config = result;
+          user = result.getUser();
+          isReadOnly = user.isReadOnly();
+          return resolve(null);
+        })
+        .then0(this::handleGalleryId)
+        .then0(this::checkTos)
+        .then0(this::loadUserSettings)
+        .then0(this::loadTranslations)  // translation based on user setting last locale
+        .then0(() -> Promise.allOf(
+            Promise.wrap(this::processSettings),
+            Promise.wrap(this::loadUserBackpack)
+        ))
+        .then(this::initializeUi)
+        .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
+        .then(projects -> {
+          folderManager.loadFolders();
+          ProjectListBox.getProjectListBox().getProjectList().onProjectsLoaded();
+          return resolve(projects);
+        })
+        .then0(this::retrieveTemplateData)
+        .then0(this::maybeOpenLastProject)
+        .error(caught -> {
+          if (caught == null) {
+            // previous step rejected without an actual error
+            return null;
+          }
+          Throwable original = caught.getOriginal();
+          if (original instanceof StatusCodeException) {
+            StatusCodeException e = (StatusCodeException) original;
+            int statusCode = e.getStatusCode();
+            switch (statusCode) {
+              case Response.SC_UNAUTHORIZED:
+                // unauthorized => not on whitelist
+                // getEncodedResponse() gives us the message that we wrote in
+                // OdeAuthFilter.writeWhitelistErrorMessage().
+                Window.alert(e.getEncodedResponse());
+                break;
+              case Response.SC_FORBIDDEN:
+                // forbidden => need tos accept
+                Window.open(Urls.makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
+                break;
+              case Response.SC_PRECONDITION_FAILED:
+                Window.Location.replace(Urls.makeUri("/login/"));
+                break;           // likely not reached
+              default:
+                break;
+            }
+          }
+          return null;
+        });
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
@@ -883,10 +755,131 @@ public class Ode implements EntryPoint {
     //History.fireCurrentHistoryState();
   }
 
+  private Promise<Object> handleGalleryId() {
+    // Arrange to redirect to the new gallery, which is run as a
+    // separate server when we are started with a galleryId flag
+    // We process this as soon as we have the system config
+    // because we need the system config to tell us where the
+    // gallery is located!
+
+    String galleryId = Window.Location.getParameter("galleryId");
+    if (galleryId != null) {
+      // This will replace us with the gallery server, displaying the app in question
+      Window.open(config.getGalleryLocation() + "?galleryid=" + galleryId, "_self", null);
+      // Never get here...(?)
+      return reject(null);
+    }
+    return resolve(null);
+  }
+
+  private Promise<Object> checkTos() {
+    // If user hasn't accepted terms of service, ask them to.
+    if (!user.getUserTosAccepted() && !isReadOnly) {
+      // We expect that the redirect to the TOS page should be handled
+      // by the onFailure method below. The server should return a
+      // "forbidden" error if the TOS wasn't accepted.
+      ErrorReporter.reportError(MESSAGES.serverUnavailable());
+      return rejectWithReason(MESSAGES.serverUnavailable());
+    }
+
+    return resolve(null);
+  }
+
+  private Promise<UserSettings> loadUserSettings() {
+    // This is called before processSettings so the work can be interleaved.
+    userSettings = new UserSettings(user);
+    return userSettings.loadSettings()
+        .then(Ode::handleUserLocale)
+        .then(result -> resolve(userSettings));
+  }
+
+  private Promise<Object> retrieveTemplateData() {
+    return Promise.<String>call(MESSAGES.createProjectError(),
+        c -> projectService.retrieveTemplateData(TEMPLATES_ROOT_DIRECTORY, c))
+        .then(json -> {
+          TemplateUploadWizard.initializeBuiltInTemplates(json);
+          return resolve(null);
+        });
+  }
+
+  private Promise<Object> maybeOpenLastProject() {
+    if (!handleQueryString() && shouldAutoloadLastProject()) {
+      openPreviousProject();
+    }
+
+    return null;
+  }
+
+  private Promise<Boolean> loadTranslations() {
+    return BlocklyMsg.Loader.loadTranslations();
+  }
+
+  private Promise<String> loadUserBackpack() {
+    String backPackId = user.getBackpackId();
+    if (backPackId == null || backPackId.isEmpty()) {
+      LOG.info("backpack: No shared backpack");
+      return this.loadBackpack();
+    } else {
+      LOG.info("Have a shared backpack backPackId = " + backPackId);
+      return BlocklyMsg.Loader.loadTranslations().then(result -> {
+        BlocklyPanel.setSharedBackpackId(backPackId);
+        return null;
+      });
+    }
+  }
+
+  private Promise<Boolean> processSettings() {
+    // load the user's backpack if we are not using a shared
+    // backpack
+
+    // Setup noop timer (if enabled)
+    int noop = config.getNoop();
+    if (noop > 0) {
+      // If we have a noop time, setup a timer to do the noop
+      Timer t = new Timer() {
+        @Override
+        public void run() {
+          userInfoService.noop(new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void e) {
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+            }
+          });
+        }
+      };
+      t.scheduleRepeating(1000 * 60 * noop);
+    }
+
+    splashConfig = config.getSplashConfig();
+    secondBuildserver = config.getSecondBuildserver();
+    // The code below is invoked if we do not have a second buildserver
+    // configured. It sets the warnedBuild1 flag to true which inhibits
+    // the display of the dialog box used when building. This means that
+    // if no second buildserver is configured, there is no dialog box
+    // displayed when the build menu items are invoked.
+    if (!secondBuildserver) {
+      warnedBuild1 = true;
+    }
+
+    if (config.getRendezvousServer() != null) {
+      setRendezvousServer(config.getRendezvousServer(), true);
+    } else {
+      setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);
+    }
+    return resolve(true);
+  }
+
   /*
    * Initializes all UI elements.
    */
-  private void initializeUi() {
+  private Promise<Object> initializeUi(Object result) {
+    folderManager = new FolderManager();
+    projectManager = new ProjectManager();
+    editorManager = new EditorManager();
+
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
@@ -913,6 +906,8 @@ public class Ode implements EntryPoint {
       }
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
+
+    projectListbox = ProjectListBox.getProjectListBox();
 
     OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
     FlowPanel mainPanel = uiBinder.createAndBindUi(this);
@@ -970,6 +965,8 @@ public class Ode implements EntryPoint {
 
     setupMotd();
     HTML5DragDrop.init();
+    topPanel.showUserEmail(user.getUserEmail());
+    return resolve(result);
   }
 
   private void setupMotd() {
@@ -1339,20 +1336,20 @@ public class Ode implements EntryPoint {
    * specified and the locales don't match, then we set the user's last locale
    * to the current locale.
    */
-  public static boolean handleUserLocale() {
+  public static Promise<Boolean> handleUserLocale(UserSettings userSettings) {
     String locale = Window.Location.getParameter("locale");
     String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
     if (!compareLocales(locale, lastUserLocale, "en")) {
       if (locale == null) {
         Window.Location.assign(Window.Location.createUrlBuilder().setParameter("locale", lastUserLocale).buildString());
-        return false;
+        return rejectWithReason("Reloading to apply user locale");
       } else {
         userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);
         userSettings.saveSettings(null);
       }
     }
-    BlocklyMsg.Loader.ensureTranslationsLoaded();
-    return true;
+    return BlocklyMsg.Loader.loadTranslations()
+        .then(result -> resolve(true));
   }
 
   private void resizeWorkArea(WorkAreaPanel workArea) {
@@ -1526,15 +1523,17 @@ public class Ode implements EntryPoint {
    * are present.
    */
   private void maybeShowNoProjectsDialog() {
-    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-      @Override
-      public void onProjectsLoaded() {
-        if (!ProjectListBox.getProjectListBox().getProjectList().listContainsProjects() && !templateLoadingFlag &&
-          !newGalleryLoadingFlag) {
-          ErrorReporter.hide();  // hide the "Please choose a project" message
-          createNoProjectsDialog(true);
+    projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
+      for (Project p : projectManager.getProjects()) {
+        if (!p.isInTrash()) {
+          return null;  // We have at least one valid project so exit early
         }
       }
+      if (!templateLoadingFlag && !newGalleryLoadingFlag) {
+        ErrorReporter.hide();  // hide the "Please choose a project" message
+        createNoProjectsDialog(true);
+      }
+      return null;
     });
   }
 
@@ -1640,15 +1639,13 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash2() {
-    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-      @Override
-      public void onProjectsLoaded() {
-        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag
-          && !newGalleryLoadingFlag) {
-          ErrorReporter.hide();  // hide the "Please choose a project" message
-          showSplashScreens();
-        }
+    projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
+      if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
+          && !templateLoadingFlag && !newGalleryLoadingFlag) {
+        ErrorReporter.hide();  // hide the "Please choose a project" message
+        showSplashScreens();
       }
+      return null;
     });
   }
 
@@ -2313,22 +2310,13 @@ public class Ode implements EntryPoint {
 
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
-  private void loadBackpack() {
-    userInfoService.getUserBackpack(new AsyncCallback<String>() {
-        @Override
-        public void onSuccess(final String backpack) {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setInitialBackpack(backpack);
-            }
-          });
-        }
-        @Override
-        public void onFailure(Throwable caught) {
-          LOG.log(Level.SEVERE, "Fetching backpack failed", caught);
-        }
-      });
+  private Promise<String> loadBackpack() {
+    return Promise.call("Fetching backpack failed",
+        userInfoService::getUserBackpack
+    ).then(result -> {
+      BlocklyPanel.setInitialBackpack(result);
+      return resolve(result);
+    });
   }
 
   public boolean hasSecondBuildserver() {

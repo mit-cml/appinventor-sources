@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <application></application>
-  <version>1</version>
-  <runtime>java8</runtime>
+  <runtime>java11</runtime>
+  <app-engine-apis>true</app-engine-apis>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
@@ -180,9 +179,4 @@
     <property name="http.maxConnections" value="5" />
 
   </system-properties>
-
-  <!-- Enable concurrency in the app engine server -->
-  <threadsafe>true</threadsafe>
-
-
 </appengine-web-app>
