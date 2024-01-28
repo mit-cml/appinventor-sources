@@ -12,10 +12,20 @@ open class PointChartDataModel: Chart2DDataModel {
   public func getEntryFromTuple(tuple: YailList<AnyObject>) -> ChartDataEntry {
     // TODO: NEED TO HANDLE POSSIBLE ERRORS
     do {
-      var xValue = try tuple[0] as! String
-      var yValue = try tuple[1] as! String
+      //var xValue = try tuple[0] as! String
+      //var yValue = try tuple[1] as! String
+      
+      // the getString() function in the Java code automatically adds a +1 to index
+      var xValue: String = "\(tuple[0+1])"
+      var yValue: String = "\(tuple[1+1])"
+      print("xvalue", xValue)
+      print("yvalue", yValue)
+
       var x: Double = Double(xValue) ?? -1
       var y: Double = Double(yValue) ?? -1
+      print("x", x)
+      print("y", y)
+      print("chartdataentry", ChartDataEntry(x: x, y: y))
       return ChartDataEntry(x: x, y: y)
       // TODO: change ERROR MESSAGE, do I need to add error messages
       //view.form?.form?.dispatchErrorOccurredEvent(chart, "GetEntryFromTuple", ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO, xValue, yValue)

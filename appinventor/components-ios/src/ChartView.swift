@@ -75,6 +75,8 @@ open class ChartView {
   public func refresh(model: ChartDataModel) {
     DispatchQueue.main.async {
       var refreshTask : RefreshTask = RefreshTask(self, model.entries)
+      print("model.entries", model.entries)
+      print("refreshTask", refreshTask)
       refreshTask.onPostExecute(result: model) // how to do execute
     }
   }
@@ -82,9 +84,13 @@ open class ChartView {
   public func refresh(model: ChartDataModel, entries: Array<DGCharts.ChartDataEntry>) {
     DispatchQueue.main.async {
       var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
+      print("dataset", dataset)
       dataset.replaceEntries(entries)
+      print("dataset after replace", dataset)
+
       self.chart?.data?.notifyDataChanged()
       self.chart?.notifyDataSetChanged()
+      self.chart?.anim
     }
   }
   
@@ -94,6 +100,7 @@ open class ChartView {
     unowned var _chartView: ChartView
     public init(_ owner: ChartView, _ entries: Array<DGCharts.ChartDataEntry>) {
       _entries = entries
+      print("init a refreshtak", entries)
       _chartView = owner
     }
     public func doInBackGround(chartDataModels: Array<ChartDataModel>) -> ChartDataModel{
@@ -101,9 +108,9 @@ open class ChartView {
     }
 
     public func onPostExecute(result: ChartDataModel) {
-
       _chartView._workQueue.async {
         self._chartView.refresh(model: result, entries: self._entries)
+        print("wow im in this workqueue in onPostExecute")
       }
     }
   }

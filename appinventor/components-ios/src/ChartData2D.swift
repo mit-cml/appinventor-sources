@@ -14,9 +14,12 @@ import Foundation
   }
   @objc func AddEntry(_ x: String, _ y: String){
     // create a 2-tuple, and add the tuple to the Data series
-    var pair: YailList<AnyObject> = [x, y]
-    _chartDataModel?.addEntryFromTuple(pair)
-    // refresh chart with new data
-    refreshChart()
+    DispatchQueue.main.async {
+      var pair: YailList<AnyObject> = [x, y]
+      print("pair from addEntry", pair)
+      self._chartDataModel?.addEntryFromTuple(pair)
+      // refresh chart with new data
+      self.refreshChart()
+    }
   }
 }

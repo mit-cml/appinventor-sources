@@ -161,8 +161,6 @@ import DGCharts
   
   func refreshChart() {
     _container.chartView?.refresh(model: _chartDataModel!)
-    // Thread 1: Fatal error: Unexpectedly found nil while unwrapping an Optional value
-    // chart data model is nill
   }
   
   /**
