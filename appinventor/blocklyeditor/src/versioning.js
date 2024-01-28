@@ -1957,8 +1957,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // RequestFocus was added
     3: "noUpgrade",
 
-    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-    4: [
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
       Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
@@ -2776,8 +2776,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // NumbersOnly was added
     5: "noUpgrade",
 
-    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-    6: [
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
       Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
@@ -3154,8 +3154,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added ReadOnly property
     6: "noUpgrade",
 
-    // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToFront methods were added.
-    7: [
+    // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    14: [
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
       Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
