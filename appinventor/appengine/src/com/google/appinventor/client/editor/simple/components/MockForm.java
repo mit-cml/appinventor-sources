@@ -60,7 +60,7 @@ public final class MockForm extends MockContainer {
    */
   private class TitleBar extends Composite {
     private static final int TITLEBAR_HEIGHT = 24;
-    private static final int ACTIONBAR_HEIGHT = 56;
+    private static final int ACTIONBAR_HEIGHT = 42; //set by me
     private static final int NAVBAR_HEIGHT = 44;
 
     // UI elements
@@ -273,7 +273,7 @@ public final class MockForm extends MockContainer {
    * Widget for a mock phone navigation bar; Shows at the bottom of the viewer
    */
   private class NavigationBar extends Composite {
-    private static final int HEIGHT = 44;
+    private static final int HEIGHT = 20;
 
     // UI elements
     private AbsolutePanel bar;
@@ -557,7 +557,7 @@ public final class MockForm extends MockContainer {
       if (val.equals("iOS")) {
         usableScreenWidth = screenWidth;
       } else {
-        usableScreenWidth = screenWidth - navigationBar.getHeight();
+        usableScreenWidth = screenWidth - navigationBar.getHeight(); 
       }
       usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
     } else {
@@ -567,7 +567,9 @@ public final class MockForm extends MockContainer {
     }
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
     scrollPanel.setPixelSize(usableScreenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
-    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    // formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    formWidget.setPixelSize(screenWidth, screenHeight);
+
     // TODO: This is a hack to fix the phone portrait mockup stretching when phone widget panel
     // is forced larger than 320px.
     phoneWidget.setWidth(screenWidth + "px");

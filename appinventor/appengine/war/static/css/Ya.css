@@ -14,27 +14,28 @@ they get cut off in Windows.
 
 @font-face {
   font-family: Roboto;
-  src: url('../fonts/Roboto-Regular.ttf');
+  src: url("../fonts/Roboto-Regular.ttf");
 }
 
 @font-face {
   font-weight: bold;
   font-family: Roboto;
-  src: url('../fonts/Roboto-Bold.ttf');
+  src: url("../fonts/Roboto-Bold.ttf");
 }
 
 @font-face {
   font-family: OpenDyslexic;
-  src: url('../fonts/OpenDyslexic-Regular.otf');
+  src: url("../fonts/OpenDyslexic-Regular.otf");
 }
 
 @font-face {
   font-weight: bold;
   font-family: OpenDyslexic;
-  src: url('../fonts/OpenDyslexic-Bold.otf');
+  src: url("../fonts/OpenDyslexic-Bold.otf");
 }
 
-body, html {
+body,
+html {
   height: 100%;
   width: 100%;
   padding: 0;
@@ -67,7 +68,7 @@ body {
   height: 250px;
   background-color: white;
   position: absolute;
-  top:0;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -123,12 +124,12 @@ div.StatusPanel {
 .ode-ContextMenuItem {
   min-width: 50px;
   padding: 4px 12px;
-  -o-transition:color .1s ease-out, background .1s ease-in;
-  -ms-transition:color .1s ease-out, background .1s ease-in;
-  -moz-transition:color .1s ease-out, background .1s ease-in;
-  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  -o-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -ms-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -moz-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -webkit-transition: color 0.1s ease-out, background 0.1s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .1s ease-out, background .1s ease-in;
+  transition: color 0.1s ease-out, background 0.1s ease-in;
 }
 
 .ode-ContextMenuItem-needsChromebook,
@@ -144,12 +145,12 @@ div.StatusPanel {
   color: #ff0000;
   min-width: 50px;
   padding: 4px 12px;
-  -o-transition:color .1s ease-out, background .1s ease-in;
-  -ms-transition:color .1s ease-out, background .1s ease-in;
-  -moz-transition:color .1s ease-out, background .1s ease-in;
-  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  -o-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -ms-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -moz-transition: color 0.1s ease-out, background 0.1s ease-in;
+  -webkit-transition: color 0.1s ease-out, background 0.1s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .1s ease-out, background .1s ease-in;
+  transition: color 0.1s ease-out, background 0.1s ease-in;
 }
 
 .ode-ContextMenuItemSeparator {
@@ -168,12 +169,12 @@ div.StatusPanel {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
-  background: #99CC00;
+  background: #99cc00;
 }
 
 .ode-ContextMenuItem-Red-selected {
   color: #ff0000;
-  background: #99CC00;
+  background: #99cc00;
 }
 
 .ode-ContextMenuItem-disabled {
@@ -304,7 +305,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowHidden {
-  display:none;
+  display: none;
 }
 
 .ode-ProjectElementHidden {
@@ -312,7 +313,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowList {
-  display:contents;
+  display: contents;
 }
 
 .ode-ProjectFolderList {
@@ -389,7 +390,7 @@ div.StatusPanel {
 
 .ode-ComponentRowUnHighlighted {
   border-bottom: 1px solid #ddd;
-  background-color: white
+  background-color: white;
 }
 
 .ode-ComponentHeaderRow {
@@ -408,7 +409,6 @@ div.StatusPanel {
  * TopPanel
  */
 
-
 .ode-TopPanel {
   display: flex;
   min-height: 48px;
@@ -419,7 +419,13 @@ div.StatusPanel {
   align-items: center;
   background-color: #f2f2f2;
   background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#f2f2f2),
+    to(#f3f3f3)
+  );
   background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
   background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
   background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
@@ -436,7 +442,7 @@ div.StatusPanel {
 
 .ode-Logo {
   margin: 0 0 4px 4px;
-/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
+  /*  -webkit-filter: drop-shadow(0px 0px 1px #222);
   filter:         drop-shadow(0px 0px 1px #222); */
 }
 
@@ -491,11 +497,11 @@ div.StatusPanel {
 .ode-TopPanelLinks .gwt-Label:hover,
 .ode-TopPanelLinks .gwt-Anchor:hover,
 .ode-TopPanelLinks .gwt-TitleLabel:hover {
-  text-shadow: 0 0 1px #BABABA;
+  text-shadow: 0 0 1px #bababa;
 }
 
 .ode-TopPanelWarningLabel {
-  color: #FF0000;
+  color: #ff0000;
   position: absolute;
   width: 100%;
   left: 0;
@@ -515,11 +521,10 @@ div.StatusPanel {
 
 .ode-TopPanelIconButton:hover {
   -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
+  filter: drop-shadow(0px 0px 3px #222);
 }
 
 .ode-TopPanelIconButton:active {
-
 }
 
 .ode-TopPanelButton,
@@ -535,25 +540,24 @@ div.StatusPanel {
   border: transparent;
   background: transparent;
   color: grey;
-  -o-transition:color .2s ease-out, background .2s ease-in;
-  -ms-transition:color .2s ease-out, background .2s ease-in;
-  -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  -o-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -ms-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -moz-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -webkit-transition: color 0.2s ease-out, background 0.2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;
+  transition: color 0.2s ease-out, background 0.2s ease-in;
 }
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
 .ActionDropDown-Options:hover {
-  background: #E6E6E6;
-  color: #5B5B5B;
+  background: #e6e6e6;
+  color: #5b5b5b;
 }
 
 .ode-TopPanelButton:active,
 .ActionDropDown-Default:active,
 .ActionDropDown-Options:active {
-
 }
 
 .ActionDropDown-Default {
@@ -590,7 +594,7 @@ div.StatusPanel {
   width: 100%;
 }
 
-.ode-DeckPanel>div {
+.ode-DeckPanel > div {
   position: relative;
   width: 100%;
   height: 100%;
@@ -619,7 +623,7 @@ div.StatusPanel {
   flex-grow: 1;
 }
 
-.ode-WorkColumns>* {
+.ode-WorkColumns > * {
   max-height: 100%;
   vertical-align: top;
 }
@@ -631,19 +635,18 @@ div.StatusPanel {
 
 .ode-NavArrow {
   border: transparent;
-  background: #C2C2C2;
-  -o-transition:color .2s ease-out, background .2s ease-in;
-  -ms-transition:color .2s ease-out, background .2s ease-in;
-  -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  background: #c2c2c2;
+  -o-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -ms-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -moz-transition: color 0.2s ease-out, background 0.2s ease-in;
+  -webkit-transition: color 0.2s ease-out, background 0.2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;}
+  transition: color 0.2s ease-out, background 0.2s ease-in;
+}
 
 .ode-NavArrow:hover {
   background-color: darkgray;
 }
-
-
 
 /*
  * StatusPanel
@@ -686,7 +689,8 @@ div.StatusPanel {
   color: #555;
 }
 
-.ode-Icon, .ode-Icon-selected {
+.ode-Icon,
+.ode-Icon-selected {
   font-size: small;
   padding: 2px 4px 2px 4px;
 }
@@ -725,7 +729,8 @@ div.StatusPanel {
   font-size: small;
 }
 
-.gwt-VerticalSplitPanel, .gwt-HorizontalSplitPanel {
+.gwt-VerticalSplitPanel,
+.gwt-HorizontalSplitPanel {
   background: white;
 }
 
@@ -782,7 +787,7 @@ div.StatusPanel {
   *display: inline;
   padding: 2px 6px;
   margin-bottom: 0;
-  *margin-left: .3em;
+  *margin-left: 0.3em;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -793,7 +798,13 @@ div.StatusPanel {
   background-color: #f5f5f5;
   *background-color: #e6e6e6;
   background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#ffffff),
+    to(#e6e6e6)
+  );
   background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
   background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
   background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
@@ -809,9 +820,12 @@ div.StatusPanel {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
   *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .ode-TextButton-up-disabled,
@@ -847,8 +861,10 @@ div.StatusPanel {
 .gwt-Button:active {
   background-image: none;
   outline: 0;
-  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -859,7 +875,7 @@ div.StatusPanel {
 }
 
 .destructive-action:hover {
-  background: #FF6666;
+  background: #ff6666;
   color: white;
   text-shadow: none;
 }
@@ -884,7 +900,13 @@ div.StatusPanel {
   background-color: #faa732;
   *background-color: #f89406;
   background-image: -moz-linear-gradient(top, #fbb450, #f89406);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#fbb450),
+    to(#f89406)
+  );
   background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
   background-image: -o-linear-gradient(top, #fbb450, #f89406);
   background-image: linear-gradient(to bottom, #fbb450, #f89406);
@@ -940,7 +962,6 @@ div.StatusPanel {
   border: 0;
 }
 
-
 .ode-SimplePaletteItem {
   background-color: white; /* needed on Firefox */
   height: 15px;
@@ -963,38 +984,38 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem-Selected {
-  background-color: #d2e0a6;
+  background-color: #010100;
 }
 
 .gwt-SimplePanel {
-  border: 1px solid #67A7E3;
+  border: 1px solid #67a7e3;
   background-color: white;
 }
 
 .ode-ExplorerContent {
   height: 100%;
   padding: 0 1ex;
-  border-left: 1px solid #D6E9F8;
-  border-right: 1px solid #D6E9F8;
+  border-left: 1px solid #d6e9f8;
+  border-right: 1px solid #d6e9f8;
   font-size: small;
 }
 
 .ode-CollapsiblePanelExpanded {
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
 }
 
 .ode-CollapsiblePanelCollapsedLeft {
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
   margin-right: 2px;
 }
 
 .ode-CollapsiblePanelCollapsedBottom {
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
   margin-top: 2px;
 }
 
 .ode-CollapsiblePanelTitle {
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
   color: black;
   font-size: small;
   margin-bottom: 2px;
@@ -1002,12 +1023,12 @@ div.StatusPanel {
 
 .ode-HeaderPanel {
   width: 100%;
-  border: 1px solid #D6E9F8;
+  border: 1px solid #d6e9f8;
   background-color: white;
 }
 
 .ode-HeaderPanelTitleBar {
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
   color: black;
   font-size: small;
 }
@@ -1045,40 +1066,40 @@ div.StatusPanel {
 
 .ode-ChoicePropertyEditor {
   padding: 3px;
-  border: thin solid #CCCCCC;
+  border: thin solid #cccccc;
   border-radius: 3px;
   cursor: pointer;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 
-  box-shadow: #D3D3D3;
+  box-shadow: #d3d3d3;
   color: #575757;
   width: auto;
   text-align: center;
   display: inline-block;
   white-space: nowrap;
 
-  -o-transition:color .2s ease-out, background-color .2s ease-in;
-  -ms-transition:color .2s ease-out, background-color .2s ease-in;
-  -moz-transition:color .2s ease-out, background-color .2s ease-in;
-  -webkit-transition:color .2s ease-out, background-color .2s ease-in;
+  -o-transition: color 0.2s ease-out, background-color 0.2s ease-in;
+  -ms-transition: color 0.2s ease-out, background-color 0.2s ease-in;
+  -moz-transition: color 0.2s ease-out, background-color 0.2s ease-in;
+  -webkit-transition: color 0.2s ease-out, background-color 0.2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;
+  transition: color 0.2s ease-out, background 0.2s ease-in;
 }
 
 .ode-ChoicePropertyEditor:hover {
-  background: #E6E6E6;
-  color: #5B5B5B;
+  background: #e6e6e6;
+  color: #5b5b5b;
 }
 
 .ode-ChoicePropertyEditor:focus {
-  border-color: #D3D3D3;
+  border-color: #d3d3d3;
   outline: 0;
   outline: thin dotted \9;
   /* IE6-9 */
 
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
-  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px #D3D3D3;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #d3d3d3;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #d3d3d3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px #d3d3d3;
 }
 
 select.ode-PropertyEditor[disabled] {
@@ -1122,9 +1143,10 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockForm {
   height: auto !important;
   background-color: #d2e0a6;
-  border: 2px solid black;
+  /* border: 2px solid black; */
   -webkit-display: flex;
   display: flex;
+  border-radius: 22px;
 }
 
 .ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm,
@@ -1153,7 +1175,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormPhonePortrait {
   background: url(../images/phonePortrait.png) no-repeat right top;
   background-size: 100% 100%;
-  padding: 50px 11px 43px 7px;
+  padding: 22px;
 }
 
 .ode-SimpleMockFormPhoneLandscapeTablet {
@@ -1161,7 +1183,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 15px 56px 12px 64px;;
+  padding: 15px 56px 12px 64px;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
   background: url(../images/phonePortraitTablet.png) no-repeat right top;
@@ -1196,7 +1218,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormTitleBar-ActionBar {
   background-color: #a5cf47;
   color: white;
-  font-size: 20px;
+  font-size: 16px;
   position: relative;
 }
 
@@ -1208,14 +1230,14 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormTitle {
-  padding: 16px;
+  padding: 8px;
   top: 0;
   left: 0;
 }
 
 .ode-SimpleMockFormMenuButton {
   right: 0;
-  padding: 16px;
+  padding: 8px;
   position: absolute;
   border: 0;
   background-color: transparent;
@@ -1232,6 +1254,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormNavigationBarPortrait,
 .ode-SimpleMockFormNavigationBarLandscape {
   background-color: #000000;
+  background-size: cover;
 }
 
 .ode-SimpleMockFormNavigationBarPortrait {
@@ -1297,33 +1320,51 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon:hover {
-  color: #0078A8;
+  color: #0078a8;
 }
 
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked .fa-unlock,
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-lock,
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked .fa-lock,
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-unlock {
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.locked
+  .fa-unlock,
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.locked:hover
+  .fa-lock,
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.unlocked
+  .fa-lock,
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.unlocked:hover
+  .fa-unlock {
   display: none;
 }
 
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-unlock,
-.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-lock {
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.locked:hover
+  .fa-unlock,
+.ode-SimpleMockContainer
+  .leaflet-container
+  .leaflet-toolbar-icon.unlocked:hover
+  .fa-lock {
   display: inline-block;
 }
 
 .ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location {
-    position: relative;
-    width: 32px;
-    height: 32px;
+  position: relative;
+  width: 32px;
+  height: 32px;
 }
 
 .ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location img {
-    position: relative;
-    top: -50%;
-    left: -50%;
-    width: 32px;
-    height: 32px;
+  position: relative;
+  top: -50%;
+  left: -50%;
+  width: 32px;
+  height: 32px;
 }
 
 .ode-SimpleMockContainer-centerContents {
@@ -1397,7 +1438,6 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-ComponentHelpPopup-Link {
   padding: 0 10px 10px 10px;
   font-size: 12px;
-
 }
 .ode-ComponentHelpPopup-Link a {
   color: #8fc202;
@@ -1420,8 +1460,9 @@ path.ode-SimpleMockMapFeature-selected {
   text-align: center;
 }
 
-.hsplitter, .vsplitter {
-  background-color: #D6E9F8;
+.hsplitter,
+.vsplitter {
+  background-color: #d6e9f8;
 }
 
 .ode-RpcStatusMessage .popupMiddleCenterInner {
@@ -1434,7 +1475,7 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-RpcStatusMessage .popupMiddleCenter,
 .ode-RpcStatusMessage .popupMiddleRight,
 .ode-RpcStatusMessage .popupBottomCenter {
-  background-color: #FFF1A8;
+  background-color: #fff1a8;
 }
 
 .ode-RpcStatusMessage .popupBottomLeft {
@@ -1450,7 +1491,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ErrorMessage {
-  color: #FF4444;
+  color: #ff4444;
   font-weight: bold;
   font-size: 13px;
   margin: 8px 16px;
@@ -1650,7 +1691,7 @@ path.ode-SimpleMockMapFeature-selected {
 /* End of NoProjectsDialogBox. */
 
 /* Start Of ProjectPropertiesDialogBox. */
-.ode-propertyDialogContainer  {
+.ode-propertyDialogContainer {
   margin-bottom: 10px;
   overflow: hidden;
 }
@@ -1700,7 +1741,7 @@ path.ode-SimpleMockMapFeature-selected {
   margin-top: 18px;
 }
 
-.ode-projectPropertyCategoryTitlePanel option { 
+.ode-projectPropertyCategoryTitlePanel option {
   font-size: 14px;
   font-weight: 500;
   padding: 10px;
@@ -1708,7 +1749,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-radius: 10px;
 }
 
-.ode-projectPropertyCategoryTitlePanel:focus  { 
+.ode-projectPropertyCategoryTitlePanel:focus {
   outline: none;
 }
 
@@ -1728,11 +1769,13 @@ path.ode-SimpleMockMapFeature-selected {
   min-height: 40px;
 }
 
-.ode-DialogBox, .ode-DialogBox .dialogContent {
+.ode-DialogBox,
+.ode-DialogBox .dialogContent {
   min-width: 340px;
 }
 
-.DialogBox-message {}
+.DialogBox-message {
+}
 
 .ode-DialogBox .gwt-CheckBox {
   font-size: 12px;
@@ -1753,7 +1796,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .gwt-Tree {
-  border: thin solid #CCCCCC;
+  border: thin solid #cccccc;
   border-radius: 3px;
   font-size: 12px;
   margin-left: 10px;
@@ -1775,7 +1818,6 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 13px;
   padding: 5px 10px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
-
 }
 
 .ode-DialogBox .dialogContent {
@@ -1803,7 +1845,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .buttonRow {
   display: inline-flex;
-  justify-content: space-around ;
+  justify-content: space-around;
   width: 95%;
 }
 
@@ -1814,16 +1856,16 @@ a.ode-ExtensionAnchor {
   padding-bottom: 8px;
   font-style: italic;
   color: grey;
-  -o-transition:color .2s ease-out;
-  -ms-transition:color .2s ease-out;
-  -moz-transition:color .2s ease-out;
-  -webkit-transition:color .2s ease-out;
+  -o-transition: color 0.2s ease-out;
+  -ms-transition: color 0.2s ease-out;
+  -moz-transition: color 0.2s ease-out;
+  -webkit-transition: color 0.2s ease-out;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out;
+  transition: color 0.2s ease-out;
 }
 
 a.ode-ExtensionAnchor:hover {
-  color: #5B5B5B;
+  color: #5b5b5b;
 }
 
 /* Settings dialog boxes */
@@ -1859,7 +1901,7 @@ a.ode-ExtensionAnchor:hover {
   height: 12px;
   font-size: x-small;
   text-align: center;
-  background-color: #D6E9F8;
+  background-color: #d6e9f8;
   color: black;
   padding: 4px;
 }
@@ -1868,7 +1910,7 @@ a.ode-ExtensionAnchor:hover {
   border: 2px solid #faf9f7;
   border-right: 2px solid #848280;
   border-bottom: 2px solid #848280;
-  background-color: #AAAAAA;
+  background-color: #aaaaaa;
   height: 30pt;
   width: 100%;
 }
@@ -1877,12 +1919,13 @@ a.ode-ExtensionAnchor:hover {
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   position: absolute;
-  top:0; left:0;
+  top: 0;
+  left: 0;
   padding-top: 10px;
   color: #fff;
   text-align: center;
   width: 100%;
-  font-size:large;
+  font-size: large;
 }
 
 /*
@@ -1985,7 +2028,7 @@ input[type="color"],
   -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
   -o-transition: border linear 0.2s, box-shadow linear 0.2s;
   transition: border linear 0.2s, box-shadow linear 0.2s;
-  font-size: 10px
+  font-size: 10px;
 }
 
 textarea:focus,
@@ -2009,9 +2052,12 @@ input[type="color"]:focus,
   outline: thin dotted \9;
   /* IE6-9 */
 
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
-  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(82, 168, 236, 0.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(82, 168, 236, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(82, 168, 236, 0.6);
 }
 
 input[type="radio"],
@@ -2060,7 +2106,6 @@ input[type="checkbox"]:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
-
 }
 
 .uneditable-input,
@@ -2146,7 +2191,7 @@ textarea::-webkit-input-placeholder {
 .ode-PropertiesPanel .gwt-StackPanelItem div {
   font-size: 12px;
   padding: 2px 8px;
-  background-color: #D2E08B;
+  background-color: #d2e08b;
   color: #555;
   height: 16px;
 }
@@ -2165,7 +2210,7 @@ textarea::-webkit-input-placeholder {
   background-color: #ceda91;
 }
 
-.ode-PropertiesPanel .gwt-DisclosurePanel-closed > tbody > tr+tr > td {
+.ode-PropertiesPanel .gwt-DisclosurePanel-closed > tbody > tr + tr > td {
   margin: 0;
   padding: 0;
   height: 0;
@@ -2187,7 +2232,7 @@ textarea::-webkit-input-placeholder {
 }
 
 .search-compontent {
-  margin:5px 0 5px 0;
+  margin: 5px 0 5px 0;
 }
 
 /* Gallery-specific styles */
@@ -2204,7 +2249,7 @@ textarea::-webkit-input-placeholder {
 }
 
 .gallery-page-single > tbody > tr {
-  display:inline-table;
+  display: inline-table;
   vertical-align: top;
 }
 .gallery-container {
@@ -2214,13 +2259,14 @@ textarea::-webkit-input-placeholder {
   background: #fff;
   vertical-align: top;
   text-decoration: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.gwt-TabPanelBottom .gallery-page-single { /* profile page under "My stuff" */
+.gwt-TabPanelBottom .gallery-page-single {
+  /* profile page under "My stuff" */
   margin: 20px 0;
 }
 .ode-UserProfileWrapper .app-title {
@@ -2290,7 +2336,6 @@ textarea::-webkit-input-placeholder {
   margin-bottom: 6px;
 }
 
-
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
   border: none;
@@ -2305,7 +2350,7 @@ textarea::-webkit-input-placeholder {
 .gallery .gwt-TabBar .gwt-TabBarItem,
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
   font-size: 28px;
-  font-family: "Roboto",Arial,sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   text-transform: uppercase;
   padding: 5px;
   border: none;
@@ -2324,7 +2369,8 @@ textarea::-webkit-input-placeholder {
   color: #333;
   font-weight: 300;
 }
-.gallery .gwt-TabPanelBottom { /* GWT wrapper for the selected tab content */
+.gallery .gwt-TabPanelBottom {
+  /* GWT wrapper for the selected tab content */
   border: none;
   padding: 0;
 }
@@ -2349,11 +2395,11 @@ textarea::-webkit-input-placeholder {
   width: 100px;
 }
 .gallery-nav-prev .gwt-Label,
-.gallery-nav-next .gwt-Label  {
+.gallery-nav-next .gwt-Label {
   margin-left: 5px;
 }
-.gallery-report-next .gwt-Label{
-  width:100px;
+.gallery-report-next .gwt-Label {
+  width: 100px;
 }
 .gallery-nav-prev .active,
 .gallery-nav-next .active,
@@ -2369,11 +2415,11 @@ textarea::-webkit-input-placeholder {
 .gallery-nav-next .active:hover,
 .gallery-report-next .active:hover {
   cursor: pointer;
-  background-color: #FFF;
+  background-color: #fff;
 }
 .gallery-nav-prev .disabled:hover,
 .gallery-nav-next .disabled:hover,
-.gallery-report-next .disabled:hover  {
+.gallery-report-next .disabled:hover {
   cursor: default;
   background: none;
 }
@@ -2388,7 +2434,6 @@ textarea::-webkit-input-placeholder {
   cursor: pointer;
 }
 .gallery-app-collection {
-
 }
 .gallery-card {
   width: 160px;
@@ -2400,14 +2445,14 @@ textarea::-webkit-input-placeholder {
   text-decoration: none;
   vertical-align: top;
   background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
-  background-color: #EEE;
+  background-color: #eee;
   -webkit-transition: background-color 1s ease;
   -moz-transition: background-color 1s ease;
   -o-transition: background-color 1s ease;
@@ -2461,12 +2506,38 @@ textarea::-webkit-input-placeholder {
   bottom: 0;
   right: 0;
   position: absolute;
-  background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));
-  background-image: -webkit-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -moz-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -ms-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -o-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1));
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(0%, rgba(255, 255, 255, 0)),
+    color-stop(100%, rgba(255, 255, 255, 1))
+  );
+  background-image: -webkit-linear-gradient(
+    left,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  background-image: -moz-linear-gradient(
+    left,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  background-image: -ms-linear-gradient(
+    left,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  background-image: -o-linear-gradient(
+    left,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='#ffffff');
 }
 .gallery-card-content .gallery-subtitle {
@@ -2494,7 +2565,8 @@ textarea::-webkit-input-placeholder {
   color: #999;
 }
 .gallery-card-content .gwt-Image,
-.app-stats .gwt-Image { /* Mini meta images */
+.app-stats .gwt-Image {
+  /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
@@ -2534,15 +2606,14 @@ textarea::-webkit-input-placeholder {
   border-radius: 0;
 }
 
-
 /* Gallery individual app page styles */
 .app-info-container {
   width: 430px;
   float: left;
 }
 .gallery-editbox {
-  border: 1px dashed #ccc!important;
-  background-color: #fff!important;
+  border: 1px dashed #ccc !important;
+  background-color: #fff !important;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -2647,7 +2718,7 @@ textarea::-webkit-input-placeholder {
   border: none;
 }
 .gallery-app-details .app-action-button,
-.gallery-app-details .app-comments-submit{
+.gallery-app-details .app-comments-submit {
   margin: 15px 0;
   display: block;
 }
@@ -2662,7 +2733,7 @@ textarea::-webkit-input-placeholder {
 }
 .app-title-container .app-desc-textarea,
 .app-meta .app-desc-textarea {
-/*  height: 20px; */
+  /*  height: 20px; */
 }
 .gallery-app-details .app-comments-textarea,
 .app-desc-textarea {
@@ -2684,12 +2755,13 @@ textarea::-webkit-input-placeholder {
 .app-otherinfo-textdisplay {
   width: 50%;
   color: #555;
-  vertical-align:top;
+  vertical-align: top;
 }
 .app-otherinfo-textlink {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px;
+  font-weight: 300;
+  font-size: 14px;
 }
 .app-otherinfo-textlink:hover {
   background-color: #b3c833;
@@ -2712,7 +2784,7 @@ textarea::-webkit-input-placeholder {
 }
 .app-otherinfo-textbox::-webkit-input-placeholder {
   font-size: 13px;
-  padding-left:10px;
+  padding-left: 10px;
 }
 .app-otherinfo-textbox:focus {
   border: 1px solid;
@@ -2767,7 +2839,8 @@ textarea::-webkit-input-placeholder {
   padding: 10px 0 0 15px;
   color: #999;
 }
-.app-stats .gwt-Image { /* Mini meta images */
+.app-stats .gwt-Image {
+  /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
@@ -2811,14 +2884,14 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-details .app-tags .gwt-Label {
   display: inline-block;
-  background-color: #EEE;
+  background-color: #eee;
   color: #999;
   padding: 2px 10px;
   margin: 5px 8px 5px 0;
 }
 .gallery-app-details .app-tags .gwt-Label:hover {
   background-color: #999;
-  color: #FFF;
+  color: #fff;
   -webkit-transition: background-color 1s ease;
   -moz-transition: background-color 1s ease;
   -o-transition: background-color 1s ease;
@@ -2833,7 +2906,6 @@ textarea::-webkit-input-placeholder {
   font-weight: 100;
   margin-bottom: 15px;
 }
-
 
 /* Gallery app comment related styles */
 .gallery-app-details .app-comments-wrapper {
@@ -2880,8 +2952,6 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
 }
 
-
-
 /* Gallery app actions related styles */
 .gallery-app-details .app-actions {
   display: block;
@@ -2908,17 +2978,21 @@ textarea::-webkit-input-placeholder {
 .primary-link-small {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 11.5px; line-height: 1.75;
+  font-weight: 300;
+  font-size: 11.5px;
+  line-height: 1.75;
 }
 .primary-link,
 .moderator-link {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px; line-height: 1.75;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
 }
 .moderator-link {
-  display:inline;
-  margin-right:5px;
+  display: inline;
+  margin-right: 5px;
 }
 .ode-ProjectGalleryLink:hover,
 .primary-link:hover,
@@ -2952,35 +3026,35 @@ textarea::-webkit-input-placeholder {
   float: right;
 }
 .ode-ModerationTable {
-
 }
 .ode-ModerationTable .primary-link {
   color: black;
 }
-.inline-label{
-  display:inline;
-  margin-right:5px;
+.inline-label {
+  display: inline;
+  margin-right: 5px;
 }
 
-.time-label{
-  display:inline;
-  margin-right:15px;
-  font-style:italic;
+.time-label {
+  display: inline;
+  margin-right: 15px;
+  font-style: italic;
 }
 .seemore-link {
   color: #333399;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px; line-height: 1.75;
-  display:inline;
-  margin-right:5px;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
+  display: inline;
+  margin-right: 5px;
 }
 
 .seemore-link:hover {
   color: #980000;
   cursor: pointer;
-  text-decoration:underline;
+  text-decoration: underline;
 }
-
 
 /* General gallery helper styles */
 .message-popup {
@@ -3017,15 +3091,15 @@ textarea::-webkit-input-placeholder {
   position: absolute;
   background: #fff;
   border: 1px solid #666;
-  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, 0.4);
+  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, 0.4);
   width: 300px;
   height: 294px;
   overflow: auto;
 }
 .ac-row {
   cursor: pointer;
-  padding: .4em;
+  padding: 0.4em;
 }
 .ac-highlighted {
   font-weight: bold;
@@ -3038,11 +3112,13 @@ textarea::-webkit-input-placeholder {
   z-index: 2000;
 }
 
-.goog-hsva-palette, .goog-hsva-palette-sm {
+.goog-hsva-palette,
+.goog-hsva-palette-sm {
   border: 0;
 }
 
-div.vector-marker>svg, div.leaflet-marker-icon>img {
+div.vector-marker > svg,
+div.leaflet-marker-icon > img {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -3105,7 +3181,7 @@ div.dropdiv p {
   min-width: fit-content;
 }
 
-.ya-Toolbar>div>div {
+.ya-Toolbar > div > div {
   margin: 2px;
 }
 
@@ -3130,14 +3206,14 @@ div.dropdiv p {
 }
 
 .download-barcode:before {
-    content: "";
-    background-color: #888;
-    position: absolute;
-    width: 1px;
-    height: 160px;
-    top: 40px;
-    left: 50%;
-    display: block;
+  content: "";
+  background-color: #888;
+  position: absolute;
+  width: 1px;
+  height: 160px;
+  top: 40px;
+  left: 50%;
+  display: block;
 }
 
 .listItem:nth-child(2n + 0) {
