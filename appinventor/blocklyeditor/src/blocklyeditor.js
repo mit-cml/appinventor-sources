@@ -723,7 +723,7 @@ AI.Blockly.ContextMenuItems.registerCommentOptions = function() {
         allBlocks.forEach(block => {
           let comment = block.getIcon(Blockly.icons.CommentIcon.TYPE);
           if (comment && !block.isCollapsed()) {
-            comment.setBubbleVisible(false);
+            comment.setBubbleVisible(true);
           }
         })
       } finally {
@@ -749,7 +749,7 @@ AI.Blockly.ContextMenuItems.registerCommentOptions = function() {
         allBlocks.forEach(block => {
           let comment = block.getIcon(Blockly.icons.CommentIcon.TYPE);
           if (comment && !block.isCollapsed()) {
-            comment.setBubbleVisible(true);
+            comment.setBubbleVisible(false);
           }
         })
       } finally {
