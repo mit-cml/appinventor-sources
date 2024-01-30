@@ -611,8 +611,9 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
       return scope.workspace.arranged_position_ !== AI.Blockly.BLKS_HORIZONTAL ? 'enabled' : 'hidden';
     },
     displayText: Blockly.Msg['ARRANGE_H'],
-    callback: function(scope) {
-      arrangeBlocks(scope.workspace, scope.workspace.arranged_type_, AI.Blockly.BLKS_HORIZONTAL);
+    callback: function(scope, opt_type) {
+      arrangeBlocks(scope.workspace, opt_type || scope.workspace.arranged_type_,
+          AI.Blockly.BLKS_HORIZONTAL);
     },
     weight: 100
   };
@@ -626,8 +627,9 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
       return scope.workspace.arranged_position_ !== AI.Blockly.BLKS_VERTICAL ? 'enabled' : 'hidden';
     },
     displayText: Blockly.Msg['ARRANGE_V'],
-    callback: function(scope) {
-      arrangeBlocks(scope.workspace, scope.workspace.arranged_position_, AI.Blockly.BLKS_VERTICAL);
+    callback: function(scope, opt_type) {
+      arrangeBlocks(scope.workspace, opt_type || scope.workspace.arranged_type_,
+          AI.Blockly.BLKS_VERTICAL);
     },
     weight: 100
   };
