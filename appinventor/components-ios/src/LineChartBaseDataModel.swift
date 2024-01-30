@@ -28,7 +28,9 @@ class LineChartBaseDataModel: PointChartDataModel {
           index += 1
         }
       }
+      print("entry in linechartbase", entry)
       _entries.insert(entry, at: index)
+      print("entries in linechartbase", _entries)
     }
   }
   

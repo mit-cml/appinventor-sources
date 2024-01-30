@@ -46,30 +46,40 @@ open class ChartDataModel {
   }
 
   func setElements(_ elements: String) {
-    let tupleSize = Chart2DDataModel.getTupleSize()
+    let tupleSize = 2
     print("self", self)
     print("tupleSize", tupleSize)
     print("tuplesize-1", tupleSize - 1)
 
     let entries = elements.split(",")
+    print("entries", entries)
     print("entries.count", entries.count)
     print("entries.count-1", entries.count-1)
 
     // entries.count - 1 because ranges are inclusive in Swift
-    for i in stride(from: tupleSize - 1, to: entries.count - 1, by: tupleSize) {
+    for i in stride(from: tupleSize - 1, to: entries.count, by: tupleSize) {
       var tupleEntries: Array<String> = []
-      
+      print("i right now", i)
       // Iterate all over the tuple entries
-      // First entry is in  (i - tupleSize + 1)
-      for j in stride(from: tupleSize - 1, to: 0, by: -1) {
+      for j in stride(from: tupleSize - 1, through: 0, by: -1) {
         var index: Int = i - j
         print("index", index)
         print("entries[i]", entries[index])
         tupleEntries.append(entries[index])
       }
       
+      print("tupleEntries", tupleEntries)
+      print("type", type(of: tupleEntries))
+
       // Add entry from the parsed tuple
-      addEntryFromTuple(tupleEntries as! YailList<AnyObject>)
+      var yailListEntries: YailList<AnyObject> = []
+      for tuple in tupleEntries {
+        yailListEntries.add(tuple)
+      }
+      print("yailListEntries", yailListEntries)
+      // addEntryFromTuple(tupleEntries as! YailList<AnyObject>)
+      addEntryFromTuple(yailListEntries)
+
     }
   }
 
