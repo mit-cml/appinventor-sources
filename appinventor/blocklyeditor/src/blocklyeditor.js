@@ -338,11 +338,13 @@ AI.Blockly.ContextMenuItems.registerWorkspaceControlsOption = function() {
 
 AI.Blockly.ContextMenuItems.registerResetArrangementOptions = function() {
   function addResetArrangements(callback) {
-    return function() {
+    return function(scope) {
       try {
-        callback.call();
+        callback.call(this, scope);
       } finally {
-        self.resetArrangements();
+        if (scope.workspace) {
+          scope.workspace.resetArrangements();
+        }
       }
     };
   }
