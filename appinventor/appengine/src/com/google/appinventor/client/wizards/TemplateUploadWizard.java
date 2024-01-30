@@ -702,6 +702,31 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   private static void openTemplateProject(final String url, final NewProjectCommand onSuccessCommand) {
     final Ode ode = Ode.getInstance();
 
+    final String projectName;
+    if (url.endsWith(".asc")) {
+      projectName = url.substring(1 + url.lastIndexOf("/"), url.lastIndexOf("."));
+    } else {
+      return;
+    }
+
+    // If project of the same name already exists, suggest a rename.
+    if (TextValidators.checkNewProjectName(projectName, true)
+              != TextValidators.ProjectNameStatus.SUCCESS) {
+      new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
+        @Override
+        public void getNewName(String name) {
+          doLoadProject(url, name, onSuccessCommand);
+        }
+      }, projectName, true);
+    } else {
+      doLoadProject(url, projectName, onSuccessCommand);
+    }
+  }
+
+  private static void doLoadProject(final String url, final String projectName,
+      final NewProjectCommand onSuccessCommand) {
+    final Ode ode = Ode.getInstance();
+
     // This Async callback is called after the project is input and created
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
         // failure message
@@ -716,23 +741,6 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         }
       }
     };
-
-    final String projectName;
-    if (url.endsWith(".asc")) {
-      projectName = url.substring(1 + url.lastIndexOf("/"), url.lastIndexOf("."));
-    } else {
-      return;
-    }
-
-    // If project of the same name already exists, just open it
-    if (TextValidators.checkNewProjectName(projectName) 
-              != TextValidators.ProjectNameStatus.SUCCESS) {
-      Project project = ode.getProjectManager().getProject(projectName);
-      if (onSuccessCommand != null) {
-        onSuccessCommand.execute(project);
-      }
-     return;   // Don't retrieve the template if the project is a duplicate
-    }
 
     // Here's where we retrieve the template data
     // Do a GET to retrieve data at url

@@ -99,7 +99,7 @@
 
   <path id="libsForCommonTests.path">
     <pathelement location="${local.build.dir}/HtmlEntities.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
   </path>
 
   <path id="CommonTests.path">
@@ -283,18 +283,17 @@
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <path refid="AndroidRuntime.path" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/bouncycastle/bcprov-jdk15on-149.jar" />
-    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
-    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
-    <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
-    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
-    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+
+    <!-- Powermock and dependencies -->
+    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+
     <pathelement location="${lib.dir}/android/support/testing-support-R-classes.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/robolectric/robolectric-3.3.2-all-deps.jar" />
+    <pathelement location="${lib.dir}/robolectric/robolectric-4.0.2-alldeps.jar" />
     <pathelement location="${android.lib}" />
   </path>
 
@@ -304,15 +303,11 @@
   </path>
 
   <target name="AndroidRuntimeTests"
-          depends="AndroidRuntime"
+          depends="AndroidRuntime,common_CommonTestUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AndroidRuntimeTests"
                 aij-forkmode="perTest"
                 aij-dir="${components.pkg}/runtime" >
-      <!-- Include extra classes from Robolectric that need to be compiled with the sources -->
-      <aij-supplemental-includes>
-        <include name="org/robolectric/**/*.java" />
-      </aij-supplemental-includes>
     </ai.dojunit>
   </target>
 
@@ -330,8 +325,7 @@
               location="${class.dir}/AnnotationProcessors" />
     <mkdir dir="${AnnotationProcessors-class.dir}" />
 
-    <ai.javac destdir="${AnnotationProcessors-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AnnotationProcessors-class.dir}">
       <include name="${components.pkg}/scripts/*.java" />
       <include name="${components.pkg}/annotations/*.java" />
       <include name="${components.pkg}/annotations/androidmanifest/*.java" />
