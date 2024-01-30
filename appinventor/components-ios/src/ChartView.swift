@@ -90,7 +90,7 @@ open class ChartView {
 
       self.chart?.data?.notifyDataChanged()
       self.chart?.notifyDataSetChanged()
-      self.chart?.anim
+      self.chart?.setNeedsDisplay()
     }
   }
   

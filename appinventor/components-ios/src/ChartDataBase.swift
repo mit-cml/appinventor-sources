@@ -30,6 +30,7 @@ import DGCharts
   var _tick : Int = 0
 
   @objc public init(_ chartContainer: Chart) {
+    print("got into init function of ChartDataBase")
     self._container = chartContainer
     super.init()
     chartContainer.addDataComponent(self)
@@ -48,14 +49,18 @@ import DGCharts
     }
   }
   
-  func Initialize() {
+  @objc public func Initialize() {
+    print("created chartdatabase")
     print("im inside intialize")
     _initialized = true
-    if dataSource == nil {
+    if dataSource != nil {
+      print("datasource is nil")
       // Source(dataSource)
     } else{
       ElementsFromPairs = _elements!
-      print("_elements")
+      print("_elements", _elements)
+      print("ElementsFromPairs", _elements)
+
     }
   }
   
