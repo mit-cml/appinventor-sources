@@ -78,8 +78,7 @@
       </srcfiles>
       <firstmatchmapper>
 				<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
-				<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.json" />
-				<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.json" />
+				<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.js" />
 				<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.js" />
       </firstmatchmapper>
     </uptodate>
