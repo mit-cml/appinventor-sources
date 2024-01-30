@@ -61,6 +61,8 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
       this.options.disabledPatternId = opt_options.disabledPatternId;
     }
     this.workspace_ = targetWorkspace;
+    this.workspace_.getAudioManager()
+        .load(['backpack.mp3', 'backpack.ogg', 'backpack.wav'], 'backpack');
     this.flyout_ = new AI.Blockly.BackpackFlyout(this.options);
     // NoAsync_: A flag for getContents(). If true, getContents will use the
     // already fetched backpack contents even when using a shared backpack
@@ -481,7 +483,7 @@ AI.Blockly.Backpack.prototype.addToBackpack = function(block, store) {
     // storage in the future.
     p.setContents(bp_contents, store);
     p.grow();
-    Blockly.common.getMainWorkspace().playAudio('backpack');
+    Blockly.common.getMainWorkspace().getAudioManager().play('backpack');
 
     // update the flyout when it's visible
     if (p.flyout_.isVisible()) {
