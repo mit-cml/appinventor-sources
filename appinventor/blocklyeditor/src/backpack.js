@@ -48,21 +48,140 @@ goog.require('AI.Blockly.Util');
  * Backpack's flyout workspace.
  * @constructor
  */
-AI.Blockly.Backpack = function(targetWorkspace, opt_options) {
-  if (opt_options instanceof Blockly.Options) {
-    this.options = opt_options;
-  } else {
-    opt_options = opt_options || {};
-    this.options = new Blockly.Options(opt_options);
-    // Parsing loses this option so we have to reassign.
-    this.options.disabledPatternId = opt_options.disabledPatternId;
+AI.Blockly.Backpack = class extends Blockly.DragTarget {
+  constructor(targetWorkspace, opt_options) {
+    super();
+    this.id = 'backpack';
+    if (opt_options instanceof Blockly.Options) {
+      this.options = opt_options;
+    } else {
+      opt_options = opt_options || {};
+      this.options = new Blockly.Options(opt_options);
+      // Parsing loses this option so we have to reassign.
+      this.options.disabledPatternId = opt_options.disabledPatternId;
+    }
+    this.workspace_ = targetWorkspace;
+    this.flyout_ = new AI.Blockly.BackpackFlyout(this.options);
+    // NoAsync_: A flag for getContents(). If true, getContents will use the
+    // already fetched backpack contents even when using a shared backpack
+    // this is used by addAllToBackpack()
+    this.NoAsync_ = false;
   }
-  this.workspace_ = targetWorkspace;
-  this.flyout_ = new AI.Blockly.BackpackFlyout(this.options);
-  // NoAsync_: A flag for getContents(). If true, getContents will use the
-  // already fetched backpack contents even when using a shared backpack
-  // this is used by addAllToBackpack()
-  this.NoAsync_ = false;
+
+  init() {
+    this.workspace_.getComponentManager().addComponent({
+      component: this,
+      weight: 2,
+      capabilities: [
+          Blockly.ComponentManager.Capability.AUTOHIDEABLE,
+          Blockly.ComponentManager.Capability.DRAG_TARGET,
+          Blockly.ComponentManager.Capability.POSITIONABLE
+      ]
+    });
+    Blockly.utils.dom.insertAfter(this.createDom(this.workspace_),
+        this.workspace_.getBubbleCanvas());
+    this.workspace_.resize();
+  }
+
+  getClientRect() {
+    if (!this.svgGroup_) {
+      return null;
+    }
+
+    const clientRect = this.svgGroup_.getBoundingClientRect();
+    const top = clientRect.top + this.MARGIN_TOP_;
+    const bottom = top + this.HEIGHT_ + 2 * this.HOTSPOT_MARGIN_;
+    const left = clientRect.left + this.SPRITE_LEFT_ - this.HOTSPOT_MARGIN_;
+    const right = left + this.WIDTH_ + 2 * this.HOTSPOT_MARGIN_;
+    return new Blockly.utils.Rect(top, bottom, left, right);
+  }
+
+  getBoundingRect() {
+    return new Blockly.utils.Rect(
+        this.top_, this.top_ + this.HEIGHT_,
+        this.left_, this.left_ + this.WIDTH_);
+  }
+
+  position(metrics, savedPositions) {
+    if (!this.initialized_) {
+      return;
+    }
+    const hasVerticalScrollbars = this.workspace_.scrollbar &&
+        this.workspace_.scrollbar.canScrollHorizontally();
+    const hasHorizontalScrollbars = this.workspace_.scrollbar &&
+        this.workspace_.scrollbar.canScrollVertically();
+
+    if (metrics.toolboxMetrics.position === Blockly.TOOLBOX_AT_LEFT ||
+        (this.workspace_.horizontalLayout && !this.workspace_.RTL)) {
+      // Right corner placement.
+      this.left_ = metrics.absoluteMetrics.left + metrics.viewMetrics.width -
+          this.WIDTH_ - this.MARGIN_HORIZONTAL_;
+      if (hasVerticalScrollbars && !this.workspace_.RTL) {
+        this.left_ -= Blockly.Scrollbar.scrollbarThickness;
+      }
+    } else {
+      // Left corner placement.
+      this.left_ = this.MARGIN_HORIZONTAL_;
+      if (hasVerticalScrollbars && this.workspace_.RTL) {
+        this.left_ += Blockly.Scrollbar.scrollbarThickness;
+      }
+    }
+
+    const startAtBottom =
+        metrics.toolboxMetrics.position === Blockly.TOOLBOX_AT_BOTTOM;
+    if (startAtBottom) {
+      // Bottom corner placement
+      this.top_ = metrics.absoluteMetrics.top + metrics.viewMetrics.height -
+          this.HEIGHT_ - this.MARGIN_VERTICAL_;
+      if (hasHorizontalScrollbars) {
+        // The horizontal scrollbars are always positioned on the bottom.
+        this.top_ -= Blockly.Scrollbar.scrollbarThickness;
+      }
+    } else {
+      // Upper corner placement
+      this.top_ = metrics.absoluteMetrics.top + this.MARGIN_VERTICAL_;
+    }
+
+    // Check for collision and bump if needed.
+    let boundingRect = this.getBoundingRectangle();
+    for (let i = 0, otherEl; (otherEl = savedPositions[i]); i++) {
+      if (boundingRect.intersects(otherEl)) {
+        if (startAtBottom) { // Bump up.
+          this.top_ = otherEl.top - this.HEIGHT_ - this.MARGIN_VERTICAL_;
+        } else { // Bump down.
+          this.top_ = otherEl.bottom + this.MARGIN_VERTICAL_;
+        }
+        // Recheck other savedPositions
+        boundingRect = this.getBoundingRectangle();
+        i = -1;
+      }
+    }
+
+    this.svgGroup_.setAttribute('transform',
+        'translate(' + this.left_ + ',' + this.top_ + ')');
+  }
+
+  onDragEnter(e) {
+    if (e instanceof Blockly.BlockSvg) {
+      // switch to open backpack icon
+      this.setOpen_(true);
+    }
+  }
+
+  onDragExit() {
+    // reset backpack state
+    this.setOpen_(false);
+  }
+
+  onDrop(dragElement) {
+    if (dragElement instanceof Blockly.BlockSvg) {
+      this.addBlock(/** @type {!Blockly.BlockSvg} */ (dragElement));
+    }
+  }
+
+  shouldPreventMove(dragElement) {
+    return dragElement instanceof Blockly.BlockSvg;
+  }
 };
 
 /**
