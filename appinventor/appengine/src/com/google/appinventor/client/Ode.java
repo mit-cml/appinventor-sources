@@ -45,6 +45,8 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Promise.RejectCallback;
+import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 
@@ -136,7 +138,7 @@ public class Ode implements EntryPoint {
   private static Ode instance;
 
   // Application level image bundle
-  private static Images IMAGES = GWT.create(Images.class);
+  private static Images IMAGES;
   public static Boolean UserPreferenceStyle = false;
 
   // ProjectEditor registry
@@ -232,8 +234,7 @@ public class Ode implements EntryPoint {
   @UiField protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
   @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
-  @UiField (provided = true) protected SourceStructureBox sourceStructureBox =
-      SourceStructureBox.getSourceStructureBox();
+  @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // mode
@@ -722,18 +723,7 @@ public class Ode implements EntryPoint {
             Promise.wrap(this::processSettings),
             Promise.wrap(this::loadUserBackpack)
         ))
-        .then0(() -> {
-          UserPreferenceStyle = Ode.getUserNewLayout();
-          if (UserPreferenceStyle) {
-            IMAGES = GWT.create(ImagesGSoC.class);
-            SimpleComponentDescriptor.resetImageBundle();
-            uiFactory = new UIFactoryGSoC();
-          } else {
-            SimpleComponentDescriptor.resetImageBundle();
-            uiFactory = new UIStyleFactory();
-          }
-          return resolve(null);
-        })
+        .then0(this::handleUiPreference)
         .then(this::initializeUi)
         .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
         .then(projects -> {
@@ -906,10 +896,46 @@ public class Ode implements EntryPoint {
     return resolve(true);
   }
 
-    /*
+  private Promise<Void> handleUiPreference() {
+    return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
+      UserPreferenceStyle = Ode.getUserNewLayout();
+      if (UserPreferenceStyle) {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(ImagesGSoC.class);
+            uiFactory = new UIFactoryGSoC();
+            res.apply(null);
+          }
+        });
+      } else {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(Images.class);
+            uiFactory = new UIStyleFactory();
+            res.apply(null);
+          }
+        });
+      }
+    });
+  }
+
+  /*
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
+    sourceStructureBox = SourceStructureBox.getSourceStructureBox();
     folderManager = new FolderManager();
     projectManager = new ProjectManager();
     editorManager = new EditorManager();
