@@ -1036,7 +1036,7 @@ Top-level component containing all other components in the program.
 : When checked, all default size text will be increased in size.
 
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
-: A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
+: Choose the set of components you’ll need for your project. A smaller set is good for beginner projects, while experts can use all options to build complex apps. For example, the Beginner Toolkit gives you access to all the features you need for our novice tutorials and curriculum.</p><p>You can always change your toolkit in Project Properties, so your choice now won’t limit the future possibilities for your app.</p>
 
 {:id="Screen.CloseScreenAnimation" .text} *CloseScreenAnimation*
 : Sets the animation type for the transition of this form closing and returning
