@@ -80,6 +80,7 @@ Blockly.Blocks['dictionaries_create_with'] = {
         // auto-fill the empty socket with a pair block
         var pairBlock = Blockly.common.getMainWorkspace().newBlock('pair');
         pairBlock.initSvg();
+        pairBlock.queueRender();
         input.connection.connect(pairBlock.outputConnection);
       }
 
