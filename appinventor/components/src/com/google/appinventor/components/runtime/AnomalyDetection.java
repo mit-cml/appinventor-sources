@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -88,12 +89,30 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
    *
    * @param chartData the ChartData2D object containing the data
    * @param threshold the threshold for the z-score to indicate an anomaly
-   * @return a list of anomalies in the form of a list of pairs (anomaly index, anomaly value)
+   * @return a list of anomalies in the form of a list of pairs (x-coord, y-coord)
    */
   @SimpleFunction
   public List<List<?>> DetectAnomaliesInChartData(final ChartData2D chartData, double threshold) {
-    List<Double> values = chartData.getYValues();
-    return DetectAnomalies(YailList.makeList(values), threshold);
+    List<Entry> entries = (List<Entry>) chartData.getDataValue(null);
+    double sum = 0;
+    for (Entry entry : entries) {
+      sum += entry.getY();
+    }
+    double mean = sum / entries.size();
+    double variance = 0;
+    for (Entry entry : entries) {
+      variance += Math.pow(entry.getY() - mean, 2);
+    }
+    variance /= entries.size();
+    double sd = Math.sqrt(variance);
+    List<List<?>> anomalies = new ArrayList<>();
+    for (Entry entry : entries) {
+      double zScore = Math.abs((entry.getY() - mean) / sd);
+      if (zScore > threshold) {
+        anomalies.add(Arrays.asList(entry.getX(), entry.getY()));
+      }
+    }
+    return anomalies;
   }
 
   /**
@@ -133,7 +152,7 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
 
     if (xData.size() == yData.size()) {
       for (int i = 0; i < xData.size(); i++) {
-        cleanData.add(Arrays.asList(xData.get(i),yData.get(i)));
+        cleanData.add(YailList.makeList(Arrays.asList(xData.get(i),yData.get(i))));
       }
     }
     return cleanData;
