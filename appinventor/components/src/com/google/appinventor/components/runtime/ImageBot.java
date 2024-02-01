@@ -408,7 +408,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
     }
   }
 
-  private static class ImageException extends IOException {
+  private static class ImageException extends Exception {
     private final int code;
     private final String description;
 
@@ -542,6 +542,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
   private String sendRequest(ImageBotToken.request request) throws ImageException {
     HttpsURLConnection connection = null;
     ensureSslSockFactory();
+    int responseCode = -1;     // This means the connection never succeeded
     try {
       URL url = new URL(IMAGEBOT_SERVICE_URL);
       connection = (HttpsURLConnection) url.openConnection();
@@ -550,23 +551,27 @@ public class ImageBot extends AndroidNonvisibleComponent {
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         request.writeTo(connection.getOutputStream());
-        final int responseCode = connection.getResponseCode();
-        ImageBotToken.response response = ImageBotToken.response.parseFrom(
-            connection.getInputStream());
+        responseCode = connection.getResponseCode();
         if (responseCode == 200) {
+          ImageBotToken.response response = ImageBotToken.response.parseFrom(
+            connection.getInputStream());
           byte[] imageData = response.getImage().toByteArray();
           File outFile = getOutputFile();
           FileOutputStream out = new FileOutputStream(outFile);
-          out.write(imageData);
-          out.flush();
-          out.close();
+          try {
+            out.write(imageData);
+            out.flush();
+          } finally {
+            out.close();
+          }
           return Uri.fromFile(outFile).toString();
         }
         String errorMessage = IOUtils.readStreamAsString(connection.getErrorStream());
         throw new ImageException(responseCode, errorMessage, null);
       }
     } catch (IOException e) {
-      throw new ImageException(404, e.toString(), e);
+      Log.e(LOG_TAG, "Got an IOException", e);
+      throw new ImageException(responseCode, e.toString(), e);
     } finally {
       if (connection != null) {
         connection.disconnect();

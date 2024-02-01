@@ -688,7 +688,8 @@ Blockly.ComponentDatabase.prototype.getEventForType = function(typeName, eventNa
  */
 Blockly.ComponentDatabase.prototype.forEventInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    goog.object.map(this.types_[typeName].eventDictionary, callback);
+    var filterDeprecated = goog.object.filter(this.types_[typeName].eventDictionary, function(event) { return !event.deprecated; });
+    goog.object.map(filterDeprecated, callback);
   }
 };
 
@@ -720,7 +721,8 @@ Blockly.ComponentDatabase.prototype.getMethodForType = function(typeName, method
  */
 Blockly.ComponentDatabase.prototype.forMethodInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    goog.object.map(this.types_[typeName].methodDictionary, callback);
+    var filterDeprecated = goog.object.filter(this.types_[typeName].methodDictionary, function(method) { return !method.deprecated; });
+    goog.object.map(filterDeprecated, callback);
   }
 };
 

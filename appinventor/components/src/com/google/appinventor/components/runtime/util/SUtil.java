@@ -12,6 +12,13 @@ import static android.Manifest.permission.BLUETOOTH_ADVERTISE;
 import static android.Manifest.permission.BLUETOOTH_CONNECT;
 import static android.Manifest.permission.BLUETOOTH_SCAN;
 
+import static android.content.Context.BLUETOOTH_SERVICE;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+
+import android.content.Context;
+
 import android.os.Build;
 
 import com.google.appinventor.components.runtime.BluetoothClient;
@@ -137,6 +144,21 @@ public class SUtil {
       permsNeeded.add(BLUETOOTH_ADMIN);
     }
     return performRequest(form, source, caller, permsNeeded, continuation);
+  }
+
+  /**
+   * Obtains a reference to the device's preferred BluetoothAdapter.
+   *
+   * @param context an Android context to use for accessing the Bluetooth service
+   * @return a BluetoothAdapter reference, or null if Bluetooth is not supported
+   */
+  public static BluetoothAdapter getAdapter(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      BluetoothManager manager = (BluetoothManager) context.getSystemService(BLUETOOTH_SERVICE);
+      return manager.getAdapter();
+    } else {
+      return BluetoothAdapter.getDefaultAdapter();
+    }
   }
 
   private static boolean performRequest(Form form, Component source, String caller,

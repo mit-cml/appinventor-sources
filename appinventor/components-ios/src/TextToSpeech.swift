@@ -163,15 +163,17 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
   // MARK: Methods
 
   @objc open func Speak(_ message: String) throws {
-    BeforeSpeaking()
     try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
     try AVAudioSession.sharedInstance().setActive(true)
-    let utterance = AVSpeechUtterance(string: message)
-    utterance.pitchMultiplier = _pitch
-    utterance.rate = _speechRate
-    utterance.voice = _voice
-    _tts.stopSpeaking(at: AVSpeechBoundary.immediate)
-    _tts.speak(utterance)
+    DispatchQueue.main.async {
+      self.BeforeSpeaking()
+      let utterance = AVSpeechUtterance(string: message)
+      utterance.pitchMultiplier = self._pitch
+      utterance.rate = self._speechRate
+      utterance.voice = self._voice
+      self._tts.stopSpeaking(at: AVSpeechBoundary.immediate)
+      self._tts.speak(utterance)
+    }
   }
 
   @objc open func Stop() {
@@ -212,5 +214,25 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     if let voice = AVSpeechSynthesisVoice(language: language) {
       _voice = voice
     }
+  }
+}
+
+extension TextToSpeech: LifecycleDelegate {
+  public func onResume() {
+    if _tts.isPaused {
+      _tts.continueSpeaking()
+    }
+  }
+
+  public func onPause() {
+    _tts.pauseSpeaking(at: .immediate)
+  }
+
+  public func onDestroy() {
+    Stop()
+  }
+
+  public func onDelete() {
+    Stop()
   }
 }

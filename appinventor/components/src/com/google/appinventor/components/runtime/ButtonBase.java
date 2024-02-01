@@ -6,8 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.animation.StateListAnimator;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.view.ViewOutlineProvider;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -38,7 +40,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -116,6 +117,12 @@ public abstract class ButtonBase extends AndroidViewComponent
   // obtained using BitmapDrawable's getBitmap() method.
   private Bitmap backgroundBitmap;
 
+  // This is the original outline provider created for the button.
+  private Object defaultOutlineProvider;
+
+  // This is the original state animator created for the button.
+  private Object defaultStateAnimator;
+
   //Whether or not the button is in high contrast mode
   private boolean isHighContrast = false;
 
@@ -150,6 +157,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     defaultColorStateList = view.getTextColors();
     defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
     defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      defaultOutlineProvider = view.getOutlineProvider();
+      defaultStateAnimator = view.getStateListAnimator();
+    }
 
     // Adds the component to its designated container
     container.$add(this);
@@ -540,6 +551,10 @@ public abstract class ButtonBase extends AndroidViewComponent
         throw new IllegalArgumentException();
     }
 
+    if (backgroundColor != Component.COLOR_DEFAULT && !container.$form().HighContrast()) {
+      drawable.getPaint().setColor(backgroundColor);
+    }
+
     // Set drawable to the background of the button.
     if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
@@ -547,17 +562,26 @@ public abstract class ButtonBase extends AndroidViewComponent
       ViewUtil.setBackgroundDrawable(view, drawable);
     }
 
+    // Hides the button shadow on Material UI if the background is NONE
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (backgroundColor == Component.COLOR_NONE) {
+        view.setOutlineProvider(null);
+        view.setStateListAnimator(null);
+      } else {
+        view.setOutlineProvider((ViewOutlineProvider) defaultOutlineProvider);
+        view.setStateListAnimator((StateListAnimator) defaultStateAnimator);
+      }
+    }
+
     if (backgroundColor == Component.COLOR_NONE) {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
-    }
-    else if (backgroundColor == Component.COLOR_DEFAULT) {
+    } else if (backgroundColor == Component.COLOR_DEFAULT) {
       if (isHighContrast || container.$form().HighContrast()) {
         view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
       } else {
         view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
       }
-    }
-    else {
+    } else {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
     }
 

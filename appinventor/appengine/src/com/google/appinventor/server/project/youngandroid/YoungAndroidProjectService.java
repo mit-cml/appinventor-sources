@@ -17,6 +17,7 @@ import com.google.appinventor.server.FileExporterImpl;
 import com.google.appinventor.server.FileImporter;
 import com.google.appinventor.server.FileImporterException;
 import com.google.appinventor.server.FileImporterImpl;
+import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.flags.Flag;
@@ -719,6 +720,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String returl = readContent(connection.getInputStream()); // Need to drain any response
         return new RpcResult(0, returl, "");
       }
+    } catch (GalleryExtensionException e) {
+      return new RpcResult(RpcResult.GALLERY_HAS_EXTENSION, "", "");
     } catch (Exception e) {
       throw CrashReport.createAndLogError(LOG, null, e.getMessage(), e);
     }

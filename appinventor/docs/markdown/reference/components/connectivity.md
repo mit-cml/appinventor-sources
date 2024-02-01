@@ -144,7 +144,8 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  ReceiveUnsignedBytes.
 
 {:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
-: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+: Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.
 
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
@@ -470,6 +471,9 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
 : Specifies the name of the file where the response should be saved.
  If SaveResponse is true and ResponseFileName is empty, then a new file
  name will be generated.
+
+{:id="Web.ResponseTextEncoding" .text} *ResponseTextEncoding*
+: Specifies the Response Text Encoding.
 
 {:id="Web.SaveResponse" .boolean} *SaveResponse*
 : Specifies whether the response should be saved in a file.

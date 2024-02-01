@@ -39,6 +39,7 @@ public class Resources {
   private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR = RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
+  private static final String D8_JAR = RUNTIME_TOOLS_DIR + "d8.jar";
   private static final String APKSIGNER_JAR = RUNTIME_TOOLS_DIR + "apksigner.jar";
 
   public static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
@@ -131,6 +132,10 @@ public class Resources {
 
   public String getDxJar() {
     return getResource(DX_JAR);
+  }
+
+  public String getD8Jar() {
+    return getResource(D8_JAR);
   }
 
   public String getApksignerJar() {

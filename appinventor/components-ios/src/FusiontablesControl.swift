@@ -133,7 +133,7 @@ open class FusiontablesControl: NonvisibleComponent {
       let path = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(_keyPath))
       if try path.checkResourceIsReachable() {
         let data = try Data(contentsOf: path)
-        let identity : (publicKey : RSAKey, privateKey : RSAKey) = try RSAKey.keysFromPkcs12Identity(data, passphrase : "notasecret")
+        let identity : (publicKey : KTVJSONWebToken.RSAKey, privateKey : KTVJSONWebToken.RSAKey) = try KTVJSONWebToken.RSAKey.keysFromPkcs12Identity(data, passphrase : "notasecret")
         let signer = RSAPKCS1Signer(hashFunction: .sha256, key: identity.privateKey)
         let jwt = try JSONWebToken(payload: payload, signer: signer)
         return jwt.rawString

@@ -11,7 +11,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.user.client.ui.DockPanel;
 
 /**

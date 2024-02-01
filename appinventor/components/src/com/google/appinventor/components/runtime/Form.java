@@ -415,7 +415,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-  private void defaultPropertyValues() {
+  protected void defaultPropertyValues() {
     if (isRepl()) {
       ActionBar(actionBarEnabled);
     } else {
@@ -437,7 +437,6 @@ public class Form extends AppInventorCompatActivity
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
-    Theme(ComponentConstants.DEFAULT_THEME);
     BackgroundColor(Component.COLOR_DEFAULT);
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
@@ -2059,11 +2058,6 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.",
       category = PropertyCategory.THEMING)
   public void Theme(String theme) {
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
-      backgroundColor = Component.COLOR_WHITE;
-      setBackground(frameLayout);
-      return;  // Only "Classic" is supported below SDK 11 due to minSDK in AppCompat
-    }
     if (usesDefaultBackground) {
       if (theme.equalsIgnoreCase("AppTheme") && !isClassicMode()) {
         backgroundColor = Component.COLOR_BLACK;
@@ -2586,6 +2580,10 @@ public class Form extends AppInventorCompatActivity
     System.err.println("Form.clear() About to do moby GC!");
     System.gc();
     dimChanges.clear();
+  }
+
+  public FrameLayout getFrameLayout() {
+    return frameLayout;
   }
 
   public void deleteComponent(Object component) {

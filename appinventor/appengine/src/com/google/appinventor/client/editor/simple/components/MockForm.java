@@ -53,6 +53,8 @@ import java.util.Map;
 public final class MockForm extends MockContainer {
   private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
 
+  private Integer view = 1;
+
   /*
    * Widget for the mock form title bar.
    */
@@ -1341,7 +1343,7 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree() {
-    return buildComponentsTree(1);
+    return buildComponentsTree(view);
   }
 
   /**
@@ -1351,6 +1353,7 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree(Integer view) {
+    this.view = view;
     return buildTree(view);
   }
 
