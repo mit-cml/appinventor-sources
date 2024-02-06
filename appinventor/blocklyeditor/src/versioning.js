@@ -1957,6 +1957,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // RequestFocus was added
     3: "noUpgrade",
 
+    // AI2: Jump to match Kodular's version of EmailPicker (6).
+    4: "noUpgrade",
+    5: "noUpgrade",
+    6: "noUpgrade",
+
     // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
     7: [
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
@@ -2776,6 +2781,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // NumbersOnly was added
     5: "noUpgrade",
 
+    // AI2: Jump to match Kodular's version of PasswordTextBox (6).
+    6: "noUpgrade",
+
     // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
     7: [
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
@@ -3153,6 +3161,15 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added ReadOnly property
     6: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of TextBox (13).
+    7: "noUpgrade",
+    8: "noUpgrade",
+    9: "noUpgrade",
+    10: "noUpgrade",
+    11: "noUpgrade",
+    12: "noUpgrade",
+    13: "noUpgrade",
 
     // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
     14: [
