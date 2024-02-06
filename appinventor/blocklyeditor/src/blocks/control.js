@@ -89,7 +89,7 @@ Blockly.Blocks['controls_if'] = {
   domToMutation: function (xmlElement) {
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10) || 0;
-    this.updateShape_();
+    this.rebuildShape_();
   },
   decompose: function (workspace) {
     var containerBlock = workspace.newBlock('controls_if_if');
@@ -132,13 +132,8 @@ Blockly.Blocks['controls_if'] = {
       clauseBlock = clauseBlock.nextConnection &&
         clauseBlock.nextConnection.targetBlock();
     }
-    this.updateShape_();
-    // Reconnect any child blocks.
-    for (var i = 1; i <= this.elseifCount_; i++) {
-      Blockly.icons.MutatorIcon.reconnect(valueConnections[i], this, 'IF' + i);
-      Blockly.icons.MutatorIcon.reconnect(statementConnections[i], this, 'DO' + i);
-    }
-    Blockly.icons.MutatorIcon.reconnect(elseStatementConnection, this, 'ELSE');
+    this.rebuildShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection);
   },
   saveConnections: function (containerBlock) {
     // Store a pointer to any connected child blocks.
@@ -169,6 +164,32 @@ Blockly.Blocks['controls_if'] = {
     }
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF}],
+  rebuildShape_: function () {
+    console.log('rebuidShape');
+    var valueConnections = [null];
+    var statementConnections = [null];
+    var elseStatementConnection = null;
+
+    if (this.getInput('ELSE')) {
+      elseStatementConnection =
+          this.getInput('ELSE').connection.targetConnection;
+    }
+    for (var i = 1; this.getInput('IF' + i); i++) {
+      var inputIf = this.getInput('IF' + i);
+      var inputDo = this.getInput('DO' + i);
+      valueConnections.push(inputIf.connection.targetConnection);
+      statementConnections.push(inputDo.connection.targetConnection);
+    }
+    this.updateShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection);
+  },
+  reconnectChildBlocks_: function (valueConnections, statementConnections, elseStatementConnection) {
+    for (let i = 1; i <= this.elseifCount_; i++) {
+      valueConnections[i]?.reconnect(this, 'IF' + i);
+      statementConnections[i]?.reconnect(this, 'DO' + i);
+    }
+    elseStatementConnection?.reconnect(this, 'ELSE');
+   },
   updateShape_: function() {
     // Delete everything.
     if (this.getInput('ELSE')) {
