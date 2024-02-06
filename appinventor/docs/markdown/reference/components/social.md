@@ -268,20 +268,22 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
  as if the user touches a different text box.
 
 {:id="EmailPicker.TextChanged"} TextChanged()
-: Event raised when the text of the EmailPicker is changed, either by the user or the program.
+: Event raised when the text of the `EmailPicker` is changed, either by the user or the program.
 
 ### Methods  {#EmailPicker-Methods}
 
 {:.methods}
 
 {:id="EmailPicker.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
-: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
+: Repositions the cursor of the `EmailPicker` before the character at the given 1-indexed position. If the given position is 
+larger than the length of the `EmailPicker`, the cursor will be moved to the end of the text; and if the given position is 
+smaller or equal to 1, the cursor will be moved to the start.
 
 {:id="EmailPicker.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the EmailPicker's text.
+: Repositions the cursor to the end of the `EmailPicker`'s text.
 
 {:id="EmailPicker.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
-: Repositions the cursor to the start of the EmailPicker's text.
+: Repositions the cursor to the start of the `EmailPicker`'s text.
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.

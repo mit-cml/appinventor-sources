@@ -541,7 +541,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   @SimpleFunction(description = "Repositions the cursor of the TextBox before the character at the given" +
    " 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved" +
-   " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.")
+   " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.")
   public void MoveCursorTo(int position) {
     int len = view.getText().toString().length();
     if (position > len) {

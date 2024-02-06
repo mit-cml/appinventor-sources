@@ -987,20 +987,22 @@ Users enter passwords in a password text box component, which hides the text tha
  as if the user touches a different text box.
 
 {:id="PasswordTextBox.TextChanged"} TextChanged()
-: Event raised when the text of the PasswordTextBox is changed, either by the user or the program.
+: Event raised when the text of the `PasswordTextBox` is changed, either by the user or the program.
 
 ### Methods  {#PasswordTextBox-Methods}
 
 {:.methods}
 
 {:id="PasswordTextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
-: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
+: Repositions the cursor of the `PasswordTextBox` before the character at the given 1-indexed position. If the given position is 
+larger than the length of the `PasswordTextBox`, the cursor will be moved to the end of the text; and if the given position is 
+smaller or equal to 1, the cursor will be moved to the start.
 
 {:id="PasswordTextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the PasswordTextBox's text.
+: Repositions the cursor to the end of the `PasswordTextBox`'s text.
 
 {:id="PasswordTextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
-: Repositions the cursor to the start of the PasswordTextBox's text.
+: Repositions the cursor to the start of the `PasswordTextBox`'s text.
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
@@ -1572,7 +1574,7 @@ Users enter text in a text box component.
  as if the user touches a different text box.
 
 {:id="TextBox.TextChanged"} TextChanged()
-: Event raised when the text of the TextBox is changed, either by the user or the program.
+: Event raised when the text of the `TextBox` is changed, either by the user or the program.
 
 ### Methods  {#TextBox-Methods}
 
@@ -1583,13 +1585,15 @@ Users enter text in a text box component.
  keyboard when the users presses the Done key.
 
 {:id="TextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
-: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the front.
+: Repositions the cursor of the `TextBox` before the character at the given 1-indexed position. If the given position is 
+larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is 
+smaller or equal to 1, the cursor will be moved to the start.
 
 {:id="TextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the TextBox's text.
+: Repositions the cursor to the end of the `TextBox`'s text.
 
 {:id="TextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
-: Repositions the cursor to the start of the TextBox's text.
+: Repositions the cursor to the start of the `TextBox`'s text.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.
