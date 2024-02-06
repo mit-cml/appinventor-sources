@@ -196,7 +196,10 @@ open class Web: NonvisibleComponent {
           }
         } else {
           if let data = data {
-            let encodingName = response.textEncodingName ?? "utf8"
+            var encodingName = response.textEncodingName ?? "utf-8"
+            if encodingName.hasPrefix("\"") && encodingName.hasSuffix("\"") {
+              encodingName = encodingName.chopPrefix(count: 1).chopSuffix(count: 1)
+            }
             guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
               self._form?.dispatchErrorOccurredEvent(self, "performRequest",
                   ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encodingName)
