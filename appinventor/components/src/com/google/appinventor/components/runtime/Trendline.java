@@ -186,6 +186,9 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
         @Override
         public void run() {
           Updated(results);
+          if (visible) {
+            container.getChartView().getView().invalidate();
+          }
         }
       });
     }

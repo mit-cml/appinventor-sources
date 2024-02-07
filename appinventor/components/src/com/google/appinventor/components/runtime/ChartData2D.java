@@ -236,7 +236,6 @@ public final class ChartData2D extends ChartDataBase {
         anomalyMap.get((double) entry.getY()).xValues.add((double) entry.getX());
         anomalyMap.get((double) entry.getY()).indexes.add(i++);
       }
-      System.err.println(anomalyMap);
       int[] highlights = new int[entries.size()];
       Arrays.fill(highlights, dataModel.getDataset().getColor());
 
@@ -250,8 +249,6 @@ public final class ChartData2D extends ChartDataBase {
           continue;
         }
         Number x = (Number) ((YailList) dataPoint).getObject(0);
-        System.err.println("x in? " + anomalyManager.xValues.contains(x.doubleValue()));
-        System.err.println("index in? " + anomalyManager.indexes.contains(x.intValue() - 1));
         if (anomalyManager.xValues.contains(x.doubleValue())
             || anomalyManager.indexes.contains(x.intValue() - 1)) {
           for (Integer index : anomalyManager.indexes) {
