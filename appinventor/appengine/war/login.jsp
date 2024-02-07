@@ -111,4 +111,3 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
   <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"></a></p>
 </footer>
 </body></html>
-
