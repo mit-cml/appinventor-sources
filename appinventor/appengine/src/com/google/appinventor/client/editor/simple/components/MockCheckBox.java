@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -139,6 +140,20 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
   private void setCheckedProperty(String text) {
     checked = Boolean.parseBoolean(text);
     paintCheckBox(checked);
+  }
+
+  @Override
+  protected void setFontSizeProperty(String text) {
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (Float.parseFloat(text) == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), text);
+    }
+
+    updatePreferredSize();
   }
 
   @Override

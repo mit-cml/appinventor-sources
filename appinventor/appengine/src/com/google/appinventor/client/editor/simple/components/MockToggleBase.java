@@ -30,6 +30,18 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements F
     super(editor, type, icon);
   }
 
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+  }
+
   protected final Widget createClonedWidget() {
     // We override updatePreferredSize directly, so this shouldn't be called.
     throw new UnsupportedOperationException();
@@ -46,6 +58,12 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements F
     int hint = super.getHeightHint();
     if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
       float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (height == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+        return 24;
+      }
       return Math.round(height);
     } else {
       return hint;
@@ -169,6 +187,7 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements F
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
     if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
       setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      updatePreferredSize();
       refreshForm();
     }
   }
