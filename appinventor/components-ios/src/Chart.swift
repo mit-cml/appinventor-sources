@@ -17,7 +17,6 @@ import DGCharts
     return []
   }
   
-
   var _view = UIView()
   var _chartView: ChartView?
   var _type = ChartType.Line
@@ -28,9 +27,6 @@ import DGCharts
   var _gridEnabled = true
   var _labels = [String]()
   var _dataComponents: Array<ChartDataBase> = []
-
-
-
 
   @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
@@ -159,13 +155,11 @@ import DGCharts
       return _type
     }
     set {
-      print("inside type") // error because chartview is nil
       let shouldReinitialize = _chartView != nil
       let newChartView = createChartView(for: newValue)
       _chartView?.chart?.removeFromSuperview()
       _type = newValue
       _chartView = newChartView
-      print("chart view inside type", _chartView)
 
       newChartView.chart?.translatesAutoresizingMaskIntoConstraints = false
       view.addSubview(newChartView.chart!)
@@ -177,10 +171,8 @@ import DGCharts
       ])
       _view.insertSubview(newChartView.getView(), at: 0)
       
-      
-      //if shouldReinitialize {
-        reinitializeChart()
-      //}
+
+      reinitializeChart()
     }
   }
 
@@ -225,10 +217,8 @@ import DGCharts
   }
 
   private func createChartView(for type: ChartType) -> ChartView {
-    print("inside create chart view ")
     switch type {
     case .Line:
-      print("it's a line!")
       return LineChartView(self) as ChartView
     case .Scatter:
       //return ScatterChartView(frame: .zero)
@@ -245,7 +235,6 @@ import DGCharts
   }
 
   private func reinitializeChart() {
-    print("entered reintialize chart")
     for dataComponent in _dataComponents {
       dataComponent.initChartData()
     }

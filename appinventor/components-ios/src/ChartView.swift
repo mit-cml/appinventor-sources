@@ -74,25 +74,27 @@ open class ChartView {
   
   public func refresh(model: ChartDataModel) {
     DispatchQueue.main.async {
-      var refreshTask : RefreshTask = RefreshTask(self, model.entries)
+      let refreshTask : RefreshTask = RefreshTask(self, model.entries)
       print("model.entries", model.entries)
       print("refreshTask", refreshTask)
       print("mode", model)
+      let dataset : ChartDataSet = model.dataset ?? ChartDataSet()
+      dataset.drawValuesEnabled = true
+
+
+
       refreshTask.onPostExecute(result: model) // how to do execute
     }
   }
   
   public func refresh(model: ChartDataModel, entries: Array<DGCharts.ChartDataEntry>) {
-    DispatchQueue.main.async {
-      var dataset : ChartDataSet = model.dataset ?? ChartDataSet()
-      print("dataset", dataset)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      let dataset : ChartDataSet = model.dataset ?? ChartDataSet()
       dataset.replaceEntries(entries)
-      print("dataset after replace", dataset)
-
+      dataset.drawValuesEnabled = true
       self.chart?.data?.notifyDataChanged()
       self.chart?.notifyDataSetChanged()
       self.chart?.setNeedsDisplay()
-      print("passed the setNeedsDisplay()")
     }
   }
   
@@ -102,8 +104,6 @@ open class ChartView {
     unowned var _chartView: ChartView
     public init(_ owner: ChartView, _ entries: Array<DGCharts.ChartDataEntry>) {
       _entries = entries
-      print("init a refreshtak", entries)
-      print("entires in Refreshtask", _entries)
       _chartView = owner
     }
     public func doInBackGround(chartDataModels: Array<ChartDataModel>) -> ChartDataModel{
@@ -111,10 +111,8 @@ open class ChartView {
     }
 
     public func onPostExecute(result: ChartDataModel) {
-      _chartView._workQueue.async {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
         self._chartView.refresh(model: result, entries: self._entries)
-        print("self._entries", self._entries)
-        print("wow im in this workqueue in onPostExecute")
       }
     }
   }

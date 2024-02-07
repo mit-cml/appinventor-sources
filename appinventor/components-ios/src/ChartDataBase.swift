@@ -30,7 +30,6 @@ import DGCharts
   var _tick : Int = 0
 
   @objc public init(_ chartContainer: Chart) {
-    print("got into init function of ChartDataBase")
     self._container = chartContainer
     super.init()
     chartContainer.addDataComponent(self)
@@ -50,21 +49,17 @@ import DGCharts
   }
   
   @objc public func Initialize() {
-    print("created chartdatabase")
-    print("im inside intialize")
     _initialized = true
     if dataSource != nil {
-      print("datasource is nil")
       // Source(dataSource)
     } else{
       ElementsFromPairs = _elements!
-      print("_elements", _elements)
-      print("ElementsFromPairs", _elements)
 
     }
   }
   
   func Colors() -> YailList<AnyObject> {
+    refreshChart()
     return _colors
   }
   
@@ -98,14 +93,8 @@ import DGCharts
   }
   
   func initChartData() {
-    print("entered intichartdata")
-    print("container", _container)
-    // this create chart model does not work
-    print("chartview in initchartdata", _container.chartView) //container not nil, chartview is null for some reason
     _chartDataModel = _container.chartView?.createChartModel()
-    print("chartdatamodel", _chartDataModel)
 
-    print("passed createchartmodel")
     // set default values
     Color = uiColorFromHex(rgbValue: 0xFF000000)
     Label = ""

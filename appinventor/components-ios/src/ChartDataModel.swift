@@ -47,36 +47,23 @@ open class ChartDataModel {
 
   func setElements(_ elements: String) {
     let tupleSize = 2
-    print("self", self)
-    print("tupleSize", tupleSize)
-    print("tuplesize-1", tupleSize - 1)
 
     let entries = elements.split(",")
-    print("entries", entries)
-    print("entries.count", entries.count)
-    print("entries.count-1", entries.count-1)
 
     // entries.count - 1 because ranges are inclusive in Swift
     for i in stride(from: tupleSize - 1, to: entries.count, by: tupleSize) {
       var tupleEntries: Array<String> = []
-      print("i right now", i)
       // Iterate all over the tuple entries
       for j in stride(from: tupleSize - 1, through: 0, by: -1) {
-        var index: Int = i - j
-        print("index", index)
-        print("entries[i]", entries[index])
+        let index: Int = i - j
         tupleEntries.append(entries[index])
       }
-      
-      print("tupleEntries", tupleEntries)
-      print("type", type(of: tupleEntries))
 
       // Add entry from the parsed tuple
-      var yailListEntries: YailList<AnyObject> = []
+      let yailListEntries: YailList<AnyObject> = []
       for tuple in tupleEntries {
         yailListEntries.add(tuple)
       }
-      print("yailListEntries", yailListEntries)
       // addEntryFromTuple(tupleEntries as! YailList<AnyObject>)
       addEntryFromTuple(yailListEntries)
 
@@ -118,7 +105,7 @@ open class ChartDataModel {
 
   func importFromColumns(_ columns: YailList<AnyObject>, _ hasHeaders: Bool) {
     // bet a yaillist of tuples from the specified columns
-    var tuples: YailList<AnyObject> = getTuplesFromColumns(columns, hasHeaders)
+    let tuples: YailList<AnyObject> = getTuplesFromColumns(columns, hasHeaders)
     
     // use the generated tuple list in the importFromList method to import the data
     importFromList(tuples as [AnyObject])
@@ -136,19 +123,19 @@ open class ChartDataModel {
       }
     }
     // swift code follows java from here
-    var row: Int =  entries
+    let row: Int =  entries
     var tuples: Array<YailList<AnyObject>> = []
     for i in stride(from: hasHeaders ? 1 : 0, to: row, by: 1) {
       var tupleElements: Array<String> = []
       for j in stride(from: 0, to: columns.count, by: 1) {
-        var value = columns[j]
+        let value = columns[j]
         // invalid column specified; add default value (minus one to compensate for skipped value)
-        if let value = value as? YailList<AnyObject> {
+        if value is YailList<AnyObject> {
           tupleElements.append(getDefaultValue(i - 1))
           continue
         }
         // safe cast value to YailList
-        var column: YailList<AnyObject> = value as! YailList<AnyObject>
+        let column: YailList<AnyObject> = value as! YailList<AnyObject>
         if column.count > i { // Entry exists in column
           // add entry from column
           tupleElements.append("\(column[i+1])") //TODO: SHOULD I DO i+1 like getString() func or not
@@ -160,7 +147,7 @@ open class ChartDataModel {
           tupleElements.append("")
         }
       }
-      var tuple: YailList<AnyObject> = tupleElements as! YailList<AnyObject>
+      let tuple: YailList<AnyObject> = tupleElements as! YailList<AnyObject>
       tuples.append(tuple)
     }
     return tuples as! YailList<AnyObject>
@@ -171,9 +158,9 @@ open class ChartDataModel {
   }
 
   func removeEntryFromTuple(_ tuple: YailList<AnyObject>) {
-    var entry: DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
+    let entry: DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
     if entry != nil {
-      var index: Int32 = findEntryIndex(entry)
+      let index: Int32 = findEntryIndex(entry)
       removeEntry(Int(index))
     }
 
@@ -186,8 +173,8 @@ open class ChartDataModel {
   }
 
   func doesEntryExist(_ tuple: YailList<AnyObject>) -> Bool {
-    var entry : DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
-    var index: Int32 = findEntryIndex(entry)
+    let entry : DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
+    let index: Int32 = findEntryIndex(entry)
     return index >= 0
   }
 
@@ -214,12 +201,12 @@ open class ChartDataModel {
 
     case .XValue:
       if let entry = entry as? PieChartDataEntry {
-        var pieEntry : PieChartDataEntry = entry
+        let pieEntry : PieChartDataEntry = entry
         criterionSatisfied = pieEntry.label == value
       } else {
-        var xValue: Float = Float(value)!
+        let xValue: Float = Float(value)!
         var compareValue: Float = Float(entry.x)
-        if let entry = entry as? BarChartDataEntry {
+        if entry is BarChartDataEntry {
           compareValue = Float(floor(compareValue))
         }
         criterionSatisfied = (compareValue == xValue)
@@ -227,7 +214,7 @@ open class ChartDataModel {
       break
 
     case .YValue:
-      var yValue: Float = Float(value)!
+      let yValue: Float = Float(value)!
       criterionSatisfied = (Float(entry.y) == yValue)
       break
       

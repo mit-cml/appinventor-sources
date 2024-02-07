@@ -8,13 +8,14 @@ class LineChartBaseDataModel: PointChartDataModel {
   var chartDataEntry: Array<ChartDataEntry> = []
   init(data: DGCharts.LineChartData, view: LineChartView) {
     super.init(data: data, view: view)
-    var dataset: LineChartDataSet = LineChartDataSet(entries: chartDataEntry, label: " ")
+    let dataset = LineChartDataSet(entries: chartDataEntry, label: " ")
+    self.dataset = dataset
     self.data.dataSets = [dataset]
     setDefaultStylingProperties()
   }
   
   public override func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
-    var entry: ChartDataEntry = getEntryFromTuple(tuple: tuple)
+    let entry: ChartDataEntry = getEntryFromTuple(tuple: tuple)
     if entry != nil { // TODO: how to compare it to nil
       // TODO: DO I NEED TO DO THE BINARY SEARCH
       // var index: Int = entries.firstIndex(of: entry)!
@@ -22,15 +23,23 @@ class LineChartBaseDataModel: PointChartDataModel {
       if index < 0 {
         index = -index - 1
       } else {
-        var entryCount: Int = entries.count
+        let entryCount: Int = entries.count
         
         while index < entryCount && entries[index].x == entry.x {
           index += 1
         }
       }
-      print("entry in linechartbase", entry)
       _entries.insert(entry, at: index)
-      print("entries in linechartbase", _entries)
+      //self.dataset?.calcMinMaxX(entry: entry)
+      //self.dataset?.calcMinMaxY(entry: entry)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        self.dataset?.replaceEntries(self._entries)
+      }
+
+//      if var defaultColors = (dataset as? LineChartDataSet)?.circleColors {
+//        defaultColors.insert(dataset!.color(atIndex: index), at: index)
+//              (dataset as? LineChartDataSet)?.circleColors = defaultColors
+//      }
     }
   }
   
@@ -51,14 +60,14 @@ class LineChartBaseDataModel: PointChartDataModel {
   
   public override func setDefaultStylingProperties() {
     if let dataset = dataset as? DGCharts.LineChartDataSet {
-      dataset.drawCircleHoleEnabled = false // also update the circle color
+      dataset.drawValuesEnabled = true
+      dataset.drawCircleHoleEnabled = true // also update the circle color
     }
   }
   
   public func setLineType(_ type: LineType) {
     if let dataset = dataset as? DGCharts.LineChartDataSet {
-      dataset.drawCircleHoleEnabled = false // also update the circle color
-      
+      dataset.drawCircleHoleEnabled = true// also update the circle color
       switch type {
       case LineType.Linear:
         dataset.mode = LineChartDataSet.Mode.linear
