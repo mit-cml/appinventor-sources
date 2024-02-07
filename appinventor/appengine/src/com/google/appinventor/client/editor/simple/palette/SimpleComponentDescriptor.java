@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2023 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -30,6 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockFeatureCollect
 import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockTwitter;
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
@@ -482,6 +483,10 @@ public final class SimpleComponentDescriptor {
             null, editor.getProjectId()));
       } else if(name.equals(MockFusionTablesControl.TYPE)) {
         return new MockFusionTablesControl(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockTwitter.TYPE)) {
+        return new MockTwitter(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
       } else if(name.equals(MockTranslator.TYPE)) {
