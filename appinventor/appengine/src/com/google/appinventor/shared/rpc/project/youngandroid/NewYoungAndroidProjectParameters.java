@@ -73,7 +73,7 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
 
   public String getBlocksToolkit() {
     if (toolkit == null) {
-      return "All";
+      return "";
     }
     return toolkit;
   }
