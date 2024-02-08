@@ -945,7 +945,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'comments': true,
     'disable': true,
     'media': './static/media/',
-    'grid': {'spacing': '20', 'length': '5', 'snap': true, 'colour': '#ccc'},
+    'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
       blockDragger: top.MultiselectBlockDragger,
