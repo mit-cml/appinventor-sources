@@ -7,12 +7,14 @@
 package com.google.appinventor.client.settings.project;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.utils.Promise.resolve;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.CommonSettings;
 import com.google.appinventor.client.settings.SettingsAccessProvider;
+import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.Command;
@@ -49,18 +51,14 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
   // SettingsAccessProvider implementation
 
   @Override
-  public void loadSettings() {
-    Ode.getInstance().getProjectService().loadProjectSettings(
-        project.getProjectId(),
-        new OdeAsyncCallback<String>(
-            // failure message
-            MESSAGES.settingsLoadError()) {
-          @Override
-          public void onSuccess(String result) {
-            LOG.info("Loaded project settings: " + result);
-            decodeSettings(result);
-            changed = false;
-          }
+  public Promise<ProjectSettings> loadSettings() {
+    return Promise.<String>call(MESSAGES.settingsLoadError(),
+        c -> Ode.getInstance().getProjectService().loadProjectSettings(project.getProjectId(), c))
+        .then(result -> {
+          LOG.info("Loaded project settings: " + result);
+          decodeSettings(result);
+          changed = false;
+          return resolve(ProjectSettings.this);
         });
   }
 

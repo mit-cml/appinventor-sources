@@ -67,7 +67,7 @@
   <path id="libsForCommonUtilsTests.path">
     <pathelement location="${public.build.dir}/CommonUtils.jar" />
     <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
   </path>
 
   <path id="CommonUtilsTests.path">
