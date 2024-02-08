@@ -814,11 +814,12 @@ AI.Blockly.ContextMenuItems.registerGridOptions = function() {
     },
     callback: function(scope) {
       let grid = scope.workspace.options.gridOptions;
+      const gridPattern = scope.workspace.options.gridPattern;
       grid['enabled'] = !grid['enabled'];
       grid['snap'] = grid['enabled'] && top.BlocklyPanel_getSnapEnabled();
       if (grid['enabled']) {
         // add grid
-        Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: url(#' + grid['pattern'].id + ');');
+        Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: url(#' + gridPattern.id + ');');
       } else {
         // remove grid
         Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: white;');
