@@ -539,9 +539,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
   }
 
-  @SimpleFunction(description = "Repositions the cursor of the TextBox before the character at the given" +
-   " 1-indexed position. If the given position is larger than the length of the `TextBox`, the cursor will be moved" +
-   " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.")
+  @SimpleFunction(description = "Repositions the cursor of the %type% before the character at the given"
+      + " 1-indexed position. If the given position is larger than the length of the %type%, the cursor will be moved"
+      + " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.")
   public void MoveCursorTo(int position) {
     int len = view.getText().toString().length();
     if (position > len) {
@@ -575,7 +575,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
   // OnFocusChangeListener implementation
 
   /* Detects for any text changes. Downside is that, all amendments to the text of the TextBox
-  * must be done through the Text() property.*/
+   * must be done through the Text() property.
+   */
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
     if (!lastText.equals(view.getText().toString())) {
