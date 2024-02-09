@@ -734,6 +734,10 @@ div.StatusPanel {
   margin: 0;
 }
 
+.ode-SimpleMockComponent .gwt-PasswordTextBox {
+  box-sizing: border-box;
+}
+
 .gwt-Tree .gwt-TreeItem span * {
   margin: 0 2px;
 }
