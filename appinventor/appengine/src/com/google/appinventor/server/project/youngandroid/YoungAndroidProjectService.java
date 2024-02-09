@@ -844,6 +844,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
                                       buildResultJsonObj.getString("output"),
                                       buildResultJsonObj.getString("error"),
                                       outputStr);
+          if (buildResultJsonObj.getInt("result") == 0) {
+            storageIo.updateProjectBuiltDate(userId, projectId, System.currentTimeMillis());
+          }
         } catch (JSONException e) {
           buildResult = new RpcResult(1, "", "");
         }

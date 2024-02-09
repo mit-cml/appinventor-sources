@@ -495,31 +495,41 @@ a, a:visited, a:hover {
 .gwt-PushButton-down,
 .gwt-PushButton-down-hovering,
 .gwt-PushButton-down-disabled {
-  margin: 0;
-  text-decoration: none;
-  background: url("../images/hborder.png") repeat-x 0px -27px;
+  border: 1px solid;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  background-color: #A5CF47;
+  border-color: #444444;
+  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
 }
-.gwt-PushButton-up,
-.gwt-PushButton-up-hovering,
-.gwt-PushButton-up-disabled {
-  padding: 3px 5px 3px 5px;
+
+.gwt-ButtonLeft {
+  border-radius: 4px 0 0 4px;
 }
-.gwt-PushButton-up {
-  border: 1px outset #ccc;
-  cursor: pointer;
-  cursor: hand;
+
+.gwt-ButtonRight {
+  border-radius: 0 4px 4px 0;
 }
+
+.gwt-ButtonCenter {
+  border-radius: 0;
+  border-width: 1px 0;
+}
+
 .gwt-PushButton-up-hovering {
-  border: 1px outset;
-  border-color: #9cf #69e #69e #7af;
-  cursor: pointer;
+  background-color: #7D9D36;
   cursor: hand;
 }
 .gwt-PushButton-up-disabled {
-  border: 1px outset #ccc;
   cursor: default;
   opacity: .5;
-  filter: alpha(opacity=40);
   zoom: 1;
 }
 .gwt-PushButton-down,
@@ -547,6 +557,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-RadioButton {
+  margin: 4px;
 }
 .gwt-RadioButton-disabled {
   color: #888;
@@ -621,13 +632,10 @@ a, a:visited, a:hover {
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
+  border-bottom: 1px solid #bbbbbb;
 }
 .gwt-StackPanel .gwt-StackPanelContent {
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
+  border-bottom: 1px solid #bbbbbb;
   background: white;
   padding: 2px 2px 10px 5px;
 }
@@ -695,8 +703,9 @@ a, a:visited, a:hover {
 }
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopRight,
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopLeft {
-  border: 0px;
+  border: 1px;
   background-color: white;
+  border-radius: 4px;
 }
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItemTopLeft,
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItemTopRight {
@@ -982,21 +991,19 @@ a, a:visited, a:hover {
   filter: alpha(opacity=40);
 }
 
-.gwt-Tree table td:first-child {
-  width: 18px;
-}
-
 .gwt-Tree .gwt-TreeItem {
   padding: 1px 0px;
   margin: 0px;
   white-space: nowrap;
+  cursor: hand;
+  cursor: pointer;
 }
-
+.gwt-Tree .gwt-TreeItem-selected {
+}
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
 }
-
 * html .gwt-TreeItem .gwt-RadioButton input,
 * html .gwt-TreeItem .gwt-CheckBox input {
   margin-left: -4px;
@@ -1096,16 +1103,11 @@ td.datePickerMonth {
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
   background: #d3def6 url(../images/hborder.png) repeat-x 0px -1464px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelContent {
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
   background: white;
   padding: 2px 2px 10px 5px;
 }

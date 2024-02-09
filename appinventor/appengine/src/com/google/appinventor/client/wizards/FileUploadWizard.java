@@ -27,10 +27,19 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 
 /**
@@ -47,6 +56,7 @@ public class FileUploadWizard {
   @UiField FileUpload upload;
   @UiField Button okButton;
   @UiField Button cancelButton;
+
 
   private final FolderNode folderNode;
   private final Collection<String> acceptableTypes;
@@ -91,6 +101,7 @@ public class FileUploadWizard {
    * @param acceptableTypes a collection of acceptable types, or null.
    * @param fileUploadedCallback callback to be executed after upload
    */
+
   public FileUploadWizard(final FolderNode folderNode,
       final Collection<String> acceptableTypes,
       final FileUploadedCallback fileUploadedCallback) {
@@ -190,6 +201,7 @@ public class FileUploadWizard {
             }
           });
     } else {
+
       new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
           FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
     }

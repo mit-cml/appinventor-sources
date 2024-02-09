@@ -502,14 +502,16 @@ public final class MockForm extends MockContainer {
 
   private void setPhoneStyle() {
     if (landscape) {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
       else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      else phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarLandscape");
     } else {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
       else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      }
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarPortrait");
     }
     if (idxPhonePreviewStyle == 2) {
@@ -561,10 +563,14 @@ public final class MockForm extends MockContainer {
     } else {
       usableScreenWidth = screenWidth;
       usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
+      phoneWidget.setWidth(screenWidth + "px");
     }
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
     scrollPanel.setPixelSize(usableScreenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
     formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    // TODO: This is a hack to fix the phone portrait mockup stretching when phone widget panel
+    // is forced larger than 320px.
+    phoneWidget.setWidth(screenWidth + "px");
     // Store properties
     changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
     boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));

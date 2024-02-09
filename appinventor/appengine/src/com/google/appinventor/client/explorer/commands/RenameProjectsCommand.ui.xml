@@ -1,0 +1,21 @@
+<!-- RenameProjectsCommand.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="style" />
+  <ai:Dialog ui:field="renameDialog" caption="Rename projects">
+    <g:FlowPanel>
+      <g:Label styleName="{style.text}" text="If you selected multiple projects, a number will be suffixed to each project to uniquely distinguish it." />
+      <g:Label styleName="{style.text}" text="You may add a + anywhere in the new name to insert each projects existing name." />
+      <g:Label styleName="{style.text}" text='New name' />
+      <g:TextBox ui:field='input' styleName="{style.input}" />
+      <g:FlowPanel styleName="{style.actions}">
+        <ai:Button ui:field='cancelButton' icon="close" text='Cancel' type="INLINE" groupPosition='LEFT' />
+        <ai:Button ui:field='renameButton' icon="check" text='Rename' type="INLINE" groupPosition='RIGHT' />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </ai:Dialog>
+</ui:UiBinder>

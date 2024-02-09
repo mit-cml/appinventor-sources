@@ -34,7 +34,7 @@ public class SourceStructureBox extends Box implements ISourceStructureBox {
   /**
    * Creates new source structure explorer box.
    */
-  private SourceStructureBox() {
+  public SourceStructureBox() {
     super(MESSAGES.sourceStructureBoxCaption(),
         300,    // height
         false,  // minimizable

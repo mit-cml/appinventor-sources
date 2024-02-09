@@ -44,4 +44,5 @@
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
+  padding-right: 5px;
 }

@@ -1,0 +1,34 @@
+@def background-image                   url('static/images/squairy_dark.jpg');
+@def text-button-background            #222;
+/* Greens */
+@def box-background                     rgba(0, 51, 0, 0.3);
+@def selected-color                     #6b9900;
+@def tab-bar-background-color           #a3b18a;
+@def bar-color                          #7a914a;
+@def box-background-color               #7e8e82;
+
+/* Greys */
+@def background-color                   #111;
+@def top-panel-background-color         #222;
+@def top-panel-background-image         #333;
+@def border-color                       #555;
+@def label-color                        #ddd;
+@def top-panel-color                    #eee;
+@def panel-shadow                       #f2f2f2;
+@def tab-bar-color                      #aaa;
+@def top-panel-end-color                rgba(17, 17, 17, 0.95);
+@def container-shadow                   rgba(0,0,0,0.1);
+@def shadow-color                       rgba(255, 255, 255, 0.1);
+@def button-shadow-color                rgba(255, 255, 255, 0.15);
+
+/* Colors */
+    /* orange */
+@def blocks-designer-color              #f89406;
+@def project-background-color           #7a914a;
+    /* blue */
+@def explorer-border                    #D6E9F8;
+@def simple-panel-border                #67A7E3;
+@def project-color                      #112abb;
+    /* red */
+@def destructive-action-hover           #FF6666;
+@def item-color-red                     #ff0000;

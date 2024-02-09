@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.UIObject;
 
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,7 +50,8 @@ public class DropDownButton extends TextButton {
    * of a DropDownButton.
    */
   private class DropDownPositionCallback extends PZAwarePositionCallback {
-    public DropDownPositionCallback(Element elem) {
+    public DropDownPositionCallback(Element elem)
+    {
       super(elem);
     }
 
@@ -136,7 +138,6 @@ public class DropDownButton extends TextButton {
           m.setVisible(false);
         }
         this.items.add(m);
-
       } else {
         menu.addSeparator();
       }

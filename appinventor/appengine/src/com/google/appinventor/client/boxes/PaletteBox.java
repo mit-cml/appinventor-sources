@@ -8,6 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
  * Box implementation for palette panels.
@@ -16,7 +17,7 @@ import com.google.appinventor.client.widgets.boxes.Box;
 public final class PaletteBox extends Box {
 
   // Singleton palette box instance
-  private static final PaletteBox INSTANCE = new PaletteBox();
+  private static PaletteBox INSTANCE;
 
   /**
    * Return the palette box.
@@ -38,5 +39,9 @@ public final class PaletteBox extends Box {
         false,     // startMinimized
         false,     // usePadding
         false);    // highlightCaption
+
+    // UIBinder calls the private constructor, presumably through reflection, which
+    // disrupts the singleton pattern. This might not be the best way to deal with it.
+    INSTANCE = this;
   }
 }

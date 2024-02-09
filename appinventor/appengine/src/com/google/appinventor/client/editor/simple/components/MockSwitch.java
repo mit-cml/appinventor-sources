@@ -195,10 +195,4 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       refreshForm();
     }
   }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    paintSwitch();
-  }
 }

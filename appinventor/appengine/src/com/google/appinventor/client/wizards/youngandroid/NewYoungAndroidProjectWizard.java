@@ -8,11 +8,10 @@ package com.google.appinventor.client.wizards.youngandroid;
 
 
 import com.google.appinventor.client.Ode;
-
-import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -40,22 +39,22 @@ import java.util.logging.Logger;
  *
  * @author markf@google.com (Mark Friedman)
  */
-public final class NewYoungAndroidProjectWizard {
+public class NewYoungAndroidProjectWizard {
   interface NewYoungAndroidProjectWizardUiBinder extends UiBinder<Dialog, NewYoungAndroidProjectWizard> {}
-  private static final NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder.class);
+
   private static final Logger LOG = Logger.getLogger(NewYoungAndroidProjectWizard.class.getName());
 
   // UI element for project name
-  @UiField Dialog addDialog;
-  @UiField Button addButton;
-  @UiField Button cancelButton;
-  @UiField LabeledTextBox projectNameTextBox;
+  @UiField protected Dialog addDialog;
+  @UiField protected Button addButton;
+  @UiField protected Button cancelButton;
+  @UiField protected LabeledTextBox projectNameTextBox;
 
   /**
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
-    UI_BINDER.createAndBindUi(this);
+    bindUI();
     projectNameTextBox.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
@@ -92,18 +91,25 @@ public final class NewYoungAndroidProjectWizard {
         projectNameTextBox.validate();
       }
     });
+  }
 
+  public void bindUI() {
+    NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+    UI_BINDER.createAndBindUi(this);
+  }
+
+  public void show() {
     addDialog.center();
     projectNameTextBox.setFocus(true);
   }
 
   @UiHandler("cancelButton")
-  void cancelAdd(ClickEvent e) {
+  protected void cancelAdd(ClickEvent e) {
     addDialog.hide();
   }
 
   @UiHandler("addButton")
-  void addProject(ClickEvent e) {
+  protected void addProject(ClickEvent e) {
     String projectName = projectNameTextBox.getText().trim();
     projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
     TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
@@ -129,7 +135,6 @@ public final class NewYoungAndroidProjectWizard {
     }
   }
 
-
   public void doCreateProject(String projectName) {
     String packageName = StringUtils.getProjectPackage(
         Ode.getInstance().getUser().getUserEmail(), projectName);
@@ -145,11 +150,13 @@ public final class NewYoungAndroidProjectWizard {
               Scheduler.get().scheduleDeferred(this); // on other project
             } else {
               Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+
             }
           }
         });
       }
     };
+
 
     NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
         parameters, callbackCommand);
