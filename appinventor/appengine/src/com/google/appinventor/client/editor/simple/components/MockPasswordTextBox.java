@@ -11,13 +11,15 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+
 
 /**
  * Mock PasswordTextBox component.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class MockPasswordTextBox extends MockWrapper {
+public final class MockPasswordTextBox extends MockWrapper implements FormChangeListener{
 
   /**
    * Component type name.
@@ -41,7 +43,16 @@ public final class MockPasswordTextBox extends MockWrapper {
     passwordTextBoxWidget.setText("**********");
     initWrapper(passwordTextBoxWidget);
   }
-
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+  }
   /**
    * Class that extends PasswordTextBox so we can use a protected constructor.
    *
@@ -81,7 +92,12 @@ public final class MockPasswordTextBox extends MockWrapper {
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        text = "&HFF000000";  // black
+      } else {
+        text = "&HFFFFFFFF";  // white
+      }
     }
     MockComponentsUtil.setWidgetBackgroundColor(passwordTextBoxWidget, text);
   }
@@ -121,7 +137,7 @@ public final class MockPasswordTextBox extends MockWrapper {
    * Sets the PasswordTextBox's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(passwordTextBoxWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, passwordTextBoxWidget, text);
     updatePreferredSize();
   }
 
@@ -137,7 +153,13 @@ public final class MockPasswordTextBox extends MockWrapper {
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFF000000";  // black
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        text = "&HFFFFFFFF";  // white
+      }
+      else {
+        text = "&HFF000000";  //black
+      }
     }
     MockComponentsUtil.setWidgetTextColor(passwordTextBoxWidget, text);
   }
@@ -171,6 +193,46 @@ public final class MockPasswordTextBox extends MockWrapper {
       setHintProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(passwordTextBoxWidget, newValue);
+      refreshForm();
     }
+  }
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
+      setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
+      setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      if (propertyValue.equals("True")){
+        setFontSizeProperty("24");
+        refreshForm();
+
+      }
+      else {
+        setFontSizeProperty("14");
+        refreshForm();
+
+      }
+    }
+  }
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

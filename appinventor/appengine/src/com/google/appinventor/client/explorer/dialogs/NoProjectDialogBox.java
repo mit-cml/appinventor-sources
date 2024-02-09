@@ -15,6 +15,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -76,25 +77,30 @@ public class NoProjectDialogBox extends DialogBox {
   @UiHandler("goToPurr")
   void handleGoToPurr(ClickEvent e) {
     this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject());
+    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),
+            "HelloPurr");
   }
 
   @UiHandler("goToTalk")
   void handleGoToTalk(ClickEvent e) {
     this.hide();
-    TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc", new NewTutorialProject());
+    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
+        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc",
+        new NewTutorialProject());
   }
 
   @UiHandler("goToYR")
   void handleGoToYR(ClickEvent e) {
     this.hide();
-    TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc", new NewTutorialProject());
+    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
+        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc",
+        new NewTutorialProject());
   }
 
   @UiHandler("noDialogNewProject")
   void handleNewProject(ClickEvent e) {
     this.hide();
-    new NewYoungAndroidProjectWizard(null).show();
+    new NewYoungAndroidProjectWizard();
   }
 
   public static void closeIfOpen() {

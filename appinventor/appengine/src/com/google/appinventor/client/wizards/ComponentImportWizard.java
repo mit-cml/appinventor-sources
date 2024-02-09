@@ -37,7 +37,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 import java.util.List;
@@ -91,7 +90,7 @@ public class ComponentImportWizard extends Wizard {
           project.addNode(componentsFolder, node);
           if ((node.getName().equals("component.json") || node.getName().equals("components.json"))
               && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-            projectEditor.addComponent(node, null);
+            projectEditor.importExtension(node);
           }
         }
       }

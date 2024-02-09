@@ -460,6 +460,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "Errore di rete",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Errore di Rete nel Comunicare con l'app Companion.<br />Prova a riavviare l'app Companion e a riconnetterti",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Ripristina",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "Controllo Versione app Companion",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "Stai usando una vecchia versione dell'App Companion. Clicca 'OK' per avviare l'aggiornamento. Controlla ",
 	"Blockly.Msg.REPL_EMULATORS": "nel tuo emulatore",

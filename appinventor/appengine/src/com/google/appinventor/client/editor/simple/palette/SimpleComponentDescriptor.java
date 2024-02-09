@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,24 +8,33 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockChatBot;
+import com.google.appinventor.client.editor.simple.components.MockChart;
+import com.google.appinventor.client.editor.simple.components.MockChartData2D;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
-import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockDataFile;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
+import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockTwitter;
+import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
+import com.google.appinventor.client.editor.simple.components.MockImageBot;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
@@ -44,13 +53,16 @@ import com.google.appinventor.client.editor.simple.components.MockScrollHorizont
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockTranslator;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.collect.Maps;
@@ -118,7 +130,9 @@ public final class SimpleComponentDescriptor {
   private static void initBundledImages() {
     bundledImages.put("images/accelerometersensor.png", images.accelerometersensor());
     bundledImages.put("images/lightsensor.png", images.lightsensor());
+    bundledImages.put("images/ball.png", images.ball());
     bundledImages.put("images/barometer.png", images.barometer());
+    bundledImages.put("images/button.png", images.button());
     bundledImages.put("images/thermometer.png", images.thermometer());
     bundledImages.put("images/hygrometer.png", images.hygrometer());
     bundledImages.put("images/gyroscopesensor.png", images.gyroscopesensor());
@@ -128,21 +142,42 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/bluetooth.png", images.bluetooth());
     bundledImages.put("images/camera.png", images.camera());
     bundledImages.put("images/camcorder.png", images.camcorder());
+    bundledImages.put("images/canvas.png", images.canvas());
+    bundledImages.put("images/checkbox.png", images.checkbox());
+    bundledImages.put("images/chatbot.png", images.chatbot());
     bundledImages.put("images/clock.png", images.clock());
+    bundledImages.put("images/contactpicker.png", images.contactpicker());
+    bundledImages.put("images/datepicker.png", images.datePickerComponent());
+    bundledImages.put("images/emailPicker.png", images.emailpicker());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
+    bundledImages.put("images/horizontal.png", images.horizontal());
+    bundledImages.put("images/image.png", images.image());
+    bundledImages.put("images/imagePicker.png", images.imagepicker());
+    bundledImages.put("images/imageSprite.png", images.imageSprite());
+    bundledImages.put("images/label.png", images.label());
+    bundledImages.put("images/listPicker.png", images.listpicker());
+    bundledImages.put("images/spreadsheet.png", images.spreadsheet());
     bundledImages.put("images/locationSensor.png", images.locationSensor());
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
     bundledImages.put("images/legoMindstormsEv3.png", images.legoMindstormsEv3());
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
+    bundledImages.put("images/passwordTextBox.png", images.passwordtextbox());
+    bundledImages.put("images/paintpalette.png", images.paintPalette());
     bundledImages.put("images/pedometer.png", images.pedometerComponent());
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
+    bundledImages.put("images/phonNumberPicker.png", images.phonenumberpicker());
     bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/radiobutton.png", images.radiobutton());
+    bundledImages.put("images/slider.png", images.slider());
     bundledImages.put("images/soundEffect.png", images.soundeffect());
     bundledImages.put("images/soundRecorder.png", images.soundRecorder());
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
+    bundledImages.put("images/switch.png", images.toggleswitch());
+    bundledImages.put("images/table.png", images.table());
+    bundledImages.put("images/textbox.png", images.textbox());
     bundledImages.put("images/textToSpeech.png", images.textToSpeech());
     bundledImages.put("images/texting.png", images.texting());
     bundledImages.put("images/datePicker.png", images.datePickerComponent());
@@ -152,12 +187,17 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/firebaseDB.png", images.firebaseDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
+    bundledImages.put("images/vertical.png", images.vertical());
+    bundledImages.put("images/videoPlayer.png", images.videoplayer());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
+    bundledImages.put("images/webviewer.png", images.webviewer());
+    bundledImages.put("images/webviewerbig.png", images.webviewerbig());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
+    bundledImages.put("images/translator.png", images.translator());
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/extension.png", images.extension());
@@ -168,9 +208,16 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/linestring.png", images.linestring());
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
+    bundledImages.put("images/recyclerView.png", images.recyclerview());
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/chart.png", images.chart());
+    bundledImages.put("images/chartData.png", images.chartData2D());
+    bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/regression.png", images.regression());
+    bundledImages.put("images/anomaly.png", images.anomalyDetection());
+    bundledImages.put("images/filepicker.png", images.file());
 
     imagesInitialized = true;
   }
@@ -193,6 +240,31 @@ public final class SimpleComponentDescriptor {
                                    boolean external) {
     this.name = name;
     this.editor = editor;
+    this.version = version;
+    this.versionName = versionName;
+    this.dateBuilt = dateBuilt;
+    this.helpString = helpString;
+    this.helpUrl = helpUrl;
+    this.categoryDocUrlString = categoryDocUrlString;
+    this.showOnPalette = showOnPalette;
+    this.nonVisible = nonVisible;
+    this.external = external;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
+  }
+
+  public SimpleComponentDescriptor(String name,
+                                   int version,
+                                   String versionName,
+                                   String dateBuilt,
+                                   String helpString,
+                                   String helpUrl,
+                                   String categoryDocUrlString,
+                                   boolean showOnPalette,
+                                   boolean nonVisible,
+                                   boolean external) {
+    // TODO: Remove editor and component database attributes
+    this.name = name;
+    this.editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
     this.version = version;
     this.versionName = versionName;
     this.dateBuilt = dateBuilt;
@@ -413,6 +485,31 @@ public final class SimpleComponentDescriptor {
         return new MockFusionTablesControl(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
+      } else if(name.equals(MockTwitter.TYPE)) {
+        return new MockTwitter(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockTranslator.TYPE)) {
+        return new MockTranslator(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockChatBot.TYPE)) {
+        return new MockChatBot(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockImageBot.TYPE)) {
+        return new MockImageBot(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockSpreadsheet.TYPE)) {
+        return new MockSpreadsheet(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if (name.equals(MockDataFile.TYPE)) {
+        return new MockDataFile(editor, name,
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId())
+                    .getIconName(name),
+                null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
@@ -425,6 +522,8 @@ public final class SimpleComponentDescriptor {
       return new MockCanvas(editor);
     } else if (name.equals(MockCheckBox.TYPE)) {
       return new MockCheckBox(editor);
+    } else if (name.equals(MockFilePicker.TYPE)) {
+      return new MockFilePicker(editor);
     } else if (name.equals(MockSwitch.TYPE)) {
       return new MockSwitch(editor);
     } else if (name.equals(MockImage.TYPE)) {
@@ -433,8 +532,10 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockListView.TYPE)) {
+      return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
-        return new MockSlider(editor);
+      return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
       return new MockPasswordTextBox(editor);
     } else if (name.equals(MockRadioButton.TYPE)) {
@@ -489,6 +590,10 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
+    } else if (name.equals(MockChart.TYPE)) {
+      return new MockChart(editor);
+    } else if (name.equals(MockChartData2D.TYPE)) {
+      return new MockChartData2D(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

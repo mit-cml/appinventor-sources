@@ -49,7 +49,8 @@ public abstract class NewProjectWizard extends Wizard {
    * @param onSuccessCommand command to be executed after process creation
    *                         succeeds (can be {@code null})
    */
-  protected void createNewProject(String projectType, final String projectName,
+  // TODO: This should probably be consolidated in NewYoungAndroidProjectWizard
+  public static void createNewProject(String projectType, final String projectName,
       NewProjectParameters params, final NewProjectCommand onSuccessCommand) {
     // Callback for updating the project explorer after the project was created on the back-end
     final Ode ode = Ode.getInstance();

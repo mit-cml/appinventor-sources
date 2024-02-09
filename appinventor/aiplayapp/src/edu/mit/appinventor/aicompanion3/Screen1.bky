@@ -1,5 +1,5 @@
 <xml xmlns="http://www.w3.org/1999/xhtml">
-  <block type="procedures_defnoreturn" id="1" x="0" y="0">
+  <block type="procedures_defnoreturn" id="1" x="130" y="751">
     <field name="NAME">badversion</field>
     <statement name="STACK">
       <block type="component_set_get" id="2" inline="false">
@@ -14,239 +14,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="4" x="0" y="92">
-    <mutation component_type="BarcodeScanner" is_generic="false" instance_name="BarcodeScanner1" event_name="AfterScan"></mutation>
-    <field name="COMPONENT_SELECTOR">BarcodeScanner1</field>
-    <statement name="DO">
-      <block type="component_set_get" id="5" inline="false">
-        <mutation component_type="TextBox" set_or_get="set" property_name="Text" is_generic="false" instance_name="CodeBox"></mutation>
-        <field name="COMPONENT_SELECTOR">CodeBox</field>
-        <field name="PROP">Text</field>
-        <value name="VALUE">
-          <block type="lexical_variable_get" id="6">
-            <mutation>
-              <eventparam name="result"></eventparam>
-            </mutation>
-            <field name="VAR">result</field>
-          </block>
-        </value>
-        <next>
-          <block type="procedures_callnoreturn" id="7" inline="false">
-            <mutation name="processcode">
-              <arg name="x"></arg>
-            </mutation>
-            <field name="PROCNAME">processcode</field>
-            <value name="ARG0">
-              <block type="lexical_variable_get" id="8">
-                <mutation>
-                  <eventparam name="result"></eventparam>
-                </mutation>
-                <field name="VAR">result</field>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" id="9" x="0" y="260">
-    <mutation>
-      <arg name="code"></arg>
-    </mutation>
-    <field name="NAME">callrendezvous</field>
-    <field name="VAR0">code</field>
-    <statement name="STACK">
-      <block type="component_set_get" id="10" inline="false">
-        <mutation component_type="Web" set_or_get="set" property_name="Url" is_generic="false" instance_name="Web1"></mutation>
-        <field name="COMPONENT_SELECTOR">Web1</field>
-        <field name="PROP">Url</field>
-        <value name="VALUE">
-          <block type="text_join" id="11" inline="false">
-            <mutation items="3"></mutation>
-            <value name="ADD0">
-              <block type="text" id="12">
-                <field name="TEXT">http://</field>
-              </block>
-            </value>
-            <value name="ADD1">
-              <block type="lexical_variable_get" id="13">
-                <field name="VAR">global rendezvousServer</field>
-              </block>
-            </value>
-            <value name="ADD2">
-              <block type="text" id="14">
-                <field name="TEXT">/rendezvous/</field>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="component_method" id="15" inline="false">
-            <mutation component_type="Web" method_name="PostText" is_generic="false" instance_name="Web1"></mutation>
-            <field name="COMPONENT_SELECTOR">Web1</field>
-            <value name="ARG0">
-              <block type="component_method" id="16" inline="false">
-                <mutation component_type="Web" method_name="BuildRequestData" is_generic="false" instance_name="Web1"></mutation>
-                <field name="COMPONENT_SELECTOR">Web1</field>
-                <value name="ARG0">
-                  <block type="lists_create_with" id="17" inline="false">
-                    <mutation items="9"></mutation>
-                    <value name="ADD0">
-                      <block type="lists_create_with" id="18" inline="false">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="19">
-                            <field name="TEXT">key</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="lexical_variable_get" id="20">
-                            <field name="VAR">code</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD1">
-                      <block type="lists_create_with" id="21" inline="false">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="22">
-                            <field name="TEXT">ipaddr</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="component_method" id="23">
-                            <mutation component_type="PhoneStatus" method_name="GetWifiIpAddress" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD2">
-                      <block type="lists_create_with" id="24" inline="false">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="25">
-                            <field name="TEXT">port</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="text" id="26">
-                            <field name="TEXT">9987</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD3">
-                      <block type="lists_create_with" id="9,YdOZ:@gq@ci2!vb)2#">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="zp,i*goyBtX/F{;$Ea|b">
-                            <field name="TEXT">webrtc</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="logic_negate" id="^u8w2dblE!Y#Vr^ZT;sS">
-                            <value name="BOOL">
-                              <block type="component_set_get" id="qg:T=8o)HNv%C|gUA(Bs">
-                                <mutation component_type="CheckBox" set_or_get="get" property_name="Checked" is_generic="false" instance_name="CheckBox1"></mutation>
-                                <field name="COMPONENT_SELECTOR">CheckBox1</field>
-                                <field name="PROP">Checked</field>
-                              </block>
-                            </value>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD4">
-                      <block type="lists_create_with" id="!EYOGgvQNcW*Gj*y8]#}">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="ewn2ra6|~iwrmq)%+e4x">
-                            <field name="TEXT">version</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="component_method" id="`aL)?L_:[aaKftu6Xk^7">
-                            <mutation component_type="PhoneStatus" method_name="GetVersionName" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD5">
-                      <block type="lists_create_with" id="t^@FVOKl1Na%vzfzwh2[">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="N,,m(+`}dg+Jy5y8q*gs">
-                            <field name="TEXT">api</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="component_method" id="@Kh2vH_B7~WrI/!YlTN^">
-                            <mutation component_type="PhoneStatus" method_name="SdkLevel" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD6">
-                      <block type="lists_create_with" id="+o$39vd!Z,:(})04x#SW">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="{=l,a3?*3+FGh=Tv_9}~">
-                            <field name="TEXT">installer</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="component_method" id=":1#WHV95X6:T6/R[Ay%7">
-                            <mutation component_type="PhoneStatus" method_name="GetInstaller" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD7">
-                      <block type="lists_create_with" id="3?x|P8JB#okUP8#oa5~o">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="dh=0y=Jn`kt,SG-ksVd[">
-                            <field name="TEXT">aid</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="component_method" id="`g:@(vs,TD%uU%D1d+q/">
-                            <mutation component_type="PhoneStatus" method_name="InstallationId" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ADD8">
-                      <block type="lists_create_with" id="}V;[y55Tf$v{NV$fLE!%">
-                        <mutation items="2"></mutation>
-                        <value name="ADD0">
-                          <block type="text" id="M;4c#e*(tb{AT6CJfQ4x">
-                            <field name="TEXT">r2</field>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="logic_boolean" id="{H$VZh}SskYpnmxy(Agi">
-                            <field name="BOOL">TRUE</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="27" x="0" y="922">
+  <block type="component_event" id="27" x="1163" y="751">
     <mutation component_type="PhoneStatus" is_generic="false" instance_name="PhoneStatus1" event_name="OnSettings"></mutation>
     <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
     <statement name="DO">
@@ -300,47 +68,34 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="MZu,PO29Xk,X*T8^%E-l" x="0" y="1092">
-    <mutation component_type="Web" is_generic="false" instance_name="Web1" event_name="GotText"></mutation>
-    <field name="COMPONENT_SELECTOR">Web1</field>
+  <block type="component_event" id="4" x="130" y="843">
+    <mutation component_type="BarcodeScanner" is_generic="false" instance_name="BarcodeScanner1" event_name="AfterScan"></mutation>
+    <field name="COMPONENT_SELECTOR">BarcodeScanner1</field>
     <statement name="DO">
-      <block type="component_method" id="O2X`f#Wz_J`eO/x}lCuS">
-        <mutation component_type="PhoneStatus" method_name="startWebRTC" is_generic="false" instance_name="PhoneStatus1"></mutation>
-        <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-        <value name="ARG0">
-          <block type="lexical_variable_get" id=",NBfs@h|1H[?vLp8E3A%">
-            <field name="VAR">global rendezvousServer</field>
-          </block>
-        </value>
-        <value name="ARG1">
-          <block type="lexical_variable_get" id="IIXLNV.IIZ^bR1.7-0}h">
-            <mutation>
-              <eventparam name="responseContent"></eventparam>
-            </mutation>
-            <field name="VAR">responseContent</field>
-          </block>
-        </value>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="47" x="0" y="1259">
-    <mutation component_type="Button" is_generic="false" instance_name="ConnectButton" event_name="Click"></mutation>
-    <field name="COMPONENT_SELECTOR">ConnectButton</field>
-    <statement name="DO">
-      <block type="component_method" id="48">
-        <mutation component_type="TextBox" method_name="HideKeyboard" is_generic="false" instance_name="CodeBox"></mutation>
+      <block type="component_set_get" id="5" inline="false">
+        <mutation component_type="TextBox" set_or_get="set" property_name="Text" is_generic="false" instance_name="CodeBox"></mutation>
         <field name="COMPONENT_SELECTOR">CodeBox</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="lexical_variable_get" id="6">
+            <mutation>
+              <eventparam name="result"></eventparam>
+            </mutation>
+            <field name="VAR">result</field>
+          </block>
+        </value>
         <next>
-          <block type="procedures_callnoreturn" id="49" inline="false">
+          <block type="procedures_callnoreturn" id="7" inline="false">
             <mutation name="processcode">
               <arg name="x"></arg>
             </mutation>
             <field name="PROCNAME">processcode</field>
             <value name="ARG0">
-              <block type="component_set_get" id="50">
-                <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="CodeBox"></mutation>
-                <field name="COMPONENT_SELECTOR">CodeBox</field>
-                <field name="PROP">Text</field>
+              <block type="lexical_variable_get" id="8">
+                <mutation>
+                  <eventparam name="result"></eventparam>
+                </mutation>
+                <field name="VAR">result</field>
               </block>
             </value>
           </block>
@@ -348,70 +103,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="34" x="0" y="1402">
-    <field name="NAME">checkWiFi</field>
-    <statement name="STACK">
-      <block type="controls_if" id="35" inline="false">
-        <value name="IF0">
-          <block type="math_compare" id="36">
-            <field name="OP">EQ</field>
-            <value name="A">
-              <block type="math_number" id="37">
-                <field name="NUM">1</field>
-              </block>
-            </value>
-            <value name="B">
-              <block type="text_starts_at" id="38">
-                <value name="TEXT">
-                  <block type="component_method" id="39">
-                    <mutation component_type="PhoneStatus" method_name="GetWifiIpAddress" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                  </block>
-                </value>
-                <value name="PIECE">
-                  <block type="text" id="40">
-                    <field name="TEXT">Error</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </value>
-        <statement name="DO0">
-          <block type="component_method" id="41" inline="false">
-            <mutation component_type="Notifier" method_name="ShowChooseDialog" is_generic="false" instance_name="Notifier1"></mutation>
-            <field name="COMPONENT_SELECTOR">Notifier1</field>
-            <value name="ARG0">
-              <block type="text" id="42">
-                <field name="TEXT">Your Device does not appear to have a WiFi Connection</field>
-              </block>
-            </value>
-            <value name="ARG1">
-              <block type="text" id="43">
-                <field name="TEXT">No WiFi</field>
-              </block>
-            </value>
-            <value name="ARG2">
-              <block type="text" id="44">
-                <field name="TEXT">Continue without WiFi</field>
-              </block>
-            </value>
-            <value name="ARG3">
-              <block type="text" id="45">
-                <field name="TEXT">Exit</field>
-              </block>
-            </value>
-            <value name="ARG4">
-              <block type="logic_boolean" id="46">
-                <field name="BOOL">FALSE</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defreturn" id="51" inline="false" x="0" y="1699">
+  <block type="procedures_defreturn" id="51" inline="false" x="1944" y="751">
     <field name="NAME">getRendezvousServer</field>
     <value name="RETURN">
       <block type="component_method" id="52" inline="false">
@@ -430,196 +122,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defreturn" id="55" inline="false" x="0" y="1839">
-    <mutation>
-      <arg name="input"></arg>
-    </mutation>
-    <field name="NAME">isAPK</field>
-    <field name="VAR0">input</field>
-    <value name="RETURN">
-      <block type="logic_or" id="?]t/mFK^K=,Isjx^C]-M">
-        <field name="OP">OR</field>
-        <value name="A">
-          <block type="math_compare" id="56">
-            <field name="OP">EQ</field>
-            <value name="A">
-              <block type="text_starts_at" id="57">
-                <value name="TEXT">
-                  <block type="lexical_variable_get" id="58">
-                    <field name="VAR">input</field>
-                  </block>
-                </value>
-                <value name="PIECE">
-                  <block type="text" id="59">
-                    <field name="TEXT">http://</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="B">
-              <block type="math_number" id="60">
-                <field name="NUM">1</field>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="B">
-          <block type="math_compare" id="u1Q`jlIW}x?cXeN;dq^d">
-            <field name="OP">EQ</field>
-            <value name="A">
-              <block type="text_starts_at" id="UJMX]nVk^Yt60go#ImlD">
-                <value name="TEXT">
-                  <block type="lexical_variable_get" id="089/L*vyb(*~k;0En;V]">
-                    <field name="VAR">input</field>
-                  </block>
-                </value>
-                <value name="PIECE">
-                  <block type="text" id="p!*FO;,2Y+m*)7dL^pL3">
-                    <field name="TEXT">https://</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="B">
-              <block type="math_number" id="0%#Y4|NYw?_e3?3uJO*8">
-                <field name="NUM">1</field>
-              </block>
-            </value>
-          </block>
-        </value>
-      </block>
-    </value>
-  </block>
-  <block type="component_event" id="61" x="0" y="1965">
-    <mutation component_type="Notifier" is_generic="false" instance_name="Notifier1" event_name="AfterChoosing"></mutation>
-    <field name="COMPONENT_SELECTOR">Notifier1</field>
-    <statement name="DO">
-      <block type="controls_if" id="62" inline="false">
-        <value name="IF0">
-          <block type="logic_compare" id="63">
-            <field name="OP">EQ</field>
-            <value name="A">
-              <block type="lexical_variable_get" id="64">
-                <mutation>
-                  <eventparam name="choice"></eventparam>
-                </mutation>
-                <field name="VAR">choice</field>
-              </block>
-            </value>
-            <value name="B">
-              <block type="text" id="65">
-                <field name="TEXT">Exit</field>
-              </block>
-            </value>
-          </block>
-        </value>
-        <statement name="DO0">
-          <block type="component_method" id="66">
-            <mutation component_type="PhoneStatus" method_name="shutdown" is_generic="false" instance_name="PhoneStatus1"></mutation>
-            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-          </block>
-        </statement>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" id="67" x="0" y="2132">
-    <mutation>
-      <arg name="x"></arg>
-    </mutation>
-    <field name="NAME">processcode</field>
-    <field name="VAR0">x</field>
-    <statement name="STACK">
-      <block type="controls_if" id="68" inline="false">
-        <mutation else="1"></mutation>
-        <value name="IF0">
-          <block type="procedures_callreturn" id="69" inline="false">
-            <mutation name="isAPK">
-              <arg name="input"></arg>
-            </mutation>
-            <field name="PROCNAME">isAPK</field>
-            <value name="ARG0">
-              <block type="lexical_variable_get" id="70">
-                <field name="VAR">x</field>
-              </block>
-            </value>
-          </block>
-        </value>
-        <statement name="DO0">
-          <block type="component_method" id="71" inline="false">
-            <mutation component_type="PhoneStatus" method_name="installURL" is_generic="false" instance_name="PhoneStatus1"></mutation>
-            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-            <value name="ARG0">
-              <block type="lexical_variable_get" id="72">
-                <field name="VAR">x</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-        <statement name="ELSE">
-          <block type="component_set_get" id="@?Z^`[7(9PJW1aG$idxb">
-            <mutation component_type="PhoneStatus" set_or_get="set" property_name="WebRTC" is_generic="false" instance_name="PhoneStatus1"></mutation>
-            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-            <field name="PROP">WebRTC</field>
-            <value name="VALUE">
-              <block type="logic_negate" id=";m];d(UwE=Sz[^}hDgO;">
-                <value name="BOOL">
-                  <block type="component_set_get" id=")=M-%eM;_@[Oa)Co%R|~">
-                    <mutation component_type="CheckBox" set_or_get="get" property_name="Checked" is_generic="false" instance_name="CheckBox1"></mutation>
-                    <field name="COMPONENT_SELECTOR">CheckBox1</field>
-                    <field name="PROP">Checked</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <next>
-              <block type="procedures_callnoreturn" id="73" inline="false">
-                <mutation name="callrendezvous">
-                  <arg name="code"></arg>
-                </mutation>
-                <field name="PROCNAME">callrendezvous</field>
-                <value name="ARG0">
-                  <block type="component_method" id="74" inline="false">
-                    <mutation component_type="PhoneStatus" method_name="setHmacSeedReturnCode" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                    <value name="ARG0">
-                      <block type="procedures_callreturn" id="75" inline="false">
-                        <mutation name="extractRendezvousServer">
-                          <arg name="code"></arg>
-                        </mutation>
-                        <field name="PROCNAME">extractRendezvousServer</field>
-                        <value name="ARG0">
-                          <block type="lexical_variable_get" id="76">
-                            <field name="VAR">x</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ARG1">
-                      <block type="lexical_variable_get" id="BCr,Lm`fIN}SKZ0fNNZ%">
-                        <field name="VAR">global rendezvousServer</field>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <next>
-                  <block type="component_method" id="77" inline="false">
-                    <mutation component_type="PhoneStatus" method_name="startHTTPD" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                    <value name="ARG0">
-                      <block type="logic_false" id="78">
-                        <field name="BOOL">FALSE</field>
-                      </block>
-                    </value>
-                  </block>
-                </next>
-              </block>
-            </next>
-          </block>
-        </statement>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="S~hQs_KH8?5y90Ie^-Ok" x="0" y="2531">
+  <block type="component_event" id="S~hQs_KH8?5y90Ie^-Ok" x="2897" y="751">
     <mutation component_type="CheckBox" is_generic="false" instance_name="CheckBox1" event_name="Changed"></mutation>
     <field name="COMPONENT_SELECTOR">CheckBox1</field>
     <statement name="DO">
@@ -641,175 +144,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="79" inline="false" x="0" y="2623">
-    <mutation>
-      <arg name="code"></arg>
-    </mutation>
-    <field name="NAME">extractRendezvousServer</field>
-    <field name="VAR0">code</field>
-    <value name="RETURN">
-      <block type="controls_choose" id="80" inline="false">
-        <value name="TEST">
-          <block type="text_contains" id="81">
-            <value name="TEXT">
-              <block type="lexical_variable_get" id="82">
-                <field name="VAR">code</field>
-              </block>
-            </value>
-            <value name="PIECE">
-              <block type="text" id="83">
-                <field name="TEXT">;</field>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="THENRETURN">
-          <block type="local_declaration_expression" id="84" inline="false">
-            <mutation>
-              <localname name="codes"></localname>
-            </mutation>
-            <field name="VAR0">codes</field>
-            <value name="DECL0">
-              <block type="text_split" id="85" inline="false">
-                <mutation mode="SPLIT"></mutation>
-                <field name="OP">SPLIT</field>
-                <value name="TEXT">
-                  <block type="lexical_variable_get" id="86">
-                    <field name="VAR">code</field>
-                  </block>
-                </value>
-                <value name="AT">
-                  <block type="text" id="87">
-                    <field name="TEXT">;</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="RETURN">
-              <block type="controls_do_then_return" id="88" inline="false">
-                <statement name="STM">
-                  <block type="procedures_callnoreturn" id="89" inline="false">
-                    <mutation name="setRendezvousServer">
-                      <arg name="value"></arg>
-                      <arg name="permanent"></arg>
-                    </mutation>
-                    <field name="PROCNAME">setRendezvousServer</field>
-                    <value name="ARG0">
-                      <block type="lists_select_item" id="90">
-                        <value name="LIST">
-                          <block type="lexical_variable_get" id="91">
-                            <field name="VAR">codes</field>
-                          </block>
-                        </value>
-                        <value name="NUM">
-                          <block type="math_number" id="92">
-                            <field name="NUM">1</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="ARG1">
-                      <block type="logic_boolean" id="93">
-                        <field name="BOOL">FALSE</field>
-                      </block>
-                    </value>
-                  </block>
-                </statement>
-                <value name="VALUE">
-                  <block type="lists_select_item" id="94">
-                    <value name="LIST">
-                      <block type="lexical_variable_get" id="95">
-                        <field name="VAR">codes</field>
-                      </block>
-                    </value>
-                    <value name="NUM">
-                      <block type="math_number" id="96">
-                        <field name="NUM">2</field>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="ELSERETURN">
-          <block type="lexical_variable_get" id="97">
-            <field name="VAR">code</field>
-          </block>
-        </value>
-      </block>
-    </value>
-  </block>
-  <block type="procedures_defnoreturn" id="98" x="0" y="2996">
-    <field name="NAME">resetRendezvousServer</field>
-    <statement name="STACK">
-      <block type="lexical_variable_set" id="99" inline="false">
-        <field name="VAR">global rendezvousServer</field>
-        <value name="VALUE">
-          <block type="text" id="100">
-            <field name="TEXT">rendezvous.appinventor.mit.edu</field>
-          </block>
-        </value>
-        <next>
-          <block type="component_method" id="101" inline="false">
-            <mutation component_type="TinyDB" method_name="ClearTag" is_generic="false" instance_name="TinyDB1"></mutation>
-            <field name="COMPONENT_SELECTOR">TinyDB1</field>
-            <value name="ARG0">
-              <block type="text" id="102">
-                <field name="TEXT">rendezvousServer</field>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="103" x="0" y="3139">
-    <mutation component_type="Button" is_generic="false" instance_name="ResetRendezvousServer" event_name="Click"></mutation>
-    <field name="COMPONENT_SELECTOR">ResetRendezvousServer</field>
-    <statement name="DO">
-      <block type="procedures_callnoreturn" id="104">
-        <mutation name="resetRendezvousServer"></mutation>
-        <field name="PROCNAME">resetRendezvousServer</field>
-        <next>
-          <block type="component_set_get" id="105" inline="false">
-            <mutation component_type="VerticalArrangement" set_or_get="set" property_name="Visible" is_generic="false" instance_name="SettingsPanel"></mutation>
-            <field name="COMPONENT_SELECTOR">SettingsPanel</field>
-            <field name="PROP">Visible</field>
-            <value name="VALUE">
-              <block type="logic_boolean" id="106">
-                <field name="BOOL">FALSE</field>
-              </block>
-            </value>
-            <next>
-              <block type="component_set_get" id="107" inline="false">
-                <mutation component_type="VerticalArrangement" set_or_get="set" property_name="Visible" is_generic="false" instance_name="MainPanel"></mutation>
-                <field name="COMPONENT_SELECTOR">MainPanel</field>
-                <field name="PROP">Visible</field>
-                <value name="VALUE">
-                  <block type="logic_boolean" id="108">
-                    <field name="BOOL">TRUE</field>
-                  </block>
-                </value>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="109" x="0" y="3283">
-    <mutation component_type="Button" is_generic="false" instance_name="ScanButton" event_name="Click"></mutation>
-    <field name="COMPONENT_SELECTOR">ScanButton</field>
-    <statement name="DO">
-      <block type="component_method" id="110">
-        <mutation component_type="BarcodeScanner" method_name="DoScan" is_generic="false" instance_name="BarcodeScanner1"></mutation>
-        <field name="COMPONENT_SELECTOR">BarcodeScanner1</field>
-      </block>
-    </statement>
-  </block>
-  <block type="component_event" id="111" x="0" y="3375">
+  <block type="component_event" id="111" x="4001" y="751">
     <mutation component_type="Form" is_generic="false" instance_name="Screen1" event_name="Initialize"></mutation>
     <field name="COMPONENT_SELECTOR">Screen1</field>
     <statement name="DO">
@@ -989,7 +324,728 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="139" x="0" y="3884">
+  <block type="component_event" id="MZu,PO29Xk,X*T8^%E-l" x="1163" y="921">
+    <mutation component_type="Web" is_generic="false" instance_name="Web1" event_name="GotText"></mutation>
+    <field name="COMPONENT_SELECTOR">Web1</field>
+    <statement name="DO">
+      <block type="controls_if" id="@}v%{1qzz|y?gs9i[cue">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="component_set_get" id="NkSp@SesJP,lg[jN$$CB">
+            <mutation component_type="CheckBox" set_or_get="get" property_name="Checked" is_generic="false" instance_name="CheckBox1"></mutation>
+            <field name="COMPONENT_SELECTOR">CheckBox1</field>
+            <field name="PROP">Checked</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_method" id="kG!h[DAl:ra=_$2x)F4d">
+            <mutation component_type="PhoneStatus" method_name="SetPopup" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+            <value name="ARG0">
+              <block type="lexical_variable_get" id="A).G-OPi.CQNSbhZH`D`">
+                <mutation>
+                  <eventparam name="responseContent"></eventparam>
+                </mutation>
+                <field name="VAR">responseContent</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="component_method" id="O2X`f#Wz_J`eO/x}lCuS">
+            <mutation component_type="PhoneStatus" method_name="startWebRTC" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+            <value name="ARG0">
+              <block type="lexical_variable_get" id=",NBfs@h|1H[?vLp8E3A%">
+                <field name="VAR">global rendezvousServer</field>
+              </block>
+            </value>
+            <value name="ARG1">
+              <block type="lexical_variable_get" id="IIXLNV.IIZ^bR1.7-0}h">
+                <mutation>
+                  <eventparam name="responseContent"></eventparam>
+                </mutation>
+                <field name="VAR">responseContent</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="55" inline="false" x="1944" y="891">
+    <mutation>
+      <arg name="input"></arg>
+    </mutation>
+    <field name="NAME">isAPK</field>
+    <field name="VAR0">input</field>
+    <value name="RETURN">
+      <block type="logic_or" id="?]t/mFK^K=,Isjx^C]-M">
+        <mutation items="2"></mutation>
+        <field name="OP">OR</field>
+        <value name="A">
+          <block type="math_compare" id="56">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="text_starts_at" id="57">
+                <value name="TEXT">
+                  <block type="lexical_variable_get" id="58">
+                    <field name="VAR">input</field>
+                  </block>
+                </value>
+                <value name="PIECE">
+                  <block type="text" id="59">
+                    <field name="TEXT">http://</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="60">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="B">
+          <block type="math_compare" id="u1Q`jlIW}x?cXeN;dq^d">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="text_starts_at" id="UJMX]nVk^Yt60go#ImlD">
+                <value name="TEXT">
+                  <block type="lexical_variable_get" id="089/L*vyb(*~k;0En;V]">
+                    <field name="VAR">input</field>
+                  </block>
+                </value>
+                <value name="PIECE">
+                  <block type="text" id="p!*FO;,2Y+m*)7dL^pL3">
+                    <field name="TEXT">https://</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="0%#Y4|NYw?_e3?3uJO*8">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="156" x="4633" y="751">
+    <field name="NAME">startdirectconnect</field>
+    <statement name="STACK">
+      <block type="local_declaration_statement" id="157" inline="false">
+        <mutation>
+          <localname name="ignore"></localname>
+        </mutation>
+        <field name="VAR0">ignore</field>
+        <value name="DECL0">
+          <block type="text" id="158">
+            <field name="TEXT"></field>
+          </block>
+        </value>
+        <statement name="STACK">
+          <block type="lexical_variable_set" id="159" inline="false">
+            <field name="VAR">ignore</field>
+            <value name="VALUE">
+              <block type="component_method" id="160" inline="false">
+                <mutation component_type="PhoneStatus" method_name="setHmacSeedReturnCode" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                <value name="ARG0">
+                  <block type="text" id="161">
+                    <field name="TEXT">emulator</field>
+                  </block>
+                </value>
+                <value name="ARG1">
+                  <block type="lexical_variable_get" id="%ie%1.1..TB8I9k/hBiU">
+                    <field name="VAR">global rendezvousServer</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <next>
+          <block type="component_method" id="162" inline="false">
+            <mutation component_type="PhoneStatus" method_name="startHTTPD" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+            <value name="ARG0">
+              <block type="logic_boolean" id="163">
+                <field name="BOOL">TRUE</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="79" inline="false" x="2896" y="851">
+    <mutation>
+      <arg name="code"></arg>
+    </mutation>
+    <field name="NAME">extractRendezvousServer</field>
+    <field name="VAR0">code</field>
+    <value name="RETURN">
+      <block type="controls_choose" id="80" inline="false">
+        <value name="TEST">
+          <block type="text_contains" id="81">
+            <mutation mode="CONTAINS"></mutation>
+            <field name="OP">CONTAINS</field>
+            <value name="TEXT">
+              <block type="lexical_variable_get" id="82">
+                <field name="VAR">code</field>
+              </block>
+            </value>
+            <value name="PIECE">
+              <block type="text" id="83">
+                <field name="TEXT">;</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="THENRETURN">
+          <block type="local_declaration_expression" id="84" inline="false">
+            <mutation>
+              <localname name="codes"></localname>
+            </mutation>
+            <field name="VAR0">codes</field>
+            <value name="DECL0">
+              <block type="text_split" id="85" inline="false">
+                <mutation mode="SPLIT"></mutation>
+                <field name="OP">SPLIT</field>
+                <value name="TEXT">
+                  <block type="lexical_variable_get" id="86">
+                    <field name="VAR">code</field>
+                  </block>
+                </value>
+                <value name="AT">
+                  <block type="text" id="87">
+                    <field name="TEXT">;</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="RETURN">
+              <block type="controls_do_then_return" id="88" inline="false">
+                <statement name="STM">
+                  <block type="procedures_callnoreturn" id="89" inline="false">
+                    <mutation name="setRendezvousServer">
+                      <arg name="value"></arg>
+                      <arg name="permanent"></arg>
+                    </mutation>
+                    <field name="PROCNAME">setRendezvousServer</field>
+                    <value name="ARG0">
+                      <block type="lists_select_item" id="90">
+                        <value name="LIST">
+                          <block type="lexical_variable_get" id="91">
+                            <field name="VAR">codes</field>
+                          </block>
+                        </value>
+                        <value name="NUM">
+                          <block type="math_number" id="92">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ARG1">
+                      <block type="logic_boolean" id="93">
+                        <field name="BOOL">FALSE</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <value name="VALUE">
+                  <block type="lists_select_item" id="94">
+                    <value name="LIST">
+                      <block type="lexical_variable_get" id="95">
+                        <field name="VAR">codes</field>
+                      </block>
+                    </value>
+                    <value name="NUM">
+                      <block type="math_number" id="96">
+                        <field name="NUM">2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="ELSERETURN">
+          <block type="lexical_variable_get" id="97">
+            <field name="VAR">code</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="9" x="130" y="1011">
+    <mutation>
+      <arg name="code"></arg>
+    </mutation>
+    <field name="NAME">callrendezvous</field>
+    <field name="VAR0">code</field>
+    <statement name="STACK">
+      <block type="component_set_get" id="10" inline="false">
+        <mutation component_type="Web" set_or_get="set" property_name="Url" is_generic="false" instance_name="Web1"></mutation>
+        <field name="COMPONENT_SELECTOR">Web1</field>
+        <field name="PROP">Url</field>
+        <value name="VALUE">
+          <block type="text_join" id="11" inline="false">
+            <mutation items="3"></mutation>
+            <value name="ADD0">
+              <block type="text" id="12">
+                <field name="TEXT">http://</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="lexical_variable_get" id="13">
+                <field name="VAR">global rendezvousServer</field>
+              </block>
+            </value>
+            <value name="ADD2">
+              <block type="text" id="14">
+                <field name="TEXT">/rendezvous/</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="component_method" id="15" inline="false">
+            <mutation component_type="Web" method_name="PostText" is_generic="false" instance_name="Web1"></mutation>
+            <field name="COMPONENT_SELECTOR">Web1</field>
+            <value name="ARG0">
+              <block type="component_method" id="16" inline="false">
+                <mutation component_type="Web" method_name="BuildRequestData" is_generic="false" instance_name="Web1"></mutation>
+                <field name="COMPONENT_SELECTOR">Web1</field>
+                <value name="ARG0">
+                  <block type="lists_create_with" id="17" inline="false">
+                    <mutation items="10"></mutation>
+                    <value name="ADD0">
+                      <block type="lists_create_with" id="18" inline="false">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="19">
+                            <field name="TEXT">key</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="lexical_variable_get" id="20">
+                            <field name="VAR">code</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="lists_create_with" id="21" inline="false">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="22">
+                            <field name="TEXT">ipaddr</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id="23">
+                            <mutation component_type="PhoneStatus" method_name="GetWifiIpAddress" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD2">
+                      <block type="lists_create_with" id="24" inline="false">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="25">
+                            <field name="TEXT">port</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="text" id="26">
+                            <field name="TEXT">9987</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD3">
+                      <block type="lists_create_with" id="9,YdOZ:@gq@ci2!vb)2#">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="zp,i*goyBtX/F{;$Ea|b">
+                            <field name="TEXT">webrtc</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="logic_negate" id="^u8w2dblE!Y#Vr^ZT;sS">
+                            <value name="BOOL">
+                              <block type="component_set_get" id="qg:T=8o)HNv%C|gUA(Bs">
+                                <mutation component_type="CheckBox" set_or_get="get" property_name="Checked" is_generic="false" instance_name="CheckBox1"></mutation>
+                                <field name="COMPONENT_SELECTOR">CheckBox1</field>
+                                <field name="PROP">Checked</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD4">
+                      <block type="lists_create_with" id="!EYOGgvQNcW*Gj*y8]#}">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="ewn2ra6|~iwrmq)%+e4x">
+                            <field name="TEXT">version</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id="`aL)?L_:[aaKftu6Xk^7">
+                            <mutation component_type="PhoneStatus" method_name="GetVersionName" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD5">
+                      <block type="lists_create_with" id="t^@FVOKl1Na%vzfzwh2[">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="N,,m(+`}dg+Jy5y8q*gs">
+                            <field name="TEXT">api</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id="@Kh2vH_B7~WrI/!YlTN^">
+                            <mutation component_type="PhoneStatus" method_name="SdkLevel" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD6">
+                      <block type="lists_create_with" id="+o$39vd!Z,:(})04x#SW">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="{=l,a3?*3+FGh=Tv_9}~">
+                            <field name="TEXT">installer</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id=":1#WHV95X6:T6/R[Ay%7">
+                            <mutation component_type="PhoneStatus" method_name="GetInstaller" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD7">
+                      <block type="lists_create_with" id="3?x|P8JB#okUP8#oa5~o">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="dh=0y=Jn`kt,SG-ksVd[">
+                            <field name="TEXT">aid</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id="`g:@(vs,TD%uU%D1d+q/">
+                            <mutation component_type="PhoneStatus" method_name="InstallationId" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD8">
+                      <block type="lists_create_with" id="}V;[y55Tf$v{NV$fLE!%">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="M;4c#e*(tb{AT6CJfQ4x">
+                            <field name="TEXT">r2</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="logic_boolean" id="{H$VZh}SskYpnmxy(Agi">
+                            <field name="BOOL">TRUE</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ADD9">
+                      <block type="lists_create_with" id="2]Ux?O*E_Miw@u*]*vHD">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="vI1Pd],RfsRTa8pTuKky">
+                            <field name="TEXT">useproxy</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="logic_boolean" id=";zEGHb?#[(hs6#)d~|q0">
+                            <field name="BOOL">TRUE</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="61" x="1944" y="1028">
+    <mutation component_type="Notifier" is_generic="false" instance_name="Notifier1" event_name="AfterChoosing"></mutation>
+    <field name="COMPONENT_SELECTOR">Notifier1</field>
+    <statement name="DO">
+      <block type="controls_if" id="62" inline="false">
+        <value name="IF0">
+          <block type="logic_compare" id="63">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="lexical_variable_get" id="64">
+                <mutation>
+                  <eventparam name="choice"></eventparam>
+                </mutation>
+                <field name="VAR">choice</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="text" id="65">
+                <field name="TEXT">Exit</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_method" id="66">
+            <mutation component_type="PhoneStatus" method_name="shutdown" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" id="164" inline="false" x="4633" y="984">
+    <field name="NAME">rendezvousServer</field>
+    <value name="VALUE">
+      <block type="text" id="165">
+        <field name="TEXT">rendezvous.appinventor.mit.edu</field>
+      </block>
+    </value>
+  </block>
+  <block type="component_event" id="47" x="1163" y="1193">
+    <mutation component_type="Button" is_generic="false" instance_name="ConnectButton" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">ConnectButton</field>
+    <statement name="DO">
+      <block type="component_method" id="48">
+        <mutation component_type="TextBox" method_name="HideKeyboard" is_generic="false" instance_name="CodeBox"></mutation>
+        <field name="COMPONENT_SELECTOR">CodeBox</field>
+        <next>
+          <block type="procedures_callnoreturn" id="49" inline="false">
+            <mutation name="processcode">
+              <arg name="x"></arg>
+            </mutation>
+            <field name="PROCNAME">processcode</field>
+            <value name="ARG0">
+              <block type="component_set_get" id="50">
+                <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="CodeBox"></mutation>
+                <field name="COMPONENT_SELECTOR">CodeBox</field>
+                <field name="PROP">Text</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="67" x="1944" y="1195">
+    <mutation>
+      <arg name="x"></arg>
+    </mutation>
+    <field name="NAME">processcode</field>
+    <field name="VAR0">x</field>
+    <statement name="STACK">
+      <block type="controls_if" id="68" inline="false">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="procedures_callreturn" id="69" inline="false">
+            <mutation name="isAPK">
+              <arg name="input"></arg>
+            </mutation>
+            <field name="PROCNAME">isAPK</field>
+            <value name="ARG0">
+              <block type="lexical_variable_get" id="70">
+                <field name="VAR">x</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_method" id="71" inline="false">
+            <mutation component_type="PhoneStatus" method_name="installURL" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+            <value name="ARG0">
+              <block type="lexical_variable_get" id="72">
+                <field name="VAR">x</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="component_set_get" id="@?Z^`[7(9PJW1aG$idxb">
+            <mutation component_type="PhoneStatus" set_or_get="set" property_name="WebRTC" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+            <field name="PROP">WebRTC</field>
+            <value name="VALUE">
+              <block type="logic_negate" id=";m];d(UwE=Sz[^}hDgO;">
+                <value name="BOOL">
+                  <block type="component_set_get" id=")=M-%eM;_@[Oa)Co%R|~">
+                    <mutation component_type="CheckBox" set_or_get="get" property_name="Checked" is_generic="false" instance_name="CheckBox1"></mutation>
+                    <field name="COMPONENT_SELECTOR">CheckBox1</field>
+                    <field name="PROP">Checked</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="procedures_callnoreturn" id="73" inline="false">
+                <mutation name="callrendezvous">
+                  <arg name="code"></arg>
+                </mutation>
+                <field name="PROCNAME">callrendezvous</field>
+                <value name="ARG0">
+                  <block type="component_method" id="74" inline="false">
+                    <mutation component_type="PhoneStatus" method_name="setHmacSeedReturnCode" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                    <value name="ARG0">
+                      <block type="procedures_callreturn" id="75" inline="false">
+                        <mutation name="extractRendezvousServer">
+                          <arg name="code"></arg>
+                        </mutation>
+                        <field name="PROCNAME">extractRendezvousServer</field>
+                        <value name="ARG0">
+                          <block type="lexical_variable_get" id="76">
+                            <field name="VAR">x</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ARG1">
+                      <block type="lexical_variable_get" id="BCr,Lm`fIN}SKZ0fNNZ%">
+                        <field name="VAR">global rendezvousServer</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="component_method" id="77" inline="false">
+                    <mutation component_type="PhoneStatus" method_name="startHTTPD" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                    <value name="ARG0">
+                      <block type="logic_false" id="78">
+                        <field name="BOOL">FALSE</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="98" x="2897" y="1216">
+    <field name="NAME">resetRendezvousServer</field>
+    <statement name="STACK">
+      <block type="lexical_variable_set" id="99" inline="false">
+        <field name="VAR">global rendezvousServer</field>
+        <value name="VALUE">
+          <block type="text" id="100">
+            <field name="TEXT">rendezvous.appinventor.mit.edu</field>
+          </block>
+        </value>
+        <next>
+          <block type="component_method" id="101" inline="false">
+            <mutation component_type="TinyDB" method_name="ClearTag" is_generic="false" instance_name="TinyDB1"></mutation>
+            <field name="COMPONENT_SELECTOR">TinyDB1</field>
+            <value name="ARG0">
+              <block type="text" id="102">
+                <field name="TEXT">rendezvousServer</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="34" x="1163" y="1336">
+    <field name="NAME">checkWiFi</field>
+    <statement name="STACK">
+      <block type="controls_if" id="35" inline="false">
+        <value name="IF0">
+          <block type="math_compare" id="36">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="math_number" id="37">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="text_starts_at" id="38">
+                <value name="TEXT">
+                  <block type="component_method" id="39">
+                    <mutation component_type="PhoneStatus" method_name="GetWifiIpAddress" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                  </block>
+                </value>
+                <value name="PIECE">
+                  <block type="text" id="40">
+                    <field name="TEXT">Error</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_method" id="41" inline="false">
+            <mutation component_type="Notifier" method_name="ShowChooseDialog" is_generic="false" instance_name="Notifier1"></mutation>
+            <field name="COMPONENT_SELECTOR">Notifier1</field>
+            <value name="ARG0">
+              <block type="text" id="42">
+                <field name="TEXT">Your Device does not appear to have a WiFi Connection</field>
+              </block>
+            </value>
+            <value name="ARG1">
+              <block type="text" id="43">
+                <field name="TEXT">No WiFi</field>
+              </block>
+            </value>
+            <value name="ARG2">
+              <block type="text" id="44">
+                <field name="TEXT">Continue without WiFi</field>
+              </block>
+            </value>
+            <value name="ARG3">
+              <block type="text" id="45">
+                <field name="TEXT">Exit</field>
+              </block>
+            </value>
+            <value name="ARG4">
+              <block type="logic_boolean" id="46">
+                <field name="BOOL">FALSE</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="139" x="4001" y="1260">
     <mutation>
       <arg name="value"></arg>
       <arg name="permanent"></arg>
@@ -1033,7 +1089,51 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="147" x="0" y="4092">
+  <block type="component_event" id="103" x="2897" y="1359">
+    <mutation component_type="Button" is_generic="false" instance_name="ResetRendezvousServer" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">ResetRendezvousServer</field>
+    <statement name="DO">
+      <block type="procedures_callnoreturn" id="104">
+        <mutation name="resetRendezvousServer"></mutation>
+        <field name="PROCNAME">resetRendezvousServer</field>
+        <next>
+          <block type="component_set_get" id="105" inline="false">
+            <mutation component_type="VerticalArrangement" set_or_get="set" property_name="Visible" is_generic="false" instance_name="SettingsPanel"></mutation>
+            <field name="COMPONENT_SELECTOR">SettingsPanel</field>
+            <field name="PROP">Visible</field>
+            <value name="VALUE">
+              <block type="logic_boolean" id="106">
+                <field name="BOOL">FALSE</field>
+              </block>
+            </value>
+            <next>
+              <block type="component_set_get" id="107" inline="false">
+                <mutation component_type="VerticalArrangement" set_or_get="set" property_name="Visible" is_generic="false" instance_name="MainPanel"></mutation>
+                <field name="COMPONENT_SELECTOR">MainPanel</field>
+                <field name="PROP">Visible</field>
+                <value name="VALUE">
+                  <block type="logic_boolean" id="108">
+                    <field name="BOOL">TRUE</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="109" x="2897" y="1503">
+    <mutation component_type="Button" is_generic="false" instance_name="ScanButton" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">ScanButton</field>
+    <statement name="DO">
+      <block type="component_method" id="110">
+        <mutation component_type="BarcodeScanner" method_name="DoScan" is_generic="false" instance_name="BarcodeScanner1"></mutation>
+        <field name="COMPONENT_SELECTOR">BarcodeScanner1</field>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="147" x="4001" y="1468">
     <mutation component_type="Button" is_generic="false" instance_name="SetRenzvousServer" event_name="Click"></mutation>
     <field name="COMPONENT_SELECTOR">SetRenzvousServer</field>
     <statement name="DO">
@@ -1088,61 +1188,5 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="156" x="0" y="4313">
-    <field name="NAME">startdirectconnect</field>
-    <statement name="STACK">
-      <block type="local_declaration_statement" id="157" inline="false">
-        <mutation>
-          <localname name="ignore"></localname>
-        </mutation>
-        <field name="VAR0">ignore</field>
-        <value name="DECL0">
-          <block type="text" id="158">
-            <field name="TEXT"></field>
-          </block>
-        </value>
-        <statement name="STACK">
-          <block type="lexical_variable_set" id="159" inline="false">
-            <field name="VAR">ignore</field>
-            <value name="VALUE">
-              <block type="component_method" id="160" inline="false">
-                <mutation component_type="PhoneStatus" method_name="setHmacSeedReturnCode" is_generic="false" instance_name="PhoneStatus1"></mutation>
-                <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-                <value name="ARG0">
-                  <block type="text" id="161">
-                    <field name="TEXT">emulator</field>
-                  </block>
-                </value>
-                <value name="ARG1">
-                  <block type="lexical_variable_get" id="%ie%1.1..TB8I9k/hBiU">
-                    <field name="VAR">global rendezvousServer</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </statement>
-        <next>
-          <block type="component_method" id="162" inline="false">
-            <mutation component_type="PhoneStatus" method_name="startHTTPD" is_generic="false" instance_name="PhoneStatus1"></mutation>
-            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
-            <value name="ARG0">
-              <block type="logic_boolean" id="163">
-                <field name="BOOL">TRUE</field>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="global_declaration" id="164" inline="false" x="0" y="4546">
-    <field name="NAME">rendezvousServer</field>
-    <value name="VALUE">
-      <block type="text" id="165">
-        <field name="TEXT">rendezvous.appinventor.mit.edu</field>
-      </block>
-    </value>
-  </block>
-  <yacodeblocks ya-version="204" language-version="30"></yacodeblocks>
+  <yacodeblocks ya-version="213" language-version="34"></yacodeblocks>
 </xml>

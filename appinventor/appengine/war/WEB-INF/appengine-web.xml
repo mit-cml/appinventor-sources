@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <application></application>
-  <version>1</version>
-  <runtime>java8</runtime>
+  <runtime>java11</runtime>
+  <app-engine-apis>true</app-engine-apis>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
@@ -60,8 +59,6 @@
 
     <!-- Name of storage bucket in Google Cloud Store -->
     <property name="gcs.bucket" value="" />
-    <!-- Whether or not to use GCS for storage -->
-    <property name="use.gcs" value="true" />
 
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
@@ -113,6 +110,10 @@
          MOTD checking, make the interval long, because this check is
          resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
+
+    <!-- The time at which the server should show an expiration notice,
+         specified in ISO 8601 format, e.g., 2021-12-31T11:59:59Z -->
+    <property name="service.expires.time" value="" />
 
     <!-- Set this to false if we should not send the Git build version with build requests.
          This is useful when testing new servers where we don't want to require the
@@ -178,9 +179,4 @@
     <property name="http.maxConnections" value="5" />
 
   </system-properties>
-
-  <!-- Enable concurrency in the app engine server -->
-  <threadsafe>true</threadsafe>
-
-
 </appengine-web-app>

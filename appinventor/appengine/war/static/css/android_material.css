@@ -1,0 +1,38 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
+/*
+ * Copyright 2020 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+.ode-SimpleMockFormPhoneBarAndroidMaterial {
+  background-color: #ECEFF1;
+}
+
+/* Material Button*/
+.ode-SimpleMockForm-AndroidMaterial .ode-SimpleMockButton {
+  padding: 4px 8px;
+  text-shadow: none;
+  border: 0;
+  border-radius: 2px;
+  background-color: #E0E0E0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* Hover for Material Button*/
+.ode-SimpleMockForm-AndroidMaterial .ode-SimpleMockButton:hover {
+  color: #333333;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+
+
+

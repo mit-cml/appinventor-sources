@@ -52,7 +52,8 @@ import android.graphics.Paint;
         "that the latter can get its appearance from an image file, while a " +
         "<code>Ball</code>'s appearance can be changed only by varying its " +
         "<code>PaintColor</code> and <code>Radius</code> properties.</p>",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/ball.png")
 @SimpleObject
 public final class Ball extends Sprite {
   private int radius;
@@ -126,7 +127,8 @@ public final class Ball extends Sprite {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "5")
-  @SimpleProperty(description = "The distance from the edge of the Ball to its center.")
+  @SimpleProperty(description = "The distance from the edge of the Ball to its center.",
+      category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
     int dr = radius - this.radius;
     // If the origin is at the center, the upper left corner moves to keep the center constant.
@@ -167,7 +169,7 @@ public final class Ball extends Sprite {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void PaintColor(int argb) {
     paintColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
@@ -189,7 +191,8 @@ public final class Ball extends Sprite {
       defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible = false,
       description = "Whether the x- and y-coordinates should represent the center of the Ball " +
-          "(true) or its left and top edges (false).")
+          "(true) or its left and top edges (false).",
+      category = PropertyCategory.BEHAVIOR)
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
   }

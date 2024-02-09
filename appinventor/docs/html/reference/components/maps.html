@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -191,7 +191,7 @@
   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
  map feature.</dd>
   <dt id="Circle.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of the feature. For Circles, this returns the text “Circle”.</dd>
+  <dd>Returns the type of the feature. For Circles, this returns MapFeature.Circle (“Circle”).</dd>
   <dt id="Circle.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">Circle</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">Circle</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -381,7 +381,7 @@
   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
  map feature.</dd>
   <dt id="LineString.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of the map feature. For LineString, this returns the text “LineString”.</dd>
+  <dd>Returns the type of the map feature. For LineString, this returns MapFeature.LineString (“LineString”).</dd>
   <dt id="LineString.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">LineString</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">LineString</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -510,9 +510,7 @@
  availability and accuracy of this feature will depend on whether the user has location
  services enabled and which location providers are available.</dd>
   <dt id="Map.ShowZoom" class="boolean"><em>ShowZoom</em></dt>
-  <dd>Shows or hides an icon indicating the user’s current location on the <a href="#Map"><code class="highlighter-rouge">Map</code></a>. The
- availability and accuracy of this feature will depend on whether the user has location
- services enabled and which location providers are available.</dd>
+  <dd>Specifies whether to show zoom controls or not.</dd>
   <dt id="Map.UserLatitude" class="number ro bo"><em>UserLatitude</em></dt>
   <dd>Returns the user’s latitude if ShowUser is enabled.</dd>
   <dt id="Map.UserLongitude" class="number ro bo"><em>UserLongitude</em></dt>
@@ -570,7 +568,7 @@
  This event is run <em>after</em> the <code class="highlighter-rouge">StopDrag</code> event on the corresponding feature and after the
  <code class="highlighter-rouge">when any ... StopDrag</code> event if one is provided.</dd>
   <dt id="Map.GotFeatures">GotFeatures(<em class="text">url</em>,<em class="list">features</em>)</dt>
-  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when when a feature collection is successfully read from the
+  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when a feature collection is successfully read from the
  given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">features</code> parameter will be a list of
  feature descriptions that can be converted into components using the
  <a href="#Map.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a> method.</dd>
@@ -870,7 +868,7 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
  map feature.</dd>
   <dt id="Polygon.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of the feature. For polygons, this returns the text “Polygon”.</dd>
+  <dd>Returns the type of the feature. For polygons, this returns MapFeature.Polygon (“Polygon”).</dd>
   <dt id="Polygon.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">Polygon</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">Polygon</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -957,7 +955,7 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
  map feature.</dd>
   <dt id="Rectangle.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of the feature. For rectangles, this returns the text “Rectangle”.</dd>
+  <dd>Returns the type of the feature. For rectangles, this returns MapFeature.Rectangle (“Rectangle”).</dd>
   <dt id="Rectangle.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">Rectangle</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">Rectangle</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -1091,7 +1089,7 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -1110,15 +1108,16 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

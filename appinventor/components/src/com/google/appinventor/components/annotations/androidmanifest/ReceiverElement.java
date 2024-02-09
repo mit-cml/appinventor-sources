@@ -97,7 +97,7 @@ public @interface ReceiverElement {
    *
    * @return  the receiver exported attribute
    */
-  String exported() default "";
+  String exported() default "true";
 
   /** Whether or not the broadcast receiver is direct-boot aware; that is, whether
    * or not it can run before the user unlocks the device.

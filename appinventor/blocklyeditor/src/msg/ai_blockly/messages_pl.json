@@ -547,5 +547,8 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO": "do",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET": "ustaw",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": "do",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "składnika"
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "składnika",
+	"Blockly.Msg.REPL_RESET": "Resetowanie",
+	"Blockly.Msg.REPL_FACTORY_RESET": "Spowoduje to próbę zresetowania emulatora do stanu fabrycznego. Jeśli wcześniej aktualizowałeś aplikację Companion zainstalowaną w emulatorze, prawdopodobnie będziesz musiał zrobić to ponownie.",
+	"Blockly.Msg.REPL_CANCEL": "Anulować"
 }

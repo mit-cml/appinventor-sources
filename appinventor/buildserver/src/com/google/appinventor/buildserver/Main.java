@@ -1,20 +1,23 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
+import com.google.appinventor.buildserver.stats.NullStatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 /**
  * Main entry point for the command line version of the YAIL compiler.
@@ -22,9 +25,6 @@ import java.util.zip.ZipFile;
  * @author markf@google.com (Mark Friedman)
  */
 public final class Main {
-
-  public final static String APK_EXTENSION_VALUE = "apk";
-  public final static String AAB_EXTENSION_VALUE = "aab";
 
   static class CommandLineOptions {
     @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
@@ -96,7 +96,18 @@ public final class Main {
       System.exit(1);
     }
 
-    ProjectBuilder projectBuilder = new ProjectBuilder();
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
+    }
+
+    AndroidBuildFactory.install();
+    // TODO(ewpatton): Install iOS build factory once published
+
+    ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());
     ZipFile zip = null;
     try {
       zip = new ZipFile(commandLineOptions.inputZipFile);
@@ -115,7 +126,7 @@ public final class Main {
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir,
                                          null,
-                                         AAB_EXTENSION_VALUE.equals(commandLineOptions.ext));
+                                         commandLineOptions.ext);
     System.exit(result.getResult());
   }
 

@@ -1,0 +1,48 @@
+name: 'Java CI'
+
+on: push
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Set up JDK 1.8'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: 'Checkout submodules'
+        run: git submodule update --init --recursive
+      - name: 'Install 32-bit dependencies'
+        run: sudo apt-get install -y libc6-i386 lib32z1 lib32stdc++6
+      - name: 'Download phantomJS'
+        run: |
+          mkdir /tmp/phantomJS
+          wget -P /tmp/phantomJS/ https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+      - name: 'Untar and add to PATH'
+        run: |
+          tar -xf /tmp/phantomJS/phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /tmp/phantomJS/
+          echo "/tmp/phantomJS/phantomjs-2.1.1-linux-x86_64/bin" >> $GITHUB_PATH
+      - name: 'Make Auth Key'
+        run: ant MakeAuthKey
+        working-directory: appinventor
+      - name: 'Build Appinventor'
+        run: ant noplay
+        working-directory: appinventor
+      - name: 'Run Tests'
+        run: ant tests
+        working-directory: appinventor
+      - name: 'Upload Test Reports to Artifacts'
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: Test Reports
+          path: appinventor/reports
+      - name: 'Build Companion'
+        run: ant PlayApp
+        working-directory: appinventor
+      - name: 'Upload Companion to Artifacts'
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: MIT AI2 Companion
+          path: appinventor/build/buildserver/MIT AI2 Companion.apk
