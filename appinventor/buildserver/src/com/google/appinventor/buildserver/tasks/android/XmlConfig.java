@@ -348,6 +348,7 @@ public class XmlConfig implements AndroidTask {
         Files.newOutputStream(paths.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
+      out.write("   <files-path name=\"internal_files\" path=\".\"/>\n");
       out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
       out.write("</paths>\n");
     } catch (IOException e) {

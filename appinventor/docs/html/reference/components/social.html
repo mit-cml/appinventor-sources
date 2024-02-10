@@ -543,9 +543,12 @@
 
 <p>The file path can be taken directly from other components such as the
  <a href="media.html#Camera"><code class="highlighter-rouge">Camera</code></a> or the <a href="media.html#ImagePicker"><code class="highlighter-rouge">ImagePicker</code></a>, but can also be
- specified directly to read from storage. Be aware that different devices treat storage
- differently, so a few things to try if, for instance, you have a file called <code class="highlighter-rouge">arrow.gif</code> in the
- folder <code class="highlighter-rouge">Appinventor/assets</code>, would be:</p>
+ specified directly to read from storage. The default behaviour is to share files from the private
+ data directory associated with your app. If the file path starts with a slash (<code class="highlighter-rouge">/</code>), then the file
+ relative to <code class="highlighter-rouge">/</code> is shared.</p>
+
+<p>Be aware that different devices treat storage differently, so a few things to try if, for
+ instance, you have a file called <code class="highlighter-rouge">arrow.gif</code> in the folder <code class="highlighter-rouge">Appinventor/assets</code>, would be:</p>
 
 <ul>
   <li><code class="highlighter-rouge">"file:///sdcard/Appinventor/assets/arrow.gif"</code>; or</li>

@@ -493,9 +493,12 @@ Sharing is a non-visible component that enables sharing files and/or messages be
 
  The file path can be taken directly from other components such as the
  [`Camera`](media.html#Camera) or the [`ImagePicker`](media.html#ImagePicker), but can also be
- specified directly to read from storage. Be aware that different devices treat storage
- differently, so a few things to try if, for instance, you have a file called `arrow.gif` in the
- folder `Appinventor/assets`, would be:
+ specified directly to read from storage. The default behaviour is to share files from the private
+ data directory associated with your app. If the file path starts with a slash (`/`), then the file
+ relative to `/` is shared.
+ 
+ Be aware that different devices treat storage differently, so a few things to try if, for
+ instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
 
  - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
  - `"/storage/Appinventor/assets/arrow.gif"`
