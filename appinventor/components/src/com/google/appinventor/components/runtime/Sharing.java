@@ -22,7 +22,6 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
-import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.File;
 
@@ -38,7 +37,7 @@ import java.io.File;
  * data directory associated with your app. If the file path starts with a slash (`/`), then the file
  * relative to `/` is shared.
  * 
- * Be aware that different devices treat storage differently, so a few things to try if, for 
+ * Be aware that different devices treat storage differently, so a few things to try if, for
  * instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
  *
  * - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
@@ -111,7 +110,9 @@ public class Sharing extends AndroidNonvisibleComponent {
   public void ShareFileWithMessage(String file, String message) {
     if (!file.startsWith("file://")) {
       if (!file.startsWith("/")) {
-        file = form.getFilesDir().getPath() + "/" +  file;
+        // Files specified using a relative path should be resolved based on the form's default
+        // file scope.
+        file = form.getDefaultPath(file);
       } else {
         file = "file://" + file;
       }

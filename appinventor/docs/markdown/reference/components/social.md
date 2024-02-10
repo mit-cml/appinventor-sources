@@ -497,7 +497,7 @@ Sharing is a non-visible component that enables sharing files and/or messages be
  data directory associated with your app. If the file path starts with a slash (`/`), then the file
  relative to `/` is shared.
  
- Be aware that different devices treat storage differently, so a few things to try if, for 
+ Be aware that different devices treat storage differently, so a few things to try if, for
  instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
 
  - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
