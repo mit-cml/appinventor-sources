@@ -486,8 +486,13 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE +
       ' ' + Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO }],
   customContextMenu: function (options) {
+    // Remove "do it" option
+    const doiItIndex = options.findIndex(function(option) {
+      return option.text === Blockly.Msg['DO_IT']
+    });
+    options.splice(doiItIndex, 1);
+
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
-    Blockly.BlocklyEditor.addPngExportOption(this, options);
   },
   getParameters: function() {
     return this.arguments_;

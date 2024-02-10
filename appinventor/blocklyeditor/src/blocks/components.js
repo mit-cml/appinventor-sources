@@ -589,11 +589,15 @@ Blockly.Blocks.component_event = {
     return tb;
   },
   customContextMenu: function (options) {
+    // Remove "do it" option
+    const doiItIndex = options.findIndex(function(option) {
+      return option.text === Blockly.Msg['DO_IT']
+    });
+    options.splice(doiItIndex, 1);
+
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.BlocklyEditor.addPngExportOption(this, options);
-    Blockly.BlocklyEditor.addGenerateYailOption(this, options);
-  },
+   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
   verify : function () {
@@ -1067,7 +1071,6 @@ Blockly.Blocks.component_method = {
 
   customContextMenu: function(options) {
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.Block.prototype.customContextMenu.call(this, options);
   }
 
 };
@@ -1452,7 +1455,6 @@ Blockly.Blocks.component_set_get = {
 
   customContextMenu: function(options) {
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.Block.prototype.customContextMenu.call(this, options);
   }
 
 };
