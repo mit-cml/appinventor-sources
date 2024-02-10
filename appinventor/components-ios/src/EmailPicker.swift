@@ -104,6 +104,7 @@ class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelega
   
   func setTextbase(_ base: TextBoxBase) {
     _base = base
+    _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
   }
   
   func textViewDidBeginEditing(_ textView: UITextView) {
@@ -116,6 +117,12 @@ class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelega
   
   func textFieldDidEndEditing(_ textField: UITextField) {
     _base?.LostFocus()
+  }
+
+  func setCursor(at position: Int32) {
+    if let offset = _field.position(from: _field.beginningOfDocument, offset: Int(position)) {
+      _field.selectedTextRange = _field.textRange(from: offset, to: offset)
+    }
   }
 }
 

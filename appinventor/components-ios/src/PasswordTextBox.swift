@@ -128,7 +128,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     return false
   }
 
-  func togggleVisible(_ visible: Bool) {
+  func toggleVisible(_ visible: Bool) {
     _field.isSecureTextEntry = !visible
     // fix cursor position
     let text = _field.text ?? ""
@@ -138,6 +138,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
   
   func setTextbase(_ base: TextBoxBase) {
     _base = base
+    _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
   }
   
   func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -146,6 +147,12 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
   
   func textFieldDidEndEditing(_ textField: UITextField) {
     _base?.LostFocus()
+  }
+
+  func setCursor(at position: Int32) {
+    if let offset = _field.position(from: _field.beginningOfDocument, offset: Int(position)) {
+      _field.selectedTextRange = _field.textRange(from: offset, to: offset)
+    }
   }
 }
 
@@ -169,7 +176,7 @@ open class PasswordTextBox: TextBoxBase {
 
   @objc open var PasswordVisible: Bool = false {
     didSet {
-      _adapter.togggleVisible(PasswordVisible)
+      _adapter.toggleVisible(PasswordVisible)
       // maintain proper type face
       FontTypeface = FontTypeface + 0
     }
