@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2022 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -588,7 +588,12 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 9
   // For YOUNG_ANDROID_VERSION 226:
   // - FORM_COMPONENT_VERSION was incremented to 31
-  public static final int YOUNG_ANDROID_VERSION = 226;
+  // For YOUNG_ANDROID_VERSION 227:
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 7
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 14
+  // - PASSWORD_TEXTBOX_VERSION was incremented to 7
+
+  public static final int YOUNG_ANDROID_VERSION = 227;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -924,7 +929,10 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For EMAILPICKER_COMPONENT_VERSION 3:
   // - RequestFocus function was added (via TextBoxBase)
-  public static final int EMAILPICKER_COMPONENT_VERSION = 3;
+  // For EMAILPICKER_COMPONENT_VERSION 7:
+  // - Bumped up to be strictly greater than Kodular's EmailPicker (6).
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  public static final int EMAILPICKER_COMPONENT_VERSION = 7;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps
@@ -1262,9 +1270,12 @@ public class YaVersion {
   // - Added RequestFocus Function (via TextBoxBase)
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 4:
   // - Added PasswordVisible property
-  // For For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
   // - Added NumbersOnly property
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 5;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 7:
+  // - Bumped up to be strictly greater than Kodular's PasswordTextBox (6).
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 7;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
@@ -1392,7 +1403,10 @@ public class YaVersion {
   // - RequestFocus method was added
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 6;
+  // For TEXTBOX_COMPONENT_VERSION 14:
+  // - Bumped up to be strictly greater than Kodular's TextBox (13).
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  public static final int TEXTBOX_COMPONENT_VERSION = 14;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice

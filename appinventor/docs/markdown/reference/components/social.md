@@ -226,6 +226,9 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 {:id="EmailPicker.Hint" .text} *Hint*
 : `EmailPicker` hint for the user.
 
+{:id="EmailPicker.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the EmailPicker.
+
 {:id="EmailPicker.Text" .text} *Text*
 : The text in the `EmailPicker`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#EmailPicker.Enabled) property is false).
@@ -263,9 +266,23 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : Event raised when the `EmailPicker` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="EmailPicker.TextChanged"} TextChanged()
+: Event raised when the text of the `EmailPicker` is changed, either by the user or the program.
+
 ### Methods  {#EmailPicker-Methods}
 
 {:.methods}
+
+{:id="EmailPicker.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the `EmailPicker` before the character at the given 1-indexed position. If the given position is 
+larger than the length of the `EmailPicker`, the cursor will be moved to the end of the text; and if the given position is 
+smaller or equal to 1, the cursor will be moved to the start.
+
+{:id="EmailPicker.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the `EmailPicker`'s text.
+
+{:id="EmailPicker.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the `EmailPicker`'s text.
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.

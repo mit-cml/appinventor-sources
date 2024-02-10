@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -942,6 +942,10 @@ public final class YoungAndroidFormUpgrader {
       // RequestFocus function was added (via TextBoxBase)
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 7) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1495,6 +1499,10 @@ public final class YoungAndroidFormUpgrader {
       // Added NumbersOnly property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 7) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1852,6 +1860,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // ReadOnly property was added
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 14) {
+      // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+      srcCompVersion = 14;
     }
     return srcCompVersion;
   }

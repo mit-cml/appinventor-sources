@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2022 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2024 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -1955,7 +1955,18 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // RequestFocus was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of EmailPicker (6).
+    4: "noUpgrade",
+    5: "noUpgrade",
+    6: "noUpgrade",
+
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
+      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
 
   }, // End EmailPicker upgraders
 
@@ -2768,7 +2779,16 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // NumbersOnly was added
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of PasswordTextBox (6).
+    6: "noUpgrade",
+
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
+      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
 
   }, // End PasswordTextBox upgraders
 
@@ -3139,8 +3159,23 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added RequestFocus method
     5: "noUpgrade",
 
-    // AI3: Added ReadOnly property
-    6: "noUpgrade"
+    // AI2: Added ReadOnly property
+    6: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of TextBox (13).
+    7: "noUpgrade",
+    8: "noUpgrade",
+    9: "noUpgrade",
+    10: "noUpgrade",
+    11: "noUpgrade",
+    12: "noUpgrade",
+    13: "noUpgrade",
+
+    // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    14: [
+      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
 
   }, // End TextBox upgraders
 

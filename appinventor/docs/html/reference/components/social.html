@@ -309,6 +309,8 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="EmailPicker.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">EmailPicker</code> hint for the user.</dd>
+  <dt id="EmailPicker.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint text of the <code class="highlighter-rouge">EmailPicker</code>.</dd>
   <dt id="EmailPicker.Text" class="text"><em>Text</em></dt>
   <dd>The text in the <code class="highlighter-rouge">EmailPicker</code>, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the <a href="#EmailPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
@@ -339,11 +341,22 @@
   <dt id="EmailPicker.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">EmailPicker</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="EmailPicker.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the <code class="highlighter-rouge">EmailPicker</code> is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="EmailPicker-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="EmailPicker.MoveCursorTo" class="method"><i></i> MoveCursorTo()</dt>
+  <dd>Repositions the cursor of the <code class="highlighter-rouge">EmailPicker</code> before the character at the given
+  1-indexed position. If the given position is larger than the length of the
+  <code class="highlighter-rouge">EmailPicker</code>, the cursor will be moved to the end of the text; and if the given
+  position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="EmailPicker.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the <code class="highlighter-rouge">EmailPicker</code>'s text.</dd>
+  <dt id="EmailPicker.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the <code class="highlighter-rouge">EmailPicker</code>'s text.</dd>
   <dt id="EmailPicker.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">EmailPicker</code>.</dd>
 </dl>
