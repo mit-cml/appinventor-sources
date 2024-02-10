@@ -49,6 +49,7 @@ public class ComponentConstants {
    * TextBox, PasswordTextBox, and EmailPicker components.
    */
   public static final int TEXTBOX_PREFERRED_WIDTH = 160;
+  public static final String TEXTBOX_HINT_COLOR = "&H808080";
 
    /**
    * HorizontalArrangement, VerticalArrangement, and Screen

@@ -74,6 +74,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
   //The default text color of the textbox hint, according to theme
   private int hintColorDefault;
 
+  // Backing for hint text color
+  private int hintColor;
+
   /**
    * Creates a new TextBoxBase component
    *
@@ -122,10 +125,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     FontSize(Component.FONT_DEFAULT_SIZE);
     Hint("");
     if (isHighContrast || container.$form().HighContrast()) {
-      view.setHintTextColor(COLOR_YELLOW);
-    }
-    else {
-      view.setHintTextColor(hintColorDefault);
+      HintColor(COLOR_YELLOW);
+    } else {
+      HintColor(hintColorDefault);
     }
 
     Text("");
@@ -570,5 +572,33 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @Override
   public boolean getLargeFont() {
     return isBigText;
+  }
+
+  /**
+   * Specifies the hint text color of the %type% as an alpha-red-green-blue integer.
+   *
+   * @param color hint RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.TEXTBOX_HINT_COLOR)
+  @SimpleProperty(description = "The color for the hint text color. You can choose a color by name the " +
+      "Designer or in the Blocks Editor.")
+  public void HintColor(int color) {
+    hintColor = color;
+    view.setHintTextColor(color);
+    view.invalidate();
+  }
+
+  /**
+   * Returns the hint text color of the %type% as an alpha-red-green-blue
+   * integer.
+   *
+   * @return hint RGB color with alpha
+   */
+  @SimpleProperty(description = "The color for the hint text. You can choose a color by name the " +
+      "Designer or in the Blocks Editor.")
+  @IsColor
+  public int HintColor() {
+    return hintColor;
   }
 }
