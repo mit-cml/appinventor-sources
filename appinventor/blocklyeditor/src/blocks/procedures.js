@@ -858,7 +858,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       }
     }
   },
-  procCustomContextMenu: function(options) {
+  customContextMenu: function(options) {
     // Add option to find caller.
     var option = {enabled: true};
     option.text = Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF;
@@ -922,7 +922,7 @@ Blockly.Blocks['procedures_callreturn'] = {
   mutationToDom: Blockly.Blocks.procedures_callnoreturn.mutationToDom,
   domToMutation: Blockly.Blocks.procedures_callnoreturn.domToMutation,
   renameVar: Blockly.Blocks.procedures_callnoreturn.renameVar,
-  procCustomContextMenu: Blockly.Blocks.procedures_callnoreturn.procCustomContextMenu,
+  customContextMenu: Blockly.Blocks.procedures_callnoreturn.customContextMenu,
   removeProcedureValue: Blockly.Blocks.procedures_callnoreturn.removeProcedureValue,
   // This generates a single generic call to 'call return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the

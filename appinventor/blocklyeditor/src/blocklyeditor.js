@@ -162,125 +162,6 @@ function unboundVariableHandler(myBlock, yailText) {
   }
 }
 
-/**
- * Adds an option to the block's context menu to export it to a PNG.
- * @param {!Blockly.BlockSvg} myBlock The block to export to PNG.
- * @param {!Array<!Object>} options The option list to add to.
- */
-Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
-  var downloadBlockOption = {
-    enabled: true,
-    text: Blockly.BlocklyEditor.makeMenuItemWithHelp(
-        Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG,
-        '/reference/other/download-pngs.html'),
-    callback: function() {
-      Blockly.exportBlockAsPng(myBlock);
-    }
-  };
-  // Add it above the help option.
-  options.splice(options.length - 1, 0, downloadBlockOption);
-};
-
-/**
- * Adds an option to the block's context menu to generate its yail.
- * @param {!Blockly.BlockSvg} myBlock The block to generate yail for.
- * @param {!Array<!Object>} options The option list to add to.
- */
-Blockly.BlocklyEditor.addGenerateYailOption = function(myBlock, options) {
-  if (!window.parent.BlocklyPanel_checkIsAdmin()) {
-    return;
-  }
-
-  // TODO: eventually create a separate kind of bubble for the generated yail,
-  //  which can morph into the bubble for "do it" output once we hook
-  //  up to the REPL.
-  var yailOption = {enabled: !this.disabled};
-  yailOption.text = Blockly.Msg.GENERATE_YAIL;
-  yailOption.callback = function() {
-    // AI.Yail.blockToCode1 returns a string if the block is a statement
-    // and an array if the block is a value
-    var yail = AI.Yail.blockToCode1(myBlock);
-    myBlock.setCommentText((yail instanceof Array) ? yail[0] : yail);
-  };
-
-  options.push(yailOption);
-};
-
-/**
- * Adds an option to the block's context menu to execute the block.
- * @param {!Blockly.BlockSvg} myBlock The block to execute.
- * @param {!Array<!Object>} options The option list to add to.
- */
-Blockly.BlocklyEditor.addDoItOption = function(myBlock, options) {
-  var connectedToRepl =
-      top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
-
-  var doitOption = { enabled: !this.disabled && connectedToRepl};
-  doitOption.text = Blockly.Msg.DO_IT;
-  doitOption.callback = function() {
-    if (!connectedToRepl) {
-      var dialog = new goog.ui.Dialog(
-          null, true, new goog.dom.DomHelper(top.document));
-      dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
-      dialog.setTextContent(Blockly.Msg.CONNECT_TO_DO_IT);
-      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet()
-          .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-              false, true));
-      dialog.setVisible(true);
-    } else {
-      // AI.Yail.blockToCode1 returns a string if the block is a statement
-      // and an array if the block is a value
-      var yail;
-      try {
-        AI.Yail.forRepl = true;
-        yail = AI.Yail.blockToCode1(myBlock);
-      } finally {
-        AI.Yail.forRepl = false;
-      }
-      unboundVariableHandler(myBlock, (yail instanceof Array) ? yail[0] : yail);
-    }
-  };
-  options.push(doitOption);
-};
-
-/**
- * Adds an option to the block's context menu to clear the result of a "Do It"
- * operation, if the result exists.
- * @param {!Blockly.BlockSvg} myBlock The block clean up.
- * @param {!Array<!Object>} options The option list to add to.
- */
-Blockly.BlocklyEditor.addClearDoItOption = function(myBlock, options) {
-  if (!myBlock.replError) {
-    return;
-  }
-  var clearDoitOption = {enabled: true};
-  clearDoitOption.text = Blockly.Msg.CLEAR_DO_IT_ERROR;
-  clearDoitOption.callback = function() {
-    myBlock.replError = null;
-    Blockly.common.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
-  };
-  options.push(clearDoitOption);
-};
-
-/**
- * Adds extra context menu options to all blocks. Current options include:
- *   - Png Export
- *   - Generate Yail (admin only)
- *   - Do It
- *   - Clear Do It (only if Do It is appended)
- * @this {!Blockly.BlockSvg}
- */
-Blockly.Block.prototype.customContextMenu = function(options) {
-  Blockly.BlocklyEditor.addPngExportOption(this, options);
-  Blockly.BlocklyEditor.addGenerateYailOption(this, options);
-  Blockly.BlocklyEditor.addDoItOption(this, options);
-  Blockly.BlocklyEditor.addClearDoItOption(this, options);
-
-  if(this.procCustomContextMenu){
-    this.procCustomContextMenu(options);
-  }
-};
-
 Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
   // Option for the backpack.
   if (this.workspace.isBackpack) {
@@ -296,6 +177,113 @@ Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
 };
 
 goog.provide('AI.Blockly.ContextMenuItems');
+
+// Context menu items for blocks
+
+AI.Blockly.ContextMenuItems.registerExportBlockOption = function() {
+  const exportItem = {
+    displayText: Blockly.BlocklyEditor.makeMenuItemWithHelp(
+        Blockly.Msg['DOWNLOAD_BLOCKS_AS_PNG'],
+        '/reference/other/download-pngs.html'),
+    callback: function (scope) {
+      Blockly.exportBlockAsPng(scope.block);
+    },
+    preconditionFn: function(scope) {
+      return 'enabled';
+    },
+    weight: 100,
+    id: 'appinventor_export_block',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(exportItem);
+}
+
+AI.Blockly.ContextMenuItems.registerDoItOption = function() {
+  const doItItem = {
+    displayText: Blockly.Msg['DO_IT'],
+    callback: function (scope) {
+      const myBlock = scope.block;
+      const connectedToRepl =
+          top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+      if (!connectedToRepl) {
+        const dialog = new goog.ui.Dialog(
+            null, true, new goog.dom.DomHelper(top.document));
+        dialog.setTitle(Blockly.Msg['CAN_NOT_DO_IT']);
+        dialog.setTextContent(Blockly.Msg['CONNECT_TO_DO_IT']);
+        dialog.setButtonSet(new goog.ui.Dialog.ButtonSet()
+            .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+                false, true));
+        dialog.setVisible(true);
+      } else {
+        // AI.Yail.blockToCode1 returns a string if the block is a statement
+        // and an array if the block is a value
+        let yail;
+        try {
+          AI.Yail.forRepl = true;
+          yail = AI.Yail.blockToCode1(myBlock);
+        } finally {
+          AI.Yail.forRepl = false;
+        }
+        unboundVariableHandler(myBlock, (yail instanceof Array) ? yail[0] : yail);
+      }
+    },
+    preconditionFn: function(scope) {
+      const connectedToRepl =
+          top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+      const myBlock = scope.block;
+      return connectedToRepl && myBlock.isEnabled() ? 'enabled' : 'disabled';
+    },
+    weight: 100,
+    id: 'appinventor_doit',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(doItItem);
+}
+
+AI.Blockly.ContextMenuItems.RegisterClearDoItOption = function() {
+  const clearDoItItem = {
+    displayText: Blockly.Msg['CLEAR_DO_IT_ERROR'],
+    callback: function (scope) {
+      const myBlock = scope.block;
+      myBlock.replError = null;
+      Blockly.common.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
+    },
+    preconditionFn: function (scope) {
+      const myBlock = scope.block;
+      return myBlock.replError ? 'enabled' : 'hidden';
+    },
+    weight: 100,
+    id: 'appinventor_clear_doit',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(clearDoItItem);
+}
+
+AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
+  // TODO: eventually create a separate kind of bubble for the generated yail,
+  //  which can morph into the bubble for "do it" output once we hook
+  //  up to the REPL.
+  const generateYailItem = {
+      displayText: Blockly.Msg['GENERATE_YAIL'],
+      callback: function (scope) {
+        const myBlock = scope.block;
+        const yail = AI.Yail.blockToCode1(myBlock);
+        myBlock.setCommentText((yail instanceof Array) ? yail[0] : yail);
+      },
+      preconditionFn: function (scope) {
+        const myBlock = scope.block;
+        return window.parent.BlocklyPanel_checkIsAdmin()
+            ? 'enabled'
+            : 'hidden';
+      },
+      weight: 100,
+      id: 'appinventor_generate_yail',
+      scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(generateYailItem);
+}
+
+// Context menu items for the workspace
 
 AI.Blockly.ContextMenuItems.registerExportBlocksOption = function() {
   let menuItem = {
@@ -909,6 +897,7 @@ AI.Blockly.ContextMenuItems.registerClearUnusedBlocksOption = function() {
 }
 
 AI.Blockly.ContextMenuItems.registerAll = function() {
+  // Workspace menu options
   AI.Blockly.ContextMenuItems.registerResetArrangementOptions();
   AI.Blockly.ContextMenuItems.registerExportBlocksOption();
   AI.Blockly.ContextMenuItems.registerWorkspaceControlsOption();
@@ -919,6 +908,11 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerGridOptions();
   AI.Blockly.ContextMenuItems.registerHelpOption();
   AI.Blockly.ContextMenuItems.registerClearUnusedBlocksOption();
+  // Block menu options
+  AI.Blockly.ContextMenuItems.registerExportBlockOption();
+  AI.Blockly.ContextMenuItems.registerGenerateYailOption();
+  AI.Blockly.ContextMenuItems.registerDoItOption();
+  AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
 }
 
 AI.Blockly.ContextMenuItems.registerAll();
