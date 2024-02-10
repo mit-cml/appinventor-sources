@@ -555,7 +555,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   @SimpleFunction(description = "Repositions the cursor to the end of the %type%'s text.")
   public void MoveCursorToEnd() {
-    MoveCursorTo(view.getText().length());
+    MoveCursorTo(view.getText().length() + 1);
   }
 
   @SimpleFunction(description = "Repositions the cursor to the start of the %type%'s text.")
