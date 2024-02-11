@@ -283,6 +283,30 @@ AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
   Blockly.ContextMenuRegistry.registry.register(generateYailItem);
 }
 
+AI.Blockly.ContextMenuItems.registerAddToBackpackOption = function() {
+  const addToBackpackItem = {
+    displayText: function(scope) {
+      return Blockly.Msg['COPY_TO_BACKPACK'] +
+      " (" + scope.block.workspace.getBackpack().count() + ")"
+    },
+    callback: function (scope) {
+      const myBlock = scope.block;
+      const myWorkspace = myBlock.workspace;
+      if (myBlock.isDeletable() &&
+          myWorkspace === Blockly.common.getMainWorkspace()) {
+        myWorkspace.getBackpack().addToBackpack(myBlock, true);
+      }
+    },
+    preconditionFn: function (scope) {
+      return scope.block.isEnabled() ? 'enabled' : 'disabled';
+    },
+    weight: 100,
+    id: 'appinventor_add_to_backpack',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(addToBackpackItem);
+}
+
 // Context menu items for the workspace
 
 AI.Blockly.ContextMenuItems.registerExportBlocksOption = function() {
@@ -909,8 +933,9 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerHelpOption();
   AI.Blockly.ContextMenuItems.registerClearUnusedBlocksOption();
   // Block menu options
-  AI.Blockly.ContextMenuItems.registerExportBlockOption();
+  AI.Blockly.ContextMenuItems.registerAddToBackpackOption();
   AI.Blockly.ContextMenuItems.registerGenerateYailOption();
+  AI.Blockly.ContextMenuItems.registerExportBlockOption();
   AI.Blockly.ContextMenuItems.registerDoItOption();
   AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
 }
