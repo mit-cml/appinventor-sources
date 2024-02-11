@@ -20,6 +20,7 @@ import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockChartData2D;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
+import com.google.appinventor.client.editor.simple.components.MockCircularProgress;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
@@ -31,6 +32,7 @@ import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockTwitter;
+import com.google.appinventor.client.editor.simple.components.MockLinearProgress;
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
@@ -215,6 +217,8 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/chart.png", images.chart());
     bundledImages.put("images/chartData.png", images.chartData2D());
     bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/circularProgress.png", images.circularProgress());
+    bundledImages.put("images/linearProgress.png", images.linearProgress());
     bundledImages.put("images/regression.png", images.regression());
     bundledImages.put("images/anomaly.png", images.anomalyDetection());
     bundledImages.put("images/filepicker.png", images.file());
@@ -594,6 +598,10 @@ public final class SimpleComponentDescriptor {
       return new MockChart(editor);
     } else if (name.equals(MockChartData2D.TYPE)) {
       return new MockChartData2D(editor);
+    } else if (name.equals(MockCircularProgress.TYPE)) {
+      return new MockCircularProgress(editor);
+    } else if (name.equals(MockLinearProgress.TYPE)) {
+      return new MockLinearProgress(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);
