@@ -290,12 +290,28 @@ AI.Blockly.ContextMenuItems.registerAddToBackpackOption = function() {
       " (" + scope.block.workspace.getBackpack().count() + ")"
     },
     callback: function (scope) {
-      const myBlock = scope.block;
-      const myWorkspace = myBlock.workspace;
-      if (myBlock.isDeletable() &&
-          myWorkspace === Blockly.common.getMainWorkspace()) {
-        myWorkspace.getBackpack().addToBackpack(myBlock, true);
+      // top.blockSelectionWeakMap comes from the multi-select plugin
+      // and is a weak map of workspaces to selected block ids
+      const blockSelectionWeakMap = top.blockSelectionWeakMap;
+
+      const myWorkspace = scope.block.workspace;
+      const backpack = myWorkspace.getBackpack();
+      const blocksToAdd = [];
+      if (blockSelectionWeakMap) {
+        const selectedBlockIds = blockSelectionWeakMap.get(myWorkspace);
+        selectedBlockIds.forEach(id => {
+          const selectedBlock = myWorkspace.getBlockById(id);
+          blocksToAdd.push(selectedBlock);
+        });
+      } else {  // no multi-select plugin
+        const myBlock = scope.block;
+        blocksToAdd.push(myBlock);
       }
+      blocksToAdd.forEach(block => {
+        if (block.isDeletable) {
+          backpack.addToBackpack(block);
+        }
+      });
     },
     preconditionFn: function (scope) {
       return scope.block.isEnabled() ? 'enabled' : 'disabled';
