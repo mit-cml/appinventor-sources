@@ -137,7 +137,7 @@ public final class PropertiesBox extends Box {
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       // TODO: Localize
-      designProperties.setPropertiesCaption(components.size() + " components selected");
+      designProperties.setPropertiesCaption(MESSAGES.componentsSelected(components.size()));
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
