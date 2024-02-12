@@ -141,8 +141,10 @@ public final class PropertiesBox extends Box {
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
+      String componentType = components.get(0).getType();
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-          ComponentsTranslation.getComponentName(components.get(0).getType()) + ")");
+          ComponentsTranslation.getComponentName(componentType.equals("Form")
+              ? "Screen" : componentType) + ")");
     }
   }
 }
