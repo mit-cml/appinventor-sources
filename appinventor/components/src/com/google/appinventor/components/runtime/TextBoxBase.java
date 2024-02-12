@@ -138,6 +138,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
 
     Text("");
+    lastText = "";
     // Listen to text changes
     view.addTextChangedListener(this);
 
@@ -496,7 +497,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
       "programmer in the Designer or Blocks Editor, or it can be entered by " +
       "the user (unless the <code>Enabled</code> property is false).")
   public void Text(String text) {
-    lastText = view.getText().toString();
     TextViewUtil.setText(view, text);
   }
 
@@ -572,16 +572,13 @@ public abstract class TextBoxBase extends AndroidViewComponent
     view.requestFocus();
   }
 
-  // OnFocusChangeListener implementation
-
-  /* Detects for any text changes. Downside is that, all amendments to the text of the TextBox
-   * must be done through the Text() property.
-   */
+  // TextWatcher implementation
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
     if (!lastText.equals(view.getText().toString())) {
       TextChanged();
     }
+    lastText = s.toString();
   }
 
   @Override
@@ -592,6 +589,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
   }
 
+  // OnFocusChangeListener implementation
   @Override
   public void onFocusChange(View previouslyFocused, boolean gainFocus) {
     if (gainFocus) {
