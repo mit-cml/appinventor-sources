@@ -72,6 +72,7 @@ import DGCharts
       if colorValue > Int.max {
         colorValue = colorValue + two * CLong(Int.min)
       }
+      print("colorvalue", colorValue)
       resultColors.append(colorValue)
     }
     _colors = resultColors as! YailList<AnyObject>
@@ -180,4 +181,70 @@ import DGCharts
       }
     }
   }
+  
+  // Removes all the entries from the Data Series
+  @objc func Clear(){
+    DispatchQueue.main.async {
+      self._chartDataModel?.clearEntries()
+      // refresh chart with new data
+      self.refreshChart()
+    }
+  }
+  
+  // datafile and web not implemented in swift yet
+  @objc func ChangeDataSource(_ source: DataSource, _ keyValue: String){
+    fatalError("Data sources are not implemented in IOS")
+  }
+  
+  // datafile and web not implemented in swift yet
+  @objc func RemoveDataSource(){
+    fatalError("Data sources are not implemented in IOS")
+  }
+  
+  // Returns a List of entries with x values matching the specified x value. A single entry is represented as a List of values of the entry
+  @objc func GetEntriesWithXValue(_ x: String) -> YailList<AnyObject>{
+    DispatchQueue.main.sync {
+      return self._chartDataModel?.findEntriesByCriterion(x, EntryCriterion.XValue)
+    }
+    // Undefined behavior: return empty list
+    return []
+  }
+  
+  // Returns a List of entries with y values matching the specified y value. A single entry is represented as a List of values of the entry
+  @objc func GetEntriesWithYValue(_ y: String) -> YailList<AnyObject>{
+    DispatchQueue.main.sync {
+      // use Y Value as criterion to filter entries
+      return self._chartDataModel?.findEntriesByCriterion(y, EntryCriterion.YValue)
+    }
+    // Undefined behavior: return empty list
+    return []
+  }
+  
+  // Returns all the entries of the Data Series. A single entry is represented as a List of values of the entry
+  @objc func GetAllEntries() -> YailList<AnyObject>{
+    let group = DispatchGroup()
+    group.enter()
+    var holder: YailList<AnyObject> = []
+    // avoid deadlocks by not using .main queue here
+    DispatchQueue.global(qos: .default).async {
+      holder = (self._chartDataModel?.getEntriesAsTuples())!
+      print("holder", holder)
+      group.leave()
+    }
+    group.wait()
+    return holder
+    
+    /*
+     Original:
+     DispatchQueue.main.sync {
+      return self._chartDataModel?.getEntriesAsTuples()
+    }
+    // Undefined behavior: return empty list
+    return []*/
+  }
+  
+  @objc func ImportFromTinyDB(){
+    fatalError("TinyDB is not implemented in IOS")
+  }
+  
 }

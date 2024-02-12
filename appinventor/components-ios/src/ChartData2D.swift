@@ -34,15 +34,24 @@ import Foundation
   }
   
   // checks whether an (x, y) entry exists in the Coordinate Data. Returns true if the Entry exists, and false otherwise.
-  // TODO: how do i return something in DispatchQueue main
   @objc func DoesEntryExist(_ x: String, _ y: String) -> Bool{
-    DispatchQueue.main.async {
-      func call() -> Bool {
-        var pair: YailList<AnyObject> = [x, y]
-        return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
-      }
+    /* Original:
+     DispatchQueue.main.sync {
+      var pair: YailList<AnyObject> = [x, y]
+      return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
+    }*/
+    
+    let group = DispatchGroup()
+    group.enter()
+    var holder: Bool = false // holder variable for returned value of doesEntryExist()
+    // avoid deadlocks by not using .main queue here
+    DispatchQueue.global(qos: .default).async {
+      var pair: YailList<AnyObject> = [x, y]
+      holder =  self._chartDataModel!.doesEntryExist(pair)
+      print("holder", holder)
+      group.leave()
     }
-    return false
+    group.wait()
+    return holder
   }
-  
 }

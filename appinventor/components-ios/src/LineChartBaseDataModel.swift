@@ -15,7 +15,7 @@ class LineChartBaseDataModel: PointChartDataModel {
   }
   
   public override func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
-    let entry: ChartDataEntry = getEntryFromTuple(tuple: tuple)
+    let entry: ChartDataEntry = getEntryFromTuple(tuple)
     if entry != nil { // TODO: how to compare it to nil
       // TODO: DO I NEED TO DO THE BINARY SEARCH
       // var index: Int = entries.firstIndex(of: entry)!

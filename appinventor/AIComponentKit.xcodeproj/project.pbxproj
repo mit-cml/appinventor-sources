@@ -180,6 +180,7 @@
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
+		B459199E2B79E4F400618F74 /* BarChartDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B459199D2B79E4F400618F74 /* BarChartDataModel.swift */; };
 		B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C72ACFB1AD0046DF4F /* LineChartView.swift */; };
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
@@ -441,6 +442,7 @@
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+EllipticalArc.swift"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
+		B459199D2B79E4F400618F74 /* BarChartDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarChartDataModel.swift; sourceTree = "<group>"; };
 		B48808C72ACFB1AD0046DF4F /* LineChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
@@ -663,6 +665,7 @@
 				B48808CB2ACFB3770046DF4F /* PointChartView.swift */,
 				B48808CD2ACFB9030046DF4F /* AxisChartView.swift */,
 				06C791D829511A4A00C1BB1B /* PointChartDataModel.swift */,
+				B459199D2B79E4F400618F74 /* BarChartDataModel.swift */,
 				06C791DA29511CDC00C1BB1B /* Chart2DDataModel.swift */,
 			);
 			name = charts;
@@ -1351,6 +1354,7 @@
 				086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */,
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
+				B459199E2B79E4F400618F74 /* BarChartDataModel.swift in Sources */,
 				06C791D12950E94500C1BB1B /* ChartView.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
 				068F9864289A34F000E2883F /* ObservableDataSource.swift in Sources */,

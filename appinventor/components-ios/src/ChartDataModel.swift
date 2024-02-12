@@ -159,6 +159,7 @@ open class ChartDataModel {
 
   func removeEntryFromTuple(_ tuple: YailList<AnyObject>) {
     let entry: DGCharts.ChartDataEntry = getEntryFromTuple(tuple)
+
     if entry != nil {
       let index: Int32 = findEntryIndex(entry)
       removeEntry(Int(index))
