@@ -89,6 +89,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -684,6 +685,14 @@ public class Ode implements EntryPoint {
     // This call also stores our sessionId in the backend. This will be checked
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
+
+    setupOrigin(((ServiceDefTarget)projectService));
+    setupOrigin((ServiceDefTarget)userInfoService);
+    setupOrigin((ServiceDefTarget)getMotdService);
+    setupOrigin((ServiceDefTarget)componentService);
+    setupOrigin((ServiceDefTarget)adminInfoService);
+    setupOrigin((ServiceDefTarget)tokenAuthService);
+
     Promise.<Config>call(MESSAGES.serverUnavailable(),
         c -> userInfoService.getSystemConfig(sessionId, c))
         .then(result -> {
@@ -2342,6 +2351,20 @@ public class Ode implements EntryPoint {
 
   public boolean getDeleteAccountAllowed() {
     return config.getDeleteAccountAllowed();
+  }
+
+  public static void setupOrigin(ServiceDefTarget service) {
+    String host = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+    String oldUrl = service.getServiceEntryPoint();
+    if (oldUrl.startsWith(GWT.getModuleBaseURL())) {
+      String newUrl = host + "/" + GWT.getModuleName() + "/" + oldUrl.substring(GWT.getModuleBaseURL().length());
+      service.setServiceEntryPoint(newUrl);
+    }
+  }
+
+  public static String getModuleBaseURL() {
+      return Window.Location.getProtocol() + "//" + Window.Location.getHost() +
+        "/" + GWT.getModuleName() + "/";
   }
 
   /**

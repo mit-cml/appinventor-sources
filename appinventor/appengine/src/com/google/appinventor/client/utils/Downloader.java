@@ -7,6 +7,7 @@
 package com.google.appinventor.client.utils;
 
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Frame;
@@ -45,7 +46,7 @@ public class Downloader extends Frame {
    */
   public final void download(String path) {
     ErrorReporter.hide();
-    setUrl(GWT.getModuleBaseURL() + path);
+    setUrl(Ode.getModuleBaseURL() + path);
   }
 
   /**

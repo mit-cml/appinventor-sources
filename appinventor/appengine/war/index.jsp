@@ -1,4 +1,5 @@
 <%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures" %>
+<%@page import="com.google.appinventor.server.flags.Flag" %>
 <%
    if (request.getScheme().equals("http") && Server.isProductionServer()
        && AppInventorFeatures.enableHttpRedirect()) {
@@ -16,6 +17,7 @@
    if (AppInventorFeatures.enableHttpRedirect()) {
        response.setHeader("Strict-Transport-Security", "max-age=3600");
    }
+   final String odeBase = Flag.createFlag("ode.base", "").get();
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
 <!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
@@ -63,7 +65,7 @@
       </ul>
     </div>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
-    <script type="text/javascript" src="ode/ode.nocache.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
     <script src="static/leaflet/leaflet-vector-markers.min.js"></script>
