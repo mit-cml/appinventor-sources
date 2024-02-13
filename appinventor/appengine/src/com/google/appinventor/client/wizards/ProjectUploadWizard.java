@@ -60,7 +60,7 @@ public class ProjectUploadWizard extends Wizard {
           // Make sure the project name is legal and unique.
           if (TextValidators.checkNewProjectName(filename, true) 
                       != TextValidators.ProjectNameStatus.SUCCESS) {
-         
+
             // Show Dialog Box and rename the project
             new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
               @Override
@@ -68,7 +68,7 @@ public class ProjectUploadWizard extends Wizard {
                 upload(upload, name);
               }
             }, filename, true);
-  
+
           } else {
             upload(upload, filename);
           }
@@ -79,9 +79,9 @@ public class ProjectUploadWizard extends Wizard {
       }
     });
   }
-  
+
   private void upload(FileUpload upload, String filename) {
-    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
+    String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
         + ServerLayout.UPLOAD_PROJECT + "/" + filename;
     Uploader.getInstance().upload(upload, uploadUrl,
         new OdeAsyncCallback<UploadResponse>(

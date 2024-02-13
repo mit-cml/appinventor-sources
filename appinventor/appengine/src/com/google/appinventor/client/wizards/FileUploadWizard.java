@@ -165,9 +165,9 @@ public class FileUploadWizard {
 
       // Use the folderNode's project id and file id in the upload URL so that the file is
       // uploaded into that project and that folder in our back-end storage.
-      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-                             ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-                             folderNode.getFileId() + "/" + filename;
+      String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+        ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+        folderNode.getFileId() + "/" + filename;
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
             @Override

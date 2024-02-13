@@ -7,7 +7,7 @@
 package com.google.appinventor.shared.storage;
 
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 /**
  * Constants and utility methods related to storage.
@@ -251,7 +251,9 @@ public class StorageUtil {
    * Returns the URL for the given project file.
    */
   public static String getFileUrl(long projectId, String fileId) {
-    return GWT.getModuleBaseURL() + getFilePath(projectId, fileId);
+    // Note: Cannot call ode.GetModuleBaseURL() here because it is shared
+    // and Ode is not in scope on the server side.
+    return (ServerLayout.getModuleBaseURL() + getFilePath(projectId, fileId));
   }
 
   /**

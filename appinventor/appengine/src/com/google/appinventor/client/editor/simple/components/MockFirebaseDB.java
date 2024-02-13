@@ -12,11 +12,13 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
 import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.logging.Logger;
@@ -54,6 +56,7 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
    */
   public MockFirebaseDB(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
+    Ode.setupOrigin(AUTH_SVC);
   }
 
   /**

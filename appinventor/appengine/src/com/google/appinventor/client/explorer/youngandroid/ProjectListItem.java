@@ -48,7 +48,7 @@ public class ProjectListItem extends Composite {
     initWidget(UI_BINDER.createAndBindUi(this));
     this.getElement().setAttribute("data-exporturl",
         "application/octet-stream:" + project.getProjectName() + ".aia:"
-            + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
+            + ServerLayout.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
             + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
     configureDraggable(this.getElement());
     DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);

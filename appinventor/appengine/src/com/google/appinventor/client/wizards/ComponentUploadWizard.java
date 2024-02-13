@@ -8,6 +8,7 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -47,7 +48,7 @@ public class ComponentUploadWizard extends Wizard {
           return;
         }
 
-        String url = GWT.getModuleBaseURL() +
+        String url = ServerLayout.getModuleBaseURL() +
           ServerLayout.UPLOAD_SERVLET + "/" +
           ServerLayout.UPLOAD_COMPONENT + "/" +
           trimLeadingPath(uploadWiget.getFilename());
