@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.editor.simple.components.utils;
 
-import com.google.appinventor.client.ComponentsTranslation;
-
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 
@@ -127,19 +125,15 @@ public class PropertiesUtil {
    */
   public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefinitions,
                                         YaFormEditor editor) {
-
-    String componentType = mockComponent.getType();
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          ComponentsTranslation.getPropertyName(property.getCaption()),
-          property.getCategory(), property.getDescription(),
-          property.getEditorType(), property.getEditorArgs(),
-          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor, property.getEditorArgs()));
+          property.getCaption(), property.getCategory(), property.getEditorType(), property.getEditorArgs(),
+          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor,
+          property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
-
   }
 
   // Use individual methods for each property since we can't write the generic
