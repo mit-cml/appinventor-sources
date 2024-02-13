@@ -76,10 +76,12 @@ import DGCharts
   @objc open var BackgroundColor: UIColor {
     get {
       //return colorToArgb(_backgroundColor)
+      print("_backgroundColorget", _backgroundColor)
       return _backgroundColor
     }
     set {
       //_backgroundColor = argbToColor(newValue)
+      print("_backgroundColorset", _backgroundColor)
       _chartView?.backgroundColor = _backgroundColor
     }
   }
@@ -112,9 +114,11 @@ import DGCharts
 
   @objc open var Labels: [String] {
     get {
+      print("_getlable", _labels)
       return _labels
     }
     set {
+      print("_setlabels", _labels)
       _labels = newValue
     }
   }
@@ -198,6 +202,14 @@ import DGCharts
   @objc open func EntryClick(_ series: Component, _ x: AnyObject, _ y: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "EntryClick",
                                   arguments: series, x, y as AnyObject)
+  }
+  
+  @objc open func SetDomain(_ minimum: Double, _ maximum: Double) {
+    self.XFromZero = minimum == 0.0
+  }
+  
+  @objc open func SetRange(_ minimum: Double, _ maximum: Double) {
+    self.YFromZero = minimum == 0.0
   }
 
   // MARK: Private Implementation

@@ -64,6 +64,7 @@ import DGCharts
   }
   
   func Colors(_ colors: YailList<AnyObject>) {
+    print("in colors function")
     var resultColors: Array<Int> = []
     for i in colors {
       var color: NSString = "\(i)" as NSString
@@ -84,6 +85,7 @@ import DGCharts
   
   @objc open var Label: String {
     get {
+      print("get label in chartdatabase", _label) // why is this empty
       return _label!
     }
     set {
