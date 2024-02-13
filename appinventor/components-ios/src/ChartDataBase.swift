@@ -203,21 +203,46 @@ import DGCharts
   
   // Returns a List of entries with x values matching the specified x value. A single entry is represented as a List of values of the entry
   @objc func GetEntriesWithXValue(_ x: String) -> YailList<AnyObject>{
-    DispatchQueue.main.sync {
+    /*DispatchQueue.main.sync {
       return self._chartDataModel?.findEntriesByCriterion(x, EntryCriterion.XValue)
     }
     // Undefined behavior: return empty list
-    return []
+    return []*/
+    let group = DispatchGroup()
+    group.enter()
+    var holder: YailList<AnyObject> = []
+    // avoid deadlocks by not using .main queue here
+    DispatchQueue.global(qos: .default).async {
+      holder = (self._chartDataModel?.findEntriesByCriterion(x, EntryCriterion.XValue))!
+      print("holder", holder)
+      group.leave()
+    }
+    group.wait()
+    // Undefined behavior: return empty list
+    return holder
   }
   
   // Returns a List of entries with y values matching the specified y value. A single entry is represented as a List of values of the entry
   @objc func GetEntriesWithYValue(_ y: String) -> YailList<AnyObject>{
-    DispatchQueue.main.sync {
+    /*DispatchQueue.main.sync {
       // use Y Value as criterion to filter entries
       return self._chartDataModel?.findEntriesByCriterion(y, EntryCriterion.YValue)
     }
+     return holder
+     */
+    
+    let group = DispatchGroup()
+    group.enter()
+    var holder: YailList<AnyObject> = []
+    // avoid deadlocks by not using .main queue here
+    DispatchQueue.global(qos: .default).async {
+      holder = (self._chartDataModel?.findEntriesByCriterion(y, EntryCriterion.YValue))!
+      print("holder", holder)
+      group.leave()
+    }
+    group.wait()
     // Undefined behavior: return empty list
-    return []
+    return holder
   }
   
   // Returns all the entries of the Data Series. A single entry is represented as a List of values of the entry
