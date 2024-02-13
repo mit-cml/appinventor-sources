@@ -538,7 +538,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editor  property editor
    */
   public final void addProperty(String name, String defaultValue, String caption, String category,
-      String description, String editorType, String[] editorArgs, PropertyEditor editor) {
+                                String editorType, String[] editorArgs, PropertyEditor editor) {
 
     String propertyDesc = ComponentsTranslation.getPropertyDescription(name
       + "PropertyDescriptions");
@@ -1241,7 +1241,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
             property.getEditorType(), property.getDefaultValue(),
             (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(),
-            property.getCategory(), property.getDescription(), property.getEditorType(),
+            property.getCategory(), property.getEditorType(),
             property.getEditorArgs(), propertyEditor);
       }
     }
