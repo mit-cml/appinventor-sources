@@ -7,27 +7,20 @@
 package com.google.appinventor.client.wizards.youngandroid;
 
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeMessages;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
-import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
-import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertyHelpWidget;
@@ -38,23 +31,10 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.common.collect.Lists;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.user.client.Window.Location;
 import java.util.logging.Logger;
 
 
@@ -79,12 +59,9 @@ public final class NewYoungAndroidProjectWizard {
   @UiField LabeledTextBox projectNameTextBox;
   @UiField YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField SubsetJSONPropertyEditor blockstoolkitEditor;
-  @UiField HorizontalPanel horizontalThemePanel;
-  @UiField HorizontalPanel horizontalBlocksPanel;
-  @UiField Label themeLabel;
-  @UiField Label blocksLabel;
-  String errorMessage = "";
-  
+  @UiField FlowPanel horizontalThemePanel;
+  @UiField FlowPanel horizontalBlocksPanel;
+
   /**
    * Creates a new YoungAndroid project wizard.
    */
@@ -103,12 +80,7 @@ public final class NewYoungAndroidProjectWizard {
     blockstoolkitEditor.setProperty(toolkit);
     PropertyHelpWidget blocksHelpWidget = new PropertyHelpWidget(toolkit);
 
-    horizontalThemePanel.setCellWidth(themeLabel, "40%");
-    horizontalThemePanel.setCellWidth(themeEditor, "40%");
     horizontalThemePanel.add(themeHelpWidget);
-
-    horizontalBlocksPanel.setCellWidth(blocksLabel, "40%");
-    horizontalBlocksPanel.setCellWidth(blockstoolkitEditor, "40%");
     horizontalBlocksPanel.add(blocksHelpWidget);
   }
 
@@ -126,13 +98,13 @@ public final class NewYoungAndroidProjectWizard {
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
-      errorMessage = TextValidators.getErrorMessage(projectNameTextBox.getText());
-      if (errorMessage.length() > 0) {
+      String errorMessage = TextValidators.getErrorMessage(projectNameTextBox.getText());
+      if (errorMessage.isEmpty()) {
         LOG.info("Found error: " + errorMessage);
         projectNameTextBox.setErrorMessage(errorMessage);
       } else {
         errorMessage = TextValidators.getWarningMessages(projectNameTextBox.getText());
-        if (errorMessage.length() > 0) {
+        if (errorMessage.isEmpty()) {
           projectNameTextBox.setErrorMessage(errorMessage);
         } else {
           // Internationalize or change handling here.

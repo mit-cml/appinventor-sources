@@ -185,7 +185,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" + 
         themeName + "\"}}\n|#";
-    if (blocksToolkit.length() >= 1){
+    if (!blocksToolkit.isEmpty()){
         newString = "#|\n$JSON\n" +
         "{\"authURL\":[]," +
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
@@ -256,7 +256,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   @Override
   public long newProject(String userId, String projectName, NewProjectParameters params) {
-    LOG.info("Here are the params: " + params);
     NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
     String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
 

@@ -5,16 +5,15 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
-import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -92,7 +91,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
-    Boolean newProject = Ode.getInstance().isProjectLoaded();
+    boolean newProject = Ode.getInstance().isProjectLoaded();
     buildTrees();
     file.addChangeHandler(new ChangeHandler() {
       @Override

@@ -37,6 +37,7 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
     this.packageName = packageName;
     formName = YOUNG_ANDROID_FORM_NAME;
   }
+
   public NewYoungAndroidProjectParameters(String packageName, String theme) {
     this.packageName = packageName;
     formName = YOUNG_ANDROID_FORM_NAME;

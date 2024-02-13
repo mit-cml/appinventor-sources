@@ -102,7 +102,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
   }
 
   // For theme choice property editor
-  public ChoicePropertyEditor(Choice[] choices, Boolean projectLoaded) {
+  public ChoicePropertyEditor(Choice[] choices, boolean projectLoaded) {
     // Initialize UI
     this.choices = choices;
     List<DropDownItem> items = Lists.newArrayList();

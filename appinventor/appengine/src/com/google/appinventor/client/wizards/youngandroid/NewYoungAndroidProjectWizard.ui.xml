@@ -2,7 +2,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:p="urn:import:com.google.appinventor.client.editor.simple.palette"
              xmlns:w="urn:import:com.google.appinventor.client.widgets"
              xmlns:s="urn:import:com.google.appinventor.client.widgets.properties"
              xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
@@ -11,23 +10,21 @@
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
     <wiz:Dialog ui:field="addDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
-                styleName="ode-DialogBox">
+                styleName="ode-DialogBox" width="340px" height="40px">
         <g:FlowPanel>
             <!--ProjectName-->
             <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
                                 stylePrimaryName="ode-LabeledTextBox" />
             <!--Blocks-->
-            <g:VerticalPanel>
-                <g:HorizontalPanel ui:field="horizontalBlocksPanel">
-                    <g:Label text="{messages.blocksToolkitTitle}:" ui:field="blocksLabel"/>
-                    <s:SubsetJSONPropertyEditor ui:field="blockstoolkitEditor"/>
-                </g:HorizontalPanel>
+                <g:FlowPanel ui:field="horizontalBlocksPanel" styleName="contentRow">
+                    <g:Label text="{messages.blocksToolkitTitle}:" width="37%"/>
+                    <s:SubsetJSONPropertyEditor ui:field="blockstoolkitEditor" />
+                </g:FlowPanel>
                 <!--Theme-->
-                <g:HorizontalPanel ui:field="horizontalThemePanel">
-                    <g:Label text="Theme:" ui:field="themeLabel" />
+                <g:FlowPanel ui:field="horizontalThemePanel" styleName="contentRow">
+                    <g:Label text="{messages.themeTitle}:" width="37%" />
                     <e:YoungAndroidThemeChoicePropertyEditor ui:field="themeEditor"/>
-                </g:HorizontalPanel>
-            </g:VerticalPanel>
+                </g:FlowPanel>
             <g:FlowPanel styleName="buttonRow" >
                 <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
                 <g:Button ui:field='addButton' text='{messages.okButton}' />
