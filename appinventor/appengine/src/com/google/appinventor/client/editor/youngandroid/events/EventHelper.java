@@ -22,15 +22,15 @@ public final class EventHelper {
     if (!event) {
       // null events are transient
       return true;
-    } else if (event.isTransient || event.isUiEvent) {
+    } else if (event.isTransient) {
       // transient events are transient
       return true;
     } else if (event.type == 'selected' || event.type == 'drag' ||
-        event.type == 'block_field_intermediate_change' || event.type == 'bubble_open' ||
+        event.type == 'block_field_intermediate_change' ||
         event.type == 'click' || event.type == 'finished_loading') {
       // Blockly selected events are transient
       return true;
-    } else if (event.type == 'ui') {
+    } else if (event.type == 'ui' || event.isUiEvent) {
       // Blockly ui events are transient if they are selection changes, clicks, opening of mutator
       // and warning bubbles.
       return event.element == 'selected' || event.element == 'click' ||
