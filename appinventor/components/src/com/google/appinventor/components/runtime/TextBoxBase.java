@@ -78,7 +78,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   private boolean isBigText = false;
 
   // Keeps track of the previous text of the TextBox for the TextChanged event
-  private String lastText;
+  private String lastText = "";
 
   //The default text color of the textbox hint, according to theme
   private int hintColorDefault;
@@ -138,7 +138,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
 
     Text("");
-    lastText = "";
     // Listen to text changes
     view.addTextChangedListener(this);
 
