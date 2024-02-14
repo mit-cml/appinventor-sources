@@ -121,7 +121,7 @@ public final class NewYoungAndroidProjectWizard {
       String packageName = StringUtils.getProjectPackage(
           Ode.getInstance().getUser().getUserEmail(), projectName);
       NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
-          packageName, theme.getValue(), JSONUtil.toJson(toolkit.getValue()));
+          packageName, theme.getValue(), toolkit.getValue());
       NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
         @Override
         public void execute(final Project project) {

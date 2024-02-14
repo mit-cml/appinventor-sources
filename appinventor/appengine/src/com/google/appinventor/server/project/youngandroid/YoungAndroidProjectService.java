@@ -27,6 +27,7 @@ import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.util.UriBuilder;
 import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
@@ -192,7 +193,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" + 
-        themeName +  "\",\"BlocksToolkit\":" + blocksToolkit +"}}\n|#";
+        themeName +  "\",\"BlocksToolkit\":" + JSONUtil.toJson(blocksToolkit) +"}}\n|#";
     }
     return newString;
   }
