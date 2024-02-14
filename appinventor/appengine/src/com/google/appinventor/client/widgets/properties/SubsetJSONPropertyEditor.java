@@ -63,24 +63,25 @@ import java.util.Set;
 
 import java.util.logging.Logger;
 
-interface BeginnerToolkit extends ClientBundle {
-  BeginnerToolkit INSTANCE = GWT.create(BeginnerToolkit.class);
-
-  @Source("toolkit_beginner.json")
-  TextResource getToolkit();
-}
-
-interface IntermediateToolkit extends ClientBundle {
-  IntermediateToolkit INSTANCE = GWT.create(IntermediateToolkit.class);
-
-  @Source("toolkit_intermediate.json")
-  TextResource getToolkit();
-}
-
 public class SubsetJSONPropertyEditor  extends PropertyEditor
         implements ProjectChangeListener {
 
   private static final Logger LOG = Logger.getLogger(Ode.class.getName());
+
+  interface BeginnerToolkit extends ClientBundle {
+    BeginnerToolkit INSTANCE = GWT.create(BeginnerToolkit.class);
+
+    @Source("toolkit_beginner.json")
+    TextResource getToolkit();
+  }
+
+  interface IntermediateToolkit extends ClientBundle {
+    IntermediateToolkit INSTANCE = GWT.create(IntermediateToolkit.class);
+
+    @Source("toolkit_intermediate.json")
+    TextResource getToolkit();
+  }
+
   private static SubsetJSONPropertyEditor INSTANCE;
 
   Tree componentTree;
@@ -91,7 +92,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
-    boolean newProject = Ode.getInstance().isProjectLoaded();
+    boolean newProject = !Ode.getInstance().isProjectLoaded();
     buildTrees();
     file.addChangeHandler(new ChangeHandler() {
       @Override

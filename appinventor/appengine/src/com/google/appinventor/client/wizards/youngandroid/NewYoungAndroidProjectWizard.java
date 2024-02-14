@@ -12,6 +12,7 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
+import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -32,8 +33,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 
 import java.util.logging.Logger;
 
@@ -122,7 +121,7 @@ public final class NewYoungAndroidProjectWizard {
       String packageName = StringUtils.getProjectPackage(
           Ode.getInstance().getUser().getUserEmail(), projectName);
       NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
-          packageName, theme.getValue(), toolkit.getValue());
+          packageName, theme.getValue(), JSONUtil.toJson(toolkit.getValue()));
       NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
         @Override
         public void execute(final Project project) {

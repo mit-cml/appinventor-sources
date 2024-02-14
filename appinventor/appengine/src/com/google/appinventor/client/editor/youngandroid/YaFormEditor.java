@@ -695,20 +695,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Set component properties
     for (String name : properties.keySet()) {
       if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)
-        JSONValue j = properties.get(name);
-        if (j instanceof JSONString) {
-          mockComponent.changeProperty(name, j.asString().getString());
-        } else if (j instanceof JSONArray){
-          for (JSONValue nestedComponent : properties.get(j).asArray().getElements()) {
-            createMockComponent(nestedComponent.asObject(), (MockContainer) mockComponent, substitution);
-          }
-        }else {
-            mockComponent.changeProperty(name, j.toJson());
-        }
+        mockComponent.changeProperty(name, properties.get(name).asString().getString());
       }
     }
-
-
 
     //This is for old project which doesn't have the AppName property
     if (mockComponent instanceof MockForm) {

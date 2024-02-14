@@ -1195,10 +1195,10 @@ public class Ode implements EntryPoint {
 
   //need to check whether currentFileEditor should be null
   public Boolean isProjectLoaded(){
-    if (currentFileEditor == null){
-      return true;
-    }else{
+    if (currentFileEditor == null) {
       return false;
+    } else {
+      return true;
     }
   }
   
