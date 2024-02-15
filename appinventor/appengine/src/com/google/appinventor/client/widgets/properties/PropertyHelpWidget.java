@@ -5,12 +5,11 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -42,11 +41,11 @@ public final class PropertyHelpWidget extends Image {
       // Create popup panel.
       super(true);
       setStyleName("ode-ComponentHelpPopup");
-      setTitle(prop.getName());
+      setTitle(ComponentsTranslation.getPropertyName(prop.getName()));
 
       // Create title from component name.
-      Label titleBar = new Label(prop.getName());
-      setTitle(prop.getName());
+      Label titleBar = new Label(ComponentsTranslation.getPropertyName(prop.getName()));
+      setTitle(ComponentsTranslation.getPropertyName(prop.getName()));
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
