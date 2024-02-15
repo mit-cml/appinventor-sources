@@ -1192,15 +1192,6 @@ public class Ode implements EntryPoint {
     }
     return 0;
   }
-
-  //need to check whether currentFileEditor should be null
-  public Boolean isProjectLoaded(){
-    if (currentFileEditor == null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
   
   /**
    * Returns the current source node, or null if there is no current source node.

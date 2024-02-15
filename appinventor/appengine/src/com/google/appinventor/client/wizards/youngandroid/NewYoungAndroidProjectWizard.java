@@ -12,7 +12,6 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
-import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -75,7 +74,7 @@ public final class NewYoungAndroidProjectWizard {
     PropertyHelpWidget themeHelpWidget = new PropertyHelpWidget(theme);
 
     EditableProperties toolkits = new EditableProperties(false);
-    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "", MESSAGES.blocksToolkitTitle(), null, ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"), new SubsetJSONPropertyEditor(), 0x01, "", null);
+    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "", MESSAGES.blocksToolkitTitle(), null, ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"), new SubsetJSONPropertyEditor(true), 0x01, "", null);
     blockstoolkitEditor.setProperty(toolkit);
     PropertyHelpWidget blocksHelpWidget = new PropertyHelpWidget(toolkit);
 

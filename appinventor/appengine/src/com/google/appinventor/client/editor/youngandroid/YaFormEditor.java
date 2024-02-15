@@ -44,7 +44,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
-import com.google.appinventor.shared.properties.json.JSONString;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;

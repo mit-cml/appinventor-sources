@@ -92,7 +92,10 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
-    boolean newProject = !Ode.getInstance().isProjectLoaded();
+    this(false);
+  }
+
+  public SubsetJSONPropertyEditor(boolean newProject) {
     buildTrees();
     file.addChangeHandler(new ChangeHandler() {
       @Override
@@ -137,14 +140,15 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         property.setValue("");
         updateValue();
       }}));
-    if (newProject){
+    if (!newProject) {
       items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
         @Override
         public void execute() {
           matchProject();
           property.setValue(createJSONString());
           updateValue();
-        }}));  
+        }
+      }));
     }
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
