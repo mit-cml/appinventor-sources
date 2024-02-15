@@ -544,16 +544,6 @@ they get cut off in Windows.
     padding: unset;
   }
   
-  .ode-WorkColumns {
-    overflow: scroll;
-    border-top: 1px solid #bbbbbb;
-    /*border-radius: 4px;*/
-  }
-  
-  .ode-WorkColumns>* {
-    overflow: scroll;
-    border-right: 1px solid #bbbbbb;
-  }
   
   .ode-NavArrow {
     background: #C2C2C2;}
@@ -565,6 +555,16 @@ they get cut off in Windows.
   
   
   /*
+.ode-WorkColumns {
+  overflow: auto;
+  border-top: 1px solid #bbbbbb;
+  /*border-radius: 4px;*/
+}
+
+.ode-WorkColumns > * {
+  overflow: auto;
+  border-right: 1px solid #bbbbbb;
+}
    * StatusPanel
    */
   
@@ -915,6 +915,63 @@ they get cut off in Windows.
   .ode-ColorChoicePropertyEditor:focus {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
   }
+.ode-SimpleMockForm {
+  border: none;
+  border-radius: 22px;
+}
+
+/* making changes for modern mockform */
+
+/* change padding */
+
+.ode-SimpleMockFormPhoneLandscape {
+  background: phoneLandscape;
+  background-size: 100% 100%;
+  padding: 22px;
+}
+
+.ode-SimpleMockFormPhonePortrait {
+  background: phonePortrait no-repeat right top;
+  background-size: 100% 100%;
+  padding: 22px;
+}
+
+.ode-SimpleMockFormPhoneLandscapeTablet {
+  background: phoneLandscapeTablet;
+  background-size: 100% 100%;
+  padding: 36px 36px 36px 30px;
+}
+.ode-SimpleMockFormPhonePortraitTablet {
+  background: phonePortraitTablet no-repeat right top;
+  background-size: 100% 100%;
+  padding: 30px 36px;
+}
+.ode-SimpleMockFormPhoneLandscapeMonitor {
+  background: phoneLandscapeMonitor no-repeat right top;
+  background-size: 100% 100%;
+  padding: 51px 53px 51px 42px;
+}
+
+.ode-SimpleMockFormPhonePortraitMonitor {
+  background: phonePortraitMonitor no-repeat right top;
+  background-size: 100% 100%;
+  padding: 42px 51px 53px; /* hard-coded magic numbers */
+}
+.ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
+.ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
+  flex-direction: column;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm {
+  width: 320px;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait {
+  background-image: navigationbarPortrait;
+}
+.ode-SimpleMockFormNavigationBarLandscape {
+  background-image: navigationbarLandscape;
+}
 
   .ode-SimpleFormDesigner {
     padding: 2px;
@@ -971,6 +1028,14 @@ they get cut off in Windows.
   .ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm {
     width: 320px;
   }
+.ode-DialogBox .gwt-Tree {
+  /* all: unset; */
+  margin: 0 20px 20px 20px;
+  border: 1px solid border-color;
+  border-radius: 5px;
+  height: 200px;
+  overflow: auto;
+}
 
 .ode-SimpleMockContainer {
     border: 2px solid tab-bar-color;
@@ -1142,14 +1207,6 @@ they get cut off in Windows.
     margin-right: 5px;
   }
   
-  .ode-DialogBox .gwt-Tree {
-    /* all: unset; */
-    margin: 0 20px 20px 20px;
-    border: 1px solid border-color;
-    border-radius: 5px;
-    height: 200px;
-    overflow: scroll;
-  }
   
   .ode-DialogBox .Caption {
     padding: 10px 20px;

@@ -34,4 +34,16 @@
 @def project-color                      #112abb;
     /* red */
 @def destructive-action-hover           #FF6666;
-@def item-color-red                     #ff0000;
+@def item-color-red                     #ff0000;@def item-color-red                     #ff0000;
+/* Mockforms */
+/* change color only */
+@def phoneLandscape                      url('static/images/phoneLandscape.png');
+/* change to modern too */
+@def phonePortrait                       url('static/images/phonePortraitModern.png');
+@def phoneLandscapeTablet                url('static/images/phoneLandscapeTablet.png');
+@def phonePortraitTablet                 url('static/images/phonePortraitModern.png');
+@def phoneLandscapeMonitor               url('static/images/phoneLandscapeMonitor.png');
+@def phonePortraitMonitor                url('static/images/phonePortraitModern.png');
+
+@def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
+@def navigationbarLandscape              url('static/images/navigationbarLandscape.png');

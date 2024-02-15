@@ -525,6 +525,36 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid tab-bar-color;
 }
 
+/* ==== start: skins for Android */
+.ode-SimpleMockFormPhoneLandscape {
+  background: phoneLandscape;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhonePortrait {
+  background: phonePortrait no-repeat right top;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhoneLandscapeTablet {
+  background: phoneLandscapeTablet;
+  background-size: 100% 100%;
+}
+.ode-SimpleMockFormPhonePortraitTablet {
+  background: phonePortraitTablet no-repeat right top;
+  background-size: 100% 100%;
+}
+.ode-SimpleMockFormPhoneLandscapeMonitor {
+  background: phoneLandscapeMonitor no-repeat right top;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhonePortraitMonitor {
+  background: phonePortraitMonitor no-repeat right top;
+  background-size: 100% 100%;
+}
+/* ==== end: skins for Android */
+
 .ode-SimpleMockForm-selected {
   border: 2px solid selected-color;
 }
@@ -548,6 +578,14 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormNavigationBarPortrait,
 .ode-SimpleMockFormNavigationBarLandscape {
   background-color: tab-bar-color;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait {
+  background-image: navigationbarPortrait;
+}
+
+.ode-SimpleMockFormNavigationBarLandscape {
+  background-image: navigationbarLandscape;
 }
 
 .ode-SimpleMockContainer {
