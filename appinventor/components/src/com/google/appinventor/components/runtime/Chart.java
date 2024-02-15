@@ -502,7 +502,7 @@ public class Chart extends AndroidViewComponent
       } else {
         return;
       }
-      chartView.getView().invalidate();
+      chartView.refresh();
     }
   }
 
@@ -523,7 +523,7 @@ public class Chart extends AndroidViewComponent
       } else {
         return;
       }
-      chartView.getView().invalidate();
+      chartView.refresh();
     }
   }
 
