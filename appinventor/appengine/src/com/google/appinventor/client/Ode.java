@@ -1192,7 +1192,7 @@ public class Ode implements EntryPoint {
     }
     return 0;
   }
-  
+
   /**
    * Returns the current source node, or null if there is no current source node.
    *
