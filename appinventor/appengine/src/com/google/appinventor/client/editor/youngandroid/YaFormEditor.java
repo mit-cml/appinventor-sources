@@ -698,8 +698,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     }
 
-
-
     //This is for old project which doesn't have the AppName property
     if (mockComponent instanceof MockForm) {
       if (!properties.keySet().contains("AppName")) {

@@ -1811,6 +1811,12 @@ path.ode-SimpleMockMapFeature-selected {
   width: 95%;
 }
 
+.ode-DialogBox .contentRow {
+  display: inline-flex;
+  width: 95%;
+  margin-left: 20px;
+}
+
 /* AI2 Extensions Styles */
 
 a.ode-ExtensionAnchor {
