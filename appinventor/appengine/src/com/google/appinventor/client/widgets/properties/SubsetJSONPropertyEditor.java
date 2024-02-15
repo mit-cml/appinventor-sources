@@ -100,12 +100,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     file.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent changeEvent) {
-        if (customPopupShowing) {
-          loadJSONfile(file, false);
-        }
-        else {
-          loadJSONfile(file, true);
-        }
+        loadJSONfile(file, !customPopupShowing);
       }
     });
 

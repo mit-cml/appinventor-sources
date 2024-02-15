@@ -8,6 +8,8 @@ package com.google.appinventor.client.wizards.youngandroid;
 
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.components.common.ComponentConstants.DEFAULT_THEME;
+
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
@@ -55,8 +57,8 @@ public final class NewYoungAndroidProjectWizard {
   @UiField Button addButton;
   @UiField Button cancelButton;
   @UiField LabeledTextBox projectNameTextBox;
-  @UiField YoungAndroidThemeChoicePropertyEditor themeEditor;
-  @UiField SubsetJSONPropertyEditor blockstoolkitEditor;
+  @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
+  @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField FlowPanel horizontalThemePanel;
   @UiField FlowPanel horizontalBlocksPanel;
 
@@ -64,20 +66,28 @@ public final class NewYoungAndroidProjectWizard {
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
+    EditableProperties themes = new EditableProperties(false);
+    themeEditor = new YoungAndroidThemeChoicePropertyEditor(DEFAULT_THEME);
+    theme = new EditableProperty(themes, MESSAGES.themeTitle(), DEFAULT_THEME,
+        MESSAGES.themeTitle(), null,
+        ComponentsTranslation.getPropertyDescription("ThemePropertyDescriptions"),
+        themeEditor, 0x01, "", null);
+    themeEditor.setProperty(theme);
+
+    EditableProperties toolkits = new EditableProperties(false);
+    blockstoolkitEditor = new SubsetJSONPropertyEditor(true);
+    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "",
+        MESSAGES.blocksToolkitTitle(), null,
+        ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
+        blockstoolkitEditor, 0x01, "", null);
+    blockstoolkitEditor.setProperty(toolkit);
+
     UI_BINDER.createAndBindUi(this);
     addDialog.center();
     projectNameTextBox.setFocus(true);
 
-    EditableProperties themes = new EditableProperties(false);
-    theme = new EditableProperty(themes, MESSAGES.themeTitle(), MESSAGES.classicTheme(), MESSAGES.themeTitle(), null, ComponentsTranslation.getPropertyDescription("ThemePropertyDescriptions"), new YoungAndroidThemeChoicePropertyEditor(), 0x01, "", null);
-    themeEditor.setProperty(theme);
     PropertyHelpWidget themeHelpWidget = new PropertyHelpWidget(theme);
-
-    EditableProperties toolkits = new EditableProperties(false);
-    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "", MESSAGES.blocksToolkitTitle(), null, ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"), new SubsetJSONPropertyEditor(true), 0x01, "", null);
-    blockstoolkitEditor.setProperty(toolkit);
     PropertyHelpWidget blocksHelpWidget = new PropertyHelpWidget(toolkit);
-
     horizontalThemePanel.add(themeHelpWidget);
     horizontalBlocksPanel.add(blocksHelpWidget);
   }
