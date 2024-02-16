@@ -145,11 +145,14 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       }));
     }
+    /*
+     Temporarily turning this off until we can determine why file.click() is not doing anything.
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
       public void execute() {
         file.click();
       }}));
+    */
 
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.customEllipsis(), new Command() {
       @Override
@@ -186,6 +189,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
       blockPanel.add(blockTree);
 
+      /*
       Button loadButton = new Button(MESSAGES.fileUploadWizardCaption());
       loadButton.addClickHandler(new ClickHandler() {
         @Override
@@ -193,6 +197,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           file.click();
         }
       });
+      */
       Button saveButton = new Button(MESSAGES.saveAsButton());
       saveButton.addClickHandler(new ClickHandler() {
         @Override
@@ -217,7 +222,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       Button cancelButton = new Button(MESSAGES.cancelButton());
       Button okButton = new Button(MESSAGES.okButton());
       buttonPanel.add(saveButton);
-      buttonPanel.add(loadButton);
+/*      buttonPanel.add(loadButton); */
       buttonPanel.add(clearButton);
       buttonPanel.add(initializeButton);
       cancelButton.addClickHandler(new ClickHandler() {
