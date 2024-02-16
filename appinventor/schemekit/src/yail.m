@@ -924,7 +924,15 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
     } else if (pic_str_p(pic, args[i])) {
       const char *str_value = pic_str(pic, args[i]);
       NSString *native_str = [NSString stringWithUTF8String:str_value];
-      [invocation setArgument:&native_str atIndex:j];
+      switch ([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
+        case 'i': {
+          int value = [native_str intValue];
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        default:
+          [invocation setArgument:&native_str atIndex:j];
+      }
     } else if (pic_true_p(pic, args[i])) {
       if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
         NSNumber *value = [NSNumber numberWithBool:YES];
