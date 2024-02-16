@@ -146,13 +146,13 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
         }
       }, true);
       result.addEventListener('dragleave', function(e) {
-        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+        self.setGridSettings(self.options.gridOptions['enabled'], self.self.getGrid().shouldSnap());
       }, true);
       result.addEventListener('dragexit', function(e) {
-        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+        self.setGridSettings(self.options.gridOptions['enabled'], self.self.getGrid().shouldSnap());
       }, true);
       result.addEventListener('drop', function(e) {
-        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+        self.setGridSettings(self.options.gridOptions['enabled'], self.self.getGrid().shouldSnap());
         if (e.dataTransfer.types.indexOf('Files') >= 0) {
           if (e.dataTransfer.files.item(0).type === 'image/png') {
             e.preventDefault();
@@ -792,7 +792,7 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
 
 Blockly.WorkspaceSvg.prototype.setGridSettings = function(enabled, snap) {
   this.options.gridOptions['enabled'] = enabled;
-  this.options.gridOptions['snap'] = enabled && snap;
+  this.getGrid().setSnapToGrid(enabled && snap);
   if (this.svgBackground_) {
     if (this.options.gridOptions['enabled']) {
       // add grid

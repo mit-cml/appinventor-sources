@@ -569,9 +569,9 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
       topblocks.sort(sortByCategory);
     }
     let metrics = workspace.getMetrics();
-    let spacing = workspace.options.gridOptions.spacing;
+    let spacing = workspace.getGrid().getSpacing()
     let spacingInv = 1 / spacing;
-    let snap = workspace.options.gridOptions.snap ?
+    let snap = workspace.getGrid().shouldSnap() ?
       function(x) { return (Math.ceil(x * spacingInv) - .5) * spacing; } : function(x) { return x; };
     let viewLeft = snap(metrics.viewLeft + 5);
     let viewTop = snap(metrics.viewTop + 5);
@@ -840,11 +840,12 @@ AI.Blockly.ContextMenuItems.registerGridOptions = function() {
         Blockly.Msg['DISABLE_GRID'] : Blockly.Msg['ENABLE_GRID']
     },
     callback: function(scope) {
-      let grid = scope.workspace.options.gridOptions;
+      let gridOptions = scope.workspace.options.gridOptions;
       const gridPattern = scope.workspace.options.gridPattern;
-      grid['enabled'] = !grid['enabled'];
-      grid['snap'] = grid['enabled'] && top.BlocklyPanel_getSnapEnabled();
-      if (grid['enabled']) {
+      gridOptions['enabled'] = !gridOptions['enabled'];
+      const grid = scope.workspace.getGrid();
+      grid.setSnapToGrid(gridOptions['enabled'] && top.BlocklyPanel_getSnapEnabled());
+      if (gridOptions['enabled']) {
         // add grid
         Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: url(#' + gridPattern.id + ');');
       } else {
@@ -852,7 +853,7 @@ AI.Blockly.ContextMenuItems.registerGridOptions = function() {
         Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: white;');
       }
       if (top.BlocklyPanel_setGridEnabled) {
-        top.BlocklyPanel_setGridEnabled(grid['enabled']);
+        top.BlocklyPanel_setGridEnabled(gridOptions['enabled']);
         top.BlocklyPanel_saveUserSettings();
       }
     },
@@ -868,14 +869,14 @@ AI.Blockly.ContextMenuItems.registerGridOptions = function() {
       return scope.workspace.options.gridOptions['enabled'] ? 'enabled' : 'hidden';
     },
     displayText: function(scope) {
-      return scope.workspace.options.gridOptions['snap'] ?
+      return scope.workspace.getGrid().shouldSnap() ?
         Blockly.Msg['DISABLE_SNAPPING'] : Blockly.Msg['ENABLE_SNAPPING'];
     },
     callback: function(scope) {
-      let grid = scope.workspace.options.gridOptions;
-      grid['snap'] = !grid['snap'];
+      const grid = scope.workspace.getGrid()
+      grid.setSnapToGrid(!grid.shouldSnap());
       if (top.BlocklyPanel_setSnapEnabled) {
-        top.BlocklyPanel_setSnapEnabled(grid['snap']);
+        top.BlocklyPanel_setSnapEnabled(grid.shouldSnap());
         top.BlocklyPanel_saveUserSettings();
       }
     },
