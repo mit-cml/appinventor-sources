@@ -16,14 +16,13 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.Execution;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Dex task, modified from the Android SDK to run in BuildServer.
@@ -188,7 +185,7 @@ public class DexExecTask {
         }
 
         System.out.println(String.format(
-                "Converting compiled files and external libraries into %1$s...", mOutput));
+            "Converting compiled files and external libraries into %1$s...", mOutput));
 
         return runDx(paths, mOutput, mVerbose /*showInputs*/);
     }

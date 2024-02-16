@@ -307,7 +307,13 @@ public final class ErrorMessages {
   // Spreadsheet Errors
   public static final int ERROR_SPREADSHEET_ERROR = 4401;
 
-  // Start the next group of errors at 4500
+  // FilePicker Errors
+  public static final int ERROR_FILEPICKER_NO_URI_RETURNED = 4501;
+
+  // ListView Errors
+  public static final int ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601;
+
+  // Start the next group of errors at 4700
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -750,6 +756,13 @@ public final class ErrorMessages {
 
     // Spreadsheet Errors
     errorMessages.put(ERROR_SPREADSHEET_ERROR, "Error in Spreadsheet: %1$s");
+
+    // FilePicker Errors
+    errorMessages.put(ERROR_FILEPICKER_NO_URI_RETURNED, "No URI returned to FilePicker");
+
+    // ListView Errors
+    errorMessages.put(ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS,
+        "The index %d is out of bounds for the list view.");
   }
 
   private ErrorMessages() {

@@ -800,8 +800,32 @@ public interface Images extends Resources {
   ImageResource chartData2D();
 
   /**
+   * Designer palette item: Regression.
+   */
+  @Source("com/google/appinventor/images/regression.png")
+  ImageResource regression();
+
+  /**
+   * Designer palette item: AnomalyDetection.
+   */
+  @Source("com/google/appinventor/images/anomaly.png")
+  ImageResource anomalyDetection();
+
+  /**
    * Designer palette item: DataFile.
    */
   @Source("com/google/appinventor/images/dataFile.png")
   ImageResource dataFile();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/circularProgress.png")
+  ImageResource circularProgress();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/linearProgress.png")
+  ImageResource linearProgress();
 }

@@ -75,7 +75,7 @@
   <import file="../build-common.xml" />
 
   <property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
-  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.46" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
   <property name="build.extra.dir" location="${local.build.dir}/extra" />
@@ -286,9 +286,8 @@
     <!-- OWASP -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
-      <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
-    </copy>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
   </target>
 
   <!-- =====================================================================
@@ -308,8 +307,7 @@
     <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
       <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
     </copy>
-    <ai.javac destdir="${AiServerLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiServerLib-class.dir}">
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -401,15 +399,14 @@
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
     <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
-    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
-    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
-    <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
-    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
-    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+
+    <!-- Powermock and dependencies -->
+    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <pathelement location="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
@@ -425,11 +422,12 @@
     <pathelement location="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-labs.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
-    <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
-    <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <pathelement location="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-testing-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-api-stubs-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-tools-sdk-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-remote-api-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
     <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerLib.jar"/>
   </path>
 
@@ -456,8 +454,7 @@
     <property name="AiSharedLib-class.dir" location="${class.dir}/AiSharedLib" />
     <mkdir dir="${AiSharedLib-class.dir}" />
 
-    <ai.javac destdir="${AiSharedLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiSharedLib-class.dir}">
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -484,7 +481,7 @@
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
@@ -512,8 +509,7 @@
     <property name="AiRebindLib-class.dir" location="${class.dir}/AiRebindLib" />
     <mkdir dir="${AiRebindLib-class.dir}" />
 
-    <ai.javac destdir="${AiRebindLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiRebindLib-class.dir}">
       <include name="${appinventor.pkg}/rebind/**/*.java" />
       <classpath>
         <!-- gwt libs -->
@@ -542,7 +538,7 @@
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
               srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
-              source="1.8" target="1.8" nowarn="true"
+              nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
       <include name="${appinventor.pkg}/shared/**/*.java" />
@@ -560,6 +556,7 @@
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
@@ -608,6 +605,7 @@
     <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
     <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
     <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <!-- gwt libs -->
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
@@ -626,7 +624,7 @@
         <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx2G"/>
+      <jvmarg value="-Xmx3G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg value="-war"/>
@@ -646,7 +644,7 @@
         <path refid="YaClientApp.classpath" />
         <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
       </classpath>
-      <jvmarg value="-Xmx1G" />
+      <jvmarg value="-Xmx3G" />
       <arg line="-style PRETTY -logLevel INFO" />
       <arg value="com.google.appinventor.YaClient-dev" />
       <arg value="-bindAddress"/>
@@ -676,9 +674,10 @@
     <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
     <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
     <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
     <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>

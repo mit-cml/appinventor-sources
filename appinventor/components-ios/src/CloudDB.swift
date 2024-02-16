@@ -306,7 +306,11 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
           do {
             var value: AnyObject?
             if message.count > 0 {
-              value = getJsonRepresentationIfValueFileName(message[0] as AnyObject) as AnyObject? ?? message[0] as AnyObject
+              if message[0] is NSNull {
+                value = try getJsonRepresentation(valueIfTagNotThere) as AnyObject
+              } else {
+                value = getJsonRepresentationIfValueFileName(message[0] as AnyObject) as AnyObject? ?? message[0] as AnyObject
+              }
             } else {
               value = try getJsonRepresentation(valueIfTagNotThere) as AnyObject
             }

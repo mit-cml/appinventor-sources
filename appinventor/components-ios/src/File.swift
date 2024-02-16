@@ -9,6 +9,7 @@ open class File: NonvisibleComponent {
   @objc let NO_ASSETS = "No_Assets"
   private var _isRepl: Bool = false
   private let LOG_TAG: String = "FileComponent"
+  private let workQueue = DispatchQueue(label: "FileOperations", qos: .userInitiated)
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -35,7 +36,7 @@ open class File: NonvisibleComponent {
   }
   
   @objc open func ReadFrom(_ fileName: String) {
-    DispatchQueue.global(qos: .background).async {
+    workQueue.async {
       do {
         let filePath: String = FileUtil.absoluteFileName(fileName, self._isRepl)
         if filePath.isEmpty || !FileManager().fileExists(atPath: filePath) {
@@ -94,7 +95,7 @@ open class File: NonvisibleComponent {
       }
       return
     }
-    DispatchQueue.global(qos: .background).async {
+    workQueue.async {
       do {
         let filePath = FileUtil.absoluteFileName(fileName, self._isRepl)
         try FileUtil.createFullFilePath(filePath, isAppend: append)

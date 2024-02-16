@@ -6,13 +6,13 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.logging.Logger;
 
 /**
  * The asset list shows all the project's assets, and lets the
@@ -42,6 +43,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 
 public class AssetList extends Composite implements ProjectChangeListener {
+  private static final Logger LOG = Logger.getLogger(AssetList.class.getName());
 
   // The asset "list" is represented as a tree and follows the same GWT conventions.
   private Tree assetList;
@@ -71,8 +73,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onClick(ClickEvent event) {
         if (assetsFolder != null) {
-          FileUploadWizard uploader = new FileUploadWizard(assetsFolder);
-          uploader.show();
+          new FileUploadWizard(assetsFolder);
         }
       }
     });
@@ -111,7 +112,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
    */
   private void refreshAssetList() {
     final Images images = Ode.getImageBundle();
-    OdeLog.log("AssetList: refreshing for project " + projectId);
+    LOG.info("AssetList: refreshing for project " + projectId);
     assetList.clear();
 
     if (assetsFolder != null) {
@@ -142,7 +143,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
   }
 
   public void refreshAssetList(long projectId) {
-    OdeLog.log("AssetList: switching projects from  " + this.projectId +
+    LOG.info("AssetList: switching projects from  " + this.projectId +
         " to " + projectId);
 
     if (project != null) {
@@ -165,14 +166,14 @@ public class AssetList extends Composite implements ProjectChangeListener {
   // ProjectChangeListener implementation
   @Override
   public void onProjectLoaded(Project project) {
-    OdeLog.log("AssetList: got onProjectLoaded for " + project.getProjectId() + 
+    LOG.info("AssetList: got onProjectLoaded for " + project.getProjectId() +
         ", current project is " + projectId);
     refreshAssetList();
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
-    OdeLog.log("AssetList: got projectNodeAdded for node " + node.getFileId() 
+    LOG.info("AssetList: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
@@ -181,7 +182,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    OdeLog.log("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId() 
+    LOG.info("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();

@@ -33,7 +33,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     description = "Toggle switch that raises an event when the user clicks on it. " +
     "There are many properties affecting its appearance that can be set in " +
     "the Designer or Blocks Editor.",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/switch.png")
 @SimpleObject
 public final class Switch extends ToggleBase<CompoundButton> {
 

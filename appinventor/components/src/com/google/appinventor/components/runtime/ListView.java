@@ -80,7 +80,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private RecyclerView recyclerView;
   private ListAdapterWithRecyclerView listAdapterWithRecyclerView;
-  private YailList stringItems;
+  private List<String> stringItems;
   private List<YailDictionary> dictItems;
   private int selectionIndex;
   private String selection;
@@ -122,7 +122,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     super(container);
     this.container = container;
-    stringItems = YailList.makeEmptyList();
+    stringItems = new ArrayList<>();
     dictItems = new ArrayList<>();
 
     linearLayout = new LinearLayout(container.$context());
@@ -286,7 +286,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     dictItems.clear();
-    stringItems = YailList.makeEmptyList();
+    stringItems = new ArrayList<>();
     if (itemsList.size() > 0) {
       Object firstitem = itemsList.getObject(0);
       // Check to see if this is a list of strings (backward compatibility) or a list of Dictionaries
@@ -307,7 +307,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         }
       } else {
         // Support legacy single-string ListViews
-        stringItems = ElementsUtil.elements(itemsList, "Listview");
+        stringItems = ElementsUtil.elementsStrings(itemsList, "ListView");
       }
     }
     setAdapterData();
@@ -324,7 +324,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     if (dictItems.size() > 0) {
       return YailList.makeList(dictItems);
     } else {
-      return stringItems;
+      return ElementsUtil.makeYailListFromList(stringItems);
     }
   }
 
@@ -340,7 +340,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
           "list.", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
-    stringItems = ElementsUtil.elementsFromString(itemstring);
+    stringItems = ElementsUtil.elementsListFromString(itemstring);
     setAdapterData();
   }
 
@@ -410,17 +410,42 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void SelectionIndex(int index) {
     if (!dictItems.isEmpty()) {
       selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
-      selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
+      if (selectionIndex > 0) {
+        selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+        selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
+      } else {
+        selection = "";
+        selectionDetailText = "";
+      }
     } else {
-      selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
+      selectionIndex = ElementsUtil.selectionIndexInStringList(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
-      selection = ElementsUtil.setSelectionFromIndex(index, stringItems);
+      selection = ElementsUtil.setSelectionFromIndexInStringList(index, stringItems);
       selectionDetailText = "";
     }
     if (listAdapterWithRecyclerView != null) {
       listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
     }
+  }
+
+  /**
+   * Removes Item from list at a given index
+   */
+  @SimpleFunction(
+      description = "Removes Item from list at a given index")
+  public void RemoveItemAtIndex(int index) {
+    if (index < 1 || index > Math.max(dictItems.size(), stringItems.size())) {
+      container.$form().dispatchErrorOccurredEvent(this, "RemoveItemAtIndex",
+          ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
+      return;
+    }
+    if (dictItems.size() >= index) {
+      dictItems.remove(index - 1);
+    }
+    if (stringItems.size() >= index) {
+      stringItems.remove(index - 1);
+    }
+    setAdapterData();
   }
 
   /**
@@ -456,7 +481,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         selectionIndex = 0;
       }
     } else {
-      selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
+      selectionIndex = ElementsUtil.setSelectedIndexFromValueInStringList(value, stringItems);
     }
     SelectionIndex(selectionIndex);
   }
@@ -557,7 +582,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
           defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void SelectionColor(int argb) {
     selectionColor = argb;
     setAdapterData();

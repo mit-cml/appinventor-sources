@@ -23,6 +23,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
@@ -508,6 +509,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.id = null;  // let Objectify auto-generate the project id
           pd.dateCreated = date;
           pd.dateModified = date;
+          pd.dateBuilt = 0;
           pd.history = project.getProjectHistory();
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
@@ -813,7 +815,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified, projectData.t.projectMovedToTrashFlag);
+          projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -845,7 +847,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       for (ProjectData projectData : projectDatas.t.values()) {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
-            projectData.dateModified, projectData.projectMovedToTrashFlag));
+            projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }
@@ -871,6 +873,25 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return projectName.t;
+  }
+
+  @Override
+  public void setProjectName(final String userId, final long projectId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            pd.name = name;
+            datastore.put(pd);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
   }
 
   @Override
@@ -1789,7 +1810,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
-              throw new IOException("FATAL Error, external component in gallery app");
+              throw new GalleryExtensionException();
             }
             if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
               it.remove();

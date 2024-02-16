@@ -308,7 +308,9 @@ public class Chart extends AndroidViewComponent
       defaultValue = "100")
   @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the "
       + "percentage indicates the percentage of the hole fill. 100% means that a full Pie Chart "
-      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false)
+      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.",
+      userVisible = false,
+      category = PropertyCategory.APPEARANCE)
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -325,7 +327,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return True if legend is enabled, false otherwise
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public boolean LegendEnabled() {
     return this.legendEnabled;
   }
@@ -341,6 +343,8 @@ public class Chart extends AndroidViewComponent
   public void LegendEnabled(boolean enabled) {
     this.legendEnabled = enabled;
     chartView.setLegendEnabled(enabled);
+    view.invalidate();
+    chartView.refresh();
   }
 
   /**
@@ -349,7 +353,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return True if grid is enabled, false otherwise
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public boolean GridEnabled() {
     return this.gridEnabled;
   }
@@ -372,6 +376,8 @@ public class Chart extends AndroidViewComponent
     // grids.
     if (chartView instanceof AxisChartView) {
       ((AxisChartView<?, ?, ?, ?, ?>) chartView).setGridEnabled(enabled);
+      view.invalidate();
+      chartView.refresh();
     }
   }
 
@@ -431,7 +437,7 @@ public class Chart extends AndroidViewComponent
    * @see #Labels(YailList)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void LabelsFromString(String labels) {
     // Retrieve the elements from the CSV-formatted String
     YailList labelsList = ElementsUtil.elementsFromString(labels);
@@ -446,7 +452,7 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void XFromZero(boolean zero) {
     this.zeroX = zero;
 
@@ -468,7 +474,7 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void YFromZero(boolean zero) {
     this.zeroY = zero;
 
