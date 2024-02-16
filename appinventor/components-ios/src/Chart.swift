@@ -4,12 +4,34 @@
 import Foundation
 import DGCharts
 
-@objc enum ChartType: Int32 {
-  case Line = 0
-  case Scatter = 1
-  case Area = 2
-  case Bar = 3
-  case Pie = 4
+@objc public class ChartType: NSObject, OptionList {
+  @objc public static let Line = ChartType(0)
+  @objc public static let Scatter = ChartType(1)
+  @objc public static let Area = ChartType(2)
+  @objc public static let Bar = ChartType(3)
+  @objc public static let Pie = ChartType(4)
+
+  private static let LOOKUP: [Int32:ChartType] = [
+    0: ChartType.Line,
+    1: ChartType.Scatter,
+    2: ChartType.Area,
+    3: ChartType.Bar,
+    4: ChartType.Pie
+  ]
+
+  let value: Int32
+
+  @objc private init(_ value: Int32) {
+    self.value = value
+  }
+
+  @objc class func fromUnderlyingValue(_ value: Int32) -> ChartType? {
+    return LOOKUP[value]
+  }
+
+  @objc public func toUnderlyingValue() -> AnyObject {
+    return value as AnyObject
+  }
 }
 
 @objc open class Chart : ViewComponent, ComponentContainer, LifecycleDelegate, AbstractMethodsForViewComponent {
@@ -154,7 +176,7 @@ import DGCharts
     }
   }
 
-  internal var `Type`: ChartType {
+  @objc open var `Type`: ChartType {
     get {
       return _type
     }
@@ -243,6 +265,8 @@ import DGCharts
     case .Pie:
       //return PieChartView(frame: .zero)
       fatalError("whoops")
+    default:
+      fatalError("Invalid chart type")
     }
   }
 
