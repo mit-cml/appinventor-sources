@@ -13,7 +13,7 @@ import DGCharts
 
   var _chartDataModel: ChartDataModel?
   var _container: Chart
-  var _color: UIColor?
+  var _color: Int32 = AIComponentKit.Color.black.int32
   var _colors: YailList<AnyObject> = []
   var _label: String?
 
@@ -37,13 +37,13 @@ import DGCharts
     DataSourceKey("")
   }
   
-  @objc open var Color: UIColor {
+  @objc open var Color: Int32 {
     get {
-      return _color!
+      return _color
     }
     set {
       _color = newValue
-      _chartDataModel?.setColor(_color!)
+      _chartDataModel?.setColor(argbToColor(newValue))
      refreshChart()
     }
   }
@@ -99,7 +99,7 @@ import DGCharts
     _chartDataModel = _container.chartView?.createChartModel()
 
     // set default values
-    Color = uiColorFromHex(rgbValue: 0xFF000000)
+    Color = AIComponentKit.Color.black.int32
     Label = ""
     
     //TODO: do i need gesture recognizers
