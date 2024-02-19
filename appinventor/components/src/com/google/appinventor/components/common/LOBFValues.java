@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2023-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,7 +18,15 @@ public enum LOBFValues implements OptionList<String> {
   Slope("slope"),
   Yintercept("Yintercept"),
   Predictions("predictions"),
-  AllValues("all values");
+  AllValues("all values"),
+  QuadraticCoefficient("Quadratic Coefficient"),
+  LinearCoefficient("slope"),
+  ExponentialCoefficient("a"),
+  ExponentialBase("b"),
+  LogarithmCoefficient("b"),
+  LogarithmConstant("a"),
+  XIntercepts("Xintercepts"),
+  RSquared("r^2");
 
   private final String lobfValues;
 

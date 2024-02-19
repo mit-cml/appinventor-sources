@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2022 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -396,5 +396,19 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_LINE_TYPE = "chart_line_type";
+
+  /**
+   * Model selector for line of best fit calculation.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_BEST_FIT_MODEL = "best_fit_model";
+
+  /**
+   * Stroke style selector for line of best fit.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidStrokeStyleChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_STROKE_STYLE = "stroke_style";
 
 }

@@ -274,6 +274,16 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   
   func setTextbase(_ base: TextBoxBase) {
     _base = base
+    _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
+  }
+
+  func setCursor(at position: Int32) {
+    if let offset = _view.position(from: _view.beginningOfDocument, offset: Int(position)) {
+      _view.selectedTextRange = _view.textRange(from: offset, to: offset)
+    }
+    if let offset = _field.position(from: _field.beginningOfDocument, offset: Int(position)) {
+      _field.selectedTextRange = _field.textRange(from: offset, to: offset)
+    }
   }
 }
 

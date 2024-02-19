@@ -409,9 +409,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index) {
     if (!dictItems.isEmpty()) {
-      selectionIndex = ElementsUtil.selectionIndexInStringList(index, YailList.makeList(dictItems));
-      selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
+      selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
+      if (selectionIndex > 0) {
+        selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+        selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
+      } else {
+        selection = "";
+        selectionDetailText = "";
+      }
     } else {
       selectionIndex = ElementsUtil.selectionIndexInStringList(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.

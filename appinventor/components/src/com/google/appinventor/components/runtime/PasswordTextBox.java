@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -139,6 +140,7 @@ public final class PasswordTextBox extends TextBoxBase {
     } else if(!acceptsNumbersOnly && !passwordVisible) {
       view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
+    TextViewUtil.setFontTypeface(container.$form(), view, this.FontTypeface(), this.FontBold(), this.FontItalic());
   }
 
 }
