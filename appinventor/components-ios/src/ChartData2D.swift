@@ -54,4 +54,19 @@ import Foundation
     group.wait()
     return holder
   }
+  
+  // Highlights data points of chocie on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
+  @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
+    var dataPointsList: Array<AnyObject> = dataPoints as! Array
+    print("dataPoitnsList", dataPointsList)
+    if !dataPoints.isEmpty {
+      var entries = _chartDataModel?.entries
+      var highlights: Array<Int> = []
+      for index in 0 ..< (_chartDataModel?.entries.count)! {
+        highlights.append(_chartDataModel?.dataset?)
+      }
+      
+    }
+
+  }
 }
