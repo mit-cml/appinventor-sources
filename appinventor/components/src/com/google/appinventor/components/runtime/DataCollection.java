@@ -788,7 +788,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * for the x values, and the specified y column for the y values. The DataFile's source file
    * is expected to be either a CSV or a JSON file.
    *
-   *   Passing in empty test for any of the column parameters will result in the usage of
+   *   Passing in empty text for any of the column parameters will result in the usage of
    * default values which are the indices of the entries. For the first entry, the default
    * value would be the 1, for the second it would be 2, and so on.
    *

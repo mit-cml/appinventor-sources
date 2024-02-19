@@ -10,9 +10,11 @@ Table of Contents:
 
 * [Button](#Button)
 * [CheckBox](#CheckBox)
+* [CircularProgress](#CircularProgress)
 * [DatePicker](#DatePicker)
 * [Image](#Image)
 * [Label](#Label)
+* [LinearProgress](#LinearProgress)
 * [ListPicker](#ListPicker)
 * [ListView](#ListView)
 * [Notifier](#Notifier)
@@ -214,6 +216,49 @@ None
 : `CheckBox` stopped being the focused component.
 
 ### Methods  {#CheckBox-Methods}
+
+{:.methods}
+None
+
+
+## CircularProgress  {#CircularProgress}
+
+Component for CircularProgress
+
+
+
+### Properties  {#CircularProgress-Properties}
+
+{:.properties}
+
+{:id="CircularProgress.Color" .color} *Color*
+: Change the indeterminate color of the circular progress bar.
+
+{:id="CircularProgress.Height" .number .bo} *Height*
+: Specifies the `CircularProgress`'s vertical height, measured in pixels.
+
+{:id="CircularProgress.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `CircularProgress`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="CircularProgress.Visible" .boolean} *Visible*
+: Specifies whether the `CircularProgress` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `CircularProgress` is showing and `false`{:.logic.block} if hidden.
+
+{:id="CircularProgress.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `CircularProgress`, measured in pixels.
+
+{:id="CircularProgress.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `CircularProgress` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#CircularProgress-Events}
+
+{:.events}
+None
+
+
+### Methods  {#CircularProgress-Methods}
 
 {:.methods}
 None
@@ -506,6 +551,59 @@ None
 {:.methods}
 None
 
+
+## LinearProgress  {#LinearProgress}
+
+Component for LinearProgress
+
+
+
+### Properties  {#LinearProgress-Properties}
+
+{:.properties}
+
+{:id="LinearProgress.Indeterminate" .boolean} *Indeterminate*
+: Indicate whether this progress bar is in indeterminate mode.
+
+{:id="LinearProgress.IndeterminateColor" .color} *IndeterminateColor*
+: Change the indeterminate color of the progress bar.
+
+{:id="LinearProgress.Maximum" .number} *Maximum*
+: Set the upper range of the progress bar max.
+
+{:id="LinearProgress.Minimum" .number} *Minimum*
+: Set the lower range of the progress bar to min. This function works only for devices with API >= 26
+
+{:id="LinearProgress.Progress" .number .bo} *Progress*
+: Get the progress bar's current level of progress.
+
+{:id="LinearProgress.ProgressColor" .color} *ProgressColor*
+: Change the progress color of the progress bar.
+
+{:id="LinearProgress.Visible" .boolean} *Visible*
+: Specifies whether the `LinearProgress` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `LinearProgress` is showing and `false`{:.logic.block} if hidden.
+
+{:id="LinearProgress.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `LinearProgress`, measured in pixels.
+
+{:id="LinearProgress.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `LinearProgress` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#LinearProgress-Events}
+
+{:.events}
+
+{:id="LinearProgress.ProgressChanged"} ProgressChanged(*progress*{:.number})
+: Event that indicates that the progress of the progress bar has been changed. Returns the current progress value. If "Indeterminate" is set to true, then it returns "0".
+
+### Methods  {#LinearProgress-Methods}
+
+{:.methods}
+
+{:id="LinearProgress.IncrementProgressBy" class="method"} <i/> IncrementProgressBy(*value*{:.number})
+: Increase the progress bar's progress by the specified amount.
 
 ## ListPicker  {#ListPicker}
 
@@ -987,22 +1085,20 @@ Users enter passwords in a password text box component, which hides the text tha
  as if the user touches a different text box.
 
 {:id="PasswordTextBox.TextChanged"} TextChanged()
-: Event raised when the text of the `PasswordTextBox` is changed, either by the user or the program.
+: Event raised when the text of the PasswordTextBox is changed, either by the user or the program.
 
 ### Methods  {#PasswordTextBox-Methods}
 
 {:.methods}
 
 {:id="PasswordTextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
-: Repositions the cursor of the `PasswordTextBox` before the character at the given 1-indexed position. If the given position is 
-larger than the length of the `PasswordTextBox`, the cursor will be moved to the end of the text; and if the given position is 
-smaller or equal to 1, the cursor will be moved to the start.
+: Repositions the cursor of the PasswordTextBox before the character at the given 1-indexed position. If the given position is larger than the length of the PasswordTextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.
 
 {:id="PasswordTextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the `PasswordTextBox`'s text.
+: Repositions the cursor to the end of the PasswordTextBox's text.
 
 {:id="PasswordTextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
-: Repositions the cursor to the start of the `PasswordTextBox`'s text.
+: Repositions the cursor to the start of the PasswordTextBox's text.
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
@@ -1574,7 +1670,7 @@ Users enter text in a text box component.
  as if the user touches a different text box.
 
 {:id="TextBox.TextChanged"} TextChanged()
-: Event raised when the text of the `TextBox` is changed, either by the user or the program.
+: Event raised when the text of the TextBox is changed, either by the user or the program.
 
 ### Methods  {#TextBox-Methods}
 
@@ -1585,15 +1681,13 @@ Users enter text in a text box component.
  keyboard when the users presses the Done key.
 
 {:id="TextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
-: Repositions the cursor of the `TextBox` before the character at the given 1-indexed position. If the given position is 
-larger than the length of the `TextBox`, the cursor will be moved to the end of the text; and if the given position is 
-smaller or equal to 1, the cursor will be moved to the start.
+: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the TextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.
 
 {:id="TextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
-: Repositions the cursor to the end of the `TextBox`'s text.
+: Repositions the cursor to the end of the TextBox's text.
 
 {:id="TextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
-: Repositions the cursor to the start of the `TextBox`'s text.
+: Repositions the cursor to the start of the TextBox's text.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.
