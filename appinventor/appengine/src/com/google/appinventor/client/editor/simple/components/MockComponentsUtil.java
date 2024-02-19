@@ -45,7 +45,10 @@ public final class MockComponentsUtil {
     if (isNoneColor(color)) {
       DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
     } else {
-      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "#" + getHexString(color, 6));
+      if (color.startsWith("&H") && color.length() == 10) {
+        color = color.substring(0,2) + color.substring(4) + color.substring(2,4);
+      }  // changes format of color from ARGB to RGBA
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "#" + getHexString(color, 8));
     }
   }
 
