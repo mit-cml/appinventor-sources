@@ -31,6 +31,7 @@ import com.google.appinventor.client.editor.simple.components.MockFeatureCollect
 import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockTrendline;
 import com.google.appinventor.client.editor.simple.components.MockTwitter;
 import com.google.appinventor.client.editor.simple.components.MockLinearProgress;
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
@@ -222,6 +223,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/regression.png", images.regression());
     bundledImages.put("images/anomaly.png", images.anomalyDetection());
     bundledImages.put("images/filepicker.png", images.file());
+    bundledImages.put("images/trendline.png", images.trendline());
 
     imagesInitialized = true;
   }
@@ -602,6 +604,8 @@ public final class SimpleComponentDescriptor {
       return new MockCircularProgress(editor);
     } else if (name.equals(MockLinearProgress.TYPE)) {
       return new MockLinearProgress(editor);
+    } else if (name.equals(MockTrendline.TYPE)) {
+      return new MockTrendline(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

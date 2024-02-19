@@ -8,8 +8,6 @@ package com.google.appinventor.client.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import java.util.Map;
-
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.properties.json.ClientJsonString;
@@ -17,13 +15,14 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Window;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -136,6 +135,11 @@ public final class YoungAndroidFormUpgrader {
       componentProperties.put("$Type", new ClientJsonString("Spreadsheet"));
     }
 
+    if (srcYaVersion < 228 && "LineOfBestFit".equals(componentType)) {
+      componentType = "Trendline";
+      componentProperties.put("$Type", new ClientJsonString("Trendline"));
+    }
+
     // Get the source component version from the componentProperties.
     int srcCompVersion = 0;
     if (componentProperties.containsKey("$Version")) {
@@ -239,6 +243,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("ActivityStarter")) {
         srcCompVersion = upgradeActivityStarterProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("AnomalyDetection")) {
+        srcCompVersion = upgradeAnomalyDetectionProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Ball")) {
         srcCompVersion = upgradeBallProperties(componentProperties, srcCompVersion);
@@ -556,6 +563,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeAnomalyDetectionProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The AnomalyDetection.DetectAnomaliesInChartData method was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeBallProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -843,6 +860,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // The XFromZero and YFromZero properties were added.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

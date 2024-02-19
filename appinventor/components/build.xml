@@ -2,7 +2,7 @@
 
 <!-- ======================================================================
      Copyright 2011 Google Inc.  All Rights Reserved.
-     Copyright 2012-2020 Massachusetts Institute of Technology, All rights reserved.
+     Copyright 2012-2024 Massachusetts Institute of Technology, All rights reserved.
 
      App Inventor component libraries
      ====================================================================== -->
@@ -170,6 +170,8 @@
     <!-- Protocol Buf Support (used by the Translation Component) -->
     <copy toFile="${public.deps.dir}/protobuf-java-3.0.0.jar" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />    
     <copy toFile="${public.deps.dir}/mpandroidchart.jar" file="${lib.dir}/mpandroidchart/mpandroidchart.jar" />
+    <!-- Commons Math used by Trendline -->
+    <copy toFile="${public.deps.dir}/commons-math3.jar" file="${lib.dir}/commons-math3/commons-math3-3.6.1.jar" />
     <!-- BEGIN Android Support Libraries -->
     <copy todir="${public.deps.dir}/">
       <fileset dir="${support.dir}/" includes="*.aar,*.jar" excludes="testing-support-R-classes.jar" />
