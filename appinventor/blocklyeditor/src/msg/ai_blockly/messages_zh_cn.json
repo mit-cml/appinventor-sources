@@ -314,7 +314,7 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS": "文本是否包含子串",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT": "文本",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE": "子串",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "检查文本%1中是否包含子串%2",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "%1 文本 %2 %3 %4",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP": "检查文本中是否包含该子串。",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT": "文本",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT": "分隔符",
