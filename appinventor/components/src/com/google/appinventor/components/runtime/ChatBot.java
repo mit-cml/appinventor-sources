@@ -321,6 +321,19 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     }
   }
 
+  @SimpleFunction(description = "Ask a question of the Chat Bot using an Image. Successive calls will " +
+    "remember information from earlier in the conversation. Use the \"ResetConversation\" " +
+    "function to reset for a new conversation.")
+  public void ConverseWithImage(final String question, final Object source) {
+
+    /* AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        performRequest(uuid, question);
+      }
+      }); */
+  }
+
   /**
    * Event indicating that a request has finished and has returned data (output from ChatBot).
    *
