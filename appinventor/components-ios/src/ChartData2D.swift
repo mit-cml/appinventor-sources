@@ -2,6 +2,7 @@
 // Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
+import DGCharts
 
 @objc class ChartData2D: ChartDataBase {
   
@@ -58,15 +59,33 @@ import Foundation
   // Highlights data points of chocie on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
   @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
     var dataPointsList: Array<AnyObject> = dataPoints as! Array
-    print("dataPoitnsList", dataPointsList)
+    print("dataPointsList", dataPointsList)
     if !dataPoints.isEmpty {
       var entries = _chartDataModel?.entries
       var highlights: Array<Int> = []
+      // populate highlights with the corresponding int color to each entrie
       for index in 0 ..< (_chartDataModel?.entries.count)! {
-        highlights.append(_chartDataModel?.dataset?)
+        // how to acces getColor() function with LineChartDataSet
+        var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
+        // need to convert uicolor to int to add to highlights
+        highlights.append(Int(colorToArgb(lineDataSet.color(atIndex: index))))
+        print("testing", colorToArgb(lineDataSet.color(atIndex: index)))
       }
-      
+      // make sure each dataPoint in the list is a yaillist
+      for dataPoint in dataPointsList {
+        if let dataPoint = dataPoint as? YailList<AnyObject> {
+          // TODO: DO WE HAVE ANOMALY DETECTION
+          var dataPointIndex: Int = 0 // anomaly detection
+          highlights[dataPointIndex - 1] = color
+        }
+      }
+      var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
+      var highlightsUI: Array<NSUIColor> = []
+      for highlight in highlights {
+        highlightsUI.append(argbToColor(highlight))
+      }
+      lineDataSet.setCircleColors(highlightsUI)
+      onDataChange()
     }
-
   }
 }

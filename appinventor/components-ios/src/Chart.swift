@@ -94,16 +94,11 @@ import DGCharts
 
   // MARK: Chart Properties
 
-  // CHANGED THIS FROM INTO TO UICOLOR BC _backgroundColor is a UIColor
   @objc open var BackgroundColor: UIColor {
     get {
-      //return colorToArgb(_backgroundColor)
-      print("_backgroundColorget", _backgroundColor)
       return _backgroundColor
     }
     set {
-      //_backgroundColor = argbToColor(newValue)
-      print("_backgroundColorset", _backgroundColor)
       _chartView?.backgroundColor = _backgroundColor
     }
   }

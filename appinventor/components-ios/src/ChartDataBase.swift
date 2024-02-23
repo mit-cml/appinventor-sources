@@ -274,4 +274,10 @@ import DGCharts
     fatalError("TinyDB is not implemented in IOS")
   }
   
+  func onDataChange(){
+    // update the chart with the chart data model's current data and refresh the chart itself
+    _container._chartView?.refresh(model: _chartDataModel)
+  }
+  
+  
 }
