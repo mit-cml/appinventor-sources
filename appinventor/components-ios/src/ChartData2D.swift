@@ -64,27 +64,36 @@ import DGCharts
       var entries = _chartDataModel?.entries
       var highlights: Array<Int> = []
       // populate highlights with the corresponding int color to each entrie
-      for index in 0 ..< (_chartDataModel?.entries.count)! {
+      for index in 0 ..< entries!.count {
         // how to acces getColor() function with LineChartDataSet
+        print("index", index)
         var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
         // need to convert uicolor to int to add to highlights
+        print("linedataset", lineDataSet)
         highlights.append(Int(colorToArgb(lineDataSet.color(atIndex: index))))
+        print("color", lineDataSet.color(atIndex: index))
         print("testing", colorToArgb(lineDataSet.color(atIndex: index)))
       }
-      // make sure each dataPoint in the list is a yaillist
+
       for dataPoint in dataPointsList {
+        print("am i in this for loop")
+        print("dataPoint", dataPoint)
+        print("type",type(of: dataPoint))
         if let dataPoint = dataPoint as? YailList<AnyObject> {
-          // TODO: DO WE HAVE ANOMALY DETECTION
-          var dataPointIndex: Int = 0 // anomaly detection
+          print("in here")
+          var dataPointIndex: Int = dataPoint[0] as! Int // anomaly detection replacement
+          print("dataPointIndex", dataPointIndex)
           highlights[dataPointIndex - 1] = color
         }
       }
+      print("did i make it here")
       var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
       var highlightsUI: Array<NSUIColor> = []
       for highlight in highlights {
-        highlightsUI.append(argbToColor(highlight))
+        highlightsUI.append(argbToColor(Int32(highlight)))
       }
-      lineDataSet.setCircleColors(highlightsUI)
+      print("highlightsUI", highlightsUI)
+      lineDataSet.circleColors = highlightsUI
       onDataChange()
     }
   }

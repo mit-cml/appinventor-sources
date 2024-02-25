@@ -275,8 +275,9 @@ import DGCharts
   }
   
   func onDataChange(){
+    print("in ondatachange")
     // update the chart with the chart data model's current data and refresh the chart itself
-    _container._chartView?.refresh(model: _chartDataModel)
+    _container._chartView?.refresh(model: _chartDataModel!)
   }
   
   
