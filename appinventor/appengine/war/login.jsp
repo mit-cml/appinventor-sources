@@ -17,7 +17,7 @@
    }
 
 %>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta HTTP-EQUIV="pragma" CONTENT="no-cache"/>
@@ -34,9 +34,16 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
    } %>
 <form method=POST action="/login">
 <center><table>
-<tr><td>${emailAddressLabel}</td><td><input type=text name=email value="" size="35"></td></tr>
-<tr><td></td></td>
-<tr><td>${passwordLabel}</td><td><input type=password name=password value="" size="35"></td></tr>
+    <tr><td><label for="email">${emailAddressLabel}</label></td><td>
+        <input type=text id="email" name=email value="" size="35">
+      </td>
+    </tr>
+    <tr><td></td></tr>
+    <tr><td><label for="password">${passwordLabel}</label></td>
+      <td>
+        <input id="password" type=password name=password value="" size="35">
+      </td>
+    </tr>
 </table></center>
 <% if (locale != null && !locale.equals("")) {
    %>
@@ -108,7 +115,7 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 
 <p style="text-align: center; clear:both;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"
                                               target="_blank"><img alt="Creative Commons License" src="/static/images/cc3.png"></a> <br>
-  <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"></a></p>
+  <a rel="Creative Commons License" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons License 4.0</a></p>
 </footer>
 </body></html>
 
