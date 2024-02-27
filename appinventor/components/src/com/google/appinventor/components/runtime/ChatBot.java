@@ -11,6 +11,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -35,7 +36,10 @@ import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.Base58Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.google.protobuf.ByteString;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -243,16 +247,25 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        performRequest(uuid, question);
+        performRequest(uuid, question, null);
       }
       });
   }
 
-  private void performRequest(String uuid, String question) {
+  private void performRequest(String uuid, String question, Bitmap image) {
     // languageToTransateTo is provided either as a two letter code, or two
     // two letter codes separated by a dash. If only one two letter code is
     // provided, it is the target language and we set the source language to auto
     // which tells the service to detect the language
+
+    /* Convert Bitmap to an image String suitable to send to the ChatBot proxy */
+    ByteString imageString = null;
+    if (image != null) {
+      ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream();
+      image.compress(Bitmap.CompressFormat.PNG, 100, imageBuffer);
+      imageString = ByteString.copyFrom(imageBuffer.toByteArray());
+    }
+
     HttpsURLConnection connection = null;
     ensureSslSockFactory();
     String iToken;
@@ -279,6 +292,9 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       }
       if (!model.isEmpty()) {
         builder.setModel(model);
+      }
+      if (imageString != null) {
+        builder.setInputimage(imageString);
       }
       ChatBotToken.request request = builder.build();
 
