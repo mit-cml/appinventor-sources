@@ -16,12 +16,10 @@ open class Chart2DDataModel: ChartDataModel {
   public override func getTupleFromEntry(_ entry: DGCharts.ChartDataEntry) -> YailList<AnyObject> {
     // Create a list with the X and Y values of the entry, and convert the generic List to a YailList
     let tupleEntries: Array<Double> = [entry.x, entry.y]
-    print("tupleEntries chart2ddatamodel", tupleEntries)
-    var tupleEntriesYail: YailList<AnyObject> = []
+    let tupleEntriesYail: YailList<AnyObject> = []
     for element in tupleEntries {
       tupleEntriesYail.add(element)
     }
-    print("tupleyail", tupleEntriesYail)
     return tupleEntriesYail
   }
 }

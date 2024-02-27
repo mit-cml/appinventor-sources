@@ -177,30 +177,30 @@ import DGCharts
   }
 
   @objc open var `Type`: ChartType {
-    get {
-      return _type
-    }
-    set {
-      let shouldReinitialize = _chartView != nil
-      let newChartView = createChartView(for: newValue)
-      _chartView?.chart?.removeFromSuperview()
-      _type = newValue
-      _chartView = newChartView
+      get {
+        return _type
+      }
+      set {
+        let shouldReinitialize = _chartView != nil
+        let newChartView = createChartView(for: newValue)
+        _chartView?.chart?.removeFromSuperview()
+        _type = newValue
+        _chartView = newChartView
 
-      newChartView.chart?.translatesAutoresizingMaskIntoConstraints = false
-      view.addSubview(newChartView.chart!)
-      NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: newChartView.chart!.topAnchor),
-        view.leadingAnchor.constraint(equalTo: newChartView.chart!.leadingAnchor),
-        view.widthAnchor.constraint(equalTo: newChartView.chart!.widthAnchor),
-        view.heightAnchor.constraint(equalTo: newChartView.chart!.heightAnchor)
-      ])
-      _view.insertSubview(newChartView.getView(), at: 0)
-      
+        newChartView.chart?.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(newChartView.chart!)
+        NSLayoutConstraint.activate([
+          view.topAnchor.constraint(equalTo: newChartView.chart!.topAnchor),
+          view.leadingAnchor.constraint(equalTo: newChartView.chart!.leadingAnchor),
+          view.widthAnchor.constraint(equalTo: newChartView.chart!.widthAnchor),
+          view.heightAnchor.constraint(equalTo: newChartView.chart!.heightAnchor)
+        ])
+        _view.insertSubview(newChartView.getView(), at: 0)
 
-      reinitializeChart()
+
+        reinitializeChart()
+      }
     }
-  }
 
   @objc open var XFromZero: Bool {
     didSet {
@@ -260,8 +260,7 @@ import DGCharts
     case .Area:
       return (LineChartView(self) as AnyObject) as! ChartView
     case .Bar:
-      //return BarChartView(frame: .zero)
-      fatalError("whoops")
+      return BarChartView(self) as ChartView
     case .Pie:
       //return PieChartView(frame: .zero)
       fatalError("whoops")

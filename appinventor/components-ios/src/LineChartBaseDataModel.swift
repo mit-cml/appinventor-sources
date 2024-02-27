@@ -30,16 +30,9 @@ class LineChartBaseDataModel: PointChartDataModel {
         }
       }
       _entries.insert(entry, at: index)
-      //self.dataset?.calcMinMaxX(entry: entry)
-      //self.dataset?.calcMinMaxY(entry: entry)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
         self.dataset?.replaceEntries(self._entries)
       }
-
-//      if var defaultColors = (dataset as? LineChartDataSet)?.circleColors {
-//        defaultColors.insert(dataset!.color(atIndex: index), at: index)
-//              (dataset as? LineChartDataSet)?.circleColors = defaultColors
-//      }
     }
   }
   

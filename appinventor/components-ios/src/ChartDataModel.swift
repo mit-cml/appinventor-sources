@@ -181,7 +181,7 @@ open class ChartDataModel {
 
   func findEntriesByCriterion(_ value: String, _ criterion: EntryCriterion) -> YailList<AnyObject> {
     var entries: Array<YailList<AnyObject>> = []
-    var entriesYail: YailList<AnyObject> = []
+    let entriesYail: YailList<AnyObject> = []
     for entry in _entries {
       if isEntryCriterionSatisfied(entry, criterion, value: value) {
         entries.append(getTupleFromEntry(entry))

@@ -14,4 +14,3 @@ open class LineChartView: LineChartViewBase {
   }
 
 }
-
