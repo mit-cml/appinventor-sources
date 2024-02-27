@@ -2,6 +2,7 @@
 // Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
+import DGCharts
 
 @objc class ChartData2D: ChartDataBase {
   
@@ -53,5 +54,47 @@ import Foundation
     }
     group.wait()
     return holder
+  }
+  
+  // Highlights data points of chocie on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
+  @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
+    var dataPointsList: Array<AnyObject> = dataPoints as! Array
+    print("dataPointsList", dataPointsList)
+    if !dataPoints.isEmpty {
+      var entries = _chartDataModel?.entries
+      var highlights: Array<Int> = []
+      // populate highlights with the corresponding int color to each entrie
+      for index in 0 ..< entries!.count {
+        // how to acces getColor() function with LineChartDataSet
+        print("index", index)
+        var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
+        // need to convert uicolor to int to add to highlights
+        print("linedataset", lineDataSet)
+        highlights.append(Int(colorToArgb(lineDataSet.color(atIndex: index))))
+        print("color", lineDataSet.color(atIndex: index))
+        print("testing", colorToArgb(lineDataSet.color(atIndex: index)))
+      }
+
+      for dataPoint in dataPointsList {
+        print("am i in this for loop")
+        print("dataPoint", dataPoint)
+        print("type",type(of: dataPoint))
+        if let dataPoint = dataPoint as? YailList<AnyObject> {
+          print("in here")
+          var dataPointIndex: Int = dataPoint[0] as! Int // anomaly detection replacement
+          print("dataPointIndex", dataPointIndex)
+          highlights[dataPointIndex - 1] = color
+        }
+      }
+      print("did i make it here")
+      var lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
+      var highlightsUI: Array<NSUIColor> = []
+      for highlight in highlights {
+        highlightsUI.append(argbToColor(Int32(highlight)))
+      }
+      print("highlightsUI", highlightsUI)
+      lineDataSet.circleColors = highlightsUI
+      onDataChange()
+    }
   }
 }

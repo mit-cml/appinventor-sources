@@ -75,9 +75,6 @@ open class ChartView {
   public func refresh(model: ChartDataModel) {
     DispatchQueue.main.async {
       let refreshTask : RefreshTask = RefreshTask(self, model.entries)
-      print("model.entries", model.entries)
-      print("refreshTask", refreshTask)
-      print("model", model)
       let dataset : ChartDataSet = model.dataset ?? ChartDataSet()
       dataset.drawValuesEnabled = true
       refreshTask.onPostExecute(result: model) // how to do execute
