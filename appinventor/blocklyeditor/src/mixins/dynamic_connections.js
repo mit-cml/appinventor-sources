@@ -17,7 +17,7 @@ AI.Blockly.Mixins.DynamicConnections = {
    * @param {Blockly.RenderedConnection} connection
    */
   findInputIndexForConnection: function (connection) {
-    if (!connection.targetConnection) {
+    if (!connection.targetConnection || connection.targetBlock().isInsertionMarker()) {
       return null;
     }
 

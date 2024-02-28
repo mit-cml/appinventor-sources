@@ -124,6 +124,8 @@ Blockly.Blocks['text_join'] = {
 
 };
 
+AI.Blockly.Mixins.extend(Blockly.Blocks['text_join'], AI.Blockly.Mixins.DynamicConnections);
+
 Blockly.Blocks['text_join_item'] = {
   // Add items.
   init: function () {

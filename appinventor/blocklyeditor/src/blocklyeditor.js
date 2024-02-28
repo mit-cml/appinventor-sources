@@ -985,6 +985,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     plugins: {
       blockDragger: top.MultiselectBlockDragger,
       metricsManager: top.ScrollMetricsManager,
+      connectionPreviewer: top.decoratePreviewer(Blockly.InsertionMarkerPreviewer),
     },
     baseBlockDragger: top.ScrollBlockDragger,
     useDoubleClick: true,

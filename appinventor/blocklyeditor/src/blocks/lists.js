@@ -119,6 +119,8 @@ Blockly.Blocks['lists_add_items'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_ADD_ITEMS_TITLE_ADD }]
 };
 
+AI.Blockly.Mixins.extend(Blockly.Blocks['lists_add_items'], AI.Blockly.Mixins.DynamicConnections);
+
 Blockly.Blocks['lists_add_items_item'] = {
   // Add items.
   init: function() {
