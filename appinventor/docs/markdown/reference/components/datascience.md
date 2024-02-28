@@ -52,16 +52,20 @@ None
  Z-score against the threshold. If a data point's Z-score is greater than the threshold,
  the data point is labeled as anomaly.
 
+{:id="AnomalyDetection.DetectAnomaliesInChartData" class="method returns list"} <i/> DetectAnomaliesInChartData(*chartData*{:.component},*threshold*{:.number})
+: Detects anomalies in the given chart data object by comparing Y values to the threshold based
+ on their standard deviation to the mean.
+
 ## Regression  {#Regression}
 
 A data science component to apply different regression models.
  The component only requires a data source to apply the model on.
 
- The component is only responsible for the statistical calculations and
+   The component is only responsible for the statistical calculations and
  provides the following properties for line of best fit:
  "slope", "Yintercept", "correlation coefficient", and "predictions"
 
- To draw the line of best fit use the drawing block in ChartData2D component
+   To draw the line of best fit use the drawing block in ChartData2D component
 
 
 

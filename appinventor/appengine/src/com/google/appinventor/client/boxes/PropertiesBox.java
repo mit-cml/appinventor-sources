@@ -8,6 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -136,13 +137,14 @@ public final class PropertiesBox extends Box {
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       // TODO: Localize
-      designProperties.setPropertiesCaption(components.size() + " components selected");
+      designProperties.setPropertiesCaption(MESSAGES.componentsSelected(components.size()));
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
+      String componentType = components.get(0).getType();
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-          components.get(0).getType() + ")");
-
+          ComponentsTranslation.getComponentName(componentType.equals("Form")
+              ? "Screen" : componentType) + ")");
     }
   }
 }

@@ -279,6 +279,14 @@
 
 <p>Replace all with <em>She loves eating. She loves writing. She loves coding</em> as the text, <em>She</em> as the segment, and <em>Hannah</em> as the replacement would result in <em>Hannah loves eating. Hannah loves writing. Hannah loves coding</em>.</p>
 
+<p>Note:
+Regular expressions (regex) are patterns used for matching character combinations in strings. When using the “replace all” block, it’s essential to be aware of special characters in regular expressions.Special characters like $, *, ., etc., have special meanings in regular expressions.
+If you want to use these characters as literal characters in your pattern, you need to escape them with a backslash (\).</p>
+
+<p>Example:
+replace all with <em>Price: $50.00</em> as the text,  <em>$</em> as the segment, <em>€</em> as the replacement
+this would result in <em>Price: €50.00</em></p>
+
 <h3 id="obfuscatetext">obfuscated text</h3>
 
 <p><img src="images/text/obfuscatetext.png" alt="" /></p>

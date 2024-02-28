@@ -280,6 +280,7 @@ let kMinimumToastWait = 10.0
       _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(origin: .zero, size: view.frame.size))
     }
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
+    _linearView.scrollEnabled = _scrollable
     _scaleFrameLayout.addSubview(_linearView)
     view.addSubview(_scaleFrameLayout)
     _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!

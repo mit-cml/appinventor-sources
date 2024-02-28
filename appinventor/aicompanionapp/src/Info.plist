@@ -43,6 +43,10 @@
 	<string>App Inventor accesses your photo library when you include an ImagePicker component in your app.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>App Inventor uses speech recognition when you include a SpeechRecognizer component in your app</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,9 +18,14 @@ import gnu.lists.LList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
@@ -58,17 +63,34 @@ public final class ChartData2D extends ChartDataBase {
     // to guarantee the order of data adding (e.g. CSV data
     // adding could be happening when this method is called,
     // so the task should be queued in the single Thread Runner)
-    threadRunner.execute(new Runnable() {
-      @Override
-      public void run() {
-        // Create a 2-tuple, and add the tuple to the Data Series
-        YailList pair = YailList.makeList(Arrays.asList(x, y));
-        dataModel.addEntryFromTuple(pair);
+    synchronized (this) {
+      final AtomicBoolean isDone = new AtomicBoolean(false);
+      threadRunner.execute(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            // Create a 2-tuple, and add the tuple to the Data Series
+            YailList pair = YailList.makeList(Arrays.asList(x, y));
+            dataModel.addEntryFromTuple(pair);
 
-        // Refresh Chart with new data
-        onDataChange();
+            // Refresh Chart with new data
+            onDataChange();
+          } finally {
+            synchronized (ChartData2D.this) {
+              isDone.set(true);
+              ChartData2D.this.notifyAll();
+            }
+          }
+        }
+      });
+      try {
+        if (!isDone.get()) {
+          wait();
+        }
+      } catch (InterruptedException e) {
+        // Just continue
       }
-    });
+    }
   }
 
   /**
@@ -84,26 +106,43 @@ public final class ChartData2D extends ChartDataBase {
     // to guarantee the order of data adding (e.g. CSV data
     // adding could be happening when this method is called,
     // so the task should be queued in the single Thread Runner)
-    threadRunner.execute(new Runnable() {
-      @Override
-      public void run() {
-        // Create a 2-tuple, and remove the tuple from the Data Series
-        YailList pair = YailList.makeList(Arrays.asList(x, y));
+    synchronized (ChartData2D.this) {
+      final AtomicBoolean isDone = new AtomicBoolean(false);
+      threadRunner.execute(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            // Create a 2-tuple, and remove the tuple from the Data Series
+            YailList pair = YailList.makeList(Arrays.asList(x, y));
 
 
-        //get index of x and remove the color highlight at that index
-        float xValue = Float.parseFloat(x);
-        float yValue = Float.parseFloat(y);
+            //get index of x and remove the color highlight at that index
+            float xValue = Float.parseFloat(x);
+            float yValue = Float.parseFloat(y);
 
-        Entry currEntry = new Entry(xValue, yValue);
-        int index = dataModel.findEntryIndex(currEntry);
+            Entry currEntry = new Entry(xValue, yValue);
+            int index = dataModel.findEntryIndex(currEntry);
 
-        dataModel.removeEntryFromTuple(pair);
-        // Refresh Chart with new data
-        resetHighlightAtIndex(index);
-        onDataChange();
+            dataModel.removeEntryFromTuple(pair);
+            // Refresh Chart with new data
+            resetHighlightAtIndex(index);
+            onDataChange();
+          } finally {
+            synchronized (ChartData2D.this) {
+              isDone.set(true);
+              ChartData2D.this.notifyAll();
+            }
+          }
+        }
+      });
+      try {
+        if (!isDone.get()) {
+          wait();
+        }
+      } catch (InterruptedException e) {
+        // Just continue
       }
-    });
+    }
   }
 
   /**
@@ -146,8 +185,10 @@ public final class ChartData2D extends ChartDataBase {
    * @param yList - the list of y values
    */
   @SimpleFunction(description = "Draws the corresponding line of best fit on the graph")
+  @Deprecated
   public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
-    List<?> predictions = (List<?>) Regression.computeLineOfBestFit(xList, yList)
+    List<?> predictions = (List<?>) Regression.computeLineOfBestFit(castToDouble((LList) xList.getCdr()),
+        castToDouble((LList) yList.getCdr()))
         .get("predictions");
     final List<List<?>> predictionPairs = new ArrayList<>();
     List<?> xValues = (List<?>) xList.getCdr();
@@ -163,6 +204,16 @@ public final class ChartData2D extends ChartDataBase {
     onDataChange();
   }
 
+  private static class AnomalyManager {
+    Set<Integer> indexes = new HashSet<>();
+    Set<Double> xValues = new HashSet<>();
+
+    @Override
+    public String toString() {
+      return "{indexes: " + indexes + ", xValues: " + xValues + "}";
+    }
+  }
+
   /**
    * Highlights all given data points on the Chart in the color of choice.
    *
@@ -176,6 +227,15 @@ public final class ChartData2D extends ChartDataBase {
     List<?> dataPointsList = (LList) dataPoints.getCdr();
     if (!dataPoints.isEmpty()) {
       List<?> entries = dataModel.getEntries();
+      Map<Double, AnomalyManager> anomalyMap = new HashMap<>();
+      int i = 0;
+      for (Entry entry : dataModel.getEntries()) {
+        if (!anomalyMap.containsKey((double) entry.getY())) {
+          anomalyMap.put((double) entry.getY(), new AnomalyManager());
+        }
+        anomalyMap.get((double) entry.getY()).xValues.add((double) entry.getX());
+        anomalyMap.get((double) entry.getY()).indexes.add(i++);
+      }
       int[] highlights = new int[entries.size()];
       Arrays.fill(highlights, dataModel.getDataset().getColor());
 
@@ -183,14 +243,32 @@ public final class ChartData2D extends ChartDataBase {
         if (!(dataPoint instanceof YailList)) {
           continue;
         }
-        int dataPointIndex = (int) AnomalyDetection.getAnomalyIndex((YailList) dataPoint);
-        highlights[dataPointIndex - 1] = color;
+        Number y = (Number) ((YailList) dataPoint).getObject(1);
+        AnomalyManager anomalyManager = anomalyMap.get(y.doubleValue());
+        if (anomalyManager == null) {
+          continue;
+        }
+        Number x = (Number) ((YailList) dataPoint).getObject(0);
+        if (anomalyManager.xValues.contains(x.doubleValue())
+            || anomalyManager.indexes.contains(x.intValue() - 1)) {
+          for (Integer index : anomalyManager.indexes) {
+            highlights[index] = color;
+          }
+        }
       }
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
       onDataChange();
     } else {
       throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }
+  }
+
+  public List<Double> getYValues() {
+    List<Double> yValues = new ArrayList<>();
+    for (Entry entry : dataModel.getEntries()) {
+      yValues.add((double) entry.getY());
+    }
+    return yValues;
   }
 
   private void resetHighlightAtIndex(int index) {

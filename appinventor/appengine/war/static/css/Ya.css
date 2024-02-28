@@ -734,6 +734,10 @@ div.StatusPanel {
   margin: 0;
 }
 
+.ode-SimpleMockComponent .gwt-PasswordTextBox {
+  box-sizing: border-box;
+}
+
 .gwt-Tree .gwt-TreeItem span * {
   margin: 0 2px;
 }
@@ -1805,6 +1809,12 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   justify-content: space-around ;
   width: 95%;
+}
+
+.ode-DialogBox .contentRow {
+  display: inline-flex;
+  width: 95%;
+  margin-left: 20px;
 }
 
 /* AI2 Extensions Styles */

@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Property editor for a list of values.
@@ -74,7 +75,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
   private final DropDownButton dropDownButton;
 
   // Array of choices
-  private Choice[] choices;
+  private final Choice[] choices;
 
   /**
    * Creates a new instance of the property editor.
@@ -82,20 +83,38 @@ public class ChoicePropertyEditor extends PropertyEditor {
    * @param choices  array of values to choose from
    */
   public ChoicePropertyEditor(Choice[] choices) {
+    this(choices, null, false);
+  }
+
+  /**
+   * Creates a new instance of the property editor with a default value.
+   *
+   * @param choices  array of values to choose from
+   * @param defaultValue  the default value, possibly null
+   * @param autoupdate  whether to update the property value automatically
+   */
+  public ChoicePropertyEditor(Choice[] choices, String defaultValue, boolean autoupdate) {
     // Initialize UI
     this.choices = choices;
     List<DropDownItem> items = Lists.newArrayList();
-    for(final Choice choice : choices) {
+    Choice selected = choices[0];
+    for (final Choice choice : choices) {
       items.add(new DropDownItem("Choice Property Editor", choice.caption, new Command() {
         @Override
         public void execute() {
           boolean multiple = isMultipleValues();
           setMultipleValues(false);
           property.setValue(choice.value, multiple);
+          if (autoupdate) {
+            updateValue();
+          }
         }
       }));
+      if (Objects.equals(choice.value, defaultValue)) {
+        selected = choice;
+      }
     }
-    dropDownButton = new DropDownButton("Choice Property Editor", choices[0].caption, items, false);
+    dropDownButton = new DropDownButton("Choice Property Editor", selected.caption, items, false);
     dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
 
     initWidget(dropDownButton);

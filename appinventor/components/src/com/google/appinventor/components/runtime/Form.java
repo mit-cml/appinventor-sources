@@ -2055,7 +2055,13 @@ public class Form extends AppInventorCompatActivity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
       defaultValue = ComponentConstants.DEFAULT_THEME)
-  @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.",
+  @SimpleProperty(userVisible = false, description = "Pick a design theme for your app. Themes change the appearance of an app, " +
+     "such as how buttons and text look. The most common themes are: </p> <ul> <li> <code>Classic</code>: " +
+     "This theme stays consistent whether you are looking at an Android, iOS, or the screen layout " +
+     "in App Inventor’s designer. Choose Classic if you want detailed control of the appearance " +
+     "of your app. </li><li> <code>Device Default</code>: This theme makes your app resemble the other " +
+     "apps on your device. With the default theme, however, your app won’t look consistent across " +
+     "Android, iOS, and App Inventor’s designer. The best way to see the true appearance of your app is to view it using the Companion.",
       category = PropertyCategory.THEMING)
   public void Theme(String theme) {
     if (usesDefaultBackground) {
@@ -2123,9 +2129,10 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")
   @SimpleProperty(userVisible = false,
-    description = "A JSON string representing the subset for the screen. Authors of template apps "
-      + "can use this to control what components, designer properties, and blocks are available "
-      + "in the project.",
+    description = "Choose the set of components you’ll need for your project. A smaller set is " +
+                   "good for beginner projects, while experts can use all options to build complex apps. For example, the " +
+                   "Beginner Toolkit gives you access to all the features you need for our novice tutorials and curriculum.</p>" +
+                   "<p>You can always change your toolkit in Project Properties, so your choice now won’t limit the future possibilities for your app.</p>",
     category = PropertyCategory.GENERAL)
   public void BlocksToolkit(String json) {
     // We don't actually do anything. This property is stored in the

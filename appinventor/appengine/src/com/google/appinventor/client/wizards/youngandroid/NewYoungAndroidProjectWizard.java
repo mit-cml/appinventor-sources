@@ -7,17 +7,15 @@
 package com.google.appinventor.client.wizards.youngandroid;
 
 
-import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.components.common.ComponentConstants.DEFAULT_THEME;
 
-import com.google.appinventor.client.widgets.Validator;
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -25,12 +23,17 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertyHelpWidget;
+import com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor;
 import com.google.appinventor.client.wizards.NewProjectWizard;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.logging.Logger;
 
@@ -40,61 +43,53 @@ import java.util.logging.Logger;
  *
  * @author markf@google.com (Mark Friedman)
  */
+
 public final class NewYoungAndroidProjectWizard {
+
   interface NewYoungAndroidProjectWizardUiBinder extends UiBinder<Dialog, NewYoungAndroidProjectWizard> {}
-  private static final NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizard.NewYoungAndroidProjectWizardUiBinder.class);
+  private static final NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
   private static final Logger LOG = Logger.getLogger(NewYoungAndroidProjectWizard.class.getName());
 
+  EditableProperty theme;
+  EditableProperty toolkit;
   // UI element for project name
   @UiField Dialog addDialog;
   @UiField Button addButton;
   @UiField Button cancelButton;
   @UiField LabeledTextBox projectNameTextBox;
+  @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
+  @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
+  @UiField FlowPanel horizontalThemePanel;
+  @UiField FlowPanel horizontalBlocksPanel;
 
   /**
    * Creates a new YoungAndroid project wizard.
    */
   public NewYoungAndroidProjectWizard() {
+    EditableProperties themes = new EditableProperties(false);
+    themeEditor = new YoungAndroidThemeChoicePropertyEditor(DEFAULT_THEME);
+    theme = new EditableProperty(themes, MESSAGES.themeTitle(), DEFAULT_THEME,
+        MESSAGES.themeTitle(), null,
+        ComponentsTranslation.getPropertyDescription("ThemePropertyDescriptions"),
+        themeEditor, 0x01, "", null);
+    themeEditor.setProperty(theme);
+
+    EditableProperties toolkits = new EditableProperties(false);
+    blockstoolkitEditor = new SubsetJSONPropertyEditor(true);
+    toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "",
+        MESSAGES.blocksToolkitTitle(), null,
+        ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
+        blockstoolkitEditor, 0x01, "", null);
+    blockstoolkitEditor.setProperty(toolkit);
+
     UI_BINDER.createAndBindUi(this);
-    projectNameTextBox.setValidator(new Validator() {
-      @Override
-      public boolean validate(String value) {
-        errorMessage = TextValidators.getErrorMessage(value);
-        projectNameTextBox.setErrorMessage(errorMessage);
-        if (errorMessage.length() > 0) {
-          addButton.setEnabled(false);
-          return false;
-        }
-        errorMessage = TextValidators.getWarningMessages(value);
-        addButton.setEnabled(true);
-        return true;
-      }
-      @Override
-      public String getErrorMessage() {
-        return errorMessage;
-      }
-    });
-
-    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
-      @Override
-      public void onKeyDown(KeyDownEvent event) {
-        int keyCode = event.getNativeKeyCode();
-        if (keyCode == KeyCodes.KEY_ENTER) {
-          addButton.click();
-        } else if (keyCode == KeyCodes.KEY_ESCAPE) {
-          cancelButton.click();
-        }
-      }});
-
-    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
-      @Override
-      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
-        projectNameTextBox.validate();
-      }
-    });
-
     addDialog.center();
     projectNameTextBox.setFocus(true);
+
+    PropertyHelpWidget themeHelpWidget = new PropertyHelpWidget(theme);
+    PropertyHelpWidget blocksHelpWidget = new PropertyHelpWidget(toolkit);
+    horizontalThemePanel.add(themeHelpWidget);
+    horizontalBlocksPanel.add(blocksHelpWidget);
   }
 
   @UiHandler("cancelButton")
@@ -104,22 +99,20 @@ public final class NewYoungAndroidProjectWizard {
 
   @UiHandler("addButton")
   void addProject(ClickEvent e) {
-    String projectName = projectNameTextBox.getText().trim();
-    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectNameTextBox.getText());
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
       LOG.info("Project status success");
-      doCreateProject(projectName);
+      createProject();
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
       String errorMessage = TextValidators.getErrorMessage(projectNameTextBox.getText());
-      if (errorMessage.length() > 0) {
+      if (errorMessage.isEmpty()) {
         LOG.info("Found error: " + errorMessage);
         projectNameTextBox.setErrorMessage(errorMessage);
       } else {
         errorMessage = TextValidators.getWarningMessages(projectNameTextBox.getText());
-        if (errorMessage.length() > 0) {
+        if (errorMessage.isEmpty()) {
           projectNameTextBox.setErrorMessage(errorMessage);
         } else {
           // Internationalize or change handling here.
@@ -129,30 +122,35 @@ public final class NewYoungAndroidProjectWizard {
     }
   }
 
-
-  public void doCreateProject(String projectName) {
-    String packageName = StringUtils.getProjectPackage(
-        Ode.getInstance().getUser().getUserEmail(), projectName);
-    NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
-        packageName);
-    NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
-      @Override
-      public void execute(final Project project) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-          @Override
-          public void execute() {
-            if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
-              Scheduler.get().scheduleDeferred(this); // on other project
-            } else {
-              Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+  public void createProject() {
+    String projectName = projectNameTextBox.getText().trim();
+    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
+    if (TextValidators.checkNewProjectName(projectName)
+            == TextValidators.ProjectNameStatus.SUCCESS) {
+      String packageName = StringUtils.getProjectPackage(
+          Ode.getInstance().getUser().getUserEmail(), projectName);
+      NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
+          packageName, theme.getValue(), toolkit.getValue());
+      NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
+        @Override
+        public void execute(final Project project) {
+          Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+              if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
+                Scheduler.get().scheduleDeferred(this); // on other project
+              } else {
+                Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+              }
             }
-          }
-        });
-      }
-    };
+          });
+        }
+      };
 
-    NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
-        parameters, callbackCommand);
-    Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
+      NewProjectWizard.createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
+          parameters, callbackCommand);
+      Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
+
+    }
   }
 }
