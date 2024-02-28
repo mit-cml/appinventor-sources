@@ -436,6 +436,17 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     }
   }
 
+  addBlock(block) {
+    this.addToBackpack(block, false);
+    if (!this.pendingSave_) {
+      this.pendingSave_ = true;
+      setTimeout(() => {
+        this.pendingSave_ = false;
+        this.setContents(AI.Blockly.Backpack.contents, true);
+      }, 10);
+    }
+  }
+
   /**
    * Add a block to the backpack.
    *

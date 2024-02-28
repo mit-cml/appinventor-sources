@@ -947,7 +947,7 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerHelpOption();
   AI.Blockly.ContextMenuItems.registerClearUnusedBlocksOption();
   // Block menu options
-  AI.Blockly.ContextMenuItems.registerAddToBackpackOption();
+  // AI.Blockly.ContextMenuItems.registerAddToBackpackOption();
   AI.Blockly.ContextMenuItems.registerGenerateYailOption();
   AI.Blockly.ContextMenuItems.registerExportBlockOption();
   AI.Blockly.ContextMenuItems.registerDoItOption();
