@@ -74,7 +74,7 @@
     </div>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="static/js/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@mit-app-inventor/blockly-plugin-workspace-multiselect@0.1.11/dist/index.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@mit-app-inventor/blockly-plugin-workspace-multiselect@0.1.12/dist/index.js"></script>
     <script type="text/javascript" src="static/js/scroll-options.js"></script>
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/@blockly/block-dynamic-connection@0.5.1/dist/index.js"></script>
