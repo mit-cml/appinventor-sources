@@ -1089,6 +1089,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   // Render blocks created prior to the workspace being rendered.
   workspace.injecting = false;
   workspace.injected = true;
+  workspace.notYetRendered = true;
   return workspace;
 };
 
@@ -1119,6 +1120,10 @@ Blockly.ai_inject = function(container, workspace) {
       workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
       workspace.resizeContents();
       Blockly.svgResize(workspace);
+      if (workspace.notYetRendered) {
+        workspace.notYetRendered = false;
+        workspace.scrollCenter();
+      }
     });
     return;
   }
