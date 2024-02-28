@@ -240,8 +240,6 @@ Blockly.WorkspaceSvg.prototype.addBackpack = function() {
         media: './assets/',
         disabledPatternId: this.options.disabledPatternId,
       });
-    var svgBackpack = this.backpack_.createDom(this);
-    this.svgGroup_.appendChild(svgBackpack);
     this.backpack_.init();
   }
 };
@@ -723,9 +721,6 @@ Blockly.WorkspaceSvg.prototype.resize = (function(resize) {
     resize.call(this);
     if (this.warningIndicator_ && this.warningIndicator_.position_) {
       this.warningIndicator_.position_();
-    }
-    if (this.backpack_ && this.backpack_.position_) {
-      this.backpack_.position_();
     }
     return this;
   };

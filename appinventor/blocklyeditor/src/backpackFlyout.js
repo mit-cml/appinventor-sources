@@ -38,7 +38,8 @@ AI.Blockly.BackpackFlyout = class extends Blockly.VerticalFlyout {
   constructor(workspaceOptions) {
     super(workspaceOptions);
     // Backpack flyout is opposite the blocks flyout
-    this.toolboxPosition_ = this.RTL ? Blockly.TOOLBOX_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
+    this.toolboxPosition_ = workspaceOptions.RTL ?
+        Blockly.utils.toolbox.Position.LEFT : Blockly.utils.toolbox.Position.RIGHT;
   }
 }
 

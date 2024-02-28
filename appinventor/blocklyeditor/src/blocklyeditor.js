@@ -162,20 +162,6 @@ function unboundVariableHandler(myBlock, yailText) {
   }
 }
 
-Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
-  // Option for the backpack.
-  if (this.workspace.isBackpack) {
-    var id = this.id;
-    var removeOption = {enabled: true};
-    removeOption.text = Blockly.Msg.REMOVE_FROM_BACKPACK;
-    var backpack = this.workspace.targetWorkspace.backpack_;
-    removeOption.callback = function() {
-      backpack.removeFromBackpack([id]);
-    };
-    menuOptions.splice(menuOptions.length - 1, 0, removeOption);
-  }
-};
-
 goog.provide('AI.Blockly.ContextMenuItems');
 
 // Context menu items for blocks
@@ -189,6 +175,9 @@ AI.Blockly.ContextMenuItems.registerExportBlockOption = function() {
       Blockly.exportBlockAsPng(scope.block);
     },
     preconditionFn: function(scope) {
+      if (scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
       return 'enabled';
     },
     weight: 100,
@@ -228,6 +217,9 @@ AI.Blockly.ContextMenuItems.registerDoItOption = function() {
       }
     },
     preconditionFn: function(scope) {
+      if (scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
       const connectedToRepl =
           top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
       const myBlock = scope.block;
@@ -272,6 +264,9 @@ AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
       },
       preconditionFn: function (scope) {
         const myBlock = scope.block;
+        if (myBlock.workspace.isFlyout) {
+          return 'hidden';
+        }
         return window.parent.BlocklyPanel_checkIsAdmin()
             ? 'enabled'
             : 'hidden';
@@ -287,7 +282,7 @@ AI.Blockly.ContextMenuItems.registerAddToBackpackOption = function() {
   const addToBackpackItem = {
     displayText: function(scope) {
       return Blockly.Msg['COPY_TO_BACKPACK'] +
-      " (" + scope.block.workspace.getBackpack().count() + ")"
+      " (" + scope.block.workspace.getBackpack().getCount() + ")"
     },
     callback: function (scope) {
       // top.blockSelectionWeakMap comes from the multi-select plugin
@@ -314,6 +309,9 @@ AI.Blockly.ContextMenuItems.registerAddToBackpackOption = function() {
       });
     },
     preconditionFn: function (scope) {
+      if (!scope.block.workspace.hasBackpack()) {
+        return 'hidden'
+      }
       return scope.block.isEnabled() ? 'enabled' : 'disabled';
     },
     weight: 100,
@@ -815,7 +813,7 @@ AI.Blockly.ContextMenuItems.registerBackpackOptions = function() {
     },
     displayText: function(scope) {
       return Blockly.Msg['BACKPACK_GET'] + " (" +
-          scope.workspace.getBackpack().count() + ")";
+          scope.workspace.getBackpack().getCount() + ")";
     },
     callback: function(scope) {
       if (scope.workspace.hasBackpack()) {
@@ -897,7 +895,7 @@ AI.Blockly.ContextMenuItems.registerHelpOption = function() {
     callback: function() {
       window.open(Blockly.Msg['HELPURL']);
     },
-    weight: 100
+    weight: 200
   }
 };
 
