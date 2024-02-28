@@ -952,6 +952,8 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerExportBlockOption();
   AI.Blockly.ContextMenuItems.registerDoItOption();
   AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
+
+  Blockly.ContextMenuRegistry.registry.getItem('blockHelp').weight = 1000;
 }
 
 AI.Blockly.ContextMenuItems.registerAll();
