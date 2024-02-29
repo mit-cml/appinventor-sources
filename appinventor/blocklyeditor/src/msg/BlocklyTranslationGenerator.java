@@ -25,6 +25,16 @@ public class BlocklyTranslationGenerator {
 
   private static boolean release = false;
 
+  private static final Map<String, String> ODE_LOCALES = new HashMap<String, String>() {{
+    put("zh-hans", "zh_CN");
+    put("zh-hant", "zh_TW");
+    put("pt-br", "pt_BR");
+    put("es", "es_ES");
+    put("fr", "fr_FR");
+    put("it", "it_IT");
+    put("ko", "ko_KR");
+  }};
+
   /**
    * The definitions of the arguments used by this script
    *
@@ -89,7 +99,8 @@ public class BlocklyTranslationGenerator {
         JSONObject merged_language = merge_string_json(json_to_merge);
         contents = "top.AI2 = {Msg: " + merged_language + "};";
         writeFile(outDir, lang_code, contents);
-        fileHashes.put(lang_code, release ? hash64(contents) : lang_code);
+        String odeLocale = ODE_LOCALES.getOrDefault(lang_code, lang_code);
+        fileHashes.put(odeLocale, release ? hash64(contents) : lang_code);
       }
     }
 
