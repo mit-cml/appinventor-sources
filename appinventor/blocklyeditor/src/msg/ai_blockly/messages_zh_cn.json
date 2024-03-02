@@ -811,7 +811,7 @@
     "Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "你需要为这个块的\"%1\"插口提供有效组件.",
     "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "该文本块内未包含有效数字",
     "Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "跳出块只能用于循环内部",
-    "Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG": "下载选中块为PNG图片",
+    "Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG": "下载选中块为PNG图像",
     "Blockly.Msg.UNGENERICIZE_BLOCK": "转为专用块",
     "Blockly.Msg.GENERICIZE_BLOCK": "转为通用块",
     "Blockly.Msg.SHOW_ALL_COMMENTS": "显示所有注释",
