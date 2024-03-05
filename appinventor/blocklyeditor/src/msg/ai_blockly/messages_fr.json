@@ -559,7 +559,7 @@
     "Blockly.Msg.DIALOG_SECURE_ESTABLISHING": "20 Etablissement de la Connexion Sécurisée",
     "Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING": "15 Rendezvous (veuillez attendre)",
     "Blockly.Msg.DO_IT_DISCONNECTED": "Exécution (Companion est déconnecté)",
-    "Blockly.Msg.DO_IT_RESULT": "Résultat de l'exécution:",
+    "Blockly.Msg.DO_IT_RESULT": "Résultat de l'exécution :",
     "Blockly.Msg.REPL_POPUP_CONTINUE": "Continuer",
     "Blockly.Msg.REPL_POPUP_MESSAGE": "Veuillez cliquer sur le bouton \"Continuer\" ci-dessous",
     "Blockly.Msg.REPL_POPUP_TITLE": "Besoin d'une fenêtre contextuelle",
@@ -578,7 +578,7 @@
     "Blockly.Msg.LANG_SCREENS_TITLE": "Nom de l'écran: ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY": "chaque",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "lorsque n'importe quel ",
-    "Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP": "Ce bloc n'est pas défini.  Efface ce bloc!",
+    "Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP": "Ce bloc n'est pas défini.  Efface ce bloc !",
     "Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX": "global",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "assigne la valeur pour la clé dans le dictionnaire",
     "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TOOLTIP": "Vérifie si quelque chose est un dictionnaire.",
@@ -602,7 +602,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP": "Renvoie le nombre de paires clé-valeur du dictionnaire.",
     "Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT": "dictionnaire",
     "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE": "taille du dictionnaire",
-    "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE": "est-ce que la clé est présente dans le dictionnaire?",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE": "est-ce que la clé est présente dans le dictionnaire ?",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP": "Vérifie si une clé est présente dans le dictionnaire.",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "est-ce que la clé %1 est présente dans le dictionnaire %2 ?",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "obtient les valeurs du dictionnaire",
@@ -719,7 +719,7 @@
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "dans le texte",
     "Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP": "Renvoie vrai si la valeur est une chaîne.",
     "Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING": "valeur",
-    "Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE": "est-ce une chaîne",
+    "Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE": "est-ce une chaîne ?",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL": "Teste si toutes les sous-chaînes sont contenues dans le texte.",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS": "Teste si la sous-chaîne est contenue dans le texte.",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY": "Teste si l'une des sous-chaînes est contenue dans le texte.",
@@ -820,5 +820,6 @@
     "Blockly.Msg.CONFIRM_DELETE": "Confirmez l'effacement",
     "Blockly.Msg.SHOW": "Afficher les commandes de l'espace de travail",
     "Blockly.Msg.HIDE": "Masquer les commandes de l'espace de travail",
-    "Blockly.Msg.CLEAN_UP": "Réordonner les blocs"
+    "Blockly.Msg.CLEAN_UP": "Réordonner les blocs",
+    "Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING": "qui passe "
 }
