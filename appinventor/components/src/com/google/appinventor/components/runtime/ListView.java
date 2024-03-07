@@ -102,6 +102,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private String fontTypeface;
   private String fontTypeDetail;
 
+  private String hint;
+
   /* for backward compatibility */
   private static final int DEFAULT_TEXT_SIZE = 22;
 
@@ -138,7 +140,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
     txtSearchBox.setPadding(10, 10, 10, 10);
-    txtSearchBox.setHint("Search list...");
+    Hint("Search list...");
     if (!AppInventorCompatActivity.isClassicMode()) {
       txtSearchBox.setBackgroundColor(COLOR_WHITE);
     }
@@ -229,6 +231,20 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       height = LENGTH_FILL_PARENT;
     }
     super.Height(height);
+  }
+
+  @DesignerProperty (editorType= PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue= "Search list...")
+  @SimpleProperty (description = "Sets hint on the filter bar.",
+      category = PropertyCategory.BEHAVIOR)
+  public void Hint(String hint) {
+    this.hint = hint;
+    txtSearchBox.setHint(hint);
+  }
+
+  @SimpleProperty
+  public String Hint() {
+    return hint;
   }
 
   /**

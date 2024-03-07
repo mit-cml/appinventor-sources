@@ -34,6 +34,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
   fileprivate var _orientation = Int32(1)
+  fileprivate let filter = UISearchBar()
+  fileprivate var _hint = "Search list..."
 
 
   public override init(_ parent: ComponentContainer) {
@@ -296,7 +298,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     set(filterBar) {
       _showFilter = filterBar
       if _showFilter && _view.tableHeaderView == nil {
-        let filter = UISearchBar()
         _view.tableHeaderView = filter
         filter.sizeToFit()
         filter.delegate = self
@@ -305,6 +306,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
     }
   }
+
+  @objc open var Hint: String {
+    get {
+      return _hint
+    }
+    set(hint) {
+      _hint = hint
+      filter.placeholder = _hint
+    }
+  }
+
 
   @objc open var TextColor: Int32 {
     get {
