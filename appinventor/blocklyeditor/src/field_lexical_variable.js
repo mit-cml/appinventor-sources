@@ -130,6 +130,11 @@ Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
       parent = parent.getParent();
     }
   }
+  if (this.sourceBlock_ && this.sourceBlock_.eventparam && this.sourceBlock_.isInFlyout) {
+    // we are in an event parameter flydown, so manually apply translations
+    var componentDb = this.sourceBlock_.workspace.getTopWorkspace().getComponentDatabase();
+    this.setText(componentDb.getInternationalizedParameterName(this.sourceBlock_.eventparam));
+  }
 };
 
 /**
