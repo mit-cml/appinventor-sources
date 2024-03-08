@@ -45,7 +45,8 @@ public class ProjectUtils {
    */
   public static File createNewTempDir() {
     File baseDir = new File(System.getProperty("java.io.tmpdir"));
-    String baseNamePrefix = System.currentTimeMillis() + "_" + Math.random() + "-";
+    long random = (long) (Math.random() * Long.MAX_VALUE);
+    String baseNamePrefix = System.currentTimeMillis() + "_" + random + "-";
 
     final int TEMP_DIR_ATTEMPTS = 10000;
     for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
