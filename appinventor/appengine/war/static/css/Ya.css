@@ -44,12 +44,6 @@ body, html {
   min-height: 100vh;
 }
 
-/* Standardization of icon sizes to 16px */
-.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {
-  width: 16px;
-  height: 16px;
-}
-
 /* Needed for Safari to position comments correctly */
 body.blocklyMinimalBody {
   min-width: auto;
