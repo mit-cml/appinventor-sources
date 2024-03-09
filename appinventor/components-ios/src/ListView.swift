@@ -574,13 +574,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else if _fontTypefaceDetail == "3" {
       cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
     }
-
-    if cell.selectedBackgroundView == nil {
-      cell.selectedBackgroundView = UIView()
+    
+    if _selectionColor == Int32(bitPattern: Color.default.rawValue){
+      cell.selectionColor = argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
+    } else {
+      cell.selectionColor = argbToColor(_selectionColor)
     }
-    cell.selectedBackgroundView?.backgroundColor =
-        argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue)
-        ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+    
     return cell
   }
 
@@ -628,4 +628,19 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   var elements: [String] {
     return _results ?? _elements
   }
+}
+
+  // extension of the UITableViewCell class defines a computed property selectionColor
+  // for setting and getting the background color of a cell when it is selected
+extension UITableViewCell {
+    var selectionColor: UIColor {
+        set {
+            let view = UIView()
+            view.backgroundColor = newValue
+            self.selectedBackgroundView = view
+        }
+        get {
+            return self.selectedBackgroundView?.backgroundColor ?? UIColor.clear
+        }
+    }
 }
