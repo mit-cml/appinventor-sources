@@ -34,8 +34,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
   fileprivate var _orientation = Int32(1)
-
-
+  fileprivate var _searching = false
+  
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
     super.init(parent)
@@ -300,6 +300,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         _view.tableHeaderView = filter
         filter.sizeToFit()
         filter.delegate = self
+        filter.showsCancelButton =  true
+
       } else if !_showFilter && _view.tableHeaderView != nil {
         _view.tableHeaderView = nil
       }
@@ -325,7 +327,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   @objc open var TextSize: Int32 {
     get {
       return _textSize
@@ -335,7 +337,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   //FontSizeDetail
   @objc open var FontSizeDetail: Int32 {
     get {
@@ -346,9 +348,9 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   // MARK: Methods
-
+  
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
       "Text1": mainText,
@@ -356,23 +358,23 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       "Image": imageName
     ] as YailDictionary
   }
-
+  
   @objc open func GetDetailText(_ listElement: YailDictionary) -> String {
     return listElement["Text2"] as? String ?? ""
   }
-
+  
   @objc open func GetImageName(_ listElement: YailDictionary) -> String {
     return listElement["Image"] as? String ?? ""
   }
-
+  
   @objc open func GetMainText(_ listElement: YailDictionary) -> String {
     return listElement["Text1"] as? String ?? ""
   }
-
+  
   @objc open func Refresh() {
     _view.reloadData()
   }
-
+  
   @objc open func RemoveItemAtIndex(_ index: Int32) {
     if index < 1 || index > max(_listData.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
@@ -387,178 +389,193 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     _view.reloadData()
   }
-
+  
   // MARK: Events
-
+  
   @objc open func AfterPicking() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicking")
   }
-
+  
   // MARK: UITableViewDataSource
-
+  
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
-      UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
-
-    if indexPath.row < _elements.count {
-      cell.textLabel?.text = _elements[indexPath.row]
-      cell.textLabel?.numberOfLines = 0
-      cell.textLabel?.lineBreakMode = .byWordWrapping
-    } else {
-      let listDataIndex = indexPath.row - _elements.count
-      if _listViewLayoutMode == 1{
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-      } else if _listViewLayoutMode == 2 {
-        tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-
-        // Configure the layout
-        cell.layoutMargins = UIEdgeInsets.zero
-        cell.separatorInset = UIEdgeInsets.zero
-        cell.preservesSuperviewLayoutMargins = true
-
-        // Create a stack view to hold the labels horizontally
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-
-        // Add the labels to the stack view
-        stackView.addArrangedSubview(cell.textLabel!)
-        stackView.addArrangedSubview(cell.detailTextLabel!)
-
-        // Add the stack view to the cell's content view
-        cell.contentView.addSubview(stackView)
-
-        // Set up constraints
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
-        ])
-      } else if _listViewLayoutMode == 3 {
-        tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
-          cell.imageView?.image = image
-
+    UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
+    
+    if _searching && _results != nil{
+      if indexPath.row < _results!.count {
+        cell.textLabel?.text = _results![indexPath.row]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+      }
+    }
+    else{
+      if indexPath.row < _elements.count {
+        cell.textLabel?.text = _elements[indexPath.row]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+      }
+      else {
+        let listDataIndex = indexPath.row - _elements.count
+        if _listViewLayoutMode == 1{
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+          cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+        }
+        else if _listViewLayoutMode == 2 {
+          tableView.rowHeight = 60
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+          cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+          
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
           cell.separatorInset = UIEdgeInsets.zero
           cell.preservesSuperviewLayoutMargins = true
-
+          
           // Create a stack view to hold the labels horizontally
           let stackView = UIStackView()
           stackView.axis = .horizontal
+          //          stackView.alignment = .fill
           stackView.alignment = .leading
           stackView.distribution = .fill
-          stackView.spacing = 8.0
-
+          
           // Add the labels to the stack view
-          stackView.addArrangedSubview(cell.imageView!)
           stackView.addArrangedSubview(cell.textLabel!)
-
+          stackView.addArrangedSubview(cell.detailTextLabel!)
+          
           // Add the stack view to the cell's content view
           cell.contentView.addSubview(stackView)
-
+          
           // Set up constraints
           stackView.translatesAutoresizingMaskIntoConstraints = false
           NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
+          ])
+        }
+        else if _listViewLayoutMode == 3 {
+          tableView.rowHeight = 60
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+          if let imagePath = _listData[listDataIndex]["Image"],
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
+            cell.imageView?.image = image
+            
+            // Configure the layout
+            cell.layoutMargins = UIEdgeInsets.zero
+            cell.separatorInset = UIEdgeInsets.zero
+            cell.preservesSuperviewLayoutMargins = true
+            
+            // Create a stack view to hold the labels horizontally
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.alignment = .leading
+            stackView.distribution = .fill
+            stackView.spacing = 8.0
+            
+            // Add the labels to the stack view
+            stackView.addArrangedSubview(cell.imageView!)
+            stackView.addArrangedSubview(cell.textLabel!)
+            
+            // Add the stack view to the cell's content view
+            cell.contentView.addSubview(stackView)
+            
+            // Set up constraints
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
               stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
               cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
-          ])
+            ])
+          }
         }
-      } else if _listViewLayoutMode == 4 {
-        tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
-          cell.imageView?.image = image
-
-          // Configure the layout
-          cell.layoutMargins = UIEdgeInsets.zero
-          cell.separatorInset = UIEdgeInsets.zero
-          cell.preservesSuperviewLayoutMargins = true
-
-          // Create a horizontal stack view to hold the imageView and a nested vertical stack view
-          let horizontalStackView = UIStackView()
-          horizontalStackView.axis = .horizontal
-          horizontalStackView.alignment = .center
-          horizontalStackView.distribution = .fill
-          horizontalStackView.spacing = 8.0
-
-          // Create a vertical stack view to hold the textLabel and detailTextLabel
-          let verticalStackView = UIStackView()
-          verticalStackView.axis = .vertical
-          verticalStackView.alignment = .leading
-          verticalStackView.distribution = .fill
-          verticalStackView.spacing = 8.0
-
-          // Add the imageView and nested vertical stack view to the horizontal stack view
-          horizontalStackView.addArrangedSubview(cell.imageView!)
-          horizontalStackView.addArrangedSubview(verticalStackView)
-
-          // Add the textLabel and detailTextLabel to the vertical stack view
-          verticalStackView.addArrangedSubview(cell.textLabel!)
-          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
-
-          // Add the horizontal stack view to the cell's content view
-          cell.contentView.addSubview(horizontalStackView)
-
-          // Set up constraints
-          horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-          NSLayoutConstraint.activate([
+        else if _listViewLayoutMode == 4 {
+          tableView.rowHeight = 60
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+          cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+          if let imagePath = _listData[listDataIndex]["Image"],
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
+            cell.imageView?.image = image
+            
+            // Configure the layout
+            cell.layoutMargins = UIEdgeInsets.zero
+            cell.separatorInset = UIEdgeInsets.zero
+            cell.preservesSuperviewLayoutMargins = true
+            
+            // Create a horizontal stack view to hold the imageView and a nested vertical stack view
+            let horizontalStackView = UIStackView()
+            horizontalStackView.axis = .horizontal
+            horizontalStackView.alignment = .center
+            horizontalStackView.distribution = .fill
+            horizontalStackView.spacing = 8.0
+            
+            // Create a vertical stack view to hold the textLabel and detailTextLabel
+            let verticalStackView = UIStackView()
+            verticalStackView.axis = .vertical
+            verticalStackView.alignment = .leading
+            verticalStackView.distribution = .fill
+            verticalStackView.spacing = 8.0
+            
+            // Add the imageView and nested vertical stack view to the horizontal stack view
+            horizontalStackView.addArrangedSubview(cell.imageView!)
+            horizontalStackView.addArrangedSubview(verticalStackView)
+            
+            // Add the textLabel and detailTextLabel to the vertical stack view
+            verticalStackView.addArrangedSubview(cell.textLabel!)
+            verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+            
+            // Add the horizontal stack view to the cell's content view
+            cell.contentView.addSubview(horizontalStackView)
+            
+            // Set up constraints
+            horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
               horizontalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
               horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
               cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
-          ])
+            ])
+          }
         }
-      } else {
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        else {
+          cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        }
+        
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
       }
-
-      cell.textLabel?.numberOfLines = 0
-      cell.textLabel?.lineBreakMode = .byWordWrapping
     }
-
+    
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
-
+    
     guard let form = _container?.form else {
       return cell
     }
-
+    
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-
+    
     //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.textLabel?.textColor = argbToColor(_textColor)
     }
-
+    
     //detailtext
     if _textColorDetail == Color.default.int32 {
       cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
     }
-
+    
     if _fontTypeface == "1" {
       cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
     } else if _fontTypeface == "2" {
@@ -566,7 +583,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else if _fontTypeface == "3" {
       cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
     }
-
+    
     if _fontTypefaceDetail == "1" {
       cell.detailTextLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail))
     } else if _fontTypefaceDetail == "2" {
@@ -583,9 +600,24 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     
     return cell
   }
-
+  
+  // Return the number of rows in tableView (indexPath.row value)
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _listData.isEmpty ? _elements.count : _listData.count
+    
+    if _searching && _results != nil {
+        return _results!.count
+    }
+    else{
+      if !_elements.isEmpty {
+        return _elements.count
+      }
+      else if !_listData.isEmpty{
+        return _listData.count
+      }
+      else{
+        return 0
+      }
+    }
   }
 
   // MARK: UITableViewDelegate
@@ -606,28 +638,53 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   // MARK: UISearchBarDelegate
 
+  // Filter elements from string or list data values and store them into _results String array
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    _results = nil
+    _searching = true
+    
     if !searchText.isEmpty  {
       _results = [String]()
-      for item in _elements {
-        if item.starts(with: searchText) {
-          _results?.append(item)
+      
+      if !_elements.isEmpty{
+        for element in _elements{
+          if element.lowercased().contains(searchText.lowercased()){
+            _results?.append(element)
+          }
         }
+      }else if !_listData.isEmpty {
+        var listDataValuesArray: [String] = []
+        
+        for dict in _listData {
+            for (_, value) in dict {
+              listDataValuesArray.append(value)
+            }
+        }
+        for listDataValue in listDataValuesArray{
+          if listDataValue.lowercased().contains(searchText.lowercased()){
+            _results?.append(listDataValue)
+          }
+        }
+      }else{
+        _results = nil
       }
+    }else{
+      _results = nil
     }
     _view.reloadData()
   }
-
+  
   open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     searchBar.endEditing(true)
   }
-
-  // MARK: Private implementation
-
-  var elements: [String] {
-    return _results ?? _elements
+  
+  open func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+      searchBar.text = ""
+      searchBar.resignFirstResponder()
+      _searching = false
+      _results = nil
+      _view.reloadData()
   }
+
 }
 
   // extension of the UITableViewCell class defines a computed property selectionColor
