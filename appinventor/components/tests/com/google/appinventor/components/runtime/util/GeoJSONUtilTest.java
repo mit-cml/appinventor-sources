@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import gnu.lists.FString;
 import gnu.lists.LList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -316,6 +317,9 @@ public class GeoJSONUtilTest extends MapTestBase {
     JSONObject json = new JSONObject(contents);
     assertEquals(6, json.getJSONArray("features").length());
     // Consider inspecting the objects more deeply to ensure correctness in the future
+    //Checking for polygon
+    //ensures that the polygon has five coordinates while saving as geojson for it to be parsable (first and last coordinates are same)
+    assertEquals(5,  json.getJSONArray("features").getJSONObject(1).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0).length());
   }
 
   @Test
@@ -467,4 +471,5 @@ public class GeoJSONUtilTest extends MapTestBase {
       }
     }
   }
+
 }
