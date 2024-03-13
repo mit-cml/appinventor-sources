@@ -277,6 +277,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
   }
 
+  public void openDeleteDialog() {
+    if (!isForm()) {
+      new DeleteDialog().center();
+    }
+  }
+
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
 
