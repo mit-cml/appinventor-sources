@@ -64,6 +64,14 @@
         <li> Firefox 52+ </li>
       </ul>
     </div>
+    <!-- Message to display if ode doesn't load. When Ode loads,
+         this message will be hidden. -->
+    <div id=odeblock>
+        <h1>If you see this message for an extended period of time, it might be because
+        your internet service is blocking requiests to <%= odeBase %>. Contact your
+        administrator to check on this and remove the block.
+        </h1>
+    </div>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>

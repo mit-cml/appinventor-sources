@@ -74,6 +74,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
@@ -644,6 +647,13 @@ public class Ode implements EntryPoint {
         }
       }
     });
+
+    // First order of business. Let's hide the div with the message about
+    // how access to Ode is blocked. If we get here, Ode is loaded, so there
+    // is no block! (yeah!)
+
+    Element element = Document.get().getElementById("odeblock");
+    element.getStyle().setDisplay(Style.Display.NONE);
 
     // Initialize global Ode instance
     instance = this;
