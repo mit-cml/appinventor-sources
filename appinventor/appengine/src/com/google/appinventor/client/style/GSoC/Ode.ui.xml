@@ -27,7 +27,7 @@
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <GSoC:DesignToolbarGSoC ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" >
-            <box:PaletteBox width="240px" ui:field="paletteBox"/>
+            <box:PaletteBox width="275px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="viewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
               <g:FlowPanel>

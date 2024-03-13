@@ -78,7 +78,10 @@ they get cut off in Windows.
     background-image: unset;
     margin: unset;
     background-color: unset;
+    border: unset;
+    box-shadow: unset;
   }
+
   .ode-Box-toolkit {
     /*all: unset;*/
   }
