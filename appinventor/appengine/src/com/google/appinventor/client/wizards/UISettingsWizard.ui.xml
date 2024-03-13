@@ -11,25 +11,21 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-    <wiz:Dialog ui:field="UIDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
+    <wiz:Dialog ui:field="UIDialog" caption="{messages.uiSettings}"
                 styleName="ode-DialogBox" width="340px" height="40px">
         <g:FlowPanel>
-            <g:FlowPanel>
+            <g:FlowPanel styleName="ode-DialogRow">
                 <!-- <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" /> -->
-                <g:Label text="{messages.selectMode}" />
-                <!-- <g:Button ui:field='darkModeButton' text='{messages.toggleTheme}'/> -->
-                <g:FlowPanel>
-                    <g:RadioButton ui:field='lightModeRadioButton' name='theme' text="{messages.disableDarkTheme}" />
-                    <g:RadioButton ui:field='darkModeRadioButton' name='theme' text="{messages.enableDarkTheme}" />
-                </g:FlowPanel>
-            </g:FlowPanel>
-            <g:FlowPanel>
-                <!-- <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" /> -->
-                <g:Label text="{messages.selectLayout}" />
-                <g:FlowPanel>
+                <g:Label text="{messages.selectLayout}" width="30%"  />
                     <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
                     <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}'/>
-                </g:FlowPanel>
+            </g:FlowPanel>
+            <g:FlowPanel styleName="ode-DialogRow">
+                <!-- <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" /> -->
+                <g:Label text="{messages.selectMode}" width="30%" />
+                <!-- <g:Button ui:field='darkModeButton' text='{messages.toggleTheme}'/> -->
+                <g:RadioButton ui:field='lightModeRadioButton' name='theme' text="{messages.disableDarkTheme}"  enabled="false" />
+                <g:RadioButton ui:field='darkModeRadioButton' name='theme' text="{messages.enableDarkTheme}" enabled="false"  />
             </g:FlowPanel>
             <g:FlowPanel styleName="buttonRow" >
                 <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton" />

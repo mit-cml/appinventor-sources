@@ -1764,6 +1764,17 @@ path.ode-SimpleMockMapFeature-selected {
   padding-left: 4px;
 }
 
+.ode-DialogRow {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+}
+
+.ode-DialogRow .gwt-RadioButton input[type="radio"] {
+  margin-right: 5px;
+}
+
 .ode-DialogBox .dialogTop {
   background-color: #8fc202;
 }

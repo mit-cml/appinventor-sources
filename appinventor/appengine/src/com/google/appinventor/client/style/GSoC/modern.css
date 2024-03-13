@@ -1135,17 +1135,24 @@ they get cut off in Windows.
     font-size: 14px;
   }
   
-  .ode-FormCheckboxLabel {
-    display: inline-block;
+  .ode-DialogRow {
+    display: inline-flex;
     margin: 10px;
     font-size: 14px;
+    gap: 5px;
+    align-items: center;
+    width: 100%;
   }
   
-  .ode-FormCheckboxLabel input[type="checkbox"] {
+  .ode-DialogRow .gwt-CheckBox input[type="checkbox"] {
     margin-right: 5px;
   }
-  
-  .ode-DialogBox .gwt-Tree {
+
+  .ode-DialogRow .gwt-RadioButton input[type="radio"] {
+    margin-right: 5px;
+  }
+
+.ode-DialogBox .gwt-Tree {
     /* all: unset; */
     margin: 0 20px 20px 20px;
     border: 1px solid border-color;
