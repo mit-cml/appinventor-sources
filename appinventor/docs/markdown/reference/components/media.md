@@ -438,6 +438,9 @@ None
 
 {:.methods}
 
+{:id="Sound.CanToggleDoNotDisturb" class="method returns boolean"} <i/> CanToggleDoNotDisturb()
+: Returns true if ringer mode adjustments that toggle Do Not Disturb are allowed, false otherwise. On devices running Android Nougat or later, ringer mode adjustments that toggle Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.
+
 {:id="Sound.Pause" class="method"} <i/> Pause()
 : Pauses playing the sound if it is being played.
 
@@ -447,11 +450,20 @@ None
 {:id="Sound.Resume" class="method"} <i/> Resume()
 : Resumes playing the sound after a pause.
 
+{:id="Sound.SetRingerMode" class="method"} <i/> SetRingerMode(*ringerMode*{:.com.google.appinventor.components.common.RingerModeEnum})
+: Sets the Ringer mode to normal, silent, or vibrate. On devices running Android Nougat or later, ringer mode adjustments that toggle Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. Use the CanToggleDoNotDisturb block to determine whether the policy has been granted. Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.
+
+{:id="Sound.ShowDoNotDisturbAccessSettings" class="method"} <i/> ShowDoNotDisturbAccessSettings()
+: Show the Do Not Disturb access settings.
+
 {:id="Sound.Stop" class="method"} <i/> Stop()
 : Stops playing the sound if it is being played.
 
 {:id="Sound.Vibrate" class="method"} <i/> Vibrate(*millisecs*{:.number})
 : Vibrates for the specified number of milliseconds.
+
+{:id="Sound.VibratePattern" class="method"} <i/> VibratePattern(*vibrate*{:.number},*delay*{:.number},*repeat*{:.boolean})
+: Vibrate with a given pattern
 
 ## SoundRecorder  {#SoundRecorder}
 
