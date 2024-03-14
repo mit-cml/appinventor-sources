@@ -73,6 +73,7 @@
         </h1>
     </div>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>

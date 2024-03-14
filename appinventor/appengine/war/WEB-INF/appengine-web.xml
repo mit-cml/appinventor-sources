@@ -20,6 +20,7 @@
 
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
+    <include path="/ode/cdnok.js" expiration="3600s" />
     <include path="/index.html" expiration="0s" />
 
     <include path="/ode/**.cache.*" expiration="365d" />
