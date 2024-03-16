@@ -352,7 +352,7 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS": "zawiera",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT": "tekst",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE": "fragment",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "zawiera tekst %1 fragment %2",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "%1 tekst %2 %3 %4",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP": "Sprawdza, czy fragment jest zawarty w tekście.",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT": "tekst",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT": "w",
@@ -606,5 +606,11 @@
     "Blockly.Msg.EXTENSIONS": "Rozszerzenia",
     "Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "Musisz dołączyć poprawny komponent do gniazda \"%1\" tego bloku.",
     "Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG": "Pobierz bloki jako PNG",
-    "Blockly.Msg.REMOVE_UNUSED_BLOCKS": "Usuń nieużywane bloki"
+    "Blockly.Msg.REMOVE_UNUSED_BLOCKS": "Usuń nieużywane bloki",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST": "fragment listy",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS": "zawiera",
+    "Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ": "Sprawdza, czy ciągi tekstowe są różne, tzn. nie mają tego samych\nznaków w tej samej kolejności. Różni się to od zwykłego ≠\nw przypadku, gdy ciągi tekstowe są liczbami: 123 i 0123 to tekst ≠\nale matematycznie =.",
+    "Blockly.Msg.LANG_MATH_LIST_MODE_TITLE": "dominanta z listy",
+    "Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SE": "Zwraca standardowy błąd swoich argumentów.",
+    "Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE": "Ten blok wymaga bloku wartości podłączonego do swojego gniazda."
 }
