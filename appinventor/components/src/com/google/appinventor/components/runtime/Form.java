@@ -6,7 +6,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.BLUETOOTH_ADVERTISE;
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static android.Manifest.permission.BLUETOOTH_SCAN;
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 import android.annotation.SuppressLint;
@@ -78,6 +83,7 @@ import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -217,6 +223,13 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+
+  private final PermissionRegistry permissionRegistry = new PermissionRegistry()
+      .recordMaxSdk(WRITE_EXTERNAL_STORAGE, Build.VERSION_CODES.R)
+      .recordMinSdk(BLUETOOTH_ADVERTISE, 31)
+      .recordMinSdk(BLUETOOTH_CONNECT, 31)
+      .recordMinSdk(BLUETOOTH_SCAN, 31)
+      .recordMaxSdk(READ_EXTERNAL_STORAGE, 33);
 
   private FileScope defaultFileScope = FileScope.App;
 
@@ -2763,8 +2776,14 @@ public class Form extends AppInventorCompatActivity
    * @return true if the permission has been denied, otherwise false.
    */
   public boolean isDeniedPermission(String permission) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return false;  // Do not need to ask permissions before Marshmallow
+    } else if (!permissionRegistry.needsPermission(permission)) {
+      return false;  // Do not need to ask for this permission on this SDK level
+    } else {
+      return ContextCompat.checkSelfPermission(this, permission)
+          == PackageManager.PERMISSION_DENIED;
+    }
   }
 
   /**
