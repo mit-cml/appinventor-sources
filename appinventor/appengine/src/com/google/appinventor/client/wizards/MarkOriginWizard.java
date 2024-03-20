@@ -71,6 +71,8 @@ public class MarkOriginWizard extends Wizard {
     spriteImagePanel.setSize("50vw", "50vh");
 
     spriteImage = new Image(imageUrl);
+    spriteImage.getElement().getStyle().setProperty("border", "1px solid black");
+    spriteImage.getElement().getStyle().setProperty("box-sizing", "border-box");
     spriteImagePanel.add(spriteImage);
 
     // align the spriteImage to the center of the panel
