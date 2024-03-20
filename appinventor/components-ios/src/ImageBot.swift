@@ -6,14 +6,13 @@
 import Foundation
 
 fileprivate let kImageBotURL: URL! = URL(string: "https://chatbot.appinventor.mit.edu/image/v1")
-fileprivate let kRequestError: Int32 = -1
-fileprivate let kSaveFileError: Int32 = -2
-fileprivate let kUnableToLoadSourceError: Int32 = -3
-fileprivate let kNoResponseError: Int32 = -4
+let kSaveFileError: Int32 = -2
+let kUnableToLoadSourceError: Int32 = -3
+let kNoResponseError: Int32 = -4
 
 open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot_response> {
-  private static let sRGB: CGColorSpace! = CGColorSpace(name: CGColorSpace.sRGB)
-  private let context = CIContext(options: [CIContextOption.outputColorSpace : NSNull()])
+  public static let sRGB: CGColorSpace! = CGColorSpace(name: CGColorSpace.sRGB)
+  public static let context = CIContext(options: [CIContextOption.outputColorSpace : NSNull()])
 
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, kImageBotURL)
@@ -117,30 +116,6 @@ open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot
 
   // MARK: Private implementation
 
-  func loadImageData(_ source: AnyObject) -> Data? {
-    guard let bitmap = loadImage(source) else {
-      return nil
-    }
-    return context.pngRepresentation(of: bitmap, format: .ARGB8, colorSpace: ImageBot.sRGB)
-  }
-
-  func loadImage(_ source: AnyObject) -> CIImage? {
-    if let canvas = source as? Canvas {
-      return canvas.ciImage
-    } else if let image = source as? Image {
-      guard let uiImage = (image.view as? UIImageView)?.image else {
-        return nil
-      }
-      return CIImage(image: uiImage)
-    } else if let path = source as? String {
-      let resolvedPath = AssetManager.shared.pathForExistingFileAsset(path)
-      if !resolvedPath.isEmpty, let image = AssetManager.shared.imageFromPath(path: resolvedPath) {
-        return CIImage(image: image)
-      }
-    }
-    return nil
-  }
-
   func loadMaskData(_ source: AnyObject) -> Data? {
     guard let bitmap = loadImage(source) else {
       return nil
@@ -166,7 +141,7 @@ open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot
       }
       return result
     }
-    return context.pngRepresentation(of: bitmap, format: .ARGB8, colorSpace: ImageBot.sRGB)
+    return ImageBot.context.pngRepresentation(of: bitmap, format: .ARGB8, colorSpace: ImageBot.sRGB)
   }
 
   func saveImage(_ content: Data) throws -> String {
@@ -223,3 +198,40 @@ extension CIImage {
   }
 }
 #endif
+
+
+func loadImageData(_ source: AnyObject, resize: Int? = nil) -> Data? {
+  guard let bitmap = loadImage(source) else {
+    return nil
+  }
+  if let resize = resize {
+    let filter = CIFilter(name: "CILanczosScaleTransform")!
+    let targetSize = CGSize(width: CGFloat(resize), height: CGFloat(resize))
+    let scale = targetSize.height / bitmap.extent.height
+    let aspectRatio = targetSize.width / (bitmap.extent.width * scale)
+    filter.setValue(bitmap, forKey: kCIInputImageKey)
+    filter.setValue(scale, forKey: kCIInputScaleKey)
+    filter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+    if let resizedImage = filter.outputImage {
+      return ImageBot.context.pngRepresentation(of: resizedImage, format: .ARGB8, colorSpace: ImageBot.sRGB)
+    }
+  }
+  return ImageBot.context.pngRepresentation(of: bitmap, format: .ARGB8, colorSpace: ImageBot.sRGB)
+}
+
+func loadImage(_ source: AnyObject) -> CIImage? {
+  if let canvas = source as? Canvas {
+    return canvas.ciImage
+  } else if let image = source as? Image {
+    guard let uiImage = (image.view as? UIImageView)?.image else {
+      return nil
+    }
+    return CIImage(image: uiImage)
+  } else if let path = source as? String {
+    let resolvedPath = AssetManager.shared.pathForExistingFileAsset(path)
+    if !resolvedPath.isEmpty, let image = AssetManager.shared.imageFromPath(path: resolvedPath) {
+      return CIImage(image: image)
+    }
+  }
+  return nil
+}
