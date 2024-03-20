@@ -1,49 +1,59 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
+import static com.google.appinventor.buildserver.util.ProjectUtils.PROJECT_DIRECTORY;
+
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.BlockXmlAnalyzer;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ComponentBlocksExtractor;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.PermissionBlockExtractor;
+import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ScopeBlockExtractor;
+import com.google.appinventor.buildserver.context.CompilerContext;
+import com.google.appinventor.buildserver.context.Paths;
 import com.google.appinventor.buildserver.stats.StatReporter;
+import com.google.appinventor.buildserver.tasks.common.BuildFactory;
+import com.google.appinventor.buildserver.util.Execution;
+
+import com.google.appinventor.buildserver.util.ProjectUtils;
 import com.google.appinventor.common.utils.StringUtils;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
+
+import java.io.File;
+import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipFile;
+
+import org.apache.commons.io.FileUtils;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * Provides support for building Young Android projects.
@@ -60,14 +70,12 @@ public final class ProjectBuilder {
   private static final Logger LOG = Logger.getLogger(ProjectBuilder.class.getName());
 
   private static final int MAX_COMPILER_MESSAGE_LENGTH = 160;
+  private static final String SEPARATOR = File.separator;
 
   // Project folder prefixes
   // TODO(user): These constants are (or should be) also defined in
   // appengine/src/com/google/appinventor/server/project/youngandroid/YoungAndroidProjectService
   // They should probably be in some place shared with the server
-  private static final String PROJECT_DIRECTORY = "youngandroidproject";
-  private static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
-                                                            "project.properties";
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
 
   private static final String FORM_PROPERTIES_EXTENSION =
@@ -77,8 +85,7 @@ public final class ProjectBuilder {
   private static final String CODEBLOCKS_SOURCE_EXTENSION =
       YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
-  private static final String ALL_COMPONENT_TYPES =
-      Compiler.RUNTIME_FILES_DIR + "simple_components.txt";
+  private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
   public File getOutputApk() {
     return outputApk;
@@ -90,53 +97,22 @@ public final class ProjectBuilder {
 
   private final StatReporter statReporter;
 
-  /**
-   * Creates a new directory beneath the system's temporary directory (as
-   * defined by the {@code java.io.tmpdir} system property), and returns its
-   * name. The name of the directory will contain the current time (in millis),
-   * and a random number.
-   *
-   * <p>This method assumes that the temporary volume is writable, has free
-   * inodes and free blocks, and that it will not be called thousands of times
-   * per second.
-   *
-   * @return the newly-created directory
-   * @throws IllegalStateException if the directory could not be created
-   */
-  private static File createNewTempDir() {
-    File baseDir = new File(System.getProperty("java.io.tmpdir"));
-    String baseNamePrefix = System.currentTimeMillis() + "_" + Math.random() + "-";
-
-    final int TEMP_DIR_ATTEMPTS = 10000;
-    for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
-      File tempDir = new File(baseDir, baseNamePrefix + counter);
-      if (tempDir.exists()) {
-        continue;
-      }
-      if (tempDir.mkdir()) {
-        return tempDir;
-      }
-    }
-    throw new IllegalStateException("Failed to create directory within "
-        + TEMP_DIR_ATTEMPTS + " attempts (tried "
-        + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
-  }
-
   public ProjectBuilder(StatReporter statReporter) {
     this.statReporter = statReporter;
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
-    boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions, String[] extraExtensions,
-    int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter, boolean isAab) {
+      boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
+      String[] extraExtensions, int childProcessRam, String dexCachePath,
+      BuildServer.ProgressReporter reporter, String ext) {
     try {
       // Download project files into a temporary directory
-      File projectRoot = createNewTempDir();
+      File projectRoot = ProjectUtils.createNewTempDir();
       LOG.info("temporary project root: " + projectRoot.getAbsolutePath());
       try {
         List<String> sourceFiles;
         try {
-          sourceFiles = extractProjectFiles(inputZip, projectRoot);
+          sourceFiles = ProjectUtils.extractProjectFiles(inputZip, projectRoot);
         } catch (IOException e) {
           LOG.severe("unexpected problem extracting project file from zip");
           return Result.createFailingResult("", "Problems processing zip file.");
@@ -150,16 +126,18 @@ public final class ProjectBuilder {
         }
 
         // Create project object from project properties file.
-        Project project = getProjectProperties(projectRoot);
+        Project project = ProjectUtils.getProjectProperties(projectRoot);
+
+        final BuildFactory<?, CompilerContext<Paths>> factory = BuildFactory.get(ext);
+        if (factory == null) {
+          throw new IllegalStateException("No factory for target: " + ext);
+        }
+        if (outputFileName == null) {
+          outputFileName = project.getProjectName() + "." + factory.getExtension();
+        }
 
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
-
-        // Prepare for redirection of compiler message output
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PrintStream console = new PrintStream(output);
-        ByteArrayOutputStream errors = new ByteArrayOutputStream();
-        PrintStream userErrors = new PrintStream(errors);
 
         Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
         if (isForCompanion) {
@@ -169,29 +147,76 @@ public final class ProjectBuilder {
           System.err.println("Including extension: " + Arrays.toString(extraExtensions));
           Collections.addAll(componentTypes, extraExtensions);
         }
-        Map<String, Set<String>> componentBlocks = getComponentBlocks(sourceFiles);
+        ComponentBlocksExtractor componentBlocksExtractor = new ComponentBlocksExtractor();
+        PermissionBlockExtractor permissionBlockExtractor = new PermissionBlockExtractor();
+        ScopeBlockExtractor scopeBlockExtractor = new ScopeBlockExtractor();
+        analyzeBlockFiles(sourceFiles, componentBlocksExtractor, permissionBlockExtractor,
+            scopeBlockExtractor);
+        Map<String, Set<String>> componentBlocks = componentBlocksExtractor.getResult();
+        Set<String> extraPermissions = permissionBlockExtractor.getResult();
+        Set<String> usedScopes = scopeBlockExtractor.getResult();
+        for (String scope : usedScopes) {
+          switch (scope) {
+            case "Shared":
+              extraPermissions.add("android.permission.READ_MEDIA_AUDIO");
+              extraPermissions.add("android.permission.READ_MEDIA_IMAGES");
+              extraPermissions.add("android.permission.READ_MEDIA_VIDEO");
+              extraPermissions.add("android.permission.READ_EXTERNAL_STORAGE");
+              extraPermissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
+              break;
+            case "Legacy":
+              extraPermissions.add("android.permission.READ_EXTERNAL_STORAGE");
+              extraPermissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
+              break;
+            default:
+              break;
+          }
+        }
+        Map<String, String> formOrientations = getScreenOrientations(sourceFiles);
+
+        // Generate the compiler context
+        Reporter r = new Reporter(reporter);
+        CompilerContext<Paths> context =
+            new CompilerContext.Builder<Paths, CompilerContext<Paths>>(project, ext)
+                .withClass(factory.getContextClass())
+                .withTypes(componentTypes)
+                .withBlocks(componentBlocks)
+                .withBlockPermissions(extraPermissions)
+                .withFormOrientations(formOrientations)
+                .withReporter(r)
+                .withStatReporter(statReporter)
+                .withCompanion(isForCompanion)
+                .withEmulator(isForEmulator)
+                .withDangerousPermissions(includeDangerousPermissions)
+                .withKeystore(keyStorePath)
+                .withRam(childProcessRam)
+                .withCache(dexCachePath)
+                .withOutput(outputFileName)
+                .build();
 
         // Invoke YoungAndroid compiler
-        boolean success =
-            Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
-                isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
-                childProcessRam, dexCachePath, outputFileName, reporter, isAab, statReporter);
-        console.close();
-        userErrors.close();
+        Compiler<?, ?> compiler = factory.makeCompiler(context);
+
+        Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
+
+        boolean success = executor.get();
+        statReporter.stopBuild(compiler, success);
+        r.close();
 
         // Retrieve compiler messages and convert to HTML and log
-        String srcPath = projectRoot.getAbsolutePath() + "/" + PROJECT_DIRECTORY + "/../src/";
-        String messages = processCompilerOutput(output.toString(PathUtil.DEFAULT_CHARSET),
+        String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
+            + ".." + SEPARATOR + "src" + SEPARATOR;
+        String messages = processCompilerOutput(context.getReporter().getSystemOutput(),
             srcPath);
 
         if (success) {
           // Locate output file
           String fileName = outputFileName;
           if (fileName == null) {
-            fileName = project.getProjectName() + (isAab ? ".aab" : ".apk");
+            fileName = project.getProjectName() + "." + ext;
           }
           File outputFile = new File(projectRoot,
-              "build/deploy/" + fileName);
+              "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
           if (!outputFile.exists()) {
             LOG.warning("Young Android build - " + outputFile + " does not exist");
           } else {
@@ -203,7 +228,7 @@ public final class ProjectBuilder {
             }
           }
         }
-        return new Result(success, messages, errors.toString(PathUtil.DEFAULT_CHARSET));
+        return new Result(success, messages, context.getReporter().getUserOutput());
       } finally {
         // On some platforms (OS/X), the java.io.tmpdir contains a symlink. We need to use the
         // canonical path here so that Files.deleteRecursively will work.
@@ -213,8 +238,8 @@ public final class ProjectBuilder {
         FileUtils.deleteQuietly(new File(projectRoot.getCanonicalPath()));
       }
     } catch (Exception e) {
-      e.printStackTrace();
-      return Result.createFailingResult("", "Server error performing build");
+      LOG.log(Level.SEVERE, "Unable to build project", e);
+      return Result.createFailingResult(e.toString(), "Server error performing build");
     }
   }
 
@@ -228,26 +253,20 @@ public final class ProjectBuilder {
     return compSet;
   }
 
-  private ArrayList<String> extractProjectFiles(ZipFile inputZip, File projectRoot)
-      throws IOException {
-    ArrayList<String> projectFileNames = Lists.newArrayList();
-    Enumeration<? extends ZipEntry> inputZipEnumeration = inputZip.entries();
-    while (inputZipEnumeration.hasMoreElements()) {
-      ZipEntry zipEntry = inputZipEnumeration.nextElement();
-      final InputStream extractedInputStream = inputZip.getInputStream(zipEntry);
-      File extractedFile = new File(projectRoot, zipEntry.getName());
-      LOG.info("extracting " + extractedFile.getAbsolutePath() + " from input zip");
-      Files.createParentDirs(extractedFile); // Do I need this?
-      Files.copy(
-          new InputSupplier<InputStream>() {
-            public InputStream getInput() throws IOException {
-              return extractedInputStream;
-            }
-          },
-          extractedFile);
-      projectFileNames.add(extractedFile.getPath());
+  private static Map<String, String> getScreenOrientations(List<String> files)
+      throws IOException, JSONException {
+    Map<String, String> result = new HashMap<>();
+    final int extLength = FORM_PROPERTIES_EXTENSION.length();
+    for (String f : files) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
+        File scmFile = new File(f);
+        String scmContent = new String(Files.toByteArray(scmFile),
+            StandardCharsets.UTF_8);
+        String formName = f.substring(f.lastIndexOf(SEPARATOR) + 1, f.length() - extLength);
+        result.put(formName, FormPropertiesAnalyzer.getFormOrientation(scmContent));
+      }
     }
-    return projectFileNames;
+    return result;
   }
 
   private static Set<String> getComponentTypes(List<String> files, File assetsDir)
@@ -268,46 +287,16 @@ public final class ProjectBuilder {
     return componentTypes;
   }
 
-  /**
-   * Constructs a mapping of component types to the blocks of each type used in
-   * the project files. Properties specified in the designer are considered
-   * blocks for the purposes of this operation.
-   *
-   * @param files A list of files contained in the project.
-   * @return A mapping of component type names to sets of block names used in
-   * the project
-   * @throws IOException if any of the files named in {@code files} cannot be
-   * read
-   */
-  private static Map<String, Set<String>> getComponentBlocks(List<String> files)
+  private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
       if (f.endsWith(".bky")) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
-        for (Map.Entry<String, Set<String>> entry :
-            FormPropertiesAnalyzer.getComponentBlocksFromBlocksFile(bkyContent).entrySet()) {
-          if (result.containsKey(entry.getKey())) {
-            result.get(entry.getKey()).addAll(entry.getValue());
-          } else {
-            result.put(entry.getKey(), entry.getValue());
-          }
-        }
-      } else if (f.endsWith(".scm")) {
-        File scmFile = new File(f);
-        String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
-        for (Map.Entry<String, Set<String>> entry :
-            FormPropertiesAnalyzer.getComponentBlocksFromSchemeFile(scmContent).entrySet()) {
-          if (result.containsKey(entry.getKey())) {
-            result.get(entry.getKey()).addAll(entry.getValue());
-          } else {
-            result.put(entry.getKey(), entry.getValue());
-          }
-        }
+        FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
       }
     }
-    return result;
   }
 
   /**
@@ -340,7 +329,7 @@ public final class ProjectBuilder {
         continue;
       }
 
-      File extCompJsonFile = new File (extCompDir, "component.json");
+      File extCompJsonFile = new File(extCompDir, "component.json");
       if (extCompJsonFile.exists()) {
         JSONObject extCompJson = new JSONObject(Resources.toString(
             extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
@@ -368,13 +357,13 @@ public final class ProjectBuilder {
     File keyStoreFile = new File(projectRoot.getPath(), keystoreFileName);
 
     /* Note: must expire after October 22, 2033, to be in the Android
-    * marketplace.  Android docs recommend "10000" as the expiration # of
-    * days.
-    *
-    * For DNAME, US may not the right country to assign it to.
-    */
+     * marketplace.  Android docs recommend "10000" as the expiration # of
+     * days.
+     *
+     * For DNAME, US may not the right country to assign it to.
+     */
     String[] keytoolCommandline = {
-        System.getProperty("java.home") + "/bin/keytool",
+        System.getProperty("java.home") + SEPARATOR + "bin" + SEPARATOR + "keytool",
         "-genkey",
         "-keystore", keyStoreFile.getAbsolutePath(),
         "-alias", "AndroidKey",
@@ -495,12 +484,5 @@ public final class ProjectBuilder {
     }
     sb.append('"');
     return sb.toString();
-  }
-
-  /*
-   * Loads the project properties file of a Young Android project.
-   */
-  private Project getProjectProperties(File projectRoot) {
-    return new Project(projectRoot.getAbsolutePath() + "/" + PROJECT_PROPERTIES_FILE_NAME);
   }
 }

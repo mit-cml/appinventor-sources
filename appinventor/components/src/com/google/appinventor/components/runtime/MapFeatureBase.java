@@ -207,7 +207,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Draggable(boolean draggable) {
     this.draggable = draggable;
     map.getController().updateFeatureDraggable(this);

@@ -35,7 +35,7 @@ public class OptionHelper {
    * @return The OptionList value if one is associated with the concrete value, otherwise the
    *     concrete value.
    */
-  public static <T> Object optionListFromValue(Component c, String func, T value) {
+  public static <T> Object optionListFromValue(Object c, String func, T value) {
     Method calledFunc = getMethod(c, func);
     if (calledFunc == null) {
       // Doesn't exist or not relevant.
@@ -120,7 +120,7 @@ public class OptionHelper {
    * @param func The function on the component we want to get the Method of.
    * @return The Method representation of the method.
    */
-  private static Method getMethod(Component c, String func) {
+  private static Method getMethod(Object c, String func) {
     Class<?> componentClass = c.getClass();
     String componentKey = componentClass.getSimpleName();
     Map<String, Method> methodMap = componentMethods.get(componentKey);

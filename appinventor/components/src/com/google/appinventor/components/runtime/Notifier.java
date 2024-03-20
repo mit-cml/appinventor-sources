@@ -383,9 +383,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               HideKeyboard((View) input);
-              TextInputCanceled();
-              //User pressed CANCEL. Raise AfterTextInput with CANCEL
-              AfterTextInput(cancelButtonText);
+              if (!TextInputCanceled()) {
+                //User pressed CANCEL. Raise AfterTextInput with CANCEL
+                AfterTextInput(cancelButtonText);
+              }
             }
           });
     }
@@ -414,14 +415,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
   /**
    * Event raised when the user cancels
-   * {@link #ShowChooseDialog(String, String, String, String, boolean)},
    * {@link #ShowPasswordDialog(String, String, boolean)}, or
    * {@link #ShowTextDialog(String, String, boolean)}.
+   *
+   * @return true if the event was successfully dispatched, otherwise false.
    */
   @SimpleEvent(
-    description = "Event raised when the user canceled ShowTextDialog.")
-  public void TextInputCanceled() {
-    EventDispatcher.dispatchEvent(this, "TextInputCanceled");
+      description = "Event raised when the user canceled ShowTextDialog.")
+  public boolean TextInputCanceled() {
+    return EventDispatcher.dispatchEvent(this, "TextInputCanceled");
   }
 
 
@@ -471,7 +473,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
-  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).")
+  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
+      category = PropertyCategory.APPEARANCE)
   public void BackgroundColor(@IsColor int argb) {
     backgroundColor = argb;
   }

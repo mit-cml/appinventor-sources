@@ -235,7 +235,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   if (subsetJsonString.length > 0) {
     // TODO: All of this code should be cleaned up and moved into a separate
     //   function. Logs should be removed.
-    
+
     var subsetArray = [];
     var subsetBlocks = [];
     subsetArray = JSON.parse(subsetJsonString);
@@ -528,6 +528,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
   }.bind(this));
 
+  // add the all components getter
+  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
+    component_type: typeName
+  }));
+
   return xmlArray;
 };
 
@@ -819,6 +824,250 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
          '</block>' +
-         '</xml>';}}
+         '</xml>';}},
+
+    // Spreadsheet.Read methods default to reading from "Sheet1"
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadRow"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadCol"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadCell"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadRange"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadSheet"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    // {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadWithQuery"},
+    // mutatorXMLStringFunction: function(mutatorAttributes) {
+    //   return (
+    //     '<xml>' +
+    //     '<block type="component_method">' +
+    //     // mutator generator
+    //     Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+    //     '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+    //     '</block>' +
+    //     '</xml>'
+    //   );
+    // }},
+
+    // Spreadsheet.Read methods default to reading from "Sheet1"
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadWithExactFilter"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+          '<xml>' +
+          '<block type="component_method">' +
+          // mutator generator
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+          '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+          '<value name="ARG1"><block type="math_number"><title name="NUM">0</title></block></value>' +
+          '</block>' +
+          '</xml>'
+        );
+      }},
+
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ReadWithPartialFilter"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+          '<xml>' +
+          '<block type="component_method">' +
+          // mutator generator
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+          '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+          '<value name="ARG1"><block type="math_number"><title name="NUM">0</title></block></value>' +
+          '</block>' +
+          '</xml>'
+        );
+      }},
+
+    // Spreadsheet.Write methods default to writing to "Sheet1"
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"WriteRow"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"WriteCol"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"WriteCell"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"WriteRange"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+
+    // Spreadsheet.ClearRange method default to Clearing from "Sheet1"
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"ClearRange"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+
+    // Spreadsheet.Add methods default to adding to "Sheet1"
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"AddRow"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"AddCol"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+
+    // Spreadsheet.Delete methods default to removing from Grid ID = 0
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"RemoveRow"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }},
+    {matchingMutatorAttributes:{component_type:"AnomalyDetection", method_name:"DetectAnomalies"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG1"><block type="math_number"><title name="NUM">2</title></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
+    {matchingMutatorAttributes:{component_type:"Regression", method_name:"CalculateLineOfBestFitValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return (
+            '<xml>' +
+            '<block type="component_method">' +
+            // mutator generator
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+            '<value name="ARG2"><block type="helpers_dropdown"><mutation key="LOBFValues"></mutation><field name="OPTION">Slope</field></block></value>' +
+            '</block>' +
+            '</xml>'
+        );
+      }},
+    {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"RemoveCol"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return (
+        '<xml>' +
+        '<block type="component_method">' +
+        // mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG0"><block type="text"><field name="TEXT">Sheet1</field></block></value>' +
+        '</block>' +
+        '</xml>'
+      );
+    }}
   ]
 };

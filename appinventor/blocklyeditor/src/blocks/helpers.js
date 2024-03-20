@@ -95,6 +95,11 @@ Blockly.Blocks['helpers_dropdown'] = {
         options.push([i18nName, option.name]);
       }
     }
+    if (this.shouldSortOptions()) {
+      options.sort(function(a, b) {
+        return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+      });
+    }
     return options;
   },
 
@@ -115,6 +120,10 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
     return options;
+  },
+
+  shouldSortOptions: function() {
+    return this.key_ === 'Permission';
   },
 
   typeblock: function() {
@@ -166,7 +175,7 @@ Blockly.Blocks['helpers_screen_names'] = {
   },
 
   getScreens: function() {
-    return Blockly.mainWorkspace.getScreenList();
+    return this.workspace.getScreenList();
   },
 
   generateOptions: function() {
@@ -241,11 +250,11 @@ Blockly.Blocks['helpers_assets'] = {
       return;
     }
     var input = this.getInput('INPUT');
-    var assets = Blockly.mainWorkspace.getAssetList();
+    var assets = this.workspace.getAssetList();
 
     if (assets.length) { // We should have an asset dropdown.
       if (!this.getField('ASSET')) {
-        dropdown = new Blockly.FieldInvalidDropdown(
+        var dropdown = new Blockly.FieldInvalidDropdown(
             this.generateOptions.bind(this));
         input.appendField(dropdown, 'ASSET');
       }
@@ -284,7 +293,7 @@ Blockly.Blocks['helpers_assets'] = {
       }
     }
 
-    var assets = Blockly.mainWorkspace.getAssetList();
+    var assets = this.workspace.getAssetList();
     if (assets.length) {
       var values = assets.map(function (elem) {
         var assetValid = restrictedFormats.some(function(fileType) {

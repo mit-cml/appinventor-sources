@@ -20,16 +20,19 @@
     This layout file is inflated and used as the ListView to display the items.
     Assign an ID so its state will be saved/restored.
 -->
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<view xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
       android:id="@+id/select_dialog_listview"
+      style="@style/Widget.AppCompat.ListView"
+      class="androidx.appcompat.app.AlertController$RecycleListView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:cacheColorHint="@null"
-      android:divider="?attr/listDividerAlertDialog"
-      android:scrollbars="vertical"
-      android:overScrollMode="ifContentScrolls"
-      android:fadingEdge="none"
-      android:paddingTop="@dimen/abc_dialog_list_padding_vertical_material"
-      android:paddingBottom="@dimen/abc_dialog_list_padding_vertical_material"
       android:clipToPadding="false"
-      style="@style/Widget.AppCompat.ListView" /><!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_select_dialog_material.xml -->
+      android:divider="?attr/listDividerAlertDialog"
+      android:fadingEdge="none"
+      android:overScrollMode="ifContentScrolls"
+      android:scrollbars="vertical"
+      android:textAlignment="viewStart"
+      app:paddingBottomNoButtons="@dimen/abc_dialog_list_padding_bottom_no_buttons"
+      app:paddingTopNoTitle="@dimen/abc_dialog_list_padding_top_no_title"/><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_select_dialog_material.xml -->

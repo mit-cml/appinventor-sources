@@ -7,6 +7,8 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,12 +22,17 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * Property editor for length properties (i.e. width and height).
  *
  */
 public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEditor {
+  private static final Logger LOG = Logger.getLogger(YoungAndroidLengthPropertyEditor.class.getName());
+
   public static final String CONST_AUTOMATIC = "" + MockVisibleComponent.LENGTH_PREFERRED;
   public static final String CONST_FILL_PARENT = "" + MockVisibleComponent.LENGTH_FILL_PARENT;
 

@@ -6,16 +6,17 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.*;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -39,7 +40,7 @@ public class PreviewFileCommand extends ChainableCommand {
   @Override
   public boolean isSupported(final ProjectNode node) {
     return StorageUtil.isImageFile(node.getFileId()) || StorageUtil.isAudioFile(node.getFileId())
-        || StorageUtil.isVideoFile(node.getFileId());
+        || StorageUtil.isVideoFile(node.getFileId()) || StorageUtil.isFontFile(node.getFileId());
   }
 
   @Override
@@ -118,7 +119,108 @@ public class PreviewFileCommand extends ChainableCommand {
         return new HTML("<video width='320' height='240' controls> <source src='" + fileUrl
             + "' type='" + fileType + "'>" + MESSAGES.filePlaybackError() + "</video>");
       }
+    } else if (StorageUtil.isFontFile(fileSuffix))  {  // Font Preview
+      String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
+      if (fileType.endsWith("ttf") || fileType.endsWith("otf")) {
+        return getFontResourcePreviewPanel(fileUrl);
+      }
     }
     return new HTML(MESSAGES.filePreviewError());
+  }
+  
+  private VerticalPanel getFontResourcePreviewPanel(String fontResourceURL) {
+    VerticalPanel fontResourcePreviewPanel = new VerticalPanel();
+    fontResourcePreviewPanel.setWidth("600px");
+    fontResourcePreviewPanel.setHeight("400px");
+    
+    HorizontalPanel fontPropertiesPanel = new HorizontalPanel();
+    fontPropertiesPanel.setHeight("100px");
+    fontPropertiesPanel.setWidth("600px");
+    fontPropertiesPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    
+    final TextBox textPreviewTextBox = new TextBox();
+    textPreviewTextBox.getElement().setPropertyString("placeholder", "Text for Preview");
+    
+    final TextBox fontSize = new TextBox();
+    fontSize.getElement().setPropertyString("placeholder", "Font Size");
+    fontSize.setText("16");
+    
+    CheckBox isFontBold = new CheckBox("Font Bold");
+    CheckBox isFontItalic = new CheckBox("Font Italic");
+    
+    fontPropertiesPanel.add(textPreviewTextBox);
+    fontPropertiesPanel.add(fontSize);
+    fontPropertiesPanel.add(isFontBold);
+    fontPropertiesPanel.add(isFontItalic);
+    
+    fontResourcePreviewPanel.add(fontPropertiesPanel);
+    
+    VerticalPanel fontPreviewPanel = new VerticalPanel();
+    fontPreviewPanel.setHeight("300px");
+    fontPreviewPanel.setWidth("600px");
+    fontPreviewPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    fontPreviewPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+  
+    StyleElement styleElement = Document.get().createStyleElement();
+    String resource = "@font-face {";
+    resource += "font-family: testFontFamily;";
+    resource += "src: url(\"" + fontResourceURL + "\");";
+    resource += "}";
+    styleElement.setInnerText(resource);
+    
+    fontResourcePreviewPanel.getElement().insertFirst(styleElement);
+    
+    final Label previewText = new Label();
+    DOM.setStyleAttribute(previewText.getElement(), "fontFamily", "testFontFamily");
+    DOM.setStyleAttribute(previewText.getElement(), "fontSize",
+      (int)(16 * 0.9) + "px");
+    
+    fontPreviewPanel.add(previewText);
+    fontResourcePreviewPanel.add(fontPreviewPanel);
+    
+    textPreviewTextBox.addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent keyUpEvent) {
+        previewText.setText(textPreviewTextBox.getText());
+      }
+    });
+    
+    fontSize.addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent keyUpEvent) {
+        if (fontSize.getText() != null && !fontSize.getText().equals("")) {
+          try {
+            DOM.setStyleAttribute(previewText.getElement(), "fontSize",
+              (int)(Float.parseFloat(fontSize.getText()) * 0.9) + "px");
+          } catch (NumberFormatException e) {
+            // Ignore this. If we throw an exception here, the project is unrecoverable.
+          }
+        }
+      }
+    });
+    
+    isFontBold.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+        if (valueChangeEvent.getValue())  {
+          DOM.setStyleAttribute(previewText.getElement(), "fontWeight", "bold");
+        } else {
+          DOM.setStyleAttribute(previewText.getElement(), "fontWeight", "normal");
+        }
+      }
+    });
+  
+    isFontItalic.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+        if (valueChangeEvent.getValue())  {
+          DOM.setStyleAttribute(previewText.getElement(), "fontStyle", "italic");
+        } else {
+          DOM.setStyleAttribute(previewText.getElement(), "fontStyle", "normal");
+        }
+      }
+    });
+    
+    return fontResourcePreviewPanel;
   }
 }

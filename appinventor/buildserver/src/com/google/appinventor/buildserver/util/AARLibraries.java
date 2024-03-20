@@ -223,7 +223,11 @@ public class AARLibraries extends HashSet<AARLibrary> {
 
     // construct compiler command line
     List<String> args = new ArrayList<>();
-    args.add("-1.7");
+    if (System.getProperty("java.version").startsWith("1.")) {
+      args.add("-1.8");
+    } else {
+      args.add("-11");
+    }
     args.add("-d");
     args.add(outputDir.getAbsolutePath());
     args.add(generated);

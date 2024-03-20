@@ -5,6 +5,11 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.content.Context;
+import android.content.Intent;
+
+import android.net.Uri;
+
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.Form;
@@ -20,13 +25,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
 
 /**
  * AssetFetcher: This module is used by the MIT AI2 Companion to fetch
@@ -48,6 +54,9 @@ import org.json.JSONException;
  */
 
 public class AssetFetcher {
+
+  private static Context context = ReplForm.getActiveForm();
+  private static HashDatabase db = new HashDatabase(context);
 
   private static final String LOG_TAG = AssetFetcher.class.getSimpleName();
 
@@ -76,28 +85,28 @@ public class AssetFetcher {
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {
     // The code below is commented out because of issues with the Google Play Store
-    //
-    // background.submit(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //       String [] parts = inputUri.split("/", 0);
-    //       String asset = parts[parts.length-1];
-    //       File assetFile = getFile(inputUri, cookieValue, asset, 0);
-    //       if (assetFile != null) {
-    //         try {
-    //           Form form = Form.getActiveForm();
-    //           Intent intent = new Intent(Intent.ACTION_VIEW);
-    //           Uri packageuri = NougatUtil.getPackageUri(form, assetFile);
-    //           intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
-    //           intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    //           form.startActivity(intent);
-    //         } catch (Exception e) {
-    //           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-    //           RetValManager.sendError("Unable to Install new Companion Package.");
-    //         }
-    //       }
-    //     }
-    //   });
+
+    background.submit(new Runnable() {
+        @Override
+        public void run() {
+          String [] parts = inputUri.split("/", 0);
+          String asset = parts[parts.length-1];
+          File assetFile = getFile(inputUri, cookieValue, asset, 0);
+          if (assetFile != null) {
+            try {
+              Form form = Form.getActiveForm();
+              Intent intent = new Intent(Intent.ACTION_VIEW);
+              Uri packageuri = NougatUtil.getPackageUri(form, assetFile);
+              intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
+              intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+              form.startActivity(intent);
+            } catch (Exception e) {
+              Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
+              RetValManager.sendError("Unable to Install new Companion Package.");
+            }
+          }
+        }
+      });
     return;
   }
 
@@ -151,18 +160,32 @@ public class AssetFetcher {
         }
       }
     }
+
+    int responseCode = 0;
+    File outFile = new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
+    Log.d(LOG_TAG, "target file = " + outFile);
+    String fileHash = null;
+
     try {
       boolean error = false;
-      File outFile = null;
       URL url = new URL(fileName);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       if (connection != null) {
-        connection.setRequestMethod("GET");
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
-        int responseCode = connection.getResponseCode();
+        HashFile hashFile = db.getHashFile(asset);
+        if (hashFile != null) {
+          connection.addRequestProperty("If-None-Match", hashFile.getHash()); // get old_hash from database
+        }
+        connection.setRequestMethod("GET");
+        responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
-        outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
         File parentOutFile = outFile.getParentFile();
+        fileHash = connection.getHeaderField("ETag"); // only save when status code is 200
+
+        if (responseCode == 304) { // We already have the file stored
+          return outFile;
+        }
+
         if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
           throw new IOException("Unable to create assets directory " + parentOutFile);
         }
@@ -190,11 +213,31 @@ public class AssetFetcher {
       if (error) {              // Try again recursively
         return getFile(fileName, cookieValue, asset, depth + 1);
       }
-      return outFile;
     } catch (Exception e) {
       Log.e(LOG_TAG, "Exception while fetching " + fileName, e);
       // Try again recursively
       return getFile(fileName, cookieValue, asset, depth + 1);
     }
+
+    if (responseCode == 200) {                             // Should the case...
+      Date timeStamp = new Date();
+      HashFile file = new HashFile(asset, fileHash, timeStamp);
+      if (db.getHashFile(asset) == null) {
+        db.insertHashFile(file);
+      } else {
+        db.updateHashFile(file);
+      }
+      return outFile;
+    } else {
+      return null;
+    }
+  }
+
+  private static String byteArray2Hex(final byte[] hash) {
+    Formatter formatter = new Formatter();
+    for (byte b : hash) {
+      formatter.format("%02x", b);
+    }
+    return formatter.toString();
   }
 }

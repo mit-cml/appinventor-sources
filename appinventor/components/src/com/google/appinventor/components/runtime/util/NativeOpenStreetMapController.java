@@ -62,7 +62,14 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
+import org.osmdroid.tileprovider.modules.IFilesystemCache;
+import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.MapTileSqlCacheProvider;
+import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -266,6 +273,10 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       super(context, null, new MapReadyHandler());
     }
 
+    public CustomMapView(Context context, MapTileProviderBase tileProvider) {
+      super(context, tileProvider, new MapReadyHandler());
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
       scrollTo(getScrollX() + (oldw - w) / 2, getScrollY() + (oldh - h) / 2);
@@ -276,6 +287,24 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     public void onDetach() {
       // Suppress call to parent onDetach
     }
+  }
+
+  private static class CustomMapTileProviderBasic extends MapTileProviderBasic {
+    public CustomMapTileProviderBasic(Context context, ITileSource tileSource,
+        IFilesystemCache cacheWriter) {
+      super(context, tileSource, cacheWriter);
+      for (int i = 0; i < this.mTileProviderList.size(); i++) {
+        if (this.mTileProviderList.get(i) instanceof MapTileSqlCacheProvider) {
+          this.mTileProviderList.set(i,
+              new MapTileFilesystemProvider(mRegisterReceiver, tileSource));
+        }
+      }
+    }
+  }
+
+  CustomMapView createCustomMapView(Context context) {
+    return new CustomMapView(context, new CustomMapTileProviderBasic(context,
+        TileSourceFactory.DEFAULT_TILE_SOURCE, new TileWriter()));
   }
 
   private final AppInventorLocationSensorAdapter locationProvider;
@@ -293,7 +322,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     }
     this.form = form;
     this.touch = new TouchOverlay();
-    view = new CustomMapView(form.getApplicationContext());
+    view = createCustomMapView(form.getApplicationContext());
     locationProvider = new AppInventorLocationSensorAdapter();
     defaultInfoWindow = new OverlayInfoWindow(view);
     view.setTilesScaledToDpi(true);
@@ -999,19 +1028,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
       final AsyncCallbackPair<Drawable> callback) {
-    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(),
-        new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
-      }
+    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(), aiMarker.Width(),
+        aiMarker.Height(), new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onFailure(String message) {
+            callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
+          }
 
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
-        callback.onSuccess(result);
-      }
-    });
+          @Override
+          public void onSuccess(BitmapDrawable result) {
+            result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
+            callback.onSuccess(result);
+          }
+        });
   }
 
   private Drawable getDefaultMarkerDrawable(MapMarker aiMarker) {
@@ -1228,7 +1257,15 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public void showInfobox(MapFeature feature) {
     OverlayWithIW overlay = featureOverlays.get(feature);
-    overlay.showInfoWindow();
+    if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+      overlay.showInfoWindow();
+    } else if (overlay instanceof org.osmdroid.views.overlay.Polyline) {
+      org.osmdroid.views.overlay.Polyline polyOverlay =  (org.osmdroid.views.overlay.Polyline)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    } else {
+      org.osmdroid.views.overlay.Polygon polyOverlay =  (org.osmdroid.views.overlay.Polygon)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    }
   }
 
   @Override

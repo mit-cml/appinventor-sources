@@ -13,7 +13,6 @@ import com.google.appinventor.client.editor.simple.components.utils.PropertiesUt
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -35,6 +34,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +51,9 @@ import java.util.Map;
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
 public final class MockForm extends MockContainer {
+  private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
+
+  private Integer view = 1;
 
   /*
    * Widget for the mock form title bar.
@@ -356,6 +359,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
+  private static final String PROPERTY_NAME_DEFAULTFILESCOPE = "DefaultFileScope";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -446,7 +450,7 @@ public final class MockForm extends MockContainer {
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
     } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      LOG.info(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
     enableAndDisableDropdowns();
@@ -627,7 +631,6 @@ public final class MockForm extends MockContainer {
     }
     changePreviewFlag = false;
   }
-
   /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
@@ -712,10 +715,10 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -757,8 +760,9 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_PRIMARY_COLOR:
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
       case PROPERTY_NAME_ACCENT_COLOR:
-      case PROPERTY_NAME_THEME: {
-        return editor.isScreen1();
+      case PROPERTY_NAME_THEME:
+      case PROPERTY_NAME_DEFAULTFILESCOPE: {
+        return false;
       }
 
       default: {
@@ -929,9 +933,10 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
-      if (editor.isLoadComplete()) {
-        ((YaFormEditor)editor).reloadComponentPalette(asJson);
-      }
+    }
+    
+    if (editor.isLoadComplete()) {
+      ((YaFormEditor)editor).reloadComponentPalette(asJson);
     }
   }
 
@@ -1040,6 +1045,14 @@ public final class MockForm extends MockContainer {
       titleBar.changeBookmarkIcon(blackIcons);
     }
 
+  }
+
+  private void setDefaultFileScope(String defaultFileScope) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    }
   }
 
   /**
@@ -1328,7 +1341,18 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree() {
-    return buildTree();
+    return buildComponentsTree(view);
+  }
+
+  /**
+   * Builds a tree of the component hierarchy of the form for display in the
+   * {@code SourceStructureExplorer}.
+   *
+   * @return  tree showing the component hierarchy of the form
+   */
+  public TreeItem buildComponentsTree(Integer view) {
+    this.view = view;
+    return buildTree(view);
   }
 
   // PropertyChangeListener implementation
@@ -1384,6 +1408,8 @@ public final class MockForm extends MockContainer {
         getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
       }
       setTheme(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_DEFAULTFILESCOPE)) {
+      setDefaultFileScope(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
       setPrimaryColor(newValue);
       if (idxPhonePreviewStyle == 2) {
@@ -1424,6 +1450,10 @@ public final class MockForm extends MockContainer {
     } else {
       myVAlignmentPropertyEditor.enable();
     }
+  }
+
+  public void projectPropertyChanged() {
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
   }
 
   @Override

@@ -160,13 +160,13 @@ import org.json.JSONObject;
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
   "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
 @UsesLibraries(libraries =
-  "google-api-client-beta.jar," +
+  "google-api-client.jar," +
   "google-api-client-android2-beta.jar," +
-  "google-http-client-beta.jar," +
+  "google-http-client.jar," +
   "google-http-client-android2-beta.jar," +
   "google-http-client-android3-beta.jar," +
-  "google-oauth-client-beta.jar," +
-  "guava-14.0.1.jar")
+  "google-oauth-client.jar," +
+  "guava.jar")
 public class Texting extends AndroidNonvisibleComponent
   implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener,
     Deleteable, ActivityResultListener {
@@ -1096,7 +1096,8 @@ public class Texting extends AndroidNonvisibleComponent
     int numParts = parts.size();
     ArrayList<PendingIntent> pendingIntents = new ArrayList<PendingIntent>();
     for (int i = 0; i < numParts; i++)
-      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT), 0));
+      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT),
+          PendingIntent.FLAG_IMMUTABLE));
 
     // Receiver for when the SMS is sent
     BroadcastReceiver sendReceiver = new BroadcastReceiver() {

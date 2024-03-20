@@ -523,6 +523,7 @@
 	"Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS": "<br/><i>Note:</i>&nbsp;Vous n'allez pas voir une autre erreur rapportée pour 5 secondes.",
 	"Blockly.Msg.REPL_NO_START_EMULATOR": "On ne peut pas ouvrir le compagnon avec l'émulateur",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Réinitialiser",
 	"Blockly.Msg.REPL_OK_LOWER": "Ok",
 	"Blockly.Msg.REPL_PLUGGED_IN_Q": "Branché?",
 	"Blockly.Msg.REPL_RUNTIME_ERROR": "Erreur d'exécution",
