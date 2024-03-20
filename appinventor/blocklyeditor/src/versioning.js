@@ -2196,6 +2196,9 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
             Blockly.Versioning.tryReplaceBlockWithAssets)],
 
+    // The MarkOrigin, OriginX, and OriginY properties were added.
+    9: "noUpgrade",
+
   }, // End ImageSprite upgraders
 
   "Label": {

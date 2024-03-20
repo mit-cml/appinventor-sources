@@ -411,4 +411,15 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_STROKE_STYLE = "stroke_style";
 
+  /**
+   * Float values limited to the range of valid unit coordinates [0, 1].
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_UNIT_COORDINATE =  "unit_coordinate";
+
+  /**
+   * The unit coordinates of the origin with respect to the top - left edge.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_ORIGIN = "origin";
 }

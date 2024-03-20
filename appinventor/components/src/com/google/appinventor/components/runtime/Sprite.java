@@ -20,6 +20,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+import com.google.appinventor.components.runtime.util.Vector2D;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.HashSet;
@@ -47,6 +48,9 @@ public abstract class Sprite extends VisibleComponent
   private static final double DEFAULT_Z = 1.0;
   private static final int DIRECTION_NONE = 0;
   protected static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
+  protected static final double DEFAULT_U = 0.0;
+  protected static final double DEFAULT_V = 0.0;
+  protected static final String DEFAULT_ORIGIN = "(0.0, 0.0)";
 
   protected final Canvas canvas;              // enclosing Canvas
   private final TimerInternal timerInternal;  // timer to control movement
@@ -73,8 +77,20 @@ public abstract class Sprite extends VisibleComponent
 
   // Added to support having coordinates at center.
   protected boolean originAtCenter;
-  protected double xCenter;
-  protected double yCenter;
+
+  // Added to support custom origin for image sprites.
+  protected double xOrigin;   // x-coordinate of origin
+  protected double yOrigin;   // y-coordinate of origin
+
+  // Unit coordinates of the origin wrt top left corner. Added for custom origin support.
+  // In the designer u -> OriginX and v -> OriginY
+  // (u, v) = (0, 0)      | Top - Left Corner
+  // (u, v) = (1, 0)      | Top - Right Corner
+  // (u, v) = (0, 1)      | Bottom - Left Corner
+  // (u, v) = (1, 1)      | Bottom - Right Corner
+  // (u, v) = (0.5, 0.5)  | Center
+  protected double u;       // unit x-coordinate of the origin w.r.t top left corner
+  protected double v;       // unit y-coordinate of the origin w.r.t top left corner
 
   protected Form form;
 
@@ -130,6 +146,8 @@ public abstract class Sprite extends VisibleComponent
     Speed(DEFAULT_SPEED);
     Visible(DEFAULT_VISIBLE);
     Z(DEFAULT_Z);
+    U(DEFAULT_U);
+    V(DEFAULT_V);
 
     container.$form().registerForOnDestroy(this);
   }
@@ -307,28 +325,24 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  public double X() {
-    return originAtCenter ? xCenter : xLeft;
+  protected double X() {
+    return xOrigin;
   }
 
-  private double xLeftToCenter(double xLeft) {
-    return xLeft + Width() / 2;
+  //These methods are protected as they are used by extending subclasses ImageSprite and Ball.
+  protected double xLeftToOrigin(double xLeft) {
+    return xLeft + Width() * u;
   }
 
-  private double xCenterToLeft(double xCenter) {
-    return xCenter - Width() / 2;
+  protected double xOriginToLeft(double xOrigin) {
+    return xOrigin - Width() * u;
   }
 
   // Note that this does not call registerChange(). This was pulled out of X()
   // so both X and Y could be changed with only a single call to registerChange().
   private void updateX(double x) {
-    if (originAtCenter) {
-      xCenter = x;
-      xLeft = xCenterToLeft(x);
-    } else {
-      xLeft = x;
-      xCenter = xLeftToCenter(x);
-    }
+    xOrigin = x;
+    xLeft = xOriginToLeft(x);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -340,24 +354,20 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  private double yTopToCenter(double yTop) {
-    return yTop + Width() / 2;
+  //These methods are protected as they are used by extending subclasses ImageSprite and Ball
+  protected double yTopToOrigin(double yTop) {
+    return yTop + Height() * v;
   }
 
-  private double yCenterToTop(double yCenter) {
-    return yCenter - Width() / 2;
+  protected double yOriginToTop(double yOrigin) {
+    return yOrigin - Height() * v;
   }
 
   // Note that this does not call registerChange(). This was pulled out of Y()
   // so both X and Y could be changed with only a single call to registerChange().
   private void updateY(double y) {
-    if (originAtCenter) {
-      yCenter = y;
-      yTop = yCenterToTop(y);
-    } else {
-      yTop = y;
-      yCenter = yTopToCenter(y);
-    }
+    yOrigin = y;
+    yTop = yOriginToTop(y);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -368,8 +378,8 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  public double Y() {
-    return originAtCenter ? yCenter : yTop;
+  protected double Y() {
+    return yOrigin;
   }
 
   /**
@@ -399,6 +409,37 @@ public abstract class Sprite extends VisibleComponent
   // annotations so it can be made a property for Ball but not for ImageSprite.
   protected void OriginAtCenter(boolean b) {
     originAtCenter = b;
+    if (originAtCenter) {
+      u = v = 0.5;
+    } else {
+      u = v = 0.0;
+    }
+    xLeft = xOriginToLeft(xOrigin);
+    yTop = yOriginToTop(yOrigin);
+  }
+
+  // The following methods get overridden in ImageSprite with the @SimpleProperty and
+  // @DesignerProperty annotations so it can be made a property for ImageSprite but not for Ball.
+  // In the designer we refer to u as OriginX and v as OriginY. ImageSprite thus implements
+  // getter / setter for those and not for u and v.
+  protected void U(double u) {
+    this.u = u;
+    xLeft = xOriginToLeft(xOrigin);
+    registerChange();
+  }
+
+  protected double U() {
+    return u;
+  }
+
+  protected void V(double v) {
+    this.v = v;
+    yTop = yOriginToTop(yOrigin);
+    registerChange();
+  }
+
+  protected double V() {
+    return v;
   }
 
   // Methods for event handling: general purpose method postEvent() and
@@ -742,16 +783,16 @@ public abstract class Sprite extends VisibleComponent
 
   /**
    * Turns this `%type%` to point towards a given `target` sprite. The new heading will be parallel
-   * to the line joining the centerpoints of the two sprites.
+   * to the line joining the origins of the two sprites.
    *
    * @param target the other sprite to point towards
    */
   @SimpleFunction(
     description = "Turns the %type% to point towards a designated " +
-        "target sprite (Ball or ImageSprite). The new heading will be parallel to the line joining " +
-        "the centerpoints of the two sprites.")
+        "target sprite (Ball or ImageSprite). The new heading will be parallel to the line " +
+        "joining the origins of the two sprites.")
   public void PointTowards(Sprite target) {
-    Heading(-Math.toDegrees(Math.atan2(target.yCenter - yCenter, target.xCenter - xCenter)));
+    Heading(-Math.toDegrees(Math.atan2(target.yOrigin - yOrigin, target.xOrigin - xOrigin)));
   }
 
   /**
@@ -764,7 +805,7 @@ public abstract class Sprite extends VisibleComponent
     description = "Sets the heading of the %type% toward the point " +
         "with the coordinates (x, y).")
   public void PointInDirection(double x, double y) {
-    Heading(-Math.toDegrees(Math.atan2(y - yCenter, x - xCenter)));
+    Heading(-Math.toDegrees(Math.atan2(y - yOrigin, x - xOrigin)));
   }
 
   // Internal methods supporting move-related functionality
@@ -900,16 +941,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (xLeft != 0) {
         xLeft = 0;
-        xCenter = xLeftToCenter(xLeft);
+        xOrigin = xLeftToOrigin(xLeft);
         moved = true;
       }
     } else if (overWestEdge()) {
       xLeft = 0;
-      xCenter = xLeftToCenter(xLeft);
+      xOrigin = xLeftToOrigin(xLeft);
       moved = true;
     } else if (overEastEdge(canvasWidth)) {
       xLeft = canvasWidth - Width();
-      xCenter = xLeftToCenter(xLeft);
+      xOrigin = xLeftToOrigin(xLeft);
       moved = true;
     }
 
@@ -921,16 +962,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (yTop != 0) {
         yTop = 0;
-        yCenter = yTopToCenter(yTop);
+        yOrigin = yTopToOrigin(yTop);
         moved = true;
       }
     } else if (overNorthEdge()) {
       yTop = 0;
-      yCenter = yTopToCenter(yTop);
+      yOrigin = yTopToOrigin(yTop);
       moved = true;
     } else if (overSouthEdge(canvasHeight)) {
       yTop = canvasHeight - Height();
-      yCenter = yTopToCenter(yTop);
+      yOrigin = yTopToOrigin(yTop);
       moved = true;
     }
 
@@ -945,10 +986,10 @@ public abstract class Sprite extends VisibleComponent
    * caller is responsible for calling {@link #registerChange()}.
    */
   protected void updateCoordinates() {
-    xLeft += speed * headingCos;
-    xCenter = xLeftToCenter(xLeft);
-    yTop += speed * headingSin;
-    yCenter = yTopToCenter(yTop);
+    xOrigin += speed * headingCos;
+    xLeft = xOriginToLeft(xOrigin);
+    yOrigin += speed * headingSin;
+    yTop = yOriginToTop(yOrigin);
   }
 
   // Methods for determining collisions with other Sprites and the edge
@@ -984,34 +1025,88 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Determines whether two sprites are in collision.  Note that we cannot
-   * merely see whether the rectangular regions around each intersect, since
-   * some types of sprite, such as BallSprite, are not rectangular.
+   * Determines whether two sprites are in collision.
    *
    * @param sprite1 one sprite
    * @param sprite2 another sprite
    * @return {@code true} if they are in collision, {@code false} otherwise
    */
   public static boolean colliding(Sprite sprite1, Sprite sprite2) {
-    // If the bounding boxes don't intersect, there can be no collision.
-    BoundingBox rect1 = sprite1.getBoundingBox(1);
-    BoundingBox rect2 = sprite2.getBoundingBox(1);
-    if (!rect1.intersectDestructively(rect2)) {
-      return false;
-    }
-
-    // If we get here, rect1 has been mutated to hold the intersection of the
-    // two bounding boxes.  Now check every point in the intersection to see if
-    // both sprites contain that point.
-    // TODO(user): Handling abutting sprites properly
-    for (double x = rect1.getLeft(); x <= rect1.getRight(); x++) {
-      for (double y = rect1.getTop(); y <= rect1.getBottom(); y++) {
-        if (sprite1.containsPoint(x, y) && sprite2.containsPoint(x, y)) {
-          return true;
-        }
+    if (sprite1 instanceof Ball && sprite2 instanceof Ball) {
+      return collidingBalls((Ball) sprite1, (Ball) sprite2);
+    } else if (sprite1 instanceof ImageSprite && sprite2 instanceof ImageSprite) {
+      return collidingImageSprites((ImageSprite) sprite1, (ImageSprite) sprite2);
+    } else {
+      if (sprite1 instanceof Ball) {
+        return collidingBallAndImageSprite((Ball) sprite1, (ImageSprite) sprite2);
+      } else {
+        return collidingBallAndImageSprite((Ball) sprite2, (ImageSprite) sprite1);
       }
     }
-    return false;
+  }
+
+  // Balls collide when the distance between their centers is less than the sum of their radius.
+  // To avoid inaccuracies introduced by Math.sqrt just compare the squared values.
+  private static boolean collidingBalls(Ball ball1, Ball ball2) {
+    double xCenter1 = ball1.xLeft + ball1.Width() / 2.0;
+    double yCenter1 = ball1.yTop + ball1.Height() / 2.0;
+
+    double xCenter2 = ball2.xLeft + ball2.Width() / 2.0;
+    double yCenter2 = ball2.yTop + ball2.Height() / 2.0;
+
+    double centerToCenterDistanceSquared = (xCenter1 - xCenter2) * (xCenter1 - xCenter2)
+            + (yCenter1 - yCenter2) * (yCenter1 - yCenter2);
+    return centerToCenterDistanceSquared
+              <= Math.pow((ball1.Radius() + ball2.Radius()), 2);
+  }
+
+  // Use the SAT collision detection algorithm for checking collisions between two image sprites.
+  // Get the normal axes for both of the sprites and after that check the projections of the sprites
+  // on those axes.
+  private static boolean collidingImageSprites(ImageSprite sprite1, ImageSprite sprite2) {
+
+    // axes to project the sprites on
+    java.util.List<Vector2D> axes = sprite1.getNormalAxes();
+    axes.addAll(sprite2.getNormalAxes());
+
+    for (Vector2D a : axes) {
+      double minA = sprite1.getMinProjection(a);
+      double maxA = sprite1.getMaxProjection(a);
+      double minB = sprite2.getMinProjection(a);
+      double maxB = sprite2.getMaxProjection(a);
+      if (maxA < minB || maxB < minA) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Use the SAT collision detection algorithm for checking collisions between an image sprite and a
+  // ball. The axes to project the sprites onto are the vectors normal to the image sprites and the
+  // vector that connects the center of the ball to the closest vertex of the image sprite.
+  private static boolean collidingBallAndImageSprite(Ball ball, ImageSprite imageSprite) {
+    java.util.List<Vector2D> axes = imageSprite.getNormalAxes();
+
+    java.util.List<Vector2D> imageCorners = imageSprite.getExtremityVectors();
+
+    Vector2D ballCenter = ball.getCenterVector();
+
+    Vector2D closestCorner = ballCenter.getClosestVector(imageCorners);
+    Vector2D ballCenterToClosestCorner = Vector2D.difference(closestCorner, ballCenter);
+    axes.add(ballCenterToClosestCorner);
+
+    for (Vector2D a : axes) {
+      double minA = imageSprite.getMinProjection(a);
+      double maxA = imageSprite.getMaxProjection(a);
+      double minB = ball.getMinProjection(a);
+      double maxB = ball.getMaxProjection(a);
+      if (maxA < minB || maxB < minA) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

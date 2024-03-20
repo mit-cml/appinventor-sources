@@ -1115,7 +1115,9 @@ public class YaVersion {
   // For IMAGESPRITE_COMPONENT_VERSION 8:
   // - Adds dropdown blocks for Direction.
   // - Assets helper block was added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 8;
+  // For IMAGESPRITE_COMPONENT_VERSION 9:
+  // - The MarkOrigin, OriginX, and OriginY properties were added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 9;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
