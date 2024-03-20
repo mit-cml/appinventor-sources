@@ -1048,11 +1048,11 @@ public abstract class Sprite extends VisibleComponent
   // Balls collide when the distance between their centers is less than the sum of their radius.
   // To avoid inaccuracies introduced by Math.sqrt just compare the squared values.
   private static boolean collidingBalls(Ball ball1, Ball ball2) {
-    double xCenter1 = ball1.xLeft + ball1.Width() / 2;
-    double yCenter1 = ball1.yTop + ball1.Height() / 2;
+    double xCenter1 = ball1.xLeft + ball1.Width() / 2.0;
+    double yCenter1 = ball1.yTop + ball1.Height() / 2.0;
 
-    double xCenter2 = ball2.xLeft + ball2.Width() / 2;
-    double yCenter2 = ball2.yTop + ball2.Height() / 2;
+    double xCenter2 = ball2.xLeft + ball2.Width() / 2.0;
+    double yCenter2 = ball2.yTop + ball2.Height() / 2.0;
 
     double centerToCenterDistanceSquared = (xCenter1 - xCenter2) * (xCenter1 - xCenter2)
             + (yCenter1 - yCenter2) * (yCenter1 - yCenter2);

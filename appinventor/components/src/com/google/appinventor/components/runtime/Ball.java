@@ -6,6 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -17,9 +20,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import com.google.appinventor.components.runtime.util.Vector2D;
 
 /**
@@ -85,21 +85,21 @@ public final class Ball extends Sprite {
   }
 
   // Get the vector to the center of the circle
-  protected Vector2D getCenterVector() {
-    double xCenter = xLeft + Width() / 2;
-    double yCenter = yTop + Height() / 2;
+  Vector2D getCenterVector() {
+    double xCenter = xLeft + Width() / 2.0;
+    double yCenter = yTop + Height() / 2.0;
     return new Vector2D(xCenter, yCenter);
   }
 
   // The min projection is the projection of the center minus the radius. We consider dot product
   // values as the projection so the radius needs to be multiplied by the axis's magnitude.
-  protected double getMinProjection(Vector2D axis) {
+  double getMinProjection(Vector2D axis) {
     return Vector2D.dotProduct(getCenterVector(), axis) - Radius() * axis.magnitude();
   }
 
   // The max projection is the projection of the center plus the radius. We consider dot product
   // values as the projection so the radius needs to be multiplied by the axis's magnitude.
-  protected double getMaxProjection(Vector2D axis) {
+  double getMaxProjection(Vector2D axis) {
     return Vector2D.dotProduct(getCenterVector(), axis) + Radius() * axis.magnitude();
   }
 
@@ -138,8 +138,8 @@ public final class Ball extends Sprite {
 
   @Override
   public boolean containsPoint(double qx, double qy) {
-    double xCenter = xLeft + Width() / 2;
-    double yCenter = yTop + Height() / 2;
+    double xCenter = xLeft + Width() / 2.0;
+    double yCenter = yTop + Height() / 2.0;
     return ((qx - xCenter) * (qx - xCenter) + (qy - yCenter) * (qy - yCenter))
         <= radius * radius;
   }

@@ -1,9 +1,13 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime.util;
 
 /**
- * Abstraction for a 2 - dimensional vector with tail at (0, 0) and the head specified by x and y.
+ * Abstraction for a 2-dimensional vector with tail at (0, 0) and the head specified by x and y.
  * Representation similar to the normal unit vector notation of vectors.
- *
  */
 public class Vector2D {
   // vector with tail at (0, 0) and head at (x, y)

@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
@@ -26,6 +31,7 @@ public class MarkOriginWizard extends Wizard {
   public interface OriginSelectedCallback {
     /**
      * Will be invoked after origin is selected. (User clicks 'OK' in the dialog)
+     *
      * @param value The value of the origin property.
      */
     void onSelected(String value);
@@ -71,7 +77,7 @@ public class MarkOriginWizard extends Wizard {
     spriteImagePanel.getElement().getStyle().setProperty("display", "flex");
     spriteImagePanel.getElement().getStyle().setProperty("justifyContent", "center");
     spriteImagePanel.getElement().getStyle().setProperty("alignItems", "center");
-    spriteImagePanel.getElement().getStyle().setProperty("padding", "" + markerHeight + "px "
+    spriteImagePanel.getElement().getStyle().setProperty("padding", markerHeight + "px "
                     + markerWidth / 2 + "px 0px " + markerWidth / 2  + "px");
 
     // allow spriteImage to get as big as possible but not bigger
@@ -234,6 +240,7 @@ public class MarkOriginWizard extends Wizard {
     /**
      * Create a drag image with the specified image and drop target. The origin of the image is
      * at the unit coordinates {@code u} and {@code v}.
+     *
      * @param image The image which is made draggable
      * @param target The possible drop target for this drag source
      */

@@ -1,18 +1,21 @@
-package com.google.appinventor.components.runtime;
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
-import org.junit.Before;
-import org.junit.Test;
+package com.google.appinventor.components.runtime;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for collisions of sprites.
  *
  */
 public class SpriteCollisionTest extends RobolectricTestBase {
-
-  private Canvas canvas;
 
   private Ball ball1;
   private Ball ball2;
@@ -24,7 +27,7 @@ public class SpriteCollisionTest extends RobolectricTestBase {
   @Before
   public void setUp() {
     super.setUp();
-    canvas = new Canvas(getForm());
+    Canvas canvas = new Canvas(getForm());
 
     ball1 = new Ball(canvas);
     ball2 = new Ball(canvas);
@@ -111,10 +114,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     // construct the image sprite such that it touches the rotated one
     int width = 40;
@@ -229,10 +232,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     // Let (0.5, 0) be the unit coordinates of the origin of sprite2. Make the top left corner of
     // the sprite 2 to touch the bottom right corner of sprite 1.
@@ -242,10 +245,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the origin would be (width * 0.5) * cos(theta) to the right of top left corner
     // as the origin is at the center of the top edge
-    double dx = (width * 0.5) * (3 / 5);
+    double dx = (width * 0.5) * (3.0 / 5);
     // After rotation the origin would be (width * 0.5) * sin(theta) down of the top left corner as
     // the origin is at the center of the top edge
-    double dy = (width * 0.5) * (4 / 5);
+    double dy = (width * 0.5) * (4.0 / 5);
 
     imageSpriteRotated2.X(rightBottomCornerX + dx);
     imageSpriteRotated2.Y(rightBottomCornerY + dy);
@@ -268,10 +271,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     imageSpriteRotated2.X(rightBottomCornerX + 5);
     imageSpriteRotated2.Y(rightBottomCornerY + 5);
@@ -294,10 +297,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     imageSpriteRotated2.X(rightBottomCornerX + 30);
     imageSpriteRotated2.Y(rightBottomCornerY + 30);
@@ -320,10 +323,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     // construct the ball such that it touches the right bottom corner of image sprite
     int radius = 25;
@@ -346,10 +349,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
     // construct the ball such that it collides with the image sprite
     ball1.X(rightBottomCornerX + 20);
@@ -372,10 +375,10 @@ public class SpriteCollisionTest extends RobolectricTestBase {
 
     // After rotation the bottom right corner's x coordinate will be (height / 2) * sin(theta) to
     // right of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerX = 80 + (60 * 0.5) * (3 / 5);  // as sin 37 = 3 / 5;
+    double rightBottomCornerX = 80 + (60 * 0.5) * (3.0 / 5);  // as sin 37 = 3 / 5;
     // After rotation the bottom right corner's y coordinate will be (height / 2) * cos(theta) down
     // of the origin. This is because the origin is in the middle of the right edge.
-    double rightBottomCornerY = 40 + (60 * 0.5) * (4 / 5);  // as cos 37 = 4 / 5;
+    double rightBottomCornerY = 40 + (60 * 0.5) * (4.0 / 5);  // as cos 37 = 4 / 5;
 
 
     // construct the ball such that it does not collide with the image sprite

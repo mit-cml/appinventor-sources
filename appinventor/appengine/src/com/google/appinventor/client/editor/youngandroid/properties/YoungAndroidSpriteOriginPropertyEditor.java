@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.Ode;
@@ -49,7 +54,7 @@ public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
    * asset.
    */
   protected String convertImagePropertyValueToUrl(String text) {
-    if (text.length() > 0) {
+    if (!text.isEmpty()) {
       ProjectNode asset = getAssetNode(text);
       if (asset != null) {
         return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
@@ -60,6 +65,7 @@ public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
 
   /**
    * Creates a new property editor for selecting origin of image sprites.
+   *
    * @param editor the editor that this property editor belongs to
    */
   public YoungAndroidSpriteOriginPropertyEditor(final YaFormEditor editor) {
@@ -72,12 +78,12 @@ public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
         @Override
         public void onClick(ClickEvent clickEvent) {
           MarkOriginWizard.OriginSelectedCallback callback =
-                  new MarkOriginWizard.OriginSelectedCallback() {
-            @Override
-            public void onSelected(String value) {
-              property.setValue(value);
-            }
-          };
+              new MarkOriginWizard.OriginSelectedCallback() {
+                @Override
+                public void onSelected(String value) {
+                  property.setValue(value);
+                }
+              };
           String imageUrl = convertImagePropertyValueToUrl(
                   property.getEditableProperties().getPropertyValue(PROPERTY_NAME_PICTURE));
           MarkOriginWizard dialog = new MarkOriginWizard(imageUrl, property.getValue(), callback);

@@ -119,8 +119,8 @@ public class ImageSprite extends Sprite {
 
   // get the vector to the center of the image sprite
   protected Vector2D getCenterVector() {
-    double xCenter = xLeft + Width() / 2;
-    double yCenter = yTop + Height() / 2;
+    double xCenter = xLeft + Width() / 2.0;
+    double yCenter = yTop + Height() / 2.0;
 
     Vector2D center = new Vector2D(xCenter, yCenter);
 
@@ -356,14 +356,13 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * OriginX property's getter method.
+   * The horizontal unit coordinate of the origin with respect to the left edge. Value between
+   * 0.0 and 1.0. For example, a value of 0.0 mean the origin is on the left edge, 0.5 means the
+   * origin is in the middle and 1.0 means the origin lies on the right edge.
+   *
    * @return  Horizontal unit coordinate of origin with respect to left edge
    */
-  @SimpleProperty(
-          description = "The horizontal unit coordinate of the origin with respect " +
-                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 " +
-                  "mean the origin is on the left edge, 0.5 means the origin is in the middle " +
-                  "and 1.0 means the origin lies on the right edge.")
+  @SimpleProperty
   public double OriginX() {
     return super.U();
   }
@@ -382,14 +381,13 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * OriginY property's getter method.
+   * The vertical unit coordinate of the origin with respect to the top edge. Value between 0.0
+   * and 1.0. For example, a value of 0.0 means the origin is on the top edge, 0.5 means the origin
+   * is in the middle and 1.0 means the origin lies on the bottom edge.
+   *
    * @return Vertical unit coordinate of the origin with respect to top edge
    */
-  @SimpleProperty(
-          description = "The vertical unit coordinate of the origin with respect " +
-                  "to the top edge. Value between 0.0 and 1.0. For example, a value of 0.0 means " +
-                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 " +
-                  "means the origin lies on the bottom edge.")
+  @SimpleProperty
   public double OriginY() {
     return super.V();
   }

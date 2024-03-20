@@ -7,10 +7,9 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
-
-import java.lang.Integer;
 
 /**
  * Mock ImageSprite component.
@@ -28,12 +27,12 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
   public static final String PROPERTY_NAME_MARKORIGIN = "MarkOrigin";
 
   // The x-y coordinates of the origin of the image sprite
-  int xOrigin;
-  int yOrigin;
+  private int xOrigin;
+  private int yOrigin;
 
   // The unit coordinates of the origin wrt top-left corner
-  double v;
-  double u;
+  private double v;
+  private double u;
 
   /**
    * Creates a new MockImageSprite component.
