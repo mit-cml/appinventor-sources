@@ -61,10 +61,6 @@ body {
   font-family: OpenDyslexic, Roboto, Helvetica, Arial, sans-serif;
 }
 
-.dyslexic .material-icons {
-  font-family: 'Material Icons';
-}
-
 /* For the TOS Form*/
 .floatingBox {
   width: 300px;

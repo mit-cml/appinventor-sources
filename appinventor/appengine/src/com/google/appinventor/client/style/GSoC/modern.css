@@ -18,8 +18,13 @@ they get cut off in Windows.
     background: lightgrey background-image;
     font-family: Poppins, Helvetica, Arial, sans-serif;
   }
+
   .dyslexic * {
     font-family: OpenDyslexic, Poppins, Helvetica, Arial, sans-serif;
+  }
+
+  .dyslexic .material-icons {
+    font-family: 'Material Icons';
   }
 
 
@@ -80,6 +85,7 @@ they get cut off in Windows.
     background-color: unset;
     border: unset;
     box-shadow: unset;
+    margin-top:5px;
   }
 
   .ode-Box-toolkit {
@@ -88,6 +94,7 @@ they get cut off in Windows.
   .ode-Box-header {
     /* all: unset; */
     visibility: collapse;
+    display: none;
   }
   
   .ode-Box-header-caption,
