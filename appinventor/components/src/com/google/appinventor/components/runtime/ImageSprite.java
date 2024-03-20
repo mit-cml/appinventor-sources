@@ -376,7 +376,7 @@ public class ImageSprite extends Sprite {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = DEFAULT_U + "")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void OriginX(double u) {
     super.U(u);
   }
@@ -402,7 +402,7 @@ public class ImageSprite extends Sprite {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = DEFAULT_V + "")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void OriginY(double v) {
     super.V(v);
   }
@@ -413,7 +413,8 @@ public class ImageSprite extends Sprite {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ORIGIN,
           defaultValue = DEFAULT_ORIGIN)
-  @SimpleProperty(description = "Mark the origin of the image sprite using a draggable marker")
+  @SimpleProperty(description = "Mark the origin of the image sprite using a draggable marker",
+      category = PropertyCategory.BEHAVIOR)
   public void MarkOrigin(String originCoordinates) {
     // parse u and v with originCoordinates interpreted in "(u, v)" format
     double u = Double.parseDouble(originCoordinates.substring(1, originCoordinates.indexOf(",")));
