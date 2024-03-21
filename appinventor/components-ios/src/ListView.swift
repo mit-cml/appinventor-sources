@@ -26,16 +26,21 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textSize = Int32(22)
-  fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
-  fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
   fileprivate var _listData: [[String: String]] = []   //ListData
+  fileprivate var _elementsFromString = [String]()
   fileprivate var _listViewLayoutMode = Int32(0)
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
   fileprivate var _orientation = Int32(1)
-
-
+  
+  // Search Logic Variables
+  fileprivate var _searching = false
+  fileprivate var _elementsFromStringResults: [String]? = nil
+  fileprivate var _mainTextResults: [String]? = nil
+  fileprivate var _detailTextResults: [String]? = nil
+  fileprivate var _imageNameResults: [String]? = nil
+  
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
     super.init(parent)
@@ -48,14 +53,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
     _view.backgroundColor = preferredTextColor(parent.form)
-
-    // The intrinsic height of the ListView needs to be explicit because UITableView does not
-    // provide a value. We use a low priority constraint to configure the height, and size it based
-    // on the number of rows (min 1). Updates to the constant in the constraint are done in the
-    // Elements property setter.
-    _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
-    _automaticHeightConstraint.priority = UILayoutPriority(1.0)
-    _automaticHeightConstraint.isActive = true
   }
 
   open override var view: UIView {
@@ -80,13 +77,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   @objc open var ElementsFromString: String {
-    get {
-      return ""
+      get {
+        return ""
+      }
+      set(elements) {
+        Elements = elements.split(",") as [AnyObject]
+        _elementsFromString = elements.split(",") as [String]
+      }
     }
-    set(elements) {
-      Elements = elements.split(",") as [AnyObject]
-    }
-  }
 
   @objc open var Elements: [AnyObject] {
     get {
@@ -118,8 +116,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       } else {
         _elements = elements.toStringArray()
       }
-      let rows = max(_elements.count, _listData.count)
-      _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
       if let searchBar = _view.tableHeaderView as? UISearchBar {
         self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
       } else {
@@ -300,6 +296,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         _view.tableHeaderView = filter
         filter.sizeToFit()
         filter.delegate = self
+        filter.showsCancelButton =  true
+
       } else if !_showFilter && _view.tableHeaderView != nil {
         _view.tableHeaderView = nil
       }
@@ -325,7 +323,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   @objc open var TextSize: Int32 {
     get {
       return _textSize
@@ -335,7 +333,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   //FontSizeDetail
   @objc open var FontSizeDetail: Int32 {
     get {
@@ -346,9 +344,9 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       _view.reloadData()
     }
   }
-
+  
   // MARK: Methods
-
+  
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
       "Text1": mainText,
@@ -356,25 +354,25 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       "Image": imageName
     ] as YailDictionary
   }
-
+  
   @objc open func GetDetailText(_ listElement: YailDictionary) -> String {
     return listElement["Text2"] as? String ?? ""
   }
-
+  
   @objc open func GetImageName(_ listElement: YailDictionary) -> String {
     return listElement["Image"] as? String ?? ""
   }
-
+  
   @objc open func GetMainText(_ listElement: YailDictionary) -> String {
     return listElement["Text1"] as? String ?? ""
   }
-
+  
   @objc open func Refresh() {
     _view.reloadData()
   }
-
+  
   @objc open func RemoveItemAtIndex(_ index: Int32) {
-    if index < 1 || index > max(_listData.count, _elements.count) {
+    if index < 1 || index > max(_listData.count, _elementsFromString.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
@@ -387,178 +385,213 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     _view.reloadData()
   }
-
+  
   // MARK: Events
-
+  
   @objc open func AfterPicking() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicking")
   }
-
+  
   // MARK: UITableViewDataSource
-
+  
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
-      UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
-
-    if indexPath.row < _elements.count {
-      cell.textLabel?.text = _elements[indexPath.row]
+    UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
+    
+    if !_elementsFromString.isEmpty {
+      cell.textLabel?.text = _searching && _elementsFromStringResults != nil ? _elementsFromStringResults![indexPath.row] : _elementsFromString[indexPath.row]
       cell.textLabel?.numberOfLines = 0
       cell.textLabel?.lineBreakMode = .byWordWrapping
-    } else {
-      let listDataIndex = indexPath.row - _elements.count
-      if _listViewLayoutMode == 1{
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-      } else if _listViewLayoutMode == 2 {
+    }
+    else {
+      let listDataIndex = indexPath.row
+      
+      // MainText Layout
+      if _listViewLayoutMode == 0{
+        cell.textLabel?.text = _searching && _mainTextResults != nil ? _mainTextResults![indexPath.row] : _listData[listDataIndex]["Text1"]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+      }
+      
+      // MainText, DetailText Vertical Layout
+      else if _listViewLayoutMode == 1{
+        cell.textLabel?.text = _searching && _mainTextResults != nil ? _mainTextResults![indexPath.row] : _listData[listDataIndex]["Text1"]
+        cell.detailTextLabel?.text = _searching && _detailTextResults != nil ? _detailTextResults![indexPath.row] : _listData[listDataIndex]["Text2"]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+      }
+      
+      // MainText, DetailText Horizontal Layout
+      else if _listViewLayoutMode == 2 {
+        
         tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-
-        // Configure the layout
+        
+        cell.textLabel?.text = _searching && _mainTextResults != nil ? _mainTextResults![indexPath.row] : _listData[listDataIndex]["Text1"]
+        cell.detailTextLabel?.text = _searching && _detailTextResults != nil ? _detailTextResults![indexPath.row] : _listData[listDataIndex]["Text2"]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        
         cell.layoutMargins = UIEdgeInsets.zero
         cell.separatorInset = UIEdgeInsets.zero
         cell.preservesSuperviewLayoutMargins = true
-
-        // Create a stack view to hold the labels horizontally
+        
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.alignment = .fill
+        stackView.alignment = .leading
         stackView.distribution = .fill
-
-        // Add the labels to the stack view
         stackView.addArrangedSubview(cell.textLabel!)
+        
+        let spacerView = UIView()
+        spacerView.widthAnchor.constraint(equalToConstant: 8.0).isActive = true
+        stackView.addArrangedSubview(spacerView)
+        
         stackView.addArrangedSubview(cell.detailTextLabel!)
-
-        // Add the stack view to the cell's content view
         cell.contentView.addSubview(stackView)
-
-        // Set up constraints
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
+          stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+          stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+          cell.detailTextLabel!.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+          cell.textLabel!.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
         ])
-      } else if _listViewLayoutMode == 3 {
-        tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
-          cell.imageView?.image = image
-
-          // Configure the layout
-          cell.layoutMargins = UIEdgeInsets.zero
-          cell.separatorInset = UIEdgeInsets.zero
-          cell.preservesSuperviewLayoutMargins = true
-
-          // Create a stack view to hold the labels horizontally
-          let stackView = UIStackView()
-          stackView.axis = .horizontal
-          stackView.alignment = .leading
-          stackView.distribution = .fill
-          stackView.spacing = 8.0
-
-          // Add the labels to the stack view
-          stackView.addArrangedSubview(cell.imageView!)
-          stackView.addArrangedSubview(cell.textLabel!)
-
-          // Add the stack view to the cell's content view
-          cell.contentView.addSubview(stackView)
-
-          // Set up constraints
-          stackView.translatesAutoresizingMaskIntoConstraints = false
-          NSLayoutConstraint.activate([
-              stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-              stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-              stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-              stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
-          ])
-        }
-      } else if _listViewLayoutMode == 4 {
-        tableView.rowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
-          cell.imageView?.image = image
-
-          // Configure the layout
-          cell.layoutMargins = UIEdgeInsets.zero
-          cell.separatorInset = UIEdgeInsets.zero
-          cell.preservesSuperviewLayoutMargins = true
-
-          // Create a horizontal stack view to hold the imageView and a nested vertical stack view
-          let horizontalStackView = UIStackView()
-          horizontalStackView.axis = .horizontal
-          horizontalStackView.alignment = .center
-          horizontalStackView.distribution = .fill
-          horizontalStackView.spacing = 8.0
-
-          // Create a vertical stack view to hold the textLabel and detailTextLabel
-          let verticalStackView = UIStackView()
-          verticalStackView.axis = .vertical
-          verticalStackView.alignment = .leading
-          verticalStackView.distribution = .fill
-          verticalStackView.spacing = 8.0
-
-          // Add the imageView and nested vertical stack view to the horizontal stack view
-          horizontalStackView.addArrangedSubview(cell.imageView!)
-          horizontalStackView.addArrangedSubview(verticalStackView)
-
-          // Add the textLabel and detailTextLabel to the vertical stack view
-          verticalStackView.addArrangedSubview(cell.textLabel!)
-          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
-
-          // Add the horizontal stack view to the cell's content view
-          cell.contentView.addSubview(horizontalStackView)
-
-          // Set up constraints
-          horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-          NSLayoutConstraint.activate([
-              horizontalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-              horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-              horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-              horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
-          ])
-        }
-      } else {
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        
       }
-
-      cell.textLabel?.numberOfLines = 0
-      cell.textLabel?.lineBreakMode = .byWordWrapping
+      
+      // Image, MainText Layout
+      else if _listViewLayoutMode == 3 {
+        
+        tableView.rowHeight = 60
+        cell.textLabel?.text = _searching && _mainTextResults != nil ? _mainTextResults![indexPath.row] : _listData[listDataIndex]["Text1"]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        
+        // Clear the previous image to avoid flickering
+        cell.imageView?.image = nil
+        
+        if let imagePath = _searching && _imageNameResults != nil ? _imageNameResults![indexPath.row] : _listData[listDataIndex]["Image"] {
+          // Load the image asynchronously
+          DispatchQueue.global().async {
+            if let image = AssetManager.shared.imageFromPath(path: imagePath) {
+              // Update the UI on the main thread
+              DispatchQueue.main.async {
+                cell.imageView?.image = image
+                cell.setNeedsLayout()
+              }
+            }
+          }
+        }
+        
+        cell.layoutMargins = UIEdgeInsets.zero
+        cell.separatorInset = UIEdgeInsets.zero
+        cell.preservesSuperviewLayoutMargins = true
+        
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.spacing = 8.0
+        
+        stackView.addArrangedSubview(cell.imageView!)
+        stackView.addArrangedSubview(cell.textLabel!)
+        cell.contentView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+          stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+          stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+          stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+          stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+          cell.imageView!.widthAnchor.constraint(equalToConstant: 58.0), // Set the width of the image view
+          cell.imageView!.heightAnchor.constraint(equalToConstant: 58.0), // Set the height of the image view
+          cell.textLabel!.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 60)
+        ])
+      }
+      
+      // Image, MainText, DetailText Vertical Layout
+      else if _listViewLayoutMode == 4 {
+        tableView.rowHeight = 60
+        cell.textLabel?.text = _searching && _mainTextResults != nil ? _mainTextResults![indexPath.row] : _listData[listDataIndex]["Text1"]
+        cell.detailTextLabel?.text = _searching && _detailTextResults != nil ? _detailTextResults![indexPath.row] : _listData[listDataIndex]["Text2"]
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        
+        // Clear the previous image to avoid flickering
+        cell.imageView?.image = nil
+        
+        if let imagePath = _searching && _imageNameResults != nil ? _imageNameResults![indexPath.row] : _listData[listDataIndex]["Image"] {
+          // Load the image asynchronously
+          DispatchQueue.global().async {
+            if let image = AssetManager.shared.imageFromPath(path: imagePath) {
+              // Update the UI on the main thread
+              DispatchQueue.main.async {
+                cell.imageView?.image = image
+                cell.setNeedsLayout()
+              }
+            }
+          }
+        }
+        
+        cell.layoutMargins = UIEdgeInsets.zero
+        cell.separatorInset = UIEdgeInsets.zero
+        cell.preservesSuperviewLayoutMargins = true
+        
+        let HStackView = UIStackView()
+        HStackView.axis = .horizontal
+        HStackView.distribution = .fill
+        HStackView.spacing = 8.0
+        
+        let VStackView = UIStackView()
+        VStackView.axis = .vertical
+        VStackView.distribution = .fill
+        VStackView.spacing = 8.0
+        
+        VStackView.addArrangedSubview(cell.textLabel!)
+        VStackView.addArrangedSubview(cell.detailTextLabel!)
+        
+        HStackView.addArrangedSubview(cell.imageView!)
+        HStackView.addArrangedSubview(VStackView)
+        cell.contentView.addSubview(HStackView)
+        HStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+          HStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+          HStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+          cell.imageView!.widthAnchor.constraint(equalToConstant: 58.0), // Set the width of the image view
+          cell.imageView!.heightAnchor.constraint(equalToConstant: 58.0), // Set the height of the image view
+          VStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 60)
+        ])
+      }
+      
     }
-
+    
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
-
+    
     guard let form = _container?.form else {
       return cell
     }
-
+    
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-
+    
     //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.textLabel?.textColor = argbToColor(_textColor)
     }
-
+    
     //detailtext
     if _textColorDetail == Color.default.int32 {
       cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
     }
-
+    
     if _fontTypeface == "1" {
       cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
     } else if _fontTypeface == "2" {
@@ -566,7 +599,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else if _fontTypeface == "3" {
       cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
     }
-
+    
     if _fontTypefaceDetail == "1" {
       cell.detailTextLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail))
     } else if _fontTypefaceDetail == "2" {
@@ -574,29 +607,52 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else if _fontTypefaceDetail == "3" {
       cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
     }
-
-    if cell.selectedBackgroundView == nil {
-      cell.selectedBackgroundView = UIView()
+    
+    if _selectionColor == Int32(bitPattern: Color.default.rawValue){
+      cell.selectionColor = argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
+    } else {
+      cell.selectionColor = argbToColor(_selectionColor)
     }
-    cell.selectedBackgroundView?.backgroundColor =
-        argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue)
-        ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+    
     return cell
   }
-
+  
+  // Return the number of rows in tableView (indexPath.row value)
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _listData.isEmpty ? _elements.count : _listData.count
-  }
+     
+     if _searching{
+       if _elementsFromStringResults != nil{
+         return _elementsFromStringResults!.count
+       }
+       else if _mainTextResults != nil{
+         return _mainTextResults!.count
+       }
+       else{
+         return 0
+       }
+     }
+     else{
+       if !_elementsFromString.isEmpty{
+         return _elementsFromString.count
+       }
+       else if !_listData.isEmpty{
+         return _listData.count
+       }
+       else{
+         return 0
+       }
+     }
+   }
 
   // MARK: UITableViewDelegate
 
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if indexPath.row < _elements.count {
+    if indexPath.row < _elementsFromString.count {
       _selectionIndex = Int32(indexPath.row) + 1
-      _selection = _elements[indexPath.row]
+      _selection = _elementsFromString[indexPath.row]
       _selectionDetailText = ""
-    } else if indexPath.row < _elements.count + _listData.count {
-      let listDataIndex = indexPath.row - _elements.count
+    } else if indexPath.row < _elementsFromString.count + _listData.count {
+      let listDataIndex = indexPath.row - _elementsFromString.count
       _selectionIndex = Int32(indexPath.row) + 1
       _selection = _listData[listDataIndex]["Text1"] ?? ""
       _selectionDetailText = _listData[listDataIndex]["Text2"] ?? ""
@@ -605,27 +661,119 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   // MARK: UISearchBarDelegate
-
+  
+  // Search Logic:
+  // If there are elements from string, filter them and store results into _elementsFromStringResults Optional String array
+  // Else if there are some list data values (MainText, DetailText, ImageName), filter them and store into Optional
+  // String arrays with corresponding names _mainTextResults, _detailTextResults, _imageNameResults
+  // If at least one of the three list data values that correspond to each other is a search result (for example, MainText),
+  // add their corresponding values to results arrays as well (for example, DetailText and ImageName) if they are
+  // visible in the current ListView layout mode
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    _results = nil
+    
     if !searchText.isEmpty  {
-      _results = [String]()
-      for item in _elements {
-        if item.starts(with: searchText) {
-          _results?.append(item)
-        }
+      _searching = true
+      _elementsFromStringResults = [String]()
+      _mainTextResults = [String]()
+      _detailTextResults = [String]()
+      _imageNameResults = [String]()
+      
+      if !_elementsFromString.isEmpty{
+        _mainTextResults = nil
+        _elementsFromStringResults = _elementsFromString.filter { $0.localizedCaseInsensitiveContains(searchText) }
       }
+      else if !_listData.isEmpty {
+        
+        _elementsFromStringResults = nil
+        var mainTextArray: [String] = []
+        var detailTextArray: [String] = []
+        var imageNameArray: [String] = []
+        
+        for dict in _listData {
+            let text1 = dict["Text1"] ?? ""
+            let text2 = dict["Text2"] ?? ""
+            let image = dict["Image"] ?? ""
+            
+            mainTextArray.append(text1)
+            detailTextArray.append(text2)
+            imageNameArray.append(image)
+        }
+        
+        for (index, mainText) in mainTextArray.enumerated() {
+          switch _listViewLayoutMode {
+          case 0:
+            if mainText.lowercased().contains(searchText.lowercased()){
+              _mainTextResults?.append(mainText)
+            }
+          case 1:
+            if mainText.lowercased().contains(searchText.lowercased()) || detailTextArray[index].lowercased().contains(searchText.lowercased()){
+              _mainTextResults?.append(mainText)
+              _detailTextResults?.append(detailTextArray[index])
+            }
+          case 2:
+            if mainText.lowercased().contains(searchText.lowercased()) || detailTextArray[index].lowercased().contains(searchText.lowercased()){
+              _mainTextResults?.append(mainText)
+              _detailTextResults?.append(detailTextArray[index])
+            }
+          case 3:
+            if mainText.lowercased().contains(searchText.lowercased()) || imageNameArray[index].lowercased().contains(searchText.lowercased()){
+              _mainTextResults?.append(mainText)
+              _imageNameResults?.append(imageNameArray[index])
+            }
+          case 4:
+            if mainText.lowercased().contains(searchText.lowercased()) || detailTextArray[index].lowercased().contains(searchText.lowercased()) || imageNameArray[index].lowercased().contains(searchText.lowercased()){
+              _mainTextResults?.append(mainText)
+              _detailTextResults?.append(detailTextArray[index])
+              _imageNameResults?.append(imageNameArray[index])
+            }
+          default:
+            print("Error: ListView Layout Mode Not Identified")
+          }
+        }
+      }else{
+        _elementsFromStringResults = nil
+        _mainTextResults = nil
+        _detailTextResults = nil
+        _imageNameResults = nil
+      }
+    }else{
+      _searching = false
+      _elementsFromStringResults = nil
+      _mainTextResults = nil
+      _detailTextResults = nil
+      _imageNameResults = nil
     }
     _view.reloadData()
   }
-
+  
   open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     searchBar.endEditing(true)
   }
-
-  // MARK: Private implementation
-
-  var elements: [String] {
-    return _results ?? _elements
+  
+  open func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    searchBar.text = ""
+    searchBar.resignFirstResponder()
+    _view.resignFirstResponder()
+    _searching = false
+    _elementsFromStringResults = nil
+    _mainTextResults = nil
+    _detailTextResults = nil
+    _imageNameResults = nil
+    _view.reloadData()
   }
+}
+
+  // extension of the UITableViewCell class defines a computed property selectionColor
+  // for setting and getting the background color of a cell when it is selected
+extension UITableViewCell {
+    var selectionColor: UIColor {
+        set {
+            let view = UIView()
+            view.backgroundColor = newValue
+            self.selectedBackgroundView = view
+        }
+        get {
+            return self.selectedBackgroundView?.backgroundColor ?? UIColor.clear
+        }
+    }
 }
