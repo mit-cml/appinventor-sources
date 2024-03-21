@@ -94,7 +94,7 @@ public class MockChatBot extends MockNonVisibleComponent {
         token.setType(tokenType);
         getTokenFromServer();
         return;                 // Callback from getTokenFromServer finishes up
-      } else if (newValue.substring(0, 1) == "%") {
+      } else if (newValue.charAt(0) == '%') {
         tokenType &= ~EditableProperty.TYPE_NONPERSISTED;
       }
       token.setType(tokenType);
@@ -107,13 +107,19 @@ public class MockChatBot extends MockNonVisibleComponent {
     Ode.getInstance().getTokenAuthService().getChatBotToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        EditableProperty tokenProperty = MockChatBot.this.properties.getProperty(PROPERTY_NAME_TOKEN);
-        if (tokenProperty != null) {
-          String existingToken = tokenProperty.getValue();
-          if (!existingToken.isEmpty()) {
-            LOG.info("bailing on getTokenFromServer existingToken = " + existingToken);
-            return;             // If we have a value, don't over-write it
-          }
+        if (token == null) {
+          onFailure(new UnsupportedOperationException(
+              "Server is not configured to generate ChatBot tokens."));
+          return;
+        }
+        EditableProperty tokenProperty = properties.getProperty(PROPERTY_NAME_TOKEN);
+        if (tokenProperty == null) {
+          return;
+        }
+        String existingToken = tokenProperty.getValue();
+        if (!existingToken.isEmpty()) {
+          LOG.info("bailing on getTokenFromServer existingToken = " + existingToken);
+          return;             // If we have a value, don't over-write it
         }
         int tokenType = tokenProperty.getType();
         tokenType |= EditableProperty.TYPE_NONPERSISTED;
