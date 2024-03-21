@@ -424,14 +424,19 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
   for(var i=0;i<params.dropDowns.length;i++){
     var dropDown = block.getField(params.dropDowns[i]);
     var dropDownList = dropDown.menuGenerator_();
-    var text = dropDown.text_;
+    var text = dropDown.getText();
+    var value = dropDown.getValue();
     var textInDropDown = false;
     if (dropDown.updateMutation) {
       dropDown.updateMutation();
     }
     for(var k=0;k<dropDownList.length;k++) {
-      if(dropDownList[k][0] == text && text != " "){
+      if (dropDownList[k][1] == value && value != " ") {
         textInDropDown = true;
+        // A mismatch in the untranslated value and translated text can be corrected.
+        if (dropDownList[k][0] != text) {
+          dropDown.setText(dropDownList[k][0]);
+        }
         break;
       }
     }
@@ -517,6 +522,18 @@ Blockly.WarningHandler.prototype['checkComponentNotExistsError'] = function(bloc
   }
   var component_names = this.workspace.componentDb_.getInstanceNames();
   if (component_names.indexOf(block.instanceName) == -1) {
+    var errorMessage = Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST;
+    block.setErrorIconText(errorMessage);
+    return true;
+  }
+  return false;
+};
+
+// check if there exists at least one component of the type of this block's value
+
+Blockly.WarningHandler.prototype['checkComponentTypeNotExistsError'] = function(block) {
+  var type = this.workspace.componentDb_.getType(block.typeName);
+  if (type == undefined) {
     var errorMessage = Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST;
     block.setErrorIconText(errorMessage);
     return true;

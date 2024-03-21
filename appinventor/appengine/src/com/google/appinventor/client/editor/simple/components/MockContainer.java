@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -89,11 +89,26 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   @Override
   protected TreeItem buildTree() {
+    return this.buildTree(1);
+  }
+
+  protected TreeItem buildTree(Integer view) {
     TreeItem itemNode = super.buildTree();
+    //hide all containers except form if only nonvisible components are to be shown
+    //in such a case, we need only the form's treeItem because all non-visible components are attached to it
+    itemNode.setVisible(view != 3 || isForm());
 
     // Recursively build the tree for child components
     for (MockComponent child : children) {
-      itemNode.addItem(child.buildTree());
+      TreeItem childNode = child.buildTree();
+      boolean isVisible = true;
+      if (view == 2 && child instanceof MockNonVisibleComponent) {
+        isVisible = false;
+      } else if (view == 3 && child instanceof MockVisibleComponent) {
+        isVisible = false;
+      }
+      childNode.setVisible(isVisible);
+      itemNode.addItem(childNode);
     }
 
     itemNode.setState(expanded);
@@ -256,7 +271,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     if (component instanceof MockVisibleComponent) {
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
-      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)) {
+      // Chart Data components are only allowed on Charts, not other containers.
+      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
+              && !(component instanceof MockChartData)) {
         return true;
       }
     }

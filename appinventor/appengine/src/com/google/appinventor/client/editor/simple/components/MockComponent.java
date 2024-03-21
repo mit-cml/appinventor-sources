@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,7 +18,6 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -28,6 +27,7 @@ import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
+import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
@@ -81,6 +81,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all components in the visual designer.
@@ -92,13 +93,15 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
-    SourcesMouseEvents, DragSource, HasAllTouchHandlers {
+    SourcesMouseEvents, DragSource, HasAllTouchHandlers, DesignPreviewChangeListener {
+  private static final Logger LOG = Logger.getLogger(MockComponent.class.getName());
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
+  public String currentPreview;
 
   /**
    * This class defines the dialog box for renaming a component.
@@ -331,7 +334,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
           YaBlocksEditor blocksEditor =
               (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
-          OdeLog.log("Showing item " + getName());
+          LOG.info("Showing item " + getName());
           blocksEditor.showComponentBlocks(getName());
         } else {
           select(source);
@@ -408,15 +411,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // Add the special name property and set the tooltip
     String name = componentName();
     setTitle(name);
-    addProperty(PROPERTY_NAME_NAME, name, null, new TextPropertyEditor());
+    addProperty(PROPERTY_NAME_NAME, name, null, null, null, new TextPropertyEditor());
 
     // TODO(user): Ensure this value is unique within the project using a list of
     // already used UUIDs
     // Set the component's UUID
-    // The default value here can be anything except 0, because YoungAndroidProjectServce
+    // The default value here can be anything except 0, because YoungAndroidProjectService
     // creates forms with an initial Uuid of 0, and Properties.java doesn't encode
     // default values when it generates JSON for a component.
-    addProperty(PROPERTY_NAME_UUID, "-1", null, new TextPropertyEditor());
+    addProperty(PROPERTY_NAME_UUID, "-1", null, null, null, new TextPropertyEditor());
     changeProperty(PROPERTY_NAME_UUID, "" + Random.nextInt());
 
     editor.getComponentPalettePanel().configureComponent(this);
@@ -439,7 +442,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   protected boolean isPropertyforYail(String propertyName) {
     // By default we use the same criterion as persistance
-    // This method can then be overriden by the invididual
+    // This method can then be overridden by the individual
     // component Mocks
     return isPropertyPersisted(propertyName);
   }
@@ -509,7 +512,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editor  property editor
    */
   public final void addProperty(String name, String defaultValue, String caption,
-      PropertyEditor editor) {
+      String category, String description, PropertyEditor editor) {
 
     int type = EditableProperty.TYPE_NORMAL;
     if (!isPropertyPersisted(name)) {
@@ -521,7 +524,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (isPropertyforYail(name)) {
       type |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, editor, type, "", null);
+    properties.addProperty(name, defaultValue, caption, category, description, editor, type, "", null);
   }
 
   /**
@@ -534,20 +537,32 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editorArgs  additional editor arguments
    * @param editor  property editor
    */
-  public final void addProperty(String name, String defaultValue, String caption,
-      String editorType, String[] editorArgs, PropertyEditor editor) {
+  public final void addProperty(String name, String defaultValue, String caption, String category,
+                                String editorType, String[] editorArgs, PropertyEditor editor) {
 
-    int type = EditableProperty.TYPE_NORMAL;
+    String propertyDesc = ComponentsTranslation.getPropertyDescription(name
+      + "PropertyDescriptions");
+    if (propertyDesc.equals(name + "PropertyDescriptions")) {
+      propertyDesc = ComponentsTranslation.getPropertyDescription((type.equals("Form")
+          ? "Screen" : type) + "." + propertyDesc);
+    }
+
+    int propertyType = EditableProperty.TYPE_NORMAL;
     if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
+      propertyType |= EditableProperty.TYPE_NONPERSISTED;
     }
     if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
+      propertyType |= EditableProperty.TYPE_INVISIBLE;
     }
     if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
+      propertyType |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, editor, type, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, ComponentsTranslation.getPropertyName(caption),
+        ComponentsTranslation.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
+  }
+
+  protected final void addProperty(String name) {
+    addProperty(name, "", null, null, null, new StringPropertyEditor());
   }
 
   /**
@@ -763,7 +778,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    *
    * @param container  owning component container for this component
    */
-  protected final void setContainer(MockContainer container) {
+  protected void setContainer(MockContainer container) {
     this.container = container;
   }
 
@@ -1103,6 +1118,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
   }
 
+  // Null onDesignPreviewChange implementation
+
+  @Override
+  public void onDesignPreviewChanged() {
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -1216,8 +1237,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
-        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());
-        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), property.getEditorType(), property.getEditorArgs(), propertyEditor);
+        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(
+            property.getEditorType(), property.getDefaultValue(),
+            (YaFormEditor) editor, property.getEditorArgs());
+        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(),
+            property.getCategory(), property.getEditorType(),
+            property.getEditorArgs(), propertyEditor);
       }
     }
 
@@ -1231,6 +1256,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public void upgradeComplete() {
     this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition
+  }
+
+  /**
+   * Hides or shows the specified property of the Component.
+   *
+   * @param property  Property key
+   * @param show  will show the property if set to true, will hide it otherwise
+   */
+  protected void showProperty(String property, boolean show) {
+    // Get the current type flags of the Property
+    int type = properties.getProperty(property).getType();
+
+    if (show) {
+      type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
+    } else {
+      type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
+    }
+
+    // Set the new type
+    properties.getProperty(property).setType(type);
   }
 
   public native void setShouldCancel(Event event, boolean cancelable)/*-{

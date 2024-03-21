@@ -16,6 +16,8 @@ import com.google.appinventor.shared.properties.json.JSONParser;
  */
 public class YoungAndroidSourceAnalyzer {
 
+  public static final String ASSETS_FOLDER = "assets";
+
   // TODO(user) Source these from a common constants library.
   public static final String SRC_FOLDER = "src";
 

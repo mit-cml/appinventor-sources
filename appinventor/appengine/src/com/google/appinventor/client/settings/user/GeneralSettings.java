@@ -37,6 +37,8 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.USER_AUTOLOAD_PROJECT, "true",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.FOLDERS, "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override

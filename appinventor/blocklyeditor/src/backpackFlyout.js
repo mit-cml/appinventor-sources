@@ -42,7 +42,7 @@ goog.require('goog.userAgent');
 Blockly.BackpackFlyout = function(workspaceOptions) {
   Blockly.BackpackFlyout.superClass_.constructor.call(this, workspaceOptions);
   // Backpack flyout is opposite the blocks flyout
-  this.toolboxPosition_ = this.RTL ? Blockly.TOOLBAR_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
+  this.toolboxPosition_ = this.RTL ? Blockly.TOOLBOX_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
 };
 goog.inherits(Blockly.BackpackFlyout, Blockly.Flyout);
 

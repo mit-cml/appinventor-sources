@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.explorer.project;
 
-import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -14,8 +13,8 @@ import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,8 @@ public final class Project {
 
   // Project specific settings
   private ProjectSettings settings; // lazily and asynchronously initialized
+
+  private ProjectFolder homeFolder = null;
 
   /**
    * Creates a new project.
@@ -94,15 +95,6 @@ public final class Project {
   }
 
   /**
-   * Returns the id of this project's attribution.
-   *
-   * @return  attribution id
-   */
-  public long getAttributionId() {
-    return projectInfo.getAttributionId();
-  }
-
-  /**
    * Returns the name of this project.
    *
    * @return  project name
@@ -146,21 +138,34 @@ public final class Project {
     projectInfo.setDateModified(date);
   }
 
-  public boolean isPublished() {
-    if (projectInfo.getGalleryId() <= UserProject.NOTPUBLISHED) {
-      /* The current unpublished project has galleryId == 0, but some old
-       * unpublished projects in database may still have -1 as unpublished value.
-       * Therefore, we use <= 0 to make sure this check.*/
-      return false;
-    }
-    return true;
-  }
-  public long getGalleryId() {
-    return projectInfo.getGalleryId();
+  /**
+   * Returns the date of when the project was last exported as an apk/aab/other.
+   *
+   * @return  date modified in milliseconds
+   */
+  public long getDateBuilt() {
+    return projectInfo.getDateBuilt();
   }
 
-  public void setGalleryId(long id) {
-    projectInfo.setGalleryId(id);
+  /**
+   * Sets the date of when the project was last exported.
+   *
+   */
+  public void setDateBuilt(long date) {
+     projectInfo.setDateBuilt(date);
+  }
+
+
+  /**
+   * The project-folder relationship is stored in the folder object.
+   * This is just a back-reference that is set when the folder is created.
+   */
+  public void setHomeFolder(ProjectFolder folder) {
+    homeFolder = folder;
+  }
+
+  public ProjectFolder getHomeFolder() {
+    return homeFolder;
   }
 
   /**
@@ -243,7 +248,6 @@ public final class Project {
         });
   }
 
-
   public void restoreFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
             Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, getProjectName());
@@ -264,27 +268,13 @@ public final class Project {
   public void deleteFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
         Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
-    final ProjectServiceAsync projectService = Ode.getInstance().getProjectService();
     final OdeAsyncCallback<Void> deleteCallback = new OdeAsyncCallback<Void>() {
       @Override
       public void onSuccess(Void result) {
         Ode.getInstance().getProjectManager().removeDeletedProject(getProjectId());
       }
     };
-    if (isPublished()) {
-      Ode.getInstance().getGalleryService().deleteApp(projectInfo.getGalleryId(),
-          new OdeAsyncCallback<Void>(MESSAGES.galleryDeleteError()) {
-            @Override
-            public void onSuccess(Void result) {
-              // need to update gallery list
-              GalleryClient.getInstance().appWasChanged();
-              // Delete the app
-              projectService.deleteProject(getProjectId(), deleteCallback);
-            }
-          });
-    } else {
-      Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
-    }
+    Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
   }
 
   public boolean isInTrash() {

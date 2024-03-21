@@ -1,32 +1,39 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.context.Resources;
+
 import com.google.appinventor.common.testutils.TestUtils;
+
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.HandlesEventDispatching;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
+
 import gnu.kawa.functions.Arithmetic;
+
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
 import gnu.math.Numeric;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
-import junit.framework.TestCase;
-import kawa.standard.Scheme;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
+import junit.framework.TestCase;
+
+import kawa.standard.Scheme;
 
 /**
  * Tests the evaluation of various YAIL code.
@@ -36,17 +43,18 @@ import java.util.Map;
  * @author markf@google.com (Mark Friedman)
  */
 public class YailEvalTest extends TestCase {
+  private static final Resources RESOURCES = new Resources();
+  private static final String YAIL_RUNTIME_LIBRARY = RESOURCES.getResource(Resources.YAIL_RUNTIME);
   private Scheme scheme;
 
   private static final String YAIL_SCHEME_TESTS =
-      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
-      "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR)
+      + "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
 
   @Override
   public void setUp() throws Exception {
     scheme = new Scheme();
-    String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
-    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
+    String yailRuntimeLibrary = TestUtils.windowsToUnix(YAIL_RUNTIME_LIBRARY);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");
@@ -1463,7 +1471,7 @@ public class YailEvalTest extends TestCase {
   private String readTestCode(String test) {
     try (InputStream is = getClass().getClassLoader()
         .getResourceAsStream("com/google/appinventor/buildserver/" + test + ".scm");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       assertNotNull(is);
       byte[] buffer = new byte[4096];
       int read;

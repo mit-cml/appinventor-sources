@@ -8,10 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -29,6 +31,8 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.FroyoWebViewClient;
+import com.google.appinventor.components.runtime.util.HoneycombWebViewClient;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -68,6 +72,14 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  * Calling `setWebViewString` from JavaScript will also run the {@link #WebViewStringChange(String)}
  * event so that the blocks can handle when the {@link #WebViewString(String)} property changes.
  *
+ * Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ * to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ * `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ * Both of these options will continue to work but the `http://localhost/` approach will work in
+ * both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ * preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ * web.
+ *
  * @internaldoc
  * Component for displaying web pages
  * This is a very limited form of browser.  You can view web pages and
@@ -98,7 +110,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<br />And if the Web page contains Javascript that executes the command " +
         "<br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
         "<br />then the value of the WebViewString property will be " +
-        "<br /><em>hello from Javascript</em>. ")
+        "<br /><em>hello from Javascript</em>. ",
+    iconName = "images/webviewer.png")
 
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
@@ -133,18 +146,21 @@ public final class WebViewer extends AndroidViewComponent {
    *
    * @param container  container the component will be placed in
    */
+  @androidx.annotation.RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
   public WebViewer(ComponentContainer container) {
     super(container);
 
     webview = new WebView(container.$context());
     resetWebViewClient();       // Set up the web view client
-    webview.getSettings().setJavaScriptEnabled(true);
+    final WebSettings settings = webview.getSettings();
+    settings.setJavaScriptEnabled(true);
+    settings.setAllowFileAccess(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
     wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
-    webview.getSettings().setBuiltInZoomControls(true);
+    settings.setBuiltInZoomControls(true);
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
@@ -465,7 +481,8 @@ public final class WebViewer extends AndroidViewComponent {
       defaultValue = "False")
   @SimpleProperty(userVisible = false,
       description = "Whether or not to give the application permission to use the Javascript geolocation API. " +
-          "This property is available only in the designer.")
+          "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
   public void UsesLocation(boolean uses) {
     // We don't actually do anything here (the work is in the MockWebViewer)
   }
@@ -494,7 +511,7 @@ public final class WebViewer extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(userVisible = true)
+  @SimpleProperty(userVisible = true, category = PropertyCategory.BEHAVIOR)
   public void PromptforPermission(boolean prompt) {
     this.prompt = prompt;
   }
@@ -515,8 +532,12 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   private void resetWebViewClient() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
-      webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      webview.setWebViewClient(new HoneycombWebViewClient(followLinks, ignoreSslErrors,
+          container.$form(), this));
+    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      webview.setWebViewClient(new FroyoWebViewClient<>(followLinks, ignoreSslErrors,
+          container.$form(), this));
     } else {
       webview.setWebViewClient(new WebViewerClient());
     }

@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
@@ -24,9 +25,17 @@ public final class TextValidators {
   private static final int MAX_FILENAME_SIZE = 100;
   private static final int MIN_FILENAME_SIZE = 1;
 
+  public enum ProjectNameStatus {
+    SUCCESS,
+    INVALIDFORMAT,
+    RESERVED,
+    DUPLICATE,
+    DUPLICATEINTRASH
+  }
+
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
-          "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
+          "SimpleForm", "String", "Pattern", "YailDictionary", "YailList", "YailNumberToString", "YailRuntimeError");
 
   protected static final List<String> JAVA_NAMES = Arrays.asList("abstract", "continue", "for", "new", "switch",
           "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
@@ -34,6 +43,8 @@ public final class TextValidators {
           "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
           "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
           "float", "native", "super", "while");
+
+  protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "def", "foreach", "forrange", "JavaStringUtils", "quote");
 
   // This class should never be instantiated.
   private TextValidators() {}
@@ -47,36 +58,36 @@ public final class TextValidators {
    * @param projectName the project name to validate
    * @return {@code true} if the project name is valid, {@code false} otherwise
    */
-  public static boolean checkNewProjectName(String projectName, boolean quietly) {
+  public static ProjectNameStatus checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
     if (!isValidIdentifier(projectName)) {
       if (!quietly) {
         Window.alert(MESSAGES.malformedProjectNameError());
       }
-      return false;
+      return ProjectNameStatus.INVALIDFORMAT;
     }
 
     // Check for names that reserved words
     if (isReservedName(projectName)) {
       Window.alert(MESSAGES.reservedNameError());
-      return false;
+      return ProjectNameStatus.RESERVED;
     }
 
     // Check that project does not already exist
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+        return ProjectNameStatus.DUPLICATEINTRASH;
       } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }
-      return false;
+      return ProjectNameStatus.DUPLICATE;
     }
-
-    return true;
+    return ProjectNameStatus.SUCCESS;
   }
 
-  public static boolean checkNewProjectName(String projectName) {
+  public static ProjectNameStatus checkNewProjectName(String projectName) {
     return checkNewProjectName(projectName, false);
   }
 
@@ -119,6 +130,41 @@ public final class TextValidators {
   }
 
   /**
+   * Determines whether the given folder name is valid, displaying an alert
+   * if it is not.  In order to be valid, the folder name must satisfy
+   * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
+   * folder name in the same parent folder.
+   *
+   * @param folderName the folder name to validate
+   * @param folder the folder whose children are to be checked against this new
+   *        folder name
+   * @return {@code true} if the folder name is valid, {@code false} otherwise
+   */
+  public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
+    // Check the format of the folder name
+    if (!isValidIdentifier(folderName)) {
+      // TODO: Decide whether to use new strings
+      Window.alert(MESSAGES.malformedProjectNameError());
+      return ProjectNameStatus.INVALIDFORMAT;
+    }
+
+    // Check for names that reserved words
+    if (isReservedName(folderName)) {
+      Window.alert(MESSAGES.reservedNameError());
+      return ProjectNameStatus.RESERVED;
+    }
+
+    // Check that folder does not already exist
+    for (ProjectFolder folder : parent.getChildFolders()) {
+      if (folderName.equals(folder.getName())) {
+        Window.alert(MESSAGES.duplicateProjectNameError(folderName));
+        return ProjectNameStatus.DUPLICATE;
+      }
+    }
+    return ProjectNameStatus.SUCCESS;
+  }
+
+  /**
    * Checks whether the argument is a legal identifier, specifically,
    * a non-empty string starting with a letter and followed by any number of
    * (unaccented English) letters, digits, or underscores.
@@ -139,7 +185,7 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isReservedName(String text) {
-    return (YAIL_NAMES.contains(text) || JAVA_NAMES.contains(text));
+    return (YAIL_NAMES.contains(text) || JAVA_NAMES.contains(text) || SCHEME_NAMES.contains(text));
   }
 
   /**
@@ -168,7 +214,7 @@ public final class TextValidators {
   public static boolean isValidCharFilename(String filename){
     return !filename.contains("'") && filename.equals(URL.encodePathSegment(filename));
   }
-  
+
   /**
    * Checks whether the argument is a filename which meets the length
    * requirement imposed by aapt, which is:
@@ -196,7 +242,7 @@ public final class TextValidators {
     String temp = filename.trim().replaceAll("( )+", " ").replace(" ","_");
     if (temp.length() > 0) {
       if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        if (!temp.matches(firstCharacterLetter)) { 
+        if (!temp.matches(firstCharacterLetter)) {
           //Check to make sure that the first character is a letter
           errorMessage = MESSAGES.firstCharProjectNameError();
         } else { //The text contains a character that is not a letter, number, or underscore

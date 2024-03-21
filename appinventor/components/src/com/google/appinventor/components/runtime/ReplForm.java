@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,7 +9,9 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.content.Intent;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 
 import android.util.Log;
@@ -29,6 +31,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
@@ -121,7 +124,7 @@ public class ReplForm extends Form {
   @Override
   public void onCreate(Bundle icicle) {
     Log.d(LOG_TAG, "onCreate");
-    replAssetDir = QUtil.getReplAssetPath(this);
+    replAssetDir = QUtil.getReplAssetPath(this, true);
     replCompDir = replAssetDir + "external_comps/";
     super.onCreate(icicle);
     loadedExternalDexs = new ArrayList<String>();
@@ -161,6 +164,16 @@ public class ReplForm extends Form {
           }
         });
     }
+  }
+
+  @Override
+  protected void defaultPropertyValues() {
+    super.defaultPropertyValues();
+    // Previously this was set in the {@link Form#defaultPropertyValues()}. However, in compiled
+    // apps we do not want to reset the theme since it is provided in the AndroidManifest.xml.
+    // In the companion though we do want to reset the theme in case we are switching from a project
+    // with a different theme than the default one to one that uses the default.
+    Theme(ComponentConstants.DEFAULT_THEME);
   }
 
   @Override
@@ -474,6 +487,21 @@ public class ReplForm extends Form {
   }
 
   @Override
+  public String getCachePath(String cache) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+      return "file://" + Environment.getExternalStorageDirectory().getAbsolutePath()
+          + "/AppInventor/cache/" + cache;
+    } else {
+      return "file://" + new java.io.File(getExternalCacheDir(), cache).getAbsolutePath();
+    }
+  }
+
+  @Override
+  public String getPrivatePath(String fileName) {
+    return "file://" + new java.io.File(QUtil.getReplDataPath(this), fileName).getAbsolutePath();
+  }
+
+  @Override
   public String getAssetPathForExtension(Component component, String asset)
       throws FileNotFoundException {
     // For testing extensions, we allow external = false, but still compile the assets into the
@@ -509,7 +537,7 @@ public class ReplForm extends Form {
   }
 
   @Override
-  protected boolean isRepl() {
+  public boolean isRepl() {
     return true;
   }
 

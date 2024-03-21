@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -15,6 +14,7 @@ import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.ui.Image;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A layout that positions and sizes each child to specific pixel
@@ -23,6 +23,8 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 final class MockCanvasLayout extends MockLayout {
+  private static final Logger LOG = Logger.getLogger(MockCanvasLayout.class.getName());
+
   private final Image image;
   private String imageUrl;
 
@@ -34,7 +36,7 @@ final class MockCanvasLayout extends MockLayout {
       @Override
       public void onError(ErrorEvent event) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
-          OdeLog.elog("Error occurred while loading image " + imageUrl);
+          LOG.severe("Error occurred while loading image " + imageUrl);
         }
         container.refreshForm();
       }

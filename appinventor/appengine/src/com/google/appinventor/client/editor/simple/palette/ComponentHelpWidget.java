@@ -50,7 +50,12 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
-      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
+      String translatedHelpText = ComponentsTranslation.getComponentHelpString(helpTextKey);
+      if (!scd.getExternal() && translatedHelpText.equals(scd.getName())
+          && !scd.getHelpString().isEmpty()) {
+        translatedHelpText = scd.getHelpString();
+      }
+      HTML helpText = new HTML(translatedHelpText);
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the
@@ -107,6 +112,13 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");
         inner.add(link);
+      }
+      if (scd.getExternal() && !"".equals(scd.getLicense())) {
+        String license = scd.getLicense();
+        HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
+            MESSAGES.viewLicense() + "</a>");
+        viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
+        inner.add(viewLicenseHTML);
       }
 
       setWidget(inner);

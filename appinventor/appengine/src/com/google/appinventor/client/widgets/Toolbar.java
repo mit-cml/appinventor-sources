@@ -6,17 +6,12 @@
 
 package com.google.appinventor.client.widgets;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.uibinder.client.ElementParserToUse;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,58 +21,146 @@ import java.util.Map;
  * and a right-aligned group.
  *
  */
-public class Toolbar extends Composite {
-  /**
-   * A Toolbar item has a widgetName that is unique over all items in
-   * the toolbar, a caption (displayed to the user)
-   * and a command to run when the item is selected.
-   */
-  public static class ToolbarItem {
-    private final String widgetName;
-    private final String caption;
-    private final Command command;
-
-    public ToolbarItem(String widgetName, String caption, Command command) {
-      this.widgetName = widgetName;
-      this.caption = caption;
-      this.command = command;
-    }
-  }
+@ElementParserToUse(className = "com.google.appinventor.client.widgets.ToolbarParser")
+public class Toolbar extends FlowPanel {
   private static final String DROP_DOWN_TRIANGLE = "\u25BE";
+
+  private static final Map<String, ToolbarPrototype> prototypes = new HashMap<>();
 
   // All mappings are widget name to widget.
   
   // Regular button widgets
-  private final Map<String, TextButton> buttonMap;
+  private final Map<String, TextButton> buttonMap = new LinkedHashMap<>();
   // Drop-down button widgets
-  private final Map<String, DropDownButton> dropDownButtonMap;
+  private final Map<String, DropDownButton> dropDownButtonMap = new LinkedHashMap<>();
 
 
-  private final HorizontalPanel leftButtons;
-  private final HorizontalPanel rightButtons;
+  private final FlowPanel leftButtons = new FlowPanel();
+  private final FlowPanel rightButtons = new FlowPanel();
+  private final FlowPanel centerButtons = new FlowPanel();
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
   public Toolbar() {
-    buttonMap = new HashMap<String, TextButton>();
-    dropDownButtonMap = new HashMap<String, DropDownButton>();
+    setStylePrimaryName("ya-Toolbar");
+    leftButtons.setStylePrimaryName("left");
+    rightButtons.setStylePrimaryName("right");
+    centerButtons.setStylePrimaryName("center");
 
-    leftButtons = new HorizontalPanel();
-    leftButtons.setSpacing(4);
+    super.add(leftButtons);
+    super.add(centerButtons);
+    super.add(rightButtons);
+  }
 
-    rightButtons = new HorizontalPanel();
-    rightButtons.setSpacing(4);
-    rightButtons.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+  public interface ToolbarBuilder {
+    void update(Toolbar toolbar);
+  }
 
-    HorizontalPanel toolbar = new HorizontalPanel();
-    toolbar.add(leftButtons);  // this nesting keeps buttons left aligned
-    toolbar.add(rightButtons);
-    toolbar.setCellHorizontalAlignment(rightButtons, HorizontalPanel.ALIGN_RIGHT);
-    toolbar.setWidth("100%");
-    toolbar.setStylePrimaryName("ya-Toolbar");
+  public static class ToolbarPrototype {
+    private final List<ToolbarBuilder> builders = new ArrayList<>();
 
-    initWidget(toolbar);
+    public void add(ToolbarBuilder item) {
+      builders.add(item);
+    }
+  }
+
+  public static ToolbarPrototype getPrototype(String name) {
+    if (!prototypes.containsKey(name)) {
+      prototypes.put(name, new ToolbarPrototype());
+    }
+    return prototypes.get(name);
+  }
+
+  protected final void build(String name) {
+    for (ToolbarBuilder builder : getPrototype(name).builders) {
+      builder.update(this);
+    }
+  }
+
+  public void extend(Toolbar toolbar) {
+    add(toolbar);
+  }
+
+  public void add(Widget widget) {
+    leftButtons.add(widget);
+  }
+
+  public void add(DropDownButton button) {
+    dropDownButtonMap.put(button.getName(), button);
+    if ("right".equals(button.getAlign())) {
+      rightButtons.add(button);
+    } else if ("center".equals(button.getAlign())) {
+      centerButtons.add(button);
+    } else {
+      leftButtons.add(button);
+    }
+  }
+
+  public void add(final ToolbarItem item) {
+    TextButton button = new TextButton(item.getCaption(), item.getIcon(), item.getStyleName());
+    button.setEnabled(item.getEnabled());
+    if (!item.getTooltip().isEmpty()) {
+      button.setTitle(item.getTooltip());
+    }
+    button.addClickHandler(event -> item.getCommand().execute());
+    if ("right".equals(item.getAlign())) {
+      rightButtons.add(button);
+    } else if ("center".equals(item.getAlign())) {
+      centerButtons.add(button);
+    } else {
+      leftButtons.add(button);
+    }
+    buttonMap.put(item.getName(), button);
+    button.setVisible(item.isVisible());
+  }
+
+  public void addRight(final ToolbarItem item) {
+    item.setAlign("right");
+    add(item);
+  }
+
+  protected void setEnabledItem(ToolbarItem item, boolean enabled) {
+    TextButton button = buttonMap.get(item.getName());
+    if (button != null) {
+      button.setEnabled(enabled);
+    }
+  }
+
+  protected void setVisibleItem(ToolbarItem item, boolean visible) {
+    TextButton button = buttonMap.get(item.getName());
+    if (button != null) {
+      button.setVisible(visible);
+    }
+  }
+
+  public void setStylename(String styleName) {
+    setStylePrimaryName(styleName);
+  }
+
+  protected void populateToolbar(Toolbar other) {
+    leftButtons.clear();
+    rightButtons.clear();
+    centerButtons.clear();
+    buttonMap.clear();
+    dropDownButtonMap.clear();
+    while (other.leftButtons.getWidgetCount() > 0) {
+      Widget w = other.leftButtons.getWidget(0);
+      w.removeFromParent();
+      leftButtons.add(w);
+    }
+    while (other.centerButtons.getWidgetCount() > 0) {
+      Widget w = other.centerButtons.getWidget(0);
+      w.removeFromParent();
+      centerButtons.add(w);
+    }
+    while (other.rightButtons.getWidgetCount() > 0) {
+      Widget w = other.rightButtons.getWidget(0);
+      w.removeFromParent();
+      rightButtons.add(w);
+    }
+    buttonMap.putAll(other.buttonMap);
+    dropDownButtonMap.putAll(other.dropDownButtonMap);
   }
 
   /**
@@ -87,7 +170,10 @@ public class Toolbar extends Composite {
    * @param enabled enabled status
    */
   public void setButtonEnabled(String widgetName, boolean enabled) {
-    buttonMap.get(widgetName).setEnabled(enabled);
+    TextButton button = buttonMap.get(widgetName);
+    if (button != null) {
+      button.setEnabled(enabled);
+    }
   }
 
   /**
@@ -145,109 +231,12 @@ public class Toolbar extends Composite {
   }
 
   /**
-   * Adds a button to the toolbar
-   *
-   * @param item button to add
-   * @param rightAlign {@code true} if the button should be right-aligned,
-   *                   {@code false} if left-aligned
-   */
-  protected void addButton(final ToolbarItem item, boolean rightAlign) {
-    TextButton button = new TextButton(item.caption);
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        item.command.execute();
-      }
-    });
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    buttonMap.put(item.widgetName, button);
-  }
-
-  /**
-   *
-   * @param item button to add
-   * @param rightAlign true if button is right-aligned, false if left
-   * @param top special styling if the button is on the top.
-   */
-  protected void addButton(final ToolbarItem item, boolean rightAlign, boolean top) {
-    TextButton button = new TextButton(item.caption);
-    button.setStyleName("ode-TopPanelDropDownButton");
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        item.command.execute();
-      }
-    });
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    buttonMap.put(item.widgetName, button);
-  }
-
-  /**
-   * Adds a (left-aligned) button to the toolbar
-   *
-   * @param item the button to add
-   */
-  protected void addButton(ToolbarItem item) {
-    addButton(item, false);
-  }
-
-  /**
-   * Adds a drop down button to the toolbar
-   *
-   * @param dropDownName name used for internal map
-   * @param caption name of button
-   * @param items list of items to add to drop down; null items indicate a separator should be
-   *        addded
-   * @param rightAlign button should be right aligned in toolbar
-   */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
-      final boolean rightAlign) {
-    final DropDownButton button = new DropDownButton(dropDownName, caption,
-        items, rightAlign);
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    dropDownButtonMap.put(dropDownName, button);
-  }
-
-  /**
-   *
-   * @param dropDownName name used for internal map
-   * @param caption name of button
-   * @param items list of items to add to the drop down; null items indicate a separator
-   * @param rightAlign button should be right aligned in toolbar
-   * @param top special style if button is added to the topPanel
-   */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
-      final boolean rightAlign, final boolean top) {
-    final DropDownButton button = new DropDownButton(dropDownName, caption,
-        items, rightAlign);
-    button.setStyleName("ode-TopPanelDropDownButton");
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    dropDownButtonMap.put(dropDownName, button);
-  }
-
-  /**
    * Adds an item to a drop down button 
    *
    * @param dropDownName name used for internal map
    * @param item item to add to drop down
    */
-  protected void addDropDownButtonItem(String dropDownName, DropDownButton.DropDownItem item) {
+  protected void addDropDownButtonItem(String dropDownName, DropDownItem item) {
     final DropDownButton button = dropDownButtonMap.get(dropDownName);
     if (button != null && item != null) {
       button.addItem(item);
@@ -275,17 +264,6 @@ public class Toolbar extends Composite {
    */
   protected void clearDropDownMenu(String dropDownName) {
     dropDownButtonMap.get(dropDownName).clearAllItems();
-  }
-  
-  /**
-   * Adds a (left-aligned) drop down button to the toolbar
-   *
-   * @param dropDownName name used for internal map
-   * @param caption name of button
-   * @param items list of items to add to drop down
-   */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items) {
-    addDropDownButton(dropDownName, caption, items, false);
   }
 
   /**

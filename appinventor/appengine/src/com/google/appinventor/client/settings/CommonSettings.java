@@ -6,9 +6,9 @@
 
 package com.google.appinventor.client.settings;
 
-import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.output.OdeLog;
+
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -17,12 +17,15 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Superclass for collections of settings.
  *
  */
 public abstract class CommonSettings implements PropertyChangeListener {
+  private static final Logger LOG = Logger.getLogger(CommonSettings.class.getName());
+
   // Mapping from category (class) to actual settings singleton instance
   private final Map<String, Settings> settingsMap;
   protected transient boolean changed = false;
@@ -72,13 +75,13 @@ public abstract class CommonSettings implements PropertyChangeListener {
    * @param encodedSettings  JSON encoded settings (may be empty)
    */
   protected final void decodeSettings(String encodedSettings) {
-    if (!encodedSettings.isEmpty()) {
+    if (!encodedSettings.isEmpty() && !encodedSettings.equals("{}")) {
       JSONObject settingsObject = new ClientJsonParser().parse(encodedSettings).asObject();
       Map<String, JSONValue> properties = settingsObject.getProperties();
       for (String category : properties.keySet()) {
         Settings settings = settingsMap.get(category);
         if (settings == null) {
-          OdeLog.wlog("Unknown settings category: " + category);
+          LOG.warning("Unknown settings category: " + category);
         } else {
           settings.changeProperties(properties.get(category).asObject());
           settings.updateAfterDecoding();

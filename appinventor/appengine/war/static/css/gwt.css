@@ -982,20 +982,21 @@ a, a:visited, a:hover {
   filter: alpha(opacity=40);
 }
 
+.gwt-Tree table td:first-child {
+  width: 18px;
+}
+
 .gwt-Tree .gwt-TreeItem {
   padding: 1px 0px;
   margin: 0px;
   white-space: nowrap;
-  cursor: hand;
-  cursor: pointer;
 }
-.gwt-Tree .gwt-TreeItem-selected {
-  background: #93c2f1 url(../images/hborder.png) repeat-x 0px -1463px;
-}
+
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
 }
+
 * html .gwt-TreeItem .gwt-RadioButton input,
 * html .gwt-TreeItem .gwt-CheckBox input {
   margin-left: -4px;

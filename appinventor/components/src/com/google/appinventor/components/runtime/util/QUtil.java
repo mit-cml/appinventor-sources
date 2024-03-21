@@ -31,10 +31,32 @@ public class QUtil {
    *
    * @param context a context, such as a Form
    * @param forcePrivate force the use of the context-specific path
+   * @param useLegacy use the legacy external storage path even on Android Q and higher
+   * @return the path to the app's shared storage.
+   */
+  public static String getExternalStoragePath(Context context, boolean forcePrivate,
+      boolean useLegacy) {
+    return getExternalStorageDir(context, forcePrivate, useLegacy).getAbsolutePath();
+  }
+
+  /**
+   * Get the SDK-specific external storage path. On Android Q and later, this is always an
+   * app-private directory on the "external" storage. On earlier versions of Android, this returns
+   * the external storage path for all apps (although possibly user-specific).
+   * If the {@code forcePrivate} flag is true, then the app-private directory will always be
+   * returned on devices running Android 2.2 Froyo or later.
+   *
+   * <p>
+   * For more details on why this is needed, see the deprecation notice at
+   * https://developer.android.com/reference/android/os/Environment#getExternalStorageDirectory()
+   * </p>
+   *
+   * @param context a context, such as a Form
+   * @param forcePrivate force the use of the context-specific path
    * @return the path to the app's shared storage.
    */
   public static String getExternalStoragePath(Context context, boolean forcePrivate) {
-    return getExternalStorageDir(context, forcePrivate).getAbsolutePath();
+    return getExternalStoragePath(context, forcePrivate, false);
   }
 
   /**
@@ -51,7 +73,7 @@ public class QUtil {
    * @return the path to the app's shared storage.
    */
   public static String getExternalStoragePath(Context context) {
-    return getExternalStoragePath(context, false);
+    return getExternalStoragePath(context, false, false);
   }
 
   /**
@@ -89,13 +111,34 @@ public class QUtil {
    * @param forcePrivate force the use of the context-specific path
    * @return the path to the app's shared storage.
    */
-  @SuppressWarnings("deprecation")
   public static File getExternalStorageDir(Context context, boolean forcePrivate) {
+    return getExternalStorageDir(context, forcePrivate, false);
+  }
+
+  /**
+   * Get the SDK-specific external storage directory. On Android Q and later, this is always an
+   * app-private directory on the "external" storage. On earlier versions of Android, this returns
+   * the external storage path for all apps (although possibly user-specific).
+   * If the {@code forcePrivate} flag is true, then the app-private directory will always be
+   * returned on devices running Android 2.2 Froyo or later.
+   *
+   * <p>
+   * For more details on why this is needed, see the deprecation notice at
+   * https://developer.android.com/reference/android/os/Environment#getExternalStorageDirectory()
+   * </p>
+   *
+   * @param context a context, such as a Form
+   * @param forcePrivate force the use of the context-specific path
+   * @param legacy use the legacy path on Android Q and later
+   * @return the path to the app's shared storage.
+   */
+  @SuppressWarnings("deprecation")
+  public static File getExternalStorageDir(Context context, boolean forcePrivate, boolean legacy) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
       // Context#getExternalFilesDir didn't exist until Froyo
       return Environment.getExternalStorageDirectory();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || forcePrivate) {
+    if ((!legacy && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) || forcePrivate) {
       // Q no longer allows using getExternalStorageDirectory()
       return context.getExternalFilesDir(null);
     } else {
@@ -124,6 +167,30 @@ public class QUtil {
       return getExternalStoragePath(context, forcePrivate) + "/assets/";
     } else {
       return getExternalStoragePath(context, forcePrivate) + "/AppInventor/assets/";
+    }
+  }
+
+  /**
+   * Get the SDK-specific path where the REPL databases live. On Android Q and later, this is always
+   * an app-private directory on the "external" storage. On earlier versions of Android, this
+   * returns the external storage path for all apps (although possibly user-specific).
+   * If the {@code forcePrivate} flag is true, then the app-private directory will always be
+   * returned on devices running Android 2.2 Froyo or later.
+   *
+   * <p>
+   * For more details on why this is needed, see the deprecation notice at
+   * https://developer.android.com/reference/android/os/Environment#getExternalStorageDirectory()
+   * </p>
+   *
+   * @param context a context, such as a Form
+   * @param forcePrivate force the use of the context-specific path
+   * @return the path to the REPL's database storage
+   */
+  public static String getReplDatabasePath(Context context, boolean forcePrivate) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return getExternalStoragePath(context, forcePrivate) + "/databases/";
+    } else {
+      return getExternalStoragePath(context, forcePrivate) + "/AppInventor/databases/";
     }
   }
 

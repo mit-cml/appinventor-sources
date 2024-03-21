@@ -29,6 +29,7 @@ public class SettingsConstants {
   public static final String USER_LAST_LOCALE = "LastLocale";
   public static final String USER_DYSLEXIC_FONT = "DyslexicFont";
   public static final String USER_AUTOLOAD_PROJECT = "AutoloadLastProject";
+  public static final String FOLDERS = "Folders";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 
@@ -61,6 +62,8 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   public static final String YOUNG_ANDROID_SETTINGS_ACCENT_COLOR = "AccentColor";
   public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
+  public static final String YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW = "PhonePreview";
+  public static final String YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE = "DefaultFileScope";
 
   /**
    * Settings for the Blocks editor.

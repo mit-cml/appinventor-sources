@@ -24,7 +24,7 @@
 
     <!-- Icons come first in the layout, since their placement doesn't depend on
          the placement of the text views. -->
-    <android.support.v7.internal.widget.TintImageView
+    <ImageView
                android:id="@android:id/icon1"
                android:layout_width="@dimen/abc_dropdownitem_icon_width"
                android:layout_height="48dip"
@@ -34,7 +34,7 @@
                android:visibility="invisible"
                style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown.Icon1" />
 
-    <android.support.v7.internal.widget.TintImageView
+    <ImageView
                android:id="@+id/edit_query"
                android:layout_width="48dip"
                android:layout_height="48dip"
@@ -45,7 +45,7 @@
                android:visibility="gone"
                style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown.Query" />
 
-    <android.support.v7.internal.widget.TintImageView
+    <ImageView
                android:id="@id/android:icon2"
                android:layout_width="48dip"
                android:layout_height="48dip"
@@ -83,4 +83,4 @@
               android:layout_above="@android:id/text2" />
 
 </RelativeLayout>
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_search_dropdown_item_icons_2line.xml -->
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_search_dropdown_item_icons_2line.xml -->
