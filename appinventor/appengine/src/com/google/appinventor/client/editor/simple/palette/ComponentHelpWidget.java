@@ -98,36 +98,38 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             ? referenceComponentsUrl + "index.html"
             : referenceComponentsUrl + categoryDocUrlString + ".html#" + name;
       }
-      if (!versionName.equals("")) {
-        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
-            versionName);
-        html.setStyleName("ode-ComponentHelpPopup-Body");
-        inner.add(html);
-      } else if (version > 0) {
-        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
-        html.setStyleName("ode-ComponentHelpPopup-Body");
-        inner.add(html);
-      }
-      if (external && dateBuilt != null && !dateBuilt.equals("")) {
-        String date = dateBuilt.split("T")[0];
-        HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\""
-            + dateBuilt + "\">" + date + "</time>");
-        dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
-        inner.add(dateCreatedHtml);
-      }
       if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +
-            MESSAGES.moreInformation() + "</a>");
+                                 MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");
         inner.add(link);
       }
-      if (external && !"".equals(license)) {
-        HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
-            MESSAGES.viewLicense() + "</a>");
-        viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
-        inner.add(viewLicenseHTML);
+      if (external) {
+        // Specific information related to extensions
+        if (!versionName.equals("")) {
+          HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
+                                   versionName);
+          html.setStyleName("ode-ComponentHelpPopup-Body");
+          inner.add(html);
+        } else if (version > 0) {
+          HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
+          html.setStyleName("ode-ComponentHelpPopup-Body");
+          inner.add(html);
+        }
+        if (dateBuilt != null && !dateBuilt.equals("")) {
+          String date = dateBuilt.split("T")[0];
+          HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\""
+                                              + dateBuilt + "\">" + date + "</time>");
+          dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
+          inner.add(dateCreatedHtml);
+        }
+        if (!"".equals(license)) {
+          HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
+                                              MESSAGES.viewLicense() + "</a>");
+          viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
+          inner.add(viewLicenseHTML);
+        }
       }
-
       setWidget(inner);
 
       // When the panel is closed, save the time in milliseconds.
