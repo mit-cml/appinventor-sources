@@ -371,7 +371,7 @@
     "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_LIST": "列表",
     "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_INDEX": "索引值",
     "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_REPLACEMENT": "替换为",
-    "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT": "将列表%1的第%2项替换为%3",
+    "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT": "替换列表%1的第%2项为%3",
     "Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TOOLTIP": "替换列表中第n项内容",
     "Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TITLE_REMOVE": "删除列表项",
     "Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT_LIST": "列表",
