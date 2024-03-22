@@ -153,6 +153,8 @@ public final class ProjectBuilder {
         analyzeBlockFiles(sourceFiles, componentBlocksExtractor, permissionBlockExtractor,
             scopeBlockExtractor);
         Map<String, Set<String>> componentBlocks = componentBlocksExtractor.getResult();
+        Map<String, Set<String>> componentProperties = getComponentDesignerProperties(sourceFiles);
+        mergeMaps(componentBlocks, componentProperties);
         Set<String> extraPermissions = permissionBlockExtractor.getResult();
         Set<String> usedScopes = scopeBlockExtractor.getResult();
         for (String scope : usedScopes) {
@@ -289,7 +291,6 @@ public final class ProjectBuilder {
 
   private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
-    Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
       if (f.endsWith(".bky")) {
         File bkyFile = new File(f);
@@ -297,6 +298,37 @@ public final class ProjectBuilder {
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
       }
     }
+  }
+
+  /**
+   * Constructs a mapping of component types to the blocks of each type used in
+   * the project files. Properties specified in the designer are considered
+   * blocks for the purposes of this operation.
+   *
+   * @param files A list of files contained in the project.
+   * @return A mapping of component type names to sets of block names used in
+   *         the project
+   * @throws IOException if any of the files named in {@code files} cannot be
+   *                     read
+   */
+  private static Map<String, Set<String>> getComponentDesignerProperties(List<String> files)
+      throws IOException {
+    Map<String, Set<String>> result = new HashMap<>();
+    for (String f : files) {
+      if (f.endsWith(".scm")) {
+        File scmFile = new File(f);
+        String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
+        for (Map.Entry<String, Set<String>> entry :
+            FormPropertiesAnalyzer.getComponentBlocksFromSchemeFile(scmContent).entrySet()) {
+          if (result.containsKey(entry.getKey())) {
+            result.get(entry.getKey()).addAll(entry.getValue());
+          } else {
+            result.put(entry.getKey(), entry.getValue());
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**
@@ -484,5 +516,17 @@ public final class ProjectBuilder {
     }
     sb.append('"');
     return sb.toString();
+  }
+
+  private static void mergeMaps(Map<String, Set<String>> dest, Map<String, Set<String>> src) {
+    for (Map.Entry<String, Set<String>> entry : src.entrySet()) {
+      String key = entry.getKey();
+      Set<String> value = entry.getValue();
+      if (dest.containsKey(key)) {
+        dest.get(key).addAll(value);
+      } else {
+        dest.put(key, value);
+      }
+    }
   }
 }
