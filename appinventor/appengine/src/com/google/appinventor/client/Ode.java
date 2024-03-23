@@ -35,6 +35,10 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.local.LocalGetMotdService;
+import com.google.appinventor.client.local.LocalProjectService;
+import com.google.appinventor.client.local.LocalTokenAuthService;
+import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
@@ -884,9 +888,9 @@ public class Ode implements EntryPoint {
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) componentService);
+    rpcStatusPopup.register(projectService);
+    rpcStatusPopup.register(userInfoService);
+    rpcStatusPopup.register(componentService);
 
     overDeckPanel = new FlowPanel("main");
     Window.setTitle(MESSAGES.titleYoungAndroid());
@@ -2232,6 +2236,11 @@ public class Ode implements EntryPoint {
           next.run();
         }
       });
+  }
+
+  public static Promise<?> exportProject() {
+    return ((LocalProjectService) instance.projectService).exportProject(
+        instance.getCurrentYoungAndroidProjectId());
   }
 
   // Used internally here so that the tutorial panel is only shown on

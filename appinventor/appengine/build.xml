@@ -26,6 +26,7 @@
        ===================================================================== -->
 
   <property name="release" value="false"/>
+  <property name="local.services" value="false"/>
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
@@ -632,6 +633,7 @@
       <arg line="-logLevel INFO"/>
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
+      <arg line="-setProperty local.services=${local.services}"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
   </target>
