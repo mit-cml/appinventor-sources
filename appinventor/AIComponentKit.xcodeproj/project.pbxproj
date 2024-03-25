@@ -181,6 +181,8 @@
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
+		8B5950ED2B156FF900436713 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 8B5950EC2B156FF900436713 /* assets */; };
+		8B77A2E92AE1EFD9009F09B2 /* posenet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77A2E82AE1EFD9009F09B2 /* posenet.swift */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
 		C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */; };
 		C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */; };
@@ -435,6 +437,8 @@
 		681D59062A84139E007B5DB5 /* OptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionList.swift; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+EllipticalArc.swift"; sourceTree = "<group>"; };
+		8B5950EC2B156FF900436713 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		8B77A2E82AE1EFD9009F09B2 /* posenet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = posenet.swift; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
@@ -588,6 +592,7 @@
 		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
+				8B77A2E72AE1EFBF009F09B2 /* extensions */,
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
 				06E59EA21D92C66B00C42804 /* components */,
 				DE962F6020ADCD58004AA45A /* resources */,
@@ -989,6 +994,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		8B77A2E72AE1EFBF009F09B2 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8B5950EC2B156FF900436713 /* assets */,
+				8B77A2E82AE1EFD9009F09B2 /* posenet.swift */,
+			);
+			path = extensions;
+			sourceTree = "<group>";
+		};
 		CBC78691202E0B35005363A3 /* components */ = {
 			isa = PBXGroup;
 			children = (
@@ -1171,6 +1185,7 @@
 				DED066B21FE0846F009C8165 /* webview-error.html in Resources */,
 				061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
+				8B5950ED2B156FF900436713 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1468,6 +1483,7 @@
 				086DC63221014C5900FDA182 /* Ev3Motors.swift in Sources */,
 				DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
+				8B77A2E92AE1EFD9009F09B2 /* posenet.swift in Sources */,
 				DEA5C6E020E17FDA0083A49B /* Polygon.swift in Sources */,
 				06C70BB12A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift in Sources */,
 				CBC78688202A23F6005363A3 /* MapFeatureContainerBase.swift in Sources */,
