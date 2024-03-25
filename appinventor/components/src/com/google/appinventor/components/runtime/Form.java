@@ -880,7 +880,6 @@ public class Form extends AppInventorCompatActivity
     androidUIHandler.post(new Runnable() {
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
-          EventDispatcher.dispatchEvent(Form.this, "Initialize");
           if (sCompatibilityMode) { // Make sure call to setLayout happens
             Sizing("Fixed");
           } else {
@@ -888,6 +887,7 @@ public class Form extends AppInventorCompatActivity
           }
           screenInitialized = true;
 
+          EventDispatcher.dispatchEvent(Form.this, "Initialize");
           //  Call all apps registered to be notified when Initialize Event is dispatched
           for (OnInitializeListener onInitializeListener : onInitializeListeners) {
             onInitializeListener.onInitialize();
