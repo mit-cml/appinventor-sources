@@ -233,5 +233,8 @@
     "Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE": "هذه الكتلة تحتاج إلى كتلة قيمة متصلة بمنفذها.",
     "Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "يجب عليك توفير مكون صالح لمنفذ \"%1\" في هذه الكتلة.",
     "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "هذه الكتلة النصية لا تحتوي على رقم صالح.هذه الكتلة النصية لا تحتوي على رقم صحيح.",
-    "Blockly.Msg.REMOVE_UNUSED_BLOCKS": "إزالة الكتل غير المستخدمة"
+    "Blockly.Msg.REMOVE_UNUSED_BLOCKS": "إزالة الكتل غير المستخدمة",
+    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ": "إرجاع صحيح إذا لم يكن كلا الرقمين متساويين لبعضهما البعض.",
+    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ": "إرجاع صحيح إذا كان كلا الرقمين متساويين لبعضهما البعض.",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": "Blockly.Msg.اختر مصدر الإدخال للاختبار"
 }
