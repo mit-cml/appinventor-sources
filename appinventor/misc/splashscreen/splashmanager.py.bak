@@ -14,7 +14,7 @@ os.environ['SERVER_SOFTWARE'] = 'MIT SplashScreen Manager 1.0' # Googlism
 
 
 def auth_func():
-  return (input('Email: '), getpass.getpass('Password: '))
+  return (raw_input('Email: '), getpass.getpass('Password: '))
 
 def main():
     getlibdir()
@@ -67,7 +67,7 @@ def main():
         sys.stderr.write('Usage: splashmanager.py [-f splashfile -w width -h height] [-H host] \n')
         sys.exit(1)
 
-    print('Connecting to %s' % host)
+    print 'Connecting to %s' % host
     if host == 'localhost':
         host = host + ':8888'
         secure = False
@@ -83,7 +83,7 @@ def main():
     update = False
     sd = SplashData.all().fetch(1)[0]
     if getversion:
-        print('Splash Version: %d' % sd.version)
+        print 'Splash Version: %d' % sd.version
     if setversion:
         sd.version = setversion
         update = True
@@ -105,16 +105,16 @@ def main():
 def getlibdir():
     '''Find the googl_appengine library directory'''
     from os.path import expanduser
-    import configparser
+    import ConfigParser
     doupdate = False
-    config = configparser.RawConfigParser()
+    config = ConfigParser.RawConfigParser()
     configfile = expanduser('~/.appinv_splashmanager')
     config.read(configfile)
     libdir = '/usr/local/google_appengine' # Default
     if config.has_section('splashmanager'):
         try:
             libdir = config.get('splashmanager', 'googlelibdir')
-        except configparser.NoOptionError:
+        except ConfigParser.NoOptionError:
             config.set('splashmanager', 'googlelibdir', libdir)
             doupdate = True
     else:
@@ -129,7 +129,7 @@ def getlibdir():
     try:
         from google.appengine.ext import db
     except ImportError:
-        newpath = input('Google Python App Engine SDK Path [%s]: ' % libdir)
+        newpath = raw_input('Google Python App Engine SDK Path [%s]: ' % libdir)
         if newpath == '':
             newpath = libdir
         libdir = newpath
@@ -137,7 +137,7 @@ def getlibdir():
         f = open(configfile, 'w')
         config.write(f)
         f.close()
-        print('Location of Google Library Directory Saved, exiting, try again...')
+        print 'Location of Google Library Directory Saved, exiting, try again...'
         sys.exit(0)
 
 # The stuff below is to permit the prompt for the library dir to
@@ -190,7 +190,7 @@ comp = Completer()
 try:
     import readline
 except ImportError:
-    print("Module readline not available.")
+    print "Module readline not available."
 else:
     import rlcompleter
     readline.set_completer_delims(' \t\n;')
