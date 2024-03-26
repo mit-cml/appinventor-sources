@@ -6,6 +6,7 @@
 import Foundation
 
 @objc public protocol LifecycleDelegate {
+  @objc optional func onInitialize()
   @objc optional func onResume()
   @objc optional func onPause()
   @objc optional func onDelete()

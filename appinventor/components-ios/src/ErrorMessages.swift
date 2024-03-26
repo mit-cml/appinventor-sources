@@ -122,6 +122,12 @@ import Foundation
   case ERROR_ROUTING_SERVICE_ERROR = 4003
   case ERROR_NO_ROUTE_FOUND = 4004
 
+  // ChartData Errors
+  case ERROR_INVALID_CHART_ENTRY_VALUES = 4101
+  case ERROR_NULL_CHART_ENTRY_VALUES = 4102
+  case ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103
+  case ERROR_INVALID_CHART_DATA_COLOR = 4104
+
   // ChatBot Errors
   case ERROR_CHATBOT_ERROR = 4200
 
@@ -347,6 +353,16 @@ import Foundation
       return "Routing service failed with status %d %s"
     case .ERROR_NO_ROUTE_FOUND:
       return "No route returned by the routing service."
+
+    // ChartData Errors
+    case .ERROR_INVALID_CHART_ENTRY_VALUES:
+      return "Invalid chart entry value(s): %s, %s"
+    case .ERROR_NULL_CHART_ENTRY_VALUES:
+      return "Undefined value was present in Chart entry"
+    case .ERROR_INSUFFICIENT_CHART_ENTRY_VALUES:
+      return "Chart entry did not contain enough values; Expected %d but was %d"
+    case .ERROR_INVALID_CHART_DATA_COLOR:
+      return "Invalid chart data color parameter specified: %s"
 
     // ChatBot Errors
     case .ERROR_CHATBOT_ERROR:
