@@ -1478,7 +1478,10 @@ public class YaVersion {
   //   with the FirstRemoved event were added
   // For FIREBASE_COMPONENT_VERSION 3:
   // - Added the ClearTag function, GetTagList and Persist
-  public static final int FIREBASE_COMPONENT_VERSION = 3;
+  // For FIREBASE_COMPONENT_VERSION 4:
+  // - Added the GoOnline and GoOffline functions
+  // - Made the FirebaseURL property user visible
+  public static final int FIREBASE_COMPONENT_VERSION = 4;
 
   // For CLOUDDB_COMPONENT_VERSION 1:
   // - CloudDB component introduced
