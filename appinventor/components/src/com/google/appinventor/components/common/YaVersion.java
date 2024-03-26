@@ -832,7 +832,9 @@ public class YaVersion {
   // - The UseFront property was added.
   // For CAMERA_COMPONENT_VERSION 3:
   // - The UseFront property was removed :-( .
-   public static final int CAMERA_COMPONENT_VERSION = 3;
+  // For CAMERA_COMPONENT_VERSION 4:
+  // - ToggleLight, HasFlash methods were added.
+   public static final int CAMERA_COMPONENT_VERSION = 4;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
