@@ -82,6 +82,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
     config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
     config.setDeleteAccountAllowed(deleteAccountAllowed);
+    config.setIosExtensions(storageIo.getIosExtensionsConfig());
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
