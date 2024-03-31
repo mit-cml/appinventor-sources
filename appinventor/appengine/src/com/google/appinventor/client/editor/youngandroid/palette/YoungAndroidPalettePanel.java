@@ -156,6 +156,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new CollapsablePanel();
+    stackPalette.setStylePrimaryName("ode-CollapsablePanel");
 
     paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
     // If a category has a palette helper, add it to the paletteHelpers map here.
@@ -222,7 +223,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         stackPalette.add(categoryPanel, category, title);
       }
     }
-
+    stackPalette.show(0);
     initExtensionPanel();
   }
 

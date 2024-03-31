@@ -931,6 +931,38 @@ div.StatusPanel {
 
 /* Palette */
 
+.ode-CollapsablePanel .gwt-DisclosurePanel .header td:has(img) {
+  display: none;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+  color: #555;
+  font-size: 13px;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+  border-top: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
+  background-color: #eef2e0;
+  cursor: pointer;
+  height: 14px;
+  padding: 8px 16px;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+  padding: 8px 4px 8px 8px;
+  background-color: white;
+  border: 1px solid #bbbbbb;
+  border-bottom: 0px;
+  margin-left: 0px;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel img {
+  margin-top: 0px;
+}
+
 .gwt-StackPanelItem div {
   border-top: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
