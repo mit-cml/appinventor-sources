@@ -166,9 +166,9 @@
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
 				063D678E1FA0CEB1002E907D /* SchemeKit.framework */,
-				06463EFA1D95956800B23DCD /* src */,
-				06463F0F1D95956800B23DCD /* tests */,
-				06463F1A1D95956800B23DCD /* uitests */,
+				06463EFA1D95956800B23DCD /* aicompanionapp/src */,
+				06463F0F1D95956800B23DCD /* aicompanionapp/tests */,
+				06463F1A1D95956800B23DCD /* aicompanionapp/uitests */,
 				06463EF91D95956800B23DCD /* Products */,
 				06EC0A1A1D959648001CD8DC /* Frameworks */,
 				9F048C59E0A8D7BC18969732 /* Pods */,
@@ -187,7 +187,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		06463EFA1D95956800B23DCD /* src */ = {
+		06463EFA1D95956800B23DCD /* aicompanionapp/src */ = {
 			isa = PBXGroup;
 			children = (
 				06B2161D1DBC7B4C000B3366 /* resources */,
@@ -207,7 +207,7 @@
 			path = aicompanionapp/src;
 			sourceTree = "<group>";
 		};
-		06463F0F1D95956800B23DCD /* tests */ = {
+		06463F0F1D95956800B23DCD /* aicompanionapp/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F101D95956800B23DCD /* AICompanionTests.swift */,
@@ -216,7 +216,7 @@
 			path = aicompanionapp/tests;
 			sourceTree = "<group>";
 		};
-		06463F1A1D95956800B23DCD /* uitests */ = {
+		06463F1A1D95956800B23DCD /* aicompanionapp/uitests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F1B1D95956800B23DCD /* AICompanionUITests.swift */,

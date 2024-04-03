@@ -281,7 +281,7 @@ public class ProjectServiceTest {
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
-        "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
+        "\"Title\":\"Screen1\","+"\"AppName\":\"noname\",\"Theme\":\"Classic\"}}\n|#");
     assertEquals(expectedYaFiles, getTextFiles(USER_ID_ONE, yaProject, true));
     assertEqualProperties(new YoungAndroidSettingsBuilder()
         .setProjectName("Project1")

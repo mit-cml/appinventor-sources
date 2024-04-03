@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -94,7 +94,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
     + "     (<code>RequestMentions</code>)</li></ul></p>\n "
     + "<p>You must obtain a Consumer Key and Consumer Secret for Twitter authorization "
     + " specific to your app from http://twitter.com/oauth_clients/new",
-    category = ComponentCategory.SOCIAL, nonVisible = true, iconName = "images/twitter.png")
+    category = ComponentCategory.INTERNAL, nonVisible = true, iconName = "images/twitter.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "twitter4j.jar," + "twitter4jmedia.jar")

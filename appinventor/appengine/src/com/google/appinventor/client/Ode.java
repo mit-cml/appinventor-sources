@@ -713,6 +713,7 @@ public class Ode implements EntryPoint {
           config = result;
           user = result.getUser();
           isReadOnly = user.isReadOnly();
+          registerIosExtensions(config.getIosExtensions());
           return resolve(null);
         })
         .then0(this::handleGalleryId)
@@ -2592,4 +2593,9 @@ public class Ode implements EntryPoint {
     public interface Style extends CssResource {
     }
   }
+
+  private static native void registerIosExtensions(String extensionJson)/*-{
+    $wnd.ALLOWED_IOS_EXTENSIONS = JSON.parse(extensionJson);
+  }-*/;
+
 }

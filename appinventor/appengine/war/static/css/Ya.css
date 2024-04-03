@@ -44,6 +44,12 @@ body, html {
   min-height: 100vh;
 }
 
+/* Standardization of icon sizes to 16px */	
+.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {	
+  width: 16px;	
+  height: 16px;	
+}
+
 /* Needed for Safari to position comments correctly */
 body.blocklyMinimalBody {
   min-width: auto;
@@ -732,6 +738,10 @@ div.StatusPanel {
 .gwt-TextBox {
   padding: 0;
   margin: 0;
+}
+
+.ode-SimpleMockComponent .gwt-PasswordTextBox {
+  box-sizing: border-box;
 }
 
 .gwt-Tree .gwt-TreeItem span * {
@@ -1816,6 +1826,12 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   justify-content: space-around ;
   width: 95%;
+}
+
+.ode-DialogBox .contentRow {
+  display: inline-flex;
+  width: 95%;
+  margin-left: 20px;
 }
 
 /* AI2 Extensions Styles */

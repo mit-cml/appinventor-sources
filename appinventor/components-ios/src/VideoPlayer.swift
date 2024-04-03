@@ -124,7 +124,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open func GetDuration() -> Int32 {
     if let player = _controller.player, let item = player.currentItem {
-      return Int32(CMTimeGetSeconds(item.duration))
+      return Int32(CMTimeGetSeconds(item.duration) * 1000.0)
     } else {
       return 0
     }
@@ -132,7 +132,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open func SeekTo(_ ms: Int32) {
     if let player = _controller.player {
-      player.seek(to: CMTime(seconds: Double(ms), preferredTimescale: 1))
+      player.seek(to: CMTime(seconds: Double(ms) / 1000.0, preferredTimescale: 1))
       player.pause()
     }
   }
