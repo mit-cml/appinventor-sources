@@ -55,7 +55,7 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
   protected final ProjectEditor projectEditor;
 
-  private MockForm form;
+  protected MockForm form;
 
   /**
    * Creates new component design panel for visible components.

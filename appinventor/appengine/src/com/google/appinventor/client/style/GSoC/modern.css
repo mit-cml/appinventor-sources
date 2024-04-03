@@ -297,7 +297,7 @@ they get cut off in Windows.
   }
   
   .ode-ProjectFolderList {
-    margin-left: 42px;
+    margin-left: 30px;
   }
   
   .ode-ProjectHeaderRow {
@@ -317,11 +317,6 @@ they get cut off in Windows.
     padding-right: 5px;
     padding-left: 20px;
     align-self: center;
-  }
-  
-  .ode-ProjectFolderIcon {
-    padding-right: 5px;
-    padding-left: 5px;
   }
   
   .ode-ProjectListDate {
@@ -640,6 +635,7 @@ they get cut off in Windows.
   .gwt-Tree .gwt-TreeItem-selected span:hover
   {
     background-color: rgba(167, 36, 122, 0.21) !important;
+    padding-right: 10px;
   }
 
   .gwt-Tree .gwt-TreeItem span,
@@ -675,7 +671,8 @@ they get cut off in Windows.
     font-weight: 500;
     font-size: 1.4em;
     padding-top: 2px;
-    padding-right: 20px
+    padding-right: 20px;
+    text-shadow: none;
   }
   .ode-TextButton,
   .gwt-Button {
@@ -941,6 +938,10 @@ they get cut off in Windows.
 
   .ode-SimpleFormDesigner .gwt-ListBox {
     margin-right: 10px;
+  }
+
+  .ode-SimpleFormDesigner .material-icons {
+    padding-right: 5px;
   }
 
   .ode-SimpleMockForm {

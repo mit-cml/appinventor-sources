@@ -14,13 +14,13 @@
     <g:VerticalPanel styleName="ode-SimpleFormDesigner">
         <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner"  horizontalAlignment="ALIGN_CENTER">
             <g:FlowPanel  stylePrimaryName="ode-SimpleFormDesignerToolbar">
-                <ai:Icon icon="aspect_ratio" />
+                <ai:Icon ui:field="size_icon" icon="aspect_ratio" />
                 <g:ListBox ui:field="listboxPhoneTablet">
                     <g:item value="0"><ui:text from="{messages.previewPhone}" /> (320 x 505)</g:item>
                     <g:item value="1"><ui:text from="{messages.previewTablet}" /> (480 x 675)</g:item>
                     <g:item value="2"><ui:text from="{messages.previewMonitor}" /> (768 x 1024)</g:item>
                 </g:ListBox>
-                <ai:Icon icon="smartphone"  />
+                <ai:Icon ui:field="os_icon" icon="smartphone"  />
                 <g:ListBox ui:field="listboxPhonePreview">
                     <g:item value="0">Android 5+ (Material)</g:item>
                     <g:item value="1">Android 3.0-4.x (Holo)</g:item>

@@ -1,5 +1,6 @@
 package com.google.appinventor.client.style.GSoC;
 
+import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
@@ -18,6 +19,8 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
   @UiField protected VerticalPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview;
+  @UiField Icon os_icon;
+  @UiField Icon size_icon;
 
   public SimpleVisibleComponentsPanelGSoC(final SimpleEditor editor,
       SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
@@ -36,8 +39,11 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
         boolean fixed = (sizing.equals("Fixed"));
         listboxPhoneTablet.setVisible(!fixed);
         if (fixed) {
+          phoneScreen.setStyleName("ode-ProjectRowHighlighted");
+          size_icon.setVisible(false);
           changeFormPreviewSize(0, 320, 505);
         } else {
+          size_icon.setVisible(true);
           getUserSettingChangeSize();
         }
       }
@@ -51,6 +57,7 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
             SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
         boolean classic = (previewStyle.equals("Classic"));
         listboxPhonePreview.setVisible(!classic);
+        os_icon.setVisible(!classic);
         if (classic) {
           changeFormPhonePreview(-1, "Classic");
         } else {
@@ -59,6 +66,19 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
       }
     };
   }
+
+  @Override
+  public void enableTabletPreviewCheckBox(boolean enable){
+    super.enableTabletPreviewCheckBox(enable);
+    size_icon.setVisible(enable);
+  }
+
+  @Override
+  public void enablePhonePreviewCheckBox(boolean enable){
+    super.enablePhonePreviewCheckBox(enable);
+    os_icon.setVisible(enable);
+  }
+
 
   @Override
   protected void bindUI() {

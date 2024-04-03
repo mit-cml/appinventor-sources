@@ -53,7 +53,9 @@
           <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" >
             <actions:OpenLinkAction link_name="Forums"/>
           </ai:DropDownItem>
-          <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
+          <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" >
+            <actions:ShowSplashAction />
+          </ai:DropDownItem>
         </ai:DropDownButton>
 
         <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
