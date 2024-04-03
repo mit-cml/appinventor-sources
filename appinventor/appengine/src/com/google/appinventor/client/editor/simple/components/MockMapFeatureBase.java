@@ -74,7 +74,12 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
   protected void onSelectedChange(boolean selected) {
     super.onSelectedChange(selected);
     setSelected(selected);
-    setEditing(selected);
+    boolean isVisible = getVisibleProperty();
+    setEditing(isVisible && selected);
+  }
+  
+  boolean getVisibleProperty() {
+    return Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_VISIBLE));
   }
 
   @Override

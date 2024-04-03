@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -160,7 +160,7 @@ public class MockCloudDB extends MockNonVisibleComponent {
   }
 
   private void getTokenFromServer() {
-    Ode.getInstance().getCloudDBAuthService().getToken(new OdeAsyncCallback<String>() {
+    Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
         EditableProperty tokenProperty = MockCloudDB.this.properties.getProperty(PROPERTY_NAME_TOKEN);

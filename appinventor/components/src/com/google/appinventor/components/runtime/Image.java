@@ -26,6 +26,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
@@ -46,7 +47,8 @@ import java.io.IOException;
     category = ComponentCategory.USERINTERFACE,
     description = "Component for displaying images.  The picture to display, " +
     "and other aspects of the Image's appearance, can be specified in the " +
-    "Designer or in the Blocks Editor.")
+    "Designer or in the Blocks Editor.",
+    iconName = "images/image.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
     "android.permission.READ_EXTERNAL_STORAGE")
@@ -90,7 +92,8 @@ public final class Image extends AndroidViewComponent {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "A written description of what the image looks like.")
+  @SimpleProperty(description = "A written description of what the image looks like.",
+      category = PropertyCategory.APPEARANCE)
   public void AlternateText(String description){
     view.setContentDescription(description);
   }
@@ -146,23 +149,22 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(@Asset final String path) {
-    if (MediaUtil.isExternalFile(container.$context(), path)
-        && container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
-          new PermissionResultHandler() {
+  public void Picture(@Asset String path) {
+    final String tempPath = path == null ? "" : path;
+    if (TiramisuUtil.requestImagePermissions(container.$form(), path,
+        new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {
               if (granted) {
-                Picture(path);
+                Picture(tempPath);
               } else {
                 container.$form().dispatchPermissionDeniedEvent(Image.this, "Picture", permission);
               }
             }
-          });
+          })) {
       return;
     }
-    picturePath = (path == null) ? "" : path;
+    picturePath = tempPath;
 
     Drawable drawable;
     try {
@@ -208,7 +210,8 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
     defaultValue = "False")
   // @Deprecated -- We will deprecate this in a future release (jis: 2/12/2016)
-  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
+  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.",
+      category = PropertyCategory.APPEARANCE)
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);

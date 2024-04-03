@@ -16,6 +16,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.Execution;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -67,6 +68,7 @@ public class DexExecTask {
     public void setVerbose(boolean verbose) {
         mVerbose = verbose;
     }
+
 
     public void setMainDexClassesFile(String classList) {
         mainDexFile = classList;
@@ -183,7 +185,7 @@ public class DexExecTask {
         }
 
         System.out.println(String.format(
-                "Converting compiled files and external libraries into %1$s...", mOutput));
+            "Converting compiled files and external libraries into %1$s...", mOutput));
 
         return runDx(paths, mOutput, mVerbose /*showInputs*/);
     }

@@ -237,7 +237,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Users press escapte button, results and searchText will be cleared
+   *  Users press escape button, results and searchText will be cleared
    */
   private class EscapeKeyDownHandler implements KeyDownHandler {
     @Override
@@ -300,6 +300,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private static boolean showCategory(ComponentCategory category) {
     if (category == ComponentCategory.UNINITIALIZED) {
+      return false;
+    }
+    // We should only show FUTURE components if the future feature flag is enabled...
+    if (category == ComponentCategory.FUTURE &&
+        !AppInventorFeatures.enableFutureFeatures()) {
       return false;
     }
     if (category == ComponentCategory.INTERNAL &&

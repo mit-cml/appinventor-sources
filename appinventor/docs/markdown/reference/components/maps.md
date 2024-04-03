@@ -469,9 +469,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  services enabled and which location providers are available.
 
 {:id="Map.ShowZoom" .boolean} *ShowZoom*
-: Shows or hides an icon indicating the user's current location on the [`Map`](#Map). The
- availability and accuracy of this feature will depend on whether the user has location
- services enabled and which location providers are available.
+: Specifies whether to show zoom controls or not.
 
 {:id="Map.Top" .number} *Top*
 : Specifies the position of the Top edge of the component relative to an
@@ -546,7 +544,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  `when any ... StopDrag` event if one is provided.
 
 {:id="Map.GotFeatures"} GotFeatures(*url*{:.text},*features*{:.list})
-: The `GotFeatures` event is run when when a feature collection is successfully read from the
+: The `GotFeatures` event is run when a feature collection is successfully read from the
  given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
  feature descriptions that can be converted into components using the
  [`FeatureFromDescription`](#Map.FeatureFromDescription) method.

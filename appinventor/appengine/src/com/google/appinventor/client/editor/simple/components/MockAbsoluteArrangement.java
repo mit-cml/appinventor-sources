@@ -6,7 +6,6 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -15,6 +14,8 @@ import com.google.gwt.event.dom.client.LoadHandler;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class MockAbsoluteArrangement extends MockContainer {
 
@@ -22,6 +23,7 @@ public final class MockAbsoluteArrangement extends MockContainer {
    * Component type name.
    */
   public static final String TYPE = "AbsoluteArrangement";
+  private static final Logger LOG = Logger.getLogger(MockAbsoluteArrangement.class.getName());
 
   // Form UI components
   protected final AbsolutePanel layoutWidget;
@@ -57,7 +59,7 @@ public final class MockAbsoluteArrangement extends MockContainer {
       @Override
       public void onError(ErrorEvent event) {
         if (imagePropValue != null && !imagePropValue.isEmpty()) {
-          OdeLog.elog("Error occurred while loading image " + imagePropValue);
+          LOG.log(Level.SEVERE, "Error occurred while loading image " + imagePropValue);
         }
         refreshForm();
       }

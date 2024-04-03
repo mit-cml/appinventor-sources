@@ -252,10 +252,10 @@ public final class StringUtils {
     String normalized = VALID_FILENAME_CHARS.retainFrom(str);
     if (!normalized.isEmpty()) {
       while (normalized.length() > 2 &&
-             !CharMatcher.JAVA_LETTER.matches(normalized.charAt(0))) {
+             !CharMatcher.javaLetter().matches(normalized.charAt(0))) {
         normalized = normalized.substring(1);
       }
-      if (CharMatcher.JAVA_LETTER.matches(normalized.charAt(0))) {
+      if (CharMatcher.javaLetter().matches(normalized.charAt(0))) {
         return normalized;
       }
     }

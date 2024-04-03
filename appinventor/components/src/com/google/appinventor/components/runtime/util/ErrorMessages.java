@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -185,6 +185,13 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_WRITE_TO_FILE = 2104;
   public static final int ERROR_CANNOT_DELETE_ASSET = 2105;
   public static final int ERROR_CANNOT_WRITE_ASSET = 2106;
+  public static final int ERROR_CANNOT_DELETE_FILE = 2107;
+  public static final int ERROR_CANNOT_MAKE_DIRECTORY = 2108;
+  public static final int ERROR_FILE_EXISTS_AT_PATH = 2109;
+  public static final int ERROR_DIRECTORY_DOES_NOT_EXIST = 2110;
+  public static final int ERROR_NOT_A_DIRECTORY = 2111;
+  public static final int ERROR_CANNOT_LIST_DIRECTORY = 2112;
+  public static final int ERROR_CANNOT_REMOVE_DIRECTORY = 2113;
 
   // Yandex.Translate errors
   public static final int ERROR_TRANSLATE_NO_KEY_FOUND = 2201;
@@ -285,8 +292,28 @@ public final class ErrorMessages {
   public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
   public static final int ERROR_NO_ROUTE_FOUND = 4004;
 
+  //ChartData Errors
+  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 4101;
+  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 4102;
+  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103;
+  public static final int ERROR_INVALID_CHART_DATA_COLOR = 4104;
 
-  // Start the next group of errors at 4100
+  // ChatBot Errors
+  public static final int ERROR_CHATBOT_ERROR = 4200;
+
+  // ImageBot Errors
+  public static final int ERROR_IMAGEBOT_ERROR = 4300;
+
+  // Spreadsheet Errors
+  public static final int ERROR_SPREADSHEET_ERROR = 4401;
+
+  // FilePicker Errors
+  public static final int ERROR_FILEPICKER_NO_URI_RETURNED = 4501;
+
+  // ListView Errors
+  public static final int ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601;
+
+  // Start the next group of errors at 4700
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -591,6 +618,13 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE, "Cannot write to file %s");
     errorMessages.put(ERROR_CANNOT_DELETE_ASSET, "Cannot delete asset file at %s");
     errorMessages.put(ERROR_CANNOT_WRITE_ASSET, "Cannot write asset file at %s");
+    errorMessages.put(ERROR_CANNOT_DELETE_FILE, "Cannot delete file at %s");
+    errorMessages.put(ERROR_CANNOT_MAKE_DIRECTORY, "Cannot create directory at %s");
+    errorMessages.put(ERROR_FILE_EXISTS_AT_PATH, "File already exists at %s");
+    errorMessages.put(ERROR_DIRECTORY_DOES_NOT_EXIST, "The directory %s could not be found");
+    errorMessages.put(ERROR_NOT_A_DIRECTORY, "The path at %s is not a directory");
+    errorMessages.put(ERROR_CANNOT_LIST_DIRECTORY, "Cannot list directory at %s");
+    errorMessages.put(ERROR_CANNOT_REMOVE_DIRECTORY, "Cannot remove directory at %s");
     //Yandex.Translate translate Errors
     errorMessages.put(ERROR_TRANSLATE_NO_KEY_FOUND, "Missing API key for the Yandex.Translate " +
         "service.");
@@ -705,6 +739,30 @@ public final class ErrorMessages {
         "Unable to request directions. Reason: %s");
     errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
     errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
+
+    //ChartData Errors
+    errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
+    errorMessages.put(ERROR_NULL_CHART_ENTRY_VALUES, "Undefined value was present in Chart Entry");
+    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough "
+        + "values; Expected %1$d, but was %2$d");
+    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter "
+        + "specified: %1$s");
+
+    // ChatBot Errors
+    errorMessages.put(ERROR_CHATBOT_ERROR, "Error from the ChatBot code %1$d %2$s");
+
+    // ImageBot Errors
+    errorMessages.put(ERROR_IMAGEBOT_ERROR, "Error from the ImageBot code %1$d %2$s");
+
+    // Spreadsheet Errors
+    errorMessages.put(ERROR_SPREADSHEET_ERROR, "Error in Spreadsheet: %1$s");
+
+    // FilePicker Errors
+    errorMessages.put(ERROR_FILEPICKER_NO_URI_RETURNED, "No URI returned to FilePicker");
+
+    // ListView Errors
+    errorMessages.put(ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS,
+        "The index %d is out of bounds for the list view.");
   }
 
   private ErrorMessages() {

@@ -10,7 +10,8 @@ package com.google.appinventor.client.editor.simple;
  * does not exist in the project.
  */
 public class ComponentNotFoundException extends IllegalArgumentException {
-  private final String componentName;
+  @SuppressWarnings("FieldMayBeFinal")
+  private String componentName;
 
   protected ComponentNotFoundException() {
     super();

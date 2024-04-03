@@ -6,10 +6,10 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
-
-import com.google.appinventor.client.output.OdeLog;
 
 import com.google.appinventor.common.utils.StringUtils;
 
@@ -30,8 +30,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manage known assets and components for a project and arrange to send them to the
@@ -41,6 +41,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 
 public final class AssetManager implements ProjectChangeListener {
+  private static final Logger LOG = Logger.getLogger(AssetManager.class.getName());
 
   private static class AssetInfo { // Describes one asset
     String fileId;
@@ -82,7 +83,7 @@ public final class AssetManager implements ProjectChangeListener {
 
     this.projectId = projectId;
     if (DEBUG)
-      OdeLog.log("AssetManager: Loading assets for " + projectId);
+      LOG.info("AssetManager: Loading assets for " + projectId);
     if (projectId != 0) {
       project = Ode.getInstance().getProjectManager().getProject(projectId);
       assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
@@ -148,7 +149,6 @@ public final class AssetManager implements ProjectChangeListener {
     String fileId = node.getFileId();
     AssetInfo assetInfo = new AssetInfo();
     assetInfo.fileId = fileId;
-    assetInfo.fileContent = null;
     assetInfo.loaded = false; // Set to true when it is loaded to the repl
     assetInfo.transferred = false; // Set to true when asset is received on phone
     assets.put(fileId, assetInfo);
@@ -209,7 +209,7 @@ public final class AssetManager implements ProjectChangeListener {
             retryCount--;
             readIn(assetInfo);
           } else {
-            OdeLog.elog("Failed to load asset.");
+            LOG.log(Level.SEVERE, "Failed to load asset.", ex);
           }
         }
       });
@@ -226,7 +226,7 @@ public final class AssetManager implements ProjectChangeListener {
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
         loadInProgress = true;
-        if (a.fileContent == null && !useWebRTC()) { // Need to fetch it from the server
+        if (a.fileContent == null && !hasFetchAssets()) { // Need to fetch it from the server
           retryCount = 3;
           ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
             MESSAGES.loadingAsset(a.fileId));
@@ -267,7 +267,7 @@ public final class AssetManager implements ProjectChangeListener {
   }
 
   public void reset1(String formName) {
-    OdeLog.log("AssetManager: formName = " + formName + " received reset.");
+    LOG.info("AssetManager: formName = " + formName + " received reset.");
     for (AssetInfo a: assets.values()) {
       a.loaded = false;
       a.transferred = false;
@@ -314,14 +314,15 @@ public final class AssetManager implements ProjectChangeListener {
   @Override
   public void onProjectLoaded(Project project) {
     if (DEBUG)
-      OdeLog.log("AssetManager: got onProjectLoaded for " + project.getProjectId() + ", current project is " + projectId);
+      LOG.info("AssetManager: got onProjectLoaded for " + project.getProjectId()
+          + ", current project is " + projectId);
     loadAssets(project.getProjectId());
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
     if (DEBUG)
-      OdeLog.log("AssetManager: got projectNodeAdded for node " + node.getFileId()
+      LOG.info("AssetManager: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
@@ -331,7 +332,7 @@ public final class AssetManager implements ProjectChangeListener {
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
     if (DEBUG)
-      OdeLog.log("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
+      LOG.info("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
@@ -359,6 +360,10 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native boolean useWebRTC() /*-{
     return top.usewebrtc;
+  }-*/;
+
+  private static native boolean hasFetchAssets() /*-{
+    return top.ReplState.hasfetchassets;
   }-*/;
 
 }

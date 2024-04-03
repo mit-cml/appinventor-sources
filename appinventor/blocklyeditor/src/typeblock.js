@@ -547,7 +547,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             canonicName: 'text',
             dropDown: {
               titleName: 'TEXT',
-              value: blockName.substring(1)
+              value: goog.string.endsWith(blockName, '"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
             }
           };
         } else {
@@ -735,7 +735,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
-    matches.push(token);
+    goog.array.insertAt(matches, token, 0);
   }
 
   // Added code to handle default values for text fields (they start with " or ')
