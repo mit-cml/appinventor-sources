@@ -25,7 +25,7 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/MaterialIcons-Regular.ttf') format('truetype');
+  src: url('../fonts/MaterialIcons-2022.woff2') format('woff2');
 }
 
 .material-icons {

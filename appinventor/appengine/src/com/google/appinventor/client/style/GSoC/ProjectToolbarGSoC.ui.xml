@@ -43,19 +43,20 @@
                             styleName="ode-ProjectListButton inline bright" tooltip="{messages.publishToGalleryButton}">
                 <actions:ExportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Restore" icon="restore" caption="{messages.restoreProjectButton}" align="right" styleName="ode-ProjectListButton inline bleft">
+            <ai:ToolbarItem name="Restore" icon="restore" tooltip="{messages.restoreProjectButton}" align="right" styleName="ode-ProjectListButton inline bleft">
                 <actions:RestoreProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Projects" caption="{messages.projectsTabName2}" align="right" styleName="ode-ProjectListButton inline bcenter">
+            <ai:ToolbarItem name="Projects" icon="inventory" align="right" styleName="ode-ProjectListButton inline bcenter" tooltip="{messages.projectMenuItem}">
                 <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="right" styleName="ode-ProjectListButton inline bleft">
+            <ai:ToolbarItem name="Trash" icon='folder_off' tooltip="{messages.viewTrashButton}"
+                            align="right" styleName="ode-ProjectListButton inline bleft">
                 <actions:TrashAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete" icon='delete' caption="{messages.trashButton}" align="right" styleName="ode-ProjectListButton danger bright" tooltip="{messages.deleteProjectButton}">
+            <ai:ToolbarItem name="Delete" icon='delete' align="right" styleName="ode-ProjectListButton danger bright" tooltip="{messages.deleteProjectButton}">
                 <actions:DeleteAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete From Trash"  icon='delete_forever' caption="{messages.deleteButton}"
+            <ai:ToolbarItem name="Delete From Trash"  icon='delete_forever'
                             align="right" styleName="ode-ProjectListButton danger bright" tooltip="{messages.deleteFromTrashButton}">
                 <actions:DeleteForeverProjectAction />
             </ai:ToolbarItem>
