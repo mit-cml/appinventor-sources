@@ -166,7 +166,7 @@ they get cut off in Windows.
     flex-grow: 1;
   }
   
-  .ode-ProjectListButton-up-hovering {
+  .ode-ProjectListButton:hover {
     background-color: #7D9D36;
   }
 
@@ -333,7 +333,8 @@ they get cut off in Windows.
     align-items: center;
     height: 40px;
     display: inline-flex;
-    font-size: unset !important;
+    font-size: 14px;
+    color: button-text
   }
   
   .ode-ProjectListName {

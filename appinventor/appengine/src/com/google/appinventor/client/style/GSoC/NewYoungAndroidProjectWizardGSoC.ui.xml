@@ -2,6 +2,11 @@
 <!-- Copyright 2011-2023 MIT, All rights reserved -->
 <!-- Released under the Apache License, Version 2.0 -->
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- As of Apr 2024, this template is not being used. CSS changes are handling all the changes
+to dialog we need currently. It is left here as an example of a dialog template in case we want
+to do that in the future. -->
+
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"

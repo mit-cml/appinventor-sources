@@ -34,11 +34,6 @@ public class UIFactoryGSoC extends UIStyleFactory {
   }
 
   @Override
-  public NewYoungAndroidProjectWizard createNewYoungAndroidProjectWizard() {
-    return new NewYoungAndroidProjectWizardGSoC();
-  }
-
-  @Override
   public SimpleVisibleComponentsPanel createSimpleVisibleComponentsPanel
       (YaFormEditor editor, SimpleNonVisibleComponentsPanel nonVisPanel) {
     return new SimpleVisibleComponentsPanelGSoC(editor, nonVisPanel);

@@ -1814,10 +1814,6 @@ path.ode-SimpleMockMapFeature-selected {
   margin: 10px;
 }
 
-.ode-DialogBox table {
-  width: 100%;
-}
-
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
 }
@@ -1832,6 +1828,7 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   width: 95%;
   margin-left: 20px;
+  padding-bottom: 10px;
 }
 
 /* AI2 Extensions Styles */
