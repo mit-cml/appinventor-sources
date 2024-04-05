@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		062ACEF81F705CD200FA31AD /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 062ACEF71F705CD200FA31AD /* Pods_AICompanionApp.framework */; };
 		062ACEF91F705D3F00FA31AD /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 062ACEF31F705B5C00FA31AD /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		062B743D2BC07549002E221F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */; };
 		063D678F1FA0CEB1002E907D /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063D678E1FA0CEB1002E907D /* SchemeKit.framework */; };
 		063D67901FA0CEB1002E907D /* SchemeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 063D678E1FA0CEB1002E907D /* SchemeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		063D67921FA0CEB1002E907D /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063D67911FA0CEB1002E907D /* AIComponentKit.framework */; };
@@ -76,6 +77,7 @@
 		062ACEF31F705B5C00FA31AD /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		062ACEF71F705CD200FA31AD /* Pods_AICompanionApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AICompanionApp.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/AIComponentKit-czkmnbdmmcqhgpfhwphanoynsffy/Build/Products/Debug-iphonesimulator/Pods_AICompanionApp.framework"; sourceTree = "<group>"; };
 		062ACEFA1F705D7700FA31AD /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AIComponentKit.framework; path = "build/Debug-iphoneos/AIComponentKit.framework"; sourceTree = "<group>"; };
+		062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = aicompanionapp/src/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		063D678E1FA0CEB1002E907D /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		063D67911FA0CEB1002E907D /* AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463EF81D95956800B23DCD /* AICompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AICompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +164,7 @@
 		06463EEF1D95956800B23DCD = {
 			isa = PBXGroup;
 			children = (
+				062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */,
 				06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */,
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
@@ -394,6 +397,7 @@
 				06B216181DBC5F1B000B3366 /* Instructions.png in Resources */,
 				06B216171DBC5F1B000B3366 /* connectwQR.png in Resources */,
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
+				062B743D2BC07549002E221F /* PrivacyInfo.xcprivacy in Resources */,
 				06B216161DBC5F1B000B3366 /* connectwCode.png in Resources */,
 				06B2161A1DBC5F1B000B3366 /* Title.png in Resources */,
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
