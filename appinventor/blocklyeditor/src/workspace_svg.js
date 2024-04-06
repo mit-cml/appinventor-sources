@@ -664,12 +664,7 @@ Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   if (!opt_allowToolbox) {  // Fixes #1269
     this.backpack_ && this.backpack_.hide();
   }
-  this.setScrollbarsVisible(true);
-
-  if(this.drawer_.isShowing())
-  {
-    this.setScrollbarsVisible(false);
-  }
+  this.setScrollbarsVisible(!this.drawer_.isShowing());
 };
 
 /**
