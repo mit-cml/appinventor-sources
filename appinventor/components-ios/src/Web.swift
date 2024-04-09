@@ -145,7 +145,7 @@ open class Web: NonvisibleComponent {
     guard let webProps = capturePropertyValues("Delete") else {
       return
     }
-    performRequest(webProps, nil, nil, "Delete")
+    performRequest(webProps, nil, nil, "DELETE")
   }
 
   fileprivate func requestTextImpl(text: String, encoding: String?, functionName: String, httpVerb: String) {
