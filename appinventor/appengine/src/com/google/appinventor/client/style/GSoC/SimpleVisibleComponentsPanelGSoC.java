@@ -39,7 +39,6 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
         boolean fixed = (sizing.equals("Fixed"));
         listboxPhoneTablet.setVisible(!fixed);
         if (fixed) {
-          phoneScreen.setStyleName("ode-ProjectRowHighlighted");
           size_icon.setVisible(false);
           changeFormPreviewSize(0, 320, 505);
         } else {
