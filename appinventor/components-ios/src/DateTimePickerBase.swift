@@ -19,7 +19,7 @@ protocol DateTimePickerDelegate: UIPopoverPresentationControllerDelegate {
 class DateTimePickerPadController: PickerPadController, DateTimePickerController {
   private var _pickerView = UIDatePicker()
   private var _setDateTimeButton = UIButton()
-  private var _delegate: DateTimePickerDelegate
+  private unowned var _delegate: DateTimePickerDelegate
   private var _isDatePicker: Bool
 
   public init(_ delegate: DateTimePickerDelegate, isDatePicker: Bool) {
@@ -88,7 +88,7 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
 
 class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerController {
   private var _pickerView = UIDatePicker()
-  private var _delegate: DateTimePickerDelegate
+  private unowned var _delegate: DateTimePickerDelegate
 
   public init(_ delegate: DateTimePickerDelegate, screen form: Form, isDatePicker: Bool) {
     _delegate = delegate

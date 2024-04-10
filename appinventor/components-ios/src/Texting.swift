@@ -39,7 +39,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     }
     set(enabled) {
       // Google Voice not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      form.view.makeToast("Sorry, your phone's system does not support this option.")
     }
   }
 
@@ -49,7 +49,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     }
     set(enabled) {
       // Receiving messages not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      form.view.makeToast("Sorry, your phone's system does not support this option.")
     }
   }
 
@@ -58,19 +58,19 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     if !MFMessageComposeViewController.canSendText() {
       let alert = UIAlertController(title: "Texting not available", message: "Texting is not supported on this device.", preferredStyle: .alert)
       alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-      _form?.present(alert, animated: true, completion: nil)
+      form.present(alert, animated: true, completion: nil)
       return
     }
     let messageVC = MFMessageComposeViewController()
     messageVC.messageComposeDelegate = self
     messageVC.body = _message
     messageVC.recipients = [_phoneNumber]
-    _form?.present(messageVC, animated: true, completion: nil)
+    form.present(messageVC, animated: true, completion: nil)
   }
 
   @objc open func SendMessageDirect() {
     SendMessage()
-    if _form?.isRepl ?? false {
+    if form.isRepl {
       RetValManager.shared().sendError("SendMessageDirect is not supported. Use SendMessage instead.")
     }
   }

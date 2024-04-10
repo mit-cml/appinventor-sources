@@ -76,7 +76,7 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
       if !EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred",
                                         arguments: responseCode as AnyObject,
                                         responseText as AnyObject) {
-        self._form?.dispatchErrorOccurredEvent(self, "ErrorOccurred",
+        self.form.dispatchErrorOccurredEvent(self, "ErrorOccurred",
             ErrorMessage.ERROR_CHATBOT_ERROR, responseCode as AnyObject, responseText as AnyObject)
       }
     }

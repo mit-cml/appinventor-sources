@@ -39,7 +39,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     if _htmlFormat {
       updateFormattedContent()
     } else {
-      if form?.BigDefaultText == true {
+      if form.BigDefaultText == true {
         if _fontSize == kFontSizeDefault {
           _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
         } else {
@@ -184,7 +184,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       updateFormattedContent()
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
-      _container?.form?.view.setNeedsLayout()
+      form.view.setNeedsLayout()
     }
   }
 

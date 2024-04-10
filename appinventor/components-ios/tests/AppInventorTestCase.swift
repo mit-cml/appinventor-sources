@@ -98,7 +98,7 @@ class AppInventorTestCase: XCTestCase {
    *                perform additional assertions.
    */
   open func expectToReceiveEvent(on component: Component, named eventName: String, checker: CheckFunc? = nil) {
-    EventDispatcher.registerEventForDelegation(component.dispatchDelegate!, String(describing: component), eventName)
+    EventDispatcher.registerEventForDelegation(component.dispatchDelegate, String(describing: component), eventName)
     let desc = EventDescription(component, eventName)
     var callbacks = form.checkerMap[desc] ?? [CheckFunc]()
     let expect = expectation(description: "\(component)$\(eventName)")
@@ -127,7 +127,7 @@ class AppInventorTestCase: XCTestCase {
    * @param eventName The name of the event that {@code component} should not receive.
    */
   open func expectNotToReceiveEvent(on component: Component, named eventName: String) {
-    EventDispatcher.registerEventForDelegation(component.dispatchDelegate!, String(describing: component), eventName)
+    EventDispatcher.registerEventForDelegation(component.dispatchDelegate, String(describing: component), eventName)
     let desc = EventDescription(component, eventName);
     var callbacks = form.checkerMap[desc] ?? [CheckFunc]()
     callbacks.append({(_ arguments: [AnyObject]) -> Void in

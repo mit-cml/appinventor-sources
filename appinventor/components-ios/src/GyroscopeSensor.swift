@@ -76,7 +76,7 @@ open class GyroscopeSensor: NonvisibleComponent {
 
   fileprivate func processUpdate(data: CMGyroData?, error: Error?) {
     if let gyroError = error {
-      _form?.dispatchErrorOccurredEvent(self, "GyroscopeChanged",
+      form.dispatchErrorOccurredEvent(self, "GyroscopeChanged",
           ErrorMessage.ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR.code,
           ErrorMessage.ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR.message,
           gyroError.localizedDescription)

@@ -48,9 +48,6 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
-    guard let form = form else {
-      return
-    }
     if width <= kLengthPercentTag {
       _view.setWidth(of: component.view, to: Length(percent: width, of: form.scaleFrameLayout))
     } else if width == kLengthPreferred {
@@ -64,9 +61,6 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
-    guard let form = form else {
-      return
-    }
     if height <= kLengthPercentTag {
       _view.setHeight(of: component.view, to: Length(percent: height, of: form.scaleFrameLayout))
     } else if height == kLengthPreferred {
@@ -77,12 +71,6 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       _view.setHeight(of: component.view, to: Length(pixels: height))
     }
     _view.setNeedsLayout()
-  }
-  
-  open var container: ComponentContainer? {
-    get {
-      return _container
-    }
   }
 
   open func isVisible(component: ViewComponent) -> Bool {

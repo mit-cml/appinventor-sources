@@ -237,7 +237,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
   }
 
   @objc func updateFontSize() {
-    if form?.BigDefaultText == true {
+    if form.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
         _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
       } else {

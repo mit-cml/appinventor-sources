@@ -56,7 +56,7 @@ import GEOSwift
 
   internal override func parseError(_ method: String) {
     super.parseError(method)
-    _container?.form?.dispatchErrorOccurredEvent(self, method,
+    form.dispatchErrorOccurredEvent(self, method,
         ErrorMessage.ERROR_LINESTRING_PARSE_ERROR.code,
         ErrorMessage.ERROR_LINESTRING_PARSE_ERROR.message, points)
   }

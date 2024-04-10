@@ -187,7 +187,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
     }
     CLASSIC_DEFAULT_PIPELINE[.Highlight] = {
       $0._view.showsTouchWhenHighlighted =
-        ($0._container?.form?.Theme != "Classic" || $0._backgroundImage != nil) && $0.ShowFeedback
+        ($0.form.Theme != "Classic" || $0._backgroundImage != nil) && $0.ShowFeedback
       $0._view.adjustsImageWhenHighlighted = $0.ShowFeedback
       return true
     }
@@ -251,7 +251,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
   }
 
   @objc func Initialize() {
-    if _container?.form?.Theme != "Classic" {
+    if form.Theme != "Classic" {
       _stylePipeline = ButtonBase.MODERN_DEFAULT_PIPELINE
     }
     applyStyle()
@@ -262,7 +262,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
       return
     }
 
-    if form?.BigDefaultText == true {
+    if form.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
         titleLabel.font = getFontSize(font: titleLabel.font, size: kFontSizeLargeDefault)
       } else {
@@ -275,7 +275,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
   }
 
   func updateColor() {
-    if form?.HighContrast == true {
+    if form.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
       } else {
@@ -507,7 +507,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
     for step in _stylePipeline.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
       if !step.value(self) { break }
     }
-    _container?.form?.view.setNeedsLayout()
+    form.view.setNeedsLayout()
     _view.setNeedsLayout()
   }
 }

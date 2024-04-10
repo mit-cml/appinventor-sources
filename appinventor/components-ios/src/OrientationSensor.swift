@@ -119,7 +119,7 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
         }
       }
       Enabled = false
-      _form?.dispatchErrorOccurredEvent(self, "OrientationChanged",
+      form.dispatchErrorOccurredEvent(self, "OrientationChanged",
           Int32(ErrorMessage.ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR.rawValue),
           "\(error!)")
     }

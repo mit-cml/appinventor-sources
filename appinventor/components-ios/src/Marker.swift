@@ -101,7 +101,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     }
     set(anchor) {
       if !(1...3 ~= anchor) {
-        _container?.form?.dispatchErrorOccurredEvent(self, "AnchorHorizontal",
+        form.dispatchErrorOccurredEvent(self, "AnchorHorizontal",
             ErrorMessage.ERROR_INVALID_ANCHOR_HORIZONTAL.code,
             ErrorMessage.ERROR_INVALID_ANCHOR_HORIZONTAL.message, anchor)
         return
@@ -125,7 +125,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     }
     set(anchor) {
       if !(1...3 ~= anchor) {
-        _container?.form?.dispatchErrorOccurredEvent(self, "AnchorVertical",
+        form.dispatchErrorOccurredEvent(self, "AnchorVertical",
             ErrorMessage.ERROR_INVALID_ANCHOR_VERTICAL.code,
             ErrorMessage.ERROR_INVALID_ANCHOR_VERTICAL.message, anchor)
         return
@@ -233,7 +233,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     }
     set(latitude) {
       if !(-90.0...90 ~= latitude) {
-        _container?.form?.dispatchErrorOccurredEvent(self, "Latitude",
+        form.dispatchErrorOccurredEvent(self, "Latitude",
             ErrorMessage.ERROR_INVALID_LATITUDE.code,
             ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       } else {
@@ -250,7 +250,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     }
     set(longitude) {
       if !(-180.0...180 ~= longitude) {
-        _container?.form?.dispatchErrorOccurredEvent(self, "Longitude",
+        form.dispatchErrorOccurredEvent(self, "Longitude",
             ErrorMessage.ERROR_INVALID_LONGITUDE.code,
             ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       } else {
@@ -306,7 +306,8 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
       _preferredHeight = CGFloat(height)
     } else if height == kLengthPreferred {
       _preferredHeight = _imagePath == "" ? kDefaultMarkerHeight: _imageView.frame.height
-    } else if let parentHeight = map?.mapView.frame.height {
+    } else {
+      let parentHeight = map.mapView.frame.height
       if height == kLengthFillParent {
         _preferredHeight = parentHeight
       } else if height <= kLengthPercentTag {
@@ -321,7 +322,8 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
       _preferredWidth = CGFloat(width)
     } else if width == kLengthPreferred {
       _preferredHeight = _imagePath == "" ? kDefaultMarkerWidth: _imageView.frame.width
-    } else if let parentWidth = map?.mapView.frame.width {
+    } else {
+      let parentWidth = map.mapView.frame.width
       if width == kLengthFillParent {
         _preferredWidth = parentWidth
       } else if width <= kLengthPercentTag {
@@ -351,18 +353,18 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
   }
 
   @objc open override func HideInfobox() {
-    map?.mapView.deselectAnnotation(annotation, animated: true)
+    map.mapView.deselectAnnotation(annotation, animated: true)
   }
 
   @objc public func SetLocation(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetLocation",
+      form.dispatchErrorOccurredEvent(self, "SetLocation",
           ErrorMessage.ERROR_INVALID_LATITUDE.code,
           ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return
     }
     if !(-180.0...180 ~= longitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetLocation",
+      form.dispatchErrorOccurredEvent(self, "SetLocation",
           ErrorMessage.ERROR_INVALID_LONGITUDE.code,
           ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return
@@ -378,7 +380,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
       changed = true
       _imageView.canShowCallout = true
     }
-    map?.mapView.selectAnnotation(annotation, animated: true)
+    map.mapView.selectAnnotation(annotation, animated: true)
     if changed {
       _imageView.canShowCallout = false
     }

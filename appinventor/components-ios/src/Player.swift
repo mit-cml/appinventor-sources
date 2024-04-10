@@ -65,7 +65,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       var resourceUrl: URL!
       if path.starts(with: "http:") || path.starts(with: "https:") {
         guard let url = URL(string: path) else {
-          _form?.dispatchErrorOccurredEvent(self, "Source",
+          form.dispatchErrorOccurredEvent(self, "Source",
               ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA, path)
           return
         }
@@ -75,7 +75,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       } else {
         let path = AssetManager.shared.pathForExistingFileAsset(path)
         guard !path.isEmpty else {
-          _form?.dispatchErrorOccurredEvent(self, "Source",
+          form.dispatchErrorOccurredEvent(self, "Source",
               ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
           return
         }
@@ -153,7 +153,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
       if state == .Error {
         state = .Error
         print("Unable to prepare to play audio")
-        _form?.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA,
+        form.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA,
             _sourcePath)
       } else {
         self.pendingPlay = true
@@ -238,7 +238,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
         break
       case .failed:
         self.state = .Error
-        _form?.dispatchErrorOccurredEvent(self, "Source",
+        form.dispatchErrorOccurredEvent(self, "Source",
             ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA, _sourcePath)
         break
       default:

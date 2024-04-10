@@ -134,19 +134,19 @@ let kMinimumToastWait = 10.0
     // Will be overriden in compiled apps
   }
 
-  open var dispatchDelegate: HandlesEventDispatching? {
+  open var dispatchDelegate: HandlesEventDispatching {
     get {
       return self
     }
   }
 
-  open var form: Form? {
+  open var form: Form {
     get {
       return self
     }
   }
 
-  public var container: ComponentContainer? {
+  public var container: ComponentContainer {
     get {
       return self
     }

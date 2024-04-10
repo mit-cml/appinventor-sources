@@ -78,11 +78,11 @@ fileprivate enum ConstraintUpdate {
   fileprivate func updateComponentConstraints(for change: ConstraintUpdate) {
     if change == .height, let constraint = _heightConstraint {
       component?.view.removeConstraint(constraint)
-      component?.form?.view.removeConstraint(constraint)
+      component?.form.view.removeConstraint(constraint)
     }
     if change == .width, let constraint = _widthConstraint {
       component?.view.removeConstraint(constraint)
-      component?.form?.view.removeConstraint(constraint)
+      component?.form.view.removeConstraint(constraint)
     }
     if change == .height || change == .initialize {
       addWidthConstraint()
@@ -100,7 +100,7 @@ fileprivate enum ConstraintUpdate {
         _heightConstraint = child.view.heightAnchor.constraint(equalToConstant: CGFloat(child._lastSetHeight))
         child.view.addConstraint(_heightConstraint!)
       } else if child._lastSetHeight <= kLengthPercentTag {
-        if let formView = child.form?.view, child.attachedToWindow {
+        if let formView = child.form.view, child.attachedToWindow {
           let height = -(child._lastSetHeight + 1000)
           let pHeight = CGFloat(height) / 100
           _heightConstraint = child.view.heightAnchor.constraint(equalTo: formView.heightAnchor, multiplier: pHeight)
@@ -117,7 +117,7 @@ fileprivate enum ConstraintUpdate {
         _widthConstraint = child.view.widthAnchor.constraint(equalToConstant: CGFloat(child._lastSetWidth))
         child.view.addConstraint(_widthConstraint!)
       } else if child._lastSetWidth <= kLengthPercentTag {
-        if let formView = child.form?.view, child.attachedToWindow {
+        if let formView = child.form.view, child.attachedToWindow {
           let width = -(child._lastSetWidth + 1000)
           let pWidth = CGFloat(width) / 100
           _widthConstraint = child.view.widthAnchor.constraint(equalTo: formView.widthAnchor, multiplier: pWidth)
@@ -361,12 +361,6 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
   }
 
   // MARK: ComponentContainer implementation
-
-  open var container: ComponentContainer? {
-    get {
-      return _container
-    }
-  }
 
   public func add(_ component: ViewComponent) {
     _view.add(component: component)

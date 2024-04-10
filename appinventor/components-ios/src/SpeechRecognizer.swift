@@ -21,7 +21,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
 
   @objc public func Initialize() {
     guard #available(iOS 10.0, *) else {
-      _form?.dispatchErrorOccurredEvent(self, "SpeechRecognizer",
+      form.dispatchErrorOccurredEvent(self, "SpeechRecognizer",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED.code)
       return
     }
@@ -49,12 +49,12 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
   @objc open func GetText() {
     if #available(iOS 10.0, *) {
       doRequestPermission() { allowed, changed in
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [self] in
           if changed {
             if allowed {
-              self._form?.PermissionGranted(kSpeechRecognizerPermission)
+              form.PermissionGranted(kSpeechRecognizerPermission)
             } else {
-              self._form?.dispatchPermissionDeniedEvent(self, "GetText", kSpeechRecognizerPermission)
+              form.dispatchPermissionDeniedEvent(self, "GetText", kSpeechRecognizerPermission)
             }
           }
           if allowed {
@@ -63,7 +63,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
         }
       }
     } else {
-      self._form?.dispatchErrorOccurredEventDialog(self, "GetText",
+      form.dispatchErrorOccurredEventDialog(self, "GetText",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED.code)
     }
   }
@@ -126,7 +126,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
     // get speech recognizer
     let locale = Language.isEmpty ? Locale.preferredLanguage : Locale(identifier: Language)
     guard let recognizer = SFSpeechRecognizer(locale: locale), recognizer.isAvailable else {
-      self._form?.dispatchErrorOccurredEvent(self, "GetText",
+      form.dispatchErrorOccurredEvent(self, "GetText",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE.code)
       return
     }
@@ -140,9 +140,9 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
       try audioSession.setCategory(.playAndRecord)
       try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
     } catch {
-      _form?.dispatchErrorOccurredEvent(self, "GetText",
-                                        ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR,
-                                        error.localizedDescription)
+      form.dispatchErrorOccurredEvent(self, "GetText",
+          ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR,
+          error.localizedDescription)
       return
     }
     // prepare recording for speech recognition
@@ -194,9 +194,9 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
       recognitionTask.finish()
     })
 
-    let start = UIAlertAction(title: "Start recording", style: .default) { item in
+    let start = UIAlertAction(title: "Start recording", style: .default) { [self] item in
       do {
-        self._form?.present(alert, animated: true) {
+        form.present(alert, animated: true) {
           // we want to terminate before the one minute maximum
           DispatchQueue.main.asyncAfter(deadline: .now() + 59.0, execute: {
             audioEngine.stop()
@@ -214,7 +214,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
         item.isEnabled = false
         stop.isEnabled = true
       } catch {
-        self._form?.dispatchErrorOccurredEvent(self, "GetText",
+        form.dispatchErrorOccurredEvent(self, "GetText",
             ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR.code)
       }
     }
@@ -222,7 +222,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
     alert.addAction(stop)
     alert.addAction(cancel)
     stop.isEnabled = false
-    self._form?.present(alert, animated: false)
+    form.present(alert, animated: false)
   }
 }
 

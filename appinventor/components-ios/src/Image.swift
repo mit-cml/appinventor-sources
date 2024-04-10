@@ -124,13 +124,13 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
               return
             }
             self.updateImage(UIImage(data: data))
-            self._container?.form?.view.setNeedsLayout()
+            self.form.view.setNeedsLayout()
           }
         }.resume()
       } else {
         updateImage(nil)
       }
-      _container?.form?.view.setNeedsLayout()
+      form.view.setNeedsLayout()
       NSLog("Image size: \(_view.frame)")
     }
   }

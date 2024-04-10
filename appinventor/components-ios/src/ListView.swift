@@ -372,7 +372,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
     if index < 1 || index > max(_listData.count, _elements.count) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
+      form.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
     }
@@ -531,10 +531,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
-
-    guard let form = _container?.form else {
-      return cell
-    }
 
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)

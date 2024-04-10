@@ -6,21 +6,25 @@
 import Foundation
 
 open class NonvisibleComponent: NSObject, Component {
-  @objc weak var _form: Form?
+  public unowned let container: ComponentContainer
 
   @objc public init(_ container: ComponentContainer) {
-    self._form = container.form
+    self.container = container
     super.init()
-    _form?.add(self)
+    form.add(self)
+  }
+
+  public var form: Form {
+    return container.form
   }
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  open var dispatchDelegate: HandlesEventDispatching? {
+  open var dispatchDelegate: HandlesEventDispatching {
     get {
-      return _form?.dispatchDelegate
+      return form.dispatchDelegate
     }
   }
 }

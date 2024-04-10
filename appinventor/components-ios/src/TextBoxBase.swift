@@ -68,7 +68,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   }
 
   func updateFontSize() {
-    if form?.BigDefaultText == true {
+    if form.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
         _delegate.font = getFontSize(font: _delegate.font, size: kFontSizeLargeDefault) ?? _delegate.font
       } else {
@@ -81,7 +81,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
 
   func updateColor() {
     var placeholderColor = colorToArgb(kDefaultPlaceholderColor)
-    if form?.HighContrast == true {
+    if form.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
         placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
@@ -101,13 +101,13 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       _backgroundColor = _userBackgroundColor
 
       if _textColor == Color.default.int32 {
-        _delegate.textColor = preferredTextColor(_container?.form)
+        _delegate.textColor = preferredTextColor(form)
       } else {
         _delegate.textColor = argbToColor(_textColor)
       }
 
       if _userBackgroundColor == Color.default.int32 {
-        _delegate.backgroundColor = preferredBackgroundColor(_container?.form)
+        _delegate.backgroundColor = preferredBackgroundColor(form)
       } else {
         _delegate.backgroundColor = argbToColor(_backgroundColor)
       }
@@ -234,7 +234,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       _hintColor = newValue
       if _hintColor != Color.default.int32 {
         _delegate?.placeholderColor = _hintColor
-      } else if _isHighContrast || (form?.HighContrast ?? false) {
+      } else if _isHighContrast || form.HighContrast {
         _delegate?.placeholderColor = Color.yellow.int32
       } else {
         _delegate?.placeholderColor = colorToArgb(kDefaultPlaceholderColor)
