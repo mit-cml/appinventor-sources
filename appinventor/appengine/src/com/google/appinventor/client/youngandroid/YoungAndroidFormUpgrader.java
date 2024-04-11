@@ -870,9 +870,9 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeChatBotProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // The ApiKey property was made visible in the designer.
-      srcCompVersion = 2;
+    if (srcCompVersion < 3) {
+      // The ConverseWithImage block was added
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
