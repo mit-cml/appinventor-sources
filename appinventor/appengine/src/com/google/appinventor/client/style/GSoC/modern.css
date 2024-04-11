@@ -551,13 +551,12 @@ they get cut off in Windows.
   }
   
   .ode-WorkColumns {
-    overflow: scroll;
     border-top: 1px solid #bbbbbb;
     /*border-radius: 4px;*/
   }
   
   .ode-WorkColumns>* {
-    overflow: scroll;
+    overflow: auto;
     border-right: 1px solid #bbbbbb;
   }
   
@@ -1026,16 +1025,22 @@ they get cut off in Windows.
     color: rgba(0, 0, 0, 0.87);
     border-radius: 0px;
   }
-  
+
+  /* class for the ListView Mock component */
+  .listViewComponentStyle {
+    width: 315px;
+    display: block;
+    overflow: unset;
+  }
+
   .listViewItemStyle {
     border-bottom: 1px solid gray;
   }
   
-  /* class for the ListView Mock component */
   .spinnerComponentStyle {
     outline: 1px solid lightgray;
   }
-  
+
   /* Component Help */
   
   .ode-ComponentHelpPopup {
