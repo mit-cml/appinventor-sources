@@ -8,7 +8,7 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
         <!-- Projects Menu -->
         <ai:Toolbar styleName="ya-ProjectToolbar">
-            <g:Label text="{messages.projectsTabName2}" styleName="ya-ProjectName"
+            <g:Label text="{messages.projectsTabName}" styleName="ya-ProjectName"
                      ui:field="projectLabel" visible="false" />
             <g:Label text="{messages.trashButton}" styleName="ya-ProjectName" visible="false"
                      ui:field="trashLabel" />

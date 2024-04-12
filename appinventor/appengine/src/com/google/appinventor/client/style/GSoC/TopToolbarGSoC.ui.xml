@@ -15,7 +15,7 @@
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
-    <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName2}" icon="inventory_2"
+    <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName}" icon="inventory_2"
                        styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" >
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false">
         <actions:SwitchToProjectAction />
