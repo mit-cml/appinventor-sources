@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
@@ -9,16 +9,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.logging.Logger;
 
-public class ProjectFolderGSoC extends ProjectFolder {
-  private static final Logger LOG = Logger.getLogger(ProjectFolderGSoC.class.getName());
-  interface ProjectFolderUiBinderGSoC extends UiBinder<FlowPanel, ProjectFolderGSoC> { }
+public class ProjectFolderNeo extends ProjectFolder {
+  private static final Logger LOG = Logger.getLogger(ProjectFolderNeo.class.getName());
+  interface ProjectFolderUiBinderNeo extends UiBinder<FlowPanel, ProjectFolderNeo> { }
 
   @UiField protected FlowPanel container;
   @UiField protected FlowPanel childrenContainer;
@@ -28,21 +27,21 @@ public class ProjectFolderGSoC extends ProjectFolder {
   @UiField protected CheckBox checkBox;
   @UiField protected Icon expandButton;
 
-  public ProjectFolderGSoC(String name, long dateCreated, long dateModified, ProjectFolder parent) {
+  public ProjectFolderNeo(String name, long dateCreated, long dateModified, ProjectFolder parent) {
     super(name, dateCreated, dateModified, parent);
   }
 
-  public ProjectFolderGSoC(String name, long dateCreated, ProjectFolder parent) {
+  public ProjectFolderNeo(String name, long dateCreated, ProjectFolder parent) {
     this(name, dateCreated, dateCreated, parent);
   }
 
-  public ProjectFolderGSoC(JSONObject json, ProjectFolder parent) {
+  public ProjectFolderNeo(JSONObject json, ProjectFolder parent) {
     super(json, parent);
   }
 
   @Override
   public void bindUI() {
-    ProjectFolderUiBinderGSoC UI_BINDER = GWT.create(ProjectFolderUiBinderGSoC.class);
+    ProjectFolderUiBinderNeo UI_BINDER = GWT.create(ProjectFolderUiBinderNeo.class);
     initWidget(UI_BINDER.createAndBindUi(this));
     super.container = container;
     super.childrenContainer = childrenContainer;
@@ -55,7 +54,7 @@ public class ProjectFolderGSoC extends ProjectFolder {
 
   @Override
   public ProjectListItem createProjectListItem(Project p) {
-    return new ProjectListItemGSoC(p) ;
+    return new ProjectListItemNeo(p) ;
   }
 
   @SuppressWarnings("unused")

@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
@@ -11,12 +11,12 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class ProjectListItemGSoC extends ProjectListItem {
+public class ProjectListItemNeo extends ProjectListItem {
 
-  interface ProjectListItemUiBinderGSoC extends UiBinder<FlowPanel, ProjectListItemGSoC> {}
+  interface ProjectListItemUiBinderNeo extends UiBinder<FlowPanel, ProjectListItemNeo> {}
 
-  private static final ProjectListItemUiBinderGSoC UI_BINDER =
-      GWT.create(ProjectListItemUiBinderGSoC.class);
+  private static final ProjectListItemUiBinderNeo UI_BINDER =
+      GWT.create(ProjectListItemUiBinderNeo.class);
 
   @UiField FlowPanel container;
   @UiField
@@ -25,7 +25,7 @@ public class ProjectListItemGSoC extends ProjectListItem {
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;
 
-  public ProjectListItemGSoC(Project project) {
+  public ProjectListItemNeo(Project project) {
     super(project);
   }
 

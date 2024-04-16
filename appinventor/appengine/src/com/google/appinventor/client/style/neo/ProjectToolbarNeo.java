@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.widgets.Toolbar;
@@ -9,11 +9,11 @@ import com.google.gwt.user.client.ui.Label;
 
 import java.util.logging.Logger;
 
-public class ProjectToolbarGSoC extends ProjectToolbar {
-  private static final Logger LOG = Logger.getLogger(ProjectToolbarGSoC.class.getName());
-  interface ProjectToolbarUiBinderGSoC extends UiBinder<Toolbar, ProjectToolbarGSoC> {}
-  private static final ProjectToolbarUiBinderGSoC UI_BINDER =
-      GWT.create(ProjectToolbarUiBinderGSoC.class);
+public class ProjectToolbarNeo extends ProjectToolbar {
+  private static final Logger LOG = Logger.getLogger(ProjectToolbarNeo.class.getName());
+  interface ProjectToolbarUiBinderNeo extends UiBinder<Toolbar, ProjectToolbarNeo> {}
+  private static final ProjectToolbarUiBinderNeo UI_BINDER =
+      GWT.create(ProjectToolbarUiBinderNeo.class);
   @UiField Label projectLabel;
   @UiField Label trashLabel;
 

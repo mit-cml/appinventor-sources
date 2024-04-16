@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -11,19 +11,17 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPanel {
-  interface SimpleVisibleComponentsPanelUiBinderGSoC extends UiBinder<VerticalPanel,
-       SimpleVisibleComponentsPanelGSoC> {}
+public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPanel {
+  interface SimpleVisibleComponentsPanelUiBinderNeo extends UiBinder<VerticalPanel,
+      SimpleVisibleComponentsPanelNeo> {}
   @UiField protected VerticalPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview;
   @UiField Icon os_icon;
   @UiField Icon size_icon;
 
-  public SimpleVisibleComponentsPanelGSoC(final SimpleEditor editor,
-      SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
+  public SimpleVisibleComponentsPanelNeo(final SimpleEditor editor,
+                                         SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
     super(editor, nonVisibleComponentsPanel);
   }
 
@@ -81,8 +79,8 @@ public class SimpleVisibleComponentsPanelGSoC extends SimpleVisibleComponentsPan
 
   @Override
   protected void bindUI() {
-    SimpleVisibleComponentsPanelUiBinderGSoC UI_BINDER =
-        GWT.create(SimpleVisibleComponentsPanelUiBinderGSoC.class);
+    SimpleVisibleComponentsPanelUiBinderNeo UI_BINDER =
+        GWT.create(SimpleVisibleComponentsPanelUiBinderNeo.class);
     UI_BINDER.createAndBindUi(this);
     super.listboxPhonePreview = listboxPhonePreview;
     super.listboxPhoneTablet = listboxPhoneTablet;

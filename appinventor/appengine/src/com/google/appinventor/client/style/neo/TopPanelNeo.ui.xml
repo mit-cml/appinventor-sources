@@ -7,7 +7,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
-             xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
+             xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -17,7 +17,7 @@
     <g:HTML>
       <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
     </g:HTML>
-    <GSoC:TopToolbarGSoC ui:field="topToolbar" />
+    <neo:TopToolbarNeo ui:field="topToolbar" />
     <g:FlowPanel ui:field="rightPanel">
       <g:FlowPanel styleName="ode-TopPanelAccount">
         <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"

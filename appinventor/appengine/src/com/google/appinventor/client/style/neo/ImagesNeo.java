@@ -1,10 +1,10 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface ImagesGSoC extends Images {
+public interface ImagesNeo extends Images {
 
   /**
    * Codi the Bee for the No Projects Dialog

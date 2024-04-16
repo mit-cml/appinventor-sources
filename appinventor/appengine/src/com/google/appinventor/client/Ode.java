@@ -21,7 +21,6 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
-import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
@@ -39,8 +38,8 @@ import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
-import com.google.appinventor.client.style.GSoC.ImagesGSoC;
-import com.google.appinventor.client.style.GSoC.UIFactoryGSoC;
+import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.UIFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
@@ -81,7 +80,6 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
@@ -91,7 +89,6 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
@@ -120,8 +117,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.annotation.Resources;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -909,8 +904,8 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(ImagesGSoC.class);
-            uiFactory = new UIFactoryGSoC();
+            IMAGES = GWT.create(ImagesNeo.class);
+            uiFactory = new UIFactoryNeo();
             res.apply(null);
           }
         });
@@ -2579,14 +2574,14 @@ public class Ode implements EntryPoint {
     Style styleclassicDark();
 
     @Source({
-      "com/google/appinventor/client/style/GSoC/lightModern.css",
-      "com/google/appinventor/client/style/GSoC/modern.css"
+      "com/google/appinventor/client/style/neo/lightNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernLight();
 
     @Source({
-      "com/google/appinventor/client/style/GSoC/darkModern.css",
-      "com/google/appinventor/client/style/GSoC/modern.css"
+      "com/google/appinventor/client/style/neo/darkNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernDark();
 

@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.TopPanel;
 import com.google.appinventor.client.widgets.DropDownButton;
@@ -11,14 +11,15 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class TopPanelGSoC extends TopPanel {
+public class TopPanelNeo extends TopPanel {
 
-  @UiTemplate("TopPanelGSoC.ui.xml")
-  interface TopPanelUiBinderGSoC extends UiBinder<FlowPanel, TopPanelGSoC> {}
+  @UiTemplate("TopPanelNeo.ui.xml")
+  interface TopPanelUiBinderneo extends UiBinder<FlowPanel, TopPanelNeo> {}
 
-  private static final TopPanelUiBinderGSoC UI_BINDER = GWT.create(TopPanelUiBinderGSoC.class);
+  private static final TopPanelUiBinderneo UI_BINDER = GWT.create(TopPanelUiBinderneo.class);
 
-  @UiField TopToolbarGSoC topToolbar;
+  @UiField
+  TopToolbarNeo topToolbar;
   @UiField ImageElement logo;
   @UiField Label readOnly;
   @UiField FlowPanel rightPanel;

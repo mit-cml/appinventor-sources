@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
@@ -10,11 +10,11 @@ import com.google.gwt.uibinder.client.UiField;
 
 import java.util.logging.Logger;
 
-public class TopToolbarGSoC extends TopToolbar {
-  private static final Logger LOG = Logger.getLogger(TopToolbarGSoC.class.getName());
-  interface TopToolbarUiBinderGSoC extends UiBinder<Toolbar, TopToolbarGSoC> {}
-  private static final TopToolbarUiBinderGSoC UI_BINDER =
-      GWT.create(TopToolbarUiBinderGSoC.class);
+public class TopToolbarNeo extends TopToolbar {
+  private static final Logger LOG = Logger.getLogger(TopToolbarNeo.class.getName());
+  interface TopToolbarUiBinderneo extends UiBinder<Toolbar, TopToolbarNeo> {}
+  private static final TopToolbarUiBinderneo UI_BINDER =
+      GWT.create(TopToolbarUiBinderneo.class);
 
   @UiField DropDownButton fileDropDown;
   @UiField DropDownButton connectDropDown;
@@ -27,7 +27,7 @@ public class TopToolbarGSoC extends TopToolbar {
   public void bindUI() {
     // The boolean needs to be reversed here so it is true when items need to be visible.
     // UIBinder can't negate the boolean itself.
-    LOG.info("bindUI GSoC");
+    LOG.info("bindUI neo");
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
 

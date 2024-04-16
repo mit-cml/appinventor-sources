@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
@@ -7,13 +7,12 @@ import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.logging.Logger;
 
-public class DesignToolbarGSoC extends DesignToolbar {
-  private static final Logger LOG = Logger.getLogger(DesignToolbarGSoC.class.getName());
-  interface DesignToolbarUiBinderGSoC extends UiBinder<Toolbar, DesignToolbarGSoC> {}
+public class DesignToolbarNeo extends DesignToolbar {
+  private static final Logger LOG = Logger.getLogger(DesignToolbarNeo.class.getName());
+  interface DesignToolbarUiBinderNeo extends UiBinder<Toolbar, DesignToolbarNeo> {}
 
   @UiField protected DropDownButton pickFormItem;
   @UiField protected ToolbarItem addFormItem;
@@ -24,7 +23,7 @@ public class DesignToolbarGSoC extends DesignToolbar {
 
   @Override
   public void bindUI() {
-    DesignToolbarUiBinderGSoC UI_BINDER = GWT.create(DesignToolbarUiBinderGSoC.class);
+    DesignToolbarUiBinderNeo UI_BINDER = GWT.create(DesignToolbarUiBinderNeo.class);
     populateToolbar(UI_BINDER.createAndBindUi(this));
     super.pickFormItem = pickFormItem;
     super.addFormItem = addFormItem;

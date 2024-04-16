@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.widgets.LabeledTextBox;
@@ -9,13 +9,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-public class NewYoungAndroidProjectWizardGSoC extends NewYoungAndroidProjectWizard {
-  interface NewYoungAndroidProjectWizardUiBinderGSoC
-      extends UiBinder<Dialog, NewYoungAndroidProjectWizardGSoC> {}
+public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizard {
+  interface NewYoungAndroidProjectWizardUiBinderNeo
+      extends UiBinder<Dialog, NewYoungAndroidProjectWizardNeo> {}
 
   @UiField protected Dialog addDialog;
   @UiField protected Button addButton;
@@ -28,8 +27,8 @@ public class NewYoungAndroidProjectWizardGSoC extends NewYoungAndroidProjectWiza
 
   @Override
   public void bindUI() {
-    NewYoungAndroidProjectWizardUiBinderGSoC UI_BINDER =
-        GWT.create(NewYoungAndroidProjectWizardUiBinderGSoC.class);
+    NewYoungAndroidProjectWizardUiBinderNeo UI_BINDER =
+        GWT.create(NewYoungAndroidProjectWizardUiBinderNeo.class);
     UI_BINDER.createAndBindUi(this);
     super.addDialog = addDialog;
     super.addButton = addButton;

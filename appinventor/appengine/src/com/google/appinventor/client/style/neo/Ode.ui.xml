@@ -7,7 +7,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
              xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
-             xmlns:GSoC="urn:import:com.google.appinventor.client.style.GSoC"
+             xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
              xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
@@ -16,16 +16,16 @@
   <ui:with field="style" />
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-Root">
-    <GSoC:TopPanelGSoC ui:field="topPanel" />
+    <neo:TopPanelNeo ui:field="topPanel" />
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
       <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
       <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
         <g:FlowPanel styleName="ode-ProjectListView" width="100%" >
-          <GSoC:ProjectToolbarGSoC ui:field="projectToolbar" />
+          <neo:ProjectToolbarNeo ui:field="projectToolbar" />
           <box:ProjectListBox ui:field="projectListbox" />
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
-          <GSoC:DesignToolbarGSoC ui:field="designToolbar" />
+          <neo:DesignToolbarNeo ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" >
             <box:PaletteBox width="265px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="viewerBox" />
@@ -53,6 +53,6 @@
         </g:FlowPanel>
       </g:DeckPanel>
     </g:FlowPanel>
-    <GSoC:StatusPanelGSoC ui:field="statusPanel" />
+    <neo:StatusPanelNeo ui:field="statusPanel" />
   </g:FlowPanel>
 </ui:UiBinder>

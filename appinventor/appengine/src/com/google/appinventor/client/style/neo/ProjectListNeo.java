@@ -1,4 +1,4 @@
-package com.google.appinventor.client.style.GSoC;
+package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
@@ -12,8 +12,8 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-public class ProjectListGSoC extends ProjectList {
-  interface ProjectListUiBinderGSoC extends UiBinder<FlowPanel, ProjectListGSoC> {}
+public class ProjectListNeo extends ProjectList {
+  interface ProjectListUiBinderNeo extends UiBinder<FlowPanel, ProjectListNeo> {}
 
   // UI elements
   @UiField CheckBox selectAllCheckBox;
@@ -27,7 +27,7 @@ public class ProjectListGSoC extends ProjectList {
 
   @Override
   public void bindIU() {
-    ProjectListUiBinderGSoC UI_BINDER = GWT.create(ProjectListUiBinderGSoC.class);
+    ProjectListUiBinderNeo UI_BINDER = GWT.create(ProjectListUiBinderNeo.class);
     initWidget(UI_BINDER.createAndBindUi(this));
     super.selectAllCheckBox = selectAllCheckBox;
     super.container = container;
@@ -49,7 +49,7 @@ public class ProjectListGSoC extends ProjectList {
   }
 
   @Override
-  public ProjectListItemGSoC createProjectListItem(Project p) {
-    return new ProjectListItemGSoC(p);
+  public ProjectListItemNeo createProjectListItem(Project p) {
+    return new ProjectListItemNeo(p);
   }
 }
