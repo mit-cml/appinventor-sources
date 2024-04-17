@@ -48,6 +48,7 @@
 		0623BBF02476291D00FEB2B6 /* TinyDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */; };
 		0624072F245340E1005E5BFC /* dictionaries.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0624072E245340E1005E5BFC /* dictionaries.yail */; };
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
+		062A67012CFFBE28006C875D /* AnomalyDetectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062A67002CFFBE28006C875D /* AnomalyDetectionTests.swift */; };
 		062B743B2BC06AD9002E221F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */; };
 		0633F360297D0AD700C3C3E9 /* tr.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633F35F297D0AD700C3C3E9 /* tr.pb.swift */; };
 		0633F362297D0B1400C3C3E9 /* Translator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633F361297D0B1400C3C3E9 /* Translator.swift */; };
@@ -230,6 +231,7 @@
 		06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F601D8D0DFC00389B04 /* ReplForm.swift */; };
 		06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */; };
 		06E2D5FF1FDB16C500A1D52A /* lists.yail in Resources */ = {isa = PBXBuildFile; fileRef = 06E2D5FE1FDB16C500A1D52A /* lists.yail */; };
+		06E4F9982CFE3DCF00B59DA7 /* AnomalyDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E4F9972CFE3DCF00B59DA7 /* AnomalyDetection.swift */; };
 		06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EA31D92C68900C42804 /* PhoneStatus.swift */; };
 		06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EA51D92C6C300C42804 /* NonvisibleComponent.swift */; };
 		06E59EA91D92C7E800C42804 /* NetworkUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 06E59EA71D92C7E800C42804 /* NetworkUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -410,6 +412,7 @@
 		0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinyDBTests.swift; sourceTree = "<group>"; };
 		0624072E245340E1005E5BFC /* dictionaries.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dictionaries.yail; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
+		062A67002CFFBE28006C875D /* AnomalyDetectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnomalyDetectionTests.swift; sourceTree = "<group>"; };
 		062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = "components-ios/src/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; };
 		0633F35F297D0AD700C3C3E9 /* tr.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tr.pb.swift; sourceTree = "<group>"; };
 		0633F361297D0B1400C3C3E9 /* Translator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translator.swift; sourceTree = "<group>"; };
@@ -587,6 +590,7 @@
 		06DA9F601D8D0DFC00389B04 /* ReplForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplForm.swift; sourceTree = "<group>"; };
 		06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinBlockTests.swift; sourceTree = "<group>"; };
 		06E2D5FE1FDB16C500A1D52A /* lists.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lists.yail; sourceTree = "<group>"; };
+		06E4F9972CFE3DCF00B59DA7 /* AnomalyDetection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnomalyDetection.swift; sourceTree = "<group>"; };
 		06E59EA31D92C68900C42804 /* PhoneStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneStatus.swift; sourceTree = "<group>"; };
 		06E59EA51D92C6C300C42804 /* NonvisibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonvisibleComponent.swift; sourceTree = "<group>"; };
 		06E59EA71D92C7E800C42804 /* NetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkUtils.h; sourceTree = "<group>"; };
@@ -1195,9 +1199,10 @@
 			isa = PBXGroup;
 			children = (
 				067BBEAE2C480CDA0058B1BD /* extensions */,
-				DE3F6B082080F72400A0BA69 /* Camera.swift */,
 				068E0EAE1DC251090086FFDA /* ActivityStarter.swift */,
+				06E4F9972CFE3DCF00B59DA7 /* AnomalyDetection.swift */,
 				06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */,
+				DE3F6B082080F72400A0BA69 /* Camera.swift */,
 				06C8CE952A3B5EFA00C39EBC /* ChatBot.swift */,
 				068E0EB01DC251240086FFDA /* Clock.swift */,
 				0417585420098566007D2C31 /* File.swift */,
@@ -1349,6 +1354,7 @@
 		CBC78692202E0B5F005363A3 /* nonvisible */ = {
 			isa = PBXGroup;
 			children = (
+				062A67002CFFBE28006C875D /* AnomalyDetectionTests.swift */,
 				CB8539242075549A009E9030 /* ClockTests.swift */,
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
 				061A3C6A2CEEE9C9000E2FBB /* RegressionTests.swift */,
@@ -1869,6 +1875,7 @@
 				062217F02A37767F00B89562 /* image.pb.swift in Sources */,
 				06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
+				06E4F9982CFE3DCF00B59DA7 /* AnomalyDetection.swift in Sources */,
 				DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */,
 				681D59052A84138A007B5DB5 /* FileScope.swift in Sources */,
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
@@ -1959,6 +1966,7 @@
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,
 				DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */,
+				062A67012CFFBE28006C875D /* AnomalyDetectionTests.swift in Sources */,
 				0681C4B326024E6800F70BC6 /* WebTests.swift in Sources */,
 				06009FF4227CF8D100E4EC4A /* FormatTests.swift in Sources */,
 				0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */,
