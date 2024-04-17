@@ -1,5 +1,6 @@
 package com.google.appinventor.client.style.neo;
 
+import com.google.appinventor.client.UIStyleFactory;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
@@ -35,8 +36,8 @@ public class ProjectFolderNeo extends ProjectFolder {
     this(name, dateCreated, dateCreated, parent);
   }
 
-  public ProjectFolderNeo(JSONObject json, ProjectFolder parent) {
-    super(json, parent);
+  public ProjectFolderNeo(JSONObject json, ProjectFolder parent, UIStyleFactory styleFactory) {
+    super(json, parent, styleFactory);
   }
 
   @Override

@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UIStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.project.ProjectSettings;
@@ -39,6 +40,7 @@ public abstract class ProjectEditor extends Composite {
   private static final Logger LOG = Logger.getLogger(ProjectEditor.class.getName());
 
   protected final ProjectRootNode projectRootNode;
+  protected final UIStyleFactory uiFactory;
   protected final long projectId;
   protected final Project project;
 
@@ -59,8 +61,9 @@ public abstract class ProjectEditor extends Composite {
    *
    * @param projectRootNode  the project root node
    */
-  public ProjectEditor(ProjectRootNode projectRootNode) {
+  public ProjectEditor(ProjectRootNode projectRootNode, UIStyleFactory uiFactory) {
     this.projectRootNode = projectRootNode;
+    this.uiFactory = uiFactory;
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
@@ -98,6 +101,10 @@ public abstract class ProjectEditor extends Composite {
    * other UI elements related to hiding the project editor.
    */
   protected abstract void onHide();
+
+  public UIStyleFactory getUiFactory() {
+    return uiFactory;
+  }
 
   public final void setScreenCheckboxState(String screen, Boolean isChecked) {
     screenHashMap.put(screen, isChecked);

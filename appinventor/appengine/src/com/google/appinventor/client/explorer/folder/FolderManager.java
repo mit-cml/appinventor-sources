@@ -6,6 +6,7 @@
 package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UIStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
@@ -29,8 +30,10 @@ public final class FolderManager {
   private boolean foldersLoaded;
 
   private final ArrayList<FolderManagerEventListener> folderManagerEventListeners;
+  private final UIStyleFactory uiFactory;
 
-  public FolderManager() {
+  public FolderManager(UIStyleFactory uiFactory) {
+    this.uiFactory = uiFactory;
     folderManagerEventListeners = new ArrayList<FolderManagerEventListener>();
     LOG.info("Created new folder manager");
   }
@@ -58,7 +61,7 @@ public final class FolderManager {
     }
 
     LOG.info("folderJSON - " + folderJSON);
-    globalFolder = Ode.getUiFactory().createProjectFolder(folderJSON, null);
+    globalFolder = uiFactory.createProjectFolder(folderJSON, null);
     LOG.info("Creating Trash Folder");
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
     checkForUnassignedProjects();
@@ -75,7 +78,7 @@ public final class FolderManager {
   }
 
   public ProjectFolder createFolder(String name, ProjectFolder parent) {
-    ProjectFolder folder = Ode.getUiFactory().createProjectFolder(name, System.currentTimeMillis(),
+    ProjectFolder folder = uiFactory.createProjectFolder(name, System.currentTimeMillis(),
         System.currentTimeMillis(), parent);
     parent.addChildFolder(folder);
     while ((parent = parent.getParentFolder()) != null) {
@@ -120,9 +123,9 @@ public final class FolderManager {
 
   private void initializeFolders() {
     LOG.info("Initializing folders for new user");
-    globalFolder = Ode.getUiFactory().createProjectFolder(FolderJSONKeys.GLOBAL_FOLDER,
-        System.currentTimeMillis(),null);
-    trashFolder = Ode.getUiFactory().createProjectFolder(FolderJSONKeys.TRASH_FOLDER,
+    globalFolder = uiFactory.createProjectFolder(FolderJSONKeys.GLOBAL_FOLDER,
+        System.currentTimeMillis(), null);
+    trashFolder = uiFactory.createProjectFolder(FolderJSONKeys.TRASH_FOLDER,
         System.currentTimeMillis(), globalFolder);
     globalFolder.addChildFolder(trashFolder);
 

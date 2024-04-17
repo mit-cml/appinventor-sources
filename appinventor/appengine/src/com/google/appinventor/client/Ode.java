@@ -26,6 +26,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
@@ -66,6 +67,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
@@ -233,7 +235,7 @@ public class Ode implements EntryPoint {
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // mode
-  @UiField(provided=true) static Resources.Style style;
+  @UiField(provided = true) static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -395,11 +397,6 @@ public class Ode implements EntryPoint {
   public FlowPanel getOverDeckPanel() {
     return overDeckPanel;
   }
-
-  public static UIStyleFactory getUiFactory() {
-    return uiFactory;
-  }
-
 
   /**
    * Switch to the Projects tab
@@ -931,8 +928,9 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
+    EDITORS.register(YoungAndroidProjectNode.class, node -> new YaProjectEditor(node, uiFactory));
     sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-    folderManager = new FolderManager();
+    folderManager = new FolderManager(uiFactory);
     projectManager = new ProjectManager();
     editorManager = new EditorManager();
 
@@ -966,26 +964,23 @@ public class Ode implements EntryPoint {
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
     // TODO: Tidy up user preference variable
-    projectListbox = ProjectListBox.getProjectListBox();
-    // OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
+    projectListbox = ProjectListBox.create(uiFactory);
     String layout;
-    if (Ode.getUserNewLayout()){
+    if (Ode.getUserNewLayout()) {
       layout = "modern";
-      if (Ode.getUserDarkThemeEnabled()){
+      if (Ode.getUserDarkThemeEnabled()) {
         style = Resources.INSTANCE.stylemodernDark();
-      } else{
+      } else {
         style = Resources.INSTANCE.stylemodernLight();
       }
-    }
-    else{
+    } else {
       layout = "classic";
-      if (Ode.getUserDarkThemeEnabled()){
+      if (Ode.getUserDarkThemeEnabled()) {
         style = Resources.INSTANCE.styleclassicDark();
-      } else{
+      } else {
         style = Resources.INSTANCE.styleclassicLight();
       }
     }
-    projectListbox = ProjectListBox.getProjectListBox();
 
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);

@@ -41,7 +41,7 @@ public class UIStyleFactory {
   }
 
   public ProjectFolder createProjectFolder(JSONObject json, ProjectFolder parent) {
-    return new ProjectFolder(json, parent);
+    return new ProjectFolder(json, parent, this);
   }
 
   public NewYoungAndroidProjectWizard createNewYoungAndroidProjectWizard() {

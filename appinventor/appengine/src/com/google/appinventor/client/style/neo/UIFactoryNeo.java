@@ -27,7 +27,7 @@ public class UIFactoryNeo extends UIStyleFactory {
 
   @Override
   public ProjectFolder createProjectFolder(JSONObject json, ProjectFolder parent) {
-    return new ProjectFolderNeo(json, parent);
+    return new ProjectFolderNeo(json, parent, this);
   }
 
   @Override

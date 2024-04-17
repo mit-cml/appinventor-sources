@@ -8,23 +8,35 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UIStyleFactory;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.widgets.boxes.Box;
-import java.util.logging.Logger;
 
 /**
  * Box implementation for project list.
  *
  */
 public final class ProjectListBox extends Box {
-  private static final Logger LOG = Logger.getLogger(ProjectListBox.class.getName());
-
   // Singleton project explorer box instance (only one project explorer allowed)
-  private static final ProjectListBox INSTANCE = new ProjectListBox();
+  private static ProjectListBox INSTANCE;
 
   // Project list for young android
   private final ProjectList plist;
+
+  /**
+   * Creates a new ProjectListBox if one doesn't exist using the provided
+   * {@code factory}. If this method has previously been called, the existing
+   * ProjectListBox is returned.
+   *
+   * @param factory factory to use for creating UI components
+   * @return a project list box instance
+   */
+  public static ProjectListBox create(UIStyleFactory factory) {
+    if (INSTANCE == null) {
+      INSTANCE = new ProjectListBox(factory.createProjectList());
+    }
+    return INSTANCE;
+  }
 
   /**
    * Returns the singleton projects list box.
@@ -38,13 +50,13 @@ public final class ProjectListBox extends Box {
   /**
    * Creates new project list box.
    */
-  private ProjectListBox() {
+  private ProjectListBox(ProjectList plist) {
     super(MESSAGES.projectListBoxCaption(),
         300,    // height
         false,  // minimizable
         false); // removable
 
-    plist = Ode.getUiFactory().createProjectList();
+    this.plist = plist;
     setContent(plist);
   }
 
@@ -54,10 +66,10 @@ public final class ProjectListBox extends Box {
    * @return  project list
    */
   public ProjectList getProjectList() {
-     return plist;
+    return plist;
   }
 
-  public void loadProjectList () {
+  public void loadProjectList() {
     plist.setIsTrash(false);
     plist.refresh(false);
     this.setCaption(MESSAGES.projectListBoxCaption());

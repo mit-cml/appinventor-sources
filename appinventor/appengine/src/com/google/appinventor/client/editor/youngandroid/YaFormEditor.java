@@ -166,7 +166,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Create UI elements for the designer panels.
     nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();
     componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);
-    visibleComponentsPanel = Ode.getUiFactory()
+    visibleComponentsPanel = projectEditor.getUiFactory()
                                  .createSimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
     componentDatabaseChangeListeners.add(visibleComponentsPanel);
     DockPanel componentsPanel = new DockPanel();

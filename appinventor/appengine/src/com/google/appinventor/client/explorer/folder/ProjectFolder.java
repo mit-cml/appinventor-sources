@@ -9,6 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
+import com.google.appinventor.client.UIStyleFactory;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
@@ -81,7 +82,7 @@ public class ProjectFolder extends Composite {
     this(name, dateCreated, dateCreated, parent);
   }
 
-  public ProjectFolder(JSONObject json, ProjectFolder parent) {
+  public ProjectFolder(JSONObject json, ProjectFolder parent, UIStyleFactory styleFactory) {
     bindUI();
     this.parent = parent;
     name = json.get(FolderJSONKeys.NAME).isString().stringValue();
@@ -104,7 +105,7 @@ public class ProjectFolder extends Composite {
 
     JSONArray childFoldersJson = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
     for (int i = 0; i < childFoldersJson.size(); i++) {
-      addChildFolder(Ode.getUiFactory().createProjectFolder(childFoldersJson.get(i).isObject(),
+      addChildFolder(styleFactory.createProjectFolder(childFoldersJson.get(i).isObject(),
           this));
     }
     cachedJson = null;
