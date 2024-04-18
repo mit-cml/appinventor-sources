@@ -422,7 +422,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     addProperty(PROPERTY_NAME_UUID, "-1", null, null, null, new TextPropertyEditor());
     changeProperty(PROPERTY_NAME_UUID, "" + Random.nextInt());
 
-    editor.getComponentPalettePanel().configureComponent(this);
+    PropertiesUtil.populateProperties(this,
+        COMPONENT_DATABASE.getPropertyDefinitions(getType()), (YaFormEditor) editor);
   }
 
   public boolean isPropertyPersisted(String propertyName) {
@@ -889,22 +890,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       }
     }
     return null;
-  }
-
-  // For debugging purposes only
-  private String describeElement(com.google.gwt.dom.client.Element element) {
-    if (element == null) {
-      return "null";
-    }
-    if (element == getElement()) {
-      return "this";
-    }
-    try {
-      return element.getTagName();
-    } catch (com.google.gwt.core.client.JavaScriptException e) {
-      // Can get here if the browser throws a permission denied error
-      return "????";
-    }
   }
 
   /**

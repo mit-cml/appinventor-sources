@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -35,10 +35,15 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
   // Backing mocked Simple form component
   private MockForm form;
 
+  // Editor that owns this nonvisible components panel
+  private final SimpleEditor editor;
+
   /**
    * Creates new component design panel for non-visible components.
    */
-  public SimpleNonVisibleComponentsPanel() {
+  public SimpleNonVisibleComponentsPanel(SimpleEditor editor) {
+    this.editor = editor;
+
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
     panel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
@@ -119,7 +124,7 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
 
   @Override
   public void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
-    MockComponent sourceComponent = ((SimplePaletteItem) source).createMockComponent();
+    MockComponent sourceComponent = ((SimplePaletteItem) source).createMockComponent(editor);
 
     // Add component to the form
     form.addComponent(sourceComponent);

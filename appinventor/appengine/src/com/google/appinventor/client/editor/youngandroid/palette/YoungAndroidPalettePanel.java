@@ -1,24 +1,27 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid.palette;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ComponentsTranslation;
-import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.Images;
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
-import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -27,31 +30,29 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.StackPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-
-import jsinterop.annotations.JsOverlay;
-import jsinterop.annotations.JsType;
-
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsType;
 
 /**
  * Panel showing Simple components which can be dropped onto the Young Android
@@ -59,13 +60,46 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
+public class YoungAndroidPalettePanel extends Composite
+    implements SimplePalettePanel, ComponentDatabaseChangeListener {
 
-  // Component database: information about components (including their properties and events)
-  private final SimpleComponentDatabase COMPONENT_DATABASE;
+  /**
+   * The Filter interface is used by the palette panel to determine what components
+   * to show. By default, an identity filter is used (everything is shown). Other
+   * implementations may override the filter by calling {@link #setFilter(Filter, boolean)}.
+   *
+   * @author ewpatton@mit.edu (Evan W. Patton)
+   */
+  public interface Filter {
+    /**
+     * Tests whether the given component type should be shown in the palette.
+     * @param componentTypeName The component type to check.
+     * @return True if the component should be shown, otherwise false.
+     */
+    boolean shouldShowComponent(String componentTypeName);
 
-  // Associated editor
-  private final YaFormEditor editor;
+    /**
+     * Tests whether the extensions panel should be shown.
+     * @return True if extensions are allowed, otherwise false.
+     */
+    boolean shouldShowExtensions();
+  }
+
+  // Identity filter implementation
+  private static final Filter IDENTITY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return true;
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
+
+  // The singleton instance of the palette panel
+  private static YoungAndroidPalettePanel INSTANCE;
 
   private final Map<ComponentCategory, PaletteHelper> paletteHelpers;
 
@@ -74,7 +108,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // store Component Type along with SimplePaleteItem to enable removal of components
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 
-  private DropTargetProvider dropTargetProvider;
   private List<Integer> categoryOrder;
 
   // panel that holds all palette items
@@ -88,20 +121,38 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private String lastSearch = "";
   private Map<String, SimplePaletteItem> searchSimplePaletteItems =
       new HashMap<String, SimplePaletteItem>();
+  // The component database currently rendered by the palette panel.
+  private ComponentDatabaseInterface componentDatabase;
+  // The editor that is currently active (also acts as the drop target provider)
+  private SimpleEditor editor;
+  // Currently active filter
+  private Filter filter = IDENTITY;
+  // Cache of previously constructed palette items to reuse
+  private final Map<String, SimplePaletteItem> cachedPaletteItems =
+      new HashMap<String, SimplePaletteItem>();
+  // Cache of previously constructed palette items to reuse for the search box
+  private final Map<String, SimplePaletteItem> cachedSearchPaletteItems =
+      new HashMap<String, SimplePaletteItem>();
+  /* We keep a static map of image names to images in the image bundle so
+   * that we can avoid making individual calls to the server for static image
+   * that are already in the bundle. This is purely an efficiency optimization
+   * for mock non-visible components.
+   */
+  private static final Map<String, ImageResource> bundledImages;
 
-  @SuppressWarnings("checkstyle:LineLength")
+  @SuppressWarnings("CheckStyle")
   private native NativeArray filter(String match)/*-{
     return this.@com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel::arrayString.filter(function(x) { return x.indexOf(match) >= 0 });
   }-*/;
 
-  @SuppressWarnings("checkstyle:LineLength")
+  @SuppressWarnings("CheckStyle")
   private native void sort()/*-{
     this.@com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel::arrayString.sort();
   }-*/;
 
   private Scheduler.ScheduledCommand rebuild = null;
 
-  private void requestRebuildList() {
+  private void requestRebuildSearchList() {
     if (rebuild != null) {
       return;
     }
@@ -142,19 +193,107 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         public String next() {
           return NativeArray.this.get(index++);
         }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
       };
     }
   }
 
+  static {
+    Images images = Ode.getImageBundle();
+    bundledImages = new HashMap<String, ImageResource>();
+    bundledImages.put("images/accelerometersensor.png", images.accelerometersensor());
+    bundledImages.put("images/ball.png", images.ball());
+    bundledImages.put("images/button.png", images.button());
+    bundledImages.put("images/canvas.png", images.canvas());
+    bundledImages.put("images/imageSprite.png", images.imageSprite());
+    bundledImages.put("images/imagePicker.png", images.imagepicker());
+    bundledImages.put("images/videoPlayer.png", images.videoplayer());
+    bundledImages.put("images/horizontal.png", images.horizontal());
+    bundledImages.put("images/vertical.png", images.vertical());
+    bundledImages.put("images/table.png", images.table());
+    bundledImages.put("images/checkbox.png", images.checkbox());
+    bundledImages.put("images/image.png", images.image());
+    bundledImages.put("images/label.png", images.label());
+    bundledImages.put("images/listPicker.png", images.listpicker());
+    bundledImages.put("images/passwordtextbox.png", images.passwordtextbox());
+    bundledImages.put("images/slider.png", images.slider());
+    bundledImages.put("images/switch.png", images.toggleswitch());
+    bundledImages.put("images/textbox.png", images.textbox());
+    bundledImages.put("images/webviewer.png", images.webviewer());
+    bundledImages.put("images/contactPicker.png", images.contactpicker());
+    bundledImages.put("images/emailPicker.png", images.emailpicker());
+    bundledImages.put("images/phoneNumberPicker.png", images.phonenumberpicker());
+    bundledImages.put("images/lightsensor.png", images.lightsensor());
+    bundledImages.put("images/barometer.png", images.barometer());
+    bundledImages.put("images/thermometer.png", images.thermometer());
+    bundledImages.put("images/hygrometer.png", images.hygrometer());
+    bundledImages.put("images/gyroscopesensor.png", images.gyroscopesensor());
+    bundledImages.put("images/nearfield.png", images.nearfield());
+    bundledImages.put("images/activityStarter.png", images.activitystarter());
+    bundledImages.put("images/barcodeScanner.png", images.barcodeScanner());
+    bundledImages.put("images/bluetooth.png", images.bluetooth());
+    bundledImages.put("images/camera.png", images.camera());
+    bundledImages.put("images/camcorder.png", images.camcorder());
+    bundledImages.put("images/clock.png", images.clock());
+    bundledImages.put("images/fusiontables.png", images.fusiontables());
+    bundledImages.put("images/gameClient.png", images.gameclient());
+    bundledImages.put("images/locationSensor.png", images.locationSensor());
+    bundledImages.put("images/notifier.png", images.notifier());
+    bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
+    bundledImages.put("images/legoMindstormsEv3.png", images.legoMindstormsEv3());
+    bundledImages.put("images/orientationsensor.png", images.orientationsensor());
+    bundledImages.put("images/pedometer.png", images.pedometerComponent());
+    bundledImages.put("images/phoneip.png", images.phonestatusComponent());
+    bundledImages.put("images/phoneCall.png", images.phonecall());
+    bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/soundEffect.png", images.soundeffect());
+    bundledImages.put("images/soundRecorder.png", images.soundRecorder());
+    bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
+    bundledImages.put("images/spreadsheet.png", images.spreadsheet());
+    bundledImages.put("images/textToSpeech.png", images.textToSpeech());
+    bundledImages.put("images/texting.png", images.texting());
+    bundledImages.put("images/datePicker.png", images.datePickerComponent());
+    bundledImages.put("images/timePicker.png", images.timePickerComponent());
+    bundledImages.put("images/tinyDB.png", images.tinyDB());
+    bundledImages.put("images/file.png", images.file());
+    bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
+    bundledImages.put("images/firebaseDB.png", images.firebaseDB());
+    bundledImages.put("images/twitter.png", images.twitterComponent());
+    bundledImages.put("images/voting.png", images.voting());
+    bundledImages.put("images/web.png", images.web());
+    bundledImages.put("images/mediastore.png", images.mediastore());
+    bundledImages.put("images/sharing.png", images.sharingComponent());
+    bundledImages.put("images/spinner.png", images.spinner());
+    bundledImages.put("images/listView.png", images.listview());
+    bundledImages.put("images/translator.png", images.translator());
+    bundledImages.put("images/yandex.png", images.yandex());
+    bundledImages.put("images/proximitysensor.png", images.proximitysensor());
+    bundledImages.put("images/extension.png", images.extension());
+    bundledImages.put("images/cloudDB.png", images.cloudDB());
+    bundledImages.put("images/map.png", images.map());
+    bundledImages.put("images/marker.png", images.marker());
+    bundledImages.put("images/circle.png", images.circle());
+    bundledImages.put("images/linestring.png", images.linestring());
+    bundledImages.put("images/polygon.png", images.polygon());
+    bundledImages.put("images/featurecollection.png", images.featurecollection());
+    bundledImages.put("images/rectangle.png", images.rectangle());
+    bundledImages.put("images/recyclerView.png", images.recyclerview());
+    bundledImages.put("images/navigation.png", images.navigationComponent());
+    bundledImages.put("images/arduino.png", images.arduino());
+    bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/chart.png", images.chart());
+    bundledImages.put("images/chartData.png", images.chartData2D());
+    bundledImages.put("images/dataFile.png", images.dataFile());
+  }
+
   /**
    * Creates a new component palette panel.
-   *
-   * @param editor parent editor of this panel
    */
-  public YoungAndroidPalettePanel(YaFormEditor editor) {
-    this.editor = editor;
-    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
-
+  private YoungAndroidPalettePanel() {
     stackPalette = new StackPanel();
 
     paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
@@ -168,12 +307,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     translationMap = new HashMap<String, String>();
     panel = new VerticalPanel();
     panel.setWidth("100%");
-
-    for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      String translationName = ComponentsTranslation.getComponentName(component).toLowerCase();
-      arrayString.push(translationName);
-      translationMap.put(translationName, component);
-    }
 
     searchText = new TextBox();
     searchText.setWidth("100%");
@@ -216,18 +349,31 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         // The production version will not include a mapping for Extension because
         // only compile-time categories are included. This allows us to i18n the
         // Extension title for the palette.
-        String title = ComponentCategory.EXTENSION.equals(category) ?
-          MESSAGES.extensionComponentPallette() :
-          ComponentsTranslation.getCategoryName(category.getName());
+        String title = ComponentCategory.EXTENSION.equals(category)
+            ? MESSAGES.extensionComponentPallette()
+            : ComponentsTranslation.getCategoryName(category.getName());
         stackPalette.add(categoryPanel, title);
       }
     }
 
     initExtensionPanel();
+    this.setSize("100%", "!005");
   }
 
-   /**
-   *  Automatic search and list results as users input the string
+  /**
+   * Gets the instance of the YoungAndroidPalettePanel.
+   *
+   * @return The instance of the panel.
+   */
+  public static YoungAndroidPalettePanel get() {
+    if (INSTANCE == null) {
+      INSTANCE = new YoungAndroidPalettePanel();
+    }
+    return INSTANCE;
+  }
+
+  /**
+   * Automatic search and list results as users input the string.
    */
   private class SearchKeyUpHandler implements KeyUpHandler {
     @Override
@@ -237,7 +383,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Users press escape button, results and searchText will be cleared
+   * Users press escape button, results and searchText will be cleared
    */
   private class EscapeKeyDownHandler implements KeyDownHandler {
     @Override
@@ -250,19 +396,21 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Users press enter button, results will be added to searchResults panel
+   * Users press enter button, results will be added to searchResults panel.
    */
   private class ReturnKeyHandler implements KeyPressHandler {
-     @Override
-      public void onKeyPress(KeyPressEvent event) {
-        switch (event.getCharCode()) {
-          case KeyCodes.KEY_END:
-          case KeyCodes.KEY_DELETE:
-          case KeyCodes.KEY_BACKSPACE:
-            doSearch();
-            break;
-        }
+    @Override
+    public void onKeyPress(KeyPressEvent event) {
+      switch (event.getCharCode()) {
+        case KeyCodes.KEY_END:
+        case KeyCodes.KEY_DELETE:
+        case KeyCodes.KEY_BACKSPACE:
+          doSearch();
+          break;
+        default:
+          break;
       }
+    }
   }
 
   private void doSearch() {
@@ -270,20 +418,19 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  User clicks on searchButton and results will be added to searchResults panel
+   * User clicks on searchButton and results will be added to searchResults panel.
    */
   private void doSearch(boolean force) {
-    String search_str = searchText.getText().trim().toLowerCase();
-    if (search_str.equals(lastSearch) && !force) {
+    String searchStr = searchText.getText().trim().toLowerCase();
+    if (searchStr.equals(lastSearch) && !force) {
       // nothing to do here.
       return;
     }
     // Empty strings will return nothing
-    if (search_str.length() != 0) {
-      long start = System.currentTimeMillis();
+    if (searchStr.length() != 0) {
       // Remove previous search results
       searchResults.clear();
-      Iterable<String> allComponents = filter(search_str);
+      Iterable<String> allComponents = filter(searchStr);
       for (String name : allComponents) {
         if (translationMap.containsKey(name)) {
           final String codeName = translationMap.get(name);
@@ -295,7 +442,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     } else {
       searchResults.clear();
     }
-    lastSearch = search_str;
+    lastSearch = searchStr;
   }
 
   private static boolean showCategory(ComponentCategory category) {
@@ -307,11 +454,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         !AppInventorFeatures.enableFutureFeatures()) {
       return false;
     }
-    if (category == ComponentCategory.INTERNAL &&
-        !AppInventorFeatures.showInternalComponentsCategory()) {
-      return false;
-    }
-    return true;
+    return category != ComponentCategory.INTERNAL
+        || AppInventorFeatures.showInternalComponentsCategory();
   }
 
   /**
@@ -319,32 +463,106 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    * each component (except for those whose category is UNINITIALIZED, or
    * whose category is INTERNAL and we're running on a production server,
    * or who are specifically marked as not to be shown on the palette),
-   * this creates a corresponding {@link SimplePaletteItem} with the passed
-   * {@link DropTargetProvider} and adds it to the panel corresponding to
-   * its category.
-   *
-   * @param dropTargetProvider provider of targets that palette items can be
-   *                           dropped on
+   * this creates or reuses a corresponding {@link SimplePaletteItem}
+   * and adds it to the panel corresponding to its category. Whether or not a
+   * component is shown is controlled by the currently active filter object,
+   * which can be set by calling {@link #setFilter(Filter, boolean)}.
    */
-  @Override
-  public void loadComponents(DropTargetProvider dropTargetProvider) {
-    this.dropTargetProvider = dropTargetProvider;
-    for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      this.addComponent(component);
-    }
-  }
-
   public void loadComponents() {
-    for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      this.addComponent(component);
+    for (String component : componentDatabase.getComponentNames()) {
+      if (filter.shouldShowComponent(component)) {
+        this.addComponent(component);
+      }
     }
   }
 
   @Override
   public void configureComponent(MockComponent mockComponent) {
-    String componentType = mockComponent.getType();
-    PropertiesUtil.populateProperties(mockComponent,
-        COMPONENT_DATABASE.getPropertyDefinitions(componentType), editor);
+  }
+
+  /**
+   * Gets the image from an icon path.
+   *
+   * @param iconPath The iconName provided by the component descriptor.
+   * @param packageName The package name of the component (for extensions).
+   * @return An image representing the icon at the given path.
+   */
+  public static Image getImageFromPath(String iconPath, String packageName) {
+    if (iconPath.startsWith("aiwebres/") && packageName != null) {
+      // icon for extension
+      Image image =
+          new Image(StorageUtil.getFileUrl(Ode.getInstance().getCurrentYoungAndroidProjectId(),
+              "assets/external_comps/" + packageName + "/" + iconPath));
+      image.setWidth("16px");
+      image.setHeight("16px");
+      return image;
+    }
+    if (bundledImages.containsKey(iconPath)) {
+      return new Image(bundledImages.get(iconPath));
+    } else {
+      return new Image(iconPath);
+    }
+  }
+
+  /**
+   * Constructs a URL, potentially, to a license file. If the license file is internal to an
+   * extension (as part of its aiwebres directory), the URL is constructed relative to the App
+   * Inventor DownloadServlet. If a fully qualified URL is provided, it is returned instead.
+   * Otherwise, an empty string is returned.
+   *
+   * @param licensePath the path to the license, as specified by the component
+   * @param packageName the package of the component, if coming from an extension
+   * @param projectId the project ID
+   * @return a URL to a license if given a valid licensePath, otherwise the empty string
+   */
+  public static String getLicenseUrlFromPath(String licensePath, String packageName,
+      long projectId) {
+    if (licensePath.startsWith("aiwebres/") && packageName != null) {
+      // License file is inside aiwebres
+      return StorageUtil.getFileUrl(projectId,
+          "assets/external_comps/" + packageName + "/" + licensePath) + "&inline";
+    } else if (licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
+      // The license is an external URL
+      return licensePath;
+    } else {
+      // No license file specified
+      return "";
+    }
+  }
+
+  private SimplePaletteItem createPaletteItem(String componentTypeName,
+      Map<String, SimplePaletteItem> cache) {
+    int version = componentDatabase.getComponentVersion(componentTypeName);
+    String key = componentTypeName + ":" + version;
+    SimplePaletteItem item = cache.get(key);
+    if (item == null) {
+      String versionName = componentDatabase.getComponentVersionName(componentTypeName);
+      String dateBuilt = componentDatabase.getComponentBuildDate(componentTypeName);
+      String helpString = componentDatabase.getHelpString(componentTypeName);
+      String helpUrl = componentDatabase.getHelpUrl(componentTypeName);
+      String categoryDocUrlString = componentDatabase.getCategoryDocUrlString(componentTypeName);
+      String type = componentDatabase.getComponentType(componentTypeName);
+      String licenseUrl = getLicenseUrlFromPath(componentDatabase.getLicenseName(componentTypeName),
+          type.substring(0, type.lastIndexOf('.')), editor.getProjectId());
+      Image image = getImageFromPath(componentDatabase.getIconName(componentTypeName),
+          type.substring(0, type.lastIndexOf('.')));
+      boolean showOnPalette = componentDatabase.getShowOnPalette(componentTypeName);
+      boolean nonVisible = componentDatabase.getNonVisible(componentTypeName);
+      boolean external = componentDatabase.getComponentExternal(componentTypeName);
+      item = new SimplePaletteItem(new SimpleComponentDescriptor(componentTypeName, version,
+          versionName, dateBuilt, helpString, helpUrl, categoryDocUrlString, licenseUrl, image,
+          showOnPalette, nonVisible, external));
+      cache.put(key, item);
+    }
+    return item;
+  }
+
+  private SimplePaletteItem getPaletteItem(String componentTypeName) {
+    return createPaletteItem(componentTypeName, cachedPaletteItems);
+  }
+
+  private SimplePaletteItem getSearchPaletteItem(String componentTypeName) {
+    return createPaletteItem(componentTypeName, cachedSearchPaletteItems);
   }
 
   /**
@@ -352,44 +570,41 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   @Override
   public void addComponent(String componentTypeName) {
-    if (simplePaletteItems.containsKey(componentTypeName)) { // We are upgrading
-      removeComponent(componentTypeName);
-    }
-    int version = COMPONENT_DATABASE.getComponentVersion(componentTypeName);
-    String versionName = COMPONENT_DATABASE.getComponentVersionName(componentTypeName);
-    String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(componentTypeName);
-    String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
-    String helpUrl = COMPONENT_DATABASE.getHelpUrl(componentTypeName);
-    String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
-    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
-    Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
-    Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentTypeName);
-    Boolean external = COMPONENT_DATABASE.getComponentExternal(componentTypeName);
+    String categoryString = componentDatabase.getCategoryString(componentTypeName);
+    boolean showOnPalette = componentDatabase.getShowOnPalette(componentTypeName);
+    boolean external = componentDatabase.getComponentExternal(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
-    if (showOnPalette && showCategory(category)) {
-      SimplePaletteItem item = new SimplePaletteItem(
-          new SimpleComponentDescriptor(componentTypeName, editor, version, versionName, dateBuilt, helpString, helpUrl,
-              categoryDocUrlString, showOnPalette, nonVisible, external),
-            dropTargetProvider);
+    if (showOnPalette && showCategory(category) && filter.shouldShowComponent(componentTypeName)) {
+      SimplePaletteItem item = getPaletteItem(componentTypeName);
+      item.setActiveEditor(editor);
       simplePaletteItems.put(componentTypeName, item);
       addPaletteItem(item, category);
 
       // Make a second copy for the search mechanism
-      item = new SimplePaletteItem(
-          new SimpleComponentDescriptor(componentTypeName, editor, version, versionName, dateBuilt,
-              helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external),
-          dropTargetProvider);
+      item = getSearchPaletteItem(componentTypeName);
+      item.setActiveEditor(editor);
+      searchSimplePaletteItems.put(componentTypeName, item);
+
       // Handle extensions
       if (external) {
         translationMap.put(componentTypeName.toLowerCase(), componentTypeName);
-        requestRebuildList();
+        requestRebuildSearchList();
+      } else {
+        String translationName = ComponentsTranslation.getComponentName(componentTypeName)
+            .toLowerCase();
+        arrayString.push(translationName);
+        translationMap.put(translationName, componentTypeName);
       }
-      searchSimplePaletteItems.put(componentTypeName, item);
     }
   }
 
+  /**
+   * Remove a component from the palette panel.
+   *
+   * @param componentTypeName The type name of the component to remove.
+   */
   public void removeComponent(String componentTypeName) {
-    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    String categoryString = componentDatabase.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     if (simplePaletteItems.containsKey(componentTypeName)) {
       removePaletteItem(simplePaletteItems.get(componentTypeName), category);
@@ -398,7 +613,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     if (category == ComponentCategory.EXTENSION) {
       searchSimplePaletteItems.remove(componentTypeName);
       translationMap.remove(componentTypeName);
-      requestRebuildList();
+      requestRebuildSearchList();
     }
   }
 
@@ -425,20 +640,20 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     // The production version will not include a mapping for Extension because
     // only compile-time categories are included. This allows us to i18n the
     // Extension title for the palette.
-    int insert_index = Collections.binarySearch(categoryOrder, category.ordinal());
-    insert_index = - insert_index - 1;
-    stackPalette.insert(panel, insert_index);
-    String title = "";
-    if (ComponentCategory.EXTENSION.equals(category)) {
-      title = MESSAGES.extensionComponentPallette();
-      initExtensionPanel();
-    } else {
-      title = ComponentsTranslation.getCategoryName(category.getName());
+    int insertIndex = Collections.binarySearch(categoryOrder, category.ordinal());
+    if (insertIndex < 0) {
+      insertIndex = - insertIndex - 1;
+      stackPalette.insert(panel, insertIndex);
+      String title;
+      if (ComponentCategory.EXTENSION.equals(category)) {
+        title = MESSAGES.extensionComponentPallette();
+        initExtensionPanel();
+      } else {
+        title = ComponentsTranslation.getCategoryName(category.getName());
+      }
+      stackPalette.setStackText(insertIndex, title);
+      categoryOrder.add(insertIndex, category.ordinal());
     }
-    stackPalette.setStackText(insert_index, title);
-    categoryOrder.add(insert_index, category.ordinal());
-    // When the categories are loaded, we want the first one open, which will almost always be User Interface
-    stackPalette.showStack(0);
     return panel;
   }
 
@@ -475,11 +690,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   @Override
   public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
-    boolean result = true;
     for (String componentType : componentTypes) {
       this.removeComponent(componentType);
     }
-    return result;
+    return true;
   }
 
   @Override
@@ -503,35 +717,60 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       pal.clear();
     }
     categoryPanels.clear();
-    paletteHelpers.clear();
     categoryOrder.clear();
     simplePaletteItems.clear();
+    searchSimplePaletteItems.clear();
   }
-
-  // Intended for use by Blocks Toolkit, which needs to be able to refresh without
-  // bothering the loaded extensions
-  public void clearComponentsExceptExtension() {
-    for (ComponentCategory category : categoryPanels.keySet()) {
-      if (!ComponentCategory.EXTENSION.equals(category)) {
-        VerticalPanel panel = categoryPanels.get(category);
-        panel.clear();
-        stackPalette.remove(panel);
-      }
-    }
-    for (PaletteHelper pal : paletteHelpers.values()) {
-      pal.clear();
-    }
-    categoryPanels.clear();
-    paletteHelpers.clear();
-    categoryOrder.clear();
-    simplePaletteItems.clear();
-  }
-
 
   @Override
   public void reloadComponents() {
     clearComponents();
+    if (filter.shouldShowExtensions()) {
+      addComponentCategory(ComponentCategory.EXTENSION);
+    }
     loadComponents();
+    requestRebuildSearchList();
+  }
+
+  /**
+   * Set the filter (if any) for filtering components in the palette. If null
+   * is provided for {@code filter}, all components will be shown (identity filter).
+   * @param filter A filter instance used for filtering.
+   * @param selectFirst If true, selects the first valid stack after applying the filter.
+   */
+  public void setFilter(Filter filter, boolean selectFirst) {
+    this.filter = filter == null ? IDENTITY : filter;
+    reloadComponents();
+    if (selectFirst) {
+      stackPalette.showStack(0);
+    }
+  }
+
+  /**
+   * Set the active editor that will receive palette items dragged from the panel.
+   * @param editor The active form editor.
+   */
+  public void setActiveEditor(SimpleEditor editor) {
+    if (this.editor == editor) {
+      return;  // already the current editor.
+    }
+    int stackToSelect;
+    if (this.editor == null || this.editor.getProjectEditor() != editor.getProjectEditor()) {
+      // When the categories are loaded, we want the first one open, which will almost always be
+      // User Interface
+      stackToSelect = 0;
+      // New project editor possibly means a new filter.
+      Filter newFilter = editor.getPaletteFilter();
+      this.filter = newFilter == null ? IDENTITY : newFilter;
+    } else {
+      stackToSelect = stackPalette.getSelectedIndex();
+    }
+    this.editor = editor;
+    componentDatabase = editor.getComponentDatabase();
+    reloadComponents();
+    if (stackToSelect >= 0) {
+      stackPalette.showStack(stackToSelect);
+    }
   }
 
 }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,7 +10,8 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
@@ -45,20 +46,13 @@ public abstract class SimpleEditor extends FileEditor {
    */
   public abstract Map<String, MockComponent> getComponents();
 
-  /*
+  /**
    * Gets a list of the names of component instances. The caller can modify the
    * list without affecting the actual properties.
    *
    * @return a list of the names of component instances
    */
   public abstract List<String> getComponentNames();
-
-  /**
-   * Returns the component palette panel
-   *
-   * @return  component palette panel
-   */
-  public abstract SimplePalettePanel getComponentPalettePanel();
 
   /**
    * Returns the non-visible components panel
@@ -135,4 +129,26 @@ public abstract class SimpleEditor extends FileEditor {
     }
     return type + (highIndex + 1);
   }
+
+  /**
+   * Gets the component database containing the simple components associated
+   * with the editor.
+   *
+   * @return The editor's component database.
+   */
+  public abstract SimpleComponentDatabase getComponentDatabase();
+
+  /**
+   * Gets the drop target provider for the editor.
+   *
+   * @return The editor's drop target provider.
+   */
+  public abstract DropTargetProvider getDropTargetProvider();
+
+  /**
+   * Gets the palette filter for the editor.
+   *
+   * @return The editor's palette filter.
+   */
+  public abstract YoungAndroidPalettePanel.Filter getPaletteFilter();
 }

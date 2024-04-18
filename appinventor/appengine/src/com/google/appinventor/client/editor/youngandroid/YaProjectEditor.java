@@ -464,7 +464,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     if (editorMap.containsKey(formName)) {
       // This happens if the blocks editor was already added.
       editorMap.get(formName).formEditor = newFormEditor;
-      editorMap.get(formName).blocksEditor.setFormEditor(newFormEditor);
     } else {
       EditorSet editors = new EditorSet();
       editors.formEditor = newFormEditor;
@@ -521,7 +520,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       // This happens if the form editor was already added.
       EditorSet pair = editorMap.get(formName);
       pair.blocksEditor = newBlocksEditor;
-      newBlocksEditor.setFormEditor(pair.formEditor);
     } else {
       EditorSet editors = new EditorSet();
       editors.blocksEditor = newBlocksEditor;
