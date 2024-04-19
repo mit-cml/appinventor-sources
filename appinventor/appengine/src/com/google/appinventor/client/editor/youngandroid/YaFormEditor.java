@@ -212,7 +212,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     final String fileId = getFileId();
     OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
-      public void onSuccess(ChecksumedLoadFile result) {
+      public void onSuccess(final ChecksumedLoadFile result) {
         String contents;
         try {
           contents = result.getContent();
@@ -228,6 +228,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
               onFileLoaded(fileContentHolder.getFileContent());
             } catch(IllegalArgumentException e) {
               return;
+            }
+            try {
+              result.setContent(fileContentHolder.getFileContent());
+            } catch (ChecksumedFileException e) {
+              LOG.warning("ChecksumedFileException in YaFormEditor");
             }
             if (afterFileLoaded != null) {
               afterFileLoaded.execute();

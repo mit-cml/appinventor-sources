@@ -20,6 +20,8 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockTwitter;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
+import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
+import com.google.appinventor.client.explorer.dialogs.ProgressBarDialogBox;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -33,6 +35,7 @@ import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
@@ -52,8 +55,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,6 +93,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private static class EditorSet {
     YaFormEditor formEditor = null;
     YaBlocksEditor blocksEditor = null;
+    YoungAndroidFormNode formNode = null;
+    YoungAndroidBlocksNode blocksNode = null;
   }
 
   // Maps form name -> editors for this form
@@ -102,6 +110,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Database of component type descriptions
   private final SimpleComponentDatabase COMPONENT_DATABASE;
+
+  private final Deque<EditorSet> loadingEditors = new LinkedList<>();
 
   // State variables to help determine whether we are ready to show Screen1
   // Automatically select the Screen1 form editor when we have finished loading
@@ -147,32 +157,38 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
   }
 
-  private void loadBlocksEditor(String formNamePassedIn) {
+  private void loadBlocksEditor(String formNamePassedIn, final Runnable callback) {
 
     final String formName = formNamePassedIn;
-    final YaBlocksEditor newBlocksEditor = editorMap.get(formName).blocksEditor;
+    final EditorSet editors = editorMap.get(formName);
+    final YaBlocksEditor newBlocksEditor = editors.blocksEditor;
     newBlocksEditor.loadFile(new Command() {
-        @Override
-        public void execute() {
-          YaBlocksEditor newBlocksEditor = editorMap.get(formName).blocksEditor;
-          int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
-              getFileIdComparator());
-          if (pos < 0) {
-            pos = -pos - 1;
-          }
-          insertFileEditor(newBlocksEditor, pos);
-          if (isScreen1(formName)) {
-            screen1BlocksLoaded = true;
-            if (readyToShowScreen1()) {
-              LOG.info("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
-                  + formName + " for project " + newBlocksEditor.getProjectId());
-              Ode.getInstance().getDesignToolbar().switchToScreen(newBlocksEditor.getProjectId(),
-                  formName, DesignToolbar.View.FORM);
-            }
+      @Override
+      public void execute() {
+        final EditorSet editors = editorMap.get(formName);
+        YaBlocksEditor newBlocksEditor = editors.blocksEditor;
+        LOG.info("Loaded " + formName + ".bky");
+        loadingEditors.remove(editors);
+        int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
+            getFileIdComparator());
+        if (pos < 0) {
+          pos = -pos - 1;
+        }
+        insertFileEditor(newBlocksEditor, pos);
+        if (isScreen1(formName)) {
+          screen1BlocksLoaded = true;
+          if (readyToShowScreen1()) {
+            LOG.info("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
+                         + formName + " for project " + newBlocksEditor.getProjectId());
+            Ode.getInstance().getDesignToolbar().switchToScreen(newBlocksEditor.getProjectId(),
+                formName, DesignToolbar.View.FORM);
           }
         }
-      });
-
+        if (callback != null) {
+          callback.run();
+        }
+      }
+    });
   }
 
   /**
@@ -187,47 +203,107 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         .then(this::loadProject);
   }
 
+  private EditorSet getOrCreateEditorSet(String formName) {
+    EditorSet result = editorMap.get(formName);
+    if (result == null) {
+      result = new EditorSet();
+      editorMap.put(formName, result);
+    }
+    return result;
+  }
+
   // Note: When we add the blocks editors in the loop below we do not actually
   // have them load the blocks file. Instead we trigger the load of a blocks file
   // in the callback for the loading of its associated forms file. This is important
   // because we have to ensure that the component type data is available when the
   // blocks are loaded!
-
   private Promise<Object> loadProject(Object result) {
     // add form editors first, then blocks editors because the blocks editors
     // need access to their corresponding form editors to set up properly
-    for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
+    final long start = System.currentTimeMillis();
+    YoungAndroidFormNode screen1scm = null;
+    YoungAndroidBlocksNode screen1bky = null;
+    for (SourceNode source : projectRootNode.getAllSourceNodes()) {
       if (source instanceof YoungAndroidFormNode) {
-        addFormEditor((YoungAndroidFormNode) source);
+        YoungAndroidFormNode form = (YoungAndroidFormNode) source;
+        if (form.isScreen1()) {
+          screen1scm = form;
+        }
+        getOrCreateEditorSet(form.getFormName()).formNode = form;
+      } else if (source instanceof YoungAndroidBlocksNode) {
+        YoungAndroidBlocksNode blocks = (YoungAndroidBlocksNode) source;
+        if (blocks.isScreen1()) {
+          screen1bky = blocks;
+        }
+        getOrCreateEditorSet(blocks.getFormName()).blocksNode = blocks;
       }
     }
-    for (ProjectNode source: projectRootNode.getAllSourceNodes()) {
-      if (source instanceof YoungAndroidBlocksNode) {
-        addBlocksEditor((YoungAndroidBlocksNode) source);
-      }
-    }
+    if (screen1scm == null || screen1bky == null) {
+      Ode.getInstance().genericWarning(MESSAGES.screen1MissingText(project.getProjectName()));
+    } else {
+      final ProgressBarDialogBox progress = new ProgressBarDialogBox("MESSAGES.loadingAppIndicatorText()", projectRootNode);
+      progress.show();
+      progress.center();
 
-    // Add the screens to the design toolbar, along with their associated editors
-    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
-    for (String formName : editorMap.keySet()) {
-      EditorSet editors = editorMap.get(formName);
-      if (editors.formEditor != null && editors.blocksEditor != null) {
-        designToolbar.addScreen(projectRootNode.getProjectId(), formName, editors.formEditor,
-            editors.blocksEditor);
-        if (isScreen1(formName)) {
-          screen1Added = true;
-          if (readyToShowScreen1()) {  // probably not yet but who knows?
-            LOG.info("YaProjectEditor.loadProject: switching to screen " + formName
-                + " for project " + projectRootNode.getProjectId());
-            Ode.getInstance().getDesignToolbar().switchToScreen(projectRootNode.getProjectId(),
-                formName, DesignToolbar.View.FORM);
+      final DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+      final Runnable callback = new Runnable() {
+        int counter = 0;
+
+        @Override
+        public void run() {
+          counter++;
+          if (loadingEditors.isEmpty() && counter >= editorMap.size()) {
+            // All done...
+            progress.hide();
+            designToolbar.sortScreenList(projectId);
+            Ode.CLog("Loading project took " + (System.currentTimeMillis() - start) + " ms");
+          } else {
+            double timeRemaining = (double) (System.currentTimeMillis() - start) / counter *
+                                       (editorMap.size() - counter) / 1000.0;
+            progress.setProgress(100 * counter / editorMap.size(),
+                MESSAGES.loadingScreen(loadingEditors.getFirst().formNode.getFormName(), (int) timeRemaining));
           }
         }
-      } else if (editors.formEditor == null) {
-        LOG.warning("Missing form editor for " + formName);
-      } else {
-        LOG.warning("Missing blocks editor for " + formName);
+      };
+      addFormEditor(screen1scm, callback);
+      addBlocksEditor(screen1bky);
+
+      final String screen1 = screen1scm.getFormName();
+      EditorSet editors = editorMap.get(screen1);
+      designToolbar.addScreen(projectRootNode.getProjectId(), screen1, editors.formEditor, editors.blocksEditor);
+      screen1Added = true;
+      if (readyToShowScreen1()) {
+        Ode.CLog("YaProjectEditor.loadProject: switching to screen " + screen1
+                     + " for project " + projectRootNode.getProjectId());
+        Ode.getInstance().getDesignToolbar().switchToScreen(projectRootNode.getProjectId(),
+            screen1, DesignToolbar.View.FORM);
       }
+
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        private Iterator<Map.Entry<String, EditorSet>> it = editorMap.entrySet().iterator();
+
+        @Override
+        public void execute() {
+          if (it.hasNext()) {
+            Map.Entry<String, EditorSet> toLoad = it.next();
+            EditorSet editors = toLoad.getValue();
+            if (!editors.formNode.isScreen1()) {  // Screen1 loading is already initialized
+              if (editors.formNode == null) {
+                Ode.getInstance().genericWarning(MESSAGES.screenMissingDesigner(project.getProjectName(), toLoad.getKey()));
+              } else if (editors.blocksNode == null) {
+                Ode.getInstance().genericWarning(MESSAGES.screenMissingBlocks(project.getProjectName(), toLoad.getKey()));
+              } else {
+                addFormEditor(editors.formNode, callback);
+                addBlocksEditor(editors.blocksNode);
+                DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+                designToolbar.addScreen(projectRootNode.getProjectId(),
+                    toLoad.getKey(), editors.formEditor, editors.blocksEditor);
+              }
+            }
+            Scheduler.get().scheduleDeferred(this);
+          }
+        }
+      });
     }
 
     // New project loading logic
@@ -292,7 +368,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     String formName = null;
     if (node instanceof YoungAndroidFormNode) {
       if (getFileEditor(node.getFileId()) == null) {
-        addFormEditor((YoungAndroidFormNode) node);
+        addFormEditor((YoungAndroidFormNode) node, null);
         formName = ((YoungAndroidFormNode) node).getFormName();
       }
     } else if (node instanceof YoungAndroidBlocksNode) {
@@ -458,9 +534,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     };
   }
 
-  private void addFormEditor(YoungAndroidFormNode formNode) {
+  private void addFormEditor(YoungAndroidFormNode formNode, final Runnable callback) {
+    final long start = System.currentTimeMillis();
     final YaFormEditor newFormEditor = new YaFormEditor(this, formNode);
     final String formName = formNode.getFormName();
+    LOG.info("Adding form editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the blocks editor was already added.
       editorMap.get(formName).formEditor = newFormEditor;
@@ -473,6 +551,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     final Command afterLoadCommand = new Command() {
       @Override
       public void execute() {
+        LOG.info("Loaded " + formName + ".scm");
         int pos = Collections.binarySearch(fileIds, newFormEditor.getFileId(),
             getFileIdComparator());
         if (pos < 0) {
@@ -483,12 +562,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
             LOG.info("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen "
-                + formName + " for project " + newFormEditor.getProjectId());
+                         + formName + " for project " + newFormEditor.getProjectId());
             Ode.getInstance().getDesignToolbar().switchToScreen(newFormEditor.getProjectId(),
                 formName, DesignToolbar.View.FORM);
           }
         }
-        loadBlocksEditor(formName);
+        loadBlocksEditor(formName, callback);
       }
     };
     if (!isScreen1(formName) && !screen1FormLoaded) {
@@ -498,6 +577,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         @Override
         public boolean execute() {
           if (screen1FormLoaded) {
+            loadingEditors.add(editorMap.get(formName));
             newFormEditor.loadFile(afterLoadCommand);
             return false;
           } else {
@@ -506,8 +586,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         }
       }, 100);
     } else {
+      loadingEditors.add(editorMap.get(formName));
       newFormEditor.loadFile(afterLoadCommand);
     }
+    LOG.info("Adding form editor for " + formName + " took " + (System.currentTimeMillis() - start) + " ms");
   }
 
   private boolean readyToShowScreen1() {
@@ -515,8 +597,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
+    final long start = System.currentTimeMillis();
     final YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, blocksNode);
     final String formName = blocksNode.getFormName();
+    LOG.info("Adding blocks editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the form editor was already added.
       EditorSet pair = editorMap.get(formName);
@@ -527,6 +611,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editors.blocksEditor = newBlocksEditor;
       editorMap.put(formName, editors);
     }
+    LOG.info("Adding blocks editor for " + formName + " took " + (System.currentTimeMillis() - start) + " ms");
   }
 
   private void removeFormEditor(String formName) {

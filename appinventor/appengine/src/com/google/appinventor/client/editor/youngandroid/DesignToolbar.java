@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
@@ -28,8 +30,6 @@ import com.google.gwt.user.client.ui.Label;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The design toolbar houses command buttons in the Young Android Design
@@ -70,7 +70,7 @@ public class DesignToolbar extends Toolbar {
     public DesignProject(String name, long projectId) {
       this.name = name;
       this.projectId = projectId;
-      screens = Maps.newHashMap();
+      screens = Maps.newTreeMap();
       // Screen1 is initial screen by default
       currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
       // Let BlocklyPanel know which screen to send Yail for
@@ -245,16 +245,10 @@ public class DesignToolbar extends Toolbar {
         return true;
       }
       pushedScreens.clear();  // Effectively switching applications; clear stack of screens.
-      clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
       LOG.info("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
       currentProject = project;
-
-      // TODO(sharon): add screens to drop-down menu in the right order
-      for (Screen screen : currentProject.screens.values()) {
-        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,
-            screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
-      }
+      sortScreenList(projectId);
       projectNameLabel.setText(projectName);
       YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project
     } else {
@@ -265,6 +259,17 @@ public class DesignToolbar extends Toolbar {
       return false;
     }
     return true;
+  }
+
+  public void sortScreenList(long projectId) {
+    if (currentProject != null) {  // We can only sort screens if we have a project.
+      clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
+      // TODO(sharon): add screens to drop-down menu in the right order
+      for (Screen screen : currentProject.screens.values()) {
+        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,
+            screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
+      }
+    }
   }
 
   /*
@@ -282,8 +287,7 @@ public class DesignToolbar extends Toolbar {
     DesignProject project = projectMap.get(projectId);
     if (project.addScreen(name, formEditor, blocksEditor)) {
       if (currentProject == project) {
-        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(name,
-            name, new SwitchScreenAction(projectId, name)));
+        sortScreenList(projectId);
       }
     }
   }
