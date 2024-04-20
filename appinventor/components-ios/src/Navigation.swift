@@ -219,7 +219,7 @@ struct NavigationRequest: Codable {
     let start = _startLocation
     let end = _endLocation
     let method = _method
-    guard let url = URL(string: "\(_serviceUrl)\(method.toUnderlyingValue())/geojson/") else {
+    guard let url = URL(string: "\(_serviceUrl)\(method.toUnderlyingValue())/geojson") else {
       return
     }
     var request = URLRequest(url: url)
