@@ -69,7 +69,7 @@ public final class MoveProjectsWizard {
     moveDialog.hide();
   }
 
-    @SuppressWarnings("unused")
+  @SuppressWarnings("unused")
   @UiHandler("moveButton")
   void moveProjects(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();

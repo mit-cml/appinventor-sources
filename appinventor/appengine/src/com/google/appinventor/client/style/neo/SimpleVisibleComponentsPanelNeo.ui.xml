@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2009-2011 Google, All Rights reserved -->
-<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
 <!-- Released under the Apache License, Version 2.0 -->
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
@@ -10,25 +8,41 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
-    <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-    <g:VerticalPanel styleName="ode-SimpleFormDesigner">
-        <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner"  horizontalAlignment="ALIGN_CENTER">
-            <g:FlowPanel  stylePrimaryName="ode-SimpleFormDesignerToolbar">
-                <ai:Icon ui:field="size_icon" icon="aspect_ratio" />
-                <g:ListBox ui:field="listboxPhoneTablet">
-                    <g:item value="0"><ui:text from="{messages.previewPhone}" /> (320 x 505)</g:item>
-                    <g:item value="1"><ui:text from="{messages.previewTablet}" /> (480 x 675)</g:item>
-                    <g:item value="2"><ui:text from="{messages.previewMonitor}" /> (768 x 1024)</g:item>
-                </g:ListBox>
-                <ai:Icon ui:field="os_icon" icon="smartphone"  />
-                <g:ListBox ui:field="listboxPhonePreview">
-                    <g:item value="0">Android 5+ (Material)</g:item>
-                    <g:item value="1">Android 3.0-4.x (Holo)</g:item>
-                    <g:item value="2">iOS 13</g:item>
-                </g:ListBox>
-                <ai:Icon icon="visibility_off" />
-                <ed:HiddenComponentsCheckbox />
-            </g:FlowPanel>
-        </g:VerticalPanel>
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <g:VerticalPanel styleName="ode-SimpleFormDesigner">
+    <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner"
+                     horizontalAlignment="ALIGN_CENTER">
+      <g:FlowPanel stylePrimaryName="ode-SimpleFormDesignerToolbar">
+        <ai:Icon ui:field="size_icon" icon="aspect_ratio"/>
+        <g:ListBox ui:field="listboxPhoneTablet">
+          <g:item value="0">
+            <ui:text from="{messages.previewPhone}"/>
+            (320 x 505)
+          </g:item>
+          <g:item value="1">
+            <ui:text from="{messages.previewTablet}"/>
+            (480 x 675)
+          </g:item>
+          <g:item value="2">
+            <ui:text from="{messages.previewMonitor}"/>
+            (768 x 1024)
+          </g:item>
+        </g:ListBox>
+        <ai:Icon ui:field="os_icon" icon="smartphone"/>
+        <g:ListBox ui:field="listboxPhonePreview">
+          <g:item value="0">
+            <ui:text from="{messages.previewAndroidMaterial}"/>
+          </g:item>
+          <g:item value="1">
+            <ui:text from="{messages.previewAndroidHolo}"/>
+          </g:item>
+          <g:item value="2">
+            <ui:text from="{messages.previewIOS13}"/>
+          </g:item>
+        </g:ListBox>
+        <ai:Icon icon="visibility_off"/>
+        <ed:HiddenComponentsCheckbox/>
+      </g:FlowPanel>
     </g:VerticalPanel>
+  </g:VerticalPanel>
 </ui:UiBinder>

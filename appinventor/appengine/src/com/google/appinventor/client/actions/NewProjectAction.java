@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.actions;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.user.client.Command;
 

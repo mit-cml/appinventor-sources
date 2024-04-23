@@ -11,43 +11,43 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
-  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ai:Toolbar>
     <!-- Left button items -->
-    <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left"  styleName="ode-ProjectListButton right-spacer"
+    <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left" styleName="ode-ProjectListButton right-spacer"
                     tooltip="{messages.myProjectsButton}">
-      <ca:SwitchToProjectAction />
+      <ca:SwitchToProjectAction/>
     </ai:ToolbarItem>
-    <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />
+    <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
     <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
                     visible="false">
-      <ya:ToggleTutorialAction />
+      <ya:ToggleTutorialAction/>
     </ai:ToolbarItem>
 
-    <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false" />
+    <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false"/>
     <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
-                       ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary" />
+                       ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary"/>
     <ai:ToolbarItem name="AddForm" icon="add" ui:field="addFormItem"
-                    align="center"  styleName="ode-ProjectListButton inline bcenter primary"
+                    align="center" styleName="ode-ProjectListButton inline bcenter primary"
                     tooltip="{messages.addFormButton}">
-      <ya:AddFormAction />
+      <ya:AddFormAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="RemoveForm" icon="remove" ui:field="removeFormItem"
                     align="center" styleName="ode-ProjectListButton inline bright primary"
                     tooltip="{messages.removeFormButton}">
-      <ya:RemoveFormAction />
+      <ya:RemoveFormAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
                     ui:field="sendToGalleryItem" align="center">
-      <ca:SendToGalleryAction />
+      <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
-                    ui:field="switchToDesign" align="right"  styleName="ode-ProjectListButton bleft primary" >
-      <ya:SwitchToFormEditorAction />
+                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bleft primary">
+      <ya:SwitchToFormEditorAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
                     ui:field="switchToBlocks" align="right" styleName="ode-ProjectListButton bright primary">
-      <ya:SwitchToBlocksEditorAction />
+      <ya:SwitchToBlocksEditorAction/>
     </ai:ToolbarItem>
   </ai:Toolbar>
 </ui:UiBinder>

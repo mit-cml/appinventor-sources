@@ -8,11 +8,11 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
-  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <g:FlowPanel styleName="ode-ProjectRow"  ui:field="container">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <g:FlowPanel styleName="ode-ProjectRow" ui:field="container">
     <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox'/>
-    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel' />
-    <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectListDate' />
-    <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectListDate' />
+    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel'/>
+    <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectListDate'/>
+    <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectListDate'/>
   </g:FlowPanel>
 </ui:UiBinder>

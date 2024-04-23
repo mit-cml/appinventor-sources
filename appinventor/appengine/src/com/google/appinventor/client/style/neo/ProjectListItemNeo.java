@@ -19,8 +19,7 @@ public class ProjectListItemNeo extends ProjectListItem {
       GWT.create(ProjectListItemUiBinderNeo.class);
 
   @UiField FlowPanel container;
-  @UiField
-  Label nameLabel;
+  @UiField Label nameLabel;
   @UiField Label dateModifiedLabel;
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;

@@ -6,13 +6,10 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.widgets.Toolbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
@@ -20,13 +17,10 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.settings.SettingsConstants;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.ListBox;

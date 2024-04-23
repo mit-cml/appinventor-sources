@@ -105,12 +105,12 @@ public final class ProjectManager {
     return projects;
   }
 
-    /**
-     * Returns the project that belongs to a project node.
-     *
-     * @param node the project node for which we want to retrieve the project
-     * @return the project of the node
-     */
+  /**
+   * Returns the project that belongs to a project node.
+   *
+   * @param node the project node for which we want to retrieve the project
+   * @return the project of the node
+   */
   public Project getProject(ProjectNode node) {
     return projectsMap.get(node.getProjectId());
   }

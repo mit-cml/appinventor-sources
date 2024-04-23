@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,7 +26,6 @@ import java.util.TreeSet;
  *
  */
 public class PropertiesPanel extends Composite implements ComponentDatabaseChangeListener {
-  private static final Logger LOG = Logger.getLogger(PropertiesPanel.class.getName());
 
   // UI elements
   private final VerticalPanel panel;
