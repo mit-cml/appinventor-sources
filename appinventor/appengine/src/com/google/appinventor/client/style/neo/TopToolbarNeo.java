@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class TopToolbarNeo extends TopToolbar {
   private static final Logger LOG = Logger.getLogger(TopToolbarNeo.class.getName());
   interface TopToolbarUiBinderneo extends UiBinder<Toolbar, TopToolbarNeo> {}
-  private static final TopToolbarUiBinderneo UI_BINDER =
+  private static final TopToolbarUiBinderneo uibinder =
       GWT.create(TopToolbarUiBinderneo.class);
 
   @UiField DropDownButton fileDropDown;
@@ -31,7 +31,7 @@ public class TopToolbarNeo extends TopToolbar {
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
 
-    initWidget(UI_BINDER.createAndBindUi(this));
+    initWidget(uibinder.createAndBindUi(this));
     super.fileDropDown = fileDropDown;
     super.connectDropDown = connectDropDown;
     super.buildDropDown = buildDropDown;

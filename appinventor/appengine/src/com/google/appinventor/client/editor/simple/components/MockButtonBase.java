@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
+
 abstract class MockButtonBase extends MockVisibleComponent implements FormChangeListener {
   private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
   // Property names

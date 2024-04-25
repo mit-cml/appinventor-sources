@@ -9,15 +9,15 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class StatusPanelNeo extends StatusPanel {
   interface StatusPanelUiBinderneo extends UiBinder<FlowPanel, StatusPanelNeo> {}
-  private static final StatusPanelUiBinderneo UI_BINDER = GWT.create(StatusPanelUiBinderneo.class);
+  private static final StatusPanelUiBinderneo uibinder = GWT.create(StatusPanelUiBinderneo.class);
 
   @UiField FlowPanel footer;
   @UiField Anchor tosLink;
 
   @Override
   public void bindUI() {
-    StatusPanelUiBinderneo UI_BINDER = GWT.create(StatusPanelUiBinderneo.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    StatusPanelUiBinderneo uibinder = GWT.create(StatusPanelUiBinderneo.class);
+    initWidget(uibinder.createAndBindUi(this));
     super.footer = footer;
     super.tosLink = tosLink;
   }

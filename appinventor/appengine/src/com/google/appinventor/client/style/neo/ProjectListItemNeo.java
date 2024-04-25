@@ -15,7 +15,7 @@ public class ProjectListItemNeo extends ProjectListItem {
 
   interface ProjectListItemUiBinderNeo extends UiBinder<FlowPanel, ProjectListItemNeo> {}
 
-  private static final ProjectListItemUiBinderNeo UI_BINDER =
+  private static final ProjectListItemUiBinderNeo uibinder =
       GWT.create(ProjectListItemUiBinderNeo.class);
 
   @UiField FlowPanel container;
@@ -30,7 +30,7 @@ public class ProjectListItemNeo extends ProjectListItem {
 
   @Override
   public void bindUI() {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    initWidget(uibinder.createAndBindUi(this));
     super.container = container;
     super.checkBox = checkBox;
     super.dateCreatedLabel = dateCreatedLabel;

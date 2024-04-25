@@ -50,7 +50,7 @@ public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
 
   interface TopPanelUiBinder extends UiBinder<FlowPanel, TopPanel> {}
-  private static final TopPanelUiBinder UI_BINDER = GWT.create(TopPanelUiBinder.class);
+  private static final TopPanelUiBinder uibinder = GWT.create(TopPanelUiBinder.class);
 
 
   private static final String WIDGET_NAME_LANGUAGE = "Language";
@@ -126,7 +126,7 @@ public class TopPanel extends Composite {
   }
 
   public void bindUI() {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   @UiFactory
@@ -137,20 +137,6 @@ public class TopPanel extends Composite {
   public TopToolbar getTopToolbar() {
     return topToolbar;
   }
-
-//  TODO: Fix template to handle buttons from classic layout
-//  @SuppressWarnings("unused")
-//  @UiHandler("myProjects")
-//  public void switchToMyProjects(ClickEvent e) {
-//    topToolbar.updateMoveToTrash(true);
-//    ode.switchToProjectsView();
-//  }
-//
-//  @SuppressWarnings("unused")
-//  @UiHandler("viewTrash")
-//  public void switchToTrash(ClickEvent e) {
-//    ode.switchToTrash();
-//  }
 
   private String getDisplayName(String localeName){
     String nativeName=LocaleInfo.getLocaleNativeDisplayName(localeName);

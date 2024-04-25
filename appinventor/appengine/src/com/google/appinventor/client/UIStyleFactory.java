@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
@@ -21,11 +26,11 @@ public class UIStyleFactory {
 
   public FlowPanel createOde(Ode target, String style) {
     if (style == "modern") {
-      OdeUiBinderNeo ui_binder = GWT.create(OdeUiBinderNeo.class);
-      return ui_binder.createAndBindUi(target);
+      OdeUiBinderNeo uibinder = GWT.create(OdeUiBinderNeo.class);
+      return uibinder.createAndBindUi(target);
     }
-    OdeUiBinder ui_binder = GWT.create(OdeUiBinder.class);
-    return ui_binder.createAndBindUi(target);
+    OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
+    return uibinder.createAndBindUi(target);
   }
 
   public ProjectList createProjectList() {

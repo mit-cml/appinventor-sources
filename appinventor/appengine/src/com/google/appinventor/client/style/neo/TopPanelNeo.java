@@ -16,7 +16,7 @@ public class TopPanelNeo extends TopPanel {
   @UiTemplate("TopPanelNeo.ui.xml")
   interface TopPanelUiBinderneo extends UiBinder<FlowPanel, TopPanelNeo> {}
 
-  private static final TopPanelUiBinderneo UI_BINDER = GWT.create(TopPanelUiBinderneo.class);
+  private static final TopPanelUiBinderneo uibinder = GWT.create(TopPanelUiBinderneo.class);
 
   @UiField
   TopToolbarNeo topToolbar;
@@ -34,7 +34,7 @@ public class TopPanelNeo extends TopPanel {
 
   @Override
   public void bindUI() {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    initWidget(uibinder.createAndBindUi(this));
     super.topToolbar = topToolbar;
     super.logo = logo;
     super.readOnly = readOnly;

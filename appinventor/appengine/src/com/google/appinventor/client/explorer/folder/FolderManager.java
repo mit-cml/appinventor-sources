@@ -29,12 +29,12 @@ public final class FolderManager {
 
   private boolean foldersLoaded;
 
-  private final ArrayList<FolderManagerEventListener> folderManagerEventListeners;
+  private final List<FolderManagerEventListener> folderManagerEventListeners;
   private final UIStyleFactory uiFactory;
 
   public FolderManager(UIStyleFactory uiFactory) {
     this.uiFactory = uiFactory;
-    folderManagerEventListeners = new ArrayList<FolderManagerEventListener>();
+    folderManagerEventListeners = new ArrayList<>();
     LOG.info("Created new folder manager");
   }
 

@@ -112,8 +112,8 @@ public class ProjectFolder extends Composite {
   }
 
   public void bindUI() {
-    ProjectFolderUiBinder UI_BINDER = GWT.create(ProjectFolderUiBinder.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    ProjectFolderUiBinder uibinder = GWT.create(ProjectFolderUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -169,21 +169,14 @@ public class ProjectFolder extends Composite {
   }
 
   public void refresh() {
-    LOG.info("Refresh folder " + name);
-    if (nameLabel == null) {
-      LOG.info("Name Label is null ");
-    }
     nameLabel.setText(name);
-    LOG.info("Set date created ");
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
-    LOG.info("Set date modified ");
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
     childrenContainer.clear();
     for (ProjectFolder f : folders.values()) {
       if (changeHandler != null) {
         f.setSelectionChangeHandler(changeHandler);
       }
-      LOG.info("Send refresh for child folder " + f.name);
       f.refresh();
       childrenContainer.add(f);
     }
@@ -255,6 +248,7 @@ public class ProjectFolder extends Composite {
   public List<Project> getProjects() {
     return projects;
   }
+
   public List<Project> getVisibleProjects(boolean onlySelected) {
     List<Project> list = new ArrayList<>();
     for (ProjectListItem item : projectListItems) {
@@ -345,7 +339,6 @@ public class ProjectFolder extends Composite {
   }
 
   public List<ProjectFolder> getChildFolders() {
-    LOG.info("Get Child Folders Classic");
     return Arrays.asList(folders.values().toArray(new ProjectFolder[0]));
   }
 

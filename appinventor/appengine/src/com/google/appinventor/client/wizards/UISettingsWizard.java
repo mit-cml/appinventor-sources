@@ -63,8 +63,8 @@ public class UISettingsWizard {
   }
 
   public void bindUI() {
-    UISettingsWizardUiBinder UI_BINDER = GWT.create(UISettingsWizardUiBinder.class);
-    UI_BINDER.createAndBindUi(this);
+    UISettingsWizardUiBinder uibinder = GWT.create(UISettingsWizardUiBinder.class);
+    uibinder.createAndBindUi(this);
   }
 
   public void show() {

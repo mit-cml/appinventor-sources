@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
@@ -27,9 +32,9 @@ public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizar
 
   @Override
   public void bindUI() {
-    NewYoungAndroidProjectWizardUiBinderNeo UI_BINDER =
+    NewYoungAndroidProjectWizardUiBinderNeo uibinder =
         GWT.create(NewYoungAndroidProjectWizardUiBinderNeo.class);
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
     super.addDialog = addDialog;
     super.addButton = addButton;
     super.cancelButton = cancelButton;

@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.UIStyleFactory;
@@ -14,10 +19,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
-import java.util.logging.Logger;
-
 public class ProjectFolderNeo extends ProjectFolder {
-  private static final Logger LOG = Logger.getLogger(ProjectFolderNeo.class.getName());
   interface ProjectFolderUiBinderNeo extends UiBinder<FlowPanel, ProjectFolderNeo> { }
 
   @UiField protected FlowPanel container;
@@ -42,8 +44,8 @@ public class ProjectFolderNeo extends ProjectFolder {
 
   @Override
   public void bindUI() {
-    ProjectFolderUiBinderNeo UI_BINDER = GWT.create(ProjectFolderUiBinderNeo.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    ProjectFolderUiBinderNeo uibinder = GWT.create(ProjectFolderUiBinderNeo.class);
+    initWidget(uibinder.createAndBindUi(this));
     super.container = container;
     super.childrenContainer = childrenContainer;
     super.nameLabel = nameLabel;

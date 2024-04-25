@@ -79,9 +79,9 @@ public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPane
 
   @Override
   protected void bindUI() {
-    SimpleVisibleComponentsPanelUiBinderNeo UI_BINDER =
+    SimpleVisibleComponentsPanelUiBinderNeo uibinder =
         GWT.create(SimpleVisibleComponentsPanelUiBinderNeo.class);
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
     super.listboxPhonePreview = listboxPhonePreview;
     super.listboxPhoneTablet = listboxPhoneTablet;
     super.phoneScreen = phoneScreen;

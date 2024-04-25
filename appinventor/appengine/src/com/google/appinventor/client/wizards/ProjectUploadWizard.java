@@ -38,7 +38,7 @@ public class ProjectUploadWizard {
   interface ProjectUploadWizardUiBinder extends UiBinder<Dialog, ProjectUploadWizard> {}
   private static final Logger LOG = Logger.getLogger(ProjectUploadWizard.class.getName());
 
-  private static final ProjectUploadWizardUiBinder UI_BINDER =
+  private static final ProjectUploadWizardUiBinder uibinder =
       GWT.create(ProjectUploadWizardUiBinder.class);
 
   @UiField Dialog uploadDialog;
@@ -55,7 +55,7 @@ public class ProjectUploadWizard {
   public ProjectUploadWizard() {
     LOG.warning("Create ProjectUploadWizard");
     // Initialize UI
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
     LOG.warning("Bound ProjectUploadWizard");
     upload.setName(ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
     upload.getElement().setAttribute("accept", PROJECT_ARCHIVE_EXTENSION);

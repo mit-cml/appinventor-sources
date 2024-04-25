@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 public class FileUploadWizard {
   interface FileUploadWizardUiBinder extends UiBinder<Dialog, FileUploadWizard> {}
 
-  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER =
+  private static final FileUploadWizard.FileUploadWizardUiBinder uibinder =
       GWT.create(FileUploadWizardUiBinder.class);
 
   @UiField Dialog uploadDialog;
@@ -109,7 +109,7 @@ public class FileUploadWizard {
     this.acceptableTypes = acceptableTypes;
     this.fileUploadedCallback = fileUploadedCallback;
 
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
 
     if (this.acceptableTypes != null) {
       upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));

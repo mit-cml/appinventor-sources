@@ -128,8 +128,8 @@ public class NewYoungAndroidProjectWizard {
   }
 
   public void bindUI() {
-    NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
-    UI_BINDER.createAndBindUi(this);
+    NewYoungAndroidProjectWizardUiBinder uibinder = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+    uibinder.createAndBindUi(this);
   }
 
   public void show() {

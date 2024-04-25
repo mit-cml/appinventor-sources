@@ -228,7 +228,7 @@ public class Ode implements EntryPoint {
   @UiField protected ProjectToolbar projectToolbar;
   @UiField (provided = true) protected ProjectListBox projectListbox;
   @UiField protected DesignToolbar designToolbar;
-  @UiField protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
   @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
   @UiField (provided = true) protected SourceStructureBox sourceStructureBox;

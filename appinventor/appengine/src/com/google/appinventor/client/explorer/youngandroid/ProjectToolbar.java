@@ -12,9 +12,10 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Label;
+
 import java.util.logging.Logger;
 
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.
@@ -23,7 +24,7 @@ import com.google.gwt.user.client.ui.Label;
 public class ProjectToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(ProjectToolbar.class.getName());
   interface ProjectToolbarUiBinder extends UiBinder<Toolbar, ProjectToolbar> {}
-  private static final ProjectToolbar.ProjectToolbarUiBinder UI_BINDER =
+  private static final ProjectToolbar.ProjectToolbarUiBinder uibinder =
       GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
 
   private static final String WIDGET_NAME_NEW = "New";
@@ -61,9 +62,8 @@ public class ProjectToolbar extends Toolbar {
     setTrashTabButtonsVisible(false);
   }
 
-  protected void bindProjectToolbar()
-  {
-    populateToolbar(UI_BINDER.createAndBindUi(this));
+  protected void bindProjectToolbar() {
+    populateToolbar(uibinder.createAndBindUi(this));
   }
 
   public void setTrashTabButtonsVisible(boolean visible) {

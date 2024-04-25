@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.Images;
@@ -5,57 +10,9 @@ import com.google.appinventor.client.Ode;
 import com.google.gwt.resources.client.ImageResource;
 
 public interface ImagesNeo extends Images {
-
-  /**
-   * Codi the Bee for the No Projects Dialog
-   * {@link Ode#createWelcomeDialog(boolean)}
-   */
-  @Override
-  @Source("images/codi_vert.png")
-  ImageResource codiVert();
-
-  /**
-   * App Inventor Logo 
-   * {@link Ode#createWelcomeDialog(boolean)}
-   */
-  @Override
-  @Source("images/appinvlogo-32.png")
-  ImageResource appInventorLogo();
-
-  /**
-   * Close button image for the box widget
-   */
-  @Override
-  @Source("images/boxClose.png")
-  ImageResource boxClose();
-
-  /**
-   * Menu button image for the box widget
-   */
-  @Override
-  @Source("images/boxMenu.png")
-  ImageResource boxMenu();
-
-  /**
-   * Minimize button image for the box widget
-   */
-  @Override
-  @Source("images/boxMinimize.png")
-  ImageResource boxMinimize();
-
-  /**
-   * Restore button image for the box widget
-   */
-  @Override
-  @Source("images/boxRestore.png")
-  ImageResource boxRestore();
-
-  /**
-   * Close button image for the tab widget
-   */
-  @Override
-  @Source("images/close.png")
-  ImageResource close();
+   /*
+   * These are from Google's Material Icon set https://fonts.google.com/icons
+   * */
 
   /**
    * Phone status bar for Android Holo shown above the form in the visual designer
@@ -142,20 +99,6 @@ public interface ImagesNeo extends Images {
   ImageResource bookIconBlack();
 
   /**
-   * Spinning/wait graphic to indicate long-running operations.
-   */
-  @Override
-  @Source("images/spin_16.gif")
-  ImageResource waitingIcon();
-
-  /**
-   * Designer palette item: question mark for more component information
-   */
-  @Override
-  @Source("images/help.png")
-  ImageResource help();
-
-  /**
    * Designer palette item: nearfield component
    */
   @Override
@@ -214,6 +157,7 @@ public interface ImagesNeo extends Images {
 
   /**
    * Designer palette item: button component
+   * Material icon: buttons_alt
    */
   @Override
   @Source("images/button.png")
@@ -260,27 +204,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/datePicker.png")
   ImageResource datePickerComponent();
-
-  /**
-   * Designer palette item: Delete Component
-   */
-  @Override
-  @Source("images/delete.png")
-  ImageResource deleteComponent();
-
-  /**
-   * Designer palette item: Extension Component
-   */
-  @Override
-  @Source("images/extension.png")
-  ImageResource extension();
-
-  /**
-   * Designer palette item: form component
-   */
-  @Override
-  @Source("images/form.png")
-  ImageResource form();
 
   /**
    * Designer palette item: horizontal arrangement component
@@ -453,13 +376,6 @@ public interface ImagesNeo extends Images {
   ImageResource texting();
 
   /**
-   * Designer palette item: GameClient component
-   */
-  @Override
-  @Source("images/gameClient.png")
-  ImageResource gameclient();
-
-  /**
    * Designer pallete item: Spreadsheet component
    */
   @Override
@@ -572,14 +488,8 @@ public interface ImagesNeo extends Images {
   ImageResource vertical();
 
   /**
-   * Designer palette item: VotingComponent
-   */
-  @Override
-  @Source("images/voting.png")
-  ImageResource voting();
-
-  /**
    * Designer palette item: ImageBot.
+   * Material icon: palette
    */
   @Override
   @Source("images/paintpalette.png")
@@ -591,13 +501,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/pedometer.png")
   ImageResource pedometerComponent();
-
-  /**
-   * Designer pallete item: PhoneStatus Component
-   */
-  @Override
-  @Source("images/phoneip.png")
-  ImageResource phonestatusComponent();
 
   /**
    * Designer palette item: Lego Mindstorms NXT components
@@ -635,15 +538,6 @@ public interface ImagesNeo extends Images {
   ImageResource webviewer();
 
   /**
-   * Designer item: WebViewer component in designer
-   */
-  // The image here is public domain and comes from
-  // www.pdclipart.org/displayimage.php/?pid=1047
-  @Override
-  @Source("images/webviewerbig.png")
-  ImageResource webviewerbig();
-
-  /**
    * Designer palette item: Web component
    */
   @Override
@@ -656,75 +550,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/gyroscopesensor.png")
   ImageResource gyroscopesensor();
-
-  /**
-   * Built in drawer item: control
-   */
-  @Override
-  @Source("images/control.png")
-  ImageResource control();
-
-  /**
-   * Built in drawer item: logic
-   */
-  @Override
-  @Source("images/logic.png")
-  ImageResource logic();
-
-  /**
-   * Built in drawer item: math
-   */
-  @Override
-  @Source("images/math.png")
-  ImageResource math();
-
-  /**
-   * Built in drawer item: text
-   */
-  @Override
-  @Source("images/text.png")
-  ImageResource text();
-
-  /**
-   * Built in drawer item: lists
-   */
-  @Override
-  @Source("images/lists.png")
-  ImageResource lists();
-
-  /**
-   * Built in drawer item: dictionaries
-   */
-  @Override
-  @Source("images/dictionaries.png")
-  ImageResource dictionaries();
-
-  /**
-   * Built in drawer item: colors
-   */
-  @Override
-  @Source("images/colors.png")
-  ImageResource colors();
-
-  /**
-   * Built in drawer item: variables
-   */
-  @Override
-  @Source("images/variables.png")
-  ImageResource variables();
-
-  /**
-   * Built in drawer item: procedures
-   */
-  @Override
-  @Source("images/procedures.png")
-  ImageResource procedures();
-  /**
-   * Designer palette item: MediaStore
-   */
-  @Override
-  @Source("images/mediastore.png")
-  ImageResource mediastore();
 
   /**
    * Designer palette item: Sharing Component
@@ -749,17 +574,11 @@ public interface ImagesNeo extends Images {
 
   /**
    * Designer pallette item: ChatBot Component
+   * Material icon: forum
    */
   @Override
   @Source("images/chatbot.png")
   ImageResource chatbot();
-
-  /**
-   * Designer palette item: YandexTranslate
-   */
-  @Override
-  @Source("images/yandex.png")
-  ImageResource yandex();
 
   /**
    * Designer palette item: proximitysensor component
@@ -825,39 +644,11 @@ public interface ImagesNeo extends Images {
   ImageResource rectangle();
 
   /**
-   * Codi Logo
-   */
-  @Override
-  @Source("images/logo.png")
-  ImageResource logo();
-
-  /**
    * Designer palette item: Arduino component
    */
   @Override
   @Source("images/arduino.png")
   ImageResource arduino();
-
-  /**
-   * Media icon: image
-   */
-  @Override
-  @Source("images/mediaIcon_img.png")
-  ImageResource mediaIconImg();
-
-  /**
-   * Media icon: audio
-   */
-  @Override
-  @Source("images/mediaIcon_audio.png")
-  ImageResource mediaIconAudio();
-
-  /**
-   * Media icon: video
-   */
-  @Override
-  @Source("images/mediaIcon_video.png")
-  ImageResource mediaIconVideo();
 
   /**
    * Designer palette item: Magnetic Field Sensor component
@@ -872,27 +663,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/navigation.png")
   ImageResource navigationComponent();
-
-  /**
-   * Wilson Logo 
-   */
-  @Override
-  @Source("images/wilson.png")
-  ImageResource wilson();
-
-  /**
-   * Talk to Me Logo
-   */
-  @Override
-  @Source("images/talkToMeLogo.png")
-  ImageResource talkToMeLogo();
-
-  /**
-   * YR Media Logo
-   */
-  @Override
-  @Source("images/YRLogo.png")
-  ImageResource YRLogo();
 
   /**
    * Download app icon
@@ -917,6 +687,7 @@ public interface ImagesNeo extends Images {
 
   /**
    * Designer palette item: Regression.
+   * Material icon: query_stats
    */
   @Override
   @Source("images/regression.png")
@@ -924,6 +695,7 @@ public interface ImagesNeo extends Images {
 
   /**
    * Designer palette item: AnomalyDetection.
+   * Material icon: error
    */
   @Override
   @Source("images/anomaly.png")
@@ -935,4 +707,25 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/dataFile.png")
   ImageResource dataFile();
+
+  /**
+   * Designer palette item: progressbar circular component
+   * Material icon: progress_activity
+   */
+  @Source("images/circularProgress.png")
+  ImageResource circularProgress();
+
+  /**
+   * Designer palette item: progressbar circular component
+   * Material icon: keyboard_double_arrow_right
+   */
+  @Source("images/linearProgress.png")
+  ImageResource linearProgress();
+
+  /**
+   * Designer palette item: Trendline.
+   * Material icon: trending_up
+   */
+  @Source("images/trendline.png")
+  ImageResource trendline();
 }

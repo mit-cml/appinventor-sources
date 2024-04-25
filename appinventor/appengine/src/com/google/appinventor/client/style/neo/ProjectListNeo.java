@@ -27,8 +27,8 @@ public class ProjectListNeo extends ProjectList {
 
   @Override
   public void bindIU() {
-    ProjectListUiBinderNeo UI_BINDER = GWT.create(ProjectListUiBinderNeo.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    ProjectListUiBinderNeo uibinder = GWT.create(ProjectListUiBinderNeo.class);
+    initWidget(uibinder.createAndBindUi(this));
     super.selectAllCheckBox = selectAllCheckBox;
     super.container = container;
     super.projectNameSortAsc = projectNameSortAsc;

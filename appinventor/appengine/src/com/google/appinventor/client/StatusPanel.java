@@ -44,8 +44,8 @@ public class StatusPanel extends Composite {
   }
 
   public void bindUI() {
-    StatusPanelUiBinder UI_BINDER = GWT.create(StatusPanelUiBinder.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    StatusPanelUiBinder uibinder = GWT.create(StatusPanelUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   @UiFactory

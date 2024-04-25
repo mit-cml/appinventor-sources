@@ -163,8 +163,8 @@ public class DesignToolbar extends Toolbar {
   }
 
   public void bindUI() {
-    DesignToolbarUiBinder UI_BINDER = GWT.create(DesignToolbarUiBinder.class);
-    populateToolbar(UI_BINDER.createAndBindUi(this));
+    DesignToolbarUiBinder uibinder = GWT.create(DesignToolbarUiBinder.class);
+    populateToolbar(uibinder.createAndBindUi(this));
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {

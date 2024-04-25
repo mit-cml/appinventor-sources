@@ -131,8 +131,8 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   }
 
   protected void bindUI() {
-    SimpleVisibleComponentsPanelUiBinder UI_BINDER = GWT.create(SimpleVisibleComponentsPanelUiBinder.class);
-    UI_BINDER.createAndBindUi(this);
+    SimpleVisibleComponentsPanelUiBinder uibinder = GWT.create(SimpleVisibleComponentsPanelUiBinder.class);
+    uibinder.createAndBindUi(this);
   }
 
   // get width and height stored in user settings, and change the preview size.

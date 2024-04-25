@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
@@ -23,8 +28,8 @@ public class DesignToolbarNeo extends DesignToolbar {
 
   @Override
   public void bindUI() {
-    DesignToolbarUiBinderNeo UI_BINDER = GWT.create(DesignToolbarUiBinderNeo.class);
-    populateToolbar(UI_BINDER.createAndBindUi(this));
+    DesignToolbarUiBinderNeo uibinder = GWT.create(DesignToolbarUiBinderNeo.class);
+    populateToolbar(uibinder.createAndBindUi(this));
     super.pickFormItem = pickFormItem;
     super.addFormItem = addFormItem;
     super.removeFormItem = removeFormItem;

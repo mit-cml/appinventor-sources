@@ -89,8 +89,8 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   public void bindIU() {
-    ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
-    initWidget(UI_BINDER.createAndBindUi(this));
+    ProjectListUiBinder uibinder = GWT.create(ProjectListUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
 
     // It is important to listen to project manager events as soon as possible.
@@ -206,10 +206,8 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       Collections.sort(folders, folderComparator);
     }
 
-    LOG.info("Refresh Sort Indicators");
     refreshSortIndicators();
 
-    LOG.info("Clear container");
     container.clear();
     ProjectSelectionChangeHandler selectionEvent = new ProjectSelectionChangeHandler() {
       @Override
@@ -218,18 +216,13 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       }
     };
 
-    LOG.info("Create folders");
     for (final ProjectFolder childFolder : folder.getChildFolders()) {
       if ("*trash*".equals(childFolder.getName())) {
         continue;
       }
-      LOG.info("Set selection change handler");
       childFolder.setSelectionChangeHandler(selectionEvent);
-      LOG.info("Refresh child folder");
       childFolder.refresh();
-      LOG.info("Add child to container");
       container.add(childFolder);
-      LOG.info("Done");
     }
     folder.clearProjectList();
     for (final Project project : projects) {
@@ -259,10 +252,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     int visibleProjects = folder.getVisibleProjects(false).size();
     int selectedFolders = folder.getSelectedFolders().size();
     int selectedProjects = folder.getSelectedProjects().size();
-
-    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders
-        + " visibleProjects=" + visibleProjects + " " + "SelectedFolders=" + selectedFolders
-        + " SelectedProjects=" + selectedProjects);
 
     if (selectableFolders + visibleProjects > 0
         && selectableFolders == selectedFolders
