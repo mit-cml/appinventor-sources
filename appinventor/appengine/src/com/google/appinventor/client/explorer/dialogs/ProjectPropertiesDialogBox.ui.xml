@@ -3,12 +3,12 @@
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
-             ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
-             ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
-             ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
-             ui:generateLocales="default">
+    xmlns:g='urn:import:com.google.gwt.user.client.ui'
+    xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+    ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+    ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+    ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
+    ui:generateLocales="default">
 
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
 

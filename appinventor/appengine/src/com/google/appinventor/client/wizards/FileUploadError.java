@@ -18,7 +18,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class  FileUploadError {
   interface FileUploadErrorUiBinder extends UiBinder<Dialog, FileUploadError> {}
 
-  private final FileUploadErrorUiBinder uibinder = GWT.create(FileUploadError.FileUploadErrorUiBinder.class);
   private final Logger LOG = Logger.getLogger(FileUploadError.class.getName());
 
   @UiField Dialog uploadError;
@@ -38,6 +37,7 @@ public class  FileUploadError {
     acceptableTypes = p_acceptableTypes;
     fileUploadedCallback = p_fileUploadedCallback;
 
+    FileUploadErrorUiBinder uibinder = GWT.create(FileUploadError.FileUploadErrorUiBinder.class);
     uibinder.createAndBindUi(this);
     uploadError.setText(title);
     errorMessage.setHTML(body);

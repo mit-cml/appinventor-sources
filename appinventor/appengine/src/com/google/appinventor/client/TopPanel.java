@@ -50,8 +50,6 @@ public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
 
   interface TopPanelUiBinder extends UiBinder<FlowPanel, TopPanel> {}
-  private static final TopPanelUiBinder uibinder = GWT.create(TopPanelUiBinder.class);
-
 
   private static final String WIDGET_NAME_LANGUAGE = "Language";
   private static final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
@@ -126,6 +124,7 @@ public class TopPanel extends Composite {
   }
 
   public void bindUI() {
+    TopPanelUiBinder uibinder = GWT.create(TopPanelUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
   }
 

@@ -24,8 +24,6 @@ import java.util.logging.Logger;
 public class ProjectToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(ProjectToolbar.class.getName());
   interface ProjectToolbarUiBinder extends UiBinder<Toolbar, ProjectToolbar> {}
-  private static final ProjectToolbar.ProjectToolbarUiBinder uibinder =
-      GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
 
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_MOVE = "Move";
@@ -63,6 +61,8 @@ public class ProjectToolbar extends Toolbar {
   }
 
   protected void bindProjectToolbar() {
+    ProjectToolbar.ProjectToolbarUiBinder uibinder =
+        GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
     populateToolbar(uibinder.createAndBindUi(this));
   }
 

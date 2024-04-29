@@ -43,8 +43,6 @@ import java.util.Map;
  */
 public class ProjectPropertiesDialogBox { 
 
-  private static final ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
-
   interface ProjectPropertiesDialogBoxUiBinder extends UiBinder<Widget, ProjectPropertiesDialogBox> {
   }
 
@@ -100,6 +98,7 @@ public class ProjectPropertiesDialogBox {
   }
 
   public ProjectPropertiesDialogBox(YaProjectEditor projectEditor) {
+    ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
     uibinder.createAndBindUi(this);
     projectProperties.setAutoHideEnabled(false);
     projectProperties.setModal(true);

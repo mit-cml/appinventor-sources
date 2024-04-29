@@ -32,15 +32,11 @@ import java.util.Date;
 public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
 
-  private static final ProjectListItemUiBinder uibinder =
-      GWT.create(ProjectListItemUiBinder.class);
-
   @UiField protected FlowPanel container;
   @UiField protected Label nameLabel;
   @UiField protected Label dateModifiedLabel;
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
-
 
   private final Project project;
   private ProjectSelectionChangeHandler changeHandler;
@@ -63,6 +59,7 @@ public class ProjectListItem extends Composite {
   }
 
   public void bindUI() {
+    ProjectListItemUiBinder uibinder = GWT.create(ProjectListItemUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
   }
 

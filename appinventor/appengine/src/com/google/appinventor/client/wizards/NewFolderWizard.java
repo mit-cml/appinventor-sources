@@ -32,7 +32,6 @@ import java.util.logging.Logger;
  */
 public final class NewFolderWizard {
   interface NewFolderWizardUiBinder extends UiBinder<Dialog, NewFolderWizard> {}
-  private static final NewFolderWizardUiBinder uibinder = GWT.create(NewFolderWizardUiBinder.class);
   private static final Logger LOG = Logger.getLogger(NewFolderWizard.class.getName());
 
   private FolderManager manager;
@@ -47,6 +46,7 @@ public final class NewFolderWizard {
    * Creates a new command for renaming projects
    */
   public NewFolderWizard() {
+    NewFolderWizardUiBinder uibinder = GWT.create(NewFolderWizardUiBinder.class);
     uibinder.createAndBindUi(this);
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());

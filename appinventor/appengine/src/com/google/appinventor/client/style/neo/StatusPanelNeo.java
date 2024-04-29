@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class StatusPanelNeo extends StatusPanel {
   interface StatusPanelUiBinderneo extends UiBinder<FlowPanel, StatusPanelNeo> {}
-  private static final StatusPanelUiBinderneo uibinder = GWT.create(StatusPanelUiBinderneo.class);
 
   @UiField FlowPanel footer;
   @UiField Anchor tosLink;

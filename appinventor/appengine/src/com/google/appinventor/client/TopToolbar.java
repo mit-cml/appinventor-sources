@@ -105,8 +105,6 @@ public class TopToolbar extends Composite {
 
   interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
 
-  private static final TopToolbarUiBinder uibinder = GWT.create(TopToolbarUiBinder.class);
-
   public TopToolbar() {
 
     bindUI();
@@ -157,9 +155,9 @@ public class TopToolbar extends Composite {
   }
 
   public void bindUI() {
+    TopToolbarUiBinder uibinder = GWT.create(TopToolbarUiBinder.class);
     // The boolean needs to be reversed here so it is true when items need to be visible.
     // UIBinder can't negate the boolean itself.
-    LOG.info("bindUI Original");
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
     initWidget(uibinder.createAndBindUi(this));
@@ -178,11 +176,9 @@ public class TopToolbar extends Composite {
   }
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
-    LOG.info("UpdateMenuState");
     boolean allowDelete = readOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
-    LOG.info("Update fileDropDown");
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
     fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
     String exportProjectLabel = numSelectedProjects > 1
