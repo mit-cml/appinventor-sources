@@ -56,7 +56,7 @@
                     tooltip="{messages.projectMenuItem}">
       <actions:SwitchToProjectAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="Trash" icon='folder_off' tooltip="{messages.viewTrashButton}"
+    <ai:ToolbarItem name="Trash" icon='folder_delete' tooltip="{messages.viewTrashButton}"
                     align="right" styleName="ode-ProjectListButton inline bleft">
       <actions:TrashAction/>
     </ai:ToolbarItem>

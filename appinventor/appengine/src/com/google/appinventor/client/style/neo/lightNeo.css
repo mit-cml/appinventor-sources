@@ -1,3 +1,8 @@
+/* -*- mode: java; c-basic-offset: 2; -
+* Copyright 2023-2024 MIT, All rights reserved
+* Released under the Apache License, Version 2.0
+* http://www.apache.org/licenses/LICENSE-2.0
+*/
 @def background-image                   url('static/images/squairy_light.png');
 @def closed-backpack                    url('../bloclyeditor/media/backpack-closed-copy.png');
 @def text-button-background            #f5f5f5;

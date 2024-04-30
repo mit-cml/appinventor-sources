@@ -1,3 +1,9 @@
+/* -*- mode: java; c-basic-offset: 2; -
+* Copyright 2023-2024 MIT, All rights reserved
+* Released under the Apache License, Version 2.0
+* http://www.apache.org/licenses/LICENSE-2.0
+*/
+
 @def background-image                   url('static/images/squairy_dark.jpg');
 @def text-button-background            #222;
 /* Greens */
