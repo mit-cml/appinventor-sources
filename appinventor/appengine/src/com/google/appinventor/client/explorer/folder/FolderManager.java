@@ -6,7 +6,7 @@
 package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.UIStyleFactory;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
@@ -30,9 +30,9 @@ public final class FolderManager {
   private boolean foldersLoaded;
 
   private final List<FolderManagerEventListener> folderManagerEventListeners;
-  private final UIStyleFactory uiFactory;
+  private final UiStyleFactory uiFactory;
 
-  public FolderManager(UIStyleFactory uiFactory) {
+  public FolderManager(UiStyleFactory uiFactory) {
     this.uiFactory = uiFactory;
     folderManagerEventListeners = new ArrayList<>();
     LOG.info("Created new folder manager");

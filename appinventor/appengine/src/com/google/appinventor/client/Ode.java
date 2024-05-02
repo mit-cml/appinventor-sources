@@ -40,7 +40,7 @@ import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
-import com.google.appinventor.client.style.neo.UIFactoryNeo;
+import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
@@ -267,7 +267,7 @@ public class Ode implements EntryPoint {
   // Licensing related variables
   private String licenseCode;
   private String systemId;
-  private static UIStyleFactory uiFactory = null;
+  private static UiStyleFactory uiFactory = null;
 
   /**
    * Flag set if we may need to show the splash screen based on
@@ -902,7 +902,7 @@ public class Ode implements EntryPoint {
           @Override
           public void onSuccess() {
             IMAGES = GWT.create(ImagesNeo.class);
-            uiFactory = new UIFactoryNeo();
+            uiFactory = new UiFactoryNeo();
             res.apply(null);
           }
         });
@@ -916,7 +916,7 @@ public class Ode implements EntryPoint {
           @Override
           public void onSuccess() {
             IMAGES = GWT.create(Images.class);
-            uiFactory = new UIStyleFactory();
+            uiFactory = new UiStyleFactory();
             res.apply(null);
           }
         });

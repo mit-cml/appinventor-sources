@@ -17,15 +17,15 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-public class UIStyleFactory {
+public class UiStyleFactory {
 
   @UiTemplate("Ode.ui.xml")
-  public interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
+  interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
   @UiTemplate("style/neo/Ode.ui.xml")
   interface OdeUiBinderNeo extends UiBinder<FlowPanel, Ode> {}
 
   public FlowPanel createOde(Ode target, String style) {
-    if (style == "modern") {
+    if (style.equals("modern")) {
       OdeUiBinderNeo uibinder = GWT.create(OdeUiBinderNeo.class);
       return uibinder.createAndBindUi(target);
     }

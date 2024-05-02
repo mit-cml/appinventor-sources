@@ -8,7 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.UIStyleFactory;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.widgets.boxes.Box;
 
@@ -31,7 +31,7 @@ public final class ProjectListBox extends Box {
    * @param factory factory to use for creating UI components
    * @return a project list box instance
    */
-  public static ProjectListBox create(UIStyleFactory factory) {
+  public static ProjectListBox create(UiStyleFactory factory) {
     if (INSTANCE == null) {
       INSTANCE = new ProjectListBox(factory.createProjectList());
     }
