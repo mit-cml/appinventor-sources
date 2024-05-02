@@ -483,20 +483,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
-   * Renames several projects.
-   *
-   * @param userId the user id
-   * @param projectIds IDs of projects to be renamed
-   * @param projectNames new project names
-   */
-	@Override
-  public void renameProjects(String userId, List<Long> projectIds, List<String> projectNames) {
-    for (int i = 0; i < projectIds.size(); ++i) {
-      storageIo.setProjectName(userId, projectIds.get(i), projectNames.get(i));
-    }
-  }
-
-  /**
    * Constructs a RpcResult object that indicates that a file was too big to send.
    *
    * @param size size of the aia
