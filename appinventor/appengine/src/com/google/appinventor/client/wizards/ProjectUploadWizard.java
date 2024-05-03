@@ -56,9 +56,11 @@ public class ProjectUploadWizard {
     LOG.warning("Create ProjectUploadWizard");
     // Initialize UI
     uibinder.createAndBindUi(this);
-    LOG.warning("Bound ProjectUploadWizard");
     upload.setName(ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
     upload.getElement().setAttribute("accept", PROJECT_ARCHIVE_EXTENSION);
+  }
+
+  public void show() {
     uploadDialog.center();
   }
 

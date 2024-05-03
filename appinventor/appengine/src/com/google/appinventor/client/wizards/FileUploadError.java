@@ -62,7 +62,7 @@ public class  FileUploadError {
   @UiHandler("okButton")
   void okDialog(ClickEvent e) {
     uploadError.hide();
-    new FileUploadWizard(folderNode, acceptableTypes, fileUploadedCallback);
+    new FileUploadWizard(folderNode, acceptableTypes, fileUploadedCallback).show();
   }
 
   @UiHandler("infoButton")

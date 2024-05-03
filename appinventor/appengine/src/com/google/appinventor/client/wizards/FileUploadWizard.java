@@ -114,10 +114,14 @@ public class FileUploadWizard {
     if (this.acceptableTypes != null) {
       upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
+  }
+
+
+  public void show() {
     uploadDialog.center();
   }
 
-  @UiHandler("cancelButton")
+    @UiHandler("cancelButton")
   void cancelMove(ClickEvent e) {
     uploadDialog.hide();
   }
