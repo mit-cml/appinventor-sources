@@ -81,6 +81,18 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     initComponent(deckPanel);
   }
 
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+  }
+
   /**
    * Class that extends Button so we can use a protected constructor.
    *
