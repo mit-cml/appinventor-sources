@@ -495,36 +495,25 @@ a, a:visited, a:hover {
 .gwt-PushButton-down,
 .gwt-PushButton-down-hovering,
 .gwt-PushButton-down-disabled {
-  border: 1px solid;
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 4px 10px;
-  transition: background 0.2s, opacity 0.1s;
-  background-color: #A5CF47;
-  border-color: #444444;
-  font-family: 'Poppins', 'Roboto', sans-serif;
-  font-weight: 500;
-  font-size: 1.06em;
-  white-space: nowrap;
+  margin: 0;
+  text-decoration: none;
+  background: url("../images/hborder.png") repeat-x 0px -27px;
 }
 
-.gwt-ButtonLeft {
-  border-radius: 4px 0 0 4px;
+.gwt-PushButton-up,
+.gwt-PushButton-up-hovering,
+.gwt-PushButton-up-disabled {
+  padding: 3px 5px 3px 5px;
 }
 
-.gwt-ButtonRight {
-  border-radius: 0 4px 4px 0;
-}
-
-.gwt-ButtonCenter {
-  border-radius: 0;
-  border-width: 1px 0;
+.gwt-PushButton-up {
+  border: 1px outset #ccc;
+  cursor: hand;
 }
 
 .gwt-PushButton-up-hovering {
-  background-color: #7D9D36;
+  border: 1px outset;
+  border-color: #9cf #69e #69e #7af;
   cursor: hand;
 }
 .gwt-PushButton-up-disabled {
@@ -532,22 +521,24 @@ a, a:visited, a:hover {
   opacity: .5;
   zoom: 1;
 }
+
 .gwt-PushButton-down,
 .gwt-PushButton-down-hovering,
 .gwt-PushButton-down-disabled {
   padding: 4px 4px 2px 6px;
 }
+
 .gwt-PushButton-down {
   border: 1px inset #666;
-  cursor: pointer;
   cursor: hand;
 }
+
 .gwt-PushButton-down-hovering {
   border: 1px inset;
   border-color: #9cf #69e #69e #7af;
-  cursor: pointer;
   cursor: hand;
 }
+
 .gwt-PushButton-down-disabled {
   border: 1px outset #ccc;
   cursor: default;
@@ -557,8 +548,8 @@ a, a:visited, a:hover {
 }
 
 .gwt-RadioButton {
-  margin: 4px;
 }
+
 .gwt-RadioButton-disabled {
   color: #888;
 }
@@ -626,16 +617,20 @@ a, a:visited, a:hover {
 .gwt-StackPanel {
   border-bottom: 1px solid #bbbbbb;
 }
+
 .gwt-StackPanel .gwt-StackPanelItem {
-  cursor: pointer;
   cursor: hand;
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border-bottom: 1px solid #bbbbbb;
+  border: 1px solid #bbbbbb;
+  border-bottom: 0;
+  background: #d3def6 url(../images/hborder.png) repeat-x 0 -989px;
 }
+
 .gwt-StackPanel .gwt-StackPanelContent {
-  border-bottom: 1px solid #bbbbbb;
+  border: 1px solid #bbbbbb;
+  border-bottom: 0;
   background: white;
   padding: 2px 2px 10px 5px;
 }
@@ -703,9 +698,8 @@ a, a:visited, a:hover {
 }
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopRight,
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopLeft {
-  border: 1px;
+  border: 0px;
   background-color: white;
-  border-radius: 4px;
 }
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItemTopLeft,
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItemTopRight {
@@ -991,19 +985,24 @@ a, a:visited, a:hover {
   filter: alpha(opacity=40);
 }
 
+.gwt-Tree table td:first-child {
+  width: 18px;
+}
+
 .gwt-Tree .gwt-TreeItem {
   padding: 1px 0px;
   margin: 0px;
   white-space: nowrap;
-  cursor: hand;
-  cursor: pointer;
 }
+
 .gwt-Tree .gwt-TreeItem-selected {
 }
+
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
 }
+
 * html .gwt-TreeItem .gwt-RadioButton input,
 * html .gwt-TreeItem .gwt-CheckBox input {
   margin-left: -4px;

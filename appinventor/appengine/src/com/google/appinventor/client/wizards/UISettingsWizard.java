@@ -1,25 +1,18 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2023-2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.appinventor.client.widgets.LabeledTextBox;
-import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.wizards.NewProjectWizard;
-import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.client.youngandroid.TextValidators;
-import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
 import java.util.logging.Logger;
 import java.lang.Boolean;

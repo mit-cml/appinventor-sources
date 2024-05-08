@@ -26,7 +26,7 @@ public class StatusPanel extends Composite {
 
   interface StatusPanelUiBinder extends UiBinder<FlowPanel, StatusPanel> {}
 
-  @UiField protected FlowPanel footer;
+  @UiField(provided = true) protected FlowPanel footer;
   @UiField protected Anchor tosLink;
 
   /**
@@ -44,6 +44,7 @@ public class StatusPanel extends Composite {
   }
 
   public void bindUI() {
+    footer = new FlowPanel("footer");
     StatusPanelUiBinder uibinder = GWT.create(StatusPanelUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
   }
