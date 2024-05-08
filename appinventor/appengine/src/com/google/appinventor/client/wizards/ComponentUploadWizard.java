@@ -7,20 +7,21 @@
 package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.ErrorReporter;
-import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.utils.Uploader;
+
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.component.Component;
 
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class ComponentUploadWizard extends Wizard {
   private static final String COMPONENT_ARCHIVE_EXTENSION = ".aix";
