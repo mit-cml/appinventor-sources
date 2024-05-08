@@ -20,7 +20,7 @@
    final String odeBase = Flag.createFlag("ode.base", "").get();
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
-<!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -64,8 +64,6 @@
         <li> Firefox 52+ </li>
       </ul>
     </div>
-    <!-- Message to display if ode doesn't load. When Ode loads,
-         this message will be hidden. -->
     <% if (!odeBase.isEmpty()) { %>
     <div id=odeblock>
         <h1>If you see this message for an extended period of time, it might be because
