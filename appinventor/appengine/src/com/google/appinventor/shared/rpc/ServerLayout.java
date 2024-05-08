@@ -212,8 +212,8 @@ public class ServerLayout {
   }
 
   public static String getModuleBaseURL() {
-      return Window.Location.getProtocol() + "//" + Window.Location.getHost() +
-        "/" + GWT.getModuleName() + "/";
+    return Window.Location.getProtocol() + "//" + Window.Location.getHost() +
+      "/" + GWT.getModuleName() + "/";
   }
 
 }
