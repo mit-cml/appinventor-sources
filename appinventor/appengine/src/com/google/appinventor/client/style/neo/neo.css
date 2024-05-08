@@ -762,6 +762,33 @@ they get cut off in Windows.
   }
   
   /* Palette */
+  .ode-CollapsablePanel {
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+  }
+
+  .ode-CollapsablePanel .gwt-DisclosurePanel .header {
+    border-bottom: 1px solid #bbb;
+    border-top: 0px;
+    cursor: pointer;
+    padding: 10px;
+    background: #fff;
+    font-size: 1.1em;
+    height: unset;
+  }
+
+  .ode-CollapsablePanel .gwt-DisclosurePanel .content {
+    padding: 0px;
+    border: 0px;
+    margin-left: 0px;
+    border-bottom: 1px solid #bbb;
+  }
+
+  .ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+    all: unset;
+    font-weight: normal;
+    color: #555;
+  }
 
   .gwt-StackPanelItem div {
     all: unset;
