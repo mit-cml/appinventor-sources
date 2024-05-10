@@ -697,7 +697,7 @@
     "Blockly.Msg.SORT_W": "Сортувати блоки за шириною",
     "Blockly.Msg.ARRANGE_S": "Розташувати блоки по діагоналі",
     "Blockly.Msg.INLINE_INPUTS": "Вбудовані входи",
-    "Blockly.Msg.EXTERNAL_INPUTS": "Додаткові входи",
+    "Blockly.Msg.EXTERNAL_INPUTS": "Зовнішні входи",
     "Blockly.Msg.ARRANGE_V": "Розташувати блоки вертикально",
     "Blockly.Msg.ARRANGE_H": "Розташувати блоки горизонтально",
     "Blockly.Msg.EXPAND_ALL": "Розгорніть блоки",
