@@ -29,14 +29,6 @@
             <box:PaletteBox width="265px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="viewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
-              <g:FlowPanel>
-                <widgets:Toolbar styleName="ya-Toolbar-minimal">
-                  <widgets:ToolbarItem name="ProjectPropertiesDialog" caption="{messages.projectPropertiesText}"
-                                       align="left" styleName="ode-ProjectListButton inline">
-                    <ya:ProjectPropertiesAction />
-                  </widgets:ToolbarItem>
-                </widgets:Toolbar>
-              </g:FlowPanel>
               <box:SourceStructureBox ui:field="sourceStructureBox" />
               <box:BlockSelectorBox />
               <g:FlowPanel>

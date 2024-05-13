@@ -90,7 +90,7 @@ public class ProjectUploadWizard {
             upload(upload, name);
           }
         }, filename, true);
-
+        uploadDialog.hide();
       } else {
         upload(upload, filename);
         uploadDialog.hide();

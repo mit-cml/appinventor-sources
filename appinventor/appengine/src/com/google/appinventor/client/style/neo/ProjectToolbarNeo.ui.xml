@@ -19,11 +19,11 @@
                     align="left" styleName="ode-ProjectListButton bleft">
       <actions:NewProjectAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="ImportProject" icon="file_upload" align="left"
+    <ai:ToolbarItem name="ImportProject" icon="file_open" align="left"
                     styleName="ode-ProjectListButton bcenter" tooltip="{messages.importProjectMenuItem}">
       <actions:ImportProjectAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="ImportTemplate" icon="cloud_upload" align="left"
+    <ai:ToolbarItem name="ImportTemplate" icon="cloud_download" align="left"
                     styleName="ode-ProjectListButton bcenter" tooltip="{messages.importTemplateButton}">
       <actions:ImportTemplateAction/>
     </ai:ToolbarItem>
@@ -44,9 +44,13 @@
         <actions:ExportAllProjectsAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>
-    <ai:ToolbarItem name="Publish" caption="Publish" icon='public' align="center"
-                    styleName="ode-ProjectListButton inline bright" tooltip="{messages.publishToGalleryButton}">
-      <actions:ExportProjectAction/>
+    <ai:ToolbarItem name="Login to Gallery" caption="{messages.galleryTabName}" icon='key' align="center"
+        styleName="ode-ProjectListButton inline bright" tooltip="{messages.loginToGallery}" visible="false">
+      <actions:LoginToGalleryAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishButton}" icon='public' align="center"
+        styleName="ode-ProjectListButton inline bright" tooltip="{messages.publishToGalleryButton}" visible="false">
+      <actions:SendToGalleryAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="Restore" icon="restore" tooltip="{messages.restoreProjectButton}" align="right"
                     styleName="ode-ProjectListButton inline bleft">
@@ -68,9 +72,6 @@
                     align="right" styleName="ode-ProjectListButton danger bright"
                     tooltip="{messages.deleteFromTrashButton}">
       <actions:DeleteForeverProjectAction/>
-    </ai:ToolbarItem>
-    <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false">
-      <actions:LoginToGalleryAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishToGalleryButton}" visible="false">
       <actions:SendToGalleryAction/>

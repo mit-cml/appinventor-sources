@@ -110,7 +110,7 @@
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
                        ui:field="settingsDropDown" align="left" icon="settings"
-                       visible="{hasWriteAccess}">
+                       visible="{hasWriteAccess}" caption="{messages.settingsTabName}">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
       </ai:DropDownItem>
@@ -134,7 +134,7 @@
 
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
-                       ui:field="adminDropDown" icon="admin_panel_settings" align="left">
+                       ui:field="adminDropDown" icon="shield_person" align="left">
 
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction/>

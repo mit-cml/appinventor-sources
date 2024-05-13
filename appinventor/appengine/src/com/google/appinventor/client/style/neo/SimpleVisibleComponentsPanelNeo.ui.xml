@@ -13,7 +13,7 @@
     <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner"
                      horizontalAlignment="ALIGN_CENTER">
       <g:FlowPanel stylePrimaryName="ode-SimpleFormDesignerToolbar">
-        <ai:Icon ui:field="size_icon" icon="aspect_ratio"/>
+        <ai:Icon ui:field="size_icon" icon="aspect_ratio" tooltip="{messages.previewDeviceSize}" />
         <g:ListBox ui:field="listboxPhoneTablet">
           <g:item value="0">
             <ui:text from="{messages.previewPhone}"/>
@@ -28,7 +28,7 @@
             (768 x 1024)
           </g:item>
         </g:ListBox>
-        <ai:Icon ui:field="os_icon" icon="smartphone"/>
+        <ai:Icon ui:field="os_icon" icon="smartphone" tooltip="{messages.previewOperatingSystem}" />
         <g:ListBox ui:field="listboxPhonePreview">
           <g:item value="0">
             <ui:text from="{messages.previewAndroidMaterial}"/>
@@ -40,8 +40,8 @@
             <ui:text from="{messages.previewIOS13}"/>
           </g:item>
         </g:ListBox>
-        <ai:Icon icon="visibility_off"/>
-        <ed:HiddenComponentsCheckbox/>
+        <ai:Icon icon="visibility_off" tooltip="{messages.showInvisiblePropertyComponents}"/>
+        <ed:HiddenComponentsCheckbox />
       </g:FlowPanel>
     </g:VerticalPanel>
   </g:VerticalPanel>

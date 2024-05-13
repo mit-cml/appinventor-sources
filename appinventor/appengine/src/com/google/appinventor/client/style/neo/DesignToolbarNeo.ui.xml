@@ -36,10 +36,17 @@
                     tooltip="{messages.removeFormButton}">
       <ya:RemoveFormAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
-                    ui:field="sendToGalleryItem" align="center">
+
+    <ai:ToolbarItem name="ProjectPropertiesDialog" icon="manufacturing"
+        tooltip="{messages.projectPropertiesText}" align="center" styleName="ode-ProjectListButton inline left-spacer">
+      <ya:ProjectPropertiesAction />
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="Gallery" icon="public" tooltip="{messages.publishToGalleryButton}"
+                    ui:field="sendToGalleryItem" align="center"  styleName="ode-ProjectListButton inline">
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
+
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
                     ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bleft primary">
       <ya:SwitchToFormEditorAction/>

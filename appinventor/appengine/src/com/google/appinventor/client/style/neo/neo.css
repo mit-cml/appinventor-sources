@@ -223,7 +223,7 @@ they get cut off in Windows.
     background-color: background-color;
     border-color: border-color;
   }
-  
+
   .raised:after {
     content: '';
     position: absolute;
@@ -455,6 +455,10 @@ they get cut off in Windows.
   .right-spacer {
     margin-right: 10px;
   }
+
+  .left-spacer {
+    margin-left: 10px !important;
+  }
   
   .ode-TopPanelAccount a {
     color: #669900;
@@ -551,6 +555,7 @@ they get cut off in Windows.
   
   .ode-WorkColumns {
     border-top: 1px solid #bbbbbb;
+    height: 94%;
     /*border-radius: 4px;*/
   }
   

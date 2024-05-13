@@ -149,10 +149,12 @@ public class NewYoungAndroidProjectWizard {
 
   @UiHandler("addButton")
   protected void addProject(ClickEvent e) {
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectNameTextBox.getText());
+    String projectName = projectNameTextBox.getText().trim()
+        .replaceAll("( )+", " ").replace(" ", "_");
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
       LOG.info("Project status success");
-      createProject();
+      createProject(projectName);
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
@@ -172,9 +174,7 @@ public class NewYoungAndroidProjectWizard {
     }
   }
 
-  public void createProject() {
-    String projectName = projectNameTextBox.getText().trim();
-    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
+  public void createProject(String projectName) {
     if (TextValidators.checkNewProjectName(projectName)
             == TextValidators.ProjectNameStatus.SUCCESS) {
       String packageName = StringUtils.getProjectPackage(
