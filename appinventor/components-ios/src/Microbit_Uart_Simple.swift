@@ -4,7 +4,8 @@
 import Foundation
 
 fileprivate let kMicrobitUartService = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
-fileprivate let kMicrobitUartCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
+fileprivate let kMicrobitTxCharacteristic = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
+fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 
 @objc public class Microbit_Uart_Simple : NonvisibleComponent, BluetoothConnectionListener {
 
@@ -18,16 +19,12 @@ fileprivate let kMicrobitUartCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCC
 
   @objc public var BluetoothDevice: BluetoothLE? {
     get {
-      return self.bleConnection
+      return bleConnection
     }
     set {
-      if let oldConn = self.bleConnection {
-        oldConn.removeConnectionListener(self)
-      }
-      self.bleConnection = newValue
-      if let conn = self.bleConnection {
-        conn.addConnectionListener(self)
-      }
+      bleConnection?.removeConnectionListener(self)
+      bleConnection = newValue
+      bleConnection?.addConnectionListener(self)
     }
   }
 
@@ -38,7 +35,7 @@ fileprivate let kMicrobitUartCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCC
       reportNullConnection("SendMessage")
       return
     }
-    conn.ExWriteStringValuesWithResponse(kMicrobitUartService, kMicrobitUartCharacteristic,
+    conn.ExWriteStringValuesWithResponse(kMicrobitUartService, kMicrobitRxCharacteristic,
         false, message, self.rxCharacteristicWriteHandler)
   }
 
@@ -56,13 +53,13 @@ fileprivate let kMicrobitUartCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCC
   // MARK: BluetoothConnectionListener implementation
 
   @objc public func onConnected(_ conn: BluetoothLE) {
-    conn.ExRegisterForStringValues(kMicrobitUartService, kMicrobitUartCharacteristic, false,
-        self.txCharacteristicHandler)
+    conn.ExRegisterForStringValues(kMicrobitUartService, kMicrobitTxCharacteristic, false,
+        self, self.txCharacteristicHandler)
   }
 
   @objc public func onDisconnected(_ conn: BluetoothLE) {
-    conn.ExUnregisterForValues(kMicrobitUartService, kMicrobitUartCharacteristic,
-        self.txCharacteristicHandler)
+    conn.ExUnregisterForValues(kMicrobitUartService, kMicrobitTxCharacteristic,
+        self, self.txCharacteristicHandler)
   }
 
   // MARK: Private implementation
