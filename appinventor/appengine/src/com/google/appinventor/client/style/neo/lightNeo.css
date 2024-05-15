@@ -31,6 +31,7 @@
 @def gwt-button-background              #A5CF47;
 
 /* Colors */
+@def highlight-color                    rgba(167, 36, 122, 0.21);
     /* orange */
 @def blocks-designer-color              #f89406;
 @def project-background-color           #fff6c3;

@@ -282,7 +282,7 @@ they get cut off in Windows.
   }
   
   .ode-ProjectRowHighlighted {
-    background-color: rgba(167, 36, 122, 0.21) !important;
+    background-color: highlight-color !important;
   }
   
   .ode-ProjectRowUnHighlighted {
@@ -838,7 +838,7 @@ they get cut off in Windows.
   }
   
   .ode-SimplePaletteItem-Selected {
-    background-color: rgba(167, 36, 122, 0.21) !important;
+    background-color: highlight-color !important;
   }
   
   .ode-SimplePaletteItem-icon {
@@ -976,7 +976,7 @@ they get cut off in Windows.
   }
 
   .ode-SimpleMockForm {
-    background-color: #d2e0a6;
+    background-color: top-panel-background-color ;
     border: 2px solid tab-bar-color;
   }
   
@@ -1053,7 +1053,7 @@ they get cut off in Windows.
   .ode-SimpleMockButton {
     background-color: #d6d7d7;
     border-bottom: 2px #b9b9b9 solid;
-    color: rgba(0, 0, 0, 0.87);
+    color: shadow-color;
     border-radius: 0px;
   }
 
@@ -1283,10 +1283,10 @@ they get cut off in Windows.
   
   .gwt-PopupPanel {
     background-color: background-color;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid container-shadow;
     /* -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); warning
     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); */
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px container-shadow);
   }
   
   /*
@@ -1338,7 +1338,7 @@ they get cut off in Windows.
     border: 1px solid #cccccc;
     /* -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); warning
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); */
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px shadow-color;
     /* -webkit-transition: border linear 0.2s, box-shadow linear 0.2s; warning
     -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
     -o-transition: border linear 0.2s, box-shadow linear 0.2s; */
