@@ -28,14 +28,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().help();
-  String name;
-  String helpString;
-  String helpURL;
-  Boolean external;
-  int version;
-  String versionName;
-  String dateBuilt;
-  String license;
 
   // Keep track of the last time (in milliseconds) of the last closure
   // so we don't reopen a popup too soon after closing it.  Specifically,
@@ -48,13 +40,12 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
     private ComponentHelpPopup() {
       // Create popup panel.
       super(true);
-
       setStyleName("ode-ComponentHelpPopup");
-      setTitle(name);
+      setTitle(scd.getName());
 
       // Create title from component name.
-      Label titleBar = new Label(ComponentsTranslation.getComponentName(name));
-      setTitle(name);
+      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));
+      setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
@@ -77,8 +68,9 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       // GWT supported String.format.
       String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();
       String url = null;
-      if (external) {  // extensions will not have documentation hosted in ai2
-        url = helpURL.isEmpty() ? null : helpURL;
+      int version = -1;
+      if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2
+        url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();
         if (url != null) {
           if (!url.startsWith("http:") && !url.startsWith("https:")) {
             url = null;
@@ -89,47 +81,46 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
                 .replaceAll("\"", "%22");
           }
         }
+        version = scd.getVersion();
       } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
         if (!referenceComponentsUrl.endsWith("/")) {
           referenceComponentsUrl += "/";
         }
-        String categoryDocUrlString = helpURL;
+        String categoryDocUrlString = scd.getCategoryDocUrlString();
         url = (categoryDocUrlString == null)
             ? referenceComponentsUrl + "index.html"
-            : referenceComponentsUrl + categoryDocUrlString + ".html#" + name;
+            : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+      }
+      if (!scd.getVersionName().equals("")) {
+        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
+            scd.getVersionName());
+        html.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(html);
+      } else if (version > 0) {
+        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
+        html.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(html);
+      }
+      if (scd.getExternal() && scd.getDateBuilt() != null && !scd.getDateBuilt().equals("")) {
+        String date = scd.getDateBuilt().split("T")[0];
+        HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\"" + scd.getDateBuilt() + "\">" + date + "</time>");
+        dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(dateCreatedHtml);
       }
       if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +
-                                 MESSAGES.moreInformation() + "</a>");
+            MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");
         inner.add(link);
       }
-      if (external) {
-        // Specific information related to extensions
-        if (!versionName.equals("")) {
-          HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
-                                   versionName);
-          html.setStyleName("ode-ComponentHelpPopup-Body");
-          inner.add(html);
-        } else if (version > 0) {
-          HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
-          html.setStyleName("ode-ComponentHelpPopup-Body");
-          inner.add(html);
-        }
-        if (dateBuilt != null && !dateBuilt.equals("")) {
-          String date = dateBuilt.split("T")[0];
-          HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\""
-                                              + dateBuilt + "\">" + date + "</time>");
-          dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
-          inner.add(dateCreatedHtml);
-        }
-        if (!"".equals(license)) {
-          HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
-                                              MESSAGES.viewLicense() + "</a>");
-          viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
-          inner.add(viewLicenseHTML);
-        }
+      if (scd.getExternal() && !"".equals(scd.getLicense())) {
+        String license = scd.getLicense();
+        HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
+            MESSAGES.viewLicense() + "</a>");
+        viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
+        inner.add(viewLicenseHTML);
       }
+
       setWidget(inner);
 
       // When the panel is closed, save the time in milliseconds.
@@ -169,14 +160,6 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
   public ComponentHelpWidget(final SimpleComponentDescriptor scd) {
     super(scd, imageResource);
-    name = scd.getName();
-    helpString = scd.getHelpString();
-    helpURL = scd.getHelpUrl();
-    external = scd.getExternal();
-    version = scd.getVersion();
-    versionName = scd.getVersionName();
-    dateBuilt = scd.getDateBuilt();
-    license = scd.getLicense();
   }
 
   @Override
