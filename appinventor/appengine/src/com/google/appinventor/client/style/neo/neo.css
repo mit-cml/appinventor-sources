@@ -80,11 +80,9 @@ they get cut off in Windows.
   .ode-Box-content {
     /*all:unset;*/
     background-image: unset;
-    margin: unset;
     background-color: unset;
     border: unset;
     box-shadow: unset;
-    margin-top:5px;
   }
 
   .ode-Box-toolkit {
@@ -540,11 +538,11 @@ they get cut off in Windows.
   .ActionDropDown-Options:active {
   
   }
-  
+
   .ode-TutorialWrapper {
     overflow-y: hidden;
   }
-  
+
   /*
    * Deck Panel
    */
@@ -552,10 +550,14 @@ they get cut off in Windows.
   .ode-DeckPanel {
     padding: unset;
   }
-  
+
+  .ode-ProjectEditor {
+    overflow-y: hidden;
+  }
+
   .ode-WorkColumns {
     border-top: 1px solid #bbbbbb;
-    height: 94%;
+    height: 50vh;
     /*border-radius: 4px;*/
   }
   
