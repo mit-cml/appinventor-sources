@@ -210,11 +210,6 @@ The ImageBot is a non-visible component that uses DALL-E 2 to create and edit im
 {:id="ImageBot.CreateImage" class="method"} <i/> CreateImage(*description*{:.text})
 : Create an image using the given description.
 
-{:id="ImageBot.EditImage" class="method"} <i/> EditImage(*source*{:.any},*description*{:.text})
-: Edit the source image using the given description. Editable areas of the image should have
- a transparent alpha. The source can be a Canvas component, an Image component, or a string
- representing the path to a file.
-
 {:id="ImageBot.EditImageWithMask" class="method"} <i/> EditImageWithMask(*imageSource*{:.any},*maskSource*{:.any},*prompt*{:.text})
 : Edit the imageSource using the given description. The editable area of the image should be
  indicated by the maskSource. The sources can be a Canvas, an Image, or a string
