@@ -3212,7 +3212,7 @@ div.dropdiv p {
 }
 
 .download-button {
-  display: grid;
+  display: grid !important;
   max-width: 130px;
   margin: 0 !important;
   margin-top: 12px !important;
@@ -3227,15 +3227,7 @@ div.dropdiv p {
   margin-right: auto;
 }
 
-.download-barcode:before {
-    content: "";
-    background-color: #888;
-    position: absolute;
-    width: 1px;
-    height: 160px;
-    top: 40px;
-    left: 50%;
-    display: block;
+.download-barcode {
 }
 
 .listItem:nth-child(2n + 0) {
