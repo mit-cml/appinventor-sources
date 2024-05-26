@@ -76,7 +76,13 @@ building on versions below the ones stated. To install on a device,
 you **must** have a valid Apple Developer account license and have
 added the relevant mobile provisioning profiles from the Developer
 portal to your Xcode organizer (see Apple's website on instructions on
-how to do this).
+how to do this).  The profile should have these **exact** details, and 
+should include a distribution certificate:
+
+```conf
+Name:	MIT App Inventor Development
+App ID: edu.mit.appinventor.*
+```
 
 To build the MIT App Inventor companion, you will need to create a
 file called AICompanionApp.xcconfig in the `appinventor` directory
