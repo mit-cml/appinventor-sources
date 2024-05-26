@@ -79,7 +79,7 @@ portal to your Xcode organizer (see Apple's website on instructions on
 how to do this).
 
 To build the MIT App Inventor companion, you will need to create a
-file called AICompanionApp.xcconfig in the components-ios directory
+file called AICompanionApp.xcconfig in the `appinventor` directory
 that sets your development team. The easiest way to do this is to copy
 the AICompanionApp.xcconfig.sample file and edit it. Alternatively,
 create a file with the following line:
