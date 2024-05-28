@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2022 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2022-2024 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
 
@@ -7,9 +7,12 @@ fileprivate let kMicrobitUartService = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 fileprivate let kMicrobitTxCharacteristic = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
 fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 
+/**
+ * The `Microbit_Uart_Simple` component implments the UART protocol for the BBC micro:bit.
+ */
 @objc public class Microbit_Uart_Simple : NonvisibleComponent, BluetoothConnectionListener {
 
-  private var bleConnection: BluetoothLE? = nil
+  private unowned var bleConnection: BluetoothLE? = nil
 
   @objc public override init(_ container: ComponentContainer) {
     super.init(container)

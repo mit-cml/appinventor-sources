@@ -1,27 +1,141 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2022-2024 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import CoreBluetooth
 
-
-enum CharacteristicType: Int {
-  case utf8s = 1
-  case utf16s = 2
-}
-
+/**
+ * The error code to report when a given BLE operation is not supported.
+ */
 fileprivate let ERROR_OPERATION_NOT_SUPPORTED = 9012
+
+/**
+ * The error code to report when an error occurs reading a BLE characteristic.
+ */
 fileprivate let ERROR_BLE_READ_ERROR = 9013
 
+/**
+ * The `BluetoothConnectionListener` protocol defines a means by which other components can
+ * receive information about a `BluetoothLE` instance's connection status.
+ */
 @objc public protocol BluetoothConnectionListener {
-  @objc optional func onConnected(_ conn: BluetoothLE)
-  @objc optional func onDisconnected(_ conn: BluetoothLE)
+  /**
+   * The `component` has successfully connected to a peripheral.
+   */
+  @objc optional func onConnected(_ component: BluetoothLE)
+
+  /**
+   * The `component` has disconnected from the peripheral.
+   */
+  @objc optional func onDisconnected(_ component: BluetoothLE)
 }
 
+extension Data {
+  /**
+   * Converts the `Data` into an `Array` of the `Desired` integer type. The stride of the data
+   * is determined via the `Intermediate` type.
+   *
+   * - Parameters:
+   *    - type: The intermediate type for interpreting the bytes contained in the `Data`
+   *
+   * - Returns: An `Array` of the `Desired` type.
+   */
+  func interpret<
+    Intermediate: FixedWidthInteger,
+    Desired: FixedWidthInteger
+  >(as type: Intermediate.Type) -> [Desired] {
+    return self.withUnsafeBytes {
+      Array($0.bindMemory(to: Intermediate.self)).map(Intermediate.init(littleEndian:))
+    }.map { Desired($0) }
+  }
+}
+
+extension Array where Element == any FixedWidthInteger {
+  /**
+   * Converts an `Array` of `FixedWidthInteger` into a `Data` using a little-endian encoding.
+   *
+   * - Returns: A new `Data` containing bytes for the contents of this `Array`.
+   */
+  func data() -> Data {
+    var result = Data()
+    for element in self {
+      result += Swift.withUnsafeBytes(of: element.littleEndian) { Data($0) }
+    }
+    return result
+  }
+}
+
+/**
+ * `StringEncodingError` can be thrown when an attempt to encode a `String` using `data(using:)`
+ * fails. This can be more informative than a method returning `nil`.
+ */
+struct StringEncodingError: Error {
+  /**
+   * The string for which an error was encountered during encoding.
+   */
+  let string: String
+
+  /**
+   * The target encoding that caused the error.
+   */
+  let targetEncoding: String.Encoding
+}
+
+extension Array where Element == String {
+  /**
+   * Converts an `Array<String>` into a `Data` using the given `encoding` and optionally
+   * terminating each `String` with `terminator`.
+   *
+   * - Parameters:
+   *    - encoding: The desired encoding for the `String`s in the `Array`.
+   *    - terminator: Optional terminating string, by default the empty string.
+   * - Throws: `StringEncodingError` if any `String` or the `terminator` cannot be encoded using
+   *           `encoding`.
+   * - Returns: A `Data` containing the encoded contents of the `Array`.
+   */
+  func data(using encoding: String.Encoding, terminator: String = "") throws -> Data {
+    guard let sepdata = terminator.data(using: encoding) else {
+      throw StringEncodingError(string: terminator, targetEncoding: encoding)
+    }
+    var result = Data()
+    for element in self {
+      guard let encoded = element.data(using: encoding) else {
+        throw StringEncodingError(string: element, targetEncoding: encoding)
+      }
+      result += encoded
+      result += sepdata
+    }
+    return result
+  }
+}
+
+extension Array where Element == AnyObject {
+  func data() throws -> Data {
+    var result = Data()
+    for element in self {
+      if let element = element as? NSNumber {
+        result.append(contentsOf: [element.uint8Value])
+      } else if let element = element as? String {
+        guard let utf8 = element.data(using: .utf8) else {
+          throw StringEncodingError(string: element, targetEncoding: .utf8)
+        }
+        result += utf8
+      }
+    }
+    return result
+  }
+}
+
+/**
+ * The `BleDeviceInfo` class captures information about detected Blueooth low energy peripherals.
+ */
 class BleDeviceInfo {
-  var peripheral: CBPeripheral
-  var advertisingData: [String: Any]
-  var rssi: NSNumber
+  /**
+   *
+   */
+  let peripheral: CBPeripheral
+  let advertisingData: [String: Any]
+  let rssi: NSNumber
 
   init(_ peripheral: CBPeripheral, _ advertisingData: [String: Any], _ rssi: NSNumber) {
     self.peripheral = peripheral
@@ -82,7 +196,7 @@ class BleReadOperation: BleOperation {
     }
     if let error = error {
       // TODO: Report the error
-      owner._form?.dispatchErrorOccurredEvent(owner, "", .ERROR_EXTENSION_ERROR, ERROR_BLE_READ_ERROR, owner, error.localizedDescription)
+      owner._form?.dispatchErrorOccurredEvent(owner, caller, .ERROR_EXTENSION_ERROR, ERROR_BLE_READ_ERROR, owner, error.localizedDescription)
       return
     }
     if characteristic.isNotifying == notify {
@@ -93,14 +207,6 @@ class BleReadOperation: BleOperation {
   func handle(_ data: Data) {
     // Handled by subclasses
   }
-}
-
-func interpretData<Intermediate: FixedWidthInteger, Desired: FixedWidthInteger>(
-    _ data: Data,
-    type: Intermediate.Type) -> [Desired] {
-  return data.withUnsafeBytes {
-    Array($0.bindMemory(to: Intermediate.self)).map(Intermediate.init(littleEndian:))
-  }.map { Desired($0) }
 }
 
 class BleReadBytesOperation: BleReadOperation {
@@ -129,7 +235,7 @@ class BleReadShortsOperation: BleReadOperation {
   }
 
   override func handle(_ data: Data) {
-    handler(signed ? interpretData(data, type: Int16.self) : interpretData(data, type: UInt16.self))
+    handler(signed ? data.interpret(as: Int16.self) : data.interpret(as: UInt16.self))
   }
 }
 
@@ -144,7 +250,7 @@ class BleReadIntegersOperation: BleReadOperation {
   }
 
   override func handle(_ data: Data) {
-    handler(signed ? interpretData(data, type: Int32.self) : interpretData(data, type: UInt32.self))
+    handler(signed ? data.interpret(as: Int32.self) : data.interpret(as: UInt32.self))
   }
 }
 
@@ -168,7 +274,23 @@ class BleReadStringsOperation: BleReadOperation {
 }
 
 class BleWriteOperation: BleOperation {
+  let type: CBCharacteristicWriteType
+  let data: Data
 
+  public init(_ owner: BluetoothLE, _ caller: String, _ characteristic: CBCharacteristic, _ data: Data, _ withResponse: Bool) {
+    type = withResponse ? .withResponse : .withoutResponse
+    self.data = data
+    super.init(owner, caller, characteristic)
+  }
+
+  override func run() -> Bool {
+    guard let peripheral = owner.peripheral else {
+      // TODO: Error
+      return true
+    }
+    peripheral.writeValue(data, for: characteristic, type: type)
+    return type == .withoutResponse
+  }
 }
 
 class BleWriteStringsOperation: BleWriteOperation {
@@ -176,14 +298,21 @@ class BleWriteStringsOperation: BleWriteOperation {
   let withResponse: Bool
 
   public init(_ owner: BluetoothLE, _ caller: String, _ characteristic: CBCharacteristic, _ utf16: Bool,
-      _ values: [String], _ withResponse: Bool) {
+              _ values: [String], _ withResponse: Bool, _ nullTerminate: Bool) {
     self.strings = values
     self.withResponse = withResponse
-    super.init(owner, caller, characteristic)
-  }
-
-  override func run() -> Bool {
-    return !withResponse
+    let encoding: String.Encoding = utf16 ? .utf16LittleEndian : .utf8
+    var data = Data()
+    for value in values {
+      guard let encoded = value.data(using: encoding) else {
+        break
+      }
+      data += encoded
+      if nullTerminate {
+        data.append(contentsOf: [0])
+      }
+    }
+    super.init(owner, caller, characteristic, data, withResponse)
   }
 }
 
@@ -207,6 +336,19 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 }
 
+
+/**
+ * The `BluetoothLE` component allows users to interact with Bluetooth low energy devices.
+ *
+ * Theory of operation:
+ *
+ * The various read/register/write/unregister methods schedule events on the `pendingOperations`
+ * queue. If the operation in question is meant to pause, it sets the `operationWaiting` flag and
+ * then waits on the `operationPending` semaphore. When a read/write confirmation is reported
+ * via the corresponding `CBCentralManagerDelegate` method, it MUST be the case that
+ * `operationWaiting` is `true`, in which case the `operationPending` semaphore is signalled to
+ * wake the sleeping thread.
+ */
 @objc public class BluetoothLE : NonvisibleComponent, CBCentralManagerDelegate, CBPeripheralDelegate {
   private var manager: CBCentralManager!
   public private(set) var peripheral: CBPeripheral? = nil
@@ -223,6 +365,9 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   private var lastReadRssi: Int32 = -100
   private var handlers = [CBUUID: NSMutableArray]()
   private var connectionTimer: Timer? = nil
+  private var pendingOperationsMutex = DispatchSemaphore(value: 1)
+  private var operationWaiting = false
+  private var operationPending = DispatchSemaphore(value: 0)
 
   @objc public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -359,7 +504,19 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   @objc public func ReadBytes(_ serviceUuid: String, _ characteristicUuid: String, _ signed: Bool) {
-
+    guard let characteristicUuid = bleStringToUuid(characteristicUuid) else {
+      // TODO: Badly formatted UUID
+      return
+    }
+    guard let characteristic = characteristics[characteristicUuid] else {
+      // TODO: Characteristic not published
+      return
+    }
+    let op = BleReadBytesOperation(self, "ReadBytes", characteristic, signed) { result in
+      DispatchQueue.main.async { [self] in
+        self.BytesReceived(serviceUuid, characteristicUuid.uuidString, result)
+      }
+    }
   }
 
   @objc public func ReadStrings(_ serviceUuid: String, _ characteristicUuid: String,
@@ -382,6 +539,54 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   @objc public func RegisterForStrings(_ serviceUuid: String, _ characteristicUuid: String,
                                             _ utf16: Bool) {
     registerForStrings(serviceUuid, characteristicUuid, utf16)
+  }
+
+  @objc public func WriteBytes(_ serviceUuid: String, _ characteristicUuid: String,
+                               _ signed: Bool, _ values: [AnyObject]) {
+    guard let peripheral = peripheral else {
+      // TODO: Raise an error
+      return
+    }
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    var data = Data()
+    for value in values {
+      if let number = value as? NSNumber {
+        if signed {
+          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
+        } else {
+          data.append(contentsOf: [number.uint8Value])
+        }
+      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
+        data.append(strdata)
+      }
+    }
+    schedulePendingOperation(BleWriteOperation(self, "WriteBytes", characteristic, data, false))
+  }
+
+  @objc public func WriteBytesWithResponse(_ serviceUuid: String, _ characteristicUuid: String,
+                                           _ signed: Bool, _ values: [AnyObject]) {
+    guard let peripheral = peripheral else {
+      // TODO: Raise an error
+      return
+    }
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    var data = Data()
+    for value in values {
+      if let number = value as? NSNumber {
+        if signed {
+          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
+        } else {
+          data.append(contentsOf: [number.uint8Value])
+        }
+      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
+        data.append(strdata)
+      }
+    }
+    schedulePendingOperation(BleWriteOperation(self, "WriteBytesWithResponse", characteristic, data, true))
   }
 
   @objc public func WriteStrings(_ serviceUuid: String, _ characteristicUuid: String,
@@ -412,7 +617,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
   private func registerForStrings(_ serviceUuid: String, _ characteristicUuid: String,
                                   _ utf16: Bool, _ handler: (([String])->())? = nil) {
-    guard let characteristic = findCharacteristic(bleStringToUuid(serviceUuid), bleStringToUuid(characteristicUuid)) else {
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
       return
     }
     guard let peripheral = peripheral else {
@@ -422,16 +627,29 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 //    schedulePendingOperation(BleReadStringOperation(characteristic, utf16, handler, true))
   }
 
-  private func findCharacteristic(_ serviceUuid: CBUUID?, _ characteristicUuid: CBUUID?) -> CBCharacteristic? {
-    guard let serviceUuuid = serviceUuid, let characteristicUuid = characteristicUuid else {
+  private func findCharacteristic(_ serviceUuid: String, _ characteristicUuid: String) -> CBCharacteristic? {
+    guard let serviceUuuid = bleStringToUuid(serviceUuid),
+          let characteristicUuid = bleStringToUuid(characteristicUuid) else {
       return nil
     }
     return characteristics[characteristicUuid]
   }
 
   private func schedulePendingOperation(_ operation: BleOperation) {
-    pendingOperations.async {
-      operation.run()
+    pendingOperationsMutex.wait()
+    defer {
+      pendingOperationsMutex.signal()
+    }
+    var operationQueue = pendingOperationsByUuid[operation.characteristic.uuid, default: []]
+    operationQueue.append(operation)
+    pendingOperationsByUuid[operation.characteristic.uuid] = operationQueue
+    pendingOperations.async { [self] in
+      pendingOperationsMutex.wait()
+      let runNext = operation.run()
+      if runNext {
+
+      }
+      pendingOperationsMutex.signal()
     }
   }
 
@@ -475,14 +693,14 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   @objc public func BytesReceived(_ serviceUuid: String, _ characteristicUuid: String,
-                                  _ values: [Int]) {
+                                  _ values: [Int32]) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "BytesReceived", arguments: values as AnyObject)
     }
   }
 
   @objc public func ShortsReceived(_ serviceUuid: String, _ characteristicUuid: String,
-                                   _ values: [Int]) {
+                                   _ values: [Int32]) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "ShortsReceived", arguments: values as AnyObject)
     }
@@ -553,7 +771,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
   @objc public func ExRegisterForStringValues(_ service: String, _ characteristic: String,
       _ utf16: Bool, _ component: Component, _ handler: @escaping (String, String, [String]) -> Void) {
-    guard let characteristic = findCharacteristic(bleStringToUuid(service), bleStringToUuid(characteristic)) else {
+    guard let characteristic = findCharacteristic(service, characteristic) else {
       // TODO: Report an error
       return
     }
@@ -575,7 +793,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   @objc public func ExUnregisterForValues(_ service: String, _ characteristic: String,
       _ component: Component, _ handler: (String, String, [String]) -> Void) {
     // TODO: Implementation
-    guard let characteristic = findCharacteristic(bleStringToUuid(service), bleStringToUuid(characteristic)) else {
+    guard let characteristic = findCharacteristic(service, characteristic) else {
       return
     }
     
@@ -583,7 +801,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
   @objc public func ExWriteStringValuesWithResponse(_ service: String, _ characteristic: String,
       _ utf16: Bool, _ message: String, _ handler: (String, String, [String]) -> Void) {
-    guard let characteristic = findCharacteristic(bleStringToUuid(service), bleStringToUuid(characteristic)) else {
+    guard let characteristic = findCharacteristic(service, characteristic) else {
       // TODO: Report the error here
       return
     }
@@ -599,20 +817,18 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     print("data length: \(data.count)")
     var chunks: [Data] = []
     var start = 0
-    for index in 0..<data.count / 20 {
-      let chunk = data.subdata(in: start..<min(start+20, data.count))
+    for _ in 0..<data.count / maxLen {
+      let chunk = data.subdata(in: start..<min(start + maxLen, data.count))
       chunks.append(chunk)
-      start += 20
+      start += maxLen
     }
     if maxLen > 0 && data.count <= maxLen {
       print("Writing whole data: \(message)")
       peripheral?.writeValue(data, for: characteristic, type: .withResponse)
+      return
     }
     for chunk in chunks {
-//      pendingOperations.async { [self] in
-//        peripheral?.writeValue(<#T##data: Data##Data#>, for: <#T##CBCharacteristic#>, type: <#T##CBCharacteristicWriteType#>)
-//        peripheral?.maximumWriteValueLength(for: .withResponse)
-//      }
+      schedulePendingOperation(BleWriteOperation(self, "ExWriteStringValuesWithResponse", characteristic, chunk, true))
     }
   }
 
@@ -713,12 +929,48 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
         }
       }
     } else {
+      pendingOperationsMutex.wait()
 
+      // MARK: CRITICAL SECTION
+      defer {
+        pendingOperationsMutex.signal()
+      }
+
+      var operationQueue = pendingOperationsByUuid[characteristic.uuid, default: []]
+      guard let pendingOperation = operationQueue.first as? BleReadOperation else {
+        return
+      }
+      operationQueue.removeFirst()
+      pendingOperationsByUuid[characteristic.uuid] = operationQueue
+      pendingOperation.peripheral(peripheral, didUpdateValueFor: characteristic, error: error)
+
+      // MARK: END CRITICAL SECTION
     }
   }
 
   public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
-    // pass
+    print("Did write characteristic \(characteristic)")
+
+    pendingOperationsMutex.wait()
+
+    // MARK: CRITICAL SECTION
+    defer {
+      pendingOperationsMutex.signal()
+    }
+
+    var operationQueue = pendingOperationsByUuid[characteristic.uuid, default: []]
+    guard let pendingOperation = operationQueue.first as? BleWriteOperation else {
+      return
+    }
+    operationQueue.removeFirst()
+    pendingOperationsByUuid[characteristic.uuid] = operationQueue
+    if !operationQueue.isEmpty {
+      DispatchQueue.main.async {
+        self.runNextOperation()
+      }
+    }
+
+    // MARK: END CRITICAL SECTION
   }
 
   func runNextOperation() {
