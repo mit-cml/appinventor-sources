@@ -834,4 +834,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/trendline.png")
   ImageResource trendline();
+
+    /**
+   * Designer palette item: PersonalImageClassifier.
+   */
+  @Source("com/google/appinventor/images/PersonalImageClassifier.png")
+  ImageResource PersonalImageClassifier();
 }
