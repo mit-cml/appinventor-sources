@@ -1004,6 +1004,10 @@ public class BlocklyPanel extends HTMLPanel {
       });
   }
 
+  public static native void setBlocklyVisible(boolean visible) /*-{
+    $wnd.Blockly.common.getMainWorkspace() && $wnd.Blockly.common.getMainWorkspace().setVisible(visible);
+  }-*/;
+
   /**
    * NativeTranslationMap is a plain JavaScriptObject that provides key-value mappings for
    * user interface translations in Blockly. This reduces the overhead of crossing GWT's

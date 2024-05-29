@@ -237,6 +237,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
     loadBlocksEditor();
+    blocksArea.setBlocklyVisible(true);
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_BLOCKS);
     sendComponentData();  // Send Blockly the component information for generating Yail
   }
@@ -284,6 +285,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onHide() for " + getFileId());
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       super.onHide();
+      blocksArea.setBlocklyVisible(false);
       unloadBlocksEditor();
     } else {
       LOG.warning("YaBlocksEditor.onHide: Not doing anything since we're not the "
