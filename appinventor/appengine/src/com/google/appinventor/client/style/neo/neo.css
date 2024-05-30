@@ -77,12 +77,16 @@ they get cut off in Windows.
   .ode-CurrentColor {
     padding-left: unset;
   }
+
   .ode-Box-content {
     /*all:unset;*/
     background-image: unset;
     background-color: unset;
     border: unset;
     box-shadow: unset;
+    display: flex;
+    flex-grow: 1;
+    margin:unset;
   }
 
   .ode-Box-toolkit {
@@ -108,9 +112,17 @@ they get cut off in Windows.
   
   .ode-Box-body {
   }
-  
+
   .ode-Box-body-padding {
     padding: unset;
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+  }
+
+  .ode-Box-body-padding>* {
+    display: flex;
+    flex-grow: 1;
   }
   
   .ode-BoxResizeControl {
@@ -565,7 +577,11 @@ they get cut off in Windows.
     overflow: auto;
     border-right: 1px solid #bbbbbb;
   }
-  
+
+  .ViewerBox {
+    display: flex;
+  }
+
   .ode-NavArrow {
     background: #C2C2C2;}
   

@@ -141,13 +141,6 @@ public final class YaBlocksEditor extends FileEditor
     // We use VIEWER_WINDOW_OFFSET as an approximation of the size of the top navigation bar
     // New layouts don't need all this messing; see comments on selected answer at:
     // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
-    blocksArea.setHeight(Window.getClientHeight() - VIEWER_WINDOW_OFFSET + "px");
-    Window.addResizeHandler(new ResizeHandler() {
-     public void onResize(ResizeEvent event) {
-       int height = event.getHeight();
-       blocksArea.setHeight(height - VIEWER_WINDOW_OFFSET + "px");
-     }
-    });
     initWidget(blocksArea);
     blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());
 

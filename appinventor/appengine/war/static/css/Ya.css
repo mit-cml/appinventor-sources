@@ -250,6 +250,9 @@ div.StatusPanel {
   border-right: 1px solid #d2d2d2;
   margin: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
+  flex-grow:1;
+  display: flex;
+  flex-flow: column;
 }
 
 .ode-Box-header {
@@ -280,6 +283,13 @@ div.StatusPanel {
 
 .ode-Box-body-padding {
   padding: 6px;
+  flex-grow: 1;
+  display:flex;
+}
+
+.ode-Box-body-padding>* {
+  display: flex;
+  flex-grow: 1;
 }
 
 .ode-BoxResizeControl {
@@ -643,7 +653,7 @@ div.StatusPanel {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 4px 8px 8px;
+  padding: 4px 8px 0;
   position: relative;
   height: 100%;
   width: 100%;
@@ -686,6 +696,8 @@ div.StatusPanel {
 .ViewerBox {
   min-width: 368px;
   flex-grow: 1;
+  display: flex;
+  flex-flow: column;
 }
 
 .ode-NavArrow {
