@@ -77,7 +77,8 @@ you **must** have a valid Apple Developer account license and have
 added the relevant mobile provisioning profiles from the Developer
 portal to your Xcode organizer (see Apple's website on instructions on
 how to do this).  The profile should have these **exact** details, and 
-should include a distribution certificate:
+should include a development certificate (a distribution certificate is
+not necessary):
 
 ```conf
 Name:	MIT App Inventor Development
