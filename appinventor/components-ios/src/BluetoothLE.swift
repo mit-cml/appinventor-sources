@@ -466,6 +466,51 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     }
   }
 
+  @objc public func ConnectMatchingName(_ name: String) {
+    startScanningForService("ConnectMatchingName", nil) { [self] peripheral in
+      print("In callback")
+      guard let peripheralName = peripheral.name else {
+        return
+      }
+      print("peripheral name: \(peripheralName)")
+      if peripheralName.contains(name) {
+        print("name matches \(name)")
+        var options: [String:Any]? = nil
+        if AutoReconnect {
+          if #available(iOS 17.0, *) {
+            options = [
+              CBConnectPeripheralOptionEnableAutoReconnect: true
+            ]
+          } else {
+            // Fallback on earlier versions
+          }
+        }
+        manager.stopScan()
+        manager.connect(peripheral, options: options)
+      }
+    }
+  }
+
+  @objc public func ConnectToDeviceWithServiceAndName(_ serviceUuid: String, _ name: String) {
+    startScanningForService("ConnectToDeviceWithServiceAndName", serviceUuid) { [self] peripheral in
+      if name == peripheral.name {
+        StopScanning()
+        var options: [String:Any]? = nil
+        if AutoReconnect {
+          if #available(iOS 17.0, *) {
+            options = [
+              CBConnectPeripheralOptionEnableAutoReconnect: true
+            ]
+          } else {
+            // Fallback on earlier versions
+          }
+        }
+        manager.stopScan()
+        manager.connect(peripheral, options: options)
+      }
+    }
+  }
+
   @objc func cancelConnection(_ sender: Timer) {
     guard let peripheral = connectingPeripheral else {
       return
@@ -491,7 +536,28 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
     deviceList.removeAll(keepingCapacity: true)
     deviceSet.removeAll(keepingCapacity: true)
+    deviceFoundCallback = nil
     manager.scanForPeripherals(withServices: nil, options: nil)
+  }
+
+  var deviceFoundCallback: ((CBPeripheral) -> ())? = nil
+
+  @objc public func startScanningForService(_ caller: String, _ serviceUuid: String?, _ handler: @escaping (CBPeripheral) -> ()) {
+    guard manager.state == .poweredOn else {
+      // TODO(ewpatton): Report error to client
+      print("Current manager state: \(manager.state)")
+      return
+    }
+
+    var services: [CBUUID]? = nil
+    if let serviceUuid = serviceUuid {
+      let uuid = CBUUID(string: serviceUuid)
+      services = [uuid]
+    }
+    deviceList.removeAll(keepingCapacity: true)
+    deviceSet.removeAll(keepingCapacity: true)
+    deviceFoundCallback = handler
+    manager.scanForPeripherals(withServices: services, options: nil)
   }
 
   @objc public func StopScanning() {
@@ -504,36 +570,36 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   @objc public func ReadBytes(_ serviceUuid: String, _ characteristicUuid: String, _ signed: Bool) {
-    guard let characteristicUuid = bleStringToUuid(characteristicUuid) else {
-      // TODO: Badly formatted UUID
+    guard peripheral != nil else {
+      // TODO: Error
       return
     }
-    guard let characteristic = characteristics[characteristicUuid] else {
-      // TODO: Characteristic not published
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      // TODO: Error
       return
     }
-    let op = BleReadBytesOperation(self, "ReadBytes", characteristic, signed) { result in
+    schedule(BleReadBytesOperation(self, "ReadBytes", characteristic, signed) { result in
       DispatchQueue.main.async { [self] in
-        self.BytesReceived(serviceUuid, characteristicUuid.uuidString, result)
+        self.BytesReceived(serviceUuid, characteristicUuid, result)
       }
-    }
+    })
   }
 
   @objc public func ReadStrings(_ serviceUuid: String, _ characteristicUuid: String,
       _ utf16: Bool) {
-    guard let peripheral = peripheral else {
-      // TODO: Disconnected error
+    guard peripheral != nil else {
+      // TODO: Error
       return
     }
-    guard let characteristicUuid = bleStringToUuid(characteristicUuid) else {
-      // TODO: Badly formatted UUID
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      // TODO: Error
       return
     }
-    guard let characteristic = characteristics[characteristicUuid] else {
-      // TODO: Characteristic not published
-      return
-    }
-    peripheral.readValue(for: characteristic)
+    schedule(BleReadStringsOperation(self, "ReadStrings", characteristic, utf16) { result in
+      DispatchQueue.main.async { [self] in
+        self.StringsReceived(serviceUuid, characteristicUuid, result)
+      }
+    })
   }
 
   @objc public func RegisterForStrings(_ serviceUuid: String, _ characteristicUuid: String,
@@ -562,7 +628,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
         data.append(strdata)
       }
     }
-    schedulePendingOperation(BleWriteOperation(self, "WriteBytes", characteristic, data, false))
+    schedule(BleWriteOperation(self, "WriteBytes", characteristic, data, false))
   }
 
   @objc public func WriteBytesWithResponse(_ serviceUuid: String, _ characteristicUuid: String,
@@ -586,7 +652,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
         data.append(strdata)
       }
     }
-    schedulePendingOperation(BleWriteOperation(self, "WriteBytesWithResponse", characteristic, data, true))
+    schedule(BleWriteOperation(self, "WriteBytesWithResponse", characteristic, data, true))
   }
 
   @objc public func WriteStrings(_ serviceUuid: String, _ characteristicUuid: String,
@@ -624,18 +690,18 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       return
     }
     peripheral.setNotifyValue(true, for: characteristic)
-//    schedulePendingOperation(BleReadStringOperation(characteristic, utf16, handler, true))
+//    schedulePendingOperation(BleReadStringsOperation(characteristic, utf16, handler, true))
   }
 
   private func findCharacteristic(_ serviceUuid: String, _ characteristicUuid: String) -> CBCharacteristic? {
-    guard let serviceUuuid = bleStringToUuid(serviceUuid),
+    guard let _ = bleStringToUuid(serviceUuid),
           let characteristicUuid = bleStringToUuid(characteristicUuid) else {
       return nil
     }
     return characteristics[characteristicUuid]
   }
 
-  private func schedulePendingOperation(_ operation: BleOperation) {
+  private func schedule(_ operation: BleOperation) {
     pendingOperationsMutex.wait()
     defer {
       pendingOperationsMutex.signal()
@@ -828,7 +894,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       return
     }
     for chunk in chunks {
-      schedulePendingOperation(BleWriteOperation(self, "ExWriteStringValuesWithResponse", characteristic, chunk, true))
+      schedule(BleWriteOperation(self, "ExWriteStringValuesWithResponse", characteristic, chunk, true))
     }
   }
 
@@ -855,6 +921,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       deviceSet.insert(peripheral.identifier)
       deviceList.append(BleDeviceInfo(peripheral, advertisementData, RSSI))
       DeviceFound()
+      deviceFoundCallback?(peripheral)
     }
   }
 
@@ -865,6 +932,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
     if let error = error {
       // TODO(ewpatton): Report error to user
+      print("discovery error: \(error)")
       return
     }
     guard let services = peripheral.services else {
@@ -888,6 +956,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     }
     if let error = error {
       // TODO(ewpatton): Report error to user
+      print("discovery error: \(error)")
       return
     }
     guard let characteristics = service.characteristics else {
