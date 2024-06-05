@@ -3,10 +3,12 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package edu.mit.appinventor.ai.personalimageclassifier;
+package com.google.appinventor.components.runtime.assets;
 
 import android.Manifest;
 import android.os.Build;
+
+import com.google.appinventor.components.runtime.BaseAiComponent;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.PermissionResultHandler;
 
@@ -16,21 +18,21 @@ import com.google.appinventor.components.runtime.PermissionResultHandler;
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-class SDK26Helper {
+public class SDK26Helper {
 
-  static boolean shouldAskForPermission(Form form) {
+  public static boolean shouldAskForPermission(Form form) {
     return form.getApplicationInfo().targetSdkVersion >= 23 &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
   }
 
-  static void askForPermission(final PersonalImageClassifier personalImageClassifier, final Runnable next) {
-    personalImageClassifier.getForm().askPermission(Manifest.permission.CAMERA, new PermissionResultHandler() {
+  public static void askForPermission(final BaseAiComponent baseAiComponent, final Runnable next) {
+    baseAiComponent.getForm().askPermission(Manifest.permission.CAMERA, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
         if (granted) {
           next.run();
         } else {
-          personalImageClassifier.getForm().PermissionDenied(personalImageClassifier, "WebViewer", permission);
+          baseAiComponent.getForm().PermissionDenied(baseAiComponent, "WebViewer", permission);
         }
       }
     });
