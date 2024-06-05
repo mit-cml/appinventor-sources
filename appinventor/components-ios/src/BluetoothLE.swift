@@ -126,6 +126,11 @@ extension Array where Element == AnyObject {
   }
 }
 
+@objc protocol BleDevice {
+  var broadcastUuid: CBUUID? { get }
+  var deviceCallback: ((CBPeripheral) -> Bool)? { get }
+}
+
 /**
  * The `BleDeviceInfo` class captures information about detected Blueooth low energy peripherals.
  */
@@ -448,6 +453,10 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       return
     }
     let deviceInfo = deviceList[Int(index - 1)]
+    connect(deviceInfo.peripheral)
+  }
+
+  private func connect(_ peripheral: CBPeripheral) {
     var options: [String:Any]? = nil
     if AutoReconnect {
       if #available(iOS 17.0, *) {
@@ -458,10 +467,10 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
         // Fallback on earlier versions
       }
     }
-    manager.connect(deviceInfo.peripheral, options: options)
+    manager.connect(peripheral, options: options)
     if ConnectionTimeout > 0 {
       connectionTimer?.invalidate()
-      connectingPeripheral = deviceInfo.peripheral
+      connectingPeripheral = peripheral
       connectionTimer = Timer.scheduledTimer(timeInterval: Double(ConnectionTimeout) / 1000.0, target: self, selector: #selector(cancelConnection(_:)), userInfo: nil, repeats: false)
     }
   }
@@ -475,18 +484,8 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       print("peripheral name: \(peripheralName)")
       if peripheralName.contains(name) {
         print("name matches \(name)")
-        var options: [String:Any]? = nil
-        if AutoReconnect {
-          if #available(iOS 17.0, *) {
-            options = [
-              CBConnectPeripheralOptionEnableAutoReconnect: true
-            ]
-          } else {
-            // Fallback on earlier versions
-          }
-        }
-        manager.stopScan()
-        manager.connect(peripheral, options: options)
+        self.StopScanning()
+        self.connect(peripheral)
       }
     }
   }
@@ -494,19 +493,8 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   @objc public func ConnectToDeviceWithServiceAndName(_ serviceUuid: String, _ name: String) {
     startScanningForService("ConnectToDeviceWithServiceAndName", serviceUuid) { [self] peripheral in
       if name == peripheral.name {
-        StopScanning()
-        var options: [String:Any]? = nil
-        if AutoReconnect {
-          if #available(iOS 17.0, *) {
-            options = [
-              CBConnectPeripheralOptionEnableAutoReconnect: true
-            ]
-          } else {
-            // Fallback on earlier versions
-          }
-        }
-        manager.stopScan()
-        manager.connect(peripheral, options: options)
+        self.StopScanning()
+        self.connect(peripheral)
       }
     }
   }
@@ -540,9 +528,19 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     manager.scanForPeripherals(withServices: nil, options: nil)
   }
 
+  @objc public func ScanForDevice(_ device: AnyObject) {
+    guard let device = device as? BleDevice else {
+      return
+    }
+    scanTest = device.deviceCallback
+    startScanningForService("ScanForDevice", device.broadcastUuid?.uuidString)
+  }
+
+  var scanTest: ((CBPeripheral) -> Bool)? = nil
+  var connectTest: ((CBPeripheral) -> Bool)? = nil
   var deviceFoundCallback: ((CBPeripheral) -> ())? = nil
 
-  @objc public func startScanningForService(_ caller: String, _ serviceUuid: String?, _ handler: @escaping (CBPeripheral) -> ()) {
+  @objc public func startScanningForService(_ caller: String, _ serviceUuid: String?, _ handler: ((CBPeripheral) -> ())? = nil) {
     guard manager.state == .poweredOn else {
       // TODO(ewpatton): Report error to client
       print("Current manager state: \(manager.state)")
@@ -917,6 +915,18 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    if let scanTest = scanTest {
+      if !scanTest(peripheral) {
+        return
+      }
+    }
+    if let connectTest = connectTest {
+      if connectTest(peripheral) {
+        self.StopScanning()
+        connect(peripheral)
+        return
+      }
+    }
     if !deviceSet.contains(peripheral.identifier) {
       deviceSet.insert(peripheral.identifier)
       deviceList.append(BleDeviceInfo(peripheral, advertisementData, RSSI))

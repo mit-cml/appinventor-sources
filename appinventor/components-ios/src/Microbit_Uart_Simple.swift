@@ -2,6 +2,7 @@
 // Copyright © 2022-2024 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
+import CoreBluetooth
 
 fileprivate let kMicrobitUartService = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 fileprivate let kMicrobitTxCharacteristic = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -10,7 +11,7 @@ fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9
 /**
  * The `Microbit_Uart_Simple` component implments the UART protocol for the BBC micro:bit.
  */
-@objc public class Microbit_Uart_Simple : NonvisibleComponent, BluetoothConnectionListener {
+@objc public class Microbit_Uart_Simple : NonvisibleComponent, BluetoothConnectionListener, BleDevice {
 
   private unowned var bleConnection: BluetoothLE? = nil
 
@@ -65,6 +66,19 @@ fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9
         self, self.txCharacteristicHandler)
   }
 
+  // MARK: BleDevice implementation
+
+  @objc public var broadcastUuid: CBUUID? = nil
+
+  @objc public var deviceCallback: ((CBPeripheral) -> Bool)? {
+    return { peripheral in
+      guard let name = peripheral.name else {
+        return false
+      }
+      return name.contains("BBC micro:bit")
+    }
+  }
+
   // MARK: Private implementation
 
   private func rxCharacteristicWriteHandler(_ service: String, _ characteristic: String,
@@ -72,7 +86,7 @@ fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9
     guard !values.isEmpty else {
       return
     }
-    MessageReceived(values.first ?? "")
+    MessageSent(values.first ?? "")
   }
 
   private func txCharacteristicHandler(_ service: String, _ characteristic: String,
@@ -80,7 +94,7 @@ fileprivate let kMicrobitRxCharacteristic = "6E400003-B5A3-F393-E0A9-E50E24DCCA9
     guard !values.isEmpty else {
       return
     }
-    MessageSent(values.first ?? "")
+    MessageReceived(values.first ?? "")
   }
 
   private func reportNullConnection(_ method: String) {
