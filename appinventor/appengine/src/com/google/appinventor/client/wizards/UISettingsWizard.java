@@ -28,8 +28,8 @@ public class UISettingsWizard {
   @UiField protected Button applyButton;
   @UiField protected Button cancelButton;
   // @UiField protected Button darkModeButton;
-  @UiField protected RadioButton lightModeRadioButton;
-  @UiField protected RadioButton darkModeRadioButton;
+//  @UiField protected RadioButton lightModeRadioButton;
+//  @UiField protected RadioButton darkModeRadioButton;
   @UiField protected RadioButton classicRadioButton;
   @UiField protected RadioButton modernRadioButton;
   Boolean userThemePreference;
@@ -47,11 +47,11 @@ public class UISettingsWizard {
     }else{
       classicRadioButton.setValue(true);
     }   
-    if (userThemePreference){
-      darkModeRadioButton.setValue(true);
-    }else{
-      lightModeRadioButton.setValue(true);
-    }  
+//    if (userThemePreference){
+//      darkModeRadioButton.setValue(true);
+//    }else{
+//      lightModeRadioButton.setValue(true);
+//    }
     show();
   }
 
@@ -94,15 +94,15 @@ public class UISettingsWizard {
     //     userThemePreference = true;
     //   }
     // Ode.setUserDarkThemeEnabled(userThemePreference);
-    if (lightModeRadioButton.getValue()){
-      if (Ode.getUserDarkThemeEnabled()){
-          Ode.setUserDarkThemeEnabled(false);
-      }
-    }else{
-      if (!Ode.getUserDarkThemeEnabled()){
-          Ode.setUserDarkThemeEnabled(true);
-      }
-    }
+//    if (lightModeRadioButton.getValue()){
+//      if (Ode.getUserDarkThemeEnabled()){
+//          Ode.setUserDarkThemeEnabled(false);
+//      }
+//    }else{
+//      if (!Ode.getUserDarkThemeEnabled()){
+//          Ode.setUserDarkThemeEnabled(true);
+//      }
+//    }
     if (classicRadioButton.getValue()){
       if (Ode.getUserNewLayout()){
           Ode.setUserNewLayout(false);

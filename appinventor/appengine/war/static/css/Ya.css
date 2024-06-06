@@ -1867,6 +1867,14 @@ path.ode-SimpleMockMapFeature-selected {
   width: 100%;
 }
 
+ .ode-DialogRow .gwt-Label {
+   color: #000;
+   font-weight: 500;
+   font-size: 1.2em;
+   padding-bottom: 2px;
+   text-shadow: none;
+ }
+
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
 }
@@ -1908,6 +1916,7 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   justify-content: space-around ;
   width: 95%;
+  margin-top:10px;
 }
 
 .ode-DialogBox .contentRow {
@@ -1915,6 +1924,14 @@ path.ode-SimpleMockMapFeature-selected {
   width: 95%;
   margin-left: 20px;
   padding-bottom: 10px;
+}
+
+.ode-DialogBox .contentImage {
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: inset;
+  border-color: lightgray;
+  box-shadow: 0 0 2px #aaa;
 }
 
 /* AI2 Extensions Styles */

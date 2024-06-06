@@ -12,15 +12,32 @@
               styleName="ode-DialogBox" width="340px" height="40px">
     <g:FlowPanel>
       <g:FlowPanel styleName="ode-DialogRow">
-        <g:Label text="{messages.selectLayout}" width="30%"/>
-        <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
-        <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}'/>
+        <g:Label text="{messages.selectStyle}" />
       </g:FlowPanel>
       <g:FlowPanel styleName="ode-DialogRow">
-        <g:Label text="{messages.selectMode}" width="30%"/>
+        <g:HTML>
+          <img srcset="" class="contentImage" src="/static/images/ai2-classic-style.png" width="360px" />
+        </g:HTML>
+      </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
+      </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow"> </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:HTML>
+          <img srcset="" class="contentImage" src="/static/images/ai2-neo-style.png" width="360px" />
+        </g:HTML>
+      </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow" >
+        <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}' />
+      </g:FlowPanel>
+      <!--
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label text="{messages.selectMode}" width="30%" />
         <g:RadioButton ui:field='lightModeRadioButton' name='theme' text="{messages.disableDarkTheme}" enabled="false"/>
         <g:RadioButton ui:field='darkModeRadioButton' name='theme' text="{messages.enableDarkTheme}" enabled="false"/>
       </g:FlowPanel>
+      -->
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
         <g:Button ui:field="applyButton" text='{messages.okButton}' styleName="ode-ProjectListButton"/>
