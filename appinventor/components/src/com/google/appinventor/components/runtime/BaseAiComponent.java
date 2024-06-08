@@ -35,12 +35,12 @@ import org.json.JSONException;
 
 
 @SimpleObject
-public abstract class BaseAiComponent extends AndroidNonvisibleComponent{
-    private static final String LOG_TAG = BaseAiComponent.class.getSimpleName();
+public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
+    protected static final String LOG_TAG = BaseAiComponent.class.getSimpleName();
     private static String TRANSFER_MODEL_PREFIX = null;
     private static String PERSONAL_MODEL_PREFIX = null;
     private static final String MODEL_PATH_SUFFIX = ".mdl";
-    private WebView webview = null;
+    protected WebView webview = null;
     private static final int ERROR_WEBVIEWER_REQUIRED = -7;
     private static final int ERROR_CLASSIFICATION_FAILED = -2;
     private static final int ERROR_INVALID_MODEL_FILE = -8;
@@ -50,7 +50,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent{
     private String modelPath = null;
     private String assetPath = null;
     private String jsInterface = null;
-    private List<String> labels = Collections.emptyList();
+    protected List<String> labels = Collections.emptyList();
     
 
     protected BaseAiComponent(Form form) {
@@ -224,7 +224,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent{
     @SimpleEvent(description = "Event indicating that an error has occurred.")
     public abstract void Error(final int errorCode);
 
-    private void assertWebView(String method) {
+    protected void assertWebView(String method) {
       if (webview == null) {
         throw new RuntimeException(String.format(ERROR_WEBVIEWER_NOT_SET, method));
       }
