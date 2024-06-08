@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -165,7 +166,8 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
       }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.runtime.components.WebViewer")
-    @SimpleProperty(userVisible = false)
+    @SimpleProperty(category=PropertyCategory.APPEARANCE,
+     userVisible = false)
     public void WebViewer(final WebViewer webviewer) {
       if (BaseAiComponent.this instanceof PersonalImageClassifier) {
           assetPath = "personal_image_classifier.html";
@@ -194,7 +196,8 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
     defaultValue = "")
-    @SimpleProperty(userVisible = false)
+    @SimpleProperty(category=PropertyCategory.BEHAVIOR,
+    userVisible = false)
     public void Model(String path) {
       Log.d(LOG_TAG, "Personal model path: " + path);
        // implement checks for other AI components suffix

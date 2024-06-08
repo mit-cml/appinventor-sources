@@ -140,7 +140,7 @@ public class PersonalImageClassifier extends BaseAiComponent implements
         webview.evaluateJavascript("classifyVideoData();", null);
     }
 
-    @SimpleFunction()
+    @SimpleFunction(description = "Starts continuous video classification if the input mode is set to video and the classification is not already running.")
     public void StartContinuousClassification() {
         if (MODE_VIDEO.equals(inputMode) && !running) {
         assertWebView("StartVideoClassification");
@@ -149,7 +149,7 @@ public class PersonalImageClassifier extends BaseAiComponent implements
         }
     }
 
-    @SimpleFunction()
+    @SimpleFunction(description = "Stop continuous video classification if the input mode is set to video and the classification is running.")
     public void StopContinuousClassification() {
         if (MODE_VIDEO.equals(inputMode) && running) {
         assertWebView("StopVideoClassification");
