@@ -218,13 +218,10 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
         activity.getWindow().setFlags(LayoutParams.FLAG_HARDWARE_ACCELERATED, LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
     
-    @SimpleEvent(description = "Event indicating that the classifier is ready.")
     public abstract void ClassifierReady();
   
-    @SimpleEvent(description = "Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].")
     public abstract void GotClassification(YailDictionary result);
   
-    @SimpleEvent(description = "Event indicating that an error has occurred.")
     public abstract void Error(final int errorCode);
 
     protected void assertWebView(String method) {

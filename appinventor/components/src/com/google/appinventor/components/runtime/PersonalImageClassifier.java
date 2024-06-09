@@ -7,12 +7,14 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
@@ -22,14 +24,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.util.Log;
 
-@DesignerComponent(version = 20210315,
+@DesignerComponent(version = YaVersion.PERSONAL_IMAGE_CLASSIFIER_COMPONENT_VERSION,
         category = ComponentCategory.DATASCIENCE,
         description = "Component that classifies images using a user trained model from the image " +
             "classification explorer. You must provide a WebViewer component in the PersonalImageClassifier " +
             "component's WebViewer property in order for classification to work.",
-        iconName = "aiwebres/glasses.png",
+        iconName = "images/PersonalImageClassifier.png",
         nonVisible = true)
-@SimpleObject(external = true)
+@SimpleObject
 @UsesAssets(fileNames = "personal_image_classifier.html, personal_image_classifier.js, mobilenet_group1-shard1of1, mobilenet_group10-shard1of1, mobilenet_group11-shard1of1, mobilenet_group12-shard1of1, mobilenet_group13-shard1of1, mobilenet_group14-shard1of1, mobilenet_group15-shard1of1, mobilenet_group16-shard1of1, mobilenet_group17-shard1of1, mobilenet_group18-shard1of1, mobilenet_group19-shard1of1, mobilenet_group2-shard1of1, mobilenet_group20-shard1of1, mobilenet_group21-shard1of1, mobilenet_group22-shard1of1, mobilenet_group23-shard1of1, mobilenet_group24-shard1of1, mobilenet_group25-shard1of1, mobilenet_group26-shard1of1, mobilenet_group27-shard1of1, mobilenet_group28-shard1of1, mobilenet_group29-shard1of1, mobilenet_group3-shard1of1, mobilenet_group30-shard1of1, mobilenet_group31-shard1of1, mobilenet_group32-shard1of1, mobilenet_group33-shard1of1, mobilenet_group34-shard1of1, mobilenet_group35-shard1of1, mobilenet_group36-shard1of1, mobilenet_group37-shard1of1, mobilenet_group38-shard1of1, mobilenet_group39-shard1of1, mobilenet_group4-shard1of1, mobilenet_group40-shard1of1, mobilenet_group41-shard1of1, mobilenet_group42-shard1of1, mobilenet_group43-shard1of1, mobilenet_group44-shard1of1, mobilenet_group45-shard1of1, mobilenet_group46-shard1of1, mobilenet_group47-shard1of1, mobilenet_group48-shard1of1, mobilenet_group49-shard1of1, mobilenet_group5-shard1of1, mobilenet_group50-shard1of1, mobilenet_group51-shard1of1, mobilenet_group52-shard1of1, mobilenet_group53-shard1of1, mobilenet_group54-shard1of1, mobilenet_group55-shard1of1, mobilenet_group6-shard1of1, mobilenet_group7-shard1of1, mobilenet_group8-shard1of1, mobilenet_group9-shard1of1, mobilenet_model.json, squeezenet_group1-shard1of1, squeezenet_model.json, tfjs-0.13.2.js")
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.CAMERA")
 public class PersonalImageClassifier extends BaseAiComponent implements
@@ -159,6 +161,7 @@ public class PersonalImageClassifier extends BaseAiComponent implements
     }
 
     @Override
+    @SimpleEvent(description = "Event indicating that the classifier is ready.")
     public void ClassifierReady() {
         InputMode(inputMode);
         MinimumInterval(minClassTime);
@@ -166,11 +169,13 @@ public class PersonalImageClassifier extends BaseAiComponent implements
     }
 
     @Override
+    @SimpleEvent(description = "Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].")
     public void GotClassification(YailDictionary result) {
       EventDispatcher.dispatchEvent(this, "GotClassification", result);
     }
 
     @Override
+    @SimpleEvent(description = "Event indicating that an error has occurred.")
     public void Error(final int errorCode) {
       EventDispatcher.dispatchEvent(this, "Error", errorCode);
     }

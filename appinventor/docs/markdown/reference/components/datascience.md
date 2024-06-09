@@ -88,8 +88,15 @@ Component for PersonalImageClassifier
 ### Events  {#PersonalImageClassifier-Events}
 
 {:.events}
-None
 
+{:id="PersonalImageClassifier.ClassifierReady"} ClassifierReady()
+: Event indicating that the classifier is ready.
+
+{:id="PersonalImageClassifier.Error"} Error(*errorCode*{:.number})
+: Event indicating that an error has occurred.
+
+{:id="PersonalImageClassifier.GotClassification"} GotClassification(*result*{:.dictionary})
+: Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].
 
 ### Methods  {#PersonalImageClassifier-Methods}
 
