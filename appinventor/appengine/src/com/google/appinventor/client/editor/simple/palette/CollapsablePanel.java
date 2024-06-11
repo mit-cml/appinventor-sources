@@ -13,17 +13,14 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
-import java.util.ArrayList;
 
 public class CollapsablePanel extends Composite{
     private static final Logger LOG = Logger.getLogger(PropertiesPanel.class.getName());
 
     // UI elements
     private final VerticalPanel panel;
-    private final ArrayList<DisclosurePanel> categoryPanels;
-    private final Map<ComponentCategory, Integer> categoryLocations;
+    private final HashMap<ComponentCategory, DisclosurePanel> categoryPanels;
 
     /**
      * Creates a new Collapsable Panel.
@@ -33,8 +30,7 @@ public class CollapsablePanel extends Composite{
         panel = new VerticalPanel();
         panel.setWidth("100%");
 
-        categoryPanels = new ArrayList<>();
-        categoryLocations = new HashMap<ComponentCategory, Integer>();
+        categoryPanels = new HashMap<>();
 
         initWidget(panel);
     }
@@ -50,14 +46,12 @@ public class CollapsablePanel extends Composite{
         innerPanel.add(componentPanel);
         innerPanel.setWidth("100%");
         // find new idx TODO should think abot this
-        Integer newIdx = categoryPanels.size();
-        categoryLocations.put(category, newIdx);
-        categoryPanels.add(innerPanel);
-        // categoryPanels.put(newIdx, innerPanel);
+        categoryPanels.put(category, innerPanel);
 
         // add the DP to the panel
         panel.add(innerPanel);
     }
+
     /**
      * Insert a component category into the panel
      * @param components the components within the category
@@ -70,13 +64,16 @@ public class CollapsablePanel extends Composite{
         DisclosurePanel innerPanel = new DisclosurePanel(title);
         innerPanel.add(componentPanel);
         innerPanel.setWidth("100%");
-        if (categoryPanels.size() > insertIdx) {
-            this.shift(insertIdx);
-        }
-        categoryPanels.add(insertIdx, innerPanel);
-        categoryLocations.put(category, insertIdx);
+        categoryPanels.put(category, innerPanel);
         // add the DP to the panel
         panel.insert(innerPanel, insertIdx);
+    }
+
+    public VerticalPanel getCategory(ComponentCategory category) {
+        if (categoryPanels.containsKey(category)) {
+            return (VerticalPanel) categoryPanels.get(category).getContent();
+        }
+        else return null;
     }
     /**
      * remove the component category from the panel
@@ -86,14 +83,16 @@ public class CollapsablePanel extends Composite{
      * @param category the componenet category to be removed - should be in the panel
      */
     public void remove(VerticalPanel componentPanel, ComponentCategory category){
-        Integer categoryIdx = categoryLocations.get(category);
-        DisclosurePanel categoryPanel = categoryPanels.get(categoryIdx);
+        DisclosurePanel categoryPanel = categoryPanels.get(category);
 
         categoryPanel.remove(componentPanel);
         panel.remove(categoryPanel);
         // remove from the data
-        categoryPanels.remove(categoryIdx);
-        categoryLocations.remove(categoryPanel);
+        categoryPanels.remove(category);
+    }
+
+    public void clear() {
+        categoryPanels.clear();
     }
 
     /**
@@ -101,19 +100,6 @@ public class CollapsablePanel extends Composite{
      * @param idx the component category location
      */
     public void show(Integer idx){
-        DisclosurePanel categoryPanel = categoryPanels.get(idx);
-        categoryPanel.setOpen(true);
+        ((DisclosurePanel)panel.getWidget(idx)).setOpen(true);
     }
-
-    /**
-     * terrible idea, but shift all values at idx
-     */
-    private void shift(Integer idx){
-        categoryLocations.forEach((key, value) -> {
-            if (value >= idx) {
-                categoryLocations.put(key, value + 1);
-            }
-        });
-    }
-
 }
