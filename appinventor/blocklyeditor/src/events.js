@@ -325,7 +325,7 @@ AI.Events.PropertyChange = class extends AI.Events.ComponentEvent {
  * @param workspaceId The identifier of the workspace the event occurred on
  * @constructor
  */
-AI.Events.StartArrangeBlocks = class extends Blockly.Events.UiBase {
+AI.Events.StartArrangeBlocks = class extends Blockly.Events.Abstract {
   type = AI.Events.BLOCKS_ARRANGE_START;
 
   constructor(workspaceId) {
@@ -373,7 +373,7 @@ AI.Events.StartArrangeBlocks = class extends Blockly.Events.UiBase {
  * @param layout The layout to be applied (either Blockly.BLKS_VERTICAL or Blockly.BLKS_HORIZONTAL)
  * @constructor
  */
-AI.Events.EndArrangeBlocks = class extends Blockly.Events.UiBase {
+AI.Events.EndArrangeBlocks = class extends Blockly.Events.Abstract {
   type = AI.Events.BLOCKS_ARRANGE_END;
 
   constructor(workspaceId, type, layout) {
