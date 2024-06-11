@@ -313,9 +313,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       this.horizontalParameters = isHorizontal;
       this.updateParams_();
       if (Blockly.Events.isEnabled()) {
-        // Trigger a Blockly UI change event
-        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
-          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()));
+        Blockly.Events.fire(new Blockly.Events.BlockChange(
+            this, 'parameter_orientation', null, !this.horizontalParameters, this.horizontalParameters));
       }
     }
   },

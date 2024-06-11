@@ -258,6 +258,10 @@ Blockly.Blocks.component_event = {
   },
 
   domToMutation : function(xmlElement) {
+    // The preexisting component dropdown cannot be reused since it might already been
+    // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+    // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+    this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     var oldRendered = this.rendered;
     this.rendered = false;
     var oldDo = null;
@@ -426,9 +430,8 @@ Blockly.Blocks.component_event = {
         }
       }
       if (Blockly.Events.isEnabled()) {
-        // Trigger a Blockly UI change event
-        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
-          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()))
+        Blockly.Events.fire(new Blockly.Events.BlockChange(
+            this, 'parameter_orientation', null, !this.horizontalParameters, this.horizontalParameters));
       }
     }
   },
@@ -704,6 +707,10 @@ Blockly.Blocks.component_method = {
   },
 
   domToMutation : function(xmlElement) {
+    // The preexisting component dropdown cannot be reused since it might already been
+    // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+    // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+    this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     var oldRendered = this.rendered;
     this.rendered = false;
     var oldInputValues = [];
@@ -1185,7 +1192,7 @@ Blockly.Blocks.component_set_get = {
 
       if(!this.isGeneric) {
         //non-generic get
-        
+
         // The preexisting component dropdown cannot be reused since it might already been
         // used here due to a previous call to mutationToDom. Reusing the dropdown is not
         // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
@@ -1210,6 +1217,10 @@ Blockly.Blocks.component_set_get = {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       if(!this.isGeneric) {
+        // The preexisting component dropdown cannot be reused since it might already been
+        // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+        // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+        this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
         this.appendValueInput("VALUE")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET)
           .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
