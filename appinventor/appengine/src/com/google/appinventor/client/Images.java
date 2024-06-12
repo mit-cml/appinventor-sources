@@ -838,6 +838,6 @@ public interface Images extends Resources {
     /**
    * Designer palette item: PersonalImageClassifier.
    */
-  @Source("com/google/appinventor/images/PersonalImageClassifier.png")
-  ImageResource PersonalImageClassifier();
+  @Source("com/google/appinventor/images/personalImageClassifier.png")
+  ImageResource personalImageClassifier();
 }
