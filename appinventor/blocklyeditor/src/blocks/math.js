@@ -60,6 +60,7 @@ Blockly.Blocks['math_number_radix'] = {
         [Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT, 'HEX'],
     ], this.dropdownListener);
     this.numberField = new Blockly.FieldTextInput('0', this.numberValidator);
+    this.currentPrefix = Blockly.Blocks.math_number_radix.PREFIX['DEC'];
 
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.appendDummyInput()
@@ -73,20 +74,19 @@ Blockly.Blocks['math_number_radix'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE}],
 
   dropdownListener: function(newValue) {
+    this.getSourceBlock().currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[newValue];
     var numberField = this.sourceBlock_.numberField;
-    var currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[this.getValue()];
-    var currentValue = Number(currentPrefix + numberField.getValue());
+    var oldPrefix = Blockly.Blocks.math_number_radix.PREFIX[this.getValue()];
+    var oldValue = Number(oldPrefix + numberField.getValue());
     var newRadix = Blockly.Blocks.math_number_radix.RADIX[newValue];
-    numberField.setValue(currentValue.toString(newRadix))
+    numberField.setValue(oldValue.toString(newRadix))
   },
 
   numberValidator: function(text) {
     if (!text) {
       return 0;
     }
-    var dropdown = this.sourceBlock_.dropdown;
-    var prefix = Blockly.Blocks.math_number_radix.PREFIX[dropdown.getValue()];
-    var n = Number(prefix + text);
+    var n = Number(this.getSourceBlock().currentPrefix + text);
     // Do not convert n to string, because that always returns decimal.
     return window.isNaN(n) ? null : text;
   }
@@ -684,7 +684,7 @@ Blockly.Blocks['math_on_list2'] = {
       return Blockly.Blocks.math_on_list2.TOOLTIPS()[mode];
     });
   },
-  
+
   typeblock: [{
     translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVG,
     dropDown: {
