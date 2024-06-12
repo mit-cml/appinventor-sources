@@ -531,7 +531,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
       int preferredWidth;
       int preferredHeight;
-      if (backgroundDrawable != null) {
+      if (backgroundDrawable != null && backgroundDrawable.getBitmap() != null) {
         // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
         Bitmap bitmap = backgroundDrawable.getBitmap();
         preferredWidth = bitmap.getWidth();
@@ -1752,4 +1752,3 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
-
