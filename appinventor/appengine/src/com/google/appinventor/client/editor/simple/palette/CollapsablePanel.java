@@ -93,6 +93,7 @@ public class CollapsablePanel extends Composite{
 
     public void clear() {
         categoryPanels.clear();
+        panel.clear();
     }
 
     /**

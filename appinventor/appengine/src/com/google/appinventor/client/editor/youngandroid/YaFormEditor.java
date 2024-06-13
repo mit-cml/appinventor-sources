@@ -583,13 +583,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         if (shownComponentsStr.length() > 0) {
           shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
         }
+        palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "invalid subset string", e);
       }
     } else {
-      shownComponents = COMPONENT_DATABASE.getComponentNames();
+      palettePanel.reloadComponents();
     }
-    palettePanel.reloadComponentsFromSet(shownComponents);
   }
 
   private native String getShownComponents(String subsetString)/*-{
