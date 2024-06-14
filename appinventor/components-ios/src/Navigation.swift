@@ -201,7 +201,7 @@ struct NavigationRequest: Codable {
 
   @objc public func RequestDirections() {
     if _apiKey.isEmpty {
-      _form?.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_INVALID_API_KEY.code)
+      form.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_INVALID_API_KEY.code)
       return
     }
     performRequest()
@@ -228,19 +228,19 @@ struct NavigationRequest: Codable {
     request.httpMethod = "POST"
     let data = NavigationRequest(getCoordinates(start, end), _language)
     request.httpBody = try? JSONEncoder().encode(data)
-    let task = URLSession.shared.dataTask(with: request) { data, resp, error in
+    let task = URLSession.shared.dataTask(with: request) { [self] data, resp, error in
       if let error = error {
         // TODO: report an error here
         var status = 0
         if let resp = resp as? HTTPURLResponse {
           status = resp.statusCode
         }
-        self._form?.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_ROUTING_SERVICE_ERROR, status, error.localizedDescription)
+        form.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_ROUTING_SERVICE_ERROR, status, error.localizedDescription)
         return
       }
       guard let data = data else {
         // TODO: report an error here
-        self._form?.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_UNABLE_TO_REQUEST_DIRECTIONS, "No response provided")
+        form.dispatchErrorOccurredEvent(self, "RequestDirections", ErrorMessage.ERROR_UNABLE_TO_REQUEST_DIRECTIONS, "No response provided")
         return
       }
       let responseContent = String(data: data, encoding: .utf8) ?? ""

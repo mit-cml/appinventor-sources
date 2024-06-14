@@ -97,7 +97,7 @@ open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot
       if !EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred",
                                         arguments: responseCode as AnyObject,
                                         responseText as AnyObject) {
-        self._form?.dispatchErrorOccurredEvent(self, "ErrorOccurred",
+        self.form.dispatchErrorOccurredEvent(self, "ErrorOccurred",
             ErrorMessage.ERROR_IMAGEBOT_ERROR, responseCode as AnyObject, responseText as AnyObject)
       }
     }

@@ -16,7 +16,7 @@ open class TinyDB: NonvisibleComponent {
   private var _namespace = "TinyDB1"
 
   public override init(_ parent: ComponentContainer) {
-    let assetmgr = parent.form?.application?.assetManager
+    let assetmgr = parent.form.application?.assetManager
     let sqlitedb = (assetmgr?.pathForPrivateAsset("TinyDb1.sqlite"))!
     do {
       _database = try? Connection(sqlitedb)

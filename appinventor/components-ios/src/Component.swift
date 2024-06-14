@@ -117,5 +117,5 @@ public let kDefaultValueTextToSpeechCountry = ""
 public let kDefaultValueTextToSpeechLanguage = ""
 
 @objc public protocol Component: NSCopying {
-  var dispatchDelegate: HandlesEventDispatching? { get }
+  var dispatchDelegate: HandlesEventDispatching { get }
 }

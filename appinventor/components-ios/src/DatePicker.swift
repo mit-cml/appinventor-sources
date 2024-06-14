@@ -10,7 +10,7 @@ import Foundation
  * This component is a button that launches a DatePickerViewController (specific to the device).
  */
 open class DatePicker: Picker, DateTimePickerDelegate {
-  fileprivate var _viewController: DateTimePickerController?
+  fileprivate var _viewController: DateTimePickerController!
   fileprivate var _year, _month, _day: Int
   fileprivate var _instant: Date
   fileprivate var _localizedMonths: [String]
@@ -29,13 +29,9 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     super.init(parent)
     super.setDelegate(self)
 
-    guard let form = parent.form else {
-      return
-    }
-    
     _viewController = getDateTimePickerController(self, screen: form, isDatePicker: true, isPhone: _isPhone)
-    _viewController?.pickerView.setValue(preferredTextColor(form), forKeyPath: "textColor")
-    _viewController?.setDateTime(calendar)
+    _viewController.pickerView.setValue(preferredTextColor(form), forKeyPath: "textColor")
+    _viewController.setDateTime(calendar)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
   }
   
@@ -81,22 +77,22 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     dateComponents.hour = 0
     dateComponents.minute = 0
     guard let date = Calendar.current.date(from: dateComponents) else {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      form.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
       return
     }
     let computedComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
     if computedComponents != dateComponents {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      form.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
       return
     }
     _instant = date
-    _viewController?.setDate(_instant)
+    _viewController.setDate(_instant)
     _customDate = true
   }
   
   @objc open func SetDateToDisplayFromInstant(_ instant: Date) {
     _instant = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: instant)!
-    self._viewController?.setDate(_instant)
+    _viewController.setDate(_instant)
     _customDate = true
   }
   
@@ -122,7 +118,7 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     if !_customDate {
       let now = Date()
       _instant = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: now)!
-      _viewController?.setDate(_instant)
+      _viewController.setDate(_instant)
     } else {
       _customDate = false
     }
@@ -133,6 +129,6 @@ open class DatePicker: Picker, DateTimePickerDelegate {
         popover.sourceRect = _view.frame
       }
     }
-    _container?.form?.present(_viewController as! UIViewController, animated: true)
+    form.present(_viewController as! UIViewController, animated: true)
   }
 }

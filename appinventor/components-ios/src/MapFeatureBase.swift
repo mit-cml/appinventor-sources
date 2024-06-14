@@ -59,7 +59,7 @@ import GEOSwift
 
 @objc open class MapFeatureBase: NSObject, MapFeature, HasStroke, LifecycleDelegate {
 
-  weak var _container: MapFeatureContainer?
+  unowned var _container: MapFeatureContainer
   var _draggable = false
 
   // used to manually trigger drag events
@@ -108,8 +108,16 @@ import GEOSwift
     return _annotation
   }
 
-  public var map: Map? {
-    return _container?.getMap()
+  public var container: ComponentContainer {
+    return _container
+  }
+
+  public var form: Form {
+    return _container.form
+  }
+
+  public var map: Map {
+    return _container.getMap()
   }
 
   open var geometry: Geometry? {
@@ -218,27 +226,27 @@ import GEOSwift
   // MARK: events
   open func Click() {
     EventDispatcher.dispatchEvent(of: self, called: "Click")
-    _container?.FeatureClick(self)
+    _container.FeatureClick(self)
   }
 
   open func Drag() {
     EventDispatcher.dispatchEvent(of: self, called: "Drag")
-    _container?.FeatureDrag(self)
+    _container.FeatureDrag(self)
   }
 
   open func LongClick() {
     EventDispatcher.dispatchEvent(of: self, called: "LongClick")
-    _container?.FeatureLongClick(self)
+    _container.FeatureLongClick(self)
   }
 
   open func StartDrag() {
     EventDispatcher.dispatchEvent(of: self, called: "StartDrag")
-    _container?.FeatureStartDrag(self)
+    _container.FeatureStartDrag(self)
   }
 
   open func StopDrag() {
     EventDispatcher.dispatchEvent(of: self, called: "StopDrag")
-    _container?.FeatureStopDrag(self)
+    _container.FeatureStopDrag(self)
   }
 
   // MARK: Methods
@@ -285,15 +293,15 @@ import GEOSwift
   }
 
   func timerFired() {
-    _container?.FeatureDrag(self)
+    _container.FeatureDrag(self)
   }
 
   open func removeFromMap() {
-    _container?.getMap().removeFeature(self)
+    _container.getMap().removeFeature(self)
   }
 
-  public var dispatchDelegate: HandlesEventDispatching? {
-    return _container?.form?.dispatchDelegate
+  public var dispatchDelegate: HandlesEventDispatching {
+    return form.dispatchDelegate
   }
 
   public func copy(with zone: NSZone? = nil) -> Any {

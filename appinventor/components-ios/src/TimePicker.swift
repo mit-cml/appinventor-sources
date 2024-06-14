@@ -27,7 +27,7 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     super.init(parent)
     super.setDelegate(self)
     
-    _viewController = getDateTimePickerController(self, screen: parent.form!, isDatePicker: false, isPhone: _isPhone)
+    _viewController = getDateTimePickerController(self, screen: parent.form, isDatePicker: false, isPhone: _isPhone)
     _viewController?.pickerView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     _viewController?.setDateTime(calendar)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
@@ -57,10 +57,10 @@ open class TimePicker: Picker, DateTimePickerDelegate {
   // MARK: TimePicker Events
   @objc open func SetTimeToDisplay(_ hour: Int32, _ minute: Int32) {
     if !(0...23 ~= hour) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetTimeToDisplay",
+      form.dispatchErrorOccurredEvent(self, "SetTimeToDisplay",
           ErrorMessage.ERROR_ILLEGAL_HOUR.code, ErrorMessage.ERROR_ILLEGAL_HOUR.message)
     } else if !(0...59 ~= minute) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetTimeToDisplay",
+      form.dispatchErrorOccurredEvent(self, "SetTimeToDisplay",
           ErrorMessage.ERROR_ILLEGAL_MINUTE.code, ErrorMessage.ERROR_ILLEGAL_MINUTE.message)
     } else {
       var timeComponents = DateComponents()
@@ -113,7 +113,7 @@ open class TimePicker: Picker, DateTimePickerDelegate {
         popover.sourceRect = _view.frame
       }
     }
-    _container?.form?.present(_viewController as! UIViewController, animated: true)
+    form.present(_viewController as! UIViewController, animated: true)
   }
 }
 

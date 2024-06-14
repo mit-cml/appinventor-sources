@@ -7,11 +7,12 @@ import Foundation
 import XCTest
 @testable import AIComponentKit
 
-class SliderTests: XCTestCase {
-  var slider: Slider = Slider(Form())
+class SliderTests: AppInventorTestCase {
+  var slider: Slider!
 
   override func setUp() {
-    slider = Slider(Form())
+    super.setUp()
+    slider = Slider(form)
   }
 
   func testDefaultSliderPosition() {

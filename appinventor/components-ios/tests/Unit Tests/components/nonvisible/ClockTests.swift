@@ -8,14 +8,14 @@ import XCTest
 @testable import AIComponentKit
 
 class ClockTests: AppInventorTestCase {
-  var clock = Clock(Form())
+  var clock: Clock!
   var calendar = Calendar.current
   var components = DateComponents()
   var date = Date()
   
   override func setUp() {
     super.setUp()
-    clock = Clock(Form())
+    clock = Clock(form)
     resetDate()
   }
   

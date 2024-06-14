@@ -158,7 +158,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
         _projectID = newId
       }
       if newId.isEmpty {
-        _form?.dispatchErrorOccurredEvent(self, "ProjectID",
+        form.dispatchErrorOccurredEvent(self, "ProjectID",
             ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.code,
             ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.message, "ProjectID")
       }
@@ -215,7 +215,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
         _token = newToken
       }
       if newToken.isEmpty {
-        _form?.dispatchErrorOccurredEvent(self, "ProjectID",
+        form.dispatchErrorOccurredEvent(self, "ProjectID",
             ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.code,
             ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.message, "Token")
       }
@@ -253,7 +253,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
     _redis?.exec(args: ["del", "\(_projectID):\(tag)"]) { message in
       if let error = self.parseError(message) {
         print("error")
-        self._form?.runOnUiThread {
+        self.form.runOnUiThread {
           self.CloudDBError(error)
         }
         self.flushRedis()
@@ -271,7 +271,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
     if CloudConnected() {
       _redis?.exec(args: ["keys", "\(_projectID):*"]) { message in
         if let error = self.parseError(message) {
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.CloudDBError(error)
           }
           self.flushRedis()
@@ -282,7 +282,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
             let range = item.index(item.startIndex, offsetBy: "\(self._projectID):".count)..<item.endIndex
             tagList.append(String(item[range]))
           }
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.TagList(tagList)
           }
         }
@@ -298,7 +298,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
       _redis?.exec(args: ["get", "\(_projectID):\(tag)"]) { message in
         if let error = self.parseError(message) {
           print("GetValue error: \(error)")
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.CloudDBError(error)
           }
           self.flushRedis()
@@ -314,7 +314,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
             } else {
               value = try getJsonRepresentation(valueIfTagNotThere) as AnyObject
             }
-            self._form?.runOnUiThread {
+            self.form.runOnUiThread {
               self.GotValue(tag, value)
             }
           } catch let error {
@@ -333,11 +333,11 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
     evaluate(script: POP_SCRIPT, scriptsha1: POP_SCRIPT_SHA, argsCount: 1, args: tag, _projectID) { array, error in
       if !error {
         if let value = array[0] as? String, value != "null" {
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.FirstRemoved(value as AnyObject)
           }
         } else {
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.FirstRemoved("" as AnyObject)
           }
         }
@@ -488,12 +488,12 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   // MARK: Helper methods
   fileprivate func checkProjectIDNotBlank(_ cause: String) {
     if _projectID.isEmpty {
-      _form?.dispatchErrorOccurredEvent(self, cause,
+      form.dispatchErrorOccurredEvent(self, cause,
           ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.code,
           ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.message, "ProjectID")
     }
     if _token.isEmpty {
-      _form?.dispatchErrorOccurredEvent(self, cause,
+      form.dispatchErrorOccurredEvent(self, cause,
           ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.code,
           ErrorMessage.ERROR_EMPTY_CLOUDDB_PROPERTY.message, "ProjectID")
     }
@@ -504,7 +504,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
       if self.parseError(message) != nil {
         self._redis?.exec(args: ["eval", script, String(argsCount)] + args) { messages in
           if let secondError = self.parseError(messages) {
-            self._form?.runOnUiThread {
+            self.form.runOnUiThread {
               self.CloudDBError(secondError)
             }
             self.flushRedis()
@@ -538,7 +538,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
 
   fileprivate func jsonError(_ method: String, _ error: Error) {
     print("a json error occured: \(error)")
-    _form?.dispatchErrorOccurredEvent(self, method,
+    form.dispatchErrorOccurredEvent(self, method,
         ErrorMessage.ERROR_CLOUDDB_JSON_MALFORMED.code,
         ErrorMessage.ERROR_CLOUDDB_JSON_MALFORMED.message, error.localizedDescription)
   }
@@ -567,12 +567,12 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
          let valArray = arr[1] as? Array<AnyObject> {
         for value in valArray {
           let retValue = getJsonRepresentationIfValueFileName(value)
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.DataChanged(tag, retValue as AnyObject? ?? value)
           }
         }
       } else {
-        self._form?.runOnUiThread {
+        self.form.runOnUiThread {
           self.CloudDBError("System Error: Unable to parse CloudDB packet")
         }
       }
@@ -591,7 +591,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
         case .proceed, .unspecified:
           completionHandler(true)
         default:
-          self._form?.runOnUiThread {
+          self.form.runOnUiThread {
             self.CloudDBError("Unable to establish a secure connection with CloudDB")
           }
           completionHandler(false)
@@ -603,7 +603,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   }
 
   public func socketDidDisconnect(client: RedisClient, error: Error?) {
-    self._form?.runOnUiThread {
+    self.form.runOnUiThread {
       self.CloudDBError("Unable to connect to client: \(error?.localizedDescription ?? "unknown error")")
     }
     flushRedis()

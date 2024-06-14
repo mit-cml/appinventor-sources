@@ -261,7 +261,7 @@ open class Notifier: NonvisibleComponent {
   public override init(_ container: ComponentContainer) {
     super.init(container)
     if Notifier.notices.form == nil {
-      Notifier.notices.form = _form
+      Notifier.notices.form = form
     }
   }
 

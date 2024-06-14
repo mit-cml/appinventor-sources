@@ -27,7 +27,7 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
   //MARK: UIImagePickerControllerDelegate
   public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     // Dismiss the picker if the user canceled.
-    form?.dismiss(animated: true, completion: nil)
+    form.dismiss(animated: true, completion: nil)
     AfterPicking()
   }
   
@@ -38,7 +38,7 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
     // The asset manager encodes the image URL's original path name to a new URL. The image data is then written to the new URL.
     let url = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] as! NSURL
     let urlPath = url.path
-    guard let assetmgr = form?.application?.assetManager else {
+    guard let assetmgr = form.application?.assetManager else {
       return
     }
     _selectedImage = assetmgr.pathForPrivateAsset(urlPath!)
@@ -55,12 +55,12 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
     do {
       try data?.write(to: selectedImageURL!)
     } catch {
-      form?.dispatchErrorOccurredEvent(self, "ImagePicker",
+      form.dispatchErrorOccurredEvent(self, "ImagePicker",
           ErrorMessage.ERROR_CANNOT_COPY_MEDIA.code,
           ErrorMessage.ERROR_CANNOT_COPY_MEDIA.message)
       _selectedImage = ""
     }
-    form?.dismiss(animated: true, completion: nil)
+    form.dismiss(animated: true, completion: nil)
     AfterPicking()
   }
     
@@ -72,14 +72,14 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
       picker.mediaTypes = [kUTTypeImage as String]
       picker.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
       if !_isPad {
-      form?.present(picker, animated: true, completion: nil)
+      form.present(picker, animated: true, completion: nil)
       } else {
         picker.modalPresentationStyle = UIModalPresentationStyle.popover
         let popover = picker.popoverPresentationController
         popover?.delegate = self
         popover?.sourceView = _view
         popover?.sourceRect = _view.frame
-        form?.present(picker, animated: true, completion: nil)
+        form.present(picker, animated: true, completion: nil)
       }
     }
   }

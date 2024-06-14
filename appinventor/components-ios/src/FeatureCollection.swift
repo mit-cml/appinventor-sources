@@ -143,12 +143,6 @@ import GEOSwift
 
   // MARK: ComponentContainer implementation
 
-  public var container: ComponentContainer? {
-    get {
-      return _container
-    }
-  }
-  
   func add(_ component: ViewComponent) {}
 
   func setChildWidth(of component: ViewComponent, to width: Int32) {}

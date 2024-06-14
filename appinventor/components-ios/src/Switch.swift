@@ -59,7 +59,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
   }
 
   func updateFontSize() {
-    if form?.BigDefaultText == true {
+    if form.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
         _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
       } else {

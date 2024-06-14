@@ -9,16 +9,16 @@ open class Sharing: NonvisibleComponent {
 
   fileprivate func showActivityPicker(_ activityItems: [Any]) {
     let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    guard var view = _form?.view else {
+    guard var view = form.view else {
       return
     }
     
-    if let component = _form?._componentWithActiveEvent, let vc = component as? ViewComponent {
+    if let component = form._componentWithActiveEvent, let vc = component as? ViewComponent {
       view = vc.view
     }
     DispatchQueue.main.async {
       activityVC.popoverPresentationController?.sourceView = view  // For iPad popover
-      self._form?.present(activityVC, animated: true, completion: nil)
+      self.form.present(activityVC, animated: true, completion: nil)
     }
   }
 

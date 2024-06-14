@@ -7,13 +7,11 @@ import Foundation
 
 open class File: NonvisibleComponent {
   @objc let NO_ASSETS = "No_Assets"
-  private var _isRepl: Bool = false
   private let LOG_TAG: String = "FileComponent"
   private let workQueue = DispatchQueue(label: "FileOperations", qos: .userInitiated)
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
-    _isRepl = _form is ReplForm
   }
 
   /// MARK: File Properties
@@ -38,7 +36,7 @@ open class File: NonvisibleComponent {
   @objc open func ReadFrom(_ fileName: String) {
     workQueue.async {
       do {
-        let filePath: String = FileUtil.absoluteFileName(fileName, self._isRepl)
+        let filePath: String = FileUtil.absoluteFileName(fileName, self.form.isRepl)
         if filePath.isEmpty || !FileManager().fileExists(atPath: filePath) {
           throw FileError(ErrorMessage.ERROR_CANNOT_FIND_FILE, fileName)
         } else {
@@ -51,7 +49,7 @@ open class File: NonvisibleComponent {
         }
       } catch {
         DispatchQueue.main.async {
-          self._form?.dispatchErrorOccurredEvent(self, "ReadFrom",
+          self.form.dispatchErrorOccurredEvent(self, "ReadFrom",
               ErrorMessage.ERROR_CANNOT_READ_FILE.code,
               ErrorMessage.ERROR_CANNOT_READ_FILE.message, fileName)
         }
@@ -61,16 +59,16 @@ open class File: NonvisibleComponent {
   
   @objc open func Delete(_ fileName: String) {
     if fileName.starts(with: "//") {
-      _form?.dispatchErrorOccurredEvent(self, "DeleteFile",
+      form.dispatchErrorOccurredEvent(self, "DeleteFile",
           ErrorMessage.ERROR_CANNOT_DELETE_ASSET.code,
           ErrorMessage.ERROR_CANNOT_DELETE_ASSET.message, fileName)
       return
     }
     
-    let filePath = FileUtil.absoluteFileName(fileName, _isRepl)
+    let filePath = FileUtil.absoluteFileName(fileName, form.isRepl)
     let fileManager = FileManager()
     if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
-      _form?.dispatchErrorOccurredEvent(self, "DeleteFile",
+      form.dispatchErrorOccurredEvent(self, "DeleteFile",
           ErrorMessage.ERROR_CANNOT_FIND_FILE.code,
           ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
     } else {
@@ -81,15 +79,15 @@ open class File: NonvisibleComponent {
       }
     }
   }
-  
+
   private func write(_ fileName: String, _ text: String, _ append: Bool) {
     if fileName.starts(with: "//") {
       if append {
-        _form?.dispatchErrorOccurredEvent(self, "AppendTo",
+        form.dispatchErrorOccurredEvent(self, "AppendTo",
             ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code,
             ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName)
       } else {
-        _form?.dispatchErrorOccurredEvent(self, "SaveFile",
+        form.dispatchErrorOccurredEvent(self, "SaveFile",
             ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code,
             ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName)
       }
@@ -97,7 +95,7 @@ open class File: NonvisibleComponent {
     }
     workQueue.async {
       do {
-        let filePath = FileUtil.absoluteFileName(fileName, self._isRepl)
+        let filePath = FileUtil.absoluteFileName(fileName, self.form.isRepl)
         try FileUtil.createFullFilePath(filePath, isAppend: append)
         if append, let fileHandle = FileHandle(forWritingAtPath: filePath) {
           defer {
@@ -106,7 +104,7 @@ open class File: NonvisibleComponent {
           fileHandle.seekToEndOfFile()
           guard let textData = text.data(using: .utf8) else {
             DispatchQueue.main.async {
-              self._form?.dispatchErrorOccurredEvent(self, "AppendTo",
+              self.form.dispatchErrorOccurredEvent(self, "AppendTo",
                   ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.code,
                   ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.message, fileName)
             }
@@ -122,11 +120,11 @@ open class File: NonvisibleComponent {
       } catch {
         DispatchQueue.main.async {
           if append {
-            self._form?.dispatchErrorOccurredEvent(self, "AppendTo",
+            self.form.dispatchErrorOccurredEvent(self, "AppendTo",
                 ErrorMessage.ERROR_CANNOT_CREATE_FILE.code,
                 ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
           } else {
-            self._form?.dispatchErrorOccurredEvent(self, "SaveFile",
+            self.form.dispatchErrorOccurredEvent(self, "SaveFile",
                 ErrorMessage.ERROR_CANNOT_CREATE_FILE.code,
                 ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
           }

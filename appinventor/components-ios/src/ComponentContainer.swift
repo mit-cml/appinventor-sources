@@ -13,13 +13,13 @@ import Foundation
   /**
    * Gets the `Form` that is at the root of the container hierarchy, if any.
    */
-  var form: Form? { get }
+  var form: Form { get }
 
   /**
    * Gets the parent `ComponentContainer` for this container. This may be `nil` if the container
    * is not attached to the component hierarchy.
    */
-  var container: ComponentContainer? { get }
+  var container: ComponentContainer { get }
 
   /**
    * Adds a child to the receiving container.

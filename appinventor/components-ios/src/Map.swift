@@ -130,7 +130,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     _zoomInBtn = ZoomButton(zoom: .zoomIn)
     _zoomOutBtn = ZoomButton(zoom: .zoomOut)
     _zoomControls = UIStackView(arrangedSubviews: [_zoomInBtn, _zoomOutBtn])
-    _locationSensor = AIComponentKit.LocationSensor(parent.form!)
+    _locationSensor = AIComponentKit.LocationSensor(parent.form)
     super.init(parent)
     if #available(iOS 11.0, *) {
       compass = MKCompassButton(mapView: mapView)
@@ -348,7 +348,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
     set(type) {
       if !(1...3 ~= type) {
-        form?.dispatchErrorOccurredEvent(self, "MapType", ErrorMessage.ERROR_INVALID_MAP_TYPE.code,
+        form.dispatchErrorOccurredEvent(self, "MapType", ErrorMessage.ERROR_INVALID_MAP_TYPE.code,
            ErrorMessage.ERROR_INVALID_MAP_TYPE.message)
         return
       }
@@ -551,7 +551,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     do {
       try GeoJSONUtil.writeAsGeoJSON(features: _features, to: path)
     } catch let err {
-      form?.dispatchErrorOccurredEvent(self, "Save",
+      form.dispatchErrorOccurredEvent(self, "Save",
           ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.code,
           ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.message, err.localizedDescription)
     }
@@ -1059,12 +1059,6 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   }
 
   // MARK: ComponentContainer implementation
-
-  public var container: ComponentContainer? {
-    get {
-      return _container
-    }
-  }
 
   public func add(_ component: ViewComponent) {}
 

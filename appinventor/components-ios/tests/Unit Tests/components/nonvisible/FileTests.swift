@@ -180,12 +180,12 @@ class FileTests: AppInventorTestCase {
   
   // MARK: Helper Functions
   private func fileExists(_ fileName: String) -> Bool {
-    return fileManager.fileExists(atPath: FileUtil.absoluteFileName(fileName, file._form is ReplForm))
+    return fileManager.fileExists(atPath: FileUtil.absoluteFileName(fileName, file.form is ReplForm))
   }
   
   private func fileTextMatches(_ fileName: String, _ expectedText: String) -> Bool {
     do {
-      let url = URL(fileURLWithPath: FileUtil.absoluteFileName(fileName, file._form is ReplForm))
+      let url = URL(fileURLWithPath: FileUtil.absoluteFileName(fileName, file.form is ReplForm))
       let text = try String(contentsOf: url, encoding: .utf8)
       return expectedText == text
     } catch {
@@ -198,7 +198,7 @@ class FileTests: AppInventorTestCase {
     if fileName.starts(with: "//") {
       return
     }
-    let filePath = FileUtil.absoluteFileName(fileName, file._form is ReplForm )
+    let filePath = FileUtil.absoluteFileName(fileName, file.form is ReplForm )
     if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
       return
     } else {

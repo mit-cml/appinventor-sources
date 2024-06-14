@@ -83,7 +83,7 @@ open class PhoneCall: NonvisibleComponent {
 
   @objc open func MakePhoneCallDirect() {
     MakePhoneCall()
-    if (_form?.isRepl ?? false) {
+    if form.isRepl {
       RetValManager.shared().sendError("MakePhoneCallDirect is not supported. Use MakePhoneCall instead.")
     }
   }

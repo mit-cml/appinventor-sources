@@ -97,7 +97,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       return true
     }
     set(newVal){
-      form?.dispatchErrorOccurredEvent(self, "PromptForPermission",
+      form.dispatchErrorOccurredEvent(self, "PromptForPermission",
           ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
           ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
     }
@@ -114,7 +114,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       }
     }
     set(newVal){
-      form?.dispatchErrorOccurredEvent(self, "UsesLocation",
+      form.dispatchErrorOccurredEvent(self, "UsesLocation",
           ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
           ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
     }
@@ -160,14 +160,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
           url2 = NSURL(string: "\(assetURL)?\(queryParameters)")
         }
         guard let destinationUrl = url2 as? URL else {
-          form?.dispatchErrorOccurredEvent(self, "WebViewer",
+          form.dispatchErrorOccurredEvent(self, "WebViewer",
               ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
               ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
           return
         }
         _view.loadFileURL(destinationUrl, allowingReadAccessTo: destinationUrl.deletingLastPathComponent())
       } else {
-        form?.dispatchErrorOccurredEvent(self, "WebViewer",
+        form.dispatchErrorOccurredEvent(self, "WebViewer",
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
@@ -178,12 +178,12 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
           let url2 = NSURL(string: String(queryParameters), relativeTo: assetURL)!
           _view.load(NSURLRequest(url: url2 as URL) as URLRequest)
         } catch {
-          form?.dispatchErrorOccurredEvent(self, "WebViewer",
+          form.dispatchErrorOccurredEvent(self, "WebViewer",
               ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
               ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
         }
       } else {
-        form?.dispatchErrorOccurredEvent(self, "WebViewer",
+        form.dispatchErrorOccurredEvent(self, "WebViewer",
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
@@ -213,7 +213,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
 
   //does nothing, as you cannot programmatically revoke location permissions
   @objc open func ClearLocations() {
-    form?.dispatchErrorOccurredEvent(self, "ClearLocations",
+    form.dispatchErrorOccurredEvent(self, "ClearLocations",
         ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
         ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
   }
@@ -277,7 +277,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   }
   
   open func webView(_ webView: WKWebView, didFail: WKNavigation!, withError: Error) {
-    form?.dispatchErrorOccurredEvent(self, "WebViewer",
+    form.dispatchErrorOccurredEvent(self, "WebViewer",
         ErrorMessage.ERROR_WEB_VIEWER_UNKNOWN_ERROR.code, withError.localizedDescription)
   }
 
@@ -327,7 +327,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
         _ in completionHandler()}
     )
     
-    _container?.form?.present(self._webAlert!, animated: true)
+    form.present(self._webAlert!, animated: true)
   }
   
   open func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,          completionHandler: @escaping (Bool) -> Void) {
@@ -339,7 +339,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       completionHandler(false)
     }))
     
-    _container?.form?.present(self._webAlert!, animated: true)
+    form.present(self._webAlert!, animated: true)
   }
   
   open func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?,
@@ -359,7 +359,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     self._webAlert?.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
       completionHandler(nil)
     }))
-    _container?.form?.present(self._webAlert!, animated: true)
+    form.present(self._webAlert!, animated: true)
   }
   
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

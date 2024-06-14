@@ -92,13 +92,13 @@ import GEOSwift
   // MARK: Methods
   @objc open func SetCenter(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetCenter",
+      form.dispatchErrorOccurredEvent(self, "SetCenter",
           ErrorMessage.ERROR_INVALID_LATITUDE.code,
           ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return
     }
     if !(-180.0...180 ~= longitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "SetCenter",
+      form.dispatchErrorOccurredEvent(self, "SetCenter",
           ErrorMessage.ERROR_INVALID_LONGITUDE.code,
           ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return
@@ -146,14 +146,14 @@ import GEOSwift
   }
 
   fileprivate func validate(latitude: Double = 0, longitude: Double = 0, for methodName: String) -> Bool {
-    if !(-90.0...90 ~= latitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, methodName,
+    guard -90.0...90 ~= latitude else {
+      form.dispatchErrorOccurredEvent(self, methodName,
           ErrorMessage.ERROR_INVALID_LATITUDE.code,
           ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return false
     }
-    if !(-180.0...180 ~= longitude) {
-      _container?.form?.dispatchErrorOccurredEvent(self, methodName,
+    guard -180.0...180 ~= longitude else {
+      form.dispatchErrorOccurredEvent(self, methodName,
           ErrorMessage.ERROR_INVALID_LONGITUDE.code,
           ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return false

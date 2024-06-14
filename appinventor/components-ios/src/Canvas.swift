@@ -656,7 +656,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       addShapeWithFill(for: shape.cgPath, with: fill)
 
     } catch {
-      form?.dispatchErrorOccurredEvent(self, "DrawShape",
+      form.dispatchErrorOccurredEvent(self, "DrawShape",
          ErrorMessage.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT.code,
          ErrorMessage.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT.message)
     }
@@ -828,7 +828,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
 
     guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-      form?.dispatchErrorOccurredEvent(self, "SaveAs",
+      form.dispatchErrorOccurredEvent(self, "SaveAs",
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code,
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
       return ""
@@ -844,7 +844,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       UIGraphicsEndImageContext()
       return fileURL.absoluteString
     } catch {
-      form?.dispatchErrorOccurredEvent(self, "SaveAs",
+      form.dispatchErrorOccurredEvent(self, "SaveAs",
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code,
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
       return ""
@@ -856,7 +856,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
 
     guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-      form?.dispatchErrorOccurredEvent(self, "SaveAs",
+      form.dispatchErrorOccurredEvent(self, "SaveAs",
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code,
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
       return ""
@@ -877,7 +877,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       data = image.pngData()
       finalFileName = fileName + ".png"
     } else {
-      form?.dispatchErrorOccurredEvent(self, "SaveAs",
+      form.dispatchErrorOccurredEvent(self, "SaveAs",
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code,
          ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
       return ""
@@ -895,7 +895,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
         try data?.write(to: finalImageURL)
       }
     } catch {
-      form?.dispatchErrorOccurredEvent(self, "SaveAs",
+      form.dispatchErrorOccurredEvent(self, "SaveAs",
          ErrorMessage.ERROR_MEDIA_FILE_ERROR.code,
          ErrorMessage.ERROR_MEDIA_FILE_ERROR.message)
       return ""
@@ -937,12 +937,6 @@ extension Canvas: LifecycleDelegate {
 
 //MARK: Container methods
 extension Canvas: ComponentContainer {
-  public var container: ComponentContainer? {
-    get {
-      return _container
-    }
-  }
-
   public func add(_ component: ViewComponent) {
     // unsupported
   }

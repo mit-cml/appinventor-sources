@@ -220,9 +220,9 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       return address
     }
     if -90...90 ~= location.coordinate.latitude && -180...180 ~= location.coordinate.longitude {
-        self.geocoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
+        self.geocoder.reverseGeocodeLocation(location, completionHandler: { [self] placemarks, error in
           if let error = error {
-            self._form?.dispatchErrorOccurredEvent(self, "getAddressFromLocation",
+            form.dispatchErrorOccurredEvent(self, "getAddressFromLocation",
                 Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
                 error.localizedDescription)
             return
@@ -257,12 +257,12 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     case CLError.denied.rawValue:
       StatusChanged(.OUT_OF_SERVICE)
       onStop()
-      _form?.dispatchErrorOccurredEvent(self, "didFailWithError", Int32(error._code),
+      form.dispatchErrorOccurredEvent(self, "didFailWithError", Int32(error._code),
           ErrorMessage.ERROR_LOCATION_SENSOR_PERMISSION_DENIED.message)
     default:
       StatusChanged(.OUT_OF_SERVICE)
       onStop()
-      _form?.dispatchErrorOccurredEvent(self, "didFailWithError", Int32(error._code),
+      form.dispatchErrorOccurredEvent(self, "didFailWithError", Int32(error._code),
           ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, error.localizedDescription)
     }
   }
@@ -323,19 +323,19 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
 
   fileprivate func startListening() {
     PermissionHandler.RequestPermission(for: .location) {
-      authorized, _ in
+      [self] authorized, _ in
       if authorized {
-        self._enabled = true
-        self.RefreshProvider()
+        _enabled = true
+        RefreshProvider()
       } else {
-        if self._enabled {
-          self._form?.dispatchErrorOccurredEvent(self, "Enabled",
+        if _enabled {
+          form.dispatchErrorOccurredEvent(self, "Enabled",
               ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code,
               ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
               "Enabled should not be true.")
         }
-        self._enabled = false
-        self.stopListening()
+        _enabled = false
+        stopListening()
       }
     }
   }

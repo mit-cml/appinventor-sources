@@ -41,8 +41,11 @@ open class PhoneStatus : NonvisibleComponent {
     guard let firstSeed = self.firstSeed else {
       return
     }
+    guard let replForm = form as? ReplForm else {
+      return
+    }
     let manager = WebRTCNativeManager(rendezvousServer, iceServers)
-    manager.initiate(_form as! ReplForm, firstSeed)
+    manager.initiate(replForm, firstSeed)
   }
 
   @objc open func startHTTPD(_ secure: Bool) {
@@ -50,9 +53,10 @@ open class PhoneStatus : NonvisibleComponent {
   }
 
   @objc open func setAssetsLoaded() {
-    if _form is ReplForm {
-      (_form as! ReplForm).setAssetsLoaded()
+    guard let replForm = form as? ReplForm else {
+      return
     }
+    replForm.setAssetsLoaded()
   }
 
   @objc open class func doFault() throws {
@@ -70,7 +74,7 @@ open class PhoneStatus : NonvisibleComponent {
 
   @objc open func installUrl(_ url: String) {
     // not implemented for iOS
-    _form?.dispatchErrorOccurredEvent(self, "installUrl",
+    form.dispatchErrorOccurredEvent(self, "installUrl",
         ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.code,
         ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.message)
   }

@@ -21,7 +21,7 @@ open class Web: NonvisibleComponent {
 
   private func stringToEncodedData(_ encoding: String, _ text: String) -> Data? {
     guard let encodingType = stringToEncoding[encoding.lowercased()] else {
-      self._form?.dispatchErrorOccurredEvent(self, "stringToEncodedData",
+      form.dispatchErrorOccurredEvent(self, "stringToEncodedData",
           ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encoding)
       return nil
     }
@@ -97,7 +97,7 @@ open class Web: NonvisibleComponent {
       _ = try processRequestHeaders(list)
       return true
     } catch (let error as InvalidHeadersError) {
-      _form?.dispatchErrorOccurredEvent(self, "RequestHeaders", error.code, error.index)
+      form.dispatchErrorOccurredEvent(self, "RequestHeaders", error.code, error.index)
     } catch (let error) {
       NSLog("Unexpected error occurred:", error.localizedDescription)
     }
@@ -201,7 +201,7 @@ open class Web: NonvisibleComponent {
               encodingName = encodingName.chopPrefix(count: 1).chopSuffix(count: 1)
             }
             guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
-              self._form?.dispatchErrorOccurredEvent(self, "performRequest",
+              self.form.dispatchErrorOccurredEvent(self, "performRequest",
                   ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encodingName)
               return
             }
@@ -216,7 +216,7 @@ open class Web: NonvisibleComponent {
         if (error as NSError).code == URLError.timedOut.rawValue {
           DispatchQueue.main.async {
             self.TimedOut(webProps.urlString as NSString)
-            self._form?.dispatchErrorOccurredEvent(self, httpVerb,
+            self.form.dispatchErrorOccurredEvent(self, httpVerb,
                 ErrorMessage.ERROR_WEB_REQUEST_TIMED_OUT.code, webProps.urlString)
           }
         }
@@ -299,7 +299,7 @@ open class Web: NonvisibleComponent {
     do {
       return try buildRequestData(list)
     } catch (let error as BuildRequestDataException) {
-      _form?.dispatchErrorOccurredEvent(self, "RequestHeaders", error.code, error.index)
+      form.dispatchErrorOccurredEvent(self, "RequestHeaders", error.code, error.index)
       return ""
     } catch (let error) {
       NSLog("Unexpected error occurred:", error.localizedDescription)
@@ -331,7 +331,7 @@ open class Web: NonvisibleComponent {
     if let text = HTMLEntities.decodeHTMLText(htmlText) {
       return text
     } else {
-      _form?.dispatchErrorOccurredEvent(self, "HtmlTextDecode",
+      form.dispatchErrorOccurredEvent(self, "HtmlTextDecode",
           ErrorMessage.ERROR_WEB_HTML_TEXT_DECODE_FAILED.code, htmlText)
       return ""
     }
@@ -342,7 +342,7 @@ open class Web: NonvisibleComponent {
       let xml = try XmlToJson.main.parseXML(xmlText)
       return JsonTextDecode(xml)
     } catch let error {
-      _form?.dispatchErrorOccurredEvent(self, "XMLTextDecode",
+      form.dispatchErrorOccurredEvent(self, "XMLTextDecode",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
       return YailList<AnyObject>()
     }
@@ -352,7 +352,7 @@ open class Web: NonvisibleComponent {
     do {
       return try getYailObjectFromJson(jsonString, false)
     } catch let error {
-      _form?.dispatchErrorOccurredEvent(self, "JsonTextDecode",
+      form.dispatchErrorOccurredEvent(self, "JsonTextDecode",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
       return "" as AnyObject
     }
@@ -362,10 +362,10 @@ open class Web: NonvisibleComponent {
     do {
       return try CapturedProperties(web: self)
     } catch ErrorMessage.ERROR_WEB_MALFORMED_URL {
-      self._form?.dispatchErrorOccurredEvent(self, functionName,
+      form.dispatchErrorOccurredEvent(self, functionName,
           ErrorMessage.ERROR_WEB_MALFORMED_URL.code, _url)
     } catch (let error as InvalidHeadersError) {
-      self._form?.dispatchErrorOccurredEvent(self, functionName, error.code, error.index)
+      form.dispatchErrorOccurredEvent(self, functionName, error.code, error.index)
     } catch (let error) {
       NSLog("Unexpected error occurred: ", error.localizedDescription)
     }
@@ -376,7 +376,7 @@ open class Web: NonvisibleComponent {
     do {
       return try getJsonRepresentation(jsonObject)
     } catch {
-      _form?.dispatchErrorOccurredEvent(self, "JsonObjectEncode",
+      form.dispatchErrorOccurredEvent(self, "JsonObjectEncode",
           ErrorMessage.ERROR_WEB_JSON_TEXT_ENCODE_FAILED)
       print(error)
       return ""
@@ -387,7 +387,7 @@ open class Web: NonvisibleComponent {
     do {
       return try getYailObjectFromJson(jsonText, true)
     } catch {
-      _form?.dispatchErrorOccurredEvent(self, "JsonTextDecodeWithDictionaries",
+      form.dispatchErrorOccurredEvent(self, "JsonTextDecodeWithDictionaries",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText)
       return "" as NSString
     }
@@ -401,7 +401,7 @@ open class Web: NonvisibleComponent {
     do {
       return try XmlToDictionaries.main.parseXML(xmlText) ?? YailDictionary()
     } catch {
-      _form?.dispatchErrorOccurredEvent(self, "XMLTextDecodeAsDictionary",
+      form.dispatchErrorOccurredEvent(self, "XMLTextDecodeAsDictionary",
           .ERROR_WEB_XML_TEXT_DECODE_FAILED, xmlText)
       return YailDictionary()
     }

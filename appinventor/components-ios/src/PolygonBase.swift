@@ -162,7 +162,7 @@ open class PolygonMarker: Marker {
         _overlay = newOverlay
       }
       if let new = self._overlay {
-        map?.replaceFeature(from: oldOverlay, to: new)
+        map.replaceFeature(from: oldOverlay, to: new)
       }
     }
   }
@@ -187,8 +187,8 @@ open class PolygonMarker: Marker {
   
   @objc open override func ShowInfobox() {
     _marker.SetLocation(Centroid.latitude, Centroid.longitude)
-    map?.removeFeature(_marker)
-    map?.addFeature(_marker)
+    map.removeFeature(_marker)
+    map.addFeature(_marker)
     let deadlineTime = DispatchTime.now() + .milliseconds(500)
     DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
       self._marker.ShowInfobox()
