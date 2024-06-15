@@ -176,7 +176,7 @@ public class TopToolbar extends Composite {
   }
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
-    boolean allowDelete = readOnly && numSelectedProjects > 0;
+    boolean allowDelete = hasWriteAccess && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
@@ -186,7 +186,7 @@ public class TopToolbar extends Composite {
         : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
-    fileDropDown.setItemEnabledById(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
+    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
   public void updateKeystoreStatus(boolean present) {

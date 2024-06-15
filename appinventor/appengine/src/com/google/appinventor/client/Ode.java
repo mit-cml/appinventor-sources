@@ -1355,13 +1355,12 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use a dark theme, false otherwise
    */
   public static boolean getUserDarkThemeEnabled() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
-    if (value == null){
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    if (value == null) {
       return false;
     }
     return Boolean.parseBoolean(value);
-    // return false;
   }
 
   /**
@@ -1370,8 +1369,8 @@ public class Ode implements EntryPoint {
    * @param enabled new value for the user's UI preference
    */
   public static void setUserDarkThemeEnabled(boolean enabled) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
                     "" + enabled);
     // userSettings.saveSettings(new Command() {
     //     @Override
@@ -1392,8 +1391,8 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use the new UI, false otherwise
    */
   public static boolean getUserNewLayout() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
     return Boolean.parseBoolean(value);
     // return true;
   }
@@ -1404,12 +1403,12 @@ public class Ode implements EntryPoint {
    * @param newLayout new value for the user's UI preference
    */
   public static void setUserNewLayout(boolean newLayout) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
                     "" + newLayout);
   }
 
-  public static void saveUserDesignSettings(){
+  public static void saveUserDesignSettings() {
     userSettings.saveSettings(new Command() {
       @Override
       public void execute() {
@@ -2417,8 +2416,21 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/"))) {
+    if (newURL.isEmpty()) {
+      designToolbar.setTutorialToggleVisible(false);
+      setTutorialVisible(false);
+      return;
+    }
+
+    boolean isUrlAllowed = false;
+    for (String candidate : config.getTutorialsUrlAllowed()) {
+      if (newURL.startsWith(candidate)) {
+        isUrlAllowed = true;
+        break;
+      }
+    }
+
+    if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
@@ -2557,14 +2569,12 @@ public class Ode implements EntryPoint {
     public static final Resources INSTANCE =  GWT.create(Resources.class);
     
     @Source({
-      "com/google/appinventor/client/light.css",
-      "com/google/appinventor/client/variableColors.css"
+      "com/google/appinventor/client/light.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css",
-      "com/google/appinventor/client/variableColors.css"
+      "com/google/appinventor/client/dark.css"
     })
     Style styleclassicDark();
 

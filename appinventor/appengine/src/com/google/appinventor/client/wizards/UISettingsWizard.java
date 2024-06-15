@@ -27,7 +27,7 @@ public class UISettingsWizard {
   @UiField protected Dialog UIDialog;
   @UiField protected Button applyButton;
   @UiField protected Button cancelButton;
-  // @UiField protected Button darkModeButton;
+//  @UiField protected Button darkModeButton;
 //  @UiField protected RadioButton lightModeRadioButton;
 //  @UiField protected RadioButton darkModeRadioButton;
   @UiField protected RadioButton classicRadioButton;
@@ -42,9 +42,9 @@ public class UISettingsWizard {
     bindUI();
     userThemePreference = Ode.getUserDarkThemeEnabled();
     userLayoutPreference = Ode.getUserNewLayout();
-    if (userLayoutPreference){
+    if (userLayoutPreference) {
       modernRadioButton.setValue(true);
-    }else{
+    } else {
       classicRadioButton.setValue(true);
     }   
 //    if (userThemePreference){
@@ -103,13 +103,13 @@ public class UISettingsWizard {
 //          Ode.setUserDarkThemeEnabled(true);
 //      }
 //    }
-    if (classicRadioButton.getValue()){
-      if (Ode.getUserNewLayout()){
-          Ode.setUserNewLayout(false);
+    if (classicRadioButton.getValue()) {
+      if (Ode.getUserNewLayout()) {
+        Ode.setUserNewLayout(false);
       }
-    }else{
-      if (!Ode.getUserNewLayout()){
-          Ode.setUserNewLayout(true);
+    } else {
+      if (!Ode.getUserNewLayout()) {
+        Ode.setUserNewLayout(true);
       }
     }
     Ode.saveUserDesignSettings();

@@ -121,7 +121,7 @@ public class FileUploadWizard {
     uploadDialog.center();
   }
 
-    @UiHandler("cancelButton")
+  @UiHandler("cancelButton")
   void cancelMove(ClickEvent e) {
     uploadDialog.hide();
   }
@@ -205,7 +205,6 @@ public class FileUploadWizard {
             }
           });
     } else {
-
       new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
           FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
     }

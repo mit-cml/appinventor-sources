@@ -73,7 +73,7 @@ public class ProjectListItem extends Composite {
 
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
-    if(selected) {
+    if (selected) {
       container.addStyleName("ode-ProjectRowHighlighted");
     } else {
       container.removeStyleName("ode-ProjectRowHighlighted");
