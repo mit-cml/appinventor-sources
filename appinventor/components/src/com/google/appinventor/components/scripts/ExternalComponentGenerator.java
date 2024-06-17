@@ -108,6 +108,7 @@ public class ExternalComponentGenerator {
         copyIcon(name, info.descriptor);
         copyLicense(name, info.descriptor);
         copyAssets(name, info.descriptor);
+        copyMock(name, info.descriptor);
       }
       generateExternalComponentBuildFiles(name, entry.getValue());
       generateExternalComponentOtherFiles(name);
@@ -287,6 +288,31 @@ public class ExternalComponentGenerator {
         }
       }
     }
+  }
+
+  public static void copyMock(String packageName, JSONObject componentDescriptor) throws JSONException, IOException {
+    boolean nonVisible = componentDescriptor.getBoolean("nonVisible");
+    if (nonVisible) {
+      return;
+    }
+
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src", File.separator + packagePath);
+    File mockFile = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.js");
+
+    if (!mockFile.exists()) {
+      System.out.println("Extensions : Skipping missing mock file " + mockFile.getAbsolutePath());
+      return;
+    }
+
+    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+    File mockDestDir = new File(destDir, "mocks");
+    ensureFreshDirectory(mockDestDir.getPath(),
+            "Unable to delete the mock directory for the extension.");
+
+    File mockDestFile = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.js");
+    System.out.println("Extensions : " + "Copying mock file " + mockFile.getAbsolutePath());
+    copyFile(mockFile.getAbsolutePath(), mockDestFile.getAbsolutePath());
   }
 
   private static void generateExternalComponentOtherFiles(String packageName) throws IOException {
