@@ -15,9 +15,9 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
-import com.google.appinventor.client.editor.simple.components.MockChatBot;
 import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockChartData2D;
+import com.google.appinventor.client.editor.simple.components.MockChatBot;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCircularProgress;
@@ -31,10 +31,6 @@ import com.google.appinventor.client.editor.simple.components.MockFeatureCollect
 import com.google.appinventor.client.editor.simple.components.MockFilePicker;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
-import com.google.appinventor.client.editor.simple.components.MockTrendline;
-import com.google.appinventor.client.editor.simple.components.MockTwitter;
-import com.google.appinventor.client.editor.simple.components.MockLinearProgress;
-import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImageBot;
@@ -42,6 +38,7 @@ import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockLineString;
+import com.google.appinventor.client.editor.simple.components.MockLinearProgress;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
@@ -56,15 +53,18 @@ import com.google.appinventor.client.editor.simple.components.MockScrollHorizont
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockTranslator;
+import com.google.appinventor.client.editor.simple.components.MockTrendline;
+import com.google.appinventor.client.editor.simple.components.MockTwitter;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
+import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.shared.storage.StorageUtil;
 
@@ -80,7 +80,6 @@ import java.util.Map;
 /**
  * Descriptor for components on the component palette panel.
  * This class is immutable.
- *
  */
 public final class SimpleComponentDescriptor {
 
@@ -231,7 +230,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Creates a new component descriptor.
    *
-   * @param name  component display name
+   * @param name component display name
    */
   public SimpleComponentDescriptor(String name,
                                    SimpleEditor editor,
@@ -270,7 +269,7 @@ public final class SimpleComponentDescriptor {
                                    boolean external) {
     // TODO: Remove editor and component database attributes
     this.name = name;
-    this.editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
+    this.editor = (YaFormEditor) Ode.getInstance().getCurrentFileEditor();
     this.version = version;
     this.versionName = versionName;
     this.dateBuilt = dateBuilt;
@@ -315,11 +314,13 @@ public final class SimpleComponentDescriptor {
 
   /**
    * Returns the origin of the component
+   *
    * @return true if component is external
    */
   public boolean getExternal() {
     return external;
   }
+
   /**
    * Returns the categoryDocUrl string for the component.  For more detail, see
    * javadoc for
@@ -356,7 +357,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns an image for display on the component palette.
    *
-   * @return  image for component
+   * @return image for component
    */
   public Image getImage() {
     if (nonVisible) {
@@ -372,7 +373,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns the version of the component, if any.
    *
-   * @return  component version string
+   * @return component version string
    */
   public int getVersion() {
     return version;
@@ -381,7 +382,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns the custom version name of the component, if any.
    *
-   * @return  component version name
+   * @return component version name
    */
   public String getVersionName() {
     return versionName;
@@ -390,7 +391,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns the date the component was built, if any.
    *
-   * @return  ISO 8601 formated date the component was built
+   * @return ISO 8601 formated date the component was built
    */
   public String getDateBuilt() {
     return dateBuilt;
@@ -412,7 +413,7 @@ public final class SimpleComponentDescriptor {
    * Returns a draggable image for the component. Used when dragging a
    * component from the palette onto the form.
    *
-   * @return  draggable widget for component
+   * @return draggable widget for component
    */
   public Widget getDragWidget() {
     return createMockComponent(name, COMPONENT_DATABASE.getComponentType(name), editor);
@@ -421,7 +422,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Instantiates the corresponding mock component.
    *
-   * @return  mock component
+   * @return mock component
    */
   public MockComponent createMockComponentFromPalette() {
     MockComponent mockComponent = createMockComponent(name,
@@ -469,7 +470,7 @@ public final class SimpleComponentDescriptor {
       // License file is inside aiwebres
       return StorageUtil.getFileUrl(projectId,
           "assets/external_comps/" + packageName + "/" + licensePath) + "&inline";
-    } else if(licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
+    } else if (licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
       // The license is an external URL
       return licensePath;
     } else {
@@ -483,38 +484,38 @@ public final class SimpleComponentDescriptor {
    */
   public static MockComponent createMockComponent(String name, String type, SimpleEditor editor) {
     if (SimpleComponentDatabase.getInstance(editor.getProjectId()).getNonVisible(name)) {
-      if(name.equals(MockFirebaseDB.TYPE)) {
+      if (name.equals(MockFirebaseDB.TYPE)) {
         return new MockFirebaseDB(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockCloudDB.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockCloudDB.TYPE)) {
         return new MockCloudDB(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockFusionTablesControl.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockFusionTablesControl.TYPE)) {
         return new MockFusionTablesControl(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockTwitter.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockTwitter.TYPE)) {
         return new MockTwitter(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockTranslator.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockTranslator.TYPE)) {
         return new MockTranslator(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockChatBot.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockChatBot.TYPE)) {
         return new MockChatBot(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockImageBot.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockImageBot.TYPE)) {
         return new MockImageBot(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
-      } else if(name.equals(MockSpreadsheet.TYPE)) {
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
+      } else if (name.equals(MockSpreadsheet.TYPE)) {
         return new MockSpreadsheet(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if (name.equals(MockDataFile.TYPE)) {
         return new MockDataFile(editor, name,
             getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId())
@@ -523,8 +524,8 @@ public final class SimpleComponentDescriptor {
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            pkgName, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
@@ -611,8 +612,16 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockTrendline.TYPE)) {
       return new MockTrendline(editor);
     } else {
-      // TODO(user): add 3rd party mock component proxy here
-      throw new UnsupportedOperationException("unknown component: " + name);
+      boolean isExternal = SimpleComponentDatabase.getInstance(editor.getProjectId()).getComponentExternal(name);
+      if (!isExternal) {
+        throw new UnsupportedOperationException("unknown component: " + name);
+      }
+
+      Image icon = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name), type, editor.getProjectId());
+      String packagePath = type.substring(0, type.lastIndexOf("."));
+      String mockScriptPath = "assets/external_comps/" + packagePath + "/mocks/" + name + ".mock.js";
+      String mockScript = StorageUtil.getFileUrl(editor.getProjectId(), mockScriptPath);
+      return new MockVisibleExtension(editor, type, icon, mockScript);
     }
   }
 }
