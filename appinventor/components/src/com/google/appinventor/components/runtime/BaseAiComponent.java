@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
-
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -37,20 +36,24 @@ import org.json.JSONException;
 
 @SimpleObject
 public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
+
     protected static final String LOG_TAG = BaseAiComponent.class.getSimpleName();
+    private static final String MODEL_PATH_SUFFIX = ".mdl";
+    
     private static String TRANSFER_MODEL_PREFIX = null;
     private static String PERSONAL_MODEL_PREFIX = null;
-    private static final String MODEL_PATH_SUFFIX = ".mdl";
-    protected WebView webview = null;
+
     private static final int ERROR_WEBVIEWER_REQUIRED = -7;
     private static final int ERROR_CLASSIFICATION_FAILED = -2;
     private static final int ERROR_INVALID_MODEL_FILE = -8;
     private static final int ERROR_MODEL_REQUIRED = -9;
     private static final String ERROR_WEBVIEWER_NOT_SET =
     "You must specify a WebViewer using the WebViewer designer property before you can call %1s";
+
     private String modelPath = null;
     private String assetPath = null;
     private String jsInterface = null;
+    protected WebView webview = null;
     protected List<String> labels = Collections.emptyList();
     
 
@@ -170,10 +173,10 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
      userVisible = false)
     public void WebViewer(final WebViewer webviewer) {
       if (BaseAiComponent.this instanceof PersonalImageClassifier) {
-          assetPath = "personal_image_classifier.html";
+          assetPath = "file:///android_asset/personal_image_classifier.html";
           jsInterface="PersonalImageClassifier";
       } else if (BaseAiComponent.this instanceof PersonalAudioClassifier) {
-          assetPath = "personal_audio_classifier.html";
+          assetPath = "file:///android_asset/personal_audio_classifier.html";
           jsInterface="PersonalAudioClassifier";
       }
       // implement checks for other AI components
@@ -183,7 +186,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
             configureWebView((WebView) webviewer.getView());
             webview.requestLayout();
             Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
-            webview.loadUrl(form.getAssetPath(assetPath));
+            webview.loadUrl(assetPath);
           }
         }
       };

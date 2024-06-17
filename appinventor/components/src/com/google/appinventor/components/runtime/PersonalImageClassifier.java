@@ -46,7 +46,9 @@ public class PersonalImageClassifier extends BaseAiComponent implements
     private static final int IMAGE_QUALITY = 100;
     private static final String MODE_VIDEO = "Video";
     private static final String MODE_IMAGE = "Image";
+    
     private static final int ERROR_INVALID_INPUT_MODE = -6;
+
     private String inputMode = MODE_VIDEO;
     private boolean running = false;
     private int minClassTime = 0;
