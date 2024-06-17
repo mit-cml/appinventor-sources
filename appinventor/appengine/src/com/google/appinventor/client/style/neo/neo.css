@@ -735,7 +735,6 @@ they get cut off in Windows.
   .ode-TextButton:hover,
   .gwt-Button:hover {
     color: #333333;
-    background-color: #7D9D36;
     transition: background-position 0.1s linear;
   }
   
@@ -1071,7 +1070,7 @@ they get cut off in Windows.
   .ode-SimpleMockButton {
     background-color: #d6d7d7;
     border-bottom: 2px #b9b9b9 solid;
-    color: shadow-color;
+    border-color: shadow-color;
     border-radius: 0px;
   }
 
