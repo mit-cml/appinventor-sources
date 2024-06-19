@@ -106,6 +106,10 @@ public class TopToolbar extends Composite {
   interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
 
   public TopToolbar() {
+    // The boolean needs to be reversed here so it is true when items need to be visible.
+    // UIBinder can't negate the boolean itself.
+    readOnly = Ode.getInstance().isReadOnly();
+    hasWriteAccess = !readOnly;
 
     bindUI();
     if (iamChromebook) {
@@ -156,10 +160,6 @@ public class TopToolbar extends Composite {
 
   public void bindUI() {
     TopToolbarUiBinder uibinder = GWT.create(TopToolbarUiBinder.class);
-    // The boolean needs to be reversed here so it is true when items need to be visible.
-    // UIBinder can't negate the boolean itself.
-    readOnly = Ode.getInstance().isReadOnly();
-    hasWriteAccess = !readOnly;
     initWidget(uibinder.createAndBindUi(this));
   }
 
