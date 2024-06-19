@@ -19,7 +19,7 @@ public class StatusPanelNeo extends StatusPanel {
   @UiField Anchor tosLink;
 
   @Override
-  public void bindUI() {
+  protected void bindUI() {
     footer = new FlowPanel("footer");
     StatusPanelUiBinderNeo uibinder = GWT.create(StatusPanelUiBinderNeo.class);
     initWidget(uibinder.createAndBindUi(this));

@@ -136,7 +136,7 @@ public class Ode implements EntryPoint {
 
   // Application level image bundle
   private static Images IMAGES;
-  public static Boolean UserPreferenceStyle = false;
+  private static boolean useNeoStyle = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -891,8 +891,8 @@ public class Ode implements EntryPoint {
 
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
-      UserPreferenceStyle = Ode.getUserNewLayout();
-      if (UserPreferenceStyle) {
+      useNeoStyle = Ode.getUserNewLayout();
+      if (useNeoStyle) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
           public void onFailure(Throwable reason) {
@@ -902,6 +902,7 @@ public class Ode implements EntryPoint {
           @Override
           public void onSuccess() {
             IMAGES = GWT.create(ImagesNeo.class);
+            RootPanel.get().addStyleName("neo");
             uiFactory = new UiFactoryNeo();
             res.apply(null);
           }
@@ -916,6 +917,7 @@ public class Ode implements EntryPoint {
           @Override
           public void onSuccess() {
             IMAGES = GWT.create(Images.class);
+            RootPanel.get().addStyleName("classic");
             uiFactory = new UiStyleFactory();
             res.apply(null);
           }

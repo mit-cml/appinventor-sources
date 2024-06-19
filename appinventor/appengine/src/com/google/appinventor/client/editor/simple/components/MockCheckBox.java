@@ -166,9 +166,4 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
       refreshForm();
     }
   }
-
-  @Override
-  protected void setContainer(MockContainer container) {
-    super.setContainer(container);
-  }
 }

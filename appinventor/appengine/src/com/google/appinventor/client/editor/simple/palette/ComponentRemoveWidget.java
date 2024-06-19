@@ -21,7 +21,7 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().deleteComponent();
 
   private static final Ode ode = Ode.getInstance();
-  String name;
+  private final String name;
 
   public ComponentRemoveWidget(SimpleComponentDescriptor simpleComponentDescriptor) {
     super(simpleComponentDescriptor, imageResource);

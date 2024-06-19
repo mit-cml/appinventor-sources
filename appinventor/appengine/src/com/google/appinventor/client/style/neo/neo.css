@@ -1303,7 +1303,7 @@ they get cut off in Windows.
     border: 1px solid container-shadow;
     /* -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); warning
     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); */
-    box-shadow: 0 5px 10px container-shadow);
+    box-shadow: 0 5px 10px container-shadow;
   }
   
   /*

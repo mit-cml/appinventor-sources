@@ -300,16 +300,16 @@ public class TopToolbar extends Composite {
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == 0) {  // We are in the Projects view
-      if (fileDropDown.getName() == "ProjectDesignOnly") {
+      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(false);
       }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
-      fileDropDown.setItemEnabledById(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
-      fileDropDown.setItemEnabled(WIDGET_NAME_EXPORTPROJECT, false);
-      fileDropDown.setItemEnabledById(MESSAGES.saveMenuItem(), false);
-      fileDropDown.setItemEnabledById(MESSAGES.saveAsMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
@@ -319,7 +319,7 @@ public class TopToolbar extends Composite {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
       }
     } else { // We have to be in the Designer/Blocks view
-      if (fileDropDown.getName() == "ProjectDesignOnly") {
+      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(true);
       }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);

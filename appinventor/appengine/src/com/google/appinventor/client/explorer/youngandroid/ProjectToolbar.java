@@ -35,10 +35,10 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
-  public final boolean isReadOnly;
-  public final boolean galleryEnabled;
-  @UiField public Label projectLabel;
-  @UiField public Label trashLabel;
+  private final boolean isReadOnly;
+  private final boolean galleryEnabled;
+  @UiField protected Label projectLabel;
+  @UiField protected Label trashLabel;
 
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
 

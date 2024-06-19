@@ -24,8 +24,7 @@
       <g:FlowPanel styleName="ode-bottomRow">
         <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>
           <ui:msg key="closeButton" description="Text of the button to close the dialog box"
-          >Close
-          </ui:msg>
+          >Close</ui:msg>
         </g:Button>
       </g:FlowPanel>
     </g:VerticalPanel>

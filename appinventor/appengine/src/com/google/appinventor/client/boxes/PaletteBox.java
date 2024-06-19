@@ -16,7 +16,7 @@ import com.google.appinventor.client.widgets.boxes.Box;
 public final class PaletteBox extends Box {
 
   // Singleton palette box instance
-  private static PaletteBox INSTANCE = new PaletteBox();
+  private static final PaletteBox INSTANCE = new PaletteBox();
 
   /**
    * Return the palette box.

@@ -3256,7 +3256,15 @@ div.dropdiv p {
   margin-right: auto;
 }
 
-.download-barcode {
+.classic .download-barcode:before {
+  content: "";
+  background-color: #888;
+  position: absolute;
+  width: 1px;
+  height: 160px;
+  top: 40px;
+  left: 50%;
+  display: block;
 }
 
 .listItem:nth-child(2n + 0) {

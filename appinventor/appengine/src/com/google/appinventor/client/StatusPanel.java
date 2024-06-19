@@ -43,7 +43,7 @@ public class StatusPanel extends Composite {
     }
   }
 
-  public void bindUI() {
+  protected void bindUI() {
     footer = new FlowPanel("footer");
     StatusPanelUiBinder uibinder = GWT.create(StatusPanelUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
