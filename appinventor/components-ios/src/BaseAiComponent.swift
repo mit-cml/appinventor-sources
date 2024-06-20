@@ -13,7 +13,7 @@ fileprivate let PERSONAL_MODEL_PREFIX = nil
 
 public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
   func classifierReady()
-  func gotClassification(_ result: YailDictionary)
+  func gotClassification(_ result: AnyObject)
   func Error(_ errorCode: Int32)
 }
 
@@ -21,6 +21,7 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
 
     public static let ERROR_WEBVEWER_REQUIRED = -7
     public static let ERROR_CLASSIFICATION_FAILED = -2;
+    public static let ERROR_INVALID_MODEL_FILE = -8;
 
     private var _labels = [String]()
     private var _modelPath = ""
@@ -40,19 +41,19 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
         _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_EXTENSION_ERROR, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
         return
         }
-        do {
-            if self is PersonalImageClassifier{
-                webview.load(try URLRequest(url: "appinventor:personal_image_classifier.html", method: .get))
-            } else {
-                // implement checks for other AI components
-            }
-        } catch {
-        print("\(error)")
-        }
     }
 
+    @objc public func Model(_ path: String) {
+      if path.hasSuffix(MODEL_PATH_SUFFIX) {
+          modelPath = path
+      } else {
+          _form?.dispatchErrorOccurredEvent(self, event: "Model", errorCode: ErrorMessages.ERROR_EXTENSION_ERROR, errorMessage: "\(ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
+      }
+    }
+
+
     @objc open var WebViewer: WebViewer {
-    get {
+      get {
         return _webviewer!
         }
         set {
@@ -69,6 +70,7 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
             _webview?.load(request)
             print("request loaded")
         }
+      }
     }
 
     // MARK: Private Implementation
@@ -80,6 +82,8 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
         webview.configuration.mediaTypesRequiringUserActionForPlayback = []
         if self is PersonalImageClassifier{
             webview.configuration.userContentController.add(self, name: "PersonalImageClassifier")
+            TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
+            PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
         } else {
             // implement checks for other AI components
         }
@@ -92,9 +96,7 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
         do {
             if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
                 for item in arr {
-                    if let label = item as? String {
-                        result.append(label)
-                    }
+                    result.append(label)
                 }
             } else {
                 throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
@@ -103,6 +105,12 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
             throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
         }
         return result
+    }
+
+    private func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
+      guard let _webview = _webview else {
+        throw IllegalStateError.webviewerNotSet
+      }
     }
 
   // MARK: WKScriptMessageHandler
@@ -150,17 +158,12 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
   // MARK: WKURLSchemeHandler
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-     if self is PersonalImageClassifier{
-            TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
-            PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
-        } else {
-            // implement checks for other AI components
-        }
     guard let url = urlSchemeTask.request.url?.absoluteString else {
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
       return
     }
     guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
-      urlSchemeTask.didFailWithError(PICError.FileNotFound)
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
       return
     }
     if url.hasPrefix(TRANSFER_MODEL_PREFIX) {
@@ -168,7 +171,7 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
     } else if url.hasPrefix(PERSONAL_MODEL_PREFIX) {
 
     } else {
-      urlSchemeTask.didFailWithError(PICError.FileNotFound)
+      urlSchemeTask.didFailWithError(PICEAIErrorrror.FileNotFound)
     }
   }
 
@@ -176,4 +179,8 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
     // We deliver the payload in one go so it cannot be cancelled.
   }
 
+  enum AIError: Error {
+    case FileNotFound
+  }
 }
+
