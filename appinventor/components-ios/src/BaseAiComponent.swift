@@ -11,7 +11,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
 fileprivate let TRANSFER_MODEL_PREFIX = nil
 fileprivate let PERSONAL_MODEL_PREFIX = nil
 
-public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
+public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
   func classifierReady()
   func gotClassification(_ result: AnyObject)
   func Error(_ errorCode: Int32)
@@ -158,22 +158,64 @@ public protocol AbstractMethodsForIAComponents: AbstractMethodsForIAComponents {
   // MARK: WKURLSchemeHandler
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-    guard let url = urlSchemeTask.request.url?.absoluteString else {
-      urlSchemeTask.didFailWithError(AIError.FileNotFound)
-      return
-    }
-    guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
-      urlSchemeTask.didFailWithError(AIError.FileNotFound)
-      return
-    }
-    if url.hasPrefix(TRANSFER_MODEL_PREFIX) {
-
-    } else if url.hasPrefix(PERSONAL_MODEL_PREFIX) {
-
-    } else {
-      urlSchemeTask.didFailWithError(PICEAIErrorrror.FileNotFound)
-    }
+      var fileData: Data? = nil
+      guard let url = urlSchemeTask.request.url?.absoluteString else {
+          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          return
+      }
+      guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
+          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          return
+      }
+      if url.hasPrefix(TRANSFER_MODEL_PREFIX) {
+          let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX, with: "")
+          if let assetURL = Bundle.main.url(forResource: fileName, withExtension: nil) {
+              do {
+                  fileData = try Data(contentsOf: assetURL)
+              } catch {
+                  urlSchemeTask.didFailWithError(error)
+                  return
+              }
+          } else {
+              urlSchemeTask.didFailWithError(PICError.FileNotFound)
+              return
+          }
+      } else if url.hasPrefix(PERSONAL_MODEL_PREFIX) {
+          let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX, with: "")
+          guard let modelPath = modelPath, let zipURL = Bundle.main.url(forResource: modelPath, withExtension: "zip") else {
+              urlSchemeTask.didFailWithError(PICError.FileNotFound)
+              return
+          }
+          do {
+              let zipData = try Data(contentsOf: zipURL)
+              let zip = try ZipArchive(data: zipData)
+              for entry in zip.entries {
+                  if entry.path == fileName {
+                      fileData = entry.data()
+                      break
+                  }
+              }
+          } catch {
+              urlSchemeTask.didFailWithError(error)
+              return
+          }
+      } else {
+          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          return
+      }
+      if let fileData = fileData {
+          let response = URLResponse(url: urlSchemeTask.request.url!,
+                                    mimeType: "application/octet-stream",
+                                    expectedContentLength: fileData.count,
+                                    textEncodingName: nil)
+          urlSchemeTask.didReceive(response)
+          urlSchemeTask.didReceive(fileData)
+          urlSchemeTask.didFinish()
+      } else {
+          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+      }
   }
+
 
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // We deliver the payload in one go so it cannot be cancelled.
