@@ -72,7 +72,7 @@ public class PersonalImageClassifier extends BaseAiComponent implements
         webview.evaluateJavascript("setInputMode(\"image\");", null);
         inputMode = MODE_IMAGE;
         } else {
-        form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode " + mode);
+        form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_INPUT_MODE, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode " + mode);
         }
     }
 

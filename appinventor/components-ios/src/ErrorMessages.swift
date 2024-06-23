@@ -150,6 +150,9 @@ import Foundation
 
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
+
+  //PIC Errors
+  case ERROR_INPUT_MODE = 100401
   
   var code: Int32 {
     return Int32(self.rawValue)
@@ -380,6 +383,9 @@ import Foundation
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
+    
+    case .ERROR_INPUT_MODE:
+      return "Invalid input mode"
     }
   }
 }

@@ -51,6 +51,10 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
       }
     }
 
+    @objc public var ModelLabels: [String] {
+      return labels
+    }   
+
 
     @objc open var WebViewer: WebViewer {
       get {
