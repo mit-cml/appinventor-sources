@@ -1401,6 +1401,24 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
+.ode-MockVisibleExtensionLoading {
+  box-sizing: border-box;
+  border: 2px dashed #383d41;
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.ode-MockVisibleExtensionLoading-selected {
+  border: 2px dashed #8fc202;
+}
+
+.ode-MockVisibleExtensionLoading img {
+  opacity: 0.75;
+}
+
 .ode-SimpleMockMapFeature-selected svg * {
   stroke: #8fc202;
   stroke-opacity: 1;

@@ -479,53 +479,41 @@ public final class SimpleComponentDescriptor {
     }
   }
 
-  /**
-   * Instantiates mock component by name.
-   */
+  /** Instantiates mock component by name. */
   public static MockComponent createMockComponent(String name, String type, SimpleEditor editor) {
-    if (SimpleComponentDatabase.getInstance(editor.getProjectId()).getNonVisible(name)) {
+    SimpleComponentDatabase scd = SimpleComponentDatabase.getInstance(editor.getProjectId());
+    if (scd.getNonVisible(name)) {
       if (name.equals(MockFirebaseDB.TYPE)) {
-        return new MockFirebaseDB(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockFirebaseDB(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockCloudDB.TYPE)) {
-        return new MockCloudDB(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockCloudDB(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockFusionTablesControl.TYPE)) {
-        return new MockFusionTablesControl(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockFusionTablesControl(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockTwitter.TYPE)) {
-        return new MockTwitter(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockTwitter(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockTranslator.TYPE)) {
-        return new MockTranslator(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockTranslator(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockChatBot.TYPE)) {
-        return new MockChatBot(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockChatBot(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockImageBot.TYPE)) {
-        return new MockImageBot(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockImageBot(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockSpreadsheet.TYPE)) {
-        return new MockSpreadsheet(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                null, editor.getProjectId()));
+        return new MockSpreadsheet(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else if (name.equals(MockDataFile.TYPE)) {
-        return new MockDataFile(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId())
-                    .getIconName(name),
-                null, editor.getProjectId()));
+        return new MockDataFile(
+            editor, name, getImageFromPath(scd.getIconName(name), null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
-        return new MockNonVisibleComponent(editor, name,
-            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                pkgName, editor.getProjectId()));
+        return new MockNonVisibleComponent(
+            editor, name, getImageFromPath(scd.getIconName(name), pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
@@ -612,16 +600,15 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockTrendline.TYPE)) {
       return new MockTrendline(editor);
     } else {
-      boolean isExternal = SimpleComponentDatabase.getInstance(editor.getProjectId()).getComponentExternal(name);
+      boolean isExternal = scd.getComponentExternal(name);
       if (!isExternal) {
         throw new UnsupportedOperationException("unknown component: " + name);
       }
 
-      Image icon = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name), type, editor.getProjectId());
+      Image icon = getImageFromPath(scd.getIconName(name), type, editor.getProjectId());
       String packagePath = type.substring(0, type.lastIndexOf("."));
-      String mockScriptPath = "assets/external_comps/" + packagePath + "/mocks/" + name + ".mock.js";
-      String mockScript = StorageUtil.getFileUrl(editor.getProjectId(), mockScriptPath);
-      return new MockVisibleExtension(editor, type, icon, mockScript);
+      String mockFileId = "assets/external_comps/" + packagePath + "/mocks/" + name + ".mock.js";
+      return new MockVisibleExtension(editor, name, icon, mockFileId);
     }
   }
 }

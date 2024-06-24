@@ -92,6 +92,10 @@ public abstract class MockVisibleComponent extends MockComponent {
     super(editor, type, new Image(icon));
   }
 
+  MockVisibleComponent(SimpleEditor editor, String type, Image icon) {
+    super(editor, type, icon);
+  }
+
   @Override
   public final void initComponent(Widget widget) {
     super.initComponent(widget);
