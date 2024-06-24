@@ -10,7 +10,7 @@
     ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
     ui:generateLocales="default">
 
-  <ui:with type="com.google.appinventor.client.Images" field="res" />
+  <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
   <wiz:Dialog ui:field="projectProperties" styleName="ode-DialogBox">
     <g:VerticalPanel>

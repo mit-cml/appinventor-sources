@@ -499,45 +499,46 @@ a, a:visited, a:hover {
   text-decoration: none;
   background: url("../images/hborder.png") repeat-x 0px -27px;
 }
+
 .gwt-PushButton-up,
 .gwt-PushButton-up-hovering,
 .gwt-PushButton-up-disabled {
   padding: 3px 5px 3px 5px;
 }
+
 .gwt-PushButton-up {
   border: 1px outset #ccc;
-  cursor: pointer;
   cursor: hand;
 }
+
 .gwt-PushButton-up-hovering {
   border: 1px outset;
   border-color: #9cf #69e #69e #7af;
-  cursor: pointer;
   cursor: hand;
 }
 .gwt-PushButton-up-disabled {
-  border: 1px outset #ccc;
   cursor: default;
   opacity: .5;
-  filter: alpha(opacity=40);
   zoom: 1;
 }
+
 .gwt-PushButton-down,
 .gwt-PushButton-down-hovering,
 .gwt-PushButton-down-disabled {
   padding: 4px 4px 2px 6px;
 }
+
 .gwt-PushButton-down {
   border: 1px inset #666;
-  cursor: pointer;
   cursor: hand;
 }
+
 .gwt-PushButton-down-hovering {
   border: 1px inset;
   border-color: #9cf #69e #69e #7af;
-  cursor: pointer;
   cursor: hand;
 }
+
 .gwt-PushButton-down-disabled {
   border: 1px outset #ccc;
   cursor: default;
@@ -548,6 +549,7 @@ a, a:visited, a:hover {
 
 .gwt-RadioButton {
 }
+
 .gwt-RadioButton-disabled {
   color: #888;
 }
@@ -615,19 +617,20 @@ a, a:visited, a:hover {
 .gwt-StackPanel {
   border-bottom: 1px solid #bbbbbb;
 }
+
 .gwt-StackPanel .gwt-StackPanelItem {
-  cursor: pointer;
   cursor: hand;
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
   border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
+  border-bottom: 0;
+  background: #d3def6 url(../images/hborder.png) repeat-x 0 -989px;
 }
+
 .gwt-StackPanel .gwt-StackPanelContent {
   border: 1px solid #bbbbbb;
-  border-bottom: 0px;
+  border-bottom: 0;
   background: white;
   padding: 2px 2px 10px 5px;
 }
@@ -992,6 +995,9 @@ a, a:visited, a:hover {
   white-space: nowrap;
 }
 
+.gwt-Tree .gwt-TreeItem-selected {
+}
+
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
   margin-left: 0px;
@@ -1096,16 +1102,11 @@ td.datePickerMonth {
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
   background: #d3def6 url(../images/hborder.png) repeat-x 0px -1464px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelContent {
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
   background: white;
   padding: 2px 2px 10px 5px;
 }

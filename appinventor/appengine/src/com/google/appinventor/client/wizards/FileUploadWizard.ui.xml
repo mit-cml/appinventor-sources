@@ -14,7 +14,7 @@
     <g:FlowPanel>
       <g:FileUpload ui:field="upload" name="uploadFile" />
       <g:FlowPanel styleName="buttonRow" >
-        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}' />
         <g:Button ui:field='okButton' text='{messages.okButton}' />
       </g:FlowPanel>
     </g:FlowPanel>

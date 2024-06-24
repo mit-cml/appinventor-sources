@@ -40,7 +40,7 @@ public final class PropertiesBox extends Box {
   /**
    * Return the properties box.
    *
-   * @return  properties box
+   * @return properties box
    */
   public static PropertiesBox getPropertiesBox() {
     return INSTANCE;
@@ -105,10 +105,10 @@ public final class PropertiesBox extends Box {
             name,
             property.getDefaultValue(),
             property.getCaption(),
-            property.getCategory(), 
+            property.getCategory(),
             property.getDescription(),
             PropertiesUtil.createPropertyEditor(property.getEditorType(),
-                property.getDefaultValue(), formEditor , property.getEditorArgs()),
+                property.getDefaultValue(), formEditor, property.getEditorArgs()),
             property.getType(),
             property.getEditorType(),
             property.getEditorArgs()

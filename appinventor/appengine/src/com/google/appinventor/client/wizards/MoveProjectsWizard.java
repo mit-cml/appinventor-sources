@@ -27,7 +27,7 @@ import java.util.List;
 public final class MoveProjectsWizard {
   interface MoveProjectsWizardUiBinder extends UiBinder<Dialog, MoveProjectsWizard> {}
 
-  private static final MoveProjectsWizardUiBinder UI_BINDER =
+  private static final MoveProjectsWizardUiBinder uibinder =
       GWT.create(MoveProjectsWizardUiBinder.class);
 
   private final FolderManager manager;
@@ -42,7 +42,7 @@ public final class MoveProjectsWizard {
    * Creates a new wizard for moving projects.
    */
   public MoveProjectsWizard() {
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
 
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());

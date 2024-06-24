@@ -25,12 +25,16 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/MaterialIcons-Regular.ttf') format('truetype');
+  src: url('../fonts/MaterialSymbolsSharp[FILL,GRAD,opsz,wght].ttf') format('truetype');
 }
 
 .material-icons {
   font-family: 'Material Icons';
-  font-weight: normal;
+  font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
   font-style: normal;
   font-size: 21px;
   display: inline-block;
@@ -44,4 +48,5 @@
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
+  padding-right: 3px;
 }
