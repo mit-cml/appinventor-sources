@@ -70,12 +70,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<ComponentCategory, PaletteHelper> paletteHelpers;
 
   private final CollapsablePanel stackPalette;
-  private final Map<ComponentCategory, VerticalPanel> categoryPanels;
+
   // store Component Type along with SimplePaleteItem to enable removal of components
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 
   private DropTargetProvider dropTargetProvider;
-  private List<Integer> categoryOrder;
 
   // panel that holds all palette items
   final VerticalPanel panel;
@@ -161,11 +160,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
     // If a category has a palette helper, add it to the paletteHelpers map here.
     paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new LegoPaletteHelper());
-
-    categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
-    categoryOrder = new ArrayList<Integer>();
-
     translationMap = new HashMap<String, String>();
     panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -211,16 +206,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
-        VerticalPanel categoryPanel = new VerticalPanel();
-        categoryPanel.setWidth("100%");
-        categoryPanels.put(category, categoryPanel);
-        // The production version will not include a mapping for Extension because
-        // only compile-time categories are included. This allows us to i18n the
-        // Extension title for the palette.
-        String title = ComponentCategory.EXTENSION.equals(category) ?
-          MESSAGES.extensionComponentPallette() :
-          ComponentsTranslation.getCategoryName(category.getName());
-        stackPalette.add(categoryPanel, category, title);
+        addComponentCategory(category);
       }
     }
     stackPalette.show(0);
@@ -336,9 +322,25 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   public void loadComponents() {
+    for (ComponentCategory category : ComponentCategory.values()) {
+      if (showCategory(category)) {
+        addComponentCategory(category);
+      }
+    }
+    initExtensionPanel();
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       this.addComponent(component);
     }
+    stackPalette.show(0);
+  }
+
+  public void reloadComponentsFromSet(Set<String> set) {
+    clearComponents();
+    initExtensionPanel();
+    for (String component : set) {
+      addComponent(component);
+    }
+    stackPalette.show(0);
   }
 
   @Override
@@ -407,7 +409,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    * Adds a component entry to the palette.
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
-    VerticalPanel panel = categoryPanels.get(category);
+    VerticalPanel panel = stackPalette.getCategory(category);
     if (panel == null) {
       panel = addComponentCategory(category);
     }
@@ -422,32 +424,22 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private VerticalPanel addComponentCategory(ComponentCategory category) {
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
-    categoryPanels.put(category, panel);
-    // The production version will not include a mapping for Extension because
-    // only compile-time categories are included. This allows us to i18n the
-    // Extension title for the palette.
-    int insert_index = Collections.binarySearch(categoryOrder, category.ordinal());
-    insert_index = - insert_index - 1;
     String title = "";
     if (ComponentCategory.EXTENSION.equals(category)) {
       title = MESSAGES.extensionComponentPallette();
-      initExtensionPanel();
     } else {
       title = ComponentsTranslation.getCategoryName(category.getName());
     }
-    stackPalette.insert(panel, category, title, insert_index);
-    categoryOrder.add(insert_index, category.ordinal());
+    stackPalette.add(panel, category, title);
     // When the categories are loaded, we want the first one open, which will almost always be User Interface
-    stackPalette.show(0);
     return panel;
   }
 
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
-    VerticalPanel panel = categoryPanels.get(category);
+    VerticalPanel panel = stackPalette.getCategory(category);
     panel.remove(component);
     if (panel.getWidgetCount() < 1) {
       stackPalette.remove(panel, category);
-      categoryPanels.remove(category);
     }
   }
 
@@ -461,8 +453,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       }
     });
 
-    categoryPanels.get(ComponentCategory.EXTENSION).add(addComponentAnchor);
-    categoryPanels.get(ComponentCategory.EXTENSION).setCellHorizontalAlignment(
+    VerticalPanel categoryPanel = stackPalette.getCategory(ComponentCategory.EXTENSION);
+    if (categoryPanel == null) {
+      categoryPanel = addComponentCategory(ComponentCategory.EXTENSION);
+    }
+    categoryPanel.add(addComponentAnchor);
+    categoryPanel.setCellHorizontalAlignment(
         addComponentAnchor, HasHorizontalAlignment.ALIGN_CENTER);
   }
 
@@ -494,39 +490,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   @Override
   public void clearComponents() {
-    for (ComponentCategory category : categoryPanels.keySet()) {
-      VerticalPanel panel = categoryPanels.get(category);
-      panel.clear();
-      stackPalette.remove(panel, category);
-    }
+    stackPalette.clear();
     for (PaletteHelper pal : paletteHelpers.values()) {
       pal.clear();
     }
-    categoryPanels.clear();
     paletteHelpers.clear();
-    categoryOrder.clear();
     simplePaletteItems.clear();
   }
-
-  // Intended for use by Blocks Toolkit, which needs to be able to refresh without
-  // bothering the loaded extensions
-  public void clearComponentsExceptExtension() {
-    for (ComponentCategory category : categoryPanels.keySet()) {
-      if (!ComponentCategory.EXTENSION.equals(category)) {
-        VerticalPanel panel = categoryPanels.get(category);
-        panel.clear();
-        stackPalette.remove(panel, category);
-      }
-    }
-    for (PaletteHelper pal : paletteHelpers.values()) {
-      pal.clear();
-    }
-    categoryPanels.clear();
-    paletteHelpers.clear();
-    categoryOrder.clear();
-    simplePaletteItems.clear();
-  }
-
 
   @Override
   public void reloadComponents() {

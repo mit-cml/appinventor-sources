@@ -583,17 +583,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         if (shownComponentsStr.length() > 0) {
           shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
         }
+        palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "invalid subset string", e);
       }
-      // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
-      palettePanel.clearComponentsExceptExtension();
     } else {
-      shownComponents = COMPONENT_DATABASE.getComponentNames();
-      palettePanel.clearComponents();
-    }
-    for (String component : shownComponents) {
-      palettePanel.addComponent(component);
+      palettePanel.reloadComponents();
     }
   }
 
