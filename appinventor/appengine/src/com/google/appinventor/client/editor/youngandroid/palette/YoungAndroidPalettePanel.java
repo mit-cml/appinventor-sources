@@ -327,6 +327,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         addComponentCategory(category);
       }
     }
+    initExtensionPanel();
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       this.addComponent(component);
     }
@@ -335,10 +336,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   public void reloadComponentsFromSet(Set<String> set) {
     clearComponents();
+    initExtensionPanel();
     for (String component : set) {
       addComponent(component);
     }
-    initExtensionPanel();
     stackPalette.show(0);
   }
 
