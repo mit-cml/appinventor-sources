@@ -9,6 +9,7 @@ open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, Lifec
 
     public static let MODE_VIDEO = "Video"
     public static let MODE_IMAGE = "Image"
+    public static let IMAGE_WIDTH = 500
     public static let ERROR_INVALID_INPUT_MODE = -6;
     private var _inputMode = PersonalImageClassifier.MODE_VIDEO
     private var _running = false
@@ -21,8 +22,24 @@ open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, Lifec
 
     //MARK: Methods
 
-    @objc public func classifyImageData(_ image: String?) {
+    @objc public func classifyImageData(_ imagePath: String?) {
         assertWebView("ClassifyImageData")
+        guard let imagePath = imagePath, !imagePath.isEmpty else{
+            print("Image path is nil or empty.")
+            return
+        }
+        print("Entered Classify")
+        print(imagePath)
+        guard let image = UIImage(contentsOfFile: imagePath) else{
+            print("Unable to load \(imagePath)")
+            return
+        }
+        let scaledImage = image.scaled(toWidth: IMAGE_WIDTH)
+        if let imageData = scaledImage.pngData(){
+            let imageEncodedBase64String = imageData.base64EncodedString().replacingOccurrences(of: "\n", with: "")
+            print("imageEncodedBase64String: \(imageEncodedBase64String)")
+            _webview.evaluateJavaScript("classifyImageData(\"\(imageEncodedBase64String)\");", completionHandler: nil)
+        }
     }
 
     @objc public func toggleCameraFacingMode() {
@@ -46,7 +63,7 @@ open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, Lifec
     @objc public func stopContinuousClassification() {
         if inputMode.caseInsensitiveCompare(MODE_VIDEO) == .orderedSame && _running {
             assertWebView("StopVideoClassification")
-            webview.evaluateJavaScript("stopVideoClassification();", completionHandler: nil)
+            _webview.evaluateJavaScript("stopVideoClassification();", completionHandler: nil)
             _running = false
         }
     }
@@ -81,10 +98,10 @@ open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, Lifec
         }
         set {
             if newValue.caseInsensitiveCompare(MODE_VIDEO) == .orderedSame {
-                webview.evaluateJavaScript("setInputMode(\"video\");", completionHandler: nil)
+                _webview.evaluateJavaScript("setInputMode(\"video\");", completionHandler: nil)
                 _inputMode = MODE_VIDEO
             } else if newValue.caseInsensitiveCompare(MODE_IMAGE) == .orderedSame {
-                webview.evaluateJavaScript("setInputMode(\"image\");", completionHandler: nil)
+                _webview.evaluateJavaScript("setInputMode(\"image\");", completionHandler: nil)
                 _inputMode = MODE_IMAGE
             } else {
                 form.dispatchErrorOccurredEvent(self, "InputMode", ErrorMessages.ERROR_INPUT_MODE, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode \(newValue)")

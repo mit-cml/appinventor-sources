@@ -81,17 +81,17 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
 
     private func configureWebView(_ webview: WKWebView) {
         _webview = webview
-        webview.configuration.preferences.javaScriptEnabled = true
-        webview.configuration.allowsInlineMediaPlayback = true
-        webview.configuration.mediaTypesRequiringUserActionForPlayback = []
+        _webview.configuration.preferences.javaScriptEnabled = true
+        _webview.configuration.allowsInlineMediaPlayback = true
+        _webview.configuration.mediaTypesRequiringUserActionForPlayback = []
         if self is PersonalImageClassifier{
-            webview.configuration.userContentController.add(self, name: "PersonalImageClassifier")
+            _webview.configuration.userContentController.add(self, name: "PersonalImageClassifier")
             TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
             PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
         } else {
             // implement checks for other AI components
         }
-        webview.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
+        _webview.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
     }
 
     private func parseLabels(_ labels: String) throws -> [String] {
