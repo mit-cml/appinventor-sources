@@ -1648,6 +1648,10 @@ public class YaVersion {
   // - Initial version
   public static final int LINEAR_PROGRESS_COMPONENT_VERSION = 1;
 
+    // For PERSONAL_IMAGE_CLASSIFIER_COMPONENT_VERSION 1:
+  // - Initial version
+  public static final int PERSONAL_IMAGE_CLASSIFIER_COMPONENT_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if
