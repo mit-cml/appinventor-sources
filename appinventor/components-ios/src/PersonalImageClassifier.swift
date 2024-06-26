@@ -4,8 +4,9 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
+import UIKit
 
-open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, LifecycleDelegate{
+@objc open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, LifecycleDelegate{
 
     public static let MODE_VIDEO = "Video"
     public static let MODE_IMAGE = "Image"
