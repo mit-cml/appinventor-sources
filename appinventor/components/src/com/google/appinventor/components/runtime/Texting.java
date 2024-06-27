@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -1115,7 +1116,8 @@ public class Texting extends AndroidNonvisibleComponent
       }
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
-    activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
+    ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
+        Context.RECEIVER_EXPORTED);
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 
