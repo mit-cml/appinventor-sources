@@ -1002,7 +1002,8 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     renderer: 'geras2_renderer',
   };
   var workspace = Blockly.inject(container, options);
-  var multiselectPlugin = new top.Multiselect(workspace);
+  AI.Blockly.multiselect = top.Multiselect;
+  var multiselectPlugin = new AI.Blockly.multiselect(workspace);
   multiselectPlugin.init(options);
   var lexicalVariablesPlugin = top.LexicalVariablesPlugin;
   lexicalVariablesPlugin.init(workspace);

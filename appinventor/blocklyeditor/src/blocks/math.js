@@ -12,6 +12,7 @@
 
 goog.provide('AI.Blocks.math');
 
+goog.require('AI.Blockly.BlocklyEditor');
 goog.require('AI.BlockUtils');
 
 Blockly.Blocks['math_number'] = {
@@ -79,7 +80,9 @@ Blockly.Blocks['math_number_radix'] = {
     var oldPrefix = Blockly.Blocks.math_number_radix.PREFIX[this.getValue()];
     var oldValue = Number(oldPrefix + numberField.getValue());
     var newRadix = Blockly.Blocks.math_number_radix.RADIX[newValue];
-    numberField.setValue(oldValue.toString(newRadix))
+    AI.Blockly.multiselect.withoutMultiFieldUpdates(function() {
+        numberField.setValue(oldValue.toString(newRadix));
+    });
   },
 
   numberValidator: function(text) {

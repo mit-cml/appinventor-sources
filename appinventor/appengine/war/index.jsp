@@ -77,7 +77,7 @@
     <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
-    <script type="text/javascript" src="static/js/workspace-multiselect-0.1.13.min.js"></script>
+    <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta1.min.js"></script>
     <script type="text/javascript" src="ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
