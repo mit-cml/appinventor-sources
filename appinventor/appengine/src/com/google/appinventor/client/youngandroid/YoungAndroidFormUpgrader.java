@@ -1381,6 +1381,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // The MarkOrigin, OriginX, and OriginY properties were added.
+      srcCompVersion = 9;
+    }
     return srcCompVersion;
   }
 
