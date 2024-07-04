@@ -885,7 +885,10 @@ public class YaVersion {
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made visible in the designer view
-  public static final int CHATBOT_COMPONENT_VERSION = 2;
+  // For CHATBOT_COMPONENT_VERSION 3:
+  // - GPT-4 with Vision can be used to handle image inputs
+  // - The ConverseWithImage method was added
+  public static final int CHATBOT_COMPONENT_VERSION = 3;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

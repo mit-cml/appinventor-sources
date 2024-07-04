@@ -65,6 +65,9 @@ The ChatBot component is a non-visible component for chatting with an AI
 {:id="ChatBot.Converse" class="method"} <i/> Converse(*question*{:.text})
 : Ask a question of the Chat Bot. Successive calls will remember information from earlier in the conversation. Use the "ResetConversation" function to reset for a new conversation.
 
+{:id="ChatBot.ConverseWithImage" class="method"} <i/> ConverseWithImage(*question*{:.text},*source*{:.any})
+: Ask a question of the Chat Bot using an Image. Successive calls will remember information from earlier in the conversation. Use the "ResetConversation" function to reset for a new conversation.
+
 {:id="ChatBot.ResetConversation" class="method"} <i/> ResetConversation()
 : Reset the current conversation, Chat bot will forget any previous conversation when responding in the future.
 

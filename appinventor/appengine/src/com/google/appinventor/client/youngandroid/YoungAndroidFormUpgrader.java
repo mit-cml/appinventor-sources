@@ -874,6 +874,10 @@ public final class YoungAndroidFormUpgrader {
       // The ApiKey property was made visible in the designer.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The ConverseWithImage block was added
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

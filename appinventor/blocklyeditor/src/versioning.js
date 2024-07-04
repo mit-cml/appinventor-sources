@@ -1867,6 +1867,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ApiKey property was made visible in the designer
     2: "noUpgrade",
+
+    // The ConverseWithImage method was added
+    3: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
