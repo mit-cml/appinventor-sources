@@ -101,7 +101,7 @@ public class ProjectUploadWizard {
   }
 
   private void upload(FileUpload upload, String filename) {
-    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
+    String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
         + ServerLayout.UPLOAD_PROJECT + "/" + filename;
     Uploader.getInstance().upload(upload, uploadUrl,
         new OdeAsyncCallback<UploadResponse>(
