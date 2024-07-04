@@ -879,25 +879,6 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public void setProjectName(final String userId, final long projectId, final String name) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            pd.name = name;
-            datastore.put(pd);
-          }
-        }
-      }, false);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-  }
-
-  @Override
   public long getProjectDateModified(final String userId, final long projectId) {
     final Result<Long> modDate = new Result<Long>();
     try {
@@ -918,6 +899,50 @@ public class ObjectifyStorageIo implements StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return modDate.t;
+  }
+
+  @Override
+  public long getProjectDateBuilt(final String userId, final long projectId) {
+    final Result<Long> builtDate = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            builtDate.t = pd.dateBuilt;
+          } else {
+            builtDate.t = (long) 0;
+          }
+        }
+      }, false); // Transaction not needed, and we want the caching we get if we don't
+                 // use them.
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return builtDate.t;
+  }
+
+  @Override
+  public long updateProjectBuiltDate(final String userId, final long projectId, final long builtDate) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            pd.dateBuilt = builtDate;
+            datastore.put(pd);
+          }
+        }
+      }, false); // Transaction not needed, and we want the caching we get if we don't
+                 // use them.
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return builtDate;
   }
 
   @Override

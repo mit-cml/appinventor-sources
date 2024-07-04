@@ -26,26 +26,23 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+
 import java.util.Date;
 
 public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
 
-  private static final ProjectListItemUiBinder UI_BINDER =
-      GWT.create(ProjectListItemUiBinder.class);
-
-  @UiField
-  FlowPanel container;
-  @UiField Label nameLabel;
-  @UiField Label dateModifiedLabel;
-  @UiField Label dateCreatedLabel;
-  @UiField CheckBox checkBox;
+  @UiField protected FlowPanel container;
+  @UiField protected Label nameLabel;
+  @UiField protected Label dateModifiedLabel;
+  @UiField protected Label dateCreatedLabel;
+  @UiField protected CheckBox checkBox;
 
   private final Project project;
   private ProjectSelectionChangeHandler changeHandler;
 
   public ProjectListItem(Project project) {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     this.getElement().setAttribute("data-exporturl",
         "application/octet-stream:" + project.getProjectName() + ".aia:"
             + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
@@ -61,6 +58,11 @@ public class ProjectListItem extends Composite {
     this.project = project;
   }
 
+  public void bindUI() {
+    ProjectListItemUiBinder uibinder = GWT.create(ProjectListItemUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
+  }
+
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
     this.changeHandler = changeHandler;
   }
@@ -72,9 +74,9 @@ public class ProjectListItem extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleDependentName("Highlighted");
+      container.addStyleName("ode-ProjectRowHighlighted");
     } else {
-      container.removeStyleDependentName("Highlighted");
+      container.removeStyleName("ode-ProjectRowHighlighted");
     }
   }
 
@@ -89,7 +91,7 @@ public class ProjectListItem extends Composite {
 
   @SuppressWarnings("unused")
   @UiHandler("checkBox")
-  void toggleItemSelection(ClickEvent e) {
+  protected void toggleItemSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
     changeHandler.onSelectionChange(checkBox.getValue());
   }
@@ -97,7 +99,7 @@ public class ProjectListItem extends Composite {
 
   @SuppressWarnings("unused")
   @UiHandler("nameLabel")
-  void itemClicked(ClickEvent e) {
+  protected void itemClicked(ClickEvent e) {
     Ode.getInstance().openYoungAndroidProjectInDesigner(project);
   }
 

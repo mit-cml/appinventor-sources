@@ -136,7 +136,6 @@ public class DropDownButton extends TextButton {
           m.setVisible(false);
         }
         this.items.add(m);
-
       } else {
         menu.addSeparator();
       }
