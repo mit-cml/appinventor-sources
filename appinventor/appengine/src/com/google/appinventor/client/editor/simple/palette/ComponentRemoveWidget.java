@@ -21,9 +21,11 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().deleteComponent();
 
   private static final Ode ode = Ode.getInstance();
+  private final String name;
 
   public ComponentRemoveWidget(SimpleComponentDescriptor simpleComponentDescriptor) {
     super(simpleComponentDescriptor, imageResource);
+    name = simpleComponentDescriptor.getName();
   }
 
   @Override
@@ -33,7 +35,7 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
       YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
       SimpleComponentDatabase componentDatabase = SimpleComponentDatabase.getInstance();
       componentDatabase.addComponentDatabaseListener(projectEditor);
-      componentDatabase.removeComponent(scd.getName());
+      componentDatabase.removeComponent(name);
     }
   }
 }

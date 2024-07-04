@@ -163,17 +163,24 @@ public class MockCloudDB extends MockNonVisibleComponent {
     Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        EditableProperty tokenProperty = MockCloudDB.this.properties.getProperty(PROPERTY_NAME_TOKEN);
-        if (tokenProperty != null) {
-          String existingToken = tokenProperty.getValue();
-          if (!existingToken.isEmpty()) {
-            return;             // If we have a value, don't over-write it
-          }
+        if (token == null) {
+          onFailure(new UnsupportedOperationException(
+              "Server is not configured to generate CloudDB tokens."));
+          return;
+        }
+        EditableProperty tokenProperty = properties.getProperty(PROPERTY_NAME_TOKEN);
+        if (tokenProperty == null) {
+          return;
+        }
+        String existingToken = tokenProperty.getValue();
+        if (!existingToken.isEmpty()) {
+          return;             // If we have a value, don't over-write it
         }
         changeProperty(PROPERTY_NAME_TOKEN, token);
       }
+
       @Override
-      public void onFailure(Throwable t){
+      public void onFailure(Throwable t) {
         changeProperty(PROPERTY_NAME_TOKEN, "ERROR : token not created");
         super.onFailure(t);
       }

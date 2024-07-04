@@ -312,6 +312,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    * @param description the description of how to edit the image
    */
   @SimpleFunction
+  @Deprecated
   public void EditImage(Object source, final String description) {
     try {
       // Load the image on the main thread. This isn't ideal but prevents the image from being

@@ -8,7 +8,7 @@ import Base58Swift
 
 // URL where we can reach the ChatBot
 let CHATBOT_SERVICE_URL: URL! = URL(string:  "https://chatbot.appinventor.mit.edu/chat/v1")
-fileprivate let kRequestError: Int32 = -1
+let kRequestError: Int32 = -1
 
 open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_response> {
   private var _uuid = ""
@@ -49,6 +49,37 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
         if !Model.isEmpty {
           $0.model = Model
         }
+      }) {
+        if let error = $2 {
+          self.ErrorOccurred($0, (error as? ProxyError)?.message ?? error.localizedDescription)
+        } else if let response = $1 {
+          self._uuid = response.uuid
+          self.GotResponse(response.answer)
+        }
+      }
+    } catch {
+      self.ErrorOccurred(kRequestError, "\(error)")
+    }
+  }
+
+  @objc open func ConverseWithImage(_ message: String, _ source: AnyObject) {
+    guard let sourceData = loadImageData(source, resize: 1024) else {
+      ErrorOccurred(kUnableToLoadSourceError, "Unable to load source")
+      return
+    }
+    print("Image size: \(sourceData.count)")
+    do {
+      try doRequest(configuration: {
+        $0.uuid = _uuid
+        $0.question = message
+        if _uuid.isEmpty && !System.isEmpty {
+          $0.system = System
+        }
+        $0.provider = Provider
+        if !Model.isEmpty {
+          $0.model = Model
+        }
+        $0.inputimage = sourceData
       }) {
         if let error = $2 {
           self.ErrorOccurred($0, (error as? ProxyError)?.message ?? error.localizedDescription)

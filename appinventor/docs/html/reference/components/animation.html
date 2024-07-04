@@ -258,7 +258,7 @@
   <dd>Turns this <code class="highlighter-rouge">Ball</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
   <dt id="Ball.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
   <dd>Turns this <code class="highlighter-rouge">Ball</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
- to the line joining the centerpoints of the two sprites.</dd>
+ to the line joining the origins of the two sprites.</dd>
 </dl>
 
 <h2 id="Canvas">Canvas</h2>
@@ -434,11 +434,21 @@
   <dd>The interval in milliseconds at which the <code class="highlighter-rouge">ImageSprite</code>’s position is updated. For example, if the
  <code class="highlighter-rouge">Interval</code> is 50 and the <a href="#ImageSprite.Speed"><code class="highlighter-rouge">Speed</code></a> is 10, then the <code class="highlighter-rouge">ImageSprite</code> will move 10 pixels
  every 50 milliseconds.</dd>
+  <dt id="ImageSprite.MarkOrigin" class="text wo"><em>MarkOrigin</em></dt>
+  <dd>Mark the origin of ImageSprite using a draggable marker.</dd>
+  <dt id="ImageSprite.OriginX" class="number"><em>OriginX</em></dt>
+  <dd>Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
+ A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the right edge.</dd>
+  <dt id="ImageSprite.OriginY" class="number"><em>OriginY</em></dt>
+  <dd>Vertical unit coordinate of the origin with respect to top edge. Permitted values in [0, 1].
+ A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the bottom edge.</dd>
   <dt id="ImageSprite.Picture" class="text"><em>Picture</em></dt>
   <dd>Specifies the path of the sprite’s picture.</dd>
   <dt id="ImageSprite.Rotates" class="boolean"><em>Rotates</em></dt>
   <dd>If true, the sprite image rotates to match the sprite’s heading. If false, the sprite image
- does not rotate when the sprite changes heading. The sprite rotates around its centerpoint.</dd>
+ does not rotate when the sprite changes heading. The sprite rotates around its origin.</dd>
   <dt id="ImageSprite.Speed" class="number"><em>Speed</em></dt>
   <dd>The speed at which the <code class="highlighter-rouge">ImageSprite</code> moves. The <code class="highlighter-rouge">ImageSprite</code> moves this many pixels every
  <a href="#ImageSprite.Interval"><code class="highlighter-rouge">Interval</code></a> milliseconds if <a href="#ImageSprite.Enabled"><code class="highlighter-rouge">Enabled</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
@@ -447,9 +457,9 @@
   <dt id="ImageSprite.Width" class="number bo"><em>Width</em></dt>
   <dd>The width of the ImageSprite in pixels.</dd>
   <dt id="ImageSprite.X" class="number"><em>X</em></dt>
-  <dd>The horizontal coordinate of the left edge of the ImageSprite, increasing as the ImageSprite moves right.</dd>
+  <dd>The horizontal coordinate of the origin of the ImageSprite, increasing as the ImageSprite moves right.</dd>
   <dt id="ImageSprite.Y" class="number"><em>Y</em></dt>
-  <dd>The vertical coordinate of the top edge of the ImageSprite, increasing as the ImageSprite moves down.</dd>
+  <dd>The vertical coordinate of the origin of the ImageSprite, increasing as the ImageSprite moves down.</dd>
   <dt id="ImageSprite.Z" class="number"><em>Z</em></dt>
   <dd>How the ImageSprite should be layered relative to other Balls and ImageSprites, with higher-numbered layers in front of lower-numbered layers.</dd>
 </dl>
@@ -515,14 +525,14 @@
  canvas. If the sprite is too tall to fit on the canvas, this aligns the
  top side of the sprite with the top side of the canvas.</dd>
   <dt id="ImageSprite.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>)</dt>
-  <dd>Moves the ImageSprite so that its left top corner is at the specified <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates.</dd>
+  <dd>Moves the ImageSprite so that its origin is at the specified <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates.</dd>
   <dt id="ImageSprite.MoveToPoint" class="method"><i></i> MoveToPoint(<em class="list">coordinates</em>)</dt>
   <dd>Moves the ImageSprite so that its origin is at the specified x and y coordinates.</dd>
   <dt id="ImageSprite.PointInDirection" class="method"><i></i> PointInDirection(<em class="number">x</em>,<em class="number">y</em>)</dt>
   <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
   <dt id="ImageSprite.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
   <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
- to the line joining the centerpoints of the two sprites.</dd>
+ to the line joining the origins of the two sprites.</dd>
 </dl>
 
 </article>

@@ -46,7 +46,7 @@ public class LabeledTextBox extends Composite {
     textbox.setStylePrimaryName("ode-LabeledTextBox");
     textbox.setWidth("100%");
     panel.add(textbox);
-    panel.setCellWidth(captionLabel, "40%");
+    panel.setCellWidth(captionLabel, "45%");
     panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
     VerticalPanel vp = new VerticalPanel();
     vp.add(panel);

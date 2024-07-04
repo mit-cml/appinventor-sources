@@ -11,16 +11,17 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="addDialog" caption="{messages.newProjectFolderMenuItem}"
-              styleName="ode-DialogBox" width="340px" height="40px">
+  <wiz:Dialog ui:field="addDialog" caption="{messages.newProjectFolderMenuItem}" styleName="ode-DialogBox">
     <g:FlowPanel>
         <w:LabeledTextBox ui:field="input" caption="{messages.newFolderWizardName}"
                           stylePrimaryName="ode-LabeledTextBox" />
-      <g:Label text="{messages.newFolderWizardParent}" styleName="ode-TreeLabel dialogContent" />
+      <g:FlowPanel >
+      <g:Label text="{messages.newFolderWizardParent}"  styleName="ode-TreeLabel dialogContent" />
       <g:Tree ui:field='tree'  />
+    </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow" >
-        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
-        <g:Button ui:field='addButton' text='{messages.okButton}' />
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}' styleName="ode-ProjectListButton"  />
+        <g:Button ui:field='addButton' text='{messages.okButton}' styleName="ode-ProjectListButton"  />
       </g:FlowPanel>
     </g:FlowPanel>
   </wiz:Dialog>
