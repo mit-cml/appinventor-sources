@@ -204,6 +204,15 @@ public struct ChatBot_request {
   /// Clears the value of `model`. Subsequent reads from it will return its default value.
   public mutating func clearModel() {self._model = nil}
 
+  public var inputimage: Data {
+    get {return _inputimage ?? Data()}
+    set {_inputimage = newValue}
+  }
+  /// Returns true if `inputimage` has been explicitly set.
+  public var hasInputimage: Bool {return self._inputimage != nil}
+  /// Clears the value of `inputimage`. Subsequent reads from it will return its default value.
+  public mutating func clearInputimage() {self._inputimage = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -216,6 +225,7 @@ public struct ChatBot_request {
   fileprivate var _apikey: String? = nil
   fileprivate var _provider: String? = nil
   fileprivate var _model: String? = nil
+  fileprivate var _inputimage: Data? = nil
 }
 
 public struct ChatBot_response {
@@ -400,6 +410,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     6: .same(proto: "apikey"),
     7: .same(proto: "provider"),
     8: .same(proto: "model"),
+    9: .same(proto: "inputimage"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -416,6 +427,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       case 6: try { try decoder.decodeSingularStringField(value: &self._apikey) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._provider) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self._model) }()
+      case 9: try { try decoder.decodeSingularBytesField(value: &self._inputimage) }()
       default: break
       }
     }
@@ -450,6 +462,9 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     try { if let v = self._model {
       try visitor.visitSingularStringField(value: v, fieldNumber: 8)
     } }()
+    try { if let v = self._inputimage {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 9)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -462,6 +477,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     if lhs._apikey != rhs._apikey {return false}
     if lhs._provider != rhs._provider {return false}
     if lhs._model != rhs._model {return false}
+    if lhs._inputimage != rhs._inputimage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

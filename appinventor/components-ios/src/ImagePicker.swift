@@ -37,20 +37,22 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
 
     // The asset manager encodes the image URL's original path name to a new URL. The image data is then written to the new URL.
     let url = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] as! NSURL
-    let urlPath = url.path
+    let urlPath = url.path?.chopPrefix(count: 1)
     guard let assetmgr = form?.application?.assetManager else {
       return
     }
-    _selectedImage = assetmgr.pathForPrivateAsset(urlPath!)
-    _selectedImage = "file://" + _selectedImage.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlPathAllowed)!
-    let selectedImageURL = URL(string: _selectedImage)
+    _selectedImage = assetmgr.pathForPrivateAsset(urlPath?.replace(target: ".HEIC", withString: ".jpg") ?? "")
+    let selectedImageURL = URL(string: "file://" + _selectedImage.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlPathAllowed)!)
     let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
     var data:Data?
     let pathExtension = url.pathExtension?.lowercased()
     if pathExtension == "jpg" || pathExtension == "jpeg" {
-      data = image.jpegData(compressionQuality: 1.0)
+      data = image.jpegData(compressionQuality: 0.8)
     } else if pathExtension == "png" {
       data = image.pngData()
+    } else if pathExtension == "heic" {
+      // Camera picture, so use JPG
+      data = image.jpegData(compressionQuality: 0.8)
     }
     do {
       try data?.write(to: selectedImageURL!)

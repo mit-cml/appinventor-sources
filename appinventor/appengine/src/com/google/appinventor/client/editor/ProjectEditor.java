@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.project.ProjectSettings;
@@ -39,6 +40,7 @@ public abstract class ProjectEditor extends Composite {
   private static final Logger LOG = Logger.getLogger(ProjectEditor.class.getName());
 
   protected final ProjectRootNode projectRootNode;
+  protected final UiStyleFactory uiFactory;
   protected final long projectId;
   protected final Project project;
 
@@ -59,8 +61,9 @@ public abstract class ProjectEditor extends Composite {
    *
    * @param projectRootNode  the project root node
    */
-  public ProjectEditor(ProjectRootNode projectRootNode) {
+  public ProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory uiFactory) {
     this.projectRootNode = projectRootNode;
+    this.uiFactory = uiFactory;
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
@@ -99,11 +102,23 @@ public abstract class ProjectEditor extends Composite {
    */
   protected abstract void onHide();
 
+  public UiStyleFactory getUiFactory() {
+    return uiFactory;
+  }
+
   public final void setScreenCheckboxState(String screen, Boolean isChecked) {
     screenHashMap.put(screen, isChecked);
+    changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+        getScreenCheckboxMapString()
+    );
   }
 
   public final Boolean getScreenCheckboxState(String screen) {
+    if (screenHashMap.size() == 0) {
+      buildScreenHashMap();
+    }
     return screenHashMap.get(screen);
   }
 
@@ -124,7 +139,11 @@ public abstract class ProjectEditor extends Composite {
     return screenCheckboxMap;
   }
 
-  public final void buildScreenHashMap(String screenCheckboxMap) {
+  public final void buildScreenHashMap() {
+    String screenCheckboxMap = getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+    );
     String[] pairs = screenCheckboxMap.split(" ");
     for (String pair : pairs) {
       String[] mapping = pair.split(":");

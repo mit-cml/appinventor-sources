@@ -7,9 +7,9 @@ package com.google.appinventor.client.explorer.folder;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
@@ -28,54 +28,45 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 public class ProjectFolder extends Composite {
+  private static final Logger LOG = Logger.getLogger(ProjectFolder.class.getName());
   private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
   /**
    * This class represents a folder containing project objects.
    */
-  private String name;
-  private List<Project> projects = new ArrayList<>();
-  private final List<ProjectListItem> projectListItems = new ArrayList<>();
-  private Map<String, ProjectFolder> folders = new HashMap<>();
-  private final long dateCreated;
+  protected String name;
+  protected List<Project> projects = new ArrayList<>();
+  protected final List<ProjectListItem> projectListItems = new ArrayList<>();
+  protected Map<String, ProjectFolder> folders = new HashMap<>();
+  protected final long dateCreated;
   protected long dateModified;
-  private ProjectFolder parent;
+  protected ProjectFolder parent;
   protected JSONObject cachedJson;
-  private ProjectSelectionChangeHandler changeHandler;
+  protected ProjectSelectionChangeHandler changeHandler;
 
-  interface ProjectFolderUiBinder extends UiBinder<FlowPanel, ProjectFolder> {
-  }
+  interface ProjectFolderUiBinder extends UiBinder<FlowPanel, ProjectFolder> { }
+  protected boolean isExpanded = false;
 
-  private static final ProjectFolder.ProjectFolderUiBinder UI_BINDER =
-      GWT.create(ProjectFolder.ProjectFolderUiBinder.class);
-  private boolean isExpanded = false;
-
-
-  @UiField
-  FlowPanel container;
-  @UiField
-  FlowPanel childrenContainer;
-  @UiField
-  Label nameLabel;
-  @UiField
-  Label dateModifiedLabel;
-  @UiField
-  Label dateCreatedLabel;
-  @UiField
-  CheckBox checkBox;
-  @UiField
-  Icon expandButton;
+  @UiField protected FlowPanel container;
+  @UiField protected FlowPanel childrenContainer;
+  @UiField protected Label nameLabel;
+  @UiField protected Label dateModifiedLabel;
+  @UiField protected Label dateCreatedLabel;
+  @UiField protected CheckBox checkBox;
+  @UiField protected Icon expandButton;
 
   public ProjectFolder(String name, long dateCreated, long dateModified, ProjectFolder parent) {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     this.name = name;
     nameLabel.setText(name);
     this.dateCreated = dateCreated;
@@ -91,8 +82,8 @@ public class ProjectFolder extends Composite {
     this(name, dateCreated, dateCreated, parent);
   }
 
-  public ProjectFolder(JSONObject json, ProjectFolder parent) {
-    initWidget(UI_BINDER.createAndBindUi(this));
+  public ProjectFolder(JSONObject json, ProjectFolder parent, UiStyleFactory styleFactory) {
+    bindUI();
     this.parent = parent;
     name = json.get(FolderJSONKeys.NAME).isString().stringValue();
     nameLabel.setText(name);
@@ -114,9 +105,15 @@ public class ProjectFolder extends Composite {
 
     JSONArray childFoldersJson = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
     for (int i = 0; i < childFoldersJson.size(); i++) {
-      addChildFolder(new ProjectFolder(childFoldersJson.get(i).isObject(), this));
+      addChildFolder(styleFactory.createProjectFolder(childFoldersJson.get(i).isObject(),
+          this));
     }
     cachedJson = null;
+  }
+
+  public void bindUI() {
+    ProjectFolderUiBinder uibinder = GWT.create(ProjectFolderUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -128,14 +125,16 @@ public class ProjectFolder extends Composite {
     return MESSAGES;
   }
 
+  @SuppressWarnings("unused")
   @UiHandler("checkBox")
-  void toggleFolderSelection(ClickEvent e) {
+  protected void toggleFolderSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
     fireSelectionChangeEvent();
   }
 
+  @SuppressWarnings("unused")
   @UiHandler("expandButton")
-  void toggleExpandedState(ClickEvent e) {
+  protected void toggleExpandedState(ClickEvent e) {
     setSelected(false);
     isExpanded = !isExpanded;
     if (isExpanded) {
@@ -154,9 +153,9 @@ public class ProjectFolder extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleDependentName("Highlighted");
+      container.addStyleName("ode-ProjectRowHighlighted");
     } else {
-      container.removeStyleDependentName("Highlighted");
+      container.removeStyleName("ode-ProjectRowHighlighted");
     }
   }
 
@@ -183,13 +182,17 @@ public class ProjectFolder extends Composite {
     }
     projectListItems.clear();
     for (Project p : projects) {
-      ProjectListItem item = new ProjectListItem(p);
+      ProjectListItem item =  createProjectListItem(p);
       if (changeHandler != null) {
         item.setSelectionChangeHandler(changeHandler);
       }
       childrenContainer.add(item);
       projectListItems.add(item);
     }
+  }
+
+  public ProjectListItem createProjectListItem(Project p) {
+    return new ProjectListItem(p) ;
   }
 
   public void removeProject(Project project) {
@@ -340,7 +343,7 @@ public class ProjectFolder extends Composite {
   }
 
   public boolean hasChildFolders() {
-    return folders.size() > 0;
+    return !folders.isEmpty();
   }
 
   public ProjectFolder getChildFolder(String name) {

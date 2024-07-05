@@ -23,8 +23,10 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
@@ -37,10 +39,14 @@ import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Promise.RejectCallback;
+import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 
@@ -61,6 +67,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
@@ -74,14 +81,16 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
@@ -89,6 +98,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -122,13 +132,12 @@ public class Ode implements EntryPoint {
 
   private static final Logger LOG = Logger.getLogger(Ode.class.getName());
 
-  interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
-
   // Global instance of the Ode object
   private static Ode instance;
 
   // Application level image bundle
-  private static final Images IMAGES = GWT.create(Images.class);
+  private static Images IMAGES;
+  private static boolean useNeoStyle = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -206,25 +215,28 @@ public class Ode implements EntryPoint {
    *  |+-------------------------------------------+|
    *  +---------------------------------------------+
    */
-  @UiField(provided = true) DeckPanel deckPanel;
-  @UiField(provided = true) FlowPanel overDeckPanel;
-  @UiField TutorialPanel tutorialPanel;
+  @UiField(provided = true) protected DeckPanel deckPanel;
+  @UiField(provided = true) protected FlowPanel overDeckPanel;
+  @UiField protected TutorialPanel tutorialPanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
-  @UiField TopPanel topPanel;
-  @UiField StatusPanel statusPanel;
-  @UiField FlowPanel workColumns;
-  @UiField FlowPanel structureAndAssets;
-  @UiField ProjectToolbar projectToolbar;
-  @UiField (provided = true) ProjectListBox projectListbox;
-  @UiField DesignToolbar designToolbar;
-  @UiField (provided = true) PaletteBox paletteBox = PaletteBox.getPaletteBox();
-  @UiField (provided = true) ViewerBox viewerBox = ViewerBox.getViewerBox();
-  @UiField (provided = true) AssetListBox assetListBox = AssetListBox.getAssetListBox();
-  @UiField (provided = true) SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-  @UiField (provided = true) PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField protected TopPanel topPanel;
+  @UiField protected StatusPanel statusPanel;
+  @UiField protected FlowPanel workColumns;
+  @UiField protected FlowPanel structureAndAssets;
+  @UiField protected ProjectToolbar projectToolbar;
+  @UiField (provided = true) protected ProjectListBox projectListbox;
+  @UiField protected DesignToolbar designToolbar;
+  @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
+  @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
+  @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+
+  // mode
+  @UiField(provided = true) static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -256,6 +268,7 @@ public class Ode implements EntryPoint {
   // Licensing related variables
   private String licenseCode;
   private String systemId;
+  private static UiStyleFactory uiFactory = null;
 
   /**
    * Flag set if we may need to show the splash screen based on
@@ -306,7 +319,7 @@ public class Ode implements EntryPoint {
     return instance.getCurrentYoungAndroidProjectId();
   }
 
-  public static ProjectEditor getCurretProjectEditor() {
+  public static ProjectEditor getCurrentProjectEditor() {
     return instance.editorManager.getOpenProjectEditor(getCurrentProjectID());
   }
 
@@ -449,12 +462,14 @@ public class Ode implements EntryPoint {
     paletteBox.setVisible(false);
     sourceStructureBox.setVisible(false);
     propertiesBox.setVisible(false);
+    HiddenComponentsCheckbox.setVisibility(false);
   }
 
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
+    HiddenComponentsCheckbox.setVisibility(true);
   }
 
   /**
@@ -599,6 +614,7 @@ public class Ode implements EntryPoint {
         History.newItem(projectIdString, false);
       }
       assetManager.loadAssets(project.getProjectId());
+      assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
   }
@@ -684,6 +700,14 @@ public class Ode implements EntryPoint {
     // This call also stores our sessionId in the backend. This will be checked
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
+
+    setupOrigin(projectService);
+    setupOrigin(userInfoService);
+    setupOrigin(getMotdService);
+    setupOrigin(componentService);
+    setupOrigin(adminInfoService);
+    setupOrigin(tokenAuthService);
+
     Promise.<Config>call(MESSAGES.serverUnavailable(),
         c -> userInfoService.getSystemConfig(sessionId, c))
         .then(result -> {
@@ -701,6 +725,7 @@ public class Ode implements EntryPoint {
             Promise.wrap(this::processSettings),
             Promise.wrap(this::loadUserBackpack)
         ))
+        .then0(this::handleUiPreference)
         .then(this::initializeUi)
         .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
         .then(projects -> {
@@ -873,11 +898,50 @@ public class Ode implements EntryPoint {
     return resolve(true);
   }
 
+  private Promise<Void> handleUiPreference() {
+    return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
+      useNeoStyle = Ode.getUserNewLayout();
+      if (useNeoStyle) {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(ImagesNeo.class);
+            RootPanel.get().addStyleName("neo");
+            uiFactory = new UiFactoryNeo();
+            res.apply(null);
+          }
+        });
+      } else {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(Images.class);
+            RootPanel.get().addStyleName("classic");
+            uiFactory = new UiStyleFactory();
+            res.apply(null);
+          }
+        });
+      }
+    });
+  }
+
   /*
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
-    folderManager = new FolderManager();
+    EDITORS.register(YoungAndroidProjectNode.class, node -> new YaProjectEditor(node, uiFactory));
+    sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    folderManager = new FolderManager(uiFactory);
     projectManager = new ProjectManager();
     editorManager = new EditorManager();
 
@@ -895,6 +959,8 @@ public class Ode implements EntryPoint {
     if (config.getServerExpired()) {
       RootPanel.get().add(new ExpiredServiceOverlay());
     }
+    LOG.info("Declare DeckPanel");
+
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
       @Override
@@ -908,10 +974,27 @@ public class Ode implements EntryPoint {
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
-    projectListbox = ProjectListBox.getProjectListBox();
+    // TODO: Tidy up user preference variable
+    projectListbox = ProjectListBox.create(uiFactory);
+    String layout;
+    if (Ode.getUserNewLayout()) {
+      layout = "modern";
+      if (Ode.getUserDarkThemeEnabled()) {
+        style = Resources.INSTANCE.stylemodernDark();
+      } else {
+        style = Resources.INSTANCE.stylemodernLight();
+      }
+    } else {
+      layout = "classic";
+      if (Ode.getUserDarkThemeEnabled()) {
+        style = Resources.INSTANCE.styleclassicDark();
+      } else {
+        style = Resources.INSTANCE.styleclassicLight();
+      }
+    }
 
-    OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
-    FlowPanel mainPanel = uiBinder.createAndBindUi(this);
+    style.ensureInjected();
+    FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -1278,6 +1361,79 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the dark theme setting.
+   *
+   * @return true if the user has opted to use a dark theme, false otherwise
+   */
+  public static boolean getUserDarkThemeEnabled() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    if (value == null) {
+      return false;
+    }
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user dark theme setting.
+   *
+   * @param enabled new value for the user's UI preference
+   */
+  public static void setUserDarkThemeEnabled(boolean enabled) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+                    "" + enabled);
+    // userSettings.saveSettings(new Command() {
+    //     @Override
+    //     public void execute() {
+    //       // Reload for the UI preferences to take effect. We
+    //       // do this here because we need to make sure that
+    //       // the user settings were saved before we terminate
+    //       // this browsing session. This is particularly important
+    //       // for Firefox
+    //       Window.Location.reload();
+    //     }
+    //   });
+  }
+
+  /**
+   * Returns user new layout usage setting.
+   *
+   * @return true if the user has opted to use the new UI, false otherwise
+   */
+  public static boolean getUserNewLayout() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    return Boolean.parseBoolean(value);
+    // return true;
+  }
+
+  /**
+   * Set user new layout usage setting.
+   *
+   * @param newLayout new value for the user's UI preference
+   */
+  public static void setUserNewLayout(boolean newLayout) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+                    "" + newLayout);
+  }
+
+  public static void saveUserDesignSettings() {
+    userSettings.saveSettings(new Command() {
+      @Override
+      public void execute() {
+        // Reload for the UI preferences to take effect. We
+        // do this here because we need to make sure that
+        // the user settings were saved before we terminate
+        // this browsing session. This is particularly important
+        // for Firefox
+        Window.Location.reload();
+      }
+    });
+  }
+
+  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.
@@ -1287,12 +1443,6 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
     return Boolean.parseBoolean(value);
   }
-
-  /**
-   * Sets whether to use autoloading for the current user.
-   *
-   * @param enable true if autoloading should be enabled or false if it should be disabled.
-   */
 
   /**
    * Helper method to create push buttons.
@@ -2344,6 +2494,17 @@ public class Ode implements EntryPoint {
     return config.getDeleteAccountAllowed();
   }
 
+  public static void setupOrigin(Object service) {
+    if (service instanceof ServiceDefTarget) {
+      String host = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+      String oldUrl = ((ServiceDefTarget)service).getServiceEntryPoint();
+      if (oldUrl.startsWith(GWT.getModuleBaseURL())) {
+        String newUrl = host + "/" + GWT.getModuleName() + "/" + oldUrl.substring(GWT.getModuleBaseURL().length());
+        ((ServiceDefTarget)service).setServiceEntryPoint(newUrl);
+      }
+    }
+  }
+
   /**
    * setRendezvousServer
    *
@@ -2411,11 +2572,49 @@ public class Ode implements EntryPoint {
     console.log(message);
   }-*/;
 
+  public static native boolean isMobile() /*-{
+    var check = false;
+    (function (a) {
+        if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+    })($wnd.navigator.userAgent || $wnd.navigator.vendor || $wnd.opera);
+    return check;
+  }-*/;
+
   private static native void doCloseProxy() /*-{
     if (top.proxy) {
       top.proxy.close();
     }
   }-*/;
+
+  public interface Resources extends ClientBundle {
+
+    public static final Resources INSTANCE =  GWT.create(Resources.class);
+    
+    @Source({
+      "com/google/appinventor/client/light.css"
+    })
+    Style styleclassicLight();
+
+    @Source({
+      "com/google/appinventor/client/dark.css"
+    })
+    Style styleclassicDark();
+
+    @Source({
+      "com/google/appinventor/client/style/neo/lightNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
+    })
+    Style stylemodernLight();
+
+    @Source({
+      "com/google/appinventor/client/style/neo/darkNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
+    })
+    Style stylemodernDark();
+
+    public interface Style extends CssResource {
+    }
+  }
 
   private static native void registerIosExtensions(String extensionJson)/*-{
     $wnd.ALLOWED_IOS_EXTENSIONS = JSON.parse(extensionJson);
