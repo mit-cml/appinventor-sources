@@ -309,6 +309,10 @@ div.StatusPanel {
   background-color: #fff6c3;
 }
 
+.ode-ProjectRow-Selector {
+  background-color: #d2e0a6;
+}
+
 .ode-ProjectRowHidden {
   display:none;
 }
@@ -551,9 +555,13 @@ div.StatusPanel {
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
-.ActionDropDown-Options:hover {
+.ActionDropDown-Options:hover,
+.ode-TopPanelButton:focus,
+.ActionDropDown-Default:focus,
+.ActionDropDown-Options:focus {
   background: #E6E6E6;
   color: #5B5B5B;
+  outline: none;
 }
 
 .ode-TopPanelButton:active,
