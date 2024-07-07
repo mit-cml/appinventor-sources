@@ -634,6 +634,8 @@
       <arg value="${build.extra.dir}"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
+    <copy todir="${build.war.dir}/ode"
+          file="${appinventor.dir}/appengine/extra/cdnok.js" />
   </target>
 
   <target name="devmode"

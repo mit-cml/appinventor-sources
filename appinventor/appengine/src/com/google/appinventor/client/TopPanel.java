@@ -12,11 +12,9 @@ import static com.google.appinventor.client.Ode.getSystemConfig;
 import com.google.appinventor.client.actions.SelectLanguage;
 
 import com.google.appinventor.client.boxes.MotdBox;
-import com.google.appinventor.client.boxes.ProjectListBox;
 
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
-import com.google.appinventor.client.widgets.TextButton;
 
 import com.google.appinventor.shared.rpc.user.Config;
 
@@ -35,16 +33,11 @@ import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
 import java.util.MissingResourceException;
@@ -62,17 +55,15 @@ public class TopPanel extends Composite {
   private static final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
   public static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   public static final String WINDOW_OPEN_LOCATION = "_ai2";
-  private static final TopPanelUiBinder UI_BINDER = GWT.create(TopPanelUiBinder.class);
 
-  @UiField(provided = true) FlowPanel header = new FlowPanel("header");
-  @UiField TopToolbar topToolbar;
-  @UiField ImageElement logo;
-  @UiField Label readOnly;
-  @UiField FlowPanel rightPanel;
-  @UiField DropDownButton languageDropDown;
-  @UiField DropDownButton accountButton;
-  @UiField DropDownItem deleteAccountItem;
-  @UiField FlowPanel links;
+  @UiField protected TopToolbar topToolbar;
+  @UiField protected ImageElement logo;
+  @UiField protected Label readOnly;
+  @UiField protected FlowPanel rightPanel;
+  @UiField protected DropDownButton languageDropDown;
+  @UiField protected DropDownButton accountButton;
+  @UiField protected DropDownItem deleteAccountItem;
+  @UiField protected FlowPanel links;
 
   final Ode ode = Ode.getInstance();
 
@@ -107,7 +98,7 @@ public class TopPanel extends Composite {
      *  |+----------++---------------++-----------------+|
      *  +------------------------------------------------+
      */
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     Config config = getSystemConfig();
     String logoUrl = config.getLogoUrl();
     if (!Strings.isNullOrEmpty(logoUrl)) {
@@ -132,6 +123,11 @@ public class TopPanel extends Composite {
     languageDropDown.setCaption(getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
   }
 
+  public void bindUI() {
+    TopPanelUiBinder uibinder = GWT.create(TopPanelUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
+  }
+
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
@@ -139,19 +135,6 @@ public class TopPanel extends Composite {
 
   public TopToolbar getTopToolbar() {
     return topToolbar;
-  }
-
-  @SuppressWarnings("unused")
-  @UiHandler("myProjects")
-  public void switchToMyProjects(ClickEvent e) {
-    topToolbar.updateMoveToTrash(true);
-    ode.switchToProjectsView();
-  }
-
-  @SuppressWarnings("unused")
-  @UiHandler("viewTrash")
-  public void switchToTrash(ClickEvent e) {
-    ode.switchToTrash();
   }
 
   private String getDisplayName(String localeName){

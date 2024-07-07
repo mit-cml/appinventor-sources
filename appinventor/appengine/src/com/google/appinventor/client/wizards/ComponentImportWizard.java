@@ -152,7 +152,7 @@ public class ComponentImportWizard extends Wizard {
             return;
           }
 
-          String url = GWT.getModuleBaseURL() +
+          String url = ServerLayout.getModuleBaseURL() +
             ServerLayout.UPLOAD_SERVLET + "/" +
             ServerLayout.UPLOAD_COMPONENT + "/" +
             trimLeadingPath(fileUpload.getFilename());

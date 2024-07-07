@@ -27,10 +27,19 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 
 /**
@@ -40,13 +49,14 @@ import java.util.Collection;
 public class FileUploadWizard {
   interface FileUploadWizardUiBinder extends UiBinder<Dialog, FileUploadWizard> {}
 
-  private static final FileUploadWizard.FileUploadWizardUiBinder UI_BINDER =
+  private static final FileUploadWizard.FileUploadWizardUiBinder uibinder =
       GWT.create(FileUploadWizardUiBinder.class);
 
   @UiField Dialog uploadDialog;
   @UiField FileUpload upload;
   @UiField Button okButton;
   @UiField Button cancelButton;
+
 
   private final FolderNode folderNode;
   private final Collection<String> acceptableTypes;
@@ -91,6 +101,7 @@ public class FileUploadWizard {
    * @param acceptableTypes a collection of acceptable types, or null.
    * @param fileUploadedCallback callback to be executed after upload
    */
+
   public FileUploadWizard(final FolderNode folderNode,
       final Collection<String> acceptableTypes,
       final FileUploadedCallback fileUploadedCallback) {
@@ -98,11 +109,15 @@ public class FileUploadWizard {
     this.acceptableTypes = acceptableTypes;
     this.fileUploadedCallback = fileUploadedCallback;
 
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
 
     if (this.acceptableTypes != null) {
       upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
+  }
+
+
+  public void show() {
     uploadDialog.center();
   }
 
@@ -165,9 +180,9 @@ public class FileUploadWizard {
 
       // Use the folderNode's project id and file id in the upload URL so that the file is
       // uploaded into that project and that folder in our back-end storage.
-      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-                             ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-                             folderNode.getFileId() + "/" + filename;
+      String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+        ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+        folderNode.getFileId() + "/" + filename;
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
             @Override
