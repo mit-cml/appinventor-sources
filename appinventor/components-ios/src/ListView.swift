@@ -274,17 +274,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         _selectionIndex = selectionIndex
         _selection = _elements[Int(selectionIndex) - 1]
         _selectionDetailText = _elements[Int(selectionIndex) - 1]
+        _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       } else {
         _selectionIndex = 0
         _selection = ""
         _selectionDetailText = ""
-      }
-      if _selectionIndex == 0 {
         if let path = _view.indexPathForSelectedRow {
           _view.deselectRow(at: path, animated: true)
         }
-      } else {
-        _view.selectRow(at: IndexPath(row: Int(_selectionIndex), section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       }
     }
   }

@@ -1746,6 +1746,15 @@ public final class ChatBotToken {
      */
     com.google.protobuf.ByteString
         getModelBytes();
+
+    /**
+     * <code>optional bytes inputimage = 9;</code>
+     */
+    boolean hasInputimage();
+    /**
+     * <code>optional bytes inputimage = 9;</code>
+     */
+    com.google.protobuf.ByteString getInputimage();
   }
   /**
    * Protobuf type {@code request}
@@ -1766,6 +1775,7 @@ public final class ChatBotToken {
       apikey_ = "";
       provider_ = "chatgpt";
       model_ = "";
+      inputimage_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -1848,6 +1858,11 @@ public final class ChatBotToken {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000080;
               model_ = bs;
+              break;
+            }
+            case 74: {
+              bitField0_ |= 0x00000100;
+              inputimage_ = input.readBytes();
               break;
             }
           }
@@ -2163,6 +2178,21 @@ public final class ChatBotToken {
       }
     }
 
+    public static final int INPUTIMAGE_FIELD_NUMBER = 9;
+    private com.google.protobuf.ByteString inputimage_;
+    /**
+     * <code>optional bytes inputimage = 9;</code>
+     */
+    public boolean hasInputimage() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional bytes inputimage = 9;</code>
+     */
+    public com.google.protobuf.ByteString getInputimage() {
+      return inputimage_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2199,6 +2229,9 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, model_);
       }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, inputimage_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2232,6 +2265,10 @@ public final class ChatBotToken {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, model_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, inputimage_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2290,6 +2327,11 @@ public final class ChatBotToken {
         result = result && getModel()
             .equals(other.getModel());
       }
+      result = result && (hasInputimage() == other.hasInputimage());
+      if (hasInputimage()) {
+        result = result && getInputimage()
+            .equals(other.getInputimage());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2333,6 +2375,10 @@ public final class ChatBotToken {
       if (hasModel()) {
         hash = (37 * hash) + MODEL_FIELD_NUMBER;
         hash = (53 * hash) + getModel().hashCode();
+      }
+      if (hasInputimage()) {
+        hash = (37 * hash) + INPUTIMAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getInputimage().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2473,6 +2519,8 @@ public final class ChatBotToken {
         bitField0_ = (bitField0_ & ~0x00000040);
         model_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
+        inputimage_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -2533,6 +2581,10 @@ public final class ChatBotToken {
           to_bitField0_ |= 0x00000080;
         }
         result.model_ = model_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.inputimage_ = inputimage_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2610,6 +2662,9 @@ public final class ChatBotToken {
           bitField0_ |= 0x00000080;
           model_ = other.model_;
           onChanged();
+        }
+        if (other.hasInputimage()) {
+          setInputimage(other.getInputimage());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3241,6 +3296,41 @@ public final class ChatBotToken {
   }
   bitField0_ |= 0x00000080;
         model_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString inputimage_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes inputimage = 9;</code>
+       */
+      public boolean hasInputimage() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional bytes inputimage = 9;</code>
+       */
+      public com.google.protobuf.ByteString getInputimage() {
+        return inputimage_;
+      }
+      /**
+       * <code>optional bytes inputimage = 9;</code>
+       */
+      public Builder setInputimage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        inputimage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes inputimage = 9;</code>
+       */
+      public Builder clearInputimage() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        inputimage_ = getDefaultInstance().getInputimage();
         onChanged();
         return this;
       }
@@ -4243,15 +4333,15 @@ public final class ChatBotToken {
       "\022\n\007version\030\002 \001(\004:\0010\022\025\n\ngeneration\030\003 \001(\004:" +
       "\0010\"i\n\005token\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005keyid" +
       "\030\002 \001(\004:\0011\022\025\n\ngeneration\030\003 \001(\004:\0010\022\020\n\010unsi" +
-      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"\236\001\n\007reques" +
+      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"\262\001\n\007reques" +
       "t\022\022\n\007version\030\001 \001(\004:\0011\022\025\n\005token\030\002 \001(\0132\006.t" +
       "oken\022\014\n\004uuid\030\003 \001(\t\022\020\n\010question\030\004 \001(\t\022\016\n\006" +
       "system\030\005 \001(\t\022\016\n\006apikey\030\006 \001(\t\022\031\n\010provider" +
-      "\030\007 \001(\t:\007chatgpt\022\r\n\005model\030\010 \001(\t\"O\n\010respon" +
-      "se\022\022\n\007version\030\001 \001(\004:\0011\022\021\n\006status\030\002 \001(\004:\001",
-      "0\022\014\n\004uuid\030\003 \001(\t\022\016\n\006answer\030\004 \001(\tBA\n1com.g" +
-      "oogle.appinventor.components.runtime.cha" +
-      "tbotB\014ChatBotToken"
+      "\030\007 \001(\t:\007chatgpt\022\r\n\005model\030\010 \001(\t\022\022\n\ninputi" +
+      "mage\030\t \001(\014\"O\n\010response\022\022\n\007version\030\001 \001(\004:",
+      "\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014\n\004uuid\030\003 \001(\t\022\016\n\006a" +
+      "nswer\030\004 \001(\tBA\n1com.google.appinventor.co" +
+      "mponents.runtime.chatbotB\014ChatBotToken"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4282,7 +4372,7 @@ public final class ChatBotToken {
     internal_static_request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_request_descriptor,
-        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", "Provider", "Model", });
+        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", "Provider", "Model", "Inputimage", });
     internal_static_response_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_response_fieldAccessorTable = new

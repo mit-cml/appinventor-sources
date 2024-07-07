@@ -874,6 +874,10 @@ public final class YoungAndroidFormUpgrader {
       // The ApiKey property was made visible in the designer.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The ConverseWithImage block was added
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1380,6 +1384,10 @@ public final class YoungAndroidFormUpgrader {
       // Direction dropdown blocks were added.
       // Assets helper block was added.
       srcCompVersion = 8;
+    }
+    if (srcCompVersion < 9) {
+      // The MarkOrigin, OriginX, and OriginY properties were added.
+      srcCompVersion = 9;
     }
     return srcCompVersion;
   }

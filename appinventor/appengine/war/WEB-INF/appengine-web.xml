@@ -20,6 +20,7 @@
 
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
+    <include path="/ode/cdnok.js" expiration="3600s" />
     <include path="/index.html" expiration="0s" />
 
     <include path="/ode/**.cache.*" expiration="365d" />
@@ -177,6 +178,14 @@
     <!-- So the calls to the buildserver can re-use connections -->
     <property name="http.keepAlive" value="true" />
     <property name="http.maxConnections" value="5" />
+
+    <!-- Where to load ode from -->
+
+    <!-- Set this to the base URL of where ode is located. Leaving it blank -->
+    <!-- will load ode from the same host as the server. Note: base URL must be -->
+    <!-- a top level url. Aka https://example.com/ *not* -->
+    <!-- https://example.com/something. -->
+    <property name="ode.base" value="" />
 
   </system-properties>
 </appengine-web-app>
