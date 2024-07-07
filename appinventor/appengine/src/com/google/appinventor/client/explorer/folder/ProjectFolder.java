@@ -15,7 +15,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -131,7 +135,37 @@ public class ProjectFolder extends Composite {
   @UiHandler("checkBox")
   void toggleFolderSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
+    for (ProjectListItem item : projectListItems) {
+      item.setSelected(checkBox.getValue());
+    }
     fireSelectionChangeEvent();
+  }
+
+  @UiHandler("checkBox")
+  void toggleFolderSelection(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      setSelected(false);
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        expandButton.setIcon("expand_more");
+        childrenContainer.removeStyleName("ode-ProjectRowHidden");
+        checkBox.setValue(false);
+      } else {
+        expandButton.setIcon("chevron_right");
+        childrenContainer.addStyleName("ode-ProjectRowHidden");
+      }
+      fireSelectionChangeEvent();
+    }
+  }
+
+  @UiHandler("checkBox")
+  void highlightContainer(FocusEvent e) {
+    container.addStyleDependentName("Selector");
+  }
+
+  @UiHandler("checkBox")
+  void highlightContainer(BlurEvent e) {
+    container.removeStyleDependentName("Selector");
   }
 
   @UiHandler("expandButton")
@@ -141,12 +175,10 @@ public class ProjectFolder extends Composite {
     if (isExpanded) {
       expandButton.setIcon("expand_more");
       childrenContainer.removeStyleName("ode-ProjectRowHidden");
-      checkBox.addStyleName("ode-ProjectElementHidden");
       checkBox.setValue(false);
     } else {
       expandButton.setIcon("chevron_right");
       childrenContainer.addStyleName("ode-ProjectRowHidden");
-      checkBox.removeStyleName("ode-ProjectElementHidden");
     }
     fireSelectionChangeEvent();
   }

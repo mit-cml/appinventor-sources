@@ -16,7 +16,11 @@ import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHand
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -94,6 +98,22 @@ public class ProjectListItem extends Composite {
     changeHandler.onSelectionChange(checkBox.getValue());
   }
 
+  @UiHandler("checkBox")
+  void openProject(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    }
+  }
+
+  @UiHandler("checkBox")
+  void highlightContainer(FocusEvent event) {
+    container.addStyleDependentName("Selector");
+  }
+
+  @UiHandler("checkBox")
+  void highlightContainer(BlurEvent event) {
+    container.removeStyleDependentName("Selector");
+  }
 
   @SuppressWarnings("unused")
   @UiHandler("nameLabel")
