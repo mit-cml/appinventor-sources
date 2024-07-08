@@ -209,6 +209,9 @@ Blockly.Backpack.prototype.createDom = function(opt_workspace) {
 
   this.svgBody_.setAttribute('class', 'blocklybackpackImage');
 
+  this.svgTooltip_ = Blockly.utils.createSvgElement('title', null , this.svgBody_);
+  this.svgTooltip_.textContent = 'Alt + B to Open/Close'; 
+
   return this.svgGroup_;
 };
 
