@@ -81,6 +81,8 @@ public class ProjectFolder extends Composite {
     this.parent = parent;
     this.projects = new ArrayList<>();
     this.folders = new HashMap<>();
+    checkBox.setText("Expand and Collapse" + nameLabel.getText() + "folder by pressing enter");
+    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public ProjectFolder(String name, long dateCreated, ProjectFolder parent) {
@@ -114,13 +116,14 @@ public class ProjectFolder extends Composite {
           this));
     }
     cachedJson = null;
+
+    checkBox.setText("Expand and Collapse" + this.nameLabel.getText() + "folder by pressing enter");
+    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void bindUI() {
     ProjectFolderUiBinder uibinder = GWT.create(ProjectFolderUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
-    checkBox.setText("Expand and Collapse" + nameLabel.getText() + "folder by pressing enter");
-    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {

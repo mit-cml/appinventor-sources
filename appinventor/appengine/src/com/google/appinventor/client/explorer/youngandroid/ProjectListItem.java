@@ -61,14 +61,14 @@ public class ProjectListItem extends Composite {
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
+
+    checkBox.setText("open" + nameLabel.getText() + "project by pressing enter");
+    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void bindUI() {
     ProjectListItemUiBinder uibinder = GWT.create(ProjectListItemUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
-
-    checkBox.setText("open" + nameLabel.getText() + "project by pressing enter");
-    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
