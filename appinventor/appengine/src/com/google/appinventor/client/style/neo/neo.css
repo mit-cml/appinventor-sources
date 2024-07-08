@@ -80,7 +80,6 @@ they get cut off in Windows.
 
   .ode-Box {
     height: 100%;
-    width: 100%;
   }
 
 
@@ -94,7 +93,6 @@ they get cut off in Windows.
     flex-grow: 1;
     margin:unset;
     height: 100%;
-    width: 100%;
   }
 
   .ode-Box-toolkit {
