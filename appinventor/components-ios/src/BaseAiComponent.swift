@@ -27,8 +27,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
     private var _modelPath = ""
     private var _webview: WKWebView? = nil
     private var _webviewer: WebViewer?
-    private var assetPath = nil;
-    private var jsInterface = nil;
+    private var assetPath? = nil;
 
     @objc public override init(_ container: ComponentContainer) {
         super.init(container)
