@@ -11,10 +11,15 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -64,6 +69,21 @@ public class ProjectFolderNeo extends ProjectFolder {
   @Override
   protected void toggleFolderSelection(ClickEvent e) {
     super.toggleFolderSelection(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void toggleFolderSelection(KeyDownEvent e) {
+    super.toggleFolderSelection(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void highlightContainer(FocusEvent e) {
+    super.highlightContainer(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void highlightContainer(BlurEvent e) {
+    super.highlightContainer(e);
   }
 
   @SuppressWarnings("unused")

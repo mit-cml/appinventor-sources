@@ -15,6 +15,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -118,6 +119,8 @@ public class ProjectFolder extends Composite {
   public void bindUI() {
     ProjectFolderUiBinder uibinder = GWT.create(ProjectFolderUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
+    checkBox.setText("Expand and Collapse" + nameLabel.getText() + "folder by pressing enter");
+    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -140,7 +143,7 @@ public class ProjectFolder extends Composite {
   }
 
   @UiHandler("checkBox")
-  void toggleFolderSelection(KeyDownEvent e) {
+  protected void toggleFolderSelection(KeyDownEvent e) {
     if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
       setSelected(false);
       isExpanded = !isExpanded;
@@ -157,12 +160,12 @@ public class ProjectFolder extends Composite {
   }
 
   @UiHandler("checkBox")
-  void highlightContainer(FocusEvent e) {
+  protected void highlightContainer(FocusEvent e) {
     container.addStyleDependentName("Selector");
   }
 
   @UiHandler("checkBox")
-  void highlightContainer(BlurEvent e) {
+  protected void highlightContainer(BlurEvent e) {
     container.removeStyleDependentName("Selector");
   }
 
@@ -184,9 +187,9 @@ public class ProjectFolder extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleName("ode-ProjectRowHighlighted");
+      container.addStyleName("ode-ProjectRow-Highlighted");
     } else {
-      container.removeStyleName("ode-ProjectRowHighlighted");
+      container.removeStyleName("ode-ProjectRow-Highlighted");
     }
   }
 

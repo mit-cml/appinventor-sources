@@ -16,6 +16,7 @@ import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHand
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -65,6 +66,9 @@ public class ProjectListItem extends Composite {
   public void bindUI() {
     ProjectListItemUiBinder uibinder = GWT.create(ProjectListItemUiBinder.class);
     initWidget(uibinder.createAndBindUi(this));
+
+    checkBox.setText("open" + nameLabel.getText() + "project by pressing enter");
+    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -78,9 +82,9 @@ public class ProjectListItem extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleName("ode-ProjectRowHighlighted");
+      container.addStyleName("ode-ProjectRow-Highlighted");
     } else {
-      container.removeStyleName("ode-ProjectRowHighlighted");
+      container.removeStyleName("ode-ProjectRow-Highlighted");
     }
   }
 
@@ -101,19 +105,19 @@ public class ProjectListItem extends Composite {
   }
 
   @UiHandler("checkBox")
-  void openProject(KeyDownEvent e) {
+  protected void openProject(KeyDownEvent e) {
     if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
       Ode.getInstance().openYoungAndroidProjectInDesigner(project);
     }
   }
 
   @UiHandler("checkBox")
-  void highlightContainer(FocusEvent event) {
+  protected void highlightContainer(FocusEvent e) {
     container.addStyleDependentName("Selector");
   }
 
   @UiHandler("checkBox")
-  void highlightContainer(BlurEvent event) {
+  protected void highlightContainer(BlurEvent e) {
     container.removeStyleDependentName("Selector");
   }
 

@@ -5,10 +5,15 @@
 
 package com.google.appinventor.client.style.neo;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -46,6 +51,21 @@ public class ProjectListItemNeo extends ProjectListItem {
   @UiHandler("checkBox")
   protected void toggleItemSelection(ClickEvent e) {
     super.toggleItemSelection(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void openProject(KeyDownEvent e) {
+    super.openProject(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void highlightContainer(FocusEvent e) {
+    super.highlightContainer(e);
+  }
+
+  @UiHandler("checkBox")
+  protected void highlightContainer(BlurEvent e) {
+    super.highlightContainer(e);
   }
 
   @UiHandler("nameLabel")
