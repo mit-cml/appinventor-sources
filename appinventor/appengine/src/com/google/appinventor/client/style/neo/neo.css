@@ -78,6 +78,12 @@ they get cut off in Windows.
     padding-left: unset;
   }
 
+  .ode-Box {
+    height: 100%;
+    width: 100%;
+  }
+
+
   .ode-Box-content {
     /*all:unset;*/
     background-image: unset;
@@ -87,6 +93,8 @@ they get cut off in Windows.
     display: flex;
     flex-grow: 1;
     margin:unset;
+    height: 100%;
+    width: 100%;
   }
 
   .ode-Box-toolkit {
@@ -596,9 +604,11 @@ they get cut off in Windows.
    */
   
   .ode-StatusPanel {
-    color: #888;
-    background: url(../images/toolbarBG.png) repeat;
-    border-bottom: 1px solid #bbccff;
+    color: label-color;
+    background: background-color;
+    border-bottom: 1px solid border-color;
+    border-top: 1px solid border-color;
+    border-radius: 1px;
   }
   
   .ode-StatusPanel a {
