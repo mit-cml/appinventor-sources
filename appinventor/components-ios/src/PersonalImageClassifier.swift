@@ -39,11 +39,7 @@ import UIKit
         if let imageData = scaledImage.pngData(){
             let imageEncodedBase64String = imageData.base64EncodedString().replacingOccurrences(of: "\n", with: "")
             print("imageEncodedBase64String: \(imageEncodedBase64String)")
-<<<<<<< HEAD
-            _webview.evaluateJavaScript("classifyImageData(\"\(imageEncodedBase64String)\");", completionHandler: nil)
-=======
             _webview?.evaluateJavaScript("classifyImageData(\"\(imageEncodedBase64String)\");", completionHandler: nil)
->>>>>>> c949328f9 (fixed syntax errors in PersonalImageClassifier.swift)
         }
     }
 
@@ -68,11 +64,7 @@ import UIKit
     @objc public func stopContinuousClassification() {
         if inputMode.caseInsensitiveCompare(MODE_VIDEO) == .orderedSame && _running {
             assertWebView("StopVideoClassification")
-<<<<<<< HEAD
-            _webview.evaluateJavaScript("stopVideoClassification();", completionHandler: nil)
-=======
             _webview?.evaluateJavaScript("stopVideoClassification();", completionHandler: nil)
->>>>>>> c949328f9 (fixed syntax errors in PersonalImageClassifier.swift)
             _running = false
         }
     }
@@ -107,17 +99,10 @@ import UIKit
         }
         set {
             if newValue.caseInsensitiveCompare(MODE_VIDEO) == .orderedSame {
-<<<<<<< HEAD
-                _webview.evaluateJavaScript("setInputMode(\"video\");", completionHandler: nil)
-                _inputMode = MODE_VIDEO
-            } else if newValue.caseInsensitiveCompare(MODE_IMAGE) == .orderedSame {
-                _webview.evaluateJavaScript("setInputMode(\"image\");", completionHandler: nil)
-=======
                 _webview?.evaluateJavaScript("setInputMode(\"video\");", completionHandler: nil)
                 _inputMode = MODE_VIDEO
             } else if newValue.caseInsensitiveCompare(MODE_IMAGE) == .orderedSame {
                 _webview?.evaluateJavaScript("setInputMode(\"image\");", completionHandler: nil)
->>>>>>> c949328f9 (fixed syntax errors in PersonalImageClassifier.swift)
                 _inputMode = MODE_IMAGE
             } else {
                 form.dispatchErrorOccurredEvent(self, "InputMode", ErrorMessages.ERROR_INPUT_MODE, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode \(newValue)")
