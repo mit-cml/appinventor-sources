@@ -15,10 +15,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -32,6 +29,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
@@ -69,6 +67,7 @@ public class ProjectFolder extends Composite {
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
   @UiField protected Icon expandButton;
+  @UiField protected FocusPanel expandbuttonFocusPanel;
 
   public ProjectFolder(String name, long dateCreated, long dateModified, ProjectFolder parent) {
     bindUI();
@@ -81,8 +80,6 @@ public class ProjectFolder extends Composite {
     this.parent = parent;
     this.projects = new ArrayList<>();
     this.folders = new HashMap<>();
-    checkBox.setText("Expand and Collapse" + nameLabel.getText() + "folder by pressing enter");
-    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public ProjectFolder(String name, long dateCreated, ProjectFolder parent) {
@@ -116,9 +113,6 @@ public class ProjectFolder extends Composite {
           this));
     }
     cachedJson = null;
-
-    checkBox.setText("Expand and Collapse" + this.nameLabel.getText() + "folder by pressing enter");
-    checkBox.getElement().getStyle().setFontSize(0, Unit.PX);
   }
 
   public void bindUI() {
@@ -139,50 +133,33 @@ public class ProjectFolder extends Composite {
   @UiHandler("checkBox")
   protected void toggleFolderSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
-    for (ProjectListItem item : projectListItems) {
-      item.setSelected(checkBox.getValue());
-    }
     fireSelectionChangeEvent();
   }
 
-  @UiHandler("checkBox")
-  protected void toggleFolderSelection(KeyDownEvent e) {
+  @UiHandler("expandbuttonFocusPanel")
+  protected void toggleExpandedState(ClickEvent e) {
+    toggleState();
+  }
+
+  @UiHandler("expandbuttonFocusPanel")
+  protected void toggleExpandedState(KeyDownEvent e) {
     if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-      setSelected(false);
-      isExpanded = !isExpanded;
-      if (isExpanded) {
-        expandButton.setIcon("expand_more");
-        childrenContainer.removeStyleName("ode-ProjectRowHidden");
-        checkBox.setValue(false);
-      } else {
-        expandButton.setIcon("chevron_right");
-        childrenContainer.addStyleName("ode-ProjectRowHidden");
-      }
-      fireSelectionChangeEvent();
+      toggleState();
     }
   }
 
-  @UiHandler("checkBox")
-  protected void highlightContainer(FocusEvent e) {
-    container.addStyleDependentName("Selector");
-  }
-
-  @UiHandler("checkBox")
-  protected void highlightContainer(BlurEvent e) {
-    container.removeStyleDependentName("Selector");
-  }
-
-  @UiHandler("expandButton")
-  protected void toggleExpandedState(ClickEvent e) {
+  private void toggleState() {
     setSelected(false);
     isExpanded = !isExpanded;
     if (isExpanded) {
       expandButton.setIcon("expand_more");
       childrenContainer.removeStyleName("ode-ProjectRowHidden");
+      checkBox.addStyleName("ode-ProjectElementHidden");
       checkBox.setValue(false);
     } else {
       expandButton.setIcon("chevron_right");
       childrenContainer.addStyleName("ode-ProjectRowHidden");
+      checkBox.removeStyleName("ode-ProjectElementHidden");
     }
     fireSelectionChangeEvent();
   }

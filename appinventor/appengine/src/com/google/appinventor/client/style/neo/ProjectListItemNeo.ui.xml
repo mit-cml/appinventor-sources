@@ -9,7 +9,9 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <g:FlowPanel styleName="ode-ProjectRowUnHighlighted" ui:field="container">
     <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox ode-ProjectCheckBox'/>
-    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
+    <g:FocusPanel ui:field='projectnameFocusPanel' styleName='ode-ProjectNameFocusPanel'>
+      <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
+    </g:FocusPanel>
     <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel'/>
     <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel'/>
   </g:FlowPanel>

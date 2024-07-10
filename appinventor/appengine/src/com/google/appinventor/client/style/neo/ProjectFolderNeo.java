@@ -11,10 +11,7 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,6 +19,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 public class ProjectFolderNeo extends ProjectFolder {
@@ -34,6 +32,7 @@ public class ProjectFolderNeo extends ProjectFolder {
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
   @UiField protected Icon expandButton;
+  @UiField protected FocusPanel expandbuttonFocusPanel;
 
   public ProjectFolderNeo(String name, long dateCreated, long dateModified, ProjectFolder parent) {
     super(name, dateCreated, dateModified, parent);
@@ -58,6 +57,7 @@ public class ProjectFolderNeo extends ProjectFolder {
     super.dateCreatedLabel = dateCreatedLabel;
     super.checkBox = checkBox;
     super.expandButton = expandButton;
+    super.expandbuttonFocusPanel = expandbuttonFocusPanel;
   }
 
   @Override
@@ -71,22 +71,13 @@ public class ProjectFolderNeo extends ProjectFolder {
     super.toggleFolderSelection(e);
   }
 
-  @UiHandler("checkBox")
-  protected void toggleFolderSelection(KeyDownEvent e) {
-    super.toggleFolderSelection(e);
+  @UiHandler("expandbuttonFocusPanel")
+  @Override
+  protected void toggleExpandedState(KeyDownEvent e) {
+    super.toggleExpandedState(e);
   }
 
-  @UiHandler("checkBox")
-  protected void highlightContainer(FocusEvent e) {
-    super.highlightContainer(e);
-  }
-
-  @UiHandler("checkBox")
-  protected void highlightContainer(BlurEvent e) {
-    super.highlightContainer(e);
-  }
-
-  @SuppressWarnings("unused")
+  @UiHandler("expandbuttonFocusPanel")
   @Override
   protected void toggleExpandedState(ClickEvent e) {
     super.toggleExpandedState(e);

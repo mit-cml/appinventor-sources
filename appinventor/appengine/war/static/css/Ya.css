@@ -328,13 +328,18 @@ div.StatusPanel {
   align-items: center;
 }
 
+.ode-ProjectNameFocusPanel,
+.ode-ExpandButtonFocusPanel,
+.ode-NameFocusPanel {
+  flex-grow: 1;
+}
+
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
   color: #555;
   cursor: pointer;
   vertical-align: top;
-  padding-right: 10px;
   text-align: left;
   flex-grow: 1;
   min-width: 100px;
@@ -370,10 +375,6 @@ div.StatusPanel {
 
 .ode-ProjectRow-Highlighted {
   background-color: #fff6c3;
-}
-
-.ode-ProjectRow-Selector {
-  background-color: #d2e0a6;
 }
 
 .ode-ProjectRowHidden {
