@@ -13,7 +13,9 @@ import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -173,37 +175,45 @@ public class RunD8 extends DexTask implements AndroidTask {
       Set<String> mainDexClasses, String outputDir, String intermediateFileName)
       throws IOException {
     List<String> arguments = new ArrayList<>();
+    List<String> javaArgs = new ArrayList<>();
     arguments.add("java");
-    arguments.add("-Xmx" + context.getChildProcessRam() + "M");
-    arguments.add("-Xss8m");
-    arguments.add("-cp");
-    arguments.add(context.getResources().getD8Jar());
-    arguments.add("com.android.tools.r8.D8");
+    javaArgs.add("-Xmx" + context.getChildProcessRam() + "M");
+    javaArgs.add("-Xss8m");
+    javaArgs.add("-cp");
+    javaArgs.add(context.getResources().getD8Jar());
+    javaArgs.add("com.android.tools.r8.D8");
     if (intermediateFileName != null) {
-      arguments.add("--intermediate");
+      javaArgs.add("--intermediate");
     }
-    arguments.add("--lib");
-    arguments.add(context.getResources().getAndroidRuntime());
+    javaArgs.add("--lib");
+    javaArgs.add(context.getResources().getAndroidRuntime());
     if (intermediateFileName == null) {
-      arguments.add("--classpath");
-      arguments.add(context.getPaths().getClassesDir().getAbsolutePath());
+      javaArgs.add("--classpath");
+      javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
     }
-    arguments.add("--output");
-    arguments.add(outputDir);
-    arguments.add("--min-api");
-    arguments.add(Integer.toString(AndroidBuildUtils.computeMinSdk(context)));
+    javaArgs.add("--output");
+    javaArgs.add(outputDir);
+    javaArgs.add("--min-api");
+    javaArgs.add(Integer.toString(AndroidBuildUtils.computeMinSdk(context)));
     if (mainDexClasses != null) {
       if (USE_D8_PROGUARD_RULES) {
-        arguments.add("--main-dex-rules");
-        arguments.add(writeClassRules(context.getPaths().getClassesDir(), mainDexClasses));
+        javaArgs.add("--main-dex-rules");
+        javaArgs.add(writeClassRules(context.getPaths().getClassesDir(), mainDexClasses));
       } else {
-        arguments.add("--main-dex-list");
-        arguments.add(writeClassList(context.getPaths().getClassesDir(), mainDexClasses));
+        javaArgs.add("--main-dex-list");
+        javaArgs.add(writeClassList(context.getPaths().getClassesDir(), mainDexClasses));
       }
     }
     for (File input : inputs) {
-      arguments.add(input.getAbsolutePath());
+      javaArgs.add(input.getAbsolutePath());
     }
+    File javaArgsFile = new File(context.getPaths().getTmpDir(), "d8arguments.txt");
+    try (PrintStream ps = new PrintStream(new FileOutputStream(javaArgsFile))) {
+      for (String arg : javaArgs) {
+        ps.println(arg);
+      }
+    }
+    arguments.add("@" + javaArgsFile.getAbsolutePath());
     synchronized (context.getResources().getSyncKawaOrDx()) {
       boolean result = Execution.execute(context.getPaths().getTmpDir(),
           arguments.toArray(new String[0]), System.out, System.err);
