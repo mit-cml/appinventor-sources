@@ -121,15 +121,16 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
-                       styleName="ode-TopPanelButton" ui:field="settingsDropDown"
-                       visible="{hasWriteAccess}">
+                       styleName="ode-TopPanelButton" ui:field="settingsDropDown">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
+      <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}"
+          visible="{hasWriteAccess}">
         <actions:DisableAutoloadAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}">
+      <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}"
+          visible="{hasWriteAccess}">
         <actions:SetFontRegularAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>

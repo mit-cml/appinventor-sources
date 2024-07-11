@@ -73,9 +73,6 @@
                     tooltip="{messages.deleteFromTrashButton}">
       <actions:DeleteForeverProjectAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishToGalleryButton}" visible="false">
-      <actions:SendToGalleryAction/>
-    </ai:ToolbarItem>
 
   </ai:Toolbar>
 </ui:UiBinder>
