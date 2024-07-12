@@ -177,6 +177,7 @@
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151EB7E1298853E400315044 /* AccessibleComponent.swift */; };
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
+		4625AF9B2A8E8B59002E2FAE /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4625AF9A2A8E8B59002E2FAE /* CardView.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
@@ -430,6 +431,7 @@
 		151EB7E1298853E400315044 /* AccessibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibleComponent.swift; sourceTree = "<group>"; };
 		22843756284F89DF00EC3133 /* AssetFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetFetcher.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		4625AF9A2A8E8B59002E2FAE /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -682,6 +684,7 @@
 		06D151921DC464AB00FC981E /* layout */ = {
 			isa = PBXGroup;
 			children = (
+				4625AF9A2A8E8B59002E2FAE /* CardView.swift */,
 				06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */,
 				06D151E91DC6ED5200FC981E /* HVArrangement.swift */,
 				06B215FB1DB95109000B3366 /* VerticalArrangement.swift */,
@@ -1325,6 +1328,7 @@
 				DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */,
 				C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
+				4625AF9B2A8E8B59002E2FAE /* CardView.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
