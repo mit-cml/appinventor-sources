@@ -16,7 +16,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -71,13 +70,13 @@ public class ProjectFolderNeo extends ProjectFolder {
     super.toggleFolderSelection(e);
   }
 
-  @UiHandler("expandbuttonFocusPanel")
+  @SuppressWarnings("unused")
   @Override
   protected void toggleExpandedState(KeyDownEvent e) {
     super.toggleExpandedState(e);
   }
 
-  @UiHandler("expandbuttonFocusPanel")
+  @SuppressWarnings("unused")
   @Override
   protected void toggleExpandedState(ClickEvent e) {
     super.toggleExpandedState(e);
