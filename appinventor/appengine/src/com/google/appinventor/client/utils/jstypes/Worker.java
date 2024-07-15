@@ -1,4 +1,4 @@
-package com.google.appinventor.client.utils;
+package com.google.appinventor.client.utils.jstypes;
 
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsPackage;
