@@ -21,7 +21,7 @@
       <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
         <g:FlowPanel width="100%" >
           <neo:ProjectToolbarNeo ui:field="projectToolbar" />
-          <box:ProjectListBox ui:field="projectListbox" styleName="ode-Box-height-100" />
+          <box:ProjectListBox ui:field="projectListbox" styleName="ode-Box ode-Box-height-100" />
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <neo:DesignToolbarNeo ui:field="designToolbar" />
