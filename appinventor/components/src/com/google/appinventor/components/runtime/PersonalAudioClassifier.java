@@ -5,6 +5,8 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,7 +81,7 @@ public class PersonalAudioClassifier extends BaseAiComponent implements Componen
     @SimpleEvent(description = "Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].")
     public void GotClassification(YailDictionary result) {
         Log.d(LOG_TAG, "GOT CLASSIFICATION: " + result);
-        EventDispatcher.dispatchEvent(this, "GotClassification", result);
+        EventDispatcher.dispatchEvent(this, "GotClassification", YailDictionary.dictToAlist(result));
     }
 
     @Override

@@ -11,6 +11,9 @@ import android.os.Build;
 import com.google.appinventor.components.runtime.BaseAiComponent;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.PermissionResultHandler;
+import com.google.appinventor.components.runtime.PersonalAudioClassifier;
+import com.google.appinventor.components.runtime.PersonalImageClassifier;
+import com.google.appinventor.components.runtime.ReplForm;
 
 /**
  * Helper class to handle the transition from targetSdk 7 to targetSdk 26 and the change in permission
@@ -26,15 +29,39 @@ public class SDK26Helper {
   }
 
   public static void askForPermission(final BaseAiComponent baseAiComponent, final Runnable next) {
-    baseAiComponent.getForm().askPermission(Manifest.permission.CAMERA, new PermissionResultHandler() {
-      @Override
-      public void HandlePermissionResponse(String permission, boolean granted) {
-        if (granted) {
-          next.run();
-        } else {
-          baseAiComponent.getForm().PermissionDenied(baseAiComponent, "WebViewer", permission);
+    Form form = baseAiComponent.getForm();
+    if(baseAiComponent instanceof PersonalImageClassifier){
+      form.askPermission(Manifest.permission.CAMERA, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            next.run();
+          } else {
+            form.PermissionDenied(baseAiComponent, "WebViewer", permission);
+          }
         }
-      }
-    });
+      });
+    }else if(baseAiComponent instanceof PersonalAudioClassifier){
+      form.askPermission(Manifest.permission.RECORD_AUDIO, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            form.askPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS, new PermissionResultHandler() {
+              @Override
+              public void HandlePermissionResponse(String permission1, boolean granted1) {
+                if (granted1 || form instanceof ReplForm) {
+                  next.run();
+                } else {
+                  form.PermissionDenied(baseAiComponent, "WebViewer", permission1);
+                }
+              }
+            });
+          } else {
+            form.PermissionDenied(baseAiComponent, "WebViewer", permission);
+          }
+        }
+      });
+    }
+
   }
 }

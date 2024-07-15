@@ -95,6 +95,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
           }
 
           try {
+            int size = 0;
             if (url.contains(TRANSFER_MODEL_PREFIX)) {
               Log.d(LOG_TAG, "overriding " + url);
 
@@ -113,6 +114,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
 
                   zipInputStream.read(fileBytes, 0, zipEntrySize);
                   file = new ByteArrayInputStream(fileBytes);
+                  size = fileBytes.length;
                   break;
                 }
               }
@@ -122,8 +124,10 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
 
             if (file != null) {
               if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+                Log.d(LOG_TAG, "Access-control-allow-origin called ");
                 Map<String, String> responseHeaders = new HashMap<>();
                 responseHeaders.put("Access-Control-Allow-Origin", "*");
+                responseHeaders.put("Content-Length", "" + size);
                 return new WebResourceResponse(contentType, charSet, 200, "OK", responseHeaders, file);
               } else {
                 return new WebResourceResponse(contentType, charSet, file);
@@ -146,8 +150,10 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
           for (String r : requestedResources) {
             if (r.equals(PermissionRequest.RESOURCE_VIDEO_CAPTURE)) {
               request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+              Log.d(LOG_TAG, "Permission video granted");
             }else if(r.equals(PermissionRequest.RESOURCE_AUDIO_CAPTURE)){
               request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+              Log.d(LOG_TAG, "Permission audio granted");
             }
           }
         }
