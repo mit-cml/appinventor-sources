@@ -129,7 +129,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         updateValue();
       }}));
 
-    items.add(new DropDownItem("Subset Property Editor", MESSAGES.expertToolkitButton(), new Command() {
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.defaultText(), new Command() {
       @Override
       public void execute() {
         property.setValue("");
@@ -642,7 +642,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   protected void updateValue() {
     LOG.info(property.getValue());
     if (StringUtils.isNullOrEmpty(property.getValue())) {
-      dropDownButton.setCaption(MESSAGES.expertToolkitButton());
+      dropDownButton.setCaption(MESSAGES.defaultText());
       dropDownButton.setWidth("");
     } else if (Objects.equals(property.getValue().replaceAll("\\s+",""), BeginnerToolkit.INSTANCE.getToolkit().getText().replaceAll("\\s+",""))){
       dropDownButton.setCaption(MESSAGES.beginnerToolkitButton());
