@@ -2202,6 +2202,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // The MarkOrigin, OriginX, and OriginY properties were added.
     9: "noUpgrade",
 
+    // A fix for the MarkOrigin, OriginX, and OriginY properties in the designer was fixed
+    10: "noUpgrade"
+
   }, // End ImageSprite upgraders
 
   "Label": {

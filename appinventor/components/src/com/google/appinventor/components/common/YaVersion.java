@@ -596,7 +596,9 @@ public class YaVersion {
   // - TRENDLINE_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 228:
   // - Renamed LineOfBestFit to Trendline
-  public static final int YOUNG_ANDROID_VERSION = 228;
+  // For YOUNG_ANDROID_VERSION 229:
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 10.
+  public static final int YOUNG_ANDROID_VERSION = 229;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1120,7 +1122,9 @@ public class YaVersion {
   // - Assets helper block was added.
   // For IMAGESPRITE_COMPONENT_VERSION 9:
   // - The MarkOrigin, OriginX, and OriginY properties were added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 9;
+  // For IMAGESPRITE_COMPONENT_VERSION 10:
+  // - A fix for MarkOrigin, OriginX, and OriginY properties was added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 10;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

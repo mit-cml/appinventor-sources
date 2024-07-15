@@ -1389,6 +1389,39 @@ public final class YoungAndroidFormUpgrader {
       // The MarkOrigin, OriginX, and OriginY properties were added.
       srcCompVersion = 9;
     }
+    if (srcCompVersion < 10) {
+      JSONValue value = componentProperties.get("MarkOrigin");
+      if (value != null) {
+        String origin = value.asString().getString();
+        if (origin.startsWith("(") && origin.endsWith(")")) {
+          String[] parts = origin.substring(1, origin.length() - 1).split(", ");
+          double x = Double.parseDouble(parts[0]);
+          double y = Double.parseDouble(parts[1]);
+          if (x == 0.0 && y == 0.0) {
+            // Clean up the default value
+            componentProperties.remove("MarkOrigin");
+          }
+        }
+      }
+      value = componentProperties.get("OriginX");
+      if (value != null) {
+        double x = Double.parseDouble(value.asString().getString());
+        if (x == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginX");
+        }
+      }
+      // I haven't seen this in the wild but just in case...
+      value = componentProperties.get("OriginY");
+      if (value != null) {
+        double y = Double.parseDouble(value.asString().getString());
+        if (y == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginY");
+        }
+      }
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 
