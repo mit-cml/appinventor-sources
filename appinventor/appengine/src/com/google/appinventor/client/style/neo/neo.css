@@ -587,6 +587,10 @@ they get cut off in Windows.
     display: flex;
   }
 
+  .ode-Designer-RightColumns {
+    min-width: 222px;
+  }
+
   .ode-NavArrow {
     background: #C2C2C2;}
   
