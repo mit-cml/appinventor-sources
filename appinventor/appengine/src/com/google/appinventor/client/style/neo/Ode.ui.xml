@@ -36,7 +36,7 @@
                 <box:AssetListBox  ui:field="assetListBox" />
               </g:FlowPanel>
             </g:FlowPanel>
-            <box:PropertiesBox ui:field="propertiesBox"  styleName="Designer-RightColumns" />
+            <box:PropertiesBox ui:field="propertiesBox"  styleName="ode-Designer-RightColumns" />
           </g:FlowPanel>
         </g:FlowPanel>
         <g:FlowPanel width="100%">
