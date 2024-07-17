@@ -587,6 +587,9 @@ they get cut off in Windows.
     display: flex;
   }
 
+  .ode-Designer-LeftColumn {
+    min-width: 265px;
+  }
   .ode-Designer-RightColumns {
     min-width: 222px;
   }

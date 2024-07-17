@@ -26,7 +26,7 @@
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <neo:DesignToolbarNeo ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" >
-            <box:PaletteBox width="265px" ui:field="paletteBox"/>
+            <box:PaletteBox ui:field="paletteBox" styleName="ode-Designer-LeftColumn" />
             <box:ViewerBox ui:field="viewerBox" />
             <g:FlowPanel ui:field="structureAndAssets" styleName="ode-Designer-RightColumns">
               <box:SourceStructureBox ui:field="sourceStructureBox"  />
