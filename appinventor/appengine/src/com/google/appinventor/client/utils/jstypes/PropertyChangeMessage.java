@@ -6,10 +6,10 @@ import jsinterop.annotations.JsType;
 
 @JsType(namespace = JsPackage.GLOBAL)
 public class PropertyChangeMessage {
-  @JsProperty(name = "propertyName")
+  @JsProperty(name = "name")
   public final String propertyName;
 
-  @JsProperty(name = "newValue")
+  @JsProperty(name = "value")
   public final String newValue;
 
   public PropertyChangeMessage(String propertyName, String newValue) {
