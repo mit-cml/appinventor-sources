@@ -134,6 +134,7 @@
   <li><a href="#ChatBot">ChatBot</a></li>
   <li><a href="#FirebaseDB">FirebaseDB</a></li>
   <li><a href="#ImageBot">ImageBot</a></li>
+  <li><a href="#PersonalImageClassifier">PersonalImageClassifier</a></li>
 </ul>
 
 <h2 id="ChatBot">ChatBot</h2>
@@ -316,6 +317,53 @@
   <dd>Edit the imageSource using the given description. The editable area of the image should be
  indicated by the maskSource. The sources can be a Canvas, an Image, or a string
  representing the path to a file.</dd>
+</dl>
+
+<h2 id="PersonalImageClassifier">PersonalImageClassifier</h2>
+
+<p>Component for PersonalImageClassifier</p>
+
+<h3 id="PersonalImageClassifier-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PersonalImageClassifier.InputMode" class="text"><em>InputMode</em></dt>
+  <dd>Gets or sets the input mode for classification. Valid values are “Video” (the default) and “Image”.</dd>
+  <dt id="PersonalImageClassifier.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
+  <dd>Property for MinimumInterval</dd>
+  <dt id="PersonalImageClassifier.Model" class="text wo do"><em>Model</em></dt>
+  <dd>Property for Model</dd>
+  <dt id="PersonalImageClassifier.ModelLabels" class="list ro bo"><em>ModelLabels</em></dt>
+  <dd>Gets all of the labels from this model. Only valid after ClassifierReady is signaled.</dd>
+  <dt id="PersonalImageClassifier.Running" class="boolean ro bo"><em>Running</em></dt>
+  <dd>Property for Running</dd>
+  <dt id="PersonalImageClassifier.WebViewer" class="component wo do"><em>WebViewer</em></dt>
+  <dd>Property for WebViewer</dd>
+</dl>
+
+<h3 id="PersonalImageClassifier-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PersonalImageClassifier.ClassifierReady">ClassifierReady()</dt>
+  <dd>Event indicating that the classifier is ready.</dd>
+  <dt id="PersonalImageClassifier.Error">Error(<em class="number">errorCode</em>)</dt>
+  <dd>Event indicating that an error has occurred.</dd>
+  <dt id="PersonalImageClassifier.GotClassification">GotClassification(<em class="dictionary">result</em>)</dt>
+  <dd>Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], …, [class10, confidence10]].</dd>
+</dl>
+
+<h3 id="PersonalImageClassifier-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PersonalImageClassifier.ClassifyImageData" class="method"><i></i> ClassifyImageData(<em class="text">image</em>)</dt>
+  <dd>Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.</dd>
+  <dt id="PersonalImageClassifier.ClassifyVideoData" class="method"><i></i> ClassifyVideoData()</dt>
+  <dd>Performs classification on current video frame and triggers the GotClassification event when classification is finished successfully.</dd>
+  <dt id="PersonalImageClassifier.StartContinuousClassification" class="method"><i></i> StartContinuousClassification()</dt>
+  <dd>Starts continuous video classification if the input mode is set to video and the classification is not already running.</dd>
+  <dt id="PersonalImageClassifier.StopContinuousClassification" class="method"><i></i> StopContinuousClassification()</dt>
+  <dd>Stop continuous video classification if the input mode is set to video and the classification is running.</dd>
+  <dt id="PersonalImageClassifier.ToggleCameraFacingMode" class="method"><i></i> ToggleCameraFacingMode()</dt>
+  <dd>Toggles between user-facing and environment-facing camera.</dd>
 </dl>
 
 </article>
