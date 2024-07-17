@@ -984,6 +984,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     $wnd.addEventListener('keydown', function (e) {
       if (e.keyCode === 16) {
         editor.shiftDown = true;
+      } else if (e.keyCode == 46 && e.target.tagName === "BODY" 
+        && editor.@com.google.appinventor.client.editor.FileEditor::isActiveEditor()()) {
+        editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::openDeleteDialog()();
       }
     });
 
@@ -1015,6 +1018,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJsni(*)(data, editor.shiftDown);
     });
   }-*/;
+
+  private void openDeleteDialog() {
+    if (form.getLastSelectedComponent() instanceof MockForm) {
+      return;  // Cannot delete MockForm
+    }
+    form.getLastSelectedComponent().openDeleteDialog();
+  }
 
   private void deleteSelectedComponent() {
     if (form.getLastSelectedComponent() instanceof MockForm) {
