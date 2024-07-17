@@ -6,16 +6,11 @@
 import Foundation
 import WebKit
 import Zip 
+import ZipArchive
 
 fileprivate let MODEL_PATH_SUFFIX = ".mdl"
-fileprivate let TRANSFER_MODEL_PREFIX = nil
-fileprivate let PERSONAL_MODEL_PREFIX = nil
-
-public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
-  func classifierReady()
-  func gotClassification(_ result: AnyObject)
-  func Error(_ errorCode: Int32)
-}
+fileprivate var TRANSFER_MODEL_PREFIX: String? = nil
+fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
 
 @objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
 
@@ -24,10 +19,10 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
     public static let ERROR_INVALID_MODEL_FILE = -8;
 
     private var _labels = [String]()
-    private var _modelPath = ""
+    private var _modelPath: String? = nil
     private var _webview: WKWebView? = nil
     private var _webviewer: WebViewer?
-    private var assetPath? = nil;
+    private var assetPath: String? = nil
 
     @objc public override init(_ container: ComponentContainer) {
         super.init(container)
@@ -37,22 +32,22 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
 
     @objc public func Initialize() {
         guard let webview = _webview else {
-        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_EXTENSION_ERROR, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
+        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_PIC, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
         return
         }
     }
 
     @objc public func Model(_ path: String) {
       if path.hasSuffix(MODEL_PATH_SUFFIX) {
-          modelPath = path
+          _modelPath = path
       } else {
-          _form?.dispatchErrorOccurredEvent(self, event: "Model", errorCode: ErrorMessages.ERROR_EXTENSION_ERROR, errorMessage: "\(ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
+        _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_PIC, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
       }
     }
 
     @objc public var ModelLabels: [String] {
-      return labels
-    }   
+      return _labels
+    }
 
 
     @objc open var WebViewer: WebViewer {
@@ -75,22 +70,27 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
         }
       }
     }
+    
+    open func classifierReady(){}
+    open func gotClassification(_ result: AnyObject){}
+    open func Error(_ errorCode: Int32){}
 
     // MARK: Private Implementation
 
     private func configureWebView(_ webview: WKWebView) {
         _webview = webview
-        _webview.configuration.preferences.javaScriptEnabled = true
-        _webview.configuration.allowsInlineMediaPlayback = true
-        _webview.configuration.mediaTypesRequiringUserActionForPlayback = []
+      _webview!.configuration.preferences.javaScriptEnabled = true
+          _webview!.configuration.allowsInlineMediaPlayback = true
+          _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
+        
         if self is PersonalImageClassifier{
-            _webview.configuration.userContentController.add(self, name: "PersonalImageClassifier")
+            _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
             TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
             PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
         } else {
             // implement checks for other AI components
         }
-        _webview.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
+        _webview!.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
     }
 
     private func parseLabels(_ labels: String) throws -> [String] {
@@ -99,7 +99,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
         do {
             if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
                 for item in arr {
-                    result.append(label)
+                    result.append(labels)
                 }
             } else {
                 throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
@@ -112,7 +112,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
 
     private func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
       guard let _webview = _webview else {
-        throw IllegalStateError.webviewerNotSet
+        throw AIError.webviewerNotSet
       }
     }
 
@@ -120,7 +120,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
 
   public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
     guard let dict = message.body as? [String: Any],
-    let functionCall = dict["functionCall"] as? String,
+    var functionCall = dict["functionCall"] as? String,
     let args = dict["args"] else {
         print("JSON Error message not recieved")
         return
@@ -129,33 +129,33 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
         do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
-          BaseAiComponent.self.labels = parseLabels(result);
-          classifierReady(result as? String)
+          _labels = try parseLabels(result as! String);
+          classifierReady()
         } catch {
           print("Error parsing JSON from web view function ready")
         }
     }
-    if functionCall = "reportResult" {
+    if functionCall == "reportResult" {
         do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
-          BaseAiComponent.self.labels = parseLabels(result);
+          _labels = try parseLabels(result as! String);
           gotClassification(result)
         } catch {
           print("Error parsing JSON from web view function reportResult")
         }
     }
-    if functionCall = "error" {
+    if functionCall == "error" {
          do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
-          let intValue = try getInt32(from: result)
+          let intValue = result as! Int32
           Error(intValue)
         } catch {
           print("Error parsing JSON from web view function error")
         }
     }
-    let eventName = body["eventName"]
+   
   }
 
   // MARK: WKURLSchemeHandler
@@ -163,15 +163,15 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
       var fileData: Data? = nil
       guard let url = urlSchemeTask.request.url?.absoluteString else {
-          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
           return
       }
       guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
-          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
           return
       }
-      if url.hasPrefix(TRANSFER_MODEL_PREFIX) {
-          let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX, with: "")
+    if url.hasPrefix(TRANSFER_MODEL_PREFIX!) {
+      let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX!, with: "")
           if let assetURL = Bundle.main.url(forResource: fileName, withExtension: nil) {
               do {
                   fileData = try Data(contentsOf: assetURL)
@@ -180,18 +180,18 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
                   return
               }
           } else {
-              urlSchemeTask.didFailWithError(PICError.FileNotFound)
+              urlSchemeTask.didFailWithError(AIError.FileNotFound)
               return
           }
-      } else if url.hasPrefix(PERSONAL_MODEL_PREFIX) {
-          let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX, with: "")
-          guard let modelPath = modelPath, let zipURL = Bundle.main.url(forResource: modelPath, withExtension: "zip") else {
-              urlSchemeTask.didFailWithError(PICError.FileNotFound)
+    } else if url.hasPrefix(PERSONAL_MODEL_PREFIX!) {
+        let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX!, with: "")
+          guard let _modelPath = _modelPath, let zipURL = Bundle.main.url(forResource: _modelPath, withExtension: "zip") else {
+              urlSchemeTask.didFailWithError(AIError.FileNotFound)
               return
           }
           do {
               let zipData = try Data(contentsOf: zipURL)
-              let zip = try ZipArchive(data: zipData)
+              let zip = ZipArchive()
               for entry in zip.entries {
                   if entry.path == fileName {
                       fileData = entry.data()
@@ -203,7 +203,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
               return
           }
       } else {
-          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
           return
       }
       if let fileData = fileData {
@@ -215,7 +215,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
           urlSchemeTask.didReceive(fileData)
           urlSchemeTask.didFinish()
       } else {
-          urlSchemeTask.didFailWithError(PICError.FileNotFound)
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
       }
   }
 
@@ -226,6 +226,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
 
   enum AIError: Error {
     case FileNotFound
+    case webviewerNotSet
   }
 }
 

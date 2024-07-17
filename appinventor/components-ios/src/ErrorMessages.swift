@@ -130,6 +130,10 @@ import Foundation
 
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
+  
+  //PersonalImageClassifier error
+  case ERROR_MODEL_PIC = 4701
+  case ERROR_WEBVIEW_PIC = 4801
 
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001

@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-@objc open class PersonalImageClassifier: BaseAiComponent, AbstractMethodsForIA, LifecycleDelegate{
+@objc open class PersonalImageClassifier: BaseAiComponent, LifecycleDelegate{
 
     public static let MODE_VIDEO = "Video"
     public static let MODE_IMAGE = "Image"
@@ -71,7 +71,7 @@ import UIKit
 
     // MARK: Events
 
-    @objc public func classifierReady() {
+    @objc override public func classifierReady() {
         DispatchQueue.main.async { [self] in
         InputMode = _inputMode
         MinimumInterval = _minClassTime
@@ -79,13 +79,13 @@ import UIKit
         }
     }
 
-    @objc public func gotClassification(_ result: AnyObject) {
+    @objc override public func gotClassification(_ result: AnyObject) {
         DispatchQueue.main.async { [self] in
         EventDispatcher.dispatchEvent(of: self, called: "GotClassification", arguments: result)
         }
     }
 
-    @objc public func error(_ errorCode: Int32) {
+    @objc override public func error(_ errorCode: Int32) {
         DispatchQueue.main.async {
         EventDispatcher.dispatchEvent(of: self, called: "Error", arguments: errorCode as AnyObject)
         }
