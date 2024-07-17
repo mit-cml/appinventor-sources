@@ -2,7 +2,7 @@ import Foundation
 import WebKit
 
 
-open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate {
+@objc open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate {
   
   fileprivate final let _ERROR_WEBVIEWER_NOT_SET: String =  "You must specify a WebViewer using the WebViewer designer property before you can call"
   private let _ERROR_JSON_PARSE_FAILED = 101
@@ -15,7 +15,7 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript?
   
-  private var _faceLandmarks: [String: [Double]] = [:]
+  private var _keyPoints: [String: [Double]] = [:]
   //    fileprivate var _minDetectionConfidence: Double = 0.5
   //    fileprivate var _minTrackingConfidence: Double = 0.5
   //    fileprivate var _cameraMode = "Front"
@@ -32,35 +32,41 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
     case webviewerNotSet
   }
   
-  public override init(_ parent: ComponentContainer) {
+  /**
+   * Creates a new FaceExtension extension.
+   */
+  
+  @objc public override init(_ parent: ComponentContainer) {
     super.init(parent)
     
-    _faceLandmarks["forehead"] = []
-    _faceLandmarks["leftCheek"] = []
-    _faceLandmarks["rightCheek"] = []
-    _faceLandmarks["leftEyebrow"] = []
-    _faceLandmarks["rightEyebrow"] = []
-    _faceLandmarks["chin"] = []
-    _faceLandmarks["leftEyeInnerCorner"] = []
-    _faceLandmarks["rightEyeInnerCorner"] = []
-    _faceLandmarks["mouthTop"] = []
-    _faceLandmarks["mouthBottom"] = []
-    _faceLandmarks["leftEyeTop"] = []
-    _faceLandmarks["leftEyeBottom"] = []
-    _faceLandmarks["rightEyeTop"] = []
-    _faceLandmarks["rightEyeBottom"] = []
-    _faceLandmarks["rightEarStart"] = []
-    _faceLandmarks["leftEarStart"] = []
-    _faceLandmarks["noseBottom"] = []
-    _faceLandmarks["rightNoseTop"] = []
-    _faceLandmarks["leftNoseTop"] = []
-    _faceLandmarks["allPoints"] = []
+    _keyPoints["forehead"] = []
+    _keyPoints["leftCheek"] = []
+    _keyPoints["rightCheek"] = []
+    _keyPoints["leftEyebrow"] = []
+    _keyPoints["rightEyebrow"] = []
+    _keyPoints["chin"] = []
+    _keyPoints["leftEyeInnerCorner"] = []
+    _keyPoints["rightEyeInnerCorner"] = []
+    _keyPoints["mouthTop"] = []
+    _keyPoints["mouthBottom"] = []
+    _keyPoints["leftEyeTop"] = []
+    _keyPoints["leftEyeBottom"] = []
+    _keyPoints["rightEyeTop"] = []
+    _keyPoints["rightEyeBottom"] = []
+    _keyPoints["rightEarStart"] = []
+    _keyPoints["leftEarStart"] = []
+    _keyPoints["noseBottom"] = []
+    _keyPoints["rightNoseTop"] = []
+    _keyPoints["leftNoseTop"] = []
+    _keyPoints["allPoints"] = []
     print("Created FaceExtension")
   }
   
   private func configureWebView(_ webview: WKWebView) {
     self._webview = webview
     let config = webview.configuration
+    //    config.preferences.javaScriptEnabled = true
+    //    config.mediaTypesRequiringUserActionForPlayback = []
     let controller = config.userContentController
     controller.add(self, name: "FaceExtension")
   }
@@ -176,7 +182,7 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
   @objc open var FaceLandmarks: [[Double]] {
     get {
       var landmarks: [[Double]] = []
-      for point in _faceLandmarks.values {
+      for point in _keyPoints.values {
         if point.count == 2 {
           landmarks.append(point)
         }
@@ -188,95 +194,95 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
   @objc open var BackgroundImage: String = ""
   
   @objc open var Forehead: [Double] {
-    return _faceLandmarks["forehead"] ?? []
+    return _keyPoints["forehead"] ?? []
   }
   
   @objc open var NoseBottom: [Double] {
-    return _faceLandmarks["noseBottom"] ?? []
+    return _keyPoints["noseBottom"] ?? []
   }
   
   @objc open var Chin: [Double] {
-    return _faceLandmarks["chin"] ?? []
+    return _keyPoints["chin"] ?? []
   }
   
   @objc open var LeftCheek: [Double] {
-    return _faceLandmarks["leftCheek"] ?? []
+    return _keyPoints["leftCheek"] ?? []
   }
   
   @objc open var RightCheek: [Double] {
-    return _faceLandmarks["rightCheek"] ?? []
+    return _keyPoints["rightCheek"] ?? []
   }
   
   @objc open var LeftEyebrow: [Double] {
-    return _faceLandmarks["leftEyebrow"] ?? []
+    return _keyPoints["leftEyebrow"] ?? []
   }
   
   @objc open var RightEyebrow: [Double] {
-    return _faceLandmarks["rightEyebrow"] ?? []
+    return _keyPoints["rightEyebrow"] ?? []
   }
   
   @objc open var LeftEyeInnerCorner: [Double] {
-    return _faceLandmarks["leftEyeInnerCorner"] ?? []
+    return _keyPoints["leftEyeInnerCorner"] ?? []
   }
   
   @objc open var RightEyeInnerCorner: [Double] {
-    return _faceLandmarks["rightEyeInnerCorner"] ?? []
+    return _keyPoints["rightEyeInnerCorner"] ?? []
   }
   
   @objc open var MouthTop: [Double] {
-    return _faceLandmarks["mouthTop"] ?? []
+    return _keyPoints["mouthTop"] ?? []
   }
   
   @objc open var MouthBottom: [Double] {
-    return _faceLandmarks["mouthBottom"] ?? []
+    return _keyPoints["mouthBottom"] ?? []
   }
   
   @objc open var LeftEyeTop: [Double] {
-    return _faceLandmarks["leftEyeTop"] ?? []
+    return _keyPoints["leftEyeTop"] ?? []
   }
   
   @objc open var LeftEyeBottom: [Double] {
-    return _faceLandmarks["leftEyeBottom"] ?? []
+    return _keyPoints["leftEyeBottom"] ?? []
   }
   
   @objc open var RightEyeTop: [Double] {
-    return _faceLandmarks["rightEyeTop"] ?? []
+    return _keyPoints["rightEyeTop"] ?? []
   }
   
   @objc open var RightEyeBottom: [Double] {
-    return _faceLandmarks["rightEyeBottom"] ?? []
+    return _keyPoints["rightEyeBottom"] ?? []
   }
   
   @objc open var RightEarStart: [Double] {
-    return _faceLandmarks["rightEarStart"] ?? []
+    return _keyPoints["rightEarStart"] ?? []
   }
   
   @objc open var LeftEarStart: [Double] {
-    return _faceLandmarks["leftEarStart"] ?? []
+    return _keyPoints["leftEarStart"] ?? []
   }
   
   @objc open var RightNoseTop: [Double] {
-    return _faceLandmarks["rightNoseTop"] ?? []
+    return _keyPoints["rightNoseTop"] ?? []
   }
   
   @objc open var LeftNoseTop: [Double] {
-    return _faceLandmarks["leftNoseTop"] ?? []
+    return _keyPoints["leftNoseTop"] ?? []
   }
   
   @objc open var FaceWidth: Double {
-    return (_faceLandmarks["rightCheek"]?.first ?? 0) - (_faceLandmarks["leftCheek"]?.first ?? 0)
+    return (_keyPoints["rightCheek"]?.first ?? 0) - (_keyPoints["leftCheek"]?.first ?? 0)
   }
   
   @objc open var CheekToNoseDistance: Double {
-    return (_faceLandmarks["leftNoseTop"]?.first ?? 0) - (_faceLandmarks["leftCheek"]?.first ?? 0)
+    return (_keyPoints["leftNoseTop"]?.first ?? 0) - (_keyPoints["leftCheek"]?.first ?? 0)
   }
   
   @objc open var EyeToMouthHeight: Double {
-    return (_faceLandmarks["mouthTop"]?.last ?? 0) - (_faceLandmarks["forehead"]?.last ?? 0)
+    return (_keyPoints["mouthTop"]?.last ?? 0) - (_keyPoints["forehead"]?.last ?? 0)
   }
   
   @objc open var AllPoints: [Double] {
-    return _faceLandmarks["allPoints"] ?? []
+    return _keyPoints["allPoints"] ?? []
   }
   
   
@@ -325,6 +331,25 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
       _initialized = true
     }
   }
+  
+  @objc open var Width: Int {
+    get {
+      return width
+    }
+    set {
+      width = newValue
+    }
+  }
+  
+  @objc open var Height: Int {
+    get {
+      return height
+    }
+    set {
+      height = newValue
+    }
+  }
+  
   
   @objc open func ModelReady() {
     EventDispatcher.dispatchEvent(of: self, called: "ModelReady")
@@ -378,6 +403,85 @@ open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDeleg
     }
   }
   
+  private let y_offset: Int = -20
+  private let y_multiplier: Double = 1.0 / 620.0
+  private let x_multiplier: Double = 1.0 / 480.0
+  private let x_offset: Double = 180.0
+  private let x_range: Double = 480.0
+  
+  open func reportImage(dataUrl: String) {
+    print("reportImage \(dataUrl)")
+    if !dataUrl.isEmpty {
+      self.BackgroundImage = String(dataUrl.dropFirst(dataUrl.firstIndex(of: ",")?.utf16Offset(in: dataUrl) ?? 0 + 1))
+      DispatchQueue.main.async {
+        self.VideoUpdated()
+      }
+    }
+  }
+  
+  open func reportWidth() -> String {
+    return String(width)
+  }
+  
+  open func reportHeight() -> String {
+    return String(height)
+  }
+  
+  open func reportResult(result: String) {
+    do {
+      let res = try JSONSerialization.jsonObject(with: Data(result.utf8), options: []) as! [String: Any]
+      
+      func parseKeyPoints(from obj: [String: Any], keys: [String]) -> [String: [Double]] {
+        var points = [String: [Double]]()
+        for key in keys {
+          if let point = obj[key] as? [String: Double] {
+            points[key] = [point["x"]! * Double(width) * x_multiplier, point["y"]! * Double(height) * y_multiplier, point["z"]!]
+          }
+        }
+        return points
+      }
+      
+      let keys = ["forehead", "chin", "leftCheek", "rightCheek", "leftEyebrow", "rightEyebrow", "leftEyeInnerCorner", "rightEyeInnerCorner", "mouthTop", "mouthBottom", "leftEyeTop", "leftEyeBottom", "rightEyeTop", "rightEyeBottom", "rightEarStart", "leftEarStart", "noseBottom", "rightNoseTop", "leftNoseTop"]
+      _keyPoints = parseKeyPoints(from: res, keys: keys)
+      
+      if let allPoints = res["allPoints"] as? [String: [String: Double]] {
+        var listOfObjects = [Double]()
+        for i in 0..<450 {
+          if let point = allPoints[String(i)],
+             let x = point["x"], let y = point["y"] {
+            let adjustedX = x * Double(width) * x_multiplier
+            let adjustedY = y * Double(height) * y_multiplier
+            listOfObjects.append(adjustedX)
+            listOfObjects.append(adjustedY)
+          }
+        }
+        
+        _keyPoints["allPoints"] = listOfObjects
+      }
+      
+      DispatchQueue.main.async {
+        self.FaceUpdated()
+      }
+      
+    } catch let error as NSError {
+      DispatchQueue.main.async {
+        self.Error(self._ERROR_JSON_PARSE_FAILED as AnyObject, error.localizedDescription as AnyObject)
+      }
+      print("Error parsing JSON from web view: \(error)")
+    }
+  }
+  
+  @objc open func FaceUpdated() {
+    EventDispatcher.dispatchEvent(of: self, called: "FaceUpdated")
+    print("Dispatched FaceUpdated")
+  }
+  
+  
+  open func error(errorCode: Int, errorMessage: String) {
+    DispatchQueue.main.async {
+      self.Error(errorCode as AnyObject, errorMessage as AnyObject)
+    }
+  }
   
   private func assertWebView(_ method: String, _ args: Any...) throws {
     if _webview == nil {
