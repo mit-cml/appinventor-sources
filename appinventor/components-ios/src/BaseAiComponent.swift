@@ -17,7 +17,7 @@ public protocol AbstractMethodsForIA: AbstractMethodsForIAComponents {
   func Error(_ errorCode: Int32)
 }
 
-@objc open class BaseAiComponent: NonVisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
+@objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
 
     public static let ERROR_WEBVEWER_REQUIRED = -7
     public static let ERROR_CLASSIFICATION_FAILED = -2;
