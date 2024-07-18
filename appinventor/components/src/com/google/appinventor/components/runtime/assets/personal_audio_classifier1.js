@@ -261,7 +261,7 @@ const loadModel = async () => {
     console.log(modelLabels)
 
     console.log("PersonalAudioClassifier: transfer model activation and personal model are ready");
-    PersonalAudioClassifier.ready();
+    PersonalAudioClassifier.ready(JSON.stringify(Object.values(modelLabels)));
   } catch (error) {
     console.log("PersonalAudioClassifier: " + error);
     PersonalAudioClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED,

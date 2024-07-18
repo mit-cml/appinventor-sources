@@ -99,7 +99,7 @@ public abstract class BaseAiComponent extends AndroidNonvisibleComponent {
             if (url.contains(TRANSFER_MODEL_PREFIX)) {
               Log.d(LOG_TAG, "overriding " + url);
 
-              file = form.openAsset(url.substring(TRANSFER_MODEL_PREFIX.length()));
+              file = form.getAssets().open(url.substring(TRANSFER_MODEL_PREFIX.length()));
             } else if (url.contains(PERSONAL_MODEL_PREFIX)) {
               Log.d(LOG_TAG, "overriding " + url);
 
