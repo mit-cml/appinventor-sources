@@ -16,14 +16,12 @@ import WebKit
   private var _webviewerApi: WKUserScript?
   
   private var _keyPoints: [String: [Double]] = [:]
-  //    fileprivate var _minDetectionConfidence: Double = 0.5
-  //    fileprivate var _minTrackingConfidence: Double = 0.5
-  //    fileprivate var _cameraMode = "Front"
   internal var _minDetectionConfidence: Double = 0.5
   internal var _minTrackingConfidence: Double = 0.5
   internal var _cameraMode = "Front"
   internal var _initialized = false
-  var _enabled = true
+  private var _enabled = true
+  private var _showMesh: Bool = false
   private var _backgroundImage = ""
   private var width = 350
   private var height = 200
@@ -38,6 +36,8 @@ import WebKit
   
   @objc public override init(_ parent: ComponentContainer) {
     super.init(parent)
+    
+    // requestHardwareAcceleration()
     
     _keyPoints["forehead"] = []
     _keyPoints["leftCheek"] = []
@@ -111,8 +111,6 @@ import WebKit
         print("Model Ready")
         ModelReady()
         if _enabled {
-          MinDetectionConfidence = _minDetectionConfidence
-          MinTrackingConfidence = _minTrackingConfidence
           UseCamera = _cameraMode
         }
         
@@ -143,38 +141,6 @@ import WebKit
         
       default:
         print("Unknown function call: \(functionCall)")
-      }
-    }
-  }
-  
-  @objc open var MinDetectionConfidence: Double {
-    get {
-      return _minDetectionConfidence
-    }
-    set {
-      _minDetectionConfidence = newValue
-      if _initialized {
-        do {
-          try assertWebView("MinDetectionConfidence")
-        } catch {
-          print(_ERROR_WEBVIEWER_NOT_SET, "MinDetectionConfidence")
-        }
-      }
-    }
-  }
-  
-  @objc open var MinTrackingConfidence: Double {
-    get {
-      return _minTrackingConfidence
-    }
-    set {
-      _minTrackingConfidence = newValue
-      if _initialized {
-        do {
-          try assertWebView("MinTrackingConfidence")
-        } catch {
-          print(_ERROR_WEBVIEWER_NOT_SET, "MinTrackingConfidence")
-        }
       }
     }
   }
@@ -302,6 +268,22 @@ import WebKit
     }
   }
   
+  @objc open var ShowMesh: Bool {
+    get {
+      return _showMesh
+    }
+    set {
+      _showMesh = newValue
+      if _initialized {
+        if _showMesh {
+          _webview?.evaluateJavaScript("turnMeshOn();", completionHandler: nil)
+        } else {
+          _webview?.evaluateJavaScript("turnMeshOff();", completionHandler: nil)
+        }
+      }
+    }
+  }
+  
   @objc open var UseCamera: String {
     get {
       return _cameraMode
@@ -318,6 +300,9 @@ import WebKit
           }
         }
       } else {
+        DispatchQueue.main.async {
+          self.Error("InvalidCameraMode" as AnyObject, "Invalid camera selection. Must be either 'Front' or 'Back'." as AnyObject)
+        }
         _form?.dispatchErrorOccurredEvent(self, "UseCamera", 3300, "Invalid camera selection. Must be either 'Front' or 'Back'.")
       }
     }
@@ -409,7 +394,7 @@ import WebKit
   private let x_offset: Double = 180.0
   private let x_range: Double = 480.0
   
-  open func reportImage(dataUrl: String) {
+  @objc open func reportImage(dataUrl: String) {
     print("reportImage \(dataUrl)")
     if !dataUrl.isEmpty {
       self.BackgroundImage = String(dataUrl.dropFirst(dataUrl.firstIndex(of: ",")?.utf16Offset(in: dataUrl) ?? 0 + 1))
@@ -419,15 +404,15 @@ import WebKit
     }
   }
   
-  open func reportWidth() -> String {
+  @objc open func reportWidth() -> String {
     return String(width)
   }
   
-  open func reportHeight() -> String {
+  @objc open func reportHeight() -> String {
     return String(height)
   }
   
-  open func reportResult(result: String) {
+  @objc open func reportResult(result: String) {
     do {
       let res = try JSONSerialization.jsonObject(with: Data(result.utf8), options: []) as! [String: Any]
       
@@ -477,7 +462,7 @@ import WebKit
   }
   
   
-  open func error(errorCode: Int, errorMessage: String) {
+  @objc open func error(errorCode: Int, errorMessage: String) {
     DispatchQueue.main.async {
       self.Error(errorCode as AnyObject, errorMessage as AnyObject)
     }
@@ -488,19 +473,19 @@ import WebKit
       throw IllegalStateError.webviewerNotSet
     }
     switch method {
-    case "MinDetectionConfidence":
-      _webview?.evaluateJavaScript("setMinDetectionConfidence(\(MinDetectionConfidence));")
-    case "MinTrackingConfidence":
-      _webview?.evaluateJavaScript("setMinTrackingConfidence(\(MinTrackingConfidence));")
     case "UseCamera":
       _webview?.evaluateJavaScript("setCameraFacingMode(\(args[0] as! Bool));")
     default:
       print("Error: Not a valid method")
     }
   }
-  func getYailObjectFromJson(_ json: String?, _ boolean: Bool) throws -> Any {
-    guard let data = json?.data(using: .utf8) else {
+  
+  @objc open func getYailObjectFromJson(_ json: String?, _ boolean: Bool) throws -> Any {
+    guard let json = json else {
       throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON"])
+    }
+    guard let data = json.data(using: .utf8) else {
+      throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error converting string to data"])
     }
     return try JSONSerialization.jsonObject(with: data, options: [])
   }
