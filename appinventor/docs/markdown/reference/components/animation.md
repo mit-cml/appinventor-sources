@@ -202,14 +202,10 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 : Determines whether moves can extend beyond the canvas borders.   Default is false. This should normally be false, and the property is provided for backwards compatibility.
 
 {:id="Canvas.FontBold" .boolean .ro .do} *FontBold*
-: Returns true if the to-be drawn text should be bold.
- If bold has been requested, this property will return true, even if the
- font does not support bold.
+: Specifies whether the drawn text should be bold. Some fonts do not support bold.
 
 {:id="Canvas.FontItalic" .boolean .ro .do} *FontItalic*
-: Returns true if the to-be drawn text should be italic.
- If italic has been requested, this property will return true, even if the
- font does not support bold.
+: Specifies whether the drawn text should be italic. Some fonts do not support italic.
 
 {:id="Canvas.FontSize" .number} *FontSize*
 : Specifies the font size of text drawn on the Canvas.
