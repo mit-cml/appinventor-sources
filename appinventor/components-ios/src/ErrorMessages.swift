@@ -150,7 +150,7 @@ import Foundation
 
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
-
+  
   var code: Int32 {
     return Int32(self.rawValue)
   }
