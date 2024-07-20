@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,6 +20,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -67,6 +68,7 @@ import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.Synchronizer;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.FileNotFoundException;
@@ -152,6 +154,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int backgroundColor;
   private String backgroundImagePath = "";
   private int textAlignment;
+
+  private boolean fontBold;
+  private boolean fontItalic;
+  private String fontTypeface;
+
   private boolean extendMovesOutsideCanvas = false;
   
   /**
@@ -172,6 +179,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
   private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
+  private static final boolean DEFAULT_FONT_BOLD = false;
+  private static final boolean DEFAULT_FONT_ITALIC = false;
+  private static final String DEFAULT_FONT_TYPEFACE = Component.TYPEFACE_DEFAULT;
   private static final int FLING_INTERVAL = 1000;  // ms
   private static final int DEFAULT_TAP_THRESHOLD = 15;
 
@@ -765,6 +775,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
+    FontBold(DEFAULT_FONT_BOLD);
+    FontItalic(DEFAULT_FONT_ITALIC);
+    FontTypeface(DEFAULT_FONT_TYPEFACE);
     TapThreshold(DEFAULT_TAP_THRESHOLD);
 
     sprites = new LinkedList<Sprite>();
@@ -1252,6 +1265,99 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
+  /**
+   * Returns true if the to-be drawn text should be bold.
+   * If bold has been requested, this property will return true, even if the
+   * font does not support bold.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false
+  )
+  public boolean FontBold() {
+    return fontBold;
+  }
+
+  /**
+   * Specifies whether the drawn text should be bold. Some fonts
+   * do not support bold.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  public void FontBold(boolean fontBold) {
+    this.fontBold = fontBold;
+  }
+
+  /**
+   * Returns true if the to-be drawn text should be italic.
+   * If italic has been requested, this property will return true, even if the
+   * font does not support bold.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false
+  )
+  public boolean FontItalic() {
+    return fontItalic;
+  }
+
+  /**
+   * Specifies whether the drawn text should be italic. Some fonts
+   * do not support italic.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  public void FontItalic(boolean fontItalic) {
+    this.fontItalic = fontItalic;
+  }
+
+  /**
+   * Returns the typeface of the to-be drawn text.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false
+  )
+  public String FontTypeface() {
+    return fontTypeface;
+  }
+
+  /**
+   * Specifies the typeface of the drawn text.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+      defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(userVisible = false)
+  public void FontTypeface(String fontTypeface) {
+    this.fontTypeface = fontTypeface;
+  }
+
+  void updatePaintFont() {
+    Typeface typeface;
+    switch (fontTypeface) {
+      case Component.TYPEFACE_DEFAULT:
+        typeface = Typeface.DEFAULT;
+        break;
+      case Component.TYPEFACE_SANSSERIF:
+        typeface = Typeface.SANS_SERIF;
+        break;
+      case Component.TYPEFACE_SERIF:
+        typeface = Typeface.SERIF;
+        break;
+      case Component.TYPEFACE_MONOSPACE:
+        typeface = Typeface.MONOSPACE;
+        break;
+      default:
+        typeface = TextViewUtil.getTypeFace(form, fontTypeface);
+    }
+
+    int style = 0;
+    if (fontBold) style |= Typeface.BOLD;
+    if (fontItalic) style |= Typeface.ITALIC;
+
+    paint.setTypeface(Typeface.create(typeface, style));
+  }
+
   @SimpleProperty(description = 
       "Determines whether moves can extend beyond the canvas borders.  "  +
       " Default is false. This should normally be false, and the property " +
@@ -1546,6 +1652,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
   public void DrawText(String text, int x, int y) {
+    updatePaintFont();
+
     float fontScalingFactor = $form().deviceDensity();
     float correctedX = x * fontScalingFactor;
     float correctedY = y * fontScalingFactor;
@@ -1566,6 +1674,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text starting at the specified coordinates "
       + "at the specified angle using the values of the FontSize and TextAlignment properties.")
   public void DrawTextAtAngle(String text, int x, int y, float angle) {
+    updatePaintFont();
+
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());
     view.drawTextAtAngle(text, correctedX, correctedY, angle);

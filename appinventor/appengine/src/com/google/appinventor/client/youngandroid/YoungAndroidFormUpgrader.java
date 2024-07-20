@@ -852,6 +852,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 15;
     }
+    if (srcCompVersion < 16) {
+      // Added FontBold, FontItalic, and FontTypeface properties
+      srcCompVersion = 16;
+    }
     return srcCompVersion;
   }
 

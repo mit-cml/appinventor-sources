@@ -1845,7 +1845,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     15: Blockly.Versioning.makeSetterUseHelper(
-        'Canvas', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Canvas', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // Added FontBold, FontItalic, and FontTypeface properties
+    16: "noUpgrade"
 
   }, // End Canvas upgraders
 

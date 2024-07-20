@@ -872,7 +872,9 @@ public class YaVersion {
   // -TapThreshold was added
   // For CANVAS_COMPONENT_VERSION 15
   // - Assets helper block was added.
-  public static final int CANVAS_COMPONENT_VERSION = 15;
+  // For CANVAS_COMPONENT_VERSION 16
+  // - Added FontBold, FontItalic and FontTypeface properties
+  public static final int CANVAS_COMPONENT_VERSION = 16;
 
   // For CHART_COMPONENT_VERSION 2:
   // - The XFromZero and YFromZero properties were added
