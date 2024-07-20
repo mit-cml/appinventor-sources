@@ -151,10 +151,6 @@ import Foundation
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
 
-  // iOS Specific Texting Errors
-  case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
-  case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
-
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -384,11 +380,6 @@ import Foundation
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
-
-    case .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED:
-      return "Google Voice integration is unavailable."
-    case .ERROR_IOS_RECEIVING_NOT_SUPPORTED:
-      return "Receiving text messages is unavailable."
     }
   }
 }
