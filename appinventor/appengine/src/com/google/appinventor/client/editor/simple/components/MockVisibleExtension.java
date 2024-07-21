@@ -5,6 +5,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.jstypes.Blob;
 import com.google.appinventor.client.utils.jstypes.BlobOptions;
+import com.google.appinventor.client.utils.jstypes.DOMPurify;
 import com.google.appinventor.client.utils.jstypes.PropertyChangeMessage;
 import com.google.appinventor.client.utils.jstypes.URL;
 import com.google.appinventor.client.utils.jstypes.Worker;
@@ -12,6 +13,7 @@ import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
 import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -66,7 +68,25 @@ public class MockVisibleExtension extends MockVisibleComponent {
   }
 
   private void initWorker(String mockScript) {
-    String[] parts = new String[] {mockScript};
+    String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+    String[] parts =
+        new String[] {
+          "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
+          "self.Mock = {\n",
+          "  document: undefined,\n",
+          "  template: () => undefined,\n",
+          "  onPropertyChange: (property) => undefined\n",
+          "};\n",
+          mockScript + "\n",
+          "const ____mockhtml = Mock.template();\n",
+          "self.postMessage(____mockhtml);\n",
+          "Mock.document = parseHTML(____mockhtml).document;\n",
+          "onmessage = (msg) => {\n",
+          "  Mock.onPropertyChange(msg.data);\n",
+          "  postMessage(Mock.document.toString());\n",
+          "};\n",
+        };
+
     BlobOptions blobOpts = BlobOptions.create("text/javascript", "transparent");
     Blob blob = new Blob(parts, blobOpts);
 
@@ -75,8 +95,10 @@ public class MockVisibleExtension extends MockVisibleComponent {
     worker.addEventListener(
         "message",
         (MessageEvent event) -> {
-          Ode.CLog(event.getData().toString());
-          HTMLPanel html = new HTMLPanel(event.getData().toString());
+          Ode.CLog("worker.message: dirty: " + event.getData().toString());
+          String sanitizedData = DOMPurify.sanitize(event.getData().toString());
+          Ode.CLog("worker.message: clean: " + sanitizedData);
+          HTMLPanel html = new HTMLPanel(sanitizedData);
           rootPanel.clear();
           rootPanel.setStylePrimaryName("ode-SimpleMockComponent");
           rootPanel.add(html);
@@ -85,11 +107,8 @@ public class MockVisibleExtension extends MockVisibleComponent {
     worker.addEventListener(
         "error",
         (Worker.ErrorEvent event) -> {
-          Ode.CLog(event.getMessage());
-          Ode.CLog(event.getFileName());
-          Ode.CLog(String.valueOf(event.getLineNo()));
-          Ode.CLog(String.valueOf(event.getColNo()));
-          Ode.CLog(event.getError().toString());
+          Ode.CLog("worker.error: " + event.getMessage());
+          Ode.CLog(String.valueOf(event.getError()));
         });
   }
 

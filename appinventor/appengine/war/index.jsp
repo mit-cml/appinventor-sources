@@ -89,6 +89,5 @@
       }
     </script>
     <script type="text/javascript" src="static/dompurify/purify.min.js"></script>
-    <script type="text/javascript" src="static/linkedom/linkedom.min.js"></script>
   </body>
 </html>
