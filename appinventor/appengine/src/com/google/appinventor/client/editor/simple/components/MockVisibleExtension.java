@@ -6,11 +6,12 @@ import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.jstypes.Blob;
 import com.google.appinventor.client.utils.jstypes.BlobOptions;
 import com.google.appinventor.client.utils.jstypes.DOMPurify;
-import com.google.appinventor.client.utils.jstypes.PropertyChangeMessage;
+import com.google.appinventor.client.utils.jstypes.ComponentProperty;
 import com.google.appinventor.client.utils.jstypes.URL;
 import com.google.appinventor.client.utils.jstypes.Worker;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
 import com.google.appinventor.client.utils.jstypes.WorkerOptions;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.user.client.Window;
@@ -73,27 +74,9 @@ public class MockVisibleExtension extends MockVisibleComponent {
   }
 
   private void initWorker(String mockScript) {
-    String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
-    String[] parts =
-        new String[] {
-          "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
-          "self.Mock = {\n",
-          "  document: undefined,\n",
-          "  template: () => undefined,\n",
-          "  onPropertyChange: (property) => undefined\n",
-          "};\n",
-          mockScript + "\n",
-          "const ____mockhtml = Mock.template();\n",
-          "self.postMessage(____mockhtml);\n",
-          "Mock.document = parseHTML(____mockhtml).document;\n",
-          "onmessage = (msg) => {\n",
-          "  Mock.onPropertyChange(msg.data);\n",
-          "  postMessage(Mock.document.toString());\n",
-          "};\n",
-        };
-
+    String[] workerSrc = getWorkerSource(mockScript);
     BlobOptions blobOpts = BlobOptions.create("text/javascript", "transparent");
-    Blob blob = new Blob(parts, blobOpts);
+    Blob blob = new Blob(workerSrc, blobOpts);
 
     WorkerOptions workerOpts = WorkerOptions.create("module");
     workerUrl = URL.createObjectURL(blob);
@@ -119,6 +102,39 @@ public class MockVisibleExtension extends MockVisibleComponent {
         });
   }
 
+  private String[] getWorkerSource(String mockScript) {
+    // Construct a JS object of the extension's properties and their values at
+    // the time of initialization of the mock.
+    final StringBuilder initPropsBuilder = new StringBuilder("{ ");
+    for (EditableProperty p : getProperties()) {
+      initPropsBuilder.append("'" + p.getName() + "': '" + p.getValue() + "', ");
+    }
+    initPropsBuilder.append("}");
+
+    final String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+    final String script = mockScript
+        .replaceAll("`", "\\\\`")
+        .replaceAll("\\$\\{", "\\\\\\${");
+
+    return new String[] {
+      "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
+      "const Mock = {\n",
+      "  document: undefined,\n",
+      "  template: (initialProperties) => undefined,\n",
+      "  onPropertyChange: (property) => undefined\n",
+      "};\n",
+      "const mockScript = new Function('Mock', `\n" + script + "\n`);\n",
+      "mockScript(Mock);\n",
+      "const mockHTML = Mock.template(" + initPropsBuilder + ");\n",
+      "self.postMessage(mockHTML);\n",
+      "Mock.document = parseHTML(mockHTML).document;\n",
+      "onmessage = (msg) => {\n",
+      "  Mock.onPropertyChange(msg.data);\n",
+      "  postMessage(Mock.document.toString());\n",
+      "};\n",
+    };
+  }
+
   @Override
   public void delete() {
     if (worker != null) {
@@ -132,18 +148,18 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     if (worker != null) {
-      PropertyChangeMessage msg = new PropertyChangeMessage(propertyName, newValue);
+      ComponentProperty msg = new ComponentProperty(propertyName, newValue);
       worker.postMessage(msg);
     }
   }
 
-  @Override
-  public int getPreferredWidth() {
-    return 128;
-  }
-
-  @Override
-  public int getPreferredHeight() {
-    return 48;
-  }
+  //  @Override
+  //  public int getPreferredWidth() {
+  //    return 128;
+  //  }
+  //
+  //  @Override
+  //  public int getPreferredHeight() {
+  //    return 48;
+  //  }
 }
