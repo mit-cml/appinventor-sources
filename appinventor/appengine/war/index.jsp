@@ -84,7 +84,7 @@
     <script src="static/leaflet/leaflet.geometryutil.js"></script>
     <script src="static/leaflet/leaflet.snap.js"></script>
     <script>
-      if (window.navigator.userAgent.indexOf("MSIE") != -1){
+      if (window.navigator.userAgent.indexOf("MSIE") !== -1){
           document.getElementById("unsupported").style.display = 'block';
       }
     </script>
