@@ -1,6 +1,5 @@
 package com.google.appinventor.client.utils.jstypes;
 
-import jsinterop.annotations.JsConstructor;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
