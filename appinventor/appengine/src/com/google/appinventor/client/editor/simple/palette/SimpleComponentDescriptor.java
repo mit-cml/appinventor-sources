@@ -606,9 +606,8 @@ public final class SimpleComponentDescriptor {
       }
 
       Image icon = getImageFromPath(scd.getIconName(name), type, editor.getProjectId());
-      String packagePath = type.substring(0, type.lastIndexOf("."));
-      String mockFileId = "assets/external_comps/" + packagePath + "/mocks/" + name + ".mock.js";
-      return new MockVisibleExtension(editor, name, icon, mockFileId);
+      String packageName = type.substring(0, type.lastIndexOf("."));
+      return new MockVisibleExtension(editor, name, icon, packageName);
     }
   }
 }

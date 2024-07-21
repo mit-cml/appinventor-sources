@@ -1,6 +1,9 @@
 package com.google.appinventor.client.utils.jstypes;
 
-import jsinterop.annotations.*;
+import jsinterop.annotations.JsFunction;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL)
 public class Worker {

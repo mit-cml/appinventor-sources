@@ -21,17 +21,21 @@ import com.google.gwt.user.client.ui.InlineHTML;
 
 public class MockVisibleExtension extends MockVisibleComponent {
   private final long projectId;
-  private final String mockFileId;
-  private final HorizontalPanel rootPanel;
+  private final String typeName;
+  private final String packageName;
 
   private Worker worker = null;
+  private String workerUrl = null;
+
+  private final HorizontalPanel rootPanel;
 
   public MockVisibleExtension(
-      SimpleEditor editor, String type, Image iconImage, String mockFileId) {
-    super(editor, type, iconImage);
+      SimpleEditor editor, String typeName, Image iconImage, String packageName) {
+    super(editor, typeName, iconImage);
 
-    this.mockFileId = mockFileId;
     this.projectId = editor.getProjectId();
+    this.typeName = typeName;
+    this.packageName = packageName;
 
     rootPanel = new HorizontalPanel();
     rootPanel.setStylePrimaryName("ode-MockVisibleExtensionLoading");
@@ -39,7 +43,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
     iconImage.setWidth("24px");
     rootPanel.add(iconImage);
 
-    InlineHTML label = new InlineHTML("Loading " + type + "...");
+    InlineHTML label = new InlineHTML("Loading " + typeName + "...");
     rootPanel.add(label);
 
     Ode.CLog("MockVisibleExtension.constructor");
@@ -50,10 +54,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void onCreateFromPalette() {
     super.onCreateFromPalette();
     Ode.CLog("MockVisibleExtension.createFromPalette");
-
+    final String mockScriptPath =
+        "assets/external_comps/" + packageName + "/mocks/" + typeName + ".mock.js";
     Promise.<ChecksumedLoadFile>call(
-            "Server error: could not load mock script for component: " + getVisibleTypeName(),
-            cb -> Ode.getInstance().getProjectService().load2(projectId, mockFileId, cb))
+            "Server error: could not load mock script for component: " + typeName,
+            cb -> Ode.getInstance().getProjectService().load2(projectId, mockScriptPath, cb))
         .then(
             result -> {
               String mockScript;
@@ -91,7 +96,9 @@ public class MockVisibleExtension extends MockVisibleComponent {
     Blob blob = new Blob(parts, blobOpts);
 
     WorkerOptions workerOpts = WorkerOptions.create("module");
-    worker = new Worker(URL.createObjectURL(blob), workerOpts);
+    workerUrl = URL.createObjectURL(blob);
+    worker = new Worker(workerUrl, workerOpts);
+
     worker.addEventListener(
         "message",
         (MessageEvent event) -> {
@@ -116,6 +123,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void delete() {
     if (worker != null) {
       worker.terminate();
+      URL.revokeObjectURL(workerUrl);
     }
     super.delete();
   }
