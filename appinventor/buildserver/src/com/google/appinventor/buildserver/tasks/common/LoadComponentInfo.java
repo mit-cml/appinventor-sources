@@ -505,15 +505,11 @@ public class LoadComponentInfo implements CommonTask {
 
       JSONObject infoObject = compJson.optJSONObject(
           ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
-      if (infoObject == null) {
-        context.getReporter().info("Component \"" + type + "\" does not specify "
-            + ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
-        continue;
+      if (infoObject != null) {
+        // Handle declared constraints
+        context.getComponentInfo().getPermissionConstraintsNeeded()
+            .put(type, processPermissionConstraints(infoObject));
       }
-
-      // Handle declared constraints
-      context.getComponentInfo().getPermissionConstraintsNeeded()
-          .put(type, processPermissionConstraints(infoObject));
 
       // Handle conditional constraints
       infoObject = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
