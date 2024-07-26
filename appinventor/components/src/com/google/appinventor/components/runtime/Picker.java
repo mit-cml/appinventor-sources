@@ -36,7 +36,11 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
 
   @Override
   public void click() {
-    BeforePicking();
+    if (!BeforePicking()) {
+      // If a block throws an exception here, we need the error to be displayed rather than opening
+      // the ListPickerActivity so that it can be dealt with first.
+      return;
+    }
     if (requestCode == 0) { // only need to register once
       requestCode = container.$form().registerForActivityResult(this);
     }
@@ -63,8 +67,8 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
    * can be used to prepare the picker before it is shown.
    */
   @SimpleEvent
-  public void BeforePicking() {
-    EventDispatcher.dispatchEvent(this, "BeforePicking");
+  public boolean BeforePicking() {
+    return EventDispatcher.dispatchEvent(this, "BeforePicking");
   }
 
   /**
