@@ -177,6 +177,8 @@
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151EB7E1298853E400315044 /* AccessibleComponent.swift */; };
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
+		46362A642AAA474700F7F028 /* BluetoothAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46362A632AAA474700F7F028 /* BluetoothAdmin.swift */; };
+		46362A662AAA475C00F7F028 /* WifiAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46362A652AAA475C00F7F028 /* WifiAdmin.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
@@ -430,6 +432,8 @@
 		151EB7E1298853E400315044 /* AccessibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibleComponent.swift; sourceTree = "<group>"; };
 		22843756284F89DF00EC3133 /* AssetFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetFetcher.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		46362A632AAA474700F7F028 /* BluetoothAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothAdmin.swift; sourceTree = "<group>"; };
+		46362A652AAA475C00F7F028 /* WifiAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiAdmin.swift; sourceTree = "<group>"; };
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -902,6 +906,8 @@
 			isa = PBXGroup;
 			children = (
 				062300A71DCE409D0035E4A4 /* BluetoothClient.swift */,
+				46362A632AAA474700F7F028 /* BluetoothAdmin.swift */,
+				46362A652AAA475C00F7F028 /* WifiAdmin.swift */,
 				062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */,
 			);
 			name = connectivity;
@@ -1348,6 +1354,7 @@
 				06C70BAA2A8BB72800C6C78D /* RSA.swift in Sources */,
 				060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */,
 				0633F360297D0AD700C3C3E9 /* tr.pb.swift in Sources */,
+				46362A662AAA475C00F7F028 /* WifiAdmin.swift in Sources */,
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
 				DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
@@ -1476,6 +1483,7 @@
 				06C70BB12A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift in Sources */,
 				CBC78688202A23F6005363A3 /* MapFeatureContainerBase.swift in Sources */,
 				CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */,
+				46362A642AAA474700F7F028 /* BluetoothAdmin.swift in Sources */,
 				06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 				06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */,
