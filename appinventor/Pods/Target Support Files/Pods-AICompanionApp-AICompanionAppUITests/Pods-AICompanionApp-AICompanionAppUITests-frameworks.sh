@@ -192,9 +192,9 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Zip/Zip.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/ZipArchive/ZipArchive.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/geos/geos.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -214,9 +214,9 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Zip/Zip.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/ZipArchive/ZipArchive.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/geos/geos.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then

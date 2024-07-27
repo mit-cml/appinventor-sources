@@ -131,9 +131,9 @@ import Foundation
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
   
-  //PersonalImageClassifier error
-  case ERROR_MODEL_PIC = 4701
-  case ERROR_WEBVIEW_PIC = 4801
+  //BaseAiComponent error
+  case ERROR_MODEL_AI = 4701
+  case ERROR_WEBVIEW_AI = 4801
 
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
@@ -388,8 +388,15 @@ import Foundation
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
     
+      //BaseAiComponent errors
     case .ERROR_INPUT_MODE:
       return "Invalid input mode"
+      
+    case .ERROR_MODEL_AI:
+      return "Invalid model file"
+      
+    case .ERROR_WEBVIEW_AI:
+      return "Invalid webview"
     }
   }
 }

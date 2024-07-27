@@ -10,8 +10,7 @@
 #endif
 #endif
 
-#import "ZipArchive.h"
 
-FOUNDATION_EXPORT double ZipArchiveVersionNumber;
-FOUNDATION_EXPORT const unsigned char ZipArchiveVersionString[];
+FOUNDATION_EXPORT double ZIPFoundationVersionNumber;
+FOUNDATION_EXPORT const unsigned char ZIPFoundationVersionString[];
 

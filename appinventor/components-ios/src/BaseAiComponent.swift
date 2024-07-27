@@ -6,7 +6,7 @@
 import Foundation
 import WebKit
 import Zip 
-import ZipArchive
+import ZIPFoundation
 
 fileprivate let MODEL_PATH_SUFFIX = ".mdl"
 fileprivate var TRANSFER_MODEL_PREFIX: String? = nil
@@ -20,7 +20,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
 
     private var _labels = [String]()
     private var _modelPath: String? = nil
-    private var _webview: WKWebView? = nil
+    internal var _webview: WKWebView? = nil
     private var _webviewer: WebViewer?
     private var assetPath: String? = nil
 
@@ -32,7 +32,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
 
     @objc public func Initialize() {
         guard let webview = _webview else {
-        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_PIC, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
+        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
         return
         }
     }
@@ -41,7 +41,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
       if path.hasSuffix(MODEL_PATH_SUFFIX) {
           _modelPath = path
       } else {
-        _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_PIC, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
+        _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_AI, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
       }
     }
 
@@ -110,7 +110,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         return result
     }
 
-    private func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
+    internal func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
       guard let _webview = _webview else {
         throw AIError.webviewerNotSet
       }
@@ -190,14 +190,25 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
               return
           }
           do {
-              let zipData = try Data(contentsOf: zipURL)
-              let zip = ZipArchive()
-              for entry in zip.entries {
-                  if entry.path == fileName {
-                      fileData = entry.data()
-                      break
-                  }
-              }
+            guard let archive = Archive(url: zipURL, accessMode: .read) else {
+                urlSchemeTask.didFailWithError(AIError.FileNotFound)
+                return
+            }
+
+            var fileData: Data?
+
+            // Cerca l'entry desiderata
+            for entry in archive {
+                if entry.path == fileName {
+                    // Leggi i dati dall'entry
+                    var entryData = Data()
+                    _ = try archive.extract(entry) { data in
+                        entryData.append(data)
+                    }
+                    fileData = entryData
+                    break
+                }
+            }
           } catch {
               urlSchemeTask.didFailWithError(error)
               return
