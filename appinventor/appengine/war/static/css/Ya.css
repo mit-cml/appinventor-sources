@@ -1401,6 +1401,17 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
+.ode-MockVisibleExtensionHost {
+  box-sizing: border-box;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+.ode-MockVisibleExtensionHost-selected {
+  border: 2px solid #8fc202;
+}
+
 .ode-MockVisibleExtensionLoading {
   box-sizing: border-box;
   border: 2px dashed #383d41;
@@ -1409,10 +1420,6 @@ select.ode-PropertyEditor[disabled] {
   font-size: 12px;
   font-weight: normal;
   font-style: italic;
-}
-
-.ode-MockVisibleExtensionLoading-selected {
-  border: 2px dashed #8fc202;
 }
 
 .ode-MockVisibleExtensionLoading img {
