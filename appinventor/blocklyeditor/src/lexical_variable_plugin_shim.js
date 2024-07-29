@@ -54,6 +54,13 @@ AI.Blockly.FieldProcedureName = lexVarPlugin.FieldProcedureName;
 
 Blockly.LexicalVariable = lexVarPlugin.LexicalVariable;
 
+/**
+ * ProcedureNameDropdown
+ */
+
+goog.provide('AI.Blockly.ProcedureNameDropdown');
+AI.Blockly.ProcedureNameDropdown = lexVarPlugin.FieldNoCheckDropdown;
+
 // Add event methods for App Inventor
 
 /**
