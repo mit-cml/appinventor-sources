@@ -491,16 +491,24 @@
 <h3 id="Sound-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="Sound.CanToggleDoNotDisturb" class="method returns boolean"><i></i> CanToggleDoNotDisturb()</dt>
+  <dd>Returns true if ringer mode adjustments that toggle Do Not Disturb are allowed, false otherwise. On devices running Android Nougat or later, ringer mode adjustments that toggle Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.</dd>
   <dt id="Sound.Pause" class="method"><i></i> Pause()</dt>
   <dd>Pauses playing the sound if it is being played.</dd>
   <dt id="Sound.Play" class="method"><i></i> Play()</dt>
   <dd>Plays the sound.</dd>
   <dt id="Sound.Resume" class="method"><i></i> Resume()</dt>
   <dd>Resumes playing the sound after a pause.</dd>
+  <dt id="Sound.SetRingerMode" class="method"><i></i> SetRingerMode(<em class="com google appinventor components common RingerModeEnum">ringerMode</em>)</dt>
+  <dd>Sets the Ringer mode to normal, silent, or vibrate. On devices running Android Nougat or later, ringer mode adjustments that toggle Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. Use the CanToggleDoNotDisturb block to determine whether the policy has been granted. Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.</dd>
+  <dt id="Sound.ShowDoNotDisturbAccessSettings" class="method"><i></i> ShowDoNotDisturbAccessSettings()</dt>
+  <dd>Show the Do Not Disturb access settings.</dd>
   <dt id="Sound.Stop" class="method"><i></i> Stop()</dt>
   <dd>Stops playing the sound if it is being played.</dd>
   <dt id="Sound.Vibrate" class="method"><i></i> Vibrate(<em class="number">millisecs</em>)</dt>
   <dd>Vibrates for the specified number of milliseconds.</dd>
+  <dt id="Sound.VibratePattern" class="method"><i></i> VibratePattern(<em class="number">vibrate</em>,<em class="number">delay</em>,<em class="boolean">repeat</em>)</dt>
+  <dd>Vibrate with a given pattern</dd>
 </dl>
 
 <h2 id="SoundRecorder">SoundRecorder</h2>
