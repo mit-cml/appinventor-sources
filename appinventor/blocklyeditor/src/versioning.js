@@ -2028,7 +2028,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2 Added AppendValue, RemoveFirst and FirstRemoved
     2: "noUpgrade",
     // AI2 Added ClearTag function, GetTagList and Persist
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // Added GoOnline and GoOffline functions
+    // Made the FirebaseURL property user visible.
+    4: "noUpgrade",
 
   },
 
