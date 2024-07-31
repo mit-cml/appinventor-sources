@@ -22,7 +22,7 @@ import UIKit
   
   //MARK: Methods
   
-  @objc public func classifyImageData(_ imagePath: String?) {
+  @objc public func ClassifyImageData(_ imagePath: String?) {
     do  {
       try assertWebView("ClassifyImageData")
     }catch{
@@ -51,11 +51,12 @@ import UIKit
       if let imageData = immagex.pngData() {
         let imageEncodedBase64String = imageData.base64EncodedString(options: .lineLength64Characters).replacingOccurrences(of: "\n", with: "")
         print("imageEncodedBase64String: \(imageEncodedBase64String)")
+        _webview?.evaluateJavaScript("classifyImageData(\"\(imageEncodedBase64String)\");", completionHandler: nil)
       }
     }
   }
   
-    @objc public func toggleCameraFacingMode() {
+    @objc public func ToggleCameraFacingMode() {
         do{
           try assertWebView("ToggleCameraFacingMode")
         }catch{
@@ -64,17 +65,18 @@ import UIKit
         _webview?.evaluateJavaScript("toggleCameraFacingMode();", completionHandler: nil)
     }
 
-    @objc public func classifyVideoData() {
+    @objc public func ClassifyVideoData() {
         do{
           try assertWebView("ClassifyVideoData")
         }catch{
           print("Error webViewer not set during ClassifyVideoData" )
         }
+        print("ClassifyVideoData")
         _webview?.evaluateJavaScript("classifyVideoData();", completionHandler: nil)
     }
 
-    @objc public func startContinuousClassification() {
-       if inputMode.caseInsensitiveCompare(PersonalImageClassifier.MODE_VIDEO) == .orderedSame && !_running {
+    @objc public func StartContinuousClassification() {
+       if InputMode.caseInsensitiveCompare(PersonalImageClassifier.MODE_VIDEO) == .orderedSame && !_running {
              do{
                try assertWebView("StartVideoClassification")
              }catch{
@@ -85,8 +87,8 @@ import UIKit
         }
     }
 
-    @objc public func stopContinuousClassification() {
-       if inputMode.caseInsensitiveCompare(PersonalImageClassifier.MODE_VIDEO) == .orderedSame && _running {
+    @objc public func StopContinuousClassification() {
+       if InputMode.caseInsensitiveCompare(PersonalImageClassifier.MODE_VIDEO) == .orderedSame && _running {
              do{
                try assertWebView("StopVideoClassification")
              }catch{
@@ -99,15 +101,16 @@ import UIKit
 
     // MARK: Events
 
-    @objc override public func classifierReady() {
+    @objc override public func ClassifierReady() {
         DispatchQueue.main.async { [self] in
-        inputMode = _inputMode
+        InputMode = _inputMode
         MinimumInterval = _minClassTime
         EventDispatcher.dispatchEvent(of: self, called: "ClassifierReady")
         }
     }
 
-    @objc override public func gotClassification(_ result: AnyObject) {
+    @objc override public func GotClassification(_ result: AnyObject) {
+        print("GotClassification")
         DispatchQueue.main.async { [self] in
         EventDispatcher.dispatchEvent(of: self, called: "GotClassification", arguments: result)
         }
@@ -121,7 +124,7 @@ import UIKit
 
     // MARK: Properties
 
-    @objc public var inputMode: String {
+    @objc public var InputMode: String {
         get {
             return _inputMode
         }

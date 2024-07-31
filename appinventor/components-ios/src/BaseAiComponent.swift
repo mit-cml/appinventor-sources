@@ -37,7 +37,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         }
     }
 
-    @objc public func Model(_ path: String) {
+    @objc public func setModel(_ path: String) {
       if path.hasSuffix(MODEL_PATH_SUFFIX) {
           _modelPath = path
       } else {
@@ -50,7 +50,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
     }
 
 
-    @objc open var WebViewer: WebViewer {
+    /*@objc open var WebViewer: WebViewer {
       get {
         return _webviewer!
         }
@@ -64,15 +64,53 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         }
         if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
             let request = URLRequest(url: url)
-            print(request)
+            print("enter request")
             _webview?.load(request)
             print("request loaded")
+        }else{
+          print("request not loaded")
         }
       }
+    }*/
+  
+  @objc open var WebViewer: WebViewer {
+    get {
+      return _webviewer!
+      }
+      set {
+      configureWebView(newValue.view as! WKWebView)
+      print("configurewebview called")
+      if self is PersonalImageClassifier{
+          assetPath = "personal_image_classifier"
+      } else {
+          // implement checks for other AI components
+      }
+      print(assetPath)
+      let bundle = Bundle(for: BaseAiComponent.self)
+      print(bundle)
+        
+      if let bundlePath = bundle.resourcePath {
+        do{
+          let files = try FileManager.default.contentsOfDirectory(atPath: bundlePath)
+          print(files)
+        }catch{
+          print(error)
+        }
+      }
+        
+      if let url = bundle.url(forResource: assetPath, withExtension: "html"){
+        let request = URLRequest(url: url)
+        print(request)
+        _webview?.load(request)
+        print("requestLoaded")
+      }else{
+        print("Request not lodaded")
+      }
     }
-    
-    open func classifierReady(){}
-    open func gotClassification(_ result: AnyObject){}
+  }
+  
+    open func ClassifierReady(){}
+    open func GotClassification(_ result: AnyObject){}
     open func Error(_ errorCode: Int32){}
 
     // MARK: Private Implementation
@@ -85,8 +123,8 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         
         if self is PersonalImageClassifier{
             _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
-            TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
-            PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
+           TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
+           PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
         } else {
             // implement checks for other AI components
         }
@@ -119,33 +157,38 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
   // MARK: WKScriptMessageHandler
 
   public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    print("recieving content")
     guard let dict = message.body as? [String: Any],
     var functionCall = dict["functionCall"] as? String,
     let args = dict["args"] else {
         print("JSON Error message not recieved")
         return
     }
+    print(message.body)
     if functionCall == "ready" {
+      print("ready")
         do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
           _labels = try parseLabels(result as! String);
-          classifierReady()
+          ClassifierReady()
         } catch {
           print("Error parsing JSON from web view function ready")
         }
     }
     if functionCall == "reportResult" {
+      print("report result")
         do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
           _labels = try parseLabels(result as! String);
-          gotClassification(result)
+          GotClassification(result)
         } catch {
           print("Error parsing JSON from web view function reportResult")
         }
     }
     if functionCall == "error" {
+      print("error")
          do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
@@ -161,6 +204,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
   // MARK: WKURLSchemeHandler
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+    print("WKURLSchemeHandler")
       var fileData: Data? = nil
       guard let url = urlSchemeTask.request.url?.absoluteString else {
           urlSchemeTask.didFailWithError(AIError.FileNotFound)
@@ -170,7 +214,9 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
           urlSchemeTask.didFailWithError(AIError.FileNotFound)
           return
       }
+    print(url)
     if url.hasPrefix(TRANSFER_MODEL_PREFIX!) {
+      print("transfer model")
       let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX!, with: "")
           if let assetURL = Bundle.main.url(forResource: fileName, withExtension: nil) {
               do {
@@ -184,6 +230,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
               return
           }
     } else if url.hasPrefix(PERSONAL_MODEL_PREFIX!) {
+        print("personal model")
         let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX!, with: "")
           guard let _modelPath = _modelPath, let zipURL = Bundle.main.url(forResource: _modelPath, withExtension: "zip") else {
               urlSchemeTask.didFailWithError(AIError.FileNotFound)
