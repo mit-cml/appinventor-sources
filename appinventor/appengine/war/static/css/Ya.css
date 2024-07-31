@@ -841,6 +841,8 @@ div.StatusPanel {
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
+  outline:#000000 2px solid;
+  border-radius: 4px;
 }
 
 /* Young Android Toolbar */
@@ -1626,6 +1628,19 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
+
+.FocusTrap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px; 
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
 
 /* Start of NoProjectsDialogBox. */
 .ode-noDialogDiv {
