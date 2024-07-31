@@ -6,12 +6,23 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
+import java.util.List;
+
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
@@ -114,6 +125,52 @@ public class SimplePaletteItem extends DragSourcePanel {
         select(getWidget());
       }
     });
+    addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+          select(getWidget());
+      }
+    });
+    addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown (KeyDownEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+          addComponent();
+        }
+      }
+    });
+    addDoubleClickHandler(new DoubleClickHandler() {
+      public void onDoubleClick (DoubleClickEvent event) {
+        addComponent();
+      }
+    });
+  }
+
+  private void addComponent() {
+    boolean added = false;
+    MockComponent component = createMockComponent();
+    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) dropTargetProvider.getDropTargets()[0];
+    DropTarget[] dropTargets = dropTargetProvider.getDropTargets();
+    for (DropTarget target : dropTargets) {
+      if(target instanceof MockContainer)
+      {
+        List<MockComponent> mcl = mockVisibleComponent.getForm().getSelectedComponents();
+        if(mcl.size()==1) {
+          if (mcl.get(0) instanceof MockContainer && mcl.get(0).isVisibleComponent()) {
+            MockContainer container = (MockContainer) mcl.get(0);
+            container.addComponent(component);
+            added = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!added) {
+      mockVisibleComponent.getForm().addComponent(component);
+    }
+    if (!component.isVisibleComponent()) {
+      mockVisibleComponent.getNonVisibleComponentsPanel().addComponent(component);
+    }
   }
 
   /**
