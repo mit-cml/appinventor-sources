@@ -105,6 +105,7 @@ public class SourceStructureExplorer extends Composite {
     tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
+        tree.setFocus(true);
         TreeItem treeItem = event.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
