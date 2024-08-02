@@ -2,10 +2,10 @@
 
 console.log("PersonalImageClassifier: Using TensorFlow.js version " + tf.version.tfjs);
 
-const TRANSFER_MODEL_PREFIX = "https://appinventor.mit.edu/personal-image-classifier/transfer/";
+const TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/";
 const TRANSFER_MODEL_SUFFIX = "_model.json";
 
-const PERSONAL_MODEL_PREFIX = "https://appinventor.mit.edu/personal-image-classifier/personal/";
+const PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/";
 const PERSONAL_MODEL_JSON_SUFFIX = "model.json";
 const PERSONAL_MODEL_WEIGHTS_SUFFIX = "model.weights.bin";
 const PERSONAL_MODEL_LABELS_SUFFIX = "model_labels.json";
@@ -77,6 +77,7 @@ function blobToFile(blob, fileName){
 
 const loadModel = async () => {
   try {
+    console.log("loading model");
     // Loads the transfer model
     transferModelInfo = await loadModelFile(PERSONAL_MODEL_PREFIX + TRANSFER_MODEL_INFO_SUFFIX, true);
     transferModel = await loadTransferModel(transferModelInfo['name'], transferModelInfo['lastLayer']);
@@ -98,10 +99,10 @@ const loadModel = async () => {
     transferModel.predict(zeros).dispose();
     zeros.dispose();
     console.log("PersonalImageClassifier: transfer model activation and personal model are ready");
-    PersonalImageClassifier.ready(JSON.stringify(Object.values(modelLabels)));
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'ready', args: JSON.stringify(Object.values(modelLabels))});
   } catch (error) {
     console.log("PersonalImageClassifier: " + error);
-    PersonalImageClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED);
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
   }
 };
 
@@ -159,10 +160,10 @@ async function predict(pixels, crop) {
     }
 
     console.log("PersonalImageClassifier: prediction is " + JSON.stringify(result));
-    PersonalImageClassifier.reportResult(JSON.stringify(result));
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'reportResult', args: JSON.stringify(result)});
   } catch (error) {
     console.log("PersonalImageClassifier: " + error);
-    PersonalImageClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED);
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
   }
 }
 
@@ -202,7 +203,7 @@ function startVideo() {
     })
       .then(stream => (video.srcObject = stream))
       .catch(e => {
-        PersonalImageClassifier.error(ERROR_FAILED_TO_START_VIDEO);
+        window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_FAILED_TO_START_VIDEO});
         console.error(e);
       });
     webcamHolder.style.display = 'block';
@@ -231,7 +232,7 @@ function toggleCameraFacingMode() {
     frontFacing = !frontFacing;
     startVideo();
   } else {
-    PersonalImageClassifier.error(ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE);
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE});
   }
 }
 
@@ -240,11 +241,11 @@ function toggleCameraFacingMode() {
 function classifyImageData(imageData) {
   if (!isVideoMode) {
     img.onload = function() {
-      predict(img).catch(() => PersonalImageClassifier.error(ERROR_CLASSIFICATION_FAILED));
+      predict(img).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED});
     }
     img.src = "data:image/png;base64," + imageData;
   } else {
-    PersonalImageClassifier.error(ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE);
+        window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE});
   }
 }
 
@@ -252,9 +253,9 @@ function classifyImageData(imageData) {
 // noinspection JSUnusedGlobalSymbols
 function classifyVideoData() {
   if (isVideoMode) {
-    predict(video, true).catch(() => PersonalImageClassifier.error(ERROR_CLASSIFICATION_FAILED));
+    predict(video, true).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED});
   } else {
-    PersonalImageClassifier.error(ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE);
+      window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE});
   }
 }
 
@@ -300,7 +301,7 @@ function setInputMode(inputMode) {
     isVideoMode = true;
     startVideo();
   } else if (inputMode !== "image" && inputMode !== "video") {
-    PersonalImageClassifier.error(ERROR_INVALID_INPUT_MODE);
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_INVALID_INPUT_MODE});
   }
 }
 
@@ -310,8 +311,7 @@ window.addEventListener("resize", function() {
   video.height = video.videoHeight * window.innerWidth / video.videoWidth;
 });
 
-loadModel().catch(() => PersonalImageClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED));
-
+loadModel().catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
 window.addEventListener('orientationchange', function() {
   if (isVideoMode) {
     // The event fires before the video actually rotates, so we delay updating the frame until

@@ -109,6 +109,8 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
     }
   }
   
+  
+  
     open func ClassifierReady(){}
     open func GotClassification(_ result: AnyObject){}
     open func Error(_ errorCode: Int32){}
@@ -122,6 +124,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
           _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
         
         if self is PersonalImageClassifier{
+            print("PersonalImageClassifier")
             _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
            TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
            PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
@@ -281,10 +284,21 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // We deliver the payload in one go so it cannot be cancelled.
   }
+  
+  func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+      print("Started to load")
+  }
 
+  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      print("Finished loading")
+  }
+
+  func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+      print("Failed to load with error: \(error.localizedDescription)")
+  }
+  
   enum AIError: Error {
     case FileNotFound
     case webviewerNotSet
   }
 }
-
