@@ -22,7 +22,7 @@
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
 <!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=10">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
