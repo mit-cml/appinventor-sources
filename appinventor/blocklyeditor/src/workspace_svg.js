@@ -664,7 +664,7 @@ Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   if (!opt_allowToolbox) {  // Fixes #1269
     this.backpack_ && this.backpack_.hide();
   }
-  this.setScrollbarsVisible(true);
+  this.setScrollbarsVisible(!this.drawer_.isShowing());
 };
 
 /**
@@ -1243,6 +1243,7 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
       var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
         this.getInverseScreenCTM());
       this.zoom(position.x, position.y, delta);
+      this.setScrollbarsVisible(true);
     } else {
       // pan using mouse wheel
       this.scrollX -= e.deltaX;
