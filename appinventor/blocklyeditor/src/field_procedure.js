@@ -19,30 +19,40 @@ goog.provide('AI.Blockly.AIProcedure');
 AI.Blockly.FieldProcedure.defaultValue = ["",""];
 
 AI.Blockly.FieldProcedure.onChange = function(procedureId) {
-  var workspace = this.block.getTopWorkspace();
+  const workspace = this.block.getTopWorkspace();
   if(!this.block.editable_){ // [lyn, 10/14/13] .editable is undefined on blocks. Changed to .editable_
-    workspace = Blockly.Drawer.flyout_.workspace_;
     return;
   }
 
-  var def = workspace.getProcedureDatabase().getProcedure(procedureId);
-  if (!def) return;  // loading but the definition block hasn't been processed yet.
-  var text = def.getFieldValue('NAME');
-  if(text == "" || text != this.getValue()) {
-    for(var i=0;this.block.getInput('ARG' + i) != null;i++){
-      this.block.removeInput('ARG' + i);
+  const procDefBlock = workspace.getProcedureDatabase().getProcedure(procedureId);
+  // loading but the definition block hasn't been processed yet.
+  if (!procDefBlock) return;
+  const text = procDefBlock.getFieldValue('NAME');
+  // If we're just in the midst of renaming the procedure, we don't have (or want) to
+  // remove the old arguments.
+  if (!this.block.isRenaming) {
+    if (text == '' || text != this.getValue()) {
+      for (let i=0; this.block.getInput('ARG' + i) != null; i++) {
+        this.block.removeInput('ARG' + i);
+      }
+      // return;
     }
-    //return;
   }
-  // this.setValue(text);
-  if(def) {
-    // [lyn, 10/27/13] Lyn sez: this causes complications (e.g., might open up mutator on collapsed procedure
-    //   declaration block) and is no longer necessary with changes to setProedureParameters.
+  this.doValueUpdate_(text);
+  // If we're just in the midst of renaming the procedure, we don't have (or want) to
+  // add the new arguments
+  if (!this.block.isRenaming) {
+    // [lyn, 10/27/13] Lyn sez: this causes complications (e.g., might open up
+    // mutator on collapsed procedure declaration block) and is no longer
+    // necessary with changes to setProedureParameters.
     // if(def.paramIds_ == null){
     //  def.mutator.setVisible(true);
     //  def.mutator.shouldHide = true;
-    //}
-    this.block.setProcedureParameters(def.arguments_, def.paramIds_, true); // It's OK if def.paramIds is null
+    // }
+    // It's OK if def.paramIds is null
+    this.block.setProcedureParameters(procDefBlock.arguments_, procDefBlock.paramIds_, true);
+  } else {
+    this.block.render();
   }
   return text;
 };

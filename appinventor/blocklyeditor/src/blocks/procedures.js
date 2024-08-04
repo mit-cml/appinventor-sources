@@ -717,7 +717,13 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   },
   renameProcedure: function(oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
-      this.setFieldValue(newName, 'PROCNAME');
+      const oldIsRenaming = !!this.isRenaming;
+      this.isRenaming = true;
+      try {
+        this.setFieldValue(newName, 'PROCNAME');
+      } finally {
+        this.isRenaming = oldIsRenaming;
+      }
     }
   },
   // [lyn, 10/27/13] Renamed "fromChange" parameter to "startTracking", because it should be true in any situation
