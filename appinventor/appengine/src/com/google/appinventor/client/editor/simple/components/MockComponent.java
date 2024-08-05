@@ -855,41 +855,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return sourceStructureExplorerItem;
   }
 
-  /**
-   * Returns the asset node with the given name.
-   *
-   * @param name  asset name
-   * @return  asset node found or {@code null}
-   */
-  protected ProjectNode getAssetNode(String name) {
-    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
-    if (project != null) {
-      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder =
-          (YoungAndroidProjectNode) project.getRootNode();
-      for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
-        if (asset.getName().equals(name)) {
-          return asset;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Converts the given image property value to an image url.
-   * Returns null if the image property value is blank or not recognized as an
-   * asset.
-   */
-  protected String convertImagePropertyValueToUrl(String text) {
-    if (text.length() > 0) {
-      ProjectNode asset = getAssetNode(text);
-      if (asset != null) {
-        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
-      }
-    }
-    return null;
-  }
-
   // For debugging purposes only
   private String describeElement(com.google.gwt.dom.client.Element element) {
     if (element == null) {
