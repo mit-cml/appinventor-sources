@@ -154,14 +154,12 @@ public class SimplePaletteItem extends DragSourcePanel {
     for (DropTarget target : dropTargets) {
       if(target instanceof MockContainer)
       {
-        List<MockComponent> mcl = mockVisibleComponent.getForm().getSelectedComponents();
-        if(mcl.size()==1) {
-          if (mcl.get(0) instanceof MockContainer && mcl.get(0).isVisibleComponent()) {
-            MockContainer container = (MockContainer) mcl.get(0);
-            container.addComponent(component);
-            added = true;
-            break;
-          }
+        MockComponent selectedComponent = mockVisibleComponent.getForm().getLastSelectedComponent();
+        if (selectedComponent instanceof MockContainer && selectedComponent.isVisibleComponent()) {
+          MockContainer container = (MockContainer) selectedComponent;
+          container.addComponent(component);
+          added = true;
+          break;
         }
       }
     }
