@@ -15,6 +15,7 @@ import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -184,7 +185,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       case PropertyTypeConstants.PROPERTY_TYPE_ASSET:
         {
           String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
-          return URL.parse(url);
+          return URL.parse(url).toString();
         }
       case PropertyTypeConstants.PROPERTY_TYPE_LENGTH:
         {
@@ -211,8 +212,12 @@ public class MockVisibleExtension extends MockVisibleComponent {
               return "monospace";
             }
           } catch (NumberFormatException e) {
-            String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
-            return URL.parse(url);
+            String typeface = value.substring(0, value.lastIndexOf("."));
+            if (Document.get().getElementById(typeface) == null) {
+              String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
+              MockComponentsUtil.createFontResource(typeface, url, typeface);
+            }
+            return typeface;
           }
         }
       default:
