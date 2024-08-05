@@ -8,4 +8,6 @@ public class URL {
   public static native String createObjectURL(Object object);
 
   public static native String revokeObjectURL(String url);
+
+  public static native URL parse(String url);
 }

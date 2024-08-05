@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 
 public class MockVisibleExtension extends MockVisibleComponent {
   private final long projectId;
@@ -103,8 +104,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     final String escapedScript =
         mockScript.replaceAll("`", "\\\\`").replaceAll("\\$\\{", "\\\\\\${");
-    final String baseUrl =
-        String.format("%s//%s", Window.Location.getProtocol(), Window.Location.getHost());
+    final String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
 
     return new String[] {
       "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
@@ -157,8 +157,66 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     if (worker != null) {
-      ComponentProperty msg = new ComponentProperty(propertyName, newValue);
+      Object value = typeAndSanitizeProperty(propertyName, newValue);
+      ComponentProperty msg = new ComponentProperty(propertyName, value);
       worker.postMessage(msg);
+    }
+  }
+
+  private Object typeAndSanitizeProperty(String name, String value) {
+    final String type = getProperties().getProperty(name).getEditorType();
+    switch (type) {
+      case PropertyTypeConstants.PROPERTY_TYPE_INTEGER:
+      case PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER:
+        return Integer.parseInt(value);
+      case PropertyTypeConstants.PROPERTY_TYPE_FLOAT:
+      case PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT:
+        return Float.parseFloat(value);
+      case PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN:
+      case PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY:
+        return Boolean.parseBoolean(value);
+      case PropertyTypeConstants.PROPERTY_TYPE_COLOR:
+        {
+          String alpha = value.substring(2, 4);
+          String baseHex = value.substring(4);
+          return "#" + baseHex + alpha;
+        }
+      case PropertyTypeConstants.PROPERTY_TYPE_ASSET:
+        {
+          String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
+          return URL.parse(url);
+        }
+      case PropertyTypeConstants.PROPERTY_TYPE_LENGTH:
+        {
+          int intVal = Integer.parseInt(value);
+          if (intVal <= LENGTH_PERCENT_TAG) {
+            return Math.abs(intVal + 1000) + "%";
+          } else if (intVal == LENGTH_PREFERRED) {
+            return "auto";
+          } else if (intVal == LENGTH_FILL_PARENT) {
+            return "100%";
+          } else {
+            return intVal + "px";
+          }
+        }
+      case "typeface":
+        {
+          try {
+            int intVal = Integer.parseInt(value);
+            if (intVal <= 1) {
+              return "sans-serif";
+            } else if (intVal == 2) {
+              return "serif";
+            } else if (intVal == 3) {
+              return "monospace";
+            }
+          } catch (NumberFormatException e) {
+            String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
+            return URL.parse(url);
+          }
+        }
+      default:
+        return value;
     }
   }
 
