@@ -179,6 +179,13 @@
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
+		5F7ED1062C35C950004418C5 /* tf-converter.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1002C35C94C004418C5 /* tf-converter.min.js */; };
+		5F7ED1072C35C950004418C5 /* app.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1012C35C94D004418C5 /* app.js */; };
+		5F7ED1082C35C950004418C5 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1022C35C94E004418C5 /* index.html */; };
+		5F7ED1092C35C950004418C5 /* group1-shard1of1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1032C35C94F004418C5 /* group1-shard1of1.bin */; };
+		5F7ED10A2C35C950004418C5 /* VERSIONS.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1042C35C94F004418C5 /* VERSIONS.txt */; };
+		5F7ED10B2C35C950004418C5 /* tf-core.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1052C35C950004418C5 /* tf-core.min.js */; };
+		5F7ED10D2C35C987004418C5 /* facemesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7ED10C2C35C987004418C5 /* facemesh.swift */; };
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
@@ -433,6 +440,13 @@
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		5F7ED1002C35C94C004418C5 /* tf-converter.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-converter.min.js"; sourceTree = "<group>"; };
+		5F7ED1012C35C94D004418C5 /* app.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = app.js; sourceTree = "<group>"; };
+		5F7ED1022C35C94E004418C5 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		5F7ED1032C35C94F004418C5 /* group1-shard1of1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "group1-shard1of1.bin"; sourceTree = "<group>"; };
+		5F7ED1042C35C94F004418C5 /* VERSIONS.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSIONS.txt; sourceTree = "<group>"; };
+		5F7ED1052C35C950004418C5 /* tf-core.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-core.min.js"; sourceTree = "<group>"; };
+		5F7ED10C2C35C987004418C5 /* facemesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facemesh.swift; sourceTree = "<group>"; };
 		681D59042A84138A007B5DB5 /* FileScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileScope.swift; sourceTree = "<group>"; };
 		681D59062A84139E007B5DB5 /* OptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionList.swift; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -590,6 +604,7 @@
 		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
+				5F7ED0FF2C35C922004418C5 /* extensions */,
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
 				06E59EA21D92C66B00C42804 /* components */,
 				DE962F6020ADCD58004AA45A /* resources */,
@@ -970,6 +985,20 @@
 			path = util;
 			sourceTree = "<group>";
 		};
+		5F7ED0FF2C35C922004418C5 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5F7ED1012C35C94D004418C5 /* app.js */,
+				5F7ED1032C35C94F004418C5 /* group1-shard1of1.bin */,
+				5F7ED1022C35C94E004418C5 /* index.html */,
+				5F7ED1002C35C94C004418C5 /* tf-converter.min.js */,
+				5F7ED1052C35C950004418C5 /* tf-core.min.js */,
+				5F7ED1042C35C94F004418C5 /* VERSIONS.txt */,
+				5F7ED10C2C35C987004418C5 /* facemesh.swift */,
+			);
+			name = extensions;
+			sourceTree = "<group>";
+		};
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
@@ -1157,7 +1186,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F7ED1082C35C950004418C5 /* index.html in Resources */,
+				5F7ED1092C35C950004418C5 /* group1-shard1of1.bin in Resources */,
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
+				5F7ED10B2C35C950004418C5 /* tf-core.min.js in Resources */,
 				DE962F5F20ADCD2C004AA45A /* comodo_usrtrust.der in Resources */,
 				DE962F6420ADCDA0004AA45A /* pop_script in Resources */,
 				064E097E233BDBE400884FEF /* Media.xcassets in Resources */,
@@ -1166,6 +1198,8 @@
 				061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */,
 				060395451F342ADE006D6E66 /* language-codes.plist in Resources */,
 				DE962F6620ADCDE0004AA45A /* sub_script in Resources */,
+				5F7ED1062C35C950004418C5 /* tf-converter.min.js in Resources */,
+				5F7ED1072C35C950004418C5 /* app.js in Resources */,
 				DE962F6220ADCD7D004AA45A /* append_script in Resources */,
 				060395461F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist in Resources */,
 				DE5CBD281FE36C8B00F5EDDE /* webviewer.js in Resources */,
@@ -1175,6 +1209,7 @@
 				061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
 				062B743B2BC06AD9002E221F /* PrivacyInfo.xcprivacy in Resources */,
+				5F7ED10A2C35C950004418C5 /* VERSIONS.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1317,6 +1352,7 @@
 				06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */,
 				06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */,
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
+				5F7ED10D2C35C987004418C5 /* facemesh.swift in Sources */,
 				DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */,
 				0633F362297D0B1400C3C3E9 /* Translator.swift in Sources */,
 				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,

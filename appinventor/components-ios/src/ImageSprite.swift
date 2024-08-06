@@ -11,7 +11,7 @@ open class ImageSprite: Sprite {
   fileprivate var _image = UIImage()
   fileprivate var _width = kLengthPreferred
   fileprivate var _height = kLengthPreferred
-
+  
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     Width = kLengthPreferred
@@ -39,12 +39,48 @@ open class ImageSprite: Sprite {
       }
     }
   }
-
+  
   @objc open var Image: UIImage {
     get {
       return _image
     }
   }
+  
+  @objc open func setMarkOrigin(_ originCoordinates: String) {
+    // parse u and v with originCoordinates interpreted in "(u, v)" format
+    
+    let trimmed = originCoordinates.trimmingCharacters(in: CharacterSet(charactersIn: "()"))
+    let components = trimmed.split(separator: ",")
+    
+    let doubleU = Double(components[0].trimmingCharacters(in: .whitespaces))
+    let doubleV = Double(components[1].trimmingCharacters(in: .whitespaces))
+    super.U = doubleU!
+    super.V = doubleV!
+    
+  }
+  
+  //for setOriginX
+  
+  @objc open var setOriginX: Double {
+    get {
+      return super.U
+    }
+    set(u) {
+      super.U = u
+    }
+  }
+  
+  //for setOriginY
+  
+  @objc open var setOriginY: Double {
+    get {
+      return super.V
+    }
+    set(v) {
+      super.V = v
+    }
+  }
+  
   
   @objc open var Rotates: Bool {
     get {
@@ -58,7 +94,7 @@ open class ImageSprite: Sprite {
       }
     }
   }
-
+  
   override open var Heading: CGFloat {
     get {
       return super.Heading
@@ -71,7 +107,7 @@ open class ImageSprite: Sprite {
       }
     }
   }
-
+  
   override open var Width: Int32 {
     get {
       return _width
