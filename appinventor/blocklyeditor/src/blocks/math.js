@@ -12,7 +12,6 @@
 
 goog.provide('AI.Blocks.math');
 
-goog.require('AI.Blockly.BlocklyEditor');
 goog.require('AI.BlockUtils');
 
 Blockly.Blocks['math_number'] = {
