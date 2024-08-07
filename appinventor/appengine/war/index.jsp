@@ -1,4 +1,5 @@
 <%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures,msg.i18n" %>
+<%@page import="com.google.appinventor.server.flags.Flag" %>
 <%
    if (request.getScheme().equals("http") && Server.isProductionServer()
        && AppInventorFeatures.enableHttpRedirect()) {
@@ -25,9 +26,10 @@
     hash = "_" + hash;
   }
   String translation = "static/js/messages" + hash + ".js";
+  final String odeBase = Flag.createFlag("ode.base", "").get();
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
-<!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -72,12 +74,22 @@
         <li> Firefox 52+ </li>
       </ul>
     </div>
+    <% if (!odeBase.isEmpty()) { %>
+    <div id=odeblock>
+        <h1>If you see this message for an extended period of time, it might be because
+        your internet service is blocking requests to <%= odeBase %>. Contact your
+        administrator to check on this and remove the block.
+        </h1>
+    </div>
+    <% } %>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="static/js/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta1.min.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script type="text/javascript" src="ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>

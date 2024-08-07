@@ -1868,6 +1868,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ApiKey property was made visible in the designer
     2: "noUpgrade",
+
+    // The ConverseWithImage method was added
+    3: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -2196,6 +2199,9 @@ Blockly.Versioning.AllUpgradeMaps =
     8: [Blockly.Versioning.makeMethodUseDropdown('ImageSprite', 'Bounce', 0, 'Direction'),
         Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
             Blockly.Versioning.tryReplaceBlockWithAssets)],
+
+    // The MarkOrigin, OriginX, and OriginY properties were added.
+    9: "noUpgrade",
 
   }, // End ImageSprite upgraders
 

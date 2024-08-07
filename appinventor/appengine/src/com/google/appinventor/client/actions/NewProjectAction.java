@@ -12,7 +12,7 @@ import com.google.gwt.user.client.Command;
 public class NewProjectAction implements Command {
   @Override
   public void execute() {
-    new NewYoungAndroidProjectWizard();
+    new NewYoungAndroidProjectWizard().show();
     // The wizard will switch to the design view when the new
     // project is created.
   }

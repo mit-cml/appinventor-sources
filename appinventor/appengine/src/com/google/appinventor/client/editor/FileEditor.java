@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor;
 
+import com.google.appinventor.client.AssetManager;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -50,6 +51,14 @@ public abstract class FileEditor extends Composite {
   public final ProjectEditor getProjectEditor() {
     return projectEditor;
   }
+
+
+  /**
+   * Returns the drag drop targets for the gui
+   *
+   * @return  project editor associated with this file editor
+   */
+  public abstract DropTargetProvider getDropTargetProvider();
 
   /**
    * Returns the project ID associated with this file editor.

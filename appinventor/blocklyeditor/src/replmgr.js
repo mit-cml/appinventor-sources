@@ -1495,7 +1495,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
-                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
+                if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
                     rs.dialog.hide();
                     top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                     top.BlocklyPanel_indicateDisconnect();
@@ -1544,9 +1544,14 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     xmlhttp.send();
 };
 
-Blockly.ReplMgr.hasExtensions = function() {
+Blockly.ReplMgr.hasDisallowedIosExtensions = function() {
     var extensions = top.AssetManager_getExtensions();
-    return extensions.length > 0;
+    for (var i = 0; i < extensions.length; i++) {
+        if (top.ALLOWED_IOS_EXTENSIONS.indexOf(extensions[i]) == -1) {
+            return true;
+        }
+    }
+    return false;
 };
 
 Blockly.ReplMgr.rendezvousDone = function() {

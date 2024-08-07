@@ -143,6 +143,7 @@ import Foundation
   case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100100
   case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100101
   case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100102
+  case ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR = 100103
 
   // iOS Specific GyroscopeSensor Errors
   case ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR = 100200
@@ -371,6 +372,8 @@ import Foundation
       return "Speech recognition encountered an error and is currently unavailable"
     case .ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR:
       return "An error occured when attempting to process audio"
+    case .ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR:
+      return "An error occurred when setting up audio for speech recognition: %s"
 
     case .ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR:
       return "The gyroscope is no longer recording data due to the following error %s"

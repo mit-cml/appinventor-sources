@@ -44,6 +44,12 @@ body, html {
   min-height: 100vh;
 }
 
+/* Standardization of icon sizes to 16px */	
+.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {	
+  width: 16px;	
+  height: 16px;	
+}
+
 /* Needed for Safari to position comments correctly */
 body.blocklyMinimalBody {
   min-width: auto;
@@ -76,6 +82,59 @@ body {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
   text-align: center;
   border: 1px #262626;
+}
+
+.gwt-PushButton-up,
+.gwt-PushButton-up-hovering,
+.gwt-PushButton-up-disabled,
+.gwt-PushButton-down,
+.gwt-PushButton-down-hovering,
+.gwt-PushButton-down-disabled {
+  border: 1px solid;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  background-color: #A5CF47;
+  border-color: #444444;
+  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
+}
+
+.gwt-ButtonLeft {
+  border-radius: 4px 0 0 4px;
+}
+
+.gwt-ButtonLeft {
+  border-radius: 4px 0 0 4px;
+}
+
+.gwt-ButtonRight {
+  border-radius: 0 4px 4px 0;
+}
+
+.gwt-ButtonCenter {
+  border-radius: 0;
+  border-width: 1px 0;
+}
+
+.gwt-PushButton-up-hovering {
+  background-color: #7D9D36;
+  border: unset;
+  filter: unset;
+}
+
+.gwt-PushButton-down-disabled {
+  border: unset;
+  filter: unset;
+}
+
+.gwt-RadioButton {
+  margin: 4px;
 }
 
 .ode-Root {
@@ -191,6 +250,9 @@ div.StatusPanel {
   border-right: 1px solid #d2d2d2;
   margin: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
+  flex-grow:1;
+  display: flex;
+  flex-flow: column;
 }
 
 .ode-Box-header {
@@ -221,6 +283,13 @@ div.StatusPanel {
 
 .ode-Box-body-padding {
   padding: 6px;
+  flex-grow: 1;
+  display:flex;
+}
+
+.ode-Box-body-padding>* {
+  display: flex;
+  flex-grow: 1;
 }
 
 .ode-BoxResizeControl {
@@ -584,7 +653,7 @@ div.StatusPanel {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 4px 8px 8px;
+  padding: 4px 8px 0;
   position: relative;
   height: 100%;
   width: 100%;
@@ -627,6 +696,8 @@ div.StatusPanel {
 .ViewerBox {
   min-width: 368px;
   flex-grow: 1;
+  display: flex;
+  flex-flow: column;
 }
 
 .ode-NavArrow {
@@ -913,6 +984,38 @@ div.StatusPanel {
 
 /* Palette */
 
+.ode-CollapsablePanel .gwt-DisclosurePanel .header td:has(img) {
+  display: none;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+  color: #555;
+  font-size: 13px;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+  border-top: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
+  background-color: #eef2e0;
+  cursor: pointer;
+  height: 14px;
+  padding: 8px 16px;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+  padding: 8px 4px 8px 8px;
+  background-color: white;
+  border: 1px solid #bbbbbb;
+  border-bottom: 0px;
+  margin-left: 0px;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel img {
+  margin-top: 0px;
+}
+
 .gwt-StackPanelItem div {
   border-top: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
@@ -939,11 +1042,32 @@ div.StatusPanel {
 .gwt-StackPanel .gwt-StackPanelContent {
   padding: 8px 4px 8px 8px;
 }
+
 .gwt-StackPanel .gwt-StackPanelItem {
   padding: 0;
   border: 0;
+  background: unset;
+  border-bottom: 1px solid #bbbbbb;
 }
 
+.gwt-StackPanel .gwt-StackPanelContent {
+  border: 0;
+  border-bottom: 1px solid #bbbbbb;
+}
+
+.gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopRight,
+.gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopLeft {
+  border: 1px;
+  border-radius: 4px;
+}
+
+.gwt-Tree table td:first-child {
+  width: unset;
+}
+
+.gwt-Tree .gwt-TreeItem {
+  cursor: pointer;
+}
 
 .ode-SimplePaletteItem {
   background-color: white; /* needed on Firefox */
@@ -1768,6 +1892,25 @@ path.ode-SimpleMockMapFeature-selected {
   padding-left: 4px;
 }
 
+.ode-DialogRow {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+}
+
+ .ode-DialogRow .gwt-Label {
+   color: #000;
+   font-weight: 500;
+   font-size: 1.2em;
+   padding-bottom: 2px;
+   text-shadow: none;
+ }
+
+.ode-DialogRow .gwt-RadioButton input[type="radio"] {
+  margin-right: 5px;
+}
+
 .ode-DialogBox .dialogTop {
   background-color: #8fc202;
 }
@@ -1797,10 +1940,6 @@ path.ode-SimpleMockMapFeature-selected {
   margin: 10px;
 }
 
-.ode-DialogBox table {
-  width: 100%;
-}
-
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
 }
@@ -1809,12 +1948,22 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   justify-content: space-around ;
   width: 95%;
+  margin-top:10px;
 }
 
 .ode-DialogBox .contentRow {
   display: inline-flex;
   width: 95%;
   margin-left: 20px;
+  padding-bottom: 10px;
+}
+
+.ode-DialogBox .contentImage {
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: inset;
+  border-color: lightgray;
+  box-shadow: 0 0 2px #aaa;
 }
 
 /* AI2 Extensions Styles */
@@ -3124,7 +3273,7 @@ div.dropdiv p {
 }
 
 .download-button {
-  display: grid;
+  display: grid !important;
   max-width: 130px;
   margin: 0 !important;
   margin-top: 12px !important;
@@ -3139,15 +3288,15 @@ div.dropdiv p {
   margin-right: auto;
 }
 
-.download-barcode:before {
-    content: "";
-    background-color: #888;
-    position: absolute;
-    width: 1px;
-    height: 160px;
-    top: 40px;
-    left: 50%;
-    display: block;
+.classic .download-barcode:before {
+  content: "";
+  background-color: #888;
+  position: absolute;
+  width: 1px;
+  height: 160px;
+  top: 40px;
+  left: 50%;
+  display: block;
 }
 
 .listItem:nth-child(2n + 0) {

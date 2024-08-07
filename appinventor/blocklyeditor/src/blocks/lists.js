@@ -109,7 +109,7 @@ Blockly.Blocks['lists_add_items'] = {
   addEmptyInput: function(){},
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum);
-    input.appendField('item').setAlign(Blockly.inputs.Align.RIGHT);
+    input.appendField(Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT_ITEM).setAlign(Blockly.inputs.Align.RIGHT);
     return input;
   },
   updateContainerBlock: function(containerBlock) {

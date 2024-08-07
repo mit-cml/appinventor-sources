@@ -120,6 +120,15 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   // while the mouse button was down.
   private int dragX;
   private int dragY;
+  
+  // Is the drag object constrained to some region?
+  private boolean isConstrained = false;
+
+  // The region the drag object is constrained to
+  private int validRegionX;
+  private int validRegionY;
+  private int validRegionWidth;
+  private int validRegionHeight;
 
   // Array of widgets that the drag source widget can be dropped on
   private DropTarget[] dropTargets;
@@ -285,6 +294,29 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   //       exists in the implementation for onMouseLeave().
   @Override
   public void onMouseMove(Widget sender, int x, int y) {
+
+    // if in drag and going out of valid region, end drag
+    if (isConstrained) {
+      if (!isInBounds(x, y)) {
+        // Complete the drag process
+        if (dragInProgress) {
+          // calculate the approximate values of x and y in the valid region
+          int xInBounds = (x < validRegionX)
+                  ? validRegionX
+                  : Math.min(x, validRegionX + validRegionWidth);
+          int yInBounds = (y < validRegionY)
+                  ? validRegionY
+                  : Math.min(y, validRegionY + validRegionHeight);
+          // drag is ended at those x and y
+          onDragEnd(sender, xInBounds, yInBounds);
+        }
+        startX = -1;
+        startY = -1;
+        dragInProgress = false;
+        return;
+      }
+    }
+
     if (mouseIsDown) {
       dragX = x;
       dragY = y;
@@ -320,7 +352,11 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
     }
 
     if (dragInProgress) {
-      onDragEnd(sender, x, y);
+      // do not trigger onDragEnd if out of bounds
+      // onDragEnd() would have been called by onMouseMove() when cursor goes out of bound
+      if (!isConstrained || (isConstrained && isInBounds(x, y))) {
+        onDragEnd(sender, x, y);
+      }
     }
 
     startX = -1;
@@ -366,6 +402,13 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
     }
   }
 
+  private boolean isInBounds(int x, int y) {
+    int xAbsolute = x + ((Widget) dragSource).getAbsoluteLeft();
+    int yAbsolute = y + ((Widget) dragSource).getAbsoluteTop();
+    return xAbsolute >= validRegionX && xAbsolute <= validRegionX + validRegionWidth
+            && yAbsolute >= validRegionY && yAbsolute <= validRegionHeight + validRegionY;
+  }
+
   private static int manhattanDist(int x1, int y1, int x2, int y2) {
     return Math.abs(x1 - x2) + Math.abs(y1 - y2);
   }
@@ -375,6 +418,21 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
    */
   private static boolean isRootHtmlElement(com.google.gwt.dom.client.Element element) {
     return "html".equalsIgnoreCase(element.getTagName());
+  }
+
+  /**
+   * Constraint the movement of the object to the region specified by the parameters.
+   * @param x leftmost x coordinate
+   * @param y topmost y coordinate
+   * @param width width of the region
+   * @param height  height of the region
+   */
+  public void constraintToBounds(int x, int y, int width, int height) {
+    isConstrained = true;
+    validRegionX = x;
+    validRegionY = y;
+    validRegionWidth = width;
+    validRegionHeight = height;
   }
 
   /**
