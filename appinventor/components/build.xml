@@ -12,7 +12,7 @@
     App Inventor component libraries
   </description>
 
-  <property name="android.sdk.version" value="33"/>
+  <property name="android.sdk.version" value="34"/>
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime">

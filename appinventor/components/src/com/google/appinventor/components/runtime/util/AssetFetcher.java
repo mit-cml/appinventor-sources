@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import android.net.Uri;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.Form;
@@ -168,6 +169,11 @@ public class AssetFetcher {
 
     try {
       boolean error = false;
+      // Starting with Android Upside Down Cake (SDK 34), we need to make the files that may be
+      // dynamically loaded be read only.
+      boolean makeReadonly = asset.contains("/external_comps/")
+          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+      Log.i(LOG_TAG, "makeReadonly = " + makeReadonly);
       URL url = new URL(fileName);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       if (connection != null) {
@@ -189,6 +195,11 @@ public class AssetFetcher {
         if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
           throw new IOException("Unable to create assets directory " + parentOutFile);
         }
+        if (outFile.exists() && makeReadonly) {
+          if (!outFile.setWritable(true, true)) {
+            throw new IllegalStateException("Unable to make " + outFile + " writable");
+          }
+        }
         BufferedInputStream in = new BufferedInputStream(connection.getInputStream(), 0x1000);
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile), 0x1000);
         try {
@@ -205,6 +216,12 @@ public class AssetFetcher {
           error = true;
         } finally {
           out.close();
+          if (makeReadonly) {
+            Log.i(LOG_TAG, "Making file read-only: " + outFile.getAbsolutePath());
+            if (!outFile.setReadOnly()) {
+              throw new IOException("Unable to make " + outFile + " read-only.");
+            }
+          }
         }
         connection.disconnect();
       } else {
