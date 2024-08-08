@@ -121,3 +121,9 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 }
+
+extension TinyDB: DataSource {
+  func getDataValue(_ key: AnyObject) -> AnyObject {
+    return self
+  }
+}

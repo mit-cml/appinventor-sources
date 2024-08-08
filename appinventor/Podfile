@@ -33,6 +33,7 @@ target 'SchemeKit' do
     pod 'GoogleAPIClientForREST/Sheets'
     pod 'CryptoSwift'
     pod 'SwiftyBase64'
+    pod 'DGCharts', '~> 5.0.0'
 
     target 'AIComponentKitTests' do
     end
@@ -57,6 +58,7 @@ target 'SchemeKit' do
       pod 'GoogleAPIClientForREST/Sheets'
       pod 'CryptoSwift'
       pod 'SwiftyBase64'
+      pod 'DGCharts', '~> 5.0.0'
 
       target 'AICompanionAppTests' do
         inherit! :search_paths
