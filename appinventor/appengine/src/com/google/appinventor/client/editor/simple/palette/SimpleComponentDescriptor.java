@@ -224,6 +224,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/anomaly.png", images.anomalyDetection());
     bundledImages.put("images/filepicker.png", images.file());
     bundledImages.put("images/trendline.png", images.trendline());
+    bundledImages.put("images/personalImageClassifier.png", images.personalImageClassifier());
 
     imagesInitialized = true;
   }
