@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -15,6 +16,7 @@ import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.wizards.ComponentImportWizard;
@@ -28,9 +30,12 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -44,11 +49,6 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -82,6 +82,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<String, String> translationMap;
 
   private final TextBox searchText; 
+  private boolean isSearchTextFocused = false;
   private final VerticalPanel searchResults;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
@@ -183,6 +184,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void onBlur(BlurEvent event) {
         doSearch();
+        isSearchTextFocused = false;
+      }
+    });
+    searchText.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        isSearchTextFocused = true;
       }
     });
     searchText.addChangeHandler(new ChangeHandler() {
@@ -191,6 +199,25 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         doSearch();
       }
     });
+
+    /* User presses the slash key, the search text box is focused */
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+        if (designToolbar.currentView == DesignToolbar.View.FORM) {
+          if (event.getNativeKeyCode() == 191 && !isSearchTextFocused) {
+            {
+              event.preventDefault();
+              searchText.setFocus(true);
+              isSearchTextFocused = true;
+            }
+          }
+        } else {
+          isSearchTextFocused = false;
+        }
+      }
+    }, KeyDownEvent.getType());
 
     panel.setSpacing(3);
     panel.add(searchText);

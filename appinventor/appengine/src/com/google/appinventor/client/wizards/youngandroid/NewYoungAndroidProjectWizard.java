@@ -17,6 +17,7 @@ import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -67,6 +68,8 @@ public class NewYoungAndroidProjectWizard {
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
   @UiField protected FlowPanel horizontalBlocksPanel;
+  @UiField protected Button topInvisible;
+  @UiField protected Button bottomInvisible;
 
   /**
    * Creates a new YoungAndroid project wizard.
@@ -87,7 +90,6 @@ public class NewYoungAndroidProjectWizard {
         ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
         blockstoolkitEditor, 0x01, "", null);
     blockstoolkitEditor.setProperty(toolkit);
-
     bindUI();
     projectNameTextBox.setValidator(new Validator() {
       @Override
@@ -202,5 +204,15 @@ public class NewYoungAndroidProjectWizard {
       Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
 
     }
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     addButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     projectNameTextBox.setFocus(true);
   }
 }

@@ -105,6 +105,7 @@ public class SourceStructureExplorer extends Composite {
     tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
+        tree.setFocus(true);
         TreeItem treeItem = event.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
@@ -130,6 +131,9 @@ public class SourceStructureExplorer extends Composite {
         if (keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_BACKSPACE) {
           event.preventDefault();
           deleteItemFromTree();
+        } else if (event.isAltKeyDown() && keyCode == KeyCodes.KEY_N) {
+          event.preventDefault();
+          renameItem();
         }
       }
     });
@@ -148,14 +152,7 @@ public class SourceStructureExplorer extends Composite {
     renameButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        TreeItem treeItem = tree.getSelectedItem();
-        if (treeItem != null) {
-          Object userObject = treeItem.getUserObject();
-          if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.rename();
-          }
-        }
+        renameItem();
       }
     });
     buttonPanel.add(renameButton);
@@ -191,6 +188,17 @@ public class SourceStructureExplorer extends Composite {
       if (userObject instanceof SourceStructureExplorerItem) {
         SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
         item.delete();
+      }
+    }
+  }
+
+  private void renameItem() {
+    TreeItem treeItem = tree.getSelectedItem();
+    if (treeItem != null) {
+      Object userObject = treeItem.getUserObject();
+      if (userObject instanceof SourceStructureExplorerItem) {
+        SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+        item.rename();
       }
     }
   }

@@ -328,13 +328,18 @@ div.StatusPanel {
   align-items: center;
 }
 
+.ode-ProjectNameFocusPanel,
+.ode-ExpandButtonFocusPanel,
+.ode-NameFocusPanel {
+  flex-grow: 1;
+}
+
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
   color: #555;
   cursor: pointer;
   vertical-align: top;
-  padding-right: 10px;
   text-align: left;
   flex-grow: 1;
   min-width: 100px;
@@ -614,9 +619,13 @@ div.StatusPanel {
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
-.ActionDropDown-Options:hover {
+.ActionDropDown-Options:hover,
+.ode-TopPanelButton:focus,
+.ActionDropDown-Default:focus,
+.ActionDropDown-Options:focus {
   background: #E6E6E6;
   color: #5B5B5B;
+  outline: none;
 }
 
 .ode-TopPanelButton:active,
@@ -832,6 +841,8 @@ div.StatusPanel {
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
+  outline:#000000 2px solid;
+  border-radius: 4px;
 }
 
 /* Young Android Toolbar */
@@ -1230,13 +1241,14 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ColorChoicePropertyEditor:focus {
+  border-color: #D3D3D3;
   outline: 0;
   outline: thin dotted \9;
   /* IE6-9 */
 
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
-  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px #D3D3D3;
 }
 
 .ode-SimpleFormDesigner {
@@ -1245,6 +1257,10 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleFormDesigner .gwt-CheckBox {
   font-size: 12px;
+}
+
+.gwt-CheckBox input[type="checkbox"]:focus {
+  outline: 2px solid #333;
 }
 
 .ode-SimpleMockForm {
@@ -1617,6 +1633,19 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
+
+.FocusTrap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px; 
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
 
 /* Start of NoProjectsDialogBox. */
 .ode-noDialogDiv {
