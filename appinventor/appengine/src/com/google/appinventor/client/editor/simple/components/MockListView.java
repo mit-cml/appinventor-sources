@@ -381,6 +381,9 @@ public final class MockListView extends MockVisibleComponent {
         setElementsFromStringProperty(currentElements);
       }
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_HINT)) {
+      textBoxWidget.setText(newValue);
+      refreshForm();
     }
   }
 }
