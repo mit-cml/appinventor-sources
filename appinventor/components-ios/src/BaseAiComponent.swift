@@ -50,7 +50,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
     }
 
 
-    /*@objc open var WebViewer: WebViewer {
+    @objc open var WebViewer: WebViewer {
       get {
         return _webviewer!
         }
@@ -58,22 +58,22 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         configureWebView(newValue.view as! WKWebView)
         print("configurewebview called")
         if self is PersonalImageClassifier{
-            assetPath = "assets/personal_image_classifier"
+            assetPath = "personal_image_classifier"
         } else {
             // implement checks for other AI components
         }
         if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
+            let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
             let request = URLRequest(url: url)
-            print("enter request")
-            _webview?.load(request)
+            _webview!.loadFileURL(url, allowingReadAccessTo: readAccessURL)
             print("request loaded")
         }else{
           print("request not loaded")
         }
       }
-    }*/
+    }
   
-  @objc open var WebViewer: WebViewer {
+  /*@objc open var WebViewer: WebViewer {
     get {
       return _webviewer!
       }
@@ -107,7 +107,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         print("Request not lodaded")
       }
     }
-  }
+  }*/
   
   
   
@@ -122,16 +122,17 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
       _webview!.configuration.preferences.javaScriptEnabled = true
           _webview!.configuration.allowsInlineMediaPlayback = true
           _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
+      _webview!.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
         
         if self is PersonalImageClassifier{
             print("PersonalImageClassifier")
             _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
-           TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/"
-           PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/"
+           TRANSFER_MODEL_PREFIX = "appinventor://personal-image-classifier/transfer/"
+           PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier/personal/"
         } else {
             // implement checks for other AI components
         }
-        _webview!.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
+        
     }
 
     private func parseLabels(_ labels: String) throws -> [String] {
@@ -195,8 +196,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
          do {
           let result = try getYailObjectFromJson(args as? String, true)
           print(result)
-          let intValue = result as! Int32
-          Error(intValue)
+          Error(args as! Int32)
         } catch {
           print("Error parsing JSON from web view function error")
         }
@@ -285,17 +285,6 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
     // We deliver the payload in one go so it cannot be cancelled.
   }
   
-  func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-      print("Started to load")
-  }
-
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-      print("Finished loading")
-  }
-
-  func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-      print("Failed to load with error: \(error.localizedDescription)")
-  }
   
   enum AIError: Error {
     case FileNotFound

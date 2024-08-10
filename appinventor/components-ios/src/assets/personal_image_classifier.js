@@ -2,10 +2,10 @@
 
 console.log("PersonalImageClassifier: Using TensorFlow.js version " + tf.version.tfjs);
 
-const TRANSFER_MODEL_PREFIX = "appinventor:personal-image-classifier/transfer/";
+const TRANSFER_MODEL_PREFIX = "appinventor://personal-image-classifier/transfer/";
 const TRANSFER_MODEL_SUFFIX = "_model.json";
 
-const PERSONAL_MODEL_PREFIX = "appinventor:personal-image-classifier/personal/";
+const PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier/personal/";
 const PERSONAL_MODEL_JSON_SUFFIX = "model.json";
 const PERSONAL_MODEL_WEIGHTS_SUFFIX = "model.weights.bin";
 const PERSONAL_MODEL_LABELS_SUFFIX = "model_labels.json";
@@ -57,14 +57,31 @@ async function loadTransferModel(modelName, modelActivation) {
 }
 
 async function loadModelFile(url, json) {
-  const modelFileResponse = await fetch(url);
+  try {
+    console.log(`Attempting to fetch from URL: ${url}`);
+    const modelFileResponse = await fetch(url);
 
-  console.log("Done fetching file");
+    if (!modelFileResponse.ok) {
+      throw new Error(`Fetch error: ${modelFileResponse.status} ${modelFileResponse.statusText}`);
+    }
 
-  if (json) {
-    return await modelFileResponse.json();
+    if (json) {
+      try {
+        return await modelFileResponse.json();
+      } catch (error) {
+        throw new Error(`JSON parsing error: ${error.message}`);
+      }
+    } else {
+      try {
+        return await modelFileResponse.blob();
+      } catch (error) {
+        throw new Error(`Blob conversion error: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    // Rilancia l'errore con informazioni aggiuntive
+    throw new Error(`loadModelFile failed: ${error.message}`);
   }
-  return await modelFileResponse.blob();
 }
 
 // From https://stackoverflow.com/questions/27159179/how-to-convert-blob-to-file-in-javascript
@@ -102,9 +119,10 @@ const loadModel = async () => {
     window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'ready', args: JSON.stringify(Object.values(modelLabels))});
   } catch (error) {
     console.log("PersonalImageClassifier: " + error);
-    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
+    window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: error.toString()});
   }
 };
+
 
 /**
  * Crops an image tensor so we get a square image with no white space.
@@ -241,7 +259,7 @@ function toggleCameraFacingMode() {
 function classifyImageData(imageData) {
   if (!isVideoMode) {
     img.onload = function() {
-      predict(img).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED});
+      predict(img).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED}));
     }
     img.src = "data:image/png;base64," + imageData;
   } else {
@@ -253,7 +271,7 @@ function classifyImageData(imageData) {
 // noinspection JSUnusedGlobalSymbols
 function classifyVideoData() {
   if (isVideoMode) {
-    predict(video, true).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED});
+    predict(video, true).catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_FAILED}));
   } else {
       window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE});
   }
@@ -311,7 +329,7 @@ window.addEventListener("resize", function() {
   video.height = video.videoHeight * window.innerWidth / video.videoWidth;
 });
 
-loadModel().catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
+loadModel().catch(() => window.webkit.messageHandlers.PersonalImageClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED}));
 window.addEventListener('orientationchange', function() {
   if (isVideoMode) {
     // The event fires before the video actually rotates, so we delay updating the frame until

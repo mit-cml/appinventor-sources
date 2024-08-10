@@ -102,6 +102,7 @@ import UIKit
     // MARK: Events
 
     @objc override public func ClassifierReady() {
+      print("classifierReady")
         DispatchQueue.main.async { [self] in
         InputMode = _inputMode
         MinimumInterval = _minClassTime
@@ -117,6 +118,7 @@ import UIKit
     }
 
     @objc override public func Error(_ errorCode: Int32) {
+        print("ErrorFunction")
         DispatchQueue.main.async {
         EventDispatcher.dispatchEvent(of: self, called: "Error", arguments: errorCode as AnyObject)
         }
