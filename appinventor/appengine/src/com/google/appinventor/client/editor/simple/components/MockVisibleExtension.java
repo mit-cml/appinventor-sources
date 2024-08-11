@@ -50,16 +50,19 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     shadowRoot = attachShadow(shadowHost.getElement());
 
-    HorizontalPanel loadingPanel = new HorizontalPanel();
-    loadingPanel.setStylePrimaryName(".ode-MockVisibleExtensionLoading");
-    iconImage.setWidth("24px");
-    loadingPanel.add(iconImage);
-    InlineHTML label = new InlineHTML("Loading " + typeName + "...");
-    loadingPanel.add(label);
+    //    HorizontalPanel loadingPanel = new HorizontalPanel();
+    //    loadingPanel.setStylePrimaryName(".ode-MockVisibleExtensionLoading");
+    //    iconImage.setWidth("24px");
+    //    loadingPanel.add(iconImage);
+    //    InlineHTML label = new InlineHTML("Loading " + typeName + "...");
+    //    loadingPanel.add(label);
+    //
+    //    shadowRoot.appendChild(loadingPanel.getElement());
 
     shadowRoot.appendChild(loadingPanel.getElement());
 
     Ode.CLog("MockVisibleExtension.constructor");
+    initWorker();
     initComponent(shadowHost);
   }
 
@@ -67,6 +70,10 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void onCreateFromPalette() {
     super.onCreateFromPalette();
     Ode.CLog("MockVisibleExtension.createFromPalette");
+  }
+
+  private void initWorker() {
+    Ode.CLog("MockVisibleExtension.initWorker");
     final String mockScriptPath =
         "assets/external_comps/" + packageName + "/mocks/" + typeName + ".mock.js";
     Promise.<ChecksumedLoadFile>call(
