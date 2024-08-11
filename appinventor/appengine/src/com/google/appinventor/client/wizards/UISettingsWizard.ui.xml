@@ -11,6 +11,7 @@
   <wiz:Dialog ui:field="UIDialog" caption="{messages.uiSettings}"
               styleName="ode-DialogBox" width="340px" height="40px">
     <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectStyle}" />
       </g:FlowPanel>
@@ -42,6 +43,7 @@
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
         <g:Button ui:field="applyButton" text='{messages.okButton}' styleName="ode-ProjectListButton"/>
       </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
     </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>
