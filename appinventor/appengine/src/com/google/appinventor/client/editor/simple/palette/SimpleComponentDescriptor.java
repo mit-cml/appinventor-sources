@@ -360,14 +360,10 @@ public final class SimpleComponentDescriptor {
    * @return image for component
    */
   public Image getImage() {
-    if (nonVisible) {
-      String type = COMPONENT_DATABASE.getComponentType(name);
-      return getImageFromPath(COMPONENT_DATABASE.getIconName(name),
-          type.substring(0, type.lastIndexOf('.')),
-          editor.getProjectId());
-    } else {
-      return getCachedMockComponent(name, editor).getIconImage();
-    }
+    String type = COMPONENT_DATABASE.getComponentType(name);
+    return getImageFromPath(COMPONENT_DATABASE.getIconName(name),
+        type.substring(0, type.lastIndexOf('.')),
+        editor.getProjectId());
   }
 
   /**
@@ -605,7 +601,11 @@ public final class SimpleComponentDescriptor {
 
       Image icon = getImageFromPath(scd.getIconName(name), type, editor.getProjectId());
       String packageName = type.substring(0, type.lastIndexOf("."));
-      return new MockVisibleExtension(editor, name, icon, packageName);
+      try {
+        return new MockVisibleExtension(editor, name, icon, packageName);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }
