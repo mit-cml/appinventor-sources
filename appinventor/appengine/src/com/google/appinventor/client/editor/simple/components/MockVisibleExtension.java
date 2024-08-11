@@ -17,6 +17,8 @@ import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -97,14 +99,13 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private String[] getWorkerSource(String mockScript) {
     // Construct a JS object of the extension's properties and their values at
     // the time of initialization of the mock.
-    final StringBuilder propsBuilder = new StringBuilder("{ ");
+    JSONObject initialProps = new JSONObject();
     for (EditableProperty p : getProperties()) {
-      propsBuilder.append("'" + p.getName() + "': '" + p.getValue() + "', ");
+      initialProps.put(p.getName(), new JSONString(p.getValue()));
     }
-    propsBuilder.append("}");
+    final String propsBuilder = initialProps.toString();
 
-    final String escapedScript =
-        mockScript.replaceAll("`", "\\\\`").replaceAll("\\$\\{", "\\\\\\${");
+    final String escapedScript = new JSONString(mockScript).toString();
     final String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
 
     return new String[] {
@@ -114,7 +115,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       "  template: (initialProperties) => undefined,\n",
       "  onPropertyChange: (property) => undefined\n",
       "};\n",
-      "const mockScript = new Function('Mock', `\n" + escapedScript + "\n`);\n",
+      "const mockScript = new Function('Mock', " + escapedScript + ");\n",
       "mockScript(Mock);\n",
       "const mockHTML = Mock.template(" + propsBuilder + ");\n",
       "self.postMessage(mockHTML);\n",
