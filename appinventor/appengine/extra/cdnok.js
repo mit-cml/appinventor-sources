@@ -1,4 +1,7 @@
 function cdnok() {
-  document.getElementById("odeblock").remove()
+  var block = document.getElementById("odeblock");
+  if (block) {
+    block.remove();
+  }
 }
 cdnok();
