@@ -5,7 +5,6 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.jstypes.Blob;
 import com.google.appinventor.client.utils.jstypes.BlobOptions;
-import com.google.appinventor.client.utils.jstypes.ComponentProperty;
 import com.google.appinventor.client.utils.jstypes.DOMPurify;
 import com.google.appinventor.client.utils.ShadowRoot;
 import com.google.appinventor.client.utils.jstypes.URL;
@@ -15,16 +14,18 @@ import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 public class MockVisibleExtension extends MockVisibleComponent {
@@ -40,6 +41,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public MockVisibleExtension(
       SimpleEditor editor, String typeName, Image iconImage, String packageName) {
     super(editor, typeName, iconImage);
+    Ode.CLog("MockVisibleExtension.constructor");
 
     this.projectId = editor.getProjectId();
     this.typeName = typeName;
@@ -50,18 +52,6 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     shadowRoot = attachShadow(shadowHost.getElement());
 
-    //    HorizontalPanel loadingPanel = new HorizontalPanel();
-    //    loadingPanel.setStylePrimaryName(".ode-MockVisibleExtensionLoading");
-    //    iconImage.setWidth("24px");
-    //    loadingPanel.add(iconImage);
-    //    InlineHTML label = new InlineHTML("Loading " + typeName + "...");
-    //    loadingPanel.add(label);
-    //
-    //    shadowRoot.appendChild(loadingPanel.getElement());
-
-    shadowRoot.appendChild(loadingPanel.getElement());
-
-    Ode.CLog("MockVisibleExtension.constructor");
     initWorker();
     initComponent(shadowHost);
   }
@@ -112,23 +102,24 @@ public class MockVisibleExtension extends MockVisibleComponent {
     }
     final String propsBuilder = initialProps.toString();
 
-    final String escapedScript = new JSONString(mockScript).toString();
+  private String[] getWorkerSource(String mockScript) {
+    final String escapedScript = JsonUtils.escapeValue(mockScript);
     final String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
 
     return new String[] {
       "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
       "const Mock = {\n",
       "  document: undefined,\n",
-      "  template: (initialProperties) => undefined,\n",
+      "  template: () => undefined,\n",
       "  onPropertyChange: (property) => undefined\n",
       "};\n",
       "const mockScript = new Function('Mock', " + escapedScript + ");\n",
       "mockScript(Mock);\n",
-      "const mockHTML = Mock.template(" + propsBuilder + ");\n",
+      "const mockHTML = Mock.template();\n",
       "self.postMessage(mockHTML);\n",
       "Mock.document = parseHTML(mockHTML).document;\n",
       "onmessage = (msg) => {\n",
-      "  Mock.onPropertyChange(msg.data);\n",
+      "  Mock.onPropertyChange(JSON.parse(msg.data));\n",
       "  postMessage(Mock.document.toString());\n",
       "};\n",
     };
@@ -155,10 +146,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
   @Override
   public void delete() {
-    if (worker != null) {
-      worker.terminate();
-      URL.revokeObjectURL(workerUrl);
-    }
+    if (worker != null) cleanUp();
     super.delete();
   }
 
@@ -166,58 +154,61 @@ public class MockVisibleExtension extends MockVisibleComponent {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     if (worker != null) {
-      Object value = typeAndSanitizeProperty(propertyName, newValue);
-      ComponentProperty msg = new ComponentProperty(propertyName, value);
-      worker.postMessage(msg);
+      JSONValue value = typeAndSanitizeProperty(propertyName, newValue);
+      JSONObject msg = new JSONObject();
+      msg.put("name", new JSONString(propertyName));
+      msg.put("value", value);
+      worker.postMessage(msg.toString());
     }
   }
 
-  private Object typeAndSanitizeProperty(String name, String value) {
+  private JSONValue typeAndSanitizeProperty(String name, String value) {
     final String type = getProperties().getProperty(name).getEditorType();
     switch (type) {
       case PropertyTypeConstants.PROPERTY_TYPE_INTEGER:
       case PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER:
-        return Integer.parseInt(value);
+        return new JSONNumber(Integer.parseInt(value));
       case PropertyTypeConstants.PROPERTY_TYPE_FLOAT:
       case PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT:
-        return Float.parseFloat(value);
+        return new JSONNumber(Float.parseFloat(value));
       case PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN:
       case PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY:
-        return Boolean.parseBoolean(value);
+        return JSONBoolean.getInstance(Boolean.parseBoolean(value));
       case PropertyTypeConstants.PROPERTY_TYPE_COLOR:
         {
           String alpha = value.substring(2, 4);
           String baseHex = value.substring(4);
-          return "#" + baseHex + alpha;
+          return new JSONString("#" + baseHex + alpha);
         }
       case PropertyTypeConstants.PROPERTY_TYPE_ASSET:
         {
           String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
-          return URL.parse(url).toString();
+          if (url == null) return null;
+          return new JSONString(url);
         }
       case PropertyTypeConstants.PROPERTY_TYPE_LENGTH:
         {
           int intVal = Integer.parseInt(value);
           if (intVal <= LENGTH_PERCENT_TAG) {
-            return Math.abs(intVal + 1000) + "%";
+            return new JSONString(Math.abs(intVal + 1000) + "%");
           } else if (intVal == LENGTH_PREFERRED) {
-            return "auto";
+            return new JSONString("auto");
           } else if (intVal == LENGTH_FILL_PARENT) {
-            return "100%";
+            return new JSONString("100%");
           } else {
-            return intVal + "px";
+            return new JSONString(intVal + "px");
           }
         }
-      case "typeface":
+      case PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE:
         {
           try {
             int intVal = Integer.parseInt(value);
             if (intVal <= 1) {
-              return "sans-serif";
+              return new JSONString("sans-serif");
             } else if (intVal == 2) {
-              return "serif";
+              return new JSONString("serif");
             } else if (intVal == 3) {
-              return "monospace";
+              return new JSONString("monospace");
             }
           } catch (NumberFormatException e) {
             String typeface = value.substring(0, value.lastIndexOf("."));
@@ -225,11 +216,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
               String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
               MockComponentsUtil.createFontResource(typeface, url, typeface);
             }
-            return typeface;
+            return new JSONString(typeface);
           }
         }
       default:
-        return value;
+        return new JSONString(value);
     }
   }
 
