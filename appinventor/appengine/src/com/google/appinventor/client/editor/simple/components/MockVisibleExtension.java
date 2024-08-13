@@ -57,9 +57,19 @@ public class MockVisibleExtension extends MockVisibleComponent {
   }
 
   @Override
-  public void onCreateFromPalette() {
-    super.onCreateFromPalette();
-    Ode.CLog("MockVisibleExtension.createFromPalette");
+  public void upgrade() {
+    super.upgrade();
+    Ode.CLog("MockVisibleExtension.upgrade");
+    if (worker != null) {
+      cleanUp();
+      initWorker();
+    }
+    upgradeComplete();
+  }
+
+  private void cleanUp() {
+    worker.terminate();
+    URL.revokeObjectURL(workerUrl);
   }
 
   private void initWorker() {
@@ -70,10 +80,10 @@ public class MockVisibleExtension extends MockVisibleComponent {
             "Server error: could not load mock script for component: " + typeName,
             cb -> Ode.getInstance().getProjectService().load2(projectId, mockScriptPath, cb))
         .then(
-            result -> {
+            file -> {
               final String mockScript;
               try {
-                mockScript = result.getContent();
+                mockScript = file.getContent();
               } catch (ChecksumedFileException e) {
                 return Promise.reject(e.getMessage());
               }
@@ -89,18 +99,13 @@ public class MockVisibleExtension extends MockVisibleComponent {
               worker.addEventListener("message", this::handleMessageEvent);
               worker.addEventListener("error", this::handleErrorEvent);
 
-              return Promise.resolve(result);
+              for (EditableProperty p : getProperties()) {
+                onPropertyChange(p.getName(), p.getValue());
+              }
+
+              return Promise.resolve(file);
             });
   }
-
-  private String[] getWorkerSource(String mockScript) {
-    // Construct a JS object of the extension's properties and their values at
-    // the time of initialization of the mock.
-    JSONObject initialProps = new JSONObject();
-    for (EditableProperty p : getProperties()) {
-      initialProps.put(p.getName(), new JSONString(p.getValue()));
-    }
-    final String propsBuilder = initialProps.toString();
 
   private String[] getWorkerSource(String mockScript) {
     final String escapedScript = JsonUtils.escapeValue(mockScript);
