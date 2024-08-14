@@ -17,9 +17,9 @@ public class Worker {
   public interface Event {}
 
   @JsType(isNative = true, namespace = JsPackage.GLOBAL)
-  public interface MessageEvent extends Event {
+  public interface MessageEvent<T> extends Event {
     @JsProperty(name = "data")
-    Object getData();
+    T getData();
   }
 
   @JsType(isNative = true, namespace = JsPackage.GLOBAL)

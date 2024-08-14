@@ -3,13 +3,14 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.ShadowRoot;
 import com.google.appinventor.client.utils.jstypes.Blob;
 import com.google.appinventor.client.utils.jstypes.BlobOptions;
 import com.google.appinventor.client.utils.jstypes.DOMPurify;
-import com.google.appinventor.client.utils.ShadowRoot;
 import com.google.appinventor.client.utils.jstypes.URL;
 import com.google.appinventor.client.utils.jstypes.Worker;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
+import com.google.appinventor.client.utils.jstypes.WorkerMessage;
 import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -29,6 +30,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 public class MockVisibleExtension extends MockVisibleComponent {
+  private final String MOCK_RENDER_REQUEST = "render-request";
+
   private final long projectId;
   private final String typeName;
   private final String packageName;
@@ -114,31 +117,38 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     return new String[] {
       "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
-      "const Mock = {\n",
-      "  document: undefined,\n",
-      "  template: () => undefined,\n",
-      "  onPropertyChange: (property) => undefined\n",
-      "};\n",
+      "const Mock = {};\n",
       "const mockScript = new Function('Mock', " + escapedScript + ");\n",
       "mockScript(Mock);\n",
       "const mockHTML = Mock.template();\n",
-      "self.postMessage(mockHTML);\n",
+      "postMessage({\n",
+      "  type: '" + MOCK_RENDER_REQUEST + "',\n",
+      "  data: mockHTML\n",
+      "});\n",
       "Mock.document = parseHTML(mockHTML).document;\n",
       "onmessage = (msg) => {\n",
       "  Mock.onPropertyChange(JSON.parse(msg.data));\n",
-      "  postMessage(Mock.document.toString());\n",
+      "  postMessage({\n",
+      "    type: '" + MOCK_RENDER_REQUEST + "',\n",
+      "    data: Mock.document.toString()\n",
+      "  });\n",
       "};\n",
     };
   }
 
-  private void handleMessageEvent(MessageEvent event) {
-    Ode.CLog("worker.message: dirty: " + event.getData().toString());
-    String sanitizedData = DOMPurify.sanitize(event.getData().toString());
-    Ode.CLog("worker.message: clean: " + sanitizedData);
-    HTMLPanel html = new HTMLPanel(sanitizedData);
-    html.setStylePrimaryName(".ode-SimpleMockComponent");
-    shadowRoot.removeAllChildren();
-    shadowRoot.appendChild(html.getElement());
+  private void handleMessageEvent(MessageEvent<WorkerMessage> msg) {
+    final WorkerMessage msgData = msg.getData();
+    Ode.CLog("worker.message: type: " + msgData.getType());
+    if (msgData.getType().equals(MOCK_RENDER_REQUEST)) {
+      final String htmlStr = msgData.getData().toString();
+      Ode.CLog("worker.data: dirty: " + htmlStr);
+      String sanitizedData = DOMPurify.sanitize(htmlStr);
+      Ode.CLog("worker.data: clean: " + sanitizedData);
+      HTMLPanel htmlPanel = new HTMLPanel(sanitizedData);
+      htmlPanel.setStylePrimaryName(".ode-SimpleMockComponent");
+      shadowRoot.removeAllChildren();
+      shadowRoot.appendChild(htmlPanel.getElement());
+    }
   }
 
   private void handleErrorEvent(Worker.ErrorEvent error) {
