@@ -49,10 +49,10 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     FlowPanel shadowHost = new FlowPanel();
     shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
-
     shadowRoot = attachShadow(shadowHost.getElement());
 
     initWorker();
+    refreshForm();
     initComponent(shadowHost);
   }
 
@@ -64,6 +64,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       cleanUp();
       initWorker();
     }
+    refreshForm();
     upgradeComplete();
   }
 
