@@ -9,8 +9,12 @@ package com.google.appinventor.client.explorer;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -104,7 +108,7 @@ public class SourceStructureExplorer extends Composite {
     });
     tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
-      public void onSelection(SelectionEvent<TreeItem> event) {
+      public void onSelection(SelectionEvent<TreeItem> event) { 
         tree.setFocus(true);
         TreeItem treeItem = event.getSelectedItem();
         if (treeItem != null) {
@@ -135,6 +139,18 @@ public class SourceStructureExplorer extends Composite {
           event.preventDefault();
           renameItem();
         }
+      }
+    });
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().setStyleName("gwt-Tree-focused");
+      }
+    });
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
       }
     });
 
@@ -322,5 +338,9 @@ public class SourceStructureExplorer extends Composite {
    */
   public void unselectItem(SourceStructureExplorerItem item) {
     selectItem(item, false);
+  }
+
+  public Tree getTree() {
+    return tree;
   }
 }

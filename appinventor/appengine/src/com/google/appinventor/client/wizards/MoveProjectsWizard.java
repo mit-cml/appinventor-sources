@@ -13,7 +13,11 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -36,7 +40,8 @@ public final class MoveProjectsWizard {
   @UiField Button moveButton;
   @UiField Button cancelButton;
   @UiField Tree tree;
-
+  @UiField Button topInvisible;
+  @UiField Button bottomInvisible;
 
   /**
    * Creates a new wizard for moving projects.
@@ -49,6 +54,21 @@ public final class MoveProjectsWizard {
     tree.addItem(root);
     tree.setSelectedItem(root);
     moveDialog.center();
+    tree.setFocus(true);
+
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().setStyleName("gwt-Tree-focused");
+      }
+    });
+    
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   static FolderTreeItem renderFolder(ProjectFolder folder) {
@@ -79,5 +99,15 @@ public final class MoveProjectsWizard {
     manager.moveItemsToFolder(selectedProjects, selectedFolders,
         treeItem.getFolder());
     moveDialog.hide();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     moveButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     tree.setFocus(true);
   }
 }

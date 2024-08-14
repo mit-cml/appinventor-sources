@@ -843,6 +843,10 @@ div.StatusPanel {
   background-color: #d2e0a6;
 }
 
+.gwt-Tree-focused {
+  outline: solid 2px #000000;
+}
+
 /* Young Android Toolbar */
 
 .ya-Toolbar {

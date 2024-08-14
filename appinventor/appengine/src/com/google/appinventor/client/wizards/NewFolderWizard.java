@@ -96,6 +96,20 @@ public final class NewFolderWizard {
         input.validate();
       }
     });
+
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().setStyleName("gwt-Tree-focused");
+      }
+    });
+
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   private FolderTreeItem renderFolder(ProjectFolder folder) {
