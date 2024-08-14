@@ -374,7 +374,7 @@ public class ImageSprite extends Sprite {
    * @param u Horizontal unit coordinate of origin with respect to left edge
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
-          defaultValue = DEFAULT_U + "")
+          defaultValue = "0.0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void OriginX(double u) {
     super.U(u);
@@ -399,7 +399,7 @@ public class ImageSprite extends Sprite {
    * @param v Vertical unit coordinate of the origin with respect to top edge
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
-          defaultValue = DEFAULT_V + "")
+          defaultValue = "0.0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void OriginY(double v) {
     super.V(v);

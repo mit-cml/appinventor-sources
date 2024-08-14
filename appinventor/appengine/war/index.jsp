@@ -75,13 +75,23 @@
       </ul>
     </div>
     <% if (!odeBase.isEmpty()) { %>
-    <div id=odeblock>
+    <div id=odeblock style="display: none;">
         <h1>If you see this message for an extended period of time, it might be because
         your internet service is blocking requests to <%= odeBase %>. Contact your
         administrator to check on this and remove the block.
         </h1>
     </div>
     <% } %>
+    <script type="text/javascript">
+      (function() {
+        setTimeout(function() {
+          var block = document.getElementById('odeblock');
+          if (block) {
+            block.style.display = 'block';
+          }
+        }, 2000);
+      })();
+    </script>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="static/js/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>
