@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.content.Intent;
 
@@ -65,10 +66,13 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
    * Event to raise when the `%type%` is clicked or the picker is shown
    * using the {@link #Open()} method.  This event occurs before the picker is displayed, and
    * can be used to prepare the picker before it is shown.
+   *
+   * @return true if the picker should be opened, false if it should not.
    */
   @SimpleEvent
   public boolean BeforePicking() {
-    return EventDispatcher.dispatchEvent(this, "BeforePicking");
+    Object result = EventDispatcher.dispatchFallibleEvent(this, "BeforePicking");
+    return !(result instanceof StopBlocksExecution);
   }
 
   /**
