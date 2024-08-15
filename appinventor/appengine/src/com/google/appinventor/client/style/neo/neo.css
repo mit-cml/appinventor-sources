@@ -590,8 +590,9 @@ they get cut off in Windows.
   .ode-Designer-LeftColumn {
     min-width: 265px;
   }
+
   .ode-Designer-RightColumns {
-    min-width: 222px;
+    width: 222px;
   }
 
   .ode-NavArrow {
@@ -771,6 +772,11 @@ they get cut off in Windows.
   .destructive-action[disabled]:hover {
     background: #faa;
     color: #888;
+  }
+
+  .ode-SourceScrollPanel {
+    width: 222px;
+    height: 480px;
   }
   
   .ode-PanelButtons .ode-TextButton {

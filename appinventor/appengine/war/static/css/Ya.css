@@ -700,6 +700,11 @@ div.StatusPanel {
   flex-flow: column;
 }
 
+.ode-SourceScrollPanel {
+  width: 200px;
+  height: 480px;
+}
+
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;
