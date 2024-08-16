@@ -117,7 +117,12 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
     return new String[] {
       "import { parseHTML } from '" + baseUrl + "/static/linkedom/linkedom.min.js';\n",
-      "const Mock = {};\n",
+      "const Mock = {\n",
+      "  document: undefined,\n",
+      "  template: () => undefined,\n",
+      "  onPropertyChange: (property) => undefined\n",
+      "  onError: (error) => undefined\n",
+      "};\n",
       "const mockScript = new Function('Mock', " + escapedScript + ");\n",
       "mockScript(Mock);\n",
       "const mockHTML = Mock.template();\n",
@@ -133,6 +138,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       "    data: Mock.document.toString()\n",
       "  });\n",
       "};\n",
+      "onerror = (err) => Mock.onError(err);\n",
     };
   }
 
@@ -145,7 +151,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       String sanitizedData = DOMPurify.sanitize(htmlStr);
       Ode.CLog("worker.data: clean: " + sanitizedData);
       HTMLPanel htmlPanel = new HTMLPanel(sanitizedData);
-      htmlPanel.setStylePrimaryName(".ode-SimpleMockComponent");
+      htmlPanel.setStylePrimaryName("ode-SimpleMockComponent");
       shadowRoot.removeAllChildren();
       shadowRoot.appendChild(htmlPanel.getElement());
     }
