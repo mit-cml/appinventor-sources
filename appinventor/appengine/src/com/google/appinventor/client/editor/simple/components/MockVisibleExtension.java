@@ -1,14 +1,14 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.ShadowRoot;
 import com.google.appinventor.client.utils.jstypes.*;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
-import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
-import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.MockInfo;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -27,8 +27,8 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private final String MOCK_RENDER_REQUEST = "render-request";
 
   private final long projectId;
-  private final String typeName;
   private final String packageName;
+  private final MockInfo mockInfo;
 
   private Worker worker = null;
   private String workerUrl = null;
@@ -41,11 +41,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
     Ode.CLog("MockVisibleExtension.constructor");
 
     this.projectId = editor.getProjectId();
-    this.typeName = typeName;
     this.packageName = packageName;
+    this.mockInfo = SimpleComponentDatabase.getInstance(this.projectId).getMockInfo(typeName);
 
     FlowPanel shadowHost = new FlowPanel();
-    shadowHost.setStylePrimaryName(".ode-MockVisibleExtensionHost");
+    shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
     shadowRoot = attachShadow(shadowHost.getElement());
 
     initWorker();
@@ -72,12 +72,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
   private void initWorker() {
     Ode.CLog("MockVisibleExtension.initWorker");
-    final String mockFilesBasePath =
-        "assets/external_comps/" + packageName + "/mocks/" + typeName + ".mock";
+    final String assetsBasePath = "assets/external_comps/" + packageName + "/";
 
     Promise.<String[]>allOf(
-            loadFileContent(mockFilesBasePath + ".js", false),
-            loadFileContent(mockFilesBasePath + ".css", true))
+            loadFileContent(assetsBasePath + mockInfo.getScript()),
+            mockInfo.getCss() != null ? loadFileContent(assetsBasePath + mockInfo.getCss()) : null)
         .then(
             files -> {
               String[] workerSrc = getWorkerSource(files[0]);
@@ -105,21 +104,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
             });
   }
 
-  private Promise<String> loadFileContent(String path, boolean resolveOnFailure) {
-    return Promise.<ChecksumedLoadFile>call(
+  private Promise<String> loadFileContent(String path) {
+    return Promise.<String>call(
             "Server error: Could not load file: " + path,
-            cb -> Ode.getInstance().getProjectService().load2(projectId, path, cb))
-        .then(
-            file -> {
-              try {
-                return Promise.resolve(file.getContent());
-              } catch (ChecksumedFileException e) {
-                if (resolveOnFailure) {
-                  return Promise.resolve(null);
-                }
-                return Promise.reject(e.getMessage());
-              }
-            });
+            cb -> Ode.getInstance().getProjectService().load(projectId, path, cb))
+        .then(Promise::resolve);
   }
 
   private String[] getWorkerSource(String mockScript) {

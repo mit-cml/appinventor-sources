@@ -45,11 +45,12 @@ public interface ComponentDatabaseInterface {
     private final String iconName;
     private final String licenseName;
     private final String typeDescription;
+    private final MockInfo mockInfo;
 
     public ComponentDefinition(String name, int version, String versionName, String dateBuilt, String type, boolean external,
               String categoryString, String helpString, String helpUrl,
               boolean showOnPalette, boolean nonVisible, String iconName,
-              String licenseName, String typeDescription) {
+              String licenseName, String typeDescription, MockInfo mockInfo) {
       this.name = name;
       this.version = version;
       this.versionName = versionName;
@@ -70,6 +71,7 @@ public interface ComponentDatabaseInterface {
       this.iconName = iconName;
       this.licenseName = licenseName;
       this.typeDescription = typeDescription;
+      this.mockInfo = mockInfo;
     }
 
     public void add(PropertyDefinition property) {
@@ -165,6 +167,10 @@ public interface ComponentDatabaseInterface {
 
     public String getTypeDescription() {
       return typeDescription;
+    }
+
+    public MockInfo getMockInfo() {
+      return mockInfo;
     }
   }
 
@@ -350,6 +356,24 @@ public interface ComponentDatabaseInterface {
 
     public List<ParameterDefinition> getParam() {
       return params;
+    }
+  }
+
+  public static class MockInfo {
+    private final String script;
+    private final String css;
+
+    public MockInfo(String script, String css) {
+      this.script = script;
+      this.css = css;
+    }
+
+    public String getScript() {
+      return script;
+    }
+
+    public String getCss() {
+      return css;
     }
   }
 
@@ -539,4 +563,6 @@ public interface ComponentDatabaseInterface {
    * @param componentName  name of component to query
    */
   boolean isComponent(String componentName);
+
+  MockInfo getMockInfo(String componentName);
 }

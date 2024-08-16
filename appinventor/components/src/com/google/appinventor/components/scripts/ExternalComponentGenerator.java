@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
@@ -103,6 +104,7 @@ public class ExternalComponentGenerator {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
       String logComponentType =  "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
+      addMockInfoToDescriptorsOfVisibleComps(entry.getValue());
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.descriptor);
@@ -214,6 +216,32 @@ public class ExternalComponentGenerator {
       if (extensionBuildInfoFile != null) {
         extensionBuildInfoFile.close();
       }
+    }
+  }
+
+  private static void addMockInfoToDescriptorsOfVisibleComps(List<ExternalComponentInfo> extensions)
+      throws JSONException {
+    final Path srcDir = Paths.get(externalComponentsDirPath, "..", "..", "src");
+    for (ExternalComponentInfo ext : extensions) {
+      final boolean isNonVisible = ext.descriptor.getBoolean("nonVisible");
+      if (isNonVisible) continue;
+
+      final String packagePath = ext.packageName.replace('.', File.separatorChar);
+      final String name = ext.descriptor.getString("name");
+      final Path mockScript = Paths.get(srcDir.toString(), packagePath, "mocks", name + ".mock.js");
+      final Path mockCss = Paths.get(srcDir.toString(), packagePath, "mocks", name + ".mock.css");
+
+      if (!mockScript.toFile().exists()) {
+        throw new IllegalStateException(
+            "Mock script doesn't exist for visible component: " + ext.type);
+      }
+
+      final JSONObject mockObj = new JSONObject();
+      mockObj.put("script", "mocks/" + name + ".mock.js");
+      if (mockCss.toFile().exists()) {
+        mockObj.put("css", "mocks/" + name + ".mock.css");
+      }
+      ext.descriptor.put("mock", mockObj);
     }
   }
 
