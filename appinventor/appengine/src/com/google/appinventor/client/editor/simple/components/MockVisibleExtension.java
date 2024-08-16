@@ -4,14 +4,8 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.ShadowRoot;
-import com.google.appinventor.client.utils.jstypes.Blob;
-import com.google.appinventor.client.utils.jstypes.BlobOptions;
-import com.google.appinventor.client.utils.jstypes.DOMPurify;
-import com.google.appinventor.client.utils.jstypes.URL;
-import com.google.appinventor.client.utils.jstypes.Worker;
+import com.google.appinventor.client.utils.jstypes.*;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
-import com.google.appinventor.client.utils.jstypes.WorkerMessage;
-import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
@@ -51,7 +45,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
     this.packageName = packageName;
 
     FlowPanel shadowHost = new FlowPanel();
-    shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
+    shadowHost.setStylePrimaryName(".ode-MockVisibleExtensionHost");
     shadowRoot = attachShadow(shadowHost.getElement());
 
     initWorker();
@@ -78,27 +72,27 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
   private void initWorker() {
     Ode.CLog("MockVisibleExtension.initWorker");
-    final String mockScriptPath =
-        "assets/external_comps/" + packageName + "/mocks/" + typeName + ".mock.js";
-    Promise.<ChecksumedLoadFile>call(
-            "Server error: could not load mock script for component: " + typeName,
-            cb -> Ode.getInstance().getProjectService().load2(projectId, mockScriptPath, cb))
-        .then(
-            file -> {
-              final String mockScript;
-              try {
-                mockScript = file.getContent();
-              } catch (ChecksumedFileException e) {
-                return Promise.reject(e.getMessage());
-              }
+    final String mockFilesBasePath =
+        "assets/external_comps/" + packageName + "/mocks/" + typeName + ".mock";
 
-              String[] workerSrc = getWorkerSource(mockScript);
+    Promise.<String[]>allOf(
+            loadFileContent(mockFilesBasePath + ".js", false),
+            loadFileContent(mockFilesBasePath + ".css", true))
+        .then(
+            files -> {
+              String[] workerSrc = getWorkerSource(files[0]);
               BlobOptions blobOpts = BlobOptions.create("text/javascript", "transparent");
               Blob blob = new Blob(workerSrc, blobOpts);
 
               workerUrl = URL.createObjectURL(blob);
               WorkerOptions workerOpts = WorkerOptions.create("module");
               worker = new Worker(workerUrl, workerOpts);
+
+              if (files[1] != null && !files[1].isEmpty()) {
+                final CSSStyleSheet[] css = new CSSStyleSheet[] {new CSSStyleSheet()};
+                css[0].replaceSync(files[1]);
+                setAdoptedStyleSheets(shadowRoot, css);
+              }
 
               worker.addEventListener("message", this::handleMessageEvent);
               worker.addEventListener("error", this::handleErrorEvent);
@@ -107,7 +101,24 @@ public class MockVisibleExtension extends MockVisibleComponent {
                 onPropertyChange(p.getName(), p.getValue());
               }
 
-              return Promise.resolve(file);
+              return Promise.resolve(files);
+            });
+  }
+
+  private Promise<String> loadFileContent(String path, boolean resolveOnFailure) {
+    return Promise.<ChecksumedLoadFile>call(
+            "Server error: Could not load file: " + path,
+            cb -> Ode.getInstance().getProjectService().load2(projectId, path, cb))
+        .then(
+            file -> {
+              try {
+                return Promise.resolve(file.getContent());
+              } catch (ChecksumedFileException e) {
+                if (resolveOnFailure) {
+                  return Promise.resolve(null);
+                }
+                return Promise.reject(e.getMessage());
+              }
             });
   }
 
@@ -158,6 +169,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
 
   private static native ShadowRoot attachShadow(Element element) /*-{
       return element.attachShadow({ mode: 'open' });
+  }-*/;
+
+  private static native void setAdoptedStyleSheets(
+      Element shadowRoot, CSSStyleSheet[] styleSheets) /*-{
+      shadowRoot.adoptedStyleSheets = styleSheets;
   }-*/;
 
   @Override

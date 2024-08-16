@@ -290,7 +290,7 @@ public class ExternalComponentGenerator {
     }
   }
 
-  public static void copyMock(String packageName, JSONObject componentDescriptor) throws JSONException, IOException {
+  private static void copyMock(String packageName, JSONObject componentDescriptor) throws JSONException, IOException {
     boolean nonVisible = componentDescriptor.getBoolean("nonVisible");
     if (nonVisible) {
       return;
@@ -298,21 +298,26 @@ public class ExternalComponentGenerator {
 
     String packagePath = packageName.replace('.', File.separatorChar);
     File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src", File.separator + packagePath);
-    File mockFile = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.js");
+    File mockScript = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.js");
 
-    if (!mockFile.exists()) {
-      System.out.println("Extensions : Skipping missing mock file " + mockFile.getAbsolutePath());
-      return;
+    if (mockScript.exists()) {
+      File destDir =
+          new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+      File mockDestDir = new File(destDir, "mocks");
+      ensureFreshDirectory(
+          mockDestDir.getPath(), "Unable to delete the mock directory for the extension.");
+
+      File mockScriptDest = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.js");
+      System.out.println("Extensions : " + "Copying mock script " + mockScript.getAbsolutePath());
+      copyFile(mockScript.getAbsolutePath(), mockScriptDest.getAbsolutePath());
+
+      File mockCss = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.css");
+      if (mockCss.exists()) {
+        File mockCssDest = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.css");
+        System.out.println("Extensions : " + "Copying mock stylesheets " + mockScript.getAbsolutePath());
+        copyFile(mockCss.getAbsolutePath(), mockCssDest.getAbsolutePath());
+      }
     }
-
-    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
-    File mockDestDir = new File(destDir, "mocks");
-    ensureFreshDirectory(mockDestDir.getPath(),
-            "Unable to delete the mock directory for the extension.");
-
-    File mockDestFile = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.js");
-    System.out.println("Extensions : " + "Copying mock file " + mockFile.getAbsolutePath());
-    copyFile(mockFile.getAbsolutePath(), mockDestFile.getAbsolutePath());
   }
 
   private static void generateExternalComponentOtherFiles(String packageName) throws IOException {
