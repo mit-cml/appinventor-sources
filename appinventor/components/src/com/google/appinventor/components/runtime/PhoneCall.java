@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
+import androidx.core.content.ContextCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -365,7 +366,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
     intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-    context.registerReceiver(callStateReceiver, intentFilter);
+    ContextCompat.registerReceiver(context, callStateReceiver, intentFilter, Context.RECEIVER_EXPORTED);
     didRegisterReceiver = true;
   }
 
