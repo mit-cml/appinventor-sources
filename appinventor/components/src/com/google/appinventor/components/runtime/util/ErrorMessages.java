@@ -313,7 +313,8 @@ public final class ErrorMessages {
   // ListView Errors
   public static final int ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601;
 
-  // Start the next group of errors at 4700
+  //PIC Errors
+  public static final int ERROR_INPUT_MODE = 4701;
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -763,6 +764,9 @@ public final class ErrorMessages {
     // ListView Errors
     errorMessages.put(ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS,
         "The index %d is out of bounds for the list view.");
+
+     // ListView Errors
+     errorMessages.put(ERROR_INPUT_MODE, "Invalid input mode.");
   }
 
   private ErrorMessages() {

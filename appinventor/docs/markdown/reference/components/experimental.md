@@ -11,6 +11,7 @@ Table of Contents:
 * [ChatBot](#ChatBot)
 * [FirebaseDB](#FirebaseDB)
 * [ImageBot](#ImageBot)
+* [PersonalImageClassifier](#PersonalImageClassifier)
 
 ## ChatBot  {#ChatBot}
 
@@ -217,3 +218,63 @@ The ImageBot is a non-visible component that uses DALL-E 2 to create and edit im
 : Edit the imageSource using the given description. The editable area of the image should be
  indicated by the maskSource. The sources can be a Canvas, an Image, or a string
  representing the path to a file.
+
+## PersonalImageClassifier  {#PersonalImageClassifier}
+
+Component for PersonalImageClassifier
+
+
+
+### Properties  {#PersonalImageClassifier-Properties}
+
+{:.properties}
+
+{:id="PersonalImageClassifier.InputMode" .text} *InputMode*
+: Gets or sets the input mode for classification. Valid values are "Video" (the default) and "Image".
+
+{:id="PersonalImageClassifier.MinimumInterval" .number} *MinimumInterval*
+: Property for MinimumInterval
+
+{:id="PersonalImageClassifier.Model" .text .wo .do} *Model*
+: Property for Model
+
+{:id="PersonalImageClassifier.ModelLabels" .list .ro .bo} *ModelLabels*
+: Gets all of the labels from this model. Only valid after ClassifierReady is signaled.
+
+{:id="PersonalImageClassifier.Running" .boolean .ro .bo} *Running*
+: Property for Running
+
+{:id="PersonalImageClassifier.WebViewer" .component .wo .do} *WebViewer*
+: Property for WebViewer
+
+### Events  {#PersonalImageClassifier-Events}
+
+{:.events}
+
+{:id="PersonalImageClassifier.ClassifierReady"} ClassifierReady()
+: Event indicating that the classifier is ready.
+
+{:id="PersonalImageClassifier.Error"} Error(*errorCode*{:.number})
+: Event indicating that an error has occurred.
+
+{:id="PersonalImageClassifier.GotClassification"} GotClassification(*result*{:.dictionary})
+: Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].
+
+### Methods  {#PersonalImageClassifier-Methods}
+
+{:.methods}
+
+{:id="PersonalImageClassifier.ClassifyImageData" class="method"} <i/> ClassifyImageData(*image*{:.text})
+: Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.
+
+{:id="PersonalImageClassifier.ClassifyVideoData" class="method"} <i/> ClassifyVideoData()
+: Performs classification on current video frame and triggers the GotClassification event when classification is finished successfully.
+
+{:id="PersonalImageClassifier.StartContinuousClassification" class="method"} <i/> StartContinuousClassification()
+: Starts continuous video classification if the input mode is set to video and the classification is not already running.
+
+{:id="PersonalImageClassifier.StopContinuousClassification" class="method"} <i/> StopContinuousClassification()
+: Stop continuous video classification if the input mode is set to video and the classification is running.
+
+{:id="PersonalImageClassifier.ToggleCameraFacingMode" class="method"} <i/> ToggleCameraFacingMode()
+: Toggles between user-facing and environment-facing camera.
