@@ -119,7 +119,8 @@ Blockly.Blocks['lists_add_items'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_ADD_ITEMS_TITLE_ADD }]
 };
 
-AI.Blockly.Mixins.extend(Blockly.Blocks['lists_add_items'], AI.Blockly.Mixins.DynamicConnections);
+// TODO: Re-enable dynamic connections for lists_add_items when we figure out why it's not working
+// AI.Blockly.Mixins.extend(Blockly.Blocks['lists_add_items'], AI.Blockly.Mixins.DynamicConnections);
 
 Blockly.Blocks['lists_add_items_item'] = {
   // Add items.
