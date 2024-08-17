@@ -450,7 +450,7 @@
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
                                  (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
-                                   #f)
+                                   (throw exception))
                                  ;; PermissionException should be caught by a permissions-aware component and
                                  ;; handled correctly at the point it is caught. However, older extensions
                                  ;; might not be updated yet for SDK 23's dangerous permissions model, so if
