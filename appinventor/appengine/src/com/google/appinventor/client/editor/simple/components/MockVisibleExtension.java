@@ -1,7 +1,6 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.ShadowRoot;
@@ -30,89 +29,89 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private final String packageName;
   private final MockInfo mockInfo;
 
-  private Worker worker = null;
-  private String workerUrl = null;
+  private Worker worker;
+  private String workerUrl;
 
   private final ShadowRoot shadowRoot;
 
   public MockVisibleExtension(
-      SimpleEditor editor, String typeName, Image iconImage, String packageName) {
+      SimpleEditor editor,
+      String typeName,
+      Image iconImage,
+      String packageName,
+      MockInfo mockInfo) {
     super(editor, typeName, iconImage);
     Ode.CLog("MockVisibleExtension.constructor");
 
     this.projectId = editor.getProjectId();
     this.packageName = packageName;
-    this.mockInfo = SimpleComponentDatabase.getInstance(this.projectId).getMockInfo(typeName);
+    this.mockInfo = mockInfo;
 
-    FlowPanel shadowHost = new FlowPanel();
+    final FlowPanel shadowHost = new FlowPanel();
     shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
-    shadowRoot = attachShadow(shadowHost.getElement());
+    shadowRoot = applyAttachShadow(shadowHost.getElement());
 
-    initWorker();
-    refreshForm();
+    initializeMock()
+        .then0(
+            () -> {
+              refreshForm();
+              return null;
+            });
     initComponent(shadowHost);
   }
 
-  @Override
-  public void upgrade() {
-    super.upgrade();
-    Ode.CLog("MockVisibleExtension.upgrade");
-    if (worker != null) {
-      cleanUp();
-      initWorker();
-    }
-    refreshForm();
-    upgradeComplete();
-  }
-
-  private void cleanUp() {
-    worker.terminate();
-    URL.revokeObjectURL(workerUrl);
-  }
-
-  private void initWorker() {
+  private Promise<Object> initializeMock() {
     Ode.CLog("MockVisibleExtension.initWorker");
     final String assetsBasePath = "assets/external_comps/" + packageName + "/";
 
-    Promise.<String[]>allOf(
-            loadFileContent(assetsBasePath + mockInfo.getScript()),
-            mockInfo.getCss() != null ? loadFileContent(assetsBasePath + mockInfo.getCss()) : null)
+    final Promise<String> fetchScript = fetchFileContent(assetsBasePath + mockInfo.getScript());
+    final Promise<String> fetchCss;
+    if (mockInfo.getCss() != null) {
+      fetchCss = fetchFileContent(assetsBasePath + mockInfo.getCss());
+    } else {
+      fetchCss = null;
+    }
+    return Promise.<String[]>allOf(fetchScript, fetchCss)
         .then(
             files -> {
-              String[] workerSrc = getWorkerSource(files[0]);
-              BlobOptions blobOpts = BlobOptions.create("text/javascript", "transparent");
-              Blob blob = new Blob(workerSrc, blobOpts);
-
-              workerUrl = URL.createObjectURL(blob);
-              WorkerOptions workerOpts = WorkerOptions.create("module");
-              worker = new Worker(workerUrl, workerOpts);
-
               if (files[1] != null && !files[1].isEmpty()) {
                 final CSSStyleSheet[] css = new CSSStyleSheet[] {new CSSStyleSheet()};
                 css[0].replaceSync(files[1]);
-                setAdoptedStyleSheets(shadowRoot, css);
+                applyAdoptedStyleSheets(shadowRoot, css);
               }
 
-              worker.addEventListener("message", this::handleMessageEvent);
-              worker.addEventListener("error", this::handleErrorEvent);
+              initializeWorker(files[0]);
 
               for (EditableProperty p : getProperties()) {
                 onPropertyChange(p.getName(), p.getValue());
               }
 
-              return Promise.resolve(files);
+              return null;
             });
   }
 
-  private Promise<String> loadFileContent(String path) {
+  private Promise<String> fetchFileContent(String path) {
     return Promise.<String>call(
             "Server error: Could not load file: " + path,
             cb -> Ode.getInstance().getProjectService().load(projectId, path, cb))
         .then(Promise::resolve);
   }
 
-  private String[] getWorkerSource(String mockScript) {
-    final String escapedScript = JsonUtils.escapeValue(mockScript);
+  private void initializeWorker(String mockScriptSrc) {
+    final String[] workerSrc = buildWorkerSource(mockScriptSrc);
+    final BlobOptions blobOpts = BlobOptions.create("text/javascript", "transparent");
+    final Blob blob = new Blob(workerSrc, blobOpts);
+
+    workerUrl = URL.createObjectURL(blob);
+    final WorkerOptions workerOpts = WorkerOptions.create("module");
+    worker = new Worker(workerUrl, workerOpts);
+
+    worker.addEventListener("message", this::handleMessageEvent);
+    worker.addEventListener("error", this::handleErrorEvent);
+  }
+
+  private String[] buildWorkerSource(String mockScriptSrc) {
+    final String escapedScript = JsonUtils.escapeValue(mockScriptSrc);
     final String baseUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
 
     return new String[] {
@@ -120,8 +119,8 @@ public class MockVisibleExtension extends MockVisibleComponent {
       "const Mock = {\n",
       "  document: undefined,\n",
       "  template: () => undefined,\n",
-      "  onPropertyChange: (property) => undefined\n",
-      "  onError: (error) => undefined\n",
+      "  onPropertyChange: (property) => undefined,\n",
+      "  onError: (error) => undefined,\n",
       "};\n",
       "const mockScript = new Function('Mock', " + escapedScript + ");\n",
       "mockScript(Mock);\n",
@@ -145,51 +144,36 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private void handleMessageEvent(MessageEvent<WorkerMessage> msg) {
     final WorkerMessage msgData = msg.getData();
     Ode.CLog("worker.message: type: " + msgData.getType());
+
     if (msgData.getType().equals(MOCK_RENDER_REQUEST)) {
       final String htmlStr = msgData.getData().toString();
       Ode.CLog("worker.data: dirty: " + htmlStr);
-      String sanitizedData = DOMPurify.sanitize(htmlStr);
+      final String sanitizedData = DOMPurify.sanitize(htmlStr);
       Ode.CLog("worker.data: clean: " + sanitizedData);
-      HTMLPanel htmlPanel = new HTMLPanel(sanitizedData);
+
+      final HTMLPanel htmlPanel = new HTMLPanel(sanitizedData);
       htmlPanel.setStylePrimaryName("ode-SimpleMockComponent");
       shadowRoot.removeAllChildren();
       shadowRoot.appendChild(htmlPanel.getElement());
     }
   }
 
-  private void handleErrorEvent(Worker.ErrorEvent error) {
-    Ode.CLog("worker.error: " + error.getMessage());
-    Ode.CLog(String.valueOf(error.getError()));
-  }
-
-  private static native ShadowRoot attachShadow(Element element) /*-{
-      return element.attachShadow({ mode: 'open' });
+  // TODO
+  private native void handleErrorEvent(Object error) /*-{
+    console.log(error)
   }-*/;
-
-  private static native void setAdoptedStyleSheets(
-      Element shadowRoot, CSSStyleSheet[] styleSheets) /*-{
-      shadowRoot.adoptedStyleSheets = styleSheets;
-  }-*/;
-
-  @Override
-  public void delete() {
-    if (worker != null) cleanUp();
-    super.delete();
-  }
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-    if (worker != null) {
-      JSONValue value = typeAndSanitizeProperty(propertyName, newValue);
-      JSONObject msg = new JSONObject();
-      msg.put("name", new JSONString(propertyName));
-      msg.put("value", value);
-      worker.postMessage(msg.toString());
-    }
+    if (worker == null) return;
+    final JSONObject msg = new JSONObject();
+    msg.put("name", new JSONString(propertyName));
+    msg.put("value", convertPropertyValue(propertyName, newValue));
+    worker.postMessage(msg.toString());
   }
 
-  private JSONValue typeAndSanitizeProperty(String name, String value) {
+  private JSONValue convertPropertyValue(String name, String value) {
     final String type = getProperties().getProperty(name).getEditorType();
     switch (type) {
       case PropertyTypeConstants.PROPERTY_TYPE_INTEGER:
@@ -203,19 +187,19 @@ public class MockVisibleExtension extends MockVisibleComponent {
         return JSONBoolean.getInstance(Boolean.parseBoolean(value));
       case PropertyTypeConstants.PROPERTY_TYPE_COLOR:
         {
-          String alpha = value.substring(2, 4);
-          String baseHex = value.substring(4);
+          final String alpha = value.substring(2, 4);
+          final String baseHex = value.substring(4);
           return new JSONString("#" + baseHex + alpha);
         }
       case PropertyTypeConstants.PROPERTY_TYPE_ASSET:
         {
-          String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
+          final String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
           if (url == null) return null;
           return new JSONString(url);
         }
       case PropertyTypeConstants.PROPERTY_TYPE_LENGTH:
         {
-          int intVal = Integer.parseInt(value);
+          final int intVal = Integer.parseInt(value);
           if (intVal <= LENGTH_PERCENT_TAG) {
             return new JSONString(Math.abs(intVal + 1000) + "%");
           } else if (intVal == LENGTH_PREFERRED) {
@@ -229,7 +213,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
       case PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE:
         {
           try {
-            int intVal = Integer.parseInt(value);
+            final int intVal = Integer.parseInt(value);
             if (intVal <= 1) {
               return new JSONString("sans-serif");
             } else if (intVal == 2) {
@@ -238,9 +222,9 @@ public class MockVisibleExtension extends MockVisibleComponent {
               return new JSONString("monospace");
             }
           } catch (NumberFormatException e) {
-            String typeface = value.substring(0, value.lastIndexOf("."));
+            final String typeface = value.substring(0, value.lastIndexOf("."));
             if (Document.get().getElementById(typeface) == null) {
-              String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
+              final String url = MockComponentsUtil.convertAssetValueToUrl(editor, value);
               MockComponentsUtil.createFontResource(typeface, url, typeface);
             }
             return new JSONString(typeface);
@@ -250,6 +234,40 @@ public class MockVisibleExtension extends MockVisibleComponent {
         return new JSONString(value);
     }
   }
+
+  @Override
+  public void upgrade() {
+    super.upgrade();
+    Ode.CLog("MockVisibleExtension.upgrade");
+    cleanUpWorker();
+    initializeMock()
+        .then0(
+            () -> {
+              refreshForm();
+              upgradeComplete();
+              return null;
+            });
+  }
+
+  @Override
+  public void delete() {
+    cleanUpWorker();
+    super.delete();
+  }
+
+  private void cleanUpWorker() {
+    worker.terminate();
+    URL.revokeObjectURL(workerUrl);
+  }
+
+  private static native ShadowRoot applyAttachShadow(Element element) /*-{
+      return element.attachShadow({ mode: 'open' });
+  }-*/;
+
+  private static native void applyAdoptedStyleSheets(
+      Element shadowRoot, CSSStyleSheet[] styleSheets) /*-{
+      shadowRoot.adoptedStyleSheets = styleSheets;
+  }-*/;
 
   //  @Override
   //  public int getPreferredWidth() {

@@ -602,7 +602,7 @@ public final class SimpleComponentDescriptor {
       Image icon = getImageFromPath(scd.getIconName(name), type, editor.getProjectId());
       String packageName = type.substring(0, type.lastIndexOf("."));
       try {
-        return new MockVisibleExtension(editor, name, icon, packageName);
+        return new MockVisibleExtension(editor, name, icon, packageName, scd.getMockInfo(name));
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
