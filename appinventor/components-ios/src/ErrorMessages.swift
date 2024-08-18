@@ -380,6 +380,16 @@ import Foundation
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
+    
+    case .ERROR_INPUT_MODE:
+      return "Invalid input mode"
+      
+    case .ERROR_MODEL_AI:
+      return "Invalid model file"
+      
+    case .ERROR_WEBVIEW_AI:
+      return "Invalid webview"
+
     }
   }
 }
