@@ -245,6 +245,13 @@
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06E624A629F698EC007DA752 /* TextToSpeechTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E624A529F698EC007DA752 /* TextToSpeechTests.swift */; };
+		06E79ACD2D1601BD007BFAC0 /* PersonalAudioClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E79ACC2D1601BD007BFAC0 /* PersonalAudioClassifier.swift */; };
+		06E79AD32D1601D5007BFAC0 /* chroma.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79ACE2D1601D4007BFAC0 /* chroma.js */; };
+		06E79AD52D1601D5007BFAC0 /* spectrogram.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD12D1601D5007BFAC0 /* spectrogram.js */; };
+		06E79AD62D1601D5007BFAC0 /* recorder1.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD22D1601D5007BFAC0 /* recorder1.js */; };
+		06E79AD92D1601EF007BFAC0 /* personal_audio_classifier1.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD72D1601EF007BFAC0 /* personal_audio_classifier1.js */; };
+		06E79ADA2D1601EF007BFAC0 /* personal_audio_classifier.html in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */; };
+		06E79ADC2D16718B007BFAC0 /* tfjs-1.5.2.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EF26592998A94600D6093C /* ComponentUtil.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
@@ -626,6 +633,13 @@
 		06E59EB21D92D19600C42804 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
 		06E624A529F698EC007DA752 /* TextToSpeechTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextToSpeechTests.swift; sourceTree = "<group>"; };
+		06E79ACC2D1601BD007BFAC0 /* PersonalAudioClassifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonalAudioClassifier.swift; sourceTree = "<group>"; };
+		06E79ACE2D1601D4007BFAC0 /* chroma.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = chroma.js; path = assets/chroma.js; sourceTree = "<group>"; };
+		06E79AD12D1601D5007BFAC0 /* spectrogram.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = spectrogram.js; path = assets/spectrogram.js; sourceTree = "<group>"; };
+		06E79AD22D1601D5007BFAC0 /* recorder1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = recorder1.js; path = assets/recorder1.js; sourceTree = "<group>"; };
+		06E79AD72D1601EF007BFAC0 /* personal_audio_classifier1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = personal_audio_classifier1.js; path = "components-common/src/PersonalAudioClassifier/personal_audio_classifier1.js"; sourceTree = SOURCE_ROOT; };
+		06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = personal_audio_classifier.html; path = "components-common/src/PersonalAudioClassifier/personal_audio_classifier.html"; sourceTree = SOURCE_ROOT; };
+		06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tfjs-1.5.2.js"; path = "assets/tfjs-1.5.2.js"; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06EF26592998A94600D6093C /* ComponentUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentUtil.swift; sourceTree = "<group>"; };
@@ -923,6 +937,7 @@
 				069EDEC528EC96670020B1B1 /* BluetoothLE.swift */,
 				5F7ED10C2C35C987004418C5 /* FaceExtension.swift */,
 				069EDEC728EC9E850020B1B1 /* Microbit_Uart_Simple.swift */,
+				06E79ACC2D1601BD007BFAC0 /* PersonalAudioClassifier.swift */,
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
 				8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */,
 			);
@@ -974,6 +989,7 @@
 			children = (
 				06009F372D1319D600F0364E /* Common */,
 				06009F362D130E4600F0364E /* FaceExtension */,
+				06E79ACB2D160196007BFAC0 /* PersonalAudioClassifier */,
 				069D1CE52C9C50BE00C0CA96 /* PersonalImageClassifier */,
 				06FD684B2CF98ECC00D17515 /* PosenetExtension */,
 				069D1C982C9C4FF000C0CA96 /* mobilenet_group1-shard1of1 */,
@@ -1326,6 +1342,19 @@
 			name = interfaces;
 			sourceTree = "<group>";
 		};
+		06E79ACB2D160196007BFAC0 /* PersonalAudioClassifier */ = {
+			isa = PBXGroup;
+			children = (
+				06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */,
+				06E79ACE2D1601D4007BFAC0 /* chroma.js */,
+				06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */,
+				06E79AD72D1601EF007BFAC0 /* personal_audio_classifier1.js */,
+				06E79AD22D1601D5007BFAC0 /* recorder1.js */,
+				06E79AD12D1601D5007BFAC0 /* spectrogram.js */,
+			);
+			name = PersonalAudioClassifier;
+			sourceTree = "<group>";
+		};
 		06EAAC7A1DCE3E6400889C6D /* connectivity */ = {
 			isa = PBXGroup;
 			children = (
@@ -1625,6 +1654,8 @@
 				064E097E233BDBE400884FEF /* Media.xcassets in Resources */,
 				069D1CAC2C9C4FF000C0CA96 /* mobilenet_group31-shard1of1 in Resources */,
 				069D1CCC2C9C4FF000C0CA96 /* mobilenet_group8-shard1of1 in Resources */,
+				06E79AD32D1601D5007BFAC0 /* chroma.js in Resources */,
+				06E79AD92D1601EF007BFAC0 /* personal_audio_classifier1.js in Resources */,
 				06B216201DBDACBF000B3366 /* runtime.scm in Resources */,
 				069D1CBC2C9C4FF000C0CA96 /* mobilenet_group29-shard1of1 in Resources */,
 				06FD68582CF98F3B00D17515 /* posenet.html in Resources */,
@@ -1636,6 +1667,7 @@
 				069D1CB42C9C4FF000C0CA96 /* mobilenet_group18-shard1of1 in Resources */,
 				069D1CD92C9C4FF000C0CA96 /* mobilenet_group33-shard1of1 in Resources */,
 				060395451F342ADE006D6E66 /* language-codes.plist in Resources */,
+				06E79AD62D1601D5007BFAC0 /* recorder1.js in Resources */,
 				069D1CBD2C9C4FF000C0CA96 /* mobilenet_group32-shard1of1 in Resources */,
 				069D1CA42C9C4FF000C0CA96 /* mobilenet_group26-shard1of1 in Resources */,
 				069D1CB82C9C4FF000C0CA96 /* mobilenet_group2-shard1of1 in Resources */,
@@ -1653,6 +1685,7 @@
 				069D1CB52C9C4FF000C0CA96 /* mobilenet_group17-shard1of1 in Resources */,
 				DE962F6220ADCD7D004AA45A /* append_script in Resources */,
 				060395461F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist in Resources */,
+				06E79ADA2D1601EF007BFAC0 /* personal_audio_classifier.html in Resources */,
 				069D1CC42C9C4FF000C0CA96 /* mobilenet_group30-shard1of1 in Resources */,
 				069D1CB72C9C4FF000C0CA96 /* mobilenet_group46-shard1of1 in Resources */,
 				DE5CBD281FE36C8B00F5EDDE /* webviewer.js in Resources */,
@@ -1661,6 +1694,7 @@
 				069D1CCB2C9C4FF000C0CA96 /* mobilenet_group5-shard1of1 in Resources */,
 				DE962F5E20ADCD2C004AA45A /* comodo_root.der in Resources */,
 				069D1CBB2C9C4FF000C0CA96 /* mobilenet_group51-shard1of1 in Resources */,
+				06E79AD52D1601D5007BFAC0 /* spectrogram.js in Resources */,
 				069D1CC22C9C4FF000C0CA96 /* mobilenet_group15-shard1of1 in Resources */,
 				069D1CD52C9C4FF000C0CA96 /* mobilenet_group41-shard1of1 in Resources */,
 				06FD68542CF98F3B00D17515 /* posenet_model-stride16.json in Resources */,
@@ -1692,6 +1726,7 @@
 				069D1CA92C9C4FF000C0CA96 /* mobilenet_group45-shard1of1 in Resources */,
 				069D1CA52C9C4FF000C0CA96 /* mobilenet_group44-shard1of1 in Resources */,
 				069D1CD62C9C4FF000C0CA96 /* mobilenet_group14-shard1of1 in Resources */,
+				06E79ADC2D16718B007BFAC0 /* tfjs-1.5.2.js in Resources */,
 				069D1CAD2C9C4FF000C0CA96 /* mobilenet_group4-shard1of1 in Resources */,
 				069D1CC12C9C4FF000C0CA96 /* mobilenet_group54-shard1of1 in Resources */,
 				069D1CCF2C9C4FF000C0CA96 /* mobilenet_group47-shard1of1 in Resources */,
@@ -1913,6 +1948,7 @@
 				CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */,
 				061A3C692CEEE66E000E2FBB /* Regression.swift in Sources */,
 				DEB9C5502101199E0069BAD7 /* PolygonBaseWithPoints.swift in Sources */,
+				06E79ACD2D1601BD007BFAC0 /* PersonalAudioClassifier.swift in Sources */,
 				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
 				068F9858289A2FD600E2883F /* Chart.swift in Sources */,

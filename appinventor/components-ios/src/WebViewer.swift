@@ -34,6 +34,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     let config = WKWebViewConfiguration()
     config.preferences.javaScriptEnabled = true
     config.allowsInlineMediaPlayback = true
+    config.mediaTypesRequiringUserActionForPlayback =  []
     config.userContentController = controller
     super.init(parent)
     config.setURLSchemeHandler(self, forURLScheme: "appinventor")
@@ -51,8 +52,17 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     _view.uiDelegate = self
     controller.add(self, name: "webString")
     parent.add(self)
-    Width = kLengthFillParent
-    Height = kLengthFillParent
+    Width = kLengthPreferred
+    Height = kLengthPreferred
+  }
+
+  @objc open func Initialize() {
+    if _lastSetWidth == kLengthPreferred {
+      Width = kLengthFillParent
+    }
+    if _lastSetHeight == kLengthPreferred {
+      Height = kLengthFillParent
+    }
   }
 
   @objc open func CurrentPageTitle() -> String {
