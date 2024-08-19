@@ -14,7 +14,7 @@ import com.google.gwt.user.client.Event;
 
 public class ResetAction implements Command {
 
-  private ResetAction() {
+  public ResetAction() {
     shortcutKeyHandler();
   }
 

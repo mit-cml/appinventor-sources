@@ -13,7 +13,7 @@ import com.google.gwt.user.client.Event;
 
 public class RefreshCompanionAction implements Command {
 
-  private RefreshCompanionAction() {
+  public RefreshCompanionAction() {
     shortcutKeyHandler();
   }
 
