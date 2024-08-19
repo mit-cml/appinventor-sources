@@ -17,7 +17,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class LineStringTest extends MapTestBase {
 
   private LineString line;

@@ -50,7 +50,6 @@ import static org.junit.Assert.assertTrue;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 @Config(shadows = ShadowAsynchUtil.class)
-@Ignore
 public class MapTest extends MapTestBase {
 
   private Map map;

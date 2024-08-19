@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class CircleTest extends MapTestBase {
 
   private Circle circle;
