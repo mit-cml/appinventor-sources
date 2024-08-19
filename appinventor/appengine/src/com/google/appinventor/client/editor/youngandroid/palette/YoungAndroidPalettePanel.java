@@ -30,8 +30,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -82,7 +80,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<String, String> translationMap;
 
   private final TextBox searchText; 
-  private boolean isSearchTextFocused = false;
   private final VerticalPanel searchResults;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
@@ -184,13 +181,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void onBlur(BlurEvent event) {
         doSearch();
-        isSearchTextFocused = false;
-      }
-    });
-    searchText.addFocusHandler(new FocusHandler() {
-      @Override
-      public void onFocus(FocusEvent event) {
-        isSearchTextFocused = true;
       }
     });
     searchText.addChangeHandler(new ChangeHandler() {
@@ -205,16 +195,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void onKeyDown(KeyDownEvent event) {
         DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
-        if (designToolbar.currentView == DesignToolbar.View.FORM) {
-          if (event.getNativeKeyCode() == 191 && !isSearchTextFocused) {
-            {
-              event.preventDefault();
-              searchText.setFocus(true);
-              isSearchTextFocused = true;
-            }
+        if (designToolbar.currentView == DesignToolbar.View.FORM && event.getNativeKeyCode() == 191 && !isTextboxFocused()) {
+          {
+            event.preventDefault();
+            searchText.setFocus(true);
           }
-        } else {
-          isSearchTextFocused = false;
         }
       }
     }, KeyDownEvent.getType());
@@ -531,4 +516,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     loadComponents();
   }
 
+  public native boolean isTextboxFocused()/*-{
+    var element = $doc.activeElement;
+    return (element.tagName.toLowerCase() === 'input' && element.type.toLowerCase() === 'text') || element.tagName.toLowerCase() === 'textarea';
+  }-*/;
 }
