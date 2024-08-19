@@ -1,13 +1,14 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.ShadowRoot;
 import com.google.appinventor.client.utils.jstypes.*;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
-import com.google.appinventor.shared.simple.ComponentDatabaseInterface.MockInfo;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -26,8 +27,9 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private final String MOCK_RENDER_REQUEST = "render-request";
 
   private final long projectId;
+  private final String typeName;
   private final String packageName;
-  private final MockInfo mockInfo;
+  private final SimpleComponentDatabase scd;
 
   private Worker worker;
   private String workerUrl;
@@ -39,13 +41,14 @@ public class MockVisibleExtension extends MockVisibleComponent {
       String typeName,
       Image iconImage,
       String packageName,
-      MockInfo mockInfo) {
+      SimpleComponentDatabase scd) {
     super(editor, typeName, iconImage);
     Ode.CLog("MockVisibleExtension.constructor");
 
     this.projectId = editor.getProjectId();
+    this.typeName = typeName;
     this.packageName = packageName;
-    this.mockInfo = mockInfo;
+    this.scd = scd;
 
     final FlowPanel shadowHost = new FlowPanel();
     shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
@@ -64,6 +67,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
     Ode.CLog("MockVisibleExtension.initWorker");
     final String assetsBasePath = "assets/external_comps/" + packageName + "/";
 
+    final ComponentDatabaseInterface.MockInfo mockInfo = scd.getMockInfo(typeName);
     final Promise<String> fetchScript = fetchFileContent(assetsBasePath + mockInfo.getScript());
     final Promise<String> fetchCss;
     if (mockInfo.getCss() != null) {
@@ -74,11 +78,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
     return Promise.<String[]>allOf(fetchScript, fetchCss)
         .then(
             files -> {
+              final CSSStyleSheet[] css = new CSSStyleSheet[] {new CSSStyleSheet()};
               if (files[1] != null && !files[1].isEmpty()) {
-                final CSSStyleSheet[] css = new CSSStyleSheet[] {new CSSStyleSheet()};
                 css[0].replaceSync(files[1]);
-                applyAdoptedStyleSheets(shadowRoot, css);
               }
+              applyAdoptedStyleSheets(shadowRoot, css);
 
               initializeWorker(files[0]);
 
@@ -238,13 +242,13 @@ public class MockVisibleExtension extends MockVisibleComponent {
   @Override
   public void upgrade() {
     super.upgrade();
+    upgradeComplete(); // Updates component definitions
     Ode.CLog("MockVisibleExtension.upgrade");
     cleanUpWorker();
     initializeMock()
         .then0(
             () -> {
               refreshForm();
-              upgradeComplete();
               return null;
             });
   }

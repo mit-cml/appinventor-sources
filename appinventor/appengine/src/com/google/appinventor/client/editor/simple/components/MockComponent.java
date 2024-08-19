@@ -1208,7 +1208,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   /**
    * upgradeComplete()
-   * Mark a MockComponent upgrade complete.
+   * Updates component definitions and marks a MockComponent upgrade complete.
    * This MUST be called manually after calling upgrade()!
    * All subclasses overriding this method must call super.upgradeComplete()!
    */
