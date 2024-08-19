@@ -33,7 +33,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-@Ignore
 public class PolygonTest extends MapTestBase {
 
   private Polygon polygon;
