@@ -2393,7 +2393,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added mode on List Mathematical Operations
     // AI2: Added "every component" block.
     36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
-         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')],
+
+    37: "noUpgrade"
 
   }, // End Language upgraders
 
