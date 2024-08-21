@@ -80,6 +80,7 @@ async function loadModelFile(url, json) {
     }
   } catch (error) {
     // Rilancia l'errore con informazioni aggiuntive
+    console.error("Load failed", error);
     throw new Error(`loadModelFile failed: ${error.message}`);
   }
 }

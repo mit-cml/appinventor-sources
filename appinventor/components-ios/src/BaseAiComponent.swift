@@ -5,7 +5,7 @@
 
 import Foundation
 import WebKit
-import Zip 
+import Zip
 import ZIPFoundation
 
 fileprivate let MODEL_PATH_SUFFIX = ".mdl"
@@ -14,278 +14,265 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
 
 @objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
 
-    public static let ERROR_WEBVEWER_REQUIRED = -7
-    public static let ERROR_CLASSIFICATION_FAILED = -2;
-    public static let ERROR_INVALID_MODEL_FILE = -8;
+  public static let ERROR_WEBVEWER_REQUIRED = -7
+  public static let ERROR_CLASSIFICATION_FAILED = -2;
+  public static let ERROR_INVALID_MODEL_FILE = -8;
 
-    private var _labels = [String]()
-    private var _modelPath: String? = nil
-    internal var _webview: WKWebView? = nil
-    private var _webviewer: WebViewer?
-    private var assetPath: String? = nil
+  private var _labels = [String]()
+  private var _modelPath: String? = nil
+  internal var _webview: WKWebView? = nil
+  private var _webviewer: WebViewer?
+  private var assetPath: String? = nil
 
-    @objc public override init(_ container: ComponentContainer) {
-        super.init(container)
+  @objc public override init(_ container: ComponentContainer) {
+    super.init(container)
+  }
+
+  //MARK: Methods
+
+  @objc public func Initialize() {
+    guard let webview = _webview else {
+      _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
+      return
     }
+  }
 
-    //MARK: Methods
-
-    @objc public func Initialize() {
-        guard let webview = _webview else {
-        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
-        return
-        }
+  @objc public func setModel(_ path: String) {
+    if path.hasSuffix(MODEL_PATH_SUFFIX) {
+      _modelPath = path
+    } else {
+      _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_AI, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
     }
+  }
 
-    @objc public func setModel(_ path: String) {
-      if path.hasSuffix(MODEL_PATH_SUFFIX) {
-          _modelPath = path
-      } else {
-        _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_AI, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
-      }
-    }
-
-    @objc public var ModelLabels: [String] {
-      return _labels
-    }
+  @objc public var ModelLabels: [String] {
+    return _labels
+  }
 
 
-    @objc open var WebViewer: WebViewer {
-      get {
-        return _webviewer!
-        }
-        set {
-        configureWebView(newValue.view as! WKWebView)
-        print("configurewebview called")
-        if self is PersonalImageClassifier{
-            assetPath = "personal_image_classifier"
-        } else {
-            // implement checks for other AI components
-        }
-        if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
-            let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
-            let request = URLRequest(url: url)
-            _webview!.loadFileURL(url, allowingReadAccessTo: readAccessURL)
-            print("request loaded")
-        }else{
-          print("request not loaded")
-        }
-      }
-    }
-  
-  /*@objc open var WebViewer: WebViewer {
+  @objc open var WebViewer: WebViewer {
     get {
       return _webviewer!
-      }
-      set {
+    }
+    set {
+      newValue.aiSchemeHandler = self
       configureWebView(newValue.view as! WKWebView)
       print("configurewebview called")
       if self is PersonalImageClassifier{
-          assetPath = "personal_image_classifier"
+        assetPath = "personal_image_classifier"
       } else {
-          // implement checks for other AI components
+        // implement checks for other AI components
       }
-      print(assetPath)
-      let bundle = Bundle(for: BaseAiComponent.self)
-      print(bundle)
-        
-      if let bundlePath = bundle.resourcePath {
-        do{
-          let files = try FileManager.default.contentsOfDirectory(atPath: bundlePath)
-          print(files)
-        }catch{
-          print(error)
-        }
-      }
-        
-      if let url = bundle.url(forResource: assetPath, withExtension: "html"){
-        let request = URLRequest(url: url)
-        print(request)
+      if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
+        let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
+        let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath ?? "").html")!)
         _webview?.load(request)
-        print("requestLoaded")
+        print("request loaded")
       }else{
-        print("Request not lodaded")
+        print("request not loaded")
       }
     }
-  }*/
-  
-  
-  
-    open func ClassifierReady(){}
-    open func GotClassification(_ result: AnyObject){}
-    open func Error(_ errorCode: Int32){}
+  }
 
-    // MARK: Private Implementation
+  open func ClassifierReady(){}
+  open func GotClassification(_ result: AnyObject){}
+  open func Error(_ errorCode: Int32){}
 
-    private func configureWebView(_ webview: WKWebView) {
-        _webview = webview
-      _webview!.configuration.preferences.javaScriptEnabled = true
-          _webview!.configuration.allowsInlineMediaPlayback = true
-          _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
-      _webview!.configuration.setURLSchemeHandler(self, forURLScheme: "appinventor")
-        
-        if self is PersonalImageClassifier{
-            print("PersonalImageClassifier")
-            _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
-           TRANSFER_MODEL_PREFIX = "appinventor://personal-image-classifier/transfer/"
-           PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier/personal/"
-        } else {
-            // implement checks for other AI components
-        }
-        
+  // MARK: Private Implementation
+
+  private func configureWebView(_ webview: WKWebView) {
+    _webview = webview
+    if #available(iOS 16.4, *) {
+      webview.isInspectable = true
+    }
+    _webview!.configuration.preferences.javaScriptEnabled = true
+    _webview!.configuration.allowsInlineMediaPlayback = true
+    _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
+
+    if self is PersonalImageClassifier{
+      print("PersonalImageClassifier")
+      _webview!.configuration.userContentController.add(self, name: "PersonalImageClassifier")
+      TRANSFER_MODEL_PREFIX = "appinventor://personal-image-classifier/transfer/"
+      PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier/personal/"
+    } else {
+      // implement checks for other AI components
     }
 
-    private func parseLabels(_ labels: String) throws -> [String] {
-        var result = [String]()
-        let data = Data(labels.utf8)
-        do {
-            if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
-                for item in arr {
-                    result.append(labels)
-                }
-            } else {
-                throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
-            }
-        } catch {
-            throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
-        }
-        return result
-    }
+  }
 
-    internal func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
-      guard let _webview = _webview else {
-        throw AIError.webviewerNotSet
+  private func parseLabels(_ labels: String) throws -> [String] {
+    var result = [String]()
+    let data = Data(labels.utf8)
+    do {
+      if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
+        for item in arr {
+          result.append(labels)
+        }
+      } else {
+        throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
       }
+    } catch {
+      throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
     }
+    return result
+  }
+
+  internal func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
+    guard let _webview = _webview else {
+      throw AIError.webviewerNotSet
+    }
+  }
 
   // MARK: WKScriptMessageHandler
 
   public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-    print("recieving content")
     guard let dict = message.body as? [String: Any],
-    var functionCall = dict["functionCall"] as? String,
-    let args = dict["args"] else {
-        print("JSON Error message not recieved")
-        return
+          var functionCall = dict["functionCall"] as? String,
+          let args = dict["args"] else {
+      print("JSON Error message not recieved")
+      return
     }
     print(message.body)
     if functionCall == "ready" {
       print("ready")
-        do {
-          let result = try getYailObjectFromJson(args as? String, true)
-          print(result)
-          _labels = try parseLabels(result as! String);
-          ClassifierReady()
-        } catch {
-          print("Error parsing JSON from web view function ready")
+      do {
+        guard let result = try getYailObjectFromJson(args as? String, true) as? YailList<AnyObject> else {
+          print("Unable to parse result")
+          return
         }
+        print(result)
+        var labelList: [String] = []
+        for el in result {
+          if let label = el as? String {
+            labelList.append(label)
+          }
+        }
+        _labels = labelList
+        ClassifierReady()
+      } catch {
+        print("Error parsing JSON from web view function ready")
+      }
     }
     if functionCall == "reportResult" {
-      print("report result")
-        do {
-          let result = try getYailObjectFromJson(args as? String, true)
-          print(result)
-          _labels = try parseLabels(result as! String);
-          GotClassification(result)
-        } catch {
-          print("Error parsing JSON from web view function reportResult")
-        }
+      do {
+        let result = try getYailObjectFromJson(args as? String, true)
+        GotClassification(result)
+      } catch {
+        print("Error parsing JSON from web view function reportResult")
+      }
     }
     if functionCall == "error" {
       print("error")
-         do {
-          let result = try getYailObjectFromJson(args as? String, true)
-          print(result)
-          Error(args as! Int32)
-        } catch {
-          print("Error parsing JSON from web view function error")
-        }
+      do {
+        let result = try getYailObjectFromJson(args as? String, true)
+        print(result)
+        Error(args as! Int32)
+      } catch {
+        print("Error parsing JSON from web view function error")
+      }
     }
-   
+
   }
 
   // MARK: WKURLSchemeHandler
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
     print("WKURLSchemeHandler")
-      var fileData: Data? = nil
-      guard let url = urlSchemeTask.request.url?.absoluteString else {
-          urlSchemeTask.didFailWithError(AIError.FileNotFound)
-          return
-      }
-      guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
-          urlSchemeTask.didFailWithError(AIError.FileNotFound)
-          return
-      }
+    var fileData: Data? = nil
+    guard let url = urlSchemeTask.request.url?.absoluteString else {
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
+      return
+    }
+    guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
+      return
+    }
     print(url)
     if url.hasPrefix(TRANSFER_MODEL_PREFIX!) {
       print("transfer model")
       let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX!, with: "")
-          if let assetURL = Bundle.main.url(forResource: fileName, withExtension: nil) {
-              do {
-                  fileData = try Data(contentsOf: assetURL)
-              } catch {
-                  urlSchemeTask.didFailWithError(error)
-                  return
-              }
-          } else {
-              urlSchemeTask.didFailWithError(AIError.FileNotFound)
-              return
-          }
-    } else if url.hasPrefix(PERSONAL_MODEL_PREFIX!) {
-        print("personal model")
-        let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX!, with: "")
-          guard let _modelPath = _modelPath, let zipURL = Bundle.main.url(forResource: _modelPath, withExtension: "zip") else {
-              urlSchemeTask.didFailWithError(AIError.FileNotFound)
-              return
-          }
-          do {
-            guard let archive = Archive(url: zipURL, accessMode: .read) else {
-                urlSchemeTask.didFailWithError(AIError.FileNotFound)
-                return
-            }
-
-            var fileData: Data?
-
-            // Cerca l'entry desiderata
-            for entry in archive {
-                if entry.path == fileName {
-                    // Leggi i dati dall'entry
-                    var entryData = Data()
-                    _ = try archive.extract(entry) { data in
-                        entryData.append(data)
-                    }
-                    fileData = entryData
-                    break
-                }
-            }
-          } catch {
-              urlSchemeTask.didFailWithError(error)
-              return
-          }
+      if let assetURL = Bundle(for: BaseAiComponent.self).url(forResource: fileName, withExtension: nil) {
+        do {
+          fileData = try Data(contentsOf: assetURL)
+        } catch {
+          urlSchemeTask.didFailWithError(error)
+          return
+        }
       } else {
+        urlSchemeTask.didFailWithError(AIError.FileNotFound)
+        return
+      }
+    } else if url.hasPrefix(PERSONAL_MODEL_PREFIX!) {
+      print("personal model")
+      let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX!, with: "")
+      guard let _modelPath = _modelPath else {
+        urlSchemeTask.didFailWithError(AIError.FileNotFound)
+        return
+      }
+      let zipPath = AssetManager.shared.pathForExistingFileAsset(_modelPath)
+      do {
+        guard let zipURL = URL(string: "file://\(zipPath)"),
+              let archive = Archive(url: zipURL, accessMode: .read) else {
           urlSchemeTask.didFailWithError(AIError.FileNotFound)
           return
+        }
+
+        // Cerca l'entry desiderata
+        for entry in archive {
+          if entry.path == fileName {
+            // Leggi i dati dall'entry
+            var entryData = Data()
+            _ = try archive.extract(entry) { data in
+              entryData.append(data)
+            }
+            fileData = entryData
+            break
+          }
+        }
+      } catch {
+        urlSchemeTask.didFailWithError(error)
+        return
       }
-      if let fileData = fileData {
-          let response = URLResponse(url: urlSchemeTask.request.url!,
-                                    mimeType: "application/octet-stream",
-                                    expectedContentLength: fileData.count,
-                                    textEncodingName: nil)
-          urlSchemeTask.didReceive(response)
-          urlSchemeTask.didReceive(fileData)
-          urlSchemeTask.didFinish()
-      } else {
-          urlSchemeTask.didFailWithError(AIError.FileNotFound)
+    } else if url.hasPrefix("appinventor://localhost/") {
+      guard let assetUrl = URL(string: fileName, relativeTo: Bundle(for: BaseAiComponent.self).resourceURL) else {
+        urlSchemeTask.didFailWithError(AIError.FileNotFound)
+        return
       }
+      do {
+        fileData = try Data(contentsOf: assetUrl)
+      } catch {
+        print("Asset error: \(error)")
+      }
+    } else {
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
+      return
+    }
+    if let fileData = fileData {
+      let headers = [
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": fileName.hasSuffix(".html") ? "text/html" : "application/octet-stream",
+        "Content-Length": "\(fileData.count)"
+      ]
+      let response = HTTPURLResponse(url: urlSchemeTask.request.url!,
+                                     statusCode: 200,
+                                     httpVersion: "HTTP/1.1",
+                                     headerFields: headers)
+      urlSchemeTask.didReceive(response!)
+      urlSchemeTask.didReceive(fileData)
+      urlSchemeTask.didFinish()
+      print("Did send data for \(fileName)")
+    } else {
+      urlSchemeTask.didFailWithError(AIError.FileNotFound)
+      print("Failed to locate \(fileName)")
+    }
   }
 
 
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // We deliver the payload in one go so it cannot be cancelled.
   }
-  
-  
+
+
   enum AIError: Error {
     case FileNotFound
     case webviewerNotSet
