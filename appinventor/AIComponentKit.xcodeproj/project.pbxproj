@@ -985,7 +985,7 @@
 			path = util;
 			sourceTree = "<group>";
 		};
-		5F7ED0FF2C35C922004418C5 /* extensions */ = {
+		5F7266182C754755009C3CAB /* assets */ = {
 			isa = PBXGroup;
 			children = (
 				5F7ED1012C35C94D004418C5 /* app.js */,
@@ -994,6 +994,14 @@
 				5F7ED1002C35C94C004418C5 /* tf-converter.min.js */,
 				5F7ED1052C35C950004418C5 /* tf-core.min.js */,
 				5F7ED1042C35C94F004418C5 /* VERSIONS.txt */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		5F7ED0FF2C35C922004418C5 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5F7266182C754755009C3CAB /* assets */,
 				5F7ED10C2C35C987004418C5 /* facemesh.swift */,
 			);
 			name = extensions;
