@@ -1,8 +1,12 @@
 import Foundation
 import WebKit
+import UIKit
 
 
-@objc open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate {
+@objc open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+  
+  private var imagePicker: UIImagePickerController?
+  var selectedImage: UIImage?
   
   fileprivate final let _ERROR_WEBVIEWER_NOT_SET: String =  "You must specify a WebViewer using the WebViewer designer property before you can call"
   private let _ERROR_JSON_PARSE_FAILED = 101
@@ -16,8 +20,6 @@ import WebKit
   private var _webviewerApi: WKUserScript?
   
   private var _keyPoints: [String: [Double]] = [:]
-  internal var _minDetectionConfidence: Double = 0.5
-  internal var _minTrackingConfidence: Double = 0.5
   internal var _cameraMode = "Front"
   internal var _initialized = false
   private var _enabled = true
@@ -36,8 +38,6 @@ import WebKit
   
   @objc public override init(_ parent: ComponentContainer) {
     super.init(parent)
-    
-    // requestHardwareAcceleration()
     
     _keyPoints["forehead"] = []
     _keyPoints["leftCheek"] = []
@@ -65,8 +65,18 @@ import WebKit
   private func configureWebView(_ webview: WKWebView) {
     self._webview = webview
     let config = webview.configuration
-    //    config.preferences.javaScriptEnabled = true
-    //    config.mediaTypesRequiringUserActionForPlayback = []
+    
+    let preferences = WKPreferences()
+        preferences.javaScriptEnabled = true
+        config.preferences = preferences
+    
+    if #available(iOS 14.0, *) {
+            config.defaultWebpagePreferences.allowsContentJavaScript = true
+        }
+    
+        config.preferences.javaScriptEnabled = true
+        config.mediaTypesRequiringUserActionForPlayback = []
+    
     let controller = config.userContentController
     controller.add(self, name: "FaceExtension")
   }
@@ -78,11 +88,96 @@ import WebKit
     set {
       configureWebView(newValue.view as! WKWebView)
       print("configureWebView called")
-      if let url = Bundle(for: FaceExtension.self).url(forResource: "assets/index", withExtension: "html") {
+      if let url = Bundle(for: FaceExtension.self).url(forResource: "index", withExtension: "html") {
         let request = URLRequest(url: url)
         print(request)
         _webview?.load(request)
         print("Request loaded")
+      }else {
+        print("Error: Unable to find the HTML file in the bundle")
+    }
+//      showImagePicker()
+    }
+  }
+
+  
+  @objc open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      print("WebView content fully loaded")
+      
+      let jsCheck = "typeof processImage === 'function';"
+      _webview?.evaluateJavaScript(jsCheck) { result, error in
+          if let error = error {
+              print("Error checking JS function existence: \(error)")
+          } else if let isFunction = result as? Bool, isFunction {
+              print("processImage function is available")
+              self.showImagePicker()
+          } else {
+              print("processImage function is not available")
+            let scriptCheck = "document.getElementsByTagName('script').length;"
+            self._webview?.evaluateJavaScript(scriptCheck) { scriptCount, scriptError in
+              if let scriptError = scriptError {
+                print("Error checking script count: \(scriptError.localizedDescription)")
+              } else {
+                print("Number of scripts loaded: \(scriptCount ?? 0)")
+              }
+            }
+          }
+      }
+  }
+
+//  @objc open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+//      print("WebView content fully loaded")
+//      
+//      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//          self.showImagePicker()
+//      }
+//  }
+  
+  @objc open func showImagePicker() {
+      guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else {
+          print("Photo library not available")
+          return
+      }
+      
+      imagePicker = UIImagePickerController()
+      imagePicker?.delegate = self
+      imagePicker?.sourceType = .photoLibrary
+      
+      if let viewController = UIApplication.shared.windows.first?.rootViewController {
+          DispatchQueue.main.async {
+              viewController.present(self.imagePicker!, animated: true, completion: nil)
+          }
+      } else {
+          print("Error: Unable to access the root view controller")
+      }
+  }
+
+  @objc open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+      picker.dismiss(animated: true, completion: nil)
+      
+      guard let selectedImage = info[.originalImage] as? UIImage else {
+          print("Error: No image was selected")
+          return
+      }
+      
+      // Convert the selected image to a base64 string
+      if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
+          let base64Image = imageData.base64EncodedString()
+          
+          // Now send this base64 string to WebView
+          sendImageToWebView(base64String: base64Image)
+      } else {
+          print("Error: Unable to convert image to data")
+      }
+  }
+      
+  @objc open func sendImageToWebView(base64String: String) {
+    let jsCode = String(format: "processImage('%@');", base64String)
+    _webview?.evaluateJavaScript(jsCode) { result, error in
+      if let error = error {
+        print("Error sending image to JavaScript: \(error)")
+      } else {
+        print("Image sent successfully")
       }
     }
   }
@@ -130,7 +225,6 @@ import WebKit
         
       case "error":
         print("Error function called")
-        // Handle specific error details if provided in args
         if let errorDetails = args as? [String: Any],
            let errorCode = errorDetails["errorCode"],
            let errorMessage = errorDetails["errorMessage"] {
