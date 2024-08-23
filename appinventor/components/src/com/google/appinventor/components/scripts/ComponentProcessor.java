@@ -25,6 +25,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.annotations.UsesActivities;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesContentProviders;
+import com.google.appinventor.components.annotations.UsesDeferrableAssets;
 import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.UsesServices;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
@@ -160,6 +161,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       //             extensions currently using @SimpleBroadcastReceiver.
       "com.google.appinventor.components.annotations.SimpleBroadcastReceiver",
       "com.google.appinventor.components.annotations.UsesAssets",
+      "com.google.appinventor.components.annotations.UsesDeferrableAssets",
       "com.google.appinventor.components.annotations.UsesLibraries",
       "com.google.appinventor.components.annotations.UsesNativeLibraries",
       "com.google.appinventor.components.annotations.UsesActivities",
@@ -1146,6 +1148,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> assets;
 
     /**
+     * Deferrable assets required by this component.
+     */
+    protected final Set<String> deferrableAssets;
+
+    /**
      * Activities required by this component.
      */
     protected final Set<String> activities;
@@ -1260,6 +1267,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       conditionalServices = Maps.newTreeMap();
 
       assets = Sets.newHashSet();
+      deferrableAssets = Sets.newHashSet();
       activities = Sets.newHashSet();
       activityMetadata = Sets.newHashSet();
       broadcastReceivers = Sets.newHashSet();
@@ -1631,6 +1639,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.libraries.addAll(parentComponent.libraries);
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
+        componentInfo.deferrableAssets.addAll(parentComponent.deferrableAssets);
         componentInfo.activities.addAll(parentComponent.activities);
         componentInfo.metadata.addAll(parentComponent.metadata);
         componentInfo.activityMetadata.addAll(parentComponent.activityMetadata);
@@ -1708,6 +1717,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesAssets != null) {
       for (String file : usesAssets.fileNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.assets, file);
+      }
+    }
+
+    // Gather required deferrable files.
+    UsesDeferrableAssets usesDeferrableAssets = element.getAnnotation(UsesDeferrableAssets.class);
+    if (usesDeferrableAssets != null) {
+      for (String file : usesDeferrableAssets.fileNames().split(",")) {
+        updateWithNonEmptyValue(componentInfo.deferrableAssets, file);
       }
     }
 

@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 @BuildType(apk = true, aab = true)
 public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> assetsNeeded;
+  private final ConcurrentMap<String, Set<String>> deferrableAssetsNeeded;
   private final ConcurrentMap<String, Set<String>> activitiesNeeded;
   private final ConcurrentMap<String, Set<String>> metadataNeeded;
   private final ConcurrentMap<String, Set<String>> activityMetadataNeeded;
@@ -45,6 +46,7 @@ public class ComponentInfo {
    */
   public ComponentInfo() {
     assetsNeeded = new ConcurrentHashMap<>();
+    deferrableAssetsNeeded = new ConcurrentHashMap<>();
     activitiesNeeded = new ConcurrentHashMap<>();
     metadataNeeded = new ConcurrentHashMap<>();
     activityMetadataNeeded = new ConcurrentHashMap<>();
@@ -64,6 +66,10 @@ public class ComponentInfo {
 
   public ConcurrentMap<String, Set<String>> getAssetsNeeded() {
     return assetsNeeded;
+  }
+
+  public ConcurrentMap<String, Set<String>> getDeferrableAssetsNeeded() {
+    return deferrableAssetsNeeded;
   }
 
   public ConcurrentMap<String, Set<String>> getActivitiesNeeded() {
@@ -139,6 +145,7 @@ public class ComponentInfo {
   public String toString() {
     return "JsonInfo{"
         + "assetsNeeded=" + assetsNeeded
+        + ", deferrableAssetsNeeded=" + deferrableAssetsNeeded
         + ", activitiesNeeded=" + activitiesNeeded
         + ", broadcastReceiversNeeded=" + broadcastReceiversNeeded
         + ", libsNeeded=" + libsNeeded

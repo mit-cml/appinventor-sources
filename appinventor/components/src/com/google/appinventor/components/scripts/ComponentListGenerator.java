@@ -76,6 +76,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(json, ComponentDescriptorConstants.NATIVE_TARGET,
         component.nativeLibraries);
     appendComponentInfo(json, ComponentDescriptorConstants.ASSETS_TARGET, component.assets);
+    appendComponentInfo(json, ComponentDescriptorConstants.DEFERRABLE_ASSETS_TARGET, component.deferrableAssets);
     appendComponentInfo(json, ComponentDescriptorConstants.ACTIVITIES_TARGET, component.activities);
     appendComponentInfo(json, ComponentDescriptorConstants.METADATA_TARGET, component.metadata);
     appendComponentInfo(json, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET,

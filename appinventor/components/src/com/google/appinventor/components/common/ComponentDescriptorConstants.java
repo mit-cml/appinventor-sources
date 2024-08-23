@@ -19,6 +19,7 @@ public final class ComponentDescriptorConstants {
   public static final String X86_64_SUFFIX = "-x8a";
   public static final String ASSET_DIRECTORY = "component";
   public static final String ASSETS_TARGET = "assets";
+  public static final String DEFERRABLE_ASSETS_TARGET = "deferrableAssets";
   public static final String ACTIVITIES_TARGET = "activities";
   public static final String METADATA_TARGET = "metadata";
   public static final String ACTIVITY_METADATA_TARGET = "activityMetadata";
