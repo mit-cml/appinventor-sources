@@ -523,6 +523,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   public native boolean isTextboxFocused()/*-{
     var element = $doc.activeElement;
-    return (element.tagName.toLowerCase() === 'input' && element.type.toLowerCase() === 'text') || element.tagName.toLowerCase() === 'textarea';
+    return element.tagName === 'INPUT' && element.type === 'text' || element.tagName === 'TEXTAREA';
   }-*/;
 }
