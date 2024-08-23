@@ -3,7 +3,9 @@ import WebKit
 import UIKit
 
 
-@objc open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+fileprivate let MODEL_PATH_SUFFIX = ".tflite"
+
+@objc open class FaceExtension: NonvisibleComponent, WKScriptMessageHandler, WKUIDelegate, WKURLSchemeHandler, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
   
   private var imagePicker: UIImagePickerController?
   var selectedImage: UIImage?
@@ -14,10 +16,17 @@ import UIKit
   private let _BACK_CAMERA = "Back"
   private let _FRONT_CAMERA = "Front"
   
-  private var _webview: WKWebView?
+  internal var _webview: WKWebView? = nil
   private var _webviewer: WebViewer?
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript?
+  
+//  private var _labels = [String]()
+  private var _modelPath: String? = nil
+  private var assetPath: String? = nil
+  public static let ERROR_WEBVEWER_REQUIRED = -7
+  public static let ERROR_CLASSIFICATION_FAILED = -2;
+  public static let ERROR_INVALID_MODEL_FILE = -8;
   
   private var _keyPoints: [String: [Double]] = [:]
   internal var _cameraMode = "Front"
@@ -62,81 +71,142 @@ import UIKit
     print("Created FaceExtension")
   }
   
-  private func configureWebView(_ webview: WKWebView) {
-    self._webview = webview
-    let config = webview.configuration
-    
-    let preferences = WKPreferences()
-        preferences.javaScriptEnabled = true
-        config.preferences = preferences
-    
-    if #available(iOS 14.0, *) {
-            config.defaultWebpagePreferences.allowsContentJavaScript = true
-        }
-    
-        config.preferences.javaScriptEnabled = true
-        config.mediaTypesRequiringUserActionForPlayback = []
-    
-    let controller = config.userContentController
-    controller.add(self, name: "FaceExtension")
+  @objc public func setModel(_ path: String) {
+
+      if path.hasSuffix(MODEL_PATH_SUFFIX) {
+          // Set the model path to the provided path
+        _modelPath = path
+      } else {
+        _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_CANNOT_FIND_FILE, "\(FaceExtension.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
+      }
   }
   
+//    open func ClassifierReady(){}
+//    open func GotClassification(_ result: AnyObject){}
+//    open func Error(_ errorCode: Int32){}
+
+  
+  private func configureWebView(_ webview: WKWebView) {
+      _webview = webview
+      let config = webview.configuration
+
+      if #available(iOS 16.4, *) {
+          webview.isInspectable = true
+      }
+
+      config.preferences.javaScriptEnabled = true
+      config.allowsInlineMediaPlayback = true
+      config.mediaTypesRequiringUserActionForPlayback = []
+      
+      if self is FaceExtension {
+          print("FaceExtension detected")
+          _webview!.configuration.userContentController.add(self, name: "FaceExtension")
+      } else {
+          // Implement checks for other AI components if needed
+          print("Other AI component detected")
+      }
+  }
+
+//    private func parseLabels(_ labels: String) throws -> [String] {
+//      var result = [String]()
+//      let data = Data(labels.utf8)
+//      do {
+//        if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
+//          for item in arr {
+//            result.append(labels)
+//          }
+//        } else {
+//          throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
+//        }
+//      } catch {
+//        throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
+//      }
+//      return result
+//    }
+    
+    //      internal func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
+    //        guard let _webview = _webview else {
+    //          throw AIError.webviewerNotSet
+    //        }
+    //      }
+    
   @objc open var WebViewer: WebViewer {
     get {
       return _webviewer!
     }
     set {
+      newValue.aiSchemeHandler = self
       configureWebView(newValue.view as! WKWebView)
       print("configureWebView called")
+      if self is FaceExtension{
+        assetPath = "index"
+      }else{
+        // implement checks for other AI components
+      }
       if let url = Bundle(for: FaceExtension.self).url(forResource: "index", withExtension: "html") {
-        let request = URLRequest(url: url)
+        let readAccessURL = Bundle(for: FaceExtension.self).bundleURL
+        let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath ?? "").html")!)
+        //        let request = URLRequest(url: url)
         print(request)
         _webview?.load(request)
         print("Request loaded")
       }else {
-        print("Error: Unable to find the HTML file in the bundle")
-    }
-//      showImagePicker()
+        print("request not loaded")
+      }
+            showImagePicker()
     }
   }
-
-  
-  @objc open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    //  @objc open var WebViewer: WebViewer {
+    //    get {
+    //      return _webviewer!
+    //    }
+    //    set {
+    //      newValue.aiSchemeHandler = self
+    //      configureWebView(newValue.view as! WKWebView)
+    //      print("configureWebView called")
+    //      if Bundle(for: FaceExtension.self).url(forResource: "index", withExtension: "html") != nil {
+    //        if let url = Bundle(for: FaceExtension.self).url(forResource: "index", withExtension: "html") {
+    //          let request = URLRequest(url: url)
+    //          print(request)
+    //          _webview?.load(request)
+    //          print("Request loaded")
+    //        }else {
+    //          print("Error: Unable to find the HTML file in the bundle")
+    //        }
+    //        //      showImagePicker()
+    //      }
+    //    }
+    //  }
+    
+    @objc open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
       print("WebView content fully loaded")
       
       let jsCheck = "typeof processImage === 'function';"
       _webview?.evaluateJavaScript(jsCheck) { result, error in
-          if let error = error {
-              print("Error checking JS function existence: \(error)")
-          } else if let isFunction = result as? Bool, isFunction {
-              print("processImage function is available")
-              self.showImagePicker()
-          } else {
-              print("processImage function is not available")
-            let scriptCheck = "document.getElementsByTagName('script').length;"
-            self._webview?.evaluateJavaScript(scriptCheck) { scriptCount, scriptError in
-              if let scriptError = scriptError {
-                print("Error checking script count: \(scriptError.localizedDescription)")
-              } else {
-                print("Number of scripts loaded: \(scriptCount ?? 0)")
-              }
+        if let error = error {
+          print("Error checking JS function existence: \(error)")
+        } else if let isFunction = result as? Bool, isFunction {
+          print("processImage function is available")
+          self.showImagePicker()
+        } else {
+          print("processImage function is not available")
+          let scriptCheck = "document.getElementsByTagName('script').length;"
+          self._webview?.evaluateJavaScript(scriptCheck) { scriptCount, scriptError in
+            if let scriptError = scriptError {
+              print("Error checking script count: \(scriptError.localizedDescription)")
+            } else {
+              print("Number of scripts loaded: \(scriptCount ?? 0)")
             }
           }
+        }
       }
-  }
-
-//  @objc open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-//      print("WebView content fully loaded")
-//      
-//      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//          self.showImagePicker()
-//      }
-//  }
+    }
   
-  @objc open func showImagePicker() {
+    
+    @objc open func showImagePicker() {
       guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else {
-          print("Photo library not available")
-          return
+        print("Photo library not available")
+        return
       }
       
       imagePicker = UIImagePickerController()
@@ -144,55 +214,56 @@ import UIKit
       imagePicker?.sourceType = .photoLibrary
       
       if let viewController = UIApplication.shared.windows.first?.rootViewController {
-          DispatchQueue.main.async {
-              viewController.present(self.imagePicker!, animated: true, completion: nil)
-          }
+        DispatchQueue.main.async {
+          viewController.present(self.imagePicker!, animated: true, completion: nil)
+        }
       } else {
-          print("Error: Unable to access the root view controller")
+        print("Error: Unable to access the root view controller")
       }
-  }
-
-  @objc open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    }
+    
+    @objc open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
       picker.dismiss(animated: true, completion: nil)
       
       guard let selectedImage = info[.originalImage] as? UIImage else {
-          print("Error: No image was selected")
-          return
+        print("Error: No image was selected")
+        return
       }
       
       // Convert the selected image to a base64 string
       if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
-          let base64Image = imageData.base64EncodedString()
-          
-          // Now send this base64 string to WebView
-          sendImageToWebView(base64String: base64Image)
+        let base64Image = imageData.base64EncodedString()
+        
+        // Now send this base64 string to WebView
+        sendImageToWebView(base64String: base64Image)
       } else {
-          print("Error: Unable to convert image to data")
-      }
-  }
-      
-  @objc open func sendImageToWebView(base64String: String) {
-    let jsCode = String(format: "processImage('%@');", base64String)
-    _webview?.evaluateJavaScript(jsCode) { result, error in
-      if let error = error {
-        print("Error sending image to JavaScript: \(error)")
-      } else {
-        print("Image sent successfully")
+        print("Error: Unable to convert image to data")
       }
     }
-  }
+    
+    @objc open func sendImageToWebView(base64String: String) {
+      let jsCode = String(format: "processImage('%@');", base64String)
+      _webview?.evaluateJavaScript(jsCode) { result, error in
+        if let error = error {
+          print("Error sending image to JavaScript: \(error)")
+        } else {
+          print("Image sent successfully")
+        }
+      }
+    }
+//  @available(iOS 15.0, *)
+//  public func webView(_ webView: WKWebView,
+//                      requestMediaCapturePermissionFor
+//                      origin: WKSecurityOrigin,initiatedByFrame
+//                      frame: WKFrameInfo,type: WKMediaCaptureType,
+//                      decisionHandler: @escaping (WKPermissionDecision) -> Void) {
+//    decisionHandler(.grant)
+//  }
   
-  @available(iOS 15.0, *)
-  public func webView(_ webView: WKWebView,
-                      requestMediaCapturePermissionFor
-                      origin: WKSecurityOrigin,initiatedByFrame
-                      frame: WKFrameInfo,type: WKMediaCaptureType,
-                      decisionHandler: @escaping (WKPermissionDecision) -> Void) {
-    decisionHandler(.grant)
-  }
+  // MARK: WKScriptMessageHandler
   
   public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-    print("receiving content")
+  
     if message.name == "FaceExtension" {
       guard let dict = message.body as? [String: Any],
             let functionCall = dict["functionCall"] as? String,
@@ -200,7 +271,7 @@ import UIKit
         print("JSON Error message not received")
         return
       }
-      
+      print(message.body)
       switch functionCall {
       case "ready":
         print("Model Ready")
@@ -239,6 +310,95 @@ import UIKit
     }
   }
   
+  public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+      print("FaceMesh WKURLSchemeHandler started")
+      
+      var fileData: Data? = nil
+      guard let url = urlSchemeTask.request.url?.absoluteString else {
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
+          return
+      }
+      guard let fileName = urlSchemeTask.request.url?.lastPathComponent else {
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
+          return
+      }
+      print("Requested URL: \(url)")
+      
+      // Handling custom FaceMesh URL scheme
+//      if url.hasPrefix("facemesh://") {
+//          print("Facemesh model detected")
+//          let modelName = url.replacingOccurrences(of: "facemesh://", with: "")
+//          if let assetURL = Bundle(for: FaceExtension.self).url(forResource: modelName, withExtension: nil) {
+//              do {
+//                  fileData = try Data(contentsOf: assetURL)
+//              } catch {
+//                  urlSchemeTask.didFailWithError(error)
+//                  return
+//              }
+//          } else {
+//              urlSchemeTask.didFailWithError(AIError.FileNotFound)
+//              return
+//          }
+//      }
+      // Handling appinventor://localhost/ scheme
+      if url.hasPrefix("appinventor://localhost/") {
+          print("AppInventor localhost URL detected")
+          guard let assetUrl = URL(string: fileName, relativeTo: Bundle(for: FaceExtension.self).resourceURL) else {
+              urlSchemeTask.didFailWithError(AIError.FileNotFound)
+              return
+          }
+          
+          if !FileManager.default.fileExists(atPath: assetUrl.path) {
+              print("File does not exist: \(assetUrl.path)")
+          
+              if fileName == "facemesh.min.js" {
+                  let fallbackData = "console.error('facemesh.min.js is missing.');".data(using: .utf8)
+                  fileData = fallbackData
+              } else {
+                  urlSchemeTask.didFailWithError(AIError.FileNotFound)
+                  return
+              }
+          } else {
+              do {
+                  fileData = try Data(contentsOf: assetUrl)
+              } catch {
+                  print("Asset error: \(error)")
+                  urlSchemeTask.didFailWithError(error)
+                  return
+              }
+          }
+      }
+      else {
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
+          return
+      }
+    
+      if let fileData = fileData {
+          let headers = [
+              "Access-Control-Allow-Origin": "*",
+              "Content-Type": fileName.hasSuffix(".html") ? "text/html" : "application/octet-stream",
+              "Content-Length": "\(fileData.count)"
+          ]
+          if let response = HTTPURLResponse(url: urlSchemeTask.request.url!,
+                                              statusCode: 200,
+                                              httpVersion: "HTTP/1.1",
+                                              headerFields: headers) {
+              urlSchemeTask.didReceive(response)
+              urlSchemeTask.didReceive(fileData)
+              urlSchemeTask.didFinish()
+              print("Data successfully sent for \(fileName)")
+          }
+      } else {
+          urlSchemeTask.didFailWithError(AIError.FileNotFound)
+          print("Failed to locate \(fileName)")
+      }
+  }
+  
+  public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
+      // You can add any necessary cleanup code here.
+      
+  }
+
   @objc open var FaceLandmarks: [[Double]] {
     get {
       var landmarks: [[Double]] = []
@@ -410,6 +570,13 @@ import UIKit
       _initialized = true
     }
   }
+  
+//  @objc public func Initialize() {
+//      guard let webview = _webview else {
+//        _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, FaceExtension.ERROR_WEBVEWER_REQUIRED)
+//        return
+//      }
+//    }
   
   @objc open var Width: Int {
     get {
@@ -583,6 +750,11 @@ import UIKit
     }
     return try JSONSerialization.jsonObject(with: data, options: [])
   }
+  
+  enum AIError: Error {
+      case FileNotFound
+      case webviewerNotSet
+    }
   
 }
 

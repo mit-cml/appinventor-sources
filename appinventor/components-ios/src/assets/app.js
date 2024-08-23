@@ -20,30 +20,10 @@ const ERRORS = {
 let forwardCamera = true;
 let running = false;
 
-//function reportImage(dataUrl) {
-//  console.log("reportImage called with dataUrl:", dataUrl);
-//  try {
-//    if (typeof dataUrl !== 'string') {
-//      throw new Error("dataUrl is not a string");
-//    }
-//    var img = new Image();
-//    img.src = "data:image/png;base64," + dataUrl;
-//    img.onload = function() {
-//      console.log("Image loaded successfully.");
-//      document.body.appendChild(img);
-//    };
-//    img.onerror = function(e) {
-//      console.error("Error loading image:", e);
-//    };
-//  } catch (e) {
-//    console.error("Error in reportImage function:", e);
-//  }
-//}
-
 function processImage(base64Image) {
   alert("Received base64 image string: " + base64Image);
       console.log("Received base64 image string:", base64Image);
-  console.log("Received base64 image string:", base64String)
+  //console.log("Received base64 image string:", base64String)
   const img = new Image();
   img.src = 'data:image/jpeg;base64,' + base64Image;
 
@@ -58,42 +38,18 @@ function processImage(base64Image) {
     // Draw the image on the canvas
     ctx.drawImage(img, 0, 0, img.width, img.height);
     
-    runClassifier(img, net);
+//    runClassifier(img, net);
 
     // Load the FaceMesh model
     const net = await facemesh.load();
     
     const predictions = await net.estimateFaces({input: canvas});
-            
-    // Assuming you have a method to process the predictions
     processPredictions(predictions);
 
-    //    runClassifier(video, net)
+        runClassifier(video, net)
       FaceExtension.reportResult(JSON.stringify(newObj));
     }
   }
-
-//function processImage(base64Image) {
-//    try {
-//        console.log("Processing image");
-//        const canvas = document.getElementById('output');
-//        const ctx = canvas.getContext('2d');
-//
-//        const img = new Image();
-//        img.onload = function() {
-//            ctx.clearRect(0, 0, canvas.width, canvas.height);
-//            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-//
-//            runClassifier(canvas, net);
-//        };
-//
-//        img.src = base64Image;
-//    } catch (error) {
-//        console.error("Error in processImage:", error);
-//    }
-//}
-
-
 
 async function setupCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
