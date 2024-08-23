@@ -20,6 +20,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent; 
 import com.google.gwt.event.dom.client.ChangeHandler; 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -58,6 +59,12 @@ public class ProjectPropertiesDialogBox {
   @UiField
   Button closeDialogBox;
 
+  @UiField
+  Button topInvisible;
+
+  @UiField
+  Button bottomInvisible;
+
   /**
    * List Of project properties category, which will be used to group properties in the dialog 
    * properties category are : General, Theming, Publishing
@@ -93,6 +100,7 @@ public class ProjectPropertiesDialogBox {
       @Override
       public void execute() {
           projectProperties.center();
+          categoryList.setFocus(true);
       }
     });   
   }
@@ -101,7 +109,7 @@ public class ProjectPropertiesDialogBox {
     ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
     uibinder.createAndBindUi(this);
     projectProperties.setAutoHideEnabled(false);
-    projectProperties.setModal(true);
+    projectProperties.setModal(false);
     projectProperties.setCaption(MESSAGES.projectPropertiesText());
 
     categoryList.getElement().getStyle().setProperty("height", "400px");
@@ -201,5 +209,15 @@ public class ProjectPropertiesDialogBox {
   void handleClose(ClickEvent e) {
     projectProperties.hide();
     applyPropertyChanges();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     closeDialogBox.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     categoryList.setFocus(true);
   }
 }

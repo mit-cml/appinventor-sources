@@ -13,6 +13,7 @@
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
   <g:HTMLPanel>
+    <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
     <div class="ode-noDialogDivHeader">
       <div class="ode-noDialogDivInnerHeader">
         <h3 class="ode-headerTitle">
@@ -127,7 +128,7 @@
       </g:Button>
     </div>
 
-
+  <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
   </g:HTMLPanel>
 
 </ui:UiBinder>
