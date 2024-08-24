@@ -151,6 +151,11 @@ import Foundation
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
   
+  //PIC erros
+  case ERROR_INPUT_MODE = 100401
+  case ERROR_WEBVIEW_AI = 100402
+  case ERROR_MODEL_AI = 100403
+  
   var code: Int32 {
     return Int32(self.rawValue)
   }

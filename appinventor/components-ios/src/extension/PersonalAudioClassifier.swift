@@ -27,7 +27,7 @@ import UIKit
     }
 
     @objc func classifySoundData(_ sound: String) {
-        guard let _webView = _webView else {
+        guard let webview = _webview else {
             print("WebView is not set")
             return
         }
@@ -40,7 +40,7 @@ import UIKit
         print("encodedSound: \(encodedSound)")
         
         let jsCommand = "getSpectrogram(\"\(encodedSound)\");"
-        _webView.evaluateJavaScript(jsCommand) { (result, error) in
+        webview.evaluateJavaScript(jsCommand) { (result, error) in
             if let error = error {
                 print("JavaScript evaluation error: \(error)")
             } else {
