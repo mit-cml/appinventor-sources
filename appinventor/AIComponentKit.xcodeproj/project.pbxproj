@@ -305,7 +305,6 @@
 		FCABB91A2C7904F400ABEAC6 /* personal_audio_classifier.html in Resources */ = {isa = PBXBuildFile; fileRef = FCABB8D72C7904F300ABEAC6 /* personal_audio_classifier.html */; };
 		FCABB91B2C7904F400ABEAC6 /* personal_audio_classifier1.js in Resources */ = {isa = PBXBuildFile; fileRef = FCABB8D82C7904F300ABEAC6 /* personal_audio_classifier1.js */; };
 		FCABB91C2C7904F400ABEAC6 /* recorder1.js in Resources */ = {isa = PBXBuildFile; fileRef = FCABB8D92C7904F300ABEAC6 /* recorder1.js */; };
-		FCABB91D2C7904F400ABEAC6 /* spectrogram.js in Resources */ = {isa = PBXBuildFile; fileRef = FCABB8DA2C7904F300ABEAC6 /* spectrogram.js */; };
 		FCABB91E2C7904F400ABEAC6 /* tfjs-1.5.2.js in Resources */ = {isa = PBXBuildFile; fileRef = FCABB8DB2C7904F300ABEAC6 /* tfjs-1.5.2.js */; };
 		FCABB9202C79051000ABEAC6 /* BaseAiComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCABB91F2C79051000ABEAC6 /* BaseAiComponent.swift */; };
 		FCABB9222C79053300ABEAC6 /* PersonalAudioClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCABB9212C79053300ABEAC6 /* PersonalAudioClassifier.swift */; };
@@ -634,7 +633,6 @@
 		FCABB8D72C7904F300ABEAC6 /* personal_audio_classifier.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = personal_audio_classifier.html; sourceTree = "<group>"; };
 		FCABB8D82C7904F300ABEAC6 /* personal_audio_classifier1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = personal_audio_classifier1.js; sourceTree = "<group>"; };
 		FCABB8D92C7904F300ABEAC6 /* recorder1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = recorder1.js; sourceTree = "<group>"; };
-		FCABB8DA2C7904F300ABEAC6 /* spectrogram.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = spectrogram.js; sourceTree = "<group>"; };
 		FCABB8DB2C7904F300ABEAC6 /* tfjs-1.5.2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tfjs-1.5.2.js"; sourceTree = "<group>"; };
 		FCABB91F2C79051000ABEAC6 /* BaseAiComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BaseAiComponent.swift; path = "components-ios/src/BaseAiComponent.swift"; sourceTree = SOURCE_ROOT; };
 		FCABB9212C79053300ABEAC6 /* PersonalAudioClassifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonalAudioClassifier.swift; sourceTree = "<group>"; };
@@ -723,7 +721,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0618A2851D8CF4EE0013A191 /* src */ = {
+		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
@@ -749,7 +747,7 @@
 			path = "components-ios/src";
 			sourceTree = "<group>";
 		};
-		0618A2901D8CF4EE0013A191 /* tests */ = {
+		0618A2901D8CF4EE0013A191 /* components-ios/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06E2D6001FDB16CC00A1D52A /* yail */,
@@ -1079,8 +1077,8 @@
 			children = (
 				062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */,
 				061CEC0D297B47B400C2879B /* install-webrtc.sh */,
-				0618A2851D8CF4EE0013A191 /* src */,
-				0618A2901D8CF4EE0013A191 /* tests */,
+				0618A2851D8CF4EE0013A191 /* components-ios/src */,
+				0618A2901D8CF4EE0013A191 /* components-ios/tests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
 				0618A27A1D8CECAC0013A191 /* Frameworks */,
 				7474807A747CFE996FC4893A /* Pods */,
@@ -1273,7 +1271,6 @@
 				FCABB8D72C7904F300ABEAC6 /* personal_audio_classifier.html */,
 				FCABB8D82C7904F300ABEAC6 /* personal_audio_classifier1.js */,
 				FCABB8D92C7904F300ABEAC6 /* recorder1.js */,
-				FCABB8DA2C7904F300ABEAC6 /* spectrogram.js */,
 				FCABB8DB2C7904F300ABEAC6 /* tfjs-1.5.2.js */,
 			);
 			name = assets;
@@ -1400,7 +1397,6 @@
 				FCABB91A2C7904F400ABEAC6 /* personal_audio_classifier.html in Resources */,
 				FCABB8EC2C7904F300ABEAC6 /* mobilenet_group11-shard1of1 in Resources */,
 				FCABB8E12C7904F300ABEAC6 /* chroma.js in Resources */,
-				FCABB91D2C7904F400ABEAC6 /* spectrogram.js in Resources */,
 				FCABB9182C7904F400ABEAC6 /* mobilenet_group55-shard1of1 in Resources */,
 				FCABB9112C7904F300ABEAC6 /* mobilenet_group48-shard1of1 in Resources */,
 				FCABB9192C7904F400ABEAC6 /* mobilenet_model.json in Resources */,

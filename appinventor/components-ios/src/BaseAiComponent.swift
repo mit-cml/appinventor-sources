@@ -59,7 +59,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         configureWebView(newValue.view as! WKWebView)
         print("configurewebview called")
       if self is PersonalAudioClassifier{
-        assetPath = "personal_audio_classifier1"
+        assetPath = "personal_audio_classifier"
       } else {
           // implement checks for other AI components
       }

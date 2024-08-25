@@ -34,7 +34,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     let config = WKWebViewConfiguration()
     config.preferences.javaScriptEnabled = true
     config.allowsInlineMediaPlayback = true
-    config.mediaTypesRequiringUserActionForPlayback = []
+    config.mediaTypesRequiringUserActionForPlayback =  []
     config.userContentController = controller
     super.init(parent)
     config.setURLSchemeHandler(self, forURLScheme: "appinventor")
