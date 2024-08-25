@@ -12,6 +12,7 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
 import com.google.appinventor.client.editor.simple.components.MockContainer;
+import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
@@ -147,27 +148,17 @@ public class SimplePaletteItem extends DragSourcePanel {
   }
 
   private void addComponent() {
-    boolean added = false;
     MockComponent component = createMockComponent();
     MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) dropTargetProvider.getDropTargets()[0];
-    DropTarget[] dropTargets = dropTargetProvider.getDropTargets();
-    for (DropTarget target : dropTargets) {
-      if(target instanceof MockContainer)
-      {
-        MockComponent selectedComponent = mockVisibleComponent.getForm().getLastSelectedComponent();
-        if (selectedComponent instanceof MockContainer && selectedComponent.isVisibleComponent()) {
-          MockContainer container = (MockContainer) selectedComponent;
-          container.addComponent(component);
-          added = true;
-          break;
-        }
-      }
-    }
-    if (!added) {
-      mockVisibleComponent.getForm().addComponent(component);
-    }
-    if (!component.isVisibleComponent()) {
-      mockVisibleComponent.getNonVisibleComponentsPanel().addComponent(component);
+    MockForm form = mockVisibleComponent.getForm();
+    MockComponent selectedComponent = form.getLastSelectedComponent();
+    if (selectedComponent instanceof MockContainer && ((MockContainer) selectedComponent).willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
+      ((MockContainer) selectedComponent).addComponent(component);
+    } else if (form.willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
+      form.addComponent(component);
+    } else if (form.willAcceptComponentType(component.getType()) && !component.isVisibleComponent()) {
+      form.addComponent(component);
+      form.getNonVisibleComponentsPanel().addComponent(component);
     }
   }
 
