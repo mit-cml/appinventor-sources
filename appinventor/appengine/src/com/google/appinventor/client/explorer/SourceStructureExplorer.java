@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -109,7 +111,6 @@ public class SourceStructureExplorer extends Composite {
     tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) { 
-        tree.setFocus(true);
         TreeItem treeItem = event.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
@@ -152,6 +153,12 @@ public class SourceStructureExplorer extends Composite {
       public void onBlur(BlurEvent event) {
         tree.getParent().removeStyleName("gwt-Tree-focused");
       }
+    });
+    tree.addMouseUpHandler(new MouseUpHandler() {
+      @Override
+      public void onMouseUp(MouseUpEvent event) {
+        tree.setFocus(true);
+      } 
     });
 
     // Put a ScrollPanel around the tree.
