@@ -9,6 +9,7 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -49,7 +50,7 @@ public class ShowShortcutsAction implements Command {
           if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getAltKey() && nativeEvent.getKeyCode() == 191 && !db.isShowing()) {
             nativeEvent.preventDefault();
             execute();
-          } else if (event.getTypeInt() == Event.ONKEYDOWN) {
+          } else if (event.getTypeInt() == Event.ONKEYDOWN && db.isShowing()) {
             nativeEvent.preventDefault();
             db.hide();
           }
