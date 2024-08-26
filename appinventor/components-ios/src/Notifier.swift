@@ -251,12 +251,25 @@ private class CustomButton: UIButton {
   fileprivate var value: AnyObject!
 }
 
+private enum ActiveAlertType {
+  case Progress
+  case Text
+  case Choose
+}
+
 open class Notifier: NonvisibleComponent {
   fileprivate var _notifierLength = ToastLength.long.rawValue
   fileprivate var _backgroundColor = Int32(bitPattern: Color.darkGray.rawValue)
   fileprivate var _textColor = Int32(bitPattern: Color.white.rawValue)
   static var notices = NotifierArray()
-  fileprivate var _activeAlert: CustomAlertView? = nil
+  fileprivate var _activeAlert: CustomAlertView? = nil {
+    didSet {
+      if _activeAlert == nil {
+        _alertType = nil
+      }
+    }
+  }
+  private var _alertType: ActiveAlertType? = nil
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -295,6 +308,9 @@ open class Notifier: NonvisibleComponent {
 
   // MARK: Notifier Methods
   @objc open func DismissProgressDialog() {
+    guard _alertType == .Progress else {
+      return
+    }
     _activeAlert?.dismiss(animated: true)
     _activeAlert = nil
   }
@@ -319,6 +335,7 @@ open class Notifier: NonvisibleComponent {
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
     if _activeAlert == nil {
       _activeAlert = CustomAlertView(title: title, message: message)
+      _alertType = .Choose
       let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
       makeBorder(for: button1, vertical: false)
       let button2 = makeButton(button2text, with: button2text as NSString, action: #selector(afterChoosing(sender:)))
@@ -361,6 +378,7 @@ open class Notifier: NonvisibleComponent {
       alert.stack.addArrangedSubview(spinner)
       alert.show(animated: true)
       _activeAlert = alert
+      _alertType = .Progress
     }
   }
 
@@ -372,6 +390,7 @@ open class Notifier: NonvisibleComponent {
     guard _activeAlert == nil else { return }
 
     _activeAlert = CustomAlertView(title: title, message: message)
+    _alertType = .Text
 
     let actions = UIStackView()
     actions.axis = .horizontal
@@ -439,6 +458,8 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc fileprivate func afterTextInput(sender: UIButton) {
+    _activeAlert?.dismiss(animated: true)
+    _activeAlert = nil
     if let button = sender as? CustomButton {
       if let field = button.value as? UITextField {
         AfterTextInput(field.text ?? "")
@@ -447,17 +468,17 @@ open class Notifier: NonvisibleComponent {
         AfterTextInput("Cancel")
       }
     }
-    DismissProgressDialog()
   }
 
   @objc fileprivate func afterChoosing(sender: UIButton) {
+    _activeAlert?.dismiss(animated: true)
+    _activeAlert = nil
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
       }
       AfterChoosing(choice)
     }
-    DismissProgressDialog()
   }
 
   @objc fileprivate func cancelChoosing(sender: UIButton) {
