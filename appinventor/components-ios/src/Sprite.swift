@@ -389,15 +389,15 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       Heading = 180 - normalizedAngle
     } else if ((e == Direction.north
                 && normalizedAngle > 0 && normalizedAngle < 180)
-               || (e == Direction.south && normalizedAngle > 180)) {
+        || (e == Direction.south && normalizedAngle > 180)) {
       Heading = 360 - normalizedAngle
     } else if ((e == Direction.northeast
                 && normalizedAngle > 0 && normalizedAngle < 90)
-               || (e == Direction.northwest
+        || (e == Direction.northwest
                    && normalizedAngle > 90 && normalizedAngle < 180)
-               || (e == Direction.southwest
+        || (e == Direction.southwest
                    && normalizedAngle > 180 && normalizedAngle < 270)
-               || (e == Direction.southeast && normalizedAngle > 270)) {
+        || (e == Direction.southeast && normalizedAngle > 270)) {
       Heading = 180 + normalizedAngle
     }
   }

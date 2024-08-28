@@ -56,7 +56,6 @@ open class ImageSprite: Sprite {
     let doubleV = Double(components[1].trimmingCharacters(in: .whitespaces))
     super.U = doubleU!
     super.V = doubleV!
-    
   }
   
   //for setOriginX
@@ -80,8 +79,7 @@ open class ImageSprite: Sprite {
       super.V = v
     }
   }
-  
-  
+
   @objc open var Rotates: Bool {
     get {
       return _rotates
