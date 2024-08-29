@@ -36,7 +36,7 @@
                        styleName="gwt-Label ode-ProjectHeaderLabel"/>
       </g:FlowPanel>
     </g:FlowPanel>
-    <g:FlowPanel styleName="ode-ProjectRowList" ui:field='container'>
+    <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='container'>
 
     </g:FlowPanel>
   </g:FlowPanel>
