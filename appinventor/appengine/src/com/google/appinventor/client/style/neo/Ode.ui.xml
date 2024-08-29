@@ -19,9 +19,9 @@
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
       <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
       <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
-        <g:FlowPanel width="100%" >
+        <g:FlowPanel width="100%" height="100%" styleName="ode-Project-FlexColumn">
           <neo:ProjectToolbarNeo ui:field="projectToolbar" />
-          <box:ProjectListBox ui:field="projectListbox" styleName="ode-Box ode-Box-height-100" />
+          <box:ProjectListBox ui:field="projectListbox" styleName="ode-Box ode-Box-projectlist" />
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <neo:DesignToolbarNeo ui:field="designToolbar" />
