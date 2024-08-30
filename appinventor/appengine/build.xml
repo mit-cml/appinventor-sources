@@ -26,6 +26,7 @@
        ===================================================================== -->
 
   <property name="release" value="false"/>
+  <property name="sourceMaps" value="false"/>
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
@@ -651,6 +652,15 @@
     </java>
     <copy todir="${build.war.dir}/ode"
           file="${appinventor.dir}/appengine/extra/cdnok.js" />
+    <copy todir="${build.war.dir}/ode" if:true="${sourceMaps}">
+      <fileset dir="${build.war.dir}/WEB-INF/deploy/ode/symbolMaps">
+        <include name="*.json"/>
+      </fileset>
+      <fileset dir="${src.dir}/">
+        <include name="${appinventor.pkg}/client/**/*.java"/>
+        <include name="${appinventor.pkg}/shared/**/*.java"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="devmode"
