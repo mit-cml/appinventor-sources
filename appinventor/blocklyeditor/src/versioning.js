@@ -3079,7 +3079,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // Added the property to allow for the removal of the Thumb Slider
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // - Track Watcher events were added
+    3: "noUpgrade"
 
   }, // End Slider upgraders
 

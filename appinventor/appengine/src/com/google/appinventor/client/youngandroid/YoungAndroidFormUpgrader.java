@@ -691,6 +691,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the property to allow for the removal of the Thumb Slider
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // - Track Watcher events were added
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
