@@ -158,7 +158,8 @@ Blockly.Blocks['dictionaries_create_with'] = {
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE,
         mutatorAttributes: { items: 2 } },
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE,
-        mutatorAttributes: { items: 0 } }]
+        mutatorAttributes: { items: 0 } }],
+  warnings: [{name: 'buildDuplicateDictKeysMap'}]
 };
 
 Blockly.Blocks['dictionaries_mutator_pair'] = {
@@ -189,7 +190,9 @@ Blockly.Blocks['pair'] = {
     this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP);
     this.setInputsInline(true);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }],
+  //add a warning here. 
+  warnings: [{name: 'checkIfIAmADuplicateKey'}]
 };
 
 Blockly.Blocks['dictionaries_lookup'] = {
