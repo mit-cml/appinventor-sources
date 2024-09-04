@@ -15,6 +15,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -211,8 +213,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     "xxXtAa5ywbp6IRF37QuQChcYnOx7zIylYI1PIENfQFC2BA==\n" +
     "-----END CERTIFICATE-----\n";
 
-  public static final String CHATBOT_SERVICE_URL =
-    "https://chatbot.appinventor.mit.edu/chat/v1";
+  private static final String CHATBOT_SERVICE_URL = AppInventorFeatures.chatBotHost() + "chat/v1";
   private static final String LOG_TAG = "ChatBot";
   private static final boolean DEBUG = false;
 

@@ -7,14 +7,15 @@ import Foundation
 import Base58Swift
 
 // URL where we can reach the ChatBot
-let CHATBOT_SERVICE_URL: URL! = URL(string:  "https://chatbot.appinventor.mit.edu/chat/v1")
+let CHATBOT_HOST: URL! = URL(string:  "https://chatbot.appinventor.mit.edu/")
 let kRequestError: Int32 = -1
 
 open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_response> {
+  private static let SERVICE_URL = CHATBOT_HOST.appendingPathComponent("chat/v1")
   private var _uuid = ""
 
   @objc public init(_ container: ComponentContainer) {
-    super.init(container, CHATBOT_SERVICE_URL)
+    super.init(container, ChatBot.SERVICE_URL)
   }
 
   // MARK: Properties
