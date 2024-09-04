@@ -48,6 +48,7 @@
 		062B743B2BC06AD9002E221F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */; };
 		0633F360297D0AD700C3C3E9 /* tr.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633F35F297D0AD700C3C3E9 /* tr.pb.swift */; };
 		0633F362297D0B1400C3C3E9 /* Translator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633F361297D0B1400C3C3E9 /* Translator.swift */; };
+		064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064218BB2C776D7100F10FBD /* Vector2D.swift */; };
 		064326B9289602770001297F /* Spreadsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064326B8289602770001297F /* Spreadsheet.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
 		0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */; };
@@ -306,6 +307,7 @@
 		062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = "components-ios/src/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; };
 		0633F35F297D0AD700C3C3E9 /* tr.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tr.pb.swift; sourceTree = "<group>"; };
 		0633F361297D0B1400C3C3E9 /* Translator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translator.swift; sourceTree = "<group>"; };
+		064218BB2C776D7100F10FBD /* Vector2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2D.swift; sourceTree = "<group>"; };
 		064326B8289602770001297F /* Spreadsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spreadsheet.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LifecycleDelegate.swift; sourceTree = "<group>"; };
@@ -798,6 +800,7 @@
 				062217EF2A37767E00B89562 /* image.pb.swift */,
 				064884D521E682EA0086411C /* iOS9Util.swift */,
 				0633F35F297D0AD700C3C3E9 /* tr.pb.swift */,
+				064218BB2C776D7100F10FBD /* Vector2D.swift */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -1362,6 +1365,7 @@
 				062217F22A3776B200B89562 /* ProxiedComponent.swift in Sources */,
 				0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */,
 				C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */,
+				064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */,
 				0417585720098EE0007D2C31 /* LinkedList.swift in Sources */,
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,

@@ -12,16 +12,16 @@ open class Ball: Sprite {
   fileprivate var _radius = DEFAULT_RADIUS
   fileprivate var _paintColor = DEFAULT_PAINTCOLOR
   fileprivate var _image = UIImage()
-  
+
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     DisplayLayer.fillColor = argbToColor(_paintColor).cgColor
     let point = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: CGFloat(Radius),
-      startAngle: 0, endAngle:CGFloat(Double.pi * 2), clockwise: true)
+                             startAngle: 0, endAngle:CGFloat(Double.pi * 2), clockwise: true)
     DisplayLayer.path = point.cgPath
     updateDisplayLayer()
   }
-  
+
   // MARK: Properties
   @objc override open var OriginAtCenter : Bool {
     get {
@@ -31,7 +31,7 @@ open class Ball: Sprite {
       super.OriginAtCenter = b
     }
   }
-  
+
   @objc open var PaintColor : Int32 {
     get {
       return _paintColor
@@ -43,7 +43,7 @@ open class Ball: Sprite {
       }
     }
   }
-  
+
   @objc open var Radius : Int32 {
     get {
       return _radius
@@ -52,36 +52,38 @@ open class Ball: Sprite {
       if radius != _radius {
         _radius = radius
         let point = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: CGFloat(Radius), startAngle: 0, endAngle:CGFloat(Double.pi * 2), clockwise: true)
+        _xLeft = xOriginToLeft(xOrigin: xOrigin)
+        _yTop = yOriginToTop(yOrigin: yOrigin)
         DisplayLayer.path = point.cgPath
       }
     }
   }
-  
+
   @objc open var Image: UIImage {
     get {
       return _image
     }
   }
-  
+
   // Changes to width and height are only allowed via changes to radius.
   override open var Width: Int32 {
     get {
       return 2 * Radius
     }
     set(width) {}
-    }
-  
+  }
+
   override open func setWidthPercent(_ toPercent: Int32) {}
-  
+
   override open var Height: Int32 {
     get {
       return 2 * Radius
     }
     set(height) {}
   }
-  
+
   override open func setHeightPercent(_ toPercent: Int32) {}
-  
+
   //MARK: Methods
   override func contains(_ point: CGPoint) -> Bool {
     let r = Double(Radius)
@@ -92,7 +94,7 @@ open class Ball: Sprite {
     let radiusSquared = pow(Double(r), 2)
     return xDiffSquared + yDiffSquared <= radiusSquared
   }
-  
+
   override func updateDisplayLayer() {
     let xCenter = CGFloat(XCenter)
     let yCenter = CGFloat(YCenter)
@@ -100,5 +102,13 @@ open class Ball: Sprite {
     CATransaction.setAnimationDuration(0.0)
     DisplayLayer.position = CGPoint(x: xCenter, y: yCenter)
     CATransaction.commit()
+  }
+
+  func getMinProjection(_ axis: Vector2D) -> Double {
+    return Vector2D.dotProduct(centerVector, axis) - Double(Radius) * axis.magnitude
+  }
+
+  func getMaxProjection(_ axis: Vector2D) -> Double {
+    return Vector2D.dotProduct(centerVector, axis) + Double(Radius) * axis.magnitude
   }
 }
