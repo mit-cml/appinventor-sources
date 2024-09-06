@@ -6,7 +6,23 @@
     <title>Tensorflow.js Extension</title>
     <script type="text/javascript">
         if (!window.FaceExtension) {
-          window.FaceExtension = { ready: function() {}, error: function(code, msg) {}, reportResult(result) {} };
+          const runtime = window.webkit.messageHandlers.FaceExtension;
+          let dispatch = (name) => {
+            return (...args) => {
+              const message = {
+                'functionCall': name,
+                'args': args
+              };
+              console.log(message);
+              runtime.postMessage(message);
+            }
+          }
+          window.FaceExtension = {
+            ready: dispatch('ready'),
+            error: dispatch('error'),
+            reportResult: dispatch('reportResult'),
+            reportImage: dispatch('reportImage')
+          };
         }
     </script>
 </head>

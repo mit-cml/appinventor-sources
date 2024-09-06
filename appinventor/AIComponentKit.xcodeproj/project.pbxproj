@@ -91,6 +91,8 @@
 		068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB61DC251BA0086FFDA /* Slider.swift */; };
 		068E0EB91DC251E90086FFDA /* Texting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB81DC251E90086FFDA /* Texting.swift */; };
 		06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06925558228B01B60091057E /* NSLock+Synchronized.swift */; };
+		06925B402C8B40D60085DC83 /* facemesh.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06925B3E2C8B40D60085DC83 /* facemesh.min.js */; };
+		06925B412C8B40D60085DC83 /* model.json in Resources */ = {isa = PBXBuildFile; fileRef = 06925B3F2C8B40D60085DC83 /* model.json */; };
 		06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06941F3F2603B4A900F8E1B2 /* StringUtil.swift */; };
 		06A47CD323F12EF400668126 /* PermissionException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A47CD223F12EF400668126 /* PermissionException.swift */; };
 		06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623832507BC3200961743 /* Array+AIHelpers.swift */; };
@@ -355,6 +357,8 @@
 		068E0EB61DC251BA0086FFDA /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
 		068E0EB81DC251E90086FFDA /* Texting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texting.swift; sourceTree = "<group>"; };
 		06925558228B01B60091057E /* NSLock+Synchronized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLock+Synchronized.swift"; sourceTree = "<group>"; };
+		06925B3E2C8B40D60085DC83 /* facemesh.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = facemesh.min.js; sourceTree = "<group>"; };
+		06925B3F2C8B40D60085DC83 /* model.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = model.json; sourceTree = "<group>"; };
 		06941F3F2603B4A900F8E1B2 /* StringUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringUtil.swift; sourceTree = "<group>"; };
 		06A47CD223F12EF400668126 /* PermissionException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionException.swift; sourceTree = "<group>"; };
 		06A623832507BC3200961743 /* Array+AIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+AIHelpers.swift"; sourceTree = "<group>"; };
@@ -988,6 +992,8 @@
 		5F7266182C754755009C3CAB /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				06925B3E2C8B40D60085DC83 /* facemesh.min.js */,
+				06925B3F2C8B40D60085DC83 /* model.json */,
 				5F7ED1012C35C94D004418C5 /* app.js */,
 				5F7ED1032C35C94F004418C5 /* group1-shard1of1.bin */,
 				5F7ED1022C35C94E004418C5 /* index.html */,
@@ -1194,6 +1200,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06925B402C8B40D60085DC83 /* facemesh.min.js in Resources */,
 				5F7ED1082C35C950004418C5 /* index.html in Resources */,
 				5F7ED1092C35C950004418C5 /* group1-shard1of1.bin in Resources */,
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
@@ -1216,6 +1223,7 @@
 				DED066B21FE0846F009C8165 /* webview-error.html in Resources */,
 				061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
+				06925B412C8B40D60085DC83 /* model.json in Resources */,
 				062B743B2BC06AD9002E221F /* PrivacyInfo.xcprivacy in Resources */,
 				5F7ED10A2C35C950004418C5 /* VERSIONS.txt in Resources */,
 			);

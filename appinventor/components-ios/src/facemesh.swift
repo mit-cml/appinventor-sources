@@ -124,7 +124,6 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
       }else {
         print("request not loaded")
       }
-      showImagePicker()
     }
   }
   
@@ -206,11 +205,10 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
     if message.name == "FaceExtension" {
       guard let dict = message.body as? [String: Any],
             let functionCall = dict["functionCall"] as? String,
-            let args = dict["args"] else {
+            let args = dict["args"] as? [Any] else {
         print("JSON Error message not received")
         return
       }
-      print(message.body)
       switch functionCall {
       case "ready":
         print("Model Ready")
@@ -222,8 +220,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
       case "reportResult":
         print("Reporting Result")
         do {
-          let result = try getYailObjectFromJson(args as? String, true)
-          print(result)
+          reportResult(result: args[0] as! String)
         } catch {
           print("Error parsing JSON from web view")
           Error(_ERROR_JSON_PARSE_FAILED as AnyObject, "Error parsing JSON from web view" as AnyObject)
@@ -231,11 +228,15 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
         
       case "reportImage":
         print("Reporting Image")
+        guard let dataUrl = args.first as? String else {
+          return
+        }
+        BackgroundImage = dataUrl
         VideoUpdated()
         
       case "error":
         print("Error function called")
-        if let errorDetails = args as? [String: Any],
+        if let errorDetails = args[0] as? [String: Any],
            let errorCode = errorDetails["errorCode"],
            let errorMessage = errorDetails["errorMessage"] {
           Error(errorCode as AnyObject, errorMessage as AnyObject)
@@ -395,19 +396,19 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
     return _keyPoints["rightEyeBottom"] ?? []
   }
   
-  @objc open var RightEarStart: [Double] {
+  @objc open var RightForehead: [Double] {
     return _keyPoints["rightEarStart"] ?? []
   }
   
-  @objc open var LeftEarStart: [Double] {
+  @objc open var LeftForehead: [Double] {
     return _keyPoints["leftEarStart"] ?? []
   }
   
-  @objc open var RightNoseTop: [Double] {
+  @objc open var RightNose: [Double] {
     return _keyPoints["rightNoseTop"] ?? []
   }
   
-  @objc open var LeftNoseTop: [Double] {
+  @objc open var LeftNose: [Double] {
     return _keyPoints["leftNoseTop"] ?? []
   }
   
