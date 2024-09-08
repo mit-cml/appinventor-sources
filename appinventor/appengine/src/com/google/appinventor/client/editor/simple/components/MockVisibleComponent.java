@@ -10,7 +10,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -158,9 +157,5 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     }
-  }
-
-  public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
-    return editor.getNonVisibleComponentsPanel();
   }
 }
