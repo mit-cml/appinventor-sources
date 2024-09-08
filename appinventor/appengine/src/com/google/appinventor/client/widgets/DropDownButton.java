@@ -119,6 +119,7 @@ public class DropDownButton extends TextButton {
         if (menu.isShowing()) {
           menu.hide();
         } else {
+          menu.resetSelection();
           menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
         }
       }
@@ -127,18 +128,14 @@ public class DropDownButton extends TextButton {
     addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-          if (menu.isShowing()) {
-            event.preventDefault();
-            menu.moveSelectionDown();
-            menu.focus();
-          }
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_UP) {
-          if (menu.isShowing()) {
-            event.preventDefault();
-            menu.moveSelectionUp();
-            menu.focus();
-          }
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN && menu.isShowing()) {
+          event.preventDefault();
+          menu.moveSelectionDown();
+          menu.focus();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_UP && menu.isShowing()) {
+          event.preventDefault();
+          menu.moveSelectionUp();
+          menu.focus();
         }
       }
     });
@@ -147,12 +144,10 @@ public class DropDownButton extends TextButton {
       @Override
       public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
         NativeEvent nativeEvent = event.getNativeEvent();
-        if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB) {
-          if (menu.isShowing()) {
-            nativeEvent.preventDefault();
-            menu.hide();
-            setFocus(true);
-          }
+        if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && menu.isShowing()) {
+          nativeEvent.preventDefault();
+          menu.hide();
+          setFocus(true);
         }
       }
     });

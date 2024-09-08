@@ -161,4 +161,8 @@ public final class ContextMenu {
     menuBar.moveSelectionUp();
   }
 
+  public void resetSelection() {
+    menuBar.selectItem(null);
+  }
+
 }
