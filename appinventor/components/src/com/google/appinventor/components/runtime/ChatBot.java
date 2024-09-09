@@ -395,7 +395,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     return system;
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
     defaultValue = "")
   @SimpleProperty(description = "The \"System\" value given to ChatGPT. It is " +
     "used to set the tone of a conversation. For example: \"You are a funny person.\"",
