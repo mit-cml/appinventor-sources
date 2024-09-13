@@ -430,11 +430,29 @@ AI.Events.WorkspaceMove = class extends AI.Events.Abstract {
     super();
     this.workspaceId = workspaceId;
     let metrics = Blockly.Workspace.getById(workspaceId).getMetrics();
-    this.oldX = metrics.viewLeft - metrics.contentLeft;
-    this.oldY = metrics.viewTop - metrics.contentTop;
+    this.oldX = metrics.viewLeft - metrics.scrollLeft;
+    this.oldY = metrics.viewTop - metrics.scrollTop;
     this.newX = null;
     this.newY = null;
   }
+
+  /**
+   * Record the new state of the workspace after the operation has occurred.
+   */
+  recordNew() {
+    var metrics = Blockly.Workspace.getById(this.workspaceId).getMetrics();
+    this.newX = metrics.viewLeft - metrics.scrollLeft;
+    this.newY = metrics.viewTop - metrics.scrollTop;
+  };
+
+  /**
+   * Check whether the event is null. For workspace moves, this is true if and only if that the new
+   * and old coordinates are the same.
+   * @returns {boolean}
+   */
+  isNull() {
+    return this.oldX === this.newX && this.oldY === this.newY;
+  };
 
   toJson() {
     let json = super.toJson();
