@@ -127,9 +127,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             lastClosureTime = System.currentTimeMillis();
           }
         });
-
-      // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
-      // avoid the Google Chrome Pinch Zoom bug.
+      
       showRelativeTo(ComponentHelpWidget.this);
     }
   }
