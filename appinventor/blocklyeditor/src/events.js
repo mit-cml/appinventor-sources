@@ -118,7 +118,11 @@ AI.Events.Abstract = class {
 
   constructor() {
     this.group = Blockly.Events.getGroup();
-    this.recordUndo = Blockly.Events.recordUndo;
+    this.recordUndo = Blockly.Events.getRecordUndo();
+  }
+
+  isNull() {
+    return false;
   }
 
   toJson() {
@@ -320,7 +324,7 @@ AI.Events.PropertyChange = class extends AI.Events.ComponentEvent {
 
 /**
  * StartArrangeBlocks is an event placed at the start of an event group created during an
- * arrangement operation. Its purpose is to reset the Blockly.workspace_arranged* flags during an
+ * arrangement operation. Its purpose is to reset the Workspace.arranged* flags during an
  * undo operation so that they reflect the state immediately preceding the arrangement.
  * @param workspaceId The identifier of the workspace the event occurred on
  * @constructor
@@ -330,10 +334,11 @@ AI.Events.StartArrangeBlocks = class extends Blockly.Events.Abstract {
 
   constructor(workspaceId) {
     super(workspaceId);
-    this.old_arranged_type = Blockly.workspace_arranged_type;
-    this.old_arranged_position = Blockly.workspace_arranged_position;
-    this.old_arranged_latest_position = Blockly.workspace_arranged_latest_position;
-    this.recordUndo = Blockly.Events.recordUndo;
+    const workspace = Blockly.Workspace.getById(workspaceId);
+    this.old_arranged_type = workspace.arranged_type_;
+    this.old_arranged_position = workspace.arranged_position_;
+    this.old_arranged_latest_position = workspace.arranged_latest_position_;
+    this.recordUndo = Blockly.Events.getRecordUndo();
     this.workspaceId = workspaceId;
   };
 
@@ -357,9 +362,10 @@ AI.Events.StartArrangeBlocks = class extends Blockly.Events.Abstract {
       // TODO(ewpatton): Determine if this is still needed and how to do it with Blockly 10
       // Blockly.Events.FIRE_QUEUE_.length = 0;
       setTimeout(function() {
-        Blockly.workspace_arranged_type = this.old_arranged_type;
-        Blockly.workspace_arranged_position = this.old_arranged_position;
-        Blockly.workspace_arranged_latest_position = this.old_arranged_latest_position;
+        const workspace = Blockly.Workspace.getById(this.workspaceId);
+        workspace.arranged_type_ = this.old_arranged_type;
+        workspace.arranged_position_ = this.old_arranged_position;
+        workspace.arranged_latest_position_ = this.old_arranged_latest_position;
       }.bind(this));
     }
   }
@@ -367,7 +373,7 @@ AI.Events.StartArrangeBlocks = class extends Blockly.Events.Abstract {
 
 /**
  * EndArrangeBlocks is an event placed at the end of an event group created during an
- * arrangement operation. Its purpose is to set the Blockly.workspace_arranged* flags to the
+ * arrangement operation. Its purpose is to set the Workspace.arranged* flags to the
  * appropriate values since they are reset by {@Blockly.WorkspaceSvg#fireChangeListener}.
  * @param type The type of arrangement (either null or Blockly.BLKS_CATEGORY)
  * @param layout The layout to be applied (either Blockly.BLKS_VERTICAL or Blockly.BLKS_HORIZONTAL)
@@ -380,7 +386,7 @@ AI.Events.EndArrangeBlocks = class extends Blockly.Events.Abstract {
     super(workspaceId);
     this.new_type = type;
     this.new_layout = layout;
-    this.recordUndo = Blockly.Events.recordUndo;
+    this.recordUndo = Blockly.Events.getRecordUndo();
     this.workspaceId = workspaceId;
   };
 
@@ -402,10 +408,11 @@ AI.Events.EndArrangeBlocks = class extends Blockly.Events.Abstract {
       // TODO(ewpatton): Determine if this is still needed and how to do it with Blockly 10
       // Blockly.Events.FIRE_QUEUE_.length = 0;
       setTimeout(function() {
-        Blockly.workspace_arranged_type = this.new_type;
-        Blockly.workspace_arranged_position = this.new_layout;
-        Blockly.workspace_arranged_latest_position = this.new_layout;
-      }.bind(this));
+        const workspace = Blockly.Workspace.getById(this.workspaceId);
+        workspace.arranged_type_ = this.new_type;
+        workspace.arranged_position_ = this.new_layout;
+        workspace.arranged_latest_position_ = this.new_layout;
+      }.bind(this), 1000);
     }
   }
 }

@@ -559,6 +559,7 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
     workspace.arranged_type_ = type;
     workspace.arranged_position_ = layout;
     workspace.arranged_latest_position_ = layout;
+    workspace.arrange_blocks_event_group_ = Blockly.Events.getGroup();
     let event = new AI.Events.EndArrangeBlocks(workspaceId, type, layout);
     let SPACER = 25;
     let topblocks = workspace.getTopBlocks(/* ordered */ false);

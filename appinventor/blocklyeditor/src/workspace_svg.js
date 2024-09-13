@@ -869,10 +869,13 @@ Blockly.WorkspaceSvg.prototype.getTopWorkspace = function() {
 Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
   Blockly.Workspace.prototype.fireChangeListener.call(this, event);
   if (event instanceof Blockly.Events.BlockMove) {
-    // Reset arrangement parameters
-    Blockly.workspace_arranged_latest_position = null;
-    Blockly.workspace_arranged_position = null;
-    Blockly.workspace_arranged_type = null;
+    const workspace = Blockly.Workspace.getById(event.workspaceId);
+    if (event.group !== workspace.arrange_blocks_event_group_) {
+      // Reset arrangement parameters if we're not in the middle of an rearrangement
+      workspace.arranged_latest_position_ = null;
+      workspace.arranged_position_ = null;
+      workspace.arranged_type_ = null;
+    }
     var oldParent = this.blockDB.get(event.oldParentId),
       block = this.blockDB.get(event.blockId);
     oldParent && this.requestErrorChecking(oldParent);
