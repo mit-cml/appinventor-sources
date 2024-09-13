@@ -1528,7 +1528,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ComponentHelpPopup-Link {
-  padding: 0 10px 10px 10px;
+  padding: 0 10px 10px 0;
   font-size: 12px;
 
 }
