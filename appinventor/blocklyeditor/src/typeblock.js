@@ -632,6 +632,7 @@ AI.Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, creat
   var i = 0,
     inputList = blockSelected.inputList,
     ilLength = inputList.length;
+  const connectionChecker = blockSelected.workspace.connectionChecker;
 
   //If createdBlock has an output connection, we need to:
   //  connect to parent (eg: connect equals into if)
@@ -641,8 +642,8 @@ AI.Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, creat
     try {
       if (createdBlock.outputConnection != null){
         //Check for type validity (connect does not do it)
-        if ( inputList[i].connection &&
-             inputList[i].connection.checkType_(createdBlock.outputConnection) ){
+        if (inputList[i].connection &&
+            connectionChecker.canConnect(inputList[i].connection, createdBlock.outputConnection, false)){
             if (!inputList[i].connection.targetConnection){ // is connection empty?
               createdBlock.outputConnection.connect(inputList[i].connection);
               break;
