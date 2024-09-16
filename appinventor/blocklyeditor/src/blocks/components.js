@@ -14,6 +14,7 @@
 
 goog.provide('AI.Blocks.components');
 goog.require('AI.Blockly.FieldEventFlydown');
+goog.require('AI.Blockly.FieldNoCheckDropdown');
 goog.require('AI.BlockUtils');
 
 Blockly.ComponentBlock = {};
@@ -1642,7 +1643,7 @@ Blockly.ComponentBlock.isClockMethodName =  function  (name) {
 };
 
 Blockly.ComponentBlock.createComponentDropDown = function(block){
-  var componentDropDown = new Blockly.FieldDropdown([["",""]]);
+  var componentDropDown = new AI.Blockly.FieldNoCheckDropdown([["",""]]);
   componentDropDown.menuGenerator_ = function(){ return block.getTopWorkspace().getComponentDatabase().getComponentNamesByType(block.typeName); };
   return componentDropDown;
 };
