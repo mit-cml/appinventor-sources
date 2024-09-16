@@ -307,14 +307,4 @@ public class MockVisibleExtension extends MockVisibleComponent {
       Element shadowRoot, CSSStyleSheet[] styleSheets) /*-{
       shadowRoot.adoptedStyleSheets = styleSheets;
   }-*/;
-
-  //  @Override
-  //  public int getPreferredWidth() {
-  //    return 128;
-  //  }
-  //
-  //  @Override
-  //  public int getPreferredHeight() {
-  //    return 48;
-  //  }
 }

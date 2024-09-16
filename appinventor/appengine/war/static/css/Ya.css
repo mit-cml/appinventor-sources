@@ -1406,6 +1406,8 @@ select.ode-PropertyEditor[disabled] {
   display: inline-block;
   width: fit-content;
   height: fit-content;
+  border: 2px solid transparent;
+  overflow: hidden;
 }
 
 .ode-MockVisibleExtensionHost-selected {
