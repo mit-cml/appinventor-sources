@@ -76,10 +76,10 @@ public class ExternalComponentGenerator {
    * Container class to store information about an extension.
    */
   private static class ExternalComponentInfo {
-    private String type;
-    private String packageName;
-    private JSONObject descriptor;
-    private JSONObject buildInfo;
+    private final String type;
+    private final String packageName;
+    private final JSONObject descriptor;
+    private final JSONObject buildInfo;
 
     ExternalComponentInfo(JSONObject descriptor, JSONObject buildInfo) {
       this.descriptor = descriptor;
@@ -232,8 +232,13 @@ public class ExternalComponentGenerator {
       final Path mockCss = Paths.get(srcDir.toString(), packagePath, "mocks", name + ".mock.css");
 
       if (!mockScript.toFile().exists()) {
-        throw new IllegalStateException(
-            "Mock script doesn't exist for visible component: " + ext.type);
+        System.err.println(
+            "Extensions :\n[ERR] Visible extension " + ext.type + " does not have a mock script");
+        System.err.println(
+            "\t\tHelp: Make sure that the mock script is placed under directory: " + mockScript.getParent().normalize());
+        System.err.println(
+            "\t\tHelp: Also make sure that filename of mock script is: " + name + ".mock.js");
+        throw new IllegalStateException("Mock script doesn't exist");
       }
 
       final JSONObject mockObj = new JSONObject();
