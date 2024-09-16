@@ -1412,18 +1412,13 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
-.ode-MockVisibleExtensionLoading {
-  box-sizing: border-box;
-  border: 2px dashed #383d41;
+.ode-MockVisibleExtensionHost-error {
+  border: 3px dashed red;
   border-radius: 5px;
   padding: 4px;
   font-size: 12px;
   font-weight: normal;
   font-style: italic;
-}
-
-.ode-MockVisibleExtensionLoading img {
-  opacity: 0.75;
 }
 
 .ode-SimpleMockMapFeature-selected svg * {

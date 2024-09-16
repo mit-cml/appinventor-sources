@@ -5,8 +5,15 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.ShadowRoot;
-import com.google.appinventor.client.utils.jstypes.*;
+import com.google.appinventor.client.utils.jstypes.Blob;
+import com.google.appinventor.client.utils.jstypes.BlobOptions;
+import com.google.appinventor.client.utils.jstypes.CSSStyleSheet;
+import com.google.appinventor.client.utils.jstypes.DOMPurify;
+import com.google.appinventor.client.utils.jstypes.URL;
+import com.google.appinventor.client.utils.jstypes.Worker;
 import com.google.appinventor.client.utils.jstypes.Worker.MessageEvent;
+import com.google.appinventor.client.utils.jstypes.WorkerMessage;
+import com.google.appinventor.client.utils.jstypes.WorkerOptions;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JsonUtils;
@@ -22,9 +29,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 public class MockVisibleExtension extends MockVisibleComponent {
-  private final String MOCK_RENDER_REQUEST = "render-request";
+  private static final String WORKER_MSG_TYPE_HTML = "html";
 
   private final long projectId;
   private final String typeName;
@@ -34,6 +42,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
   private Worker worker;
   private String workerUrl;
 
+  private final FlowPanel shadowHost;
   private final ShadowRoot shadowRoot;
 
   public MockVisibleExtension(
@@ -50,7 +59,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
     this.packageName = packageName;
     this.scd = scd;
 
-    final FlowPanel shadowHost = new FlowPanel();
+    shadowHost = new FlowPanel();
     shadowHost.setStylePrimaryName("ode-MockVisibleExtensionHost");
     shadowRoot = applyAttachShadow(shadowHost.getElement());
 
@@ -78,11 +87,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
     return Promise.<String[]>allOf(fetchScript, fetchCss)
         .then(
             files -> {
-              final CSSStyleSheet[] css = new CSSStyleSheet[] {new CSSStyleSheet()};
               if (files[1] != null && !files[1].isEmpty()) {
+                final CSSStyleSheet[] css = new CSSStyleSheet[1];
                 css[0].replaceSync(files[1]);
+                applyAdoptedStyleSheets(shadowRoot, css);
               }
-              applyAdoptedStyleSheets(shadowRoot, css);
 
               initializeWorker(files[0]);
 
@@ -130,14 +139,14 @@ public class MockVisibleExtension extends MockVisibleComponent {
       "mockScript(Mock);\n",
       "const mockHTML = Mock.template();\n",
       "postMessage({\n",
-      "  type: '" + MOCK_RENDER_REQUEST + "',\n",
+      "  type: '" + WORKER_MSG_TYPE_HTML + "',\n",
       "  data: mockHTML\n",
       "});\n",
       "Mock.document = parseHTML(mockHTML).document;\n",
       "onmessage = (msg) => {\n",
       "  Mock.onPropertyChange(JSON.parse(msg.data));\n",
       "  postMessage({\n",
-      "    type: '" + MOCK_RENDER_REQUEST + "',\n",
+      "    type: '" + WORKER_MSG_TYPE_HTML + "',\n",
       "    data: Mock.document.toString()\n",
       "  });\n",
       "};\n",
@@ -149,23 +158,49 @@ public class MockVisibleExtension extends MockVisibleComponent {
     final WorkerMessage msgData = msg.getData();
     Ode.CLog("worker.message: type: " + msgData.getType());
 
-    if (msgData.getType().equals(MOCK_RENDER_REQUEST)) {
+    if (msgData.getType().equals(WORKER_MSG_TYPE_HTML)) {
       final String htmlStr = msgData.getData().toString();
       Ode.CLog("worker.data: dirty: " + htmlStr);
-      final String sanitizedData = DOMPurify.sanitize(htmlStr);
-      Ode.CLog("worker.data: clean: " + sanitizedData);
+      final String sanitizedHtmlStr = DOMPurify.sanitize(htmlStr);
+      Ode.CLog("worker.data: clean: " + sanitizedHtmlStr);
 
-      final HTMLPanel htmlPanel = new HTMLPanel(sanitizedData);
-      htmlPanel.setStylePrimaryName("ode-SimpleMockComponent");
-      shadowRoot.removeAllChildren();
-      shadowRoot.appendChild(htmlPanel.getElement());
+      if (sanitizedHtmlStr.trim().isEmpty()) {
+        shadowHost.addStyleDependentName("error");
+        final InlineHTML label =
+            new InlineHTML(
+                "ERR: Unable to load mock for + " + typeName + "\nCheck console for more details.");
+        shadowRoot.removeAllChildren();
+        shadowRoot.appendChild(label.getElement());
+        Ode.CError(
+            "Mock error: Empty HTML: "
+                + typeName
+                + "\nHTML before sanitization: "
+                + htmlStr
+                + "\nAfter sanitization: ");
+        refreshForm();
+      } else {
+        shadowHost.removeStyleDependentName("error");
+        final HTMLPanel htmlPanel = new HTMLPanel(sanitizedHtmlStr);
+        shadowRoot.removeAllChildren();
+        shadowRoot.appendChild(htmlPanel.getElement());
+        refreshForm();
+      }
     }
   }
 
-  // TODO
-  private native void handleErrorEvent(Object error) /*-{
-    console.log(error)
-  }-*/;
+  private void handleErrorEvent(Object error) {
+    shadowHost.addStyleDependentName("error");
+    if (shadowRoot.getChildCount() == 0) {
+      final InlineHTML label =
+          new InlineHTML(
+              "ERR: Unable to load mock for + " + typeName + "\nCheck console for more details.");
+      shadowRoot.removeAllChildren();
+      shadowRoot.appendChild(label.getElement());
+      refreshForm();
+    }
+    setTitle("An error has occurred; check the console for more info.");
+    Ode.CError(error);
+  }
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {

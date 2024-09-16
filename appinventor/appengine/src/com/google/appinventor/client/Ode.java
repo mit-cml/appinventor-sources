@@ -2572,6 +2572,10 @@ public class Ode implements EntryPoint {
     console.log(message);
   }-*/;
 
+  public static native void CError(Object message) /*-{
+    console.error(message);
+  }-*/;
+
   public static native boolean isMobile() /*-{
     var check = false;
     (function (a) {
