@@ -131,6 +131,10 @@ import Foundation
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
 
+  //BaseAiComponent error
+  case ERROR_MODEL_AI = 4701
+  case ERROR_WEBVIEW_AI = 4801
+
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
   case ERROR_CLOUDDB_JSON_MALFORMED = 104002
@@ -154,6 +158,9 @@ import Foundation
   // iOS Specific Texting Errors
   case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
   case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
+
+  //PIC Errors
+  case ERROR_INPUT_MODE = 100401
 
   var code: Int32 {
     return Int32(self.rawValue)
@@ -389,6 +396,16 @@ import Foundation
       return "Google Voice integration is unavailable."
     case .ERROR_IOS_RECEIVING_NOT_SUPPORTED:
       return "Receiving text messages is unavailable."
+
+    //BaseAiComponent errors
+    case .ERROR_INPUT_MODE:
+      return "Invalid input mode"
+
+    case .ERROR_MODEL_AI:
+      return "Invalid model file"
+
+    case .ERROR_WEBVIEW_AI:
+      return "Invalid webview"
     }
   }
 }

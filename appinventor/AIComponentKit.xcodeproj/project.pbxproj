@@ -72,6 +72,7 @@
 		06604B732034EFE70066C459 /* CsvUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06604B722034EFE70066C459 /* CsvUtil.swift */; };
 		0665ADE7210F592D0044C887 /* FileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC78693202E0B6E005363A3 /* FileTests.swift */; };
 		06678E32233956EE00BD3F19 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06678E31233956EE00BD3F19 /* main.swift */; };
+		067BBF312C480CEF0058B1BD /* BaseAiComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
@@ -330,6 +331,7 @@
 		06604B722034EFE70066C459 /* CsvUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtil.swift; sourceTree = "<group>"; };
 		06678E31233956EE00BD3F19 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		066EA0A32979D44E008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
+		067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseAiComponent.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		067D2BCE2040FB4B00D1EB16 /* variables.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = variables.yail; sourceTree = "<group>"; };
@@ -587,7 +589,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
+		0618A2851D8CF4EE0013A191 /* src */ = {
 			isa = PBXGroup;
 			children = (
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
@@ -613,7 +615,7 @@
 			path = "components-ios/src";
 			sourceTree = "<group>";
 		};
-		0618A2901D8CF4EE0013A191 /* components-ios/tests */ = {
+		0618A2901D8CF4EE0013A191 /* tests */ = {
 			isa = PBXGroup;
 			children = (
 				06E2D6001FDB16CC00A1D52A /* yail */,
@@ -632,6 +634,22 @@
 				0653CBD91F971BA70052065A /* TestFailure.swift */,
 			);
 			path = "components-ios/tests";
+			sourceTree = "<group>";
+		};
+		067BBEAE2C480CDA0058B1BD /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				067BBEEF2C480CEF0058B1BD /* assets */,
+				067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */,
+			);
+			name = extensions;
+			sourceTree = "<group>";
+		};
+		067BBEEF2C480CEF0058B1BD /* assets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 		06C70BA32A8BB6A800C6C78D /* GoogleAuth */ = {
@@ -852,6 +870,7 @@
 		06E59EAC1D92C91D00C42804 /* nonvisible */ = {
 			isa = PBXGroup;
 			children = (
+				067BBEAE2C480CDA0058B1BD /* extensions */,
 				DE3F6B082080F72400A0BA69 /* Camera.swift */,
 				068E0EAE1DC251090086FFDA /* ActivityStarter.swift */,
 				06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */,
@@ -942,8 +961,8 @@
 			children = (
 				062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */,
 				061CEC0D297B47B400C2879B /* install-webrtc.sh */,
-				0618A2851D8CF4EE0013A191 /* components-ios/src */,
-				0618A2901D8CF4EE0013A191 /* components-ios/tests */,
+				0618A2851D8CF4EE0013A191 /* src */,
+				0618A2901D8CF4EE0013A191 /* tests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
 				0618A27A1D8CECAC0013A191 /* Frameworks */,
 				7474807A747CFE996FC4893A /* Pods */,
@@ -1276,6 +1295,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
+				"${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
@@ -1298,6 +1318,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZIPFoundation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
@@ -1435,6 +1456,7 @@
 				681D59052A84138A007B5DB5 /* FileScope.swift in Sources */,
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
 				0644F6C01F37CAD800642E4D /* Player.swift in Sources */,
+				067BBF312C480CEF0058B1BD /* BaseAiComponent.swift in Sources */,
 				06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */,
 				068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */,
 				06B215FA1DB950F6000B3366 /* HorizontalArrangement.swift in Sources */,
