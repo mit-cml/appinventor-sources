@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.tokenauth;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.OdeRemoteServiceServlet;
 import com.google.appinventor.server.flags.Flag;
 
@@ -17,6 +18,7 @@ import com.google.protobuf.ByteString;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -58,6 +60,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class TokenAuthServiceImpl extends OdeRemoteServiceServlet
   implements TokenAuthService {
+  private static final Logger LOG = Logger.getLogger(TokenAuthServiceImpl.class.getName());
 
   private String SECRET_KEY_UUID = Flag.createFlag("clouddb.uuid.secret", "").get();
   private String SECRET_KEY_CLOUD_DB = Flag.createFlag("clouddb.secret", "").get();
@@ -160,8 +163,7 @@ public class TokenAuthServiceImpl extends OdeRemoteServiceServlet
         .setSignature(ByteString.copyFrom(signature)).build().toByteArray();
       return (Base58Util.encode(token));
     } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 

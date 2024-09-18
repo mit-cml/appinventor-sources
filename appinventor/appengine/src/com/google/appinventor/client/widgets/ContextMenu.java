@@ -105,9 +105,14 @@ public final class ContextMenu {
   /**
    * Adds a separator to the context menu.
    */
-  public void addSeparator() {
+  public MenuItemSeparator addSeparator() {
     MenuItemSeparator menuItemSeparator = menuBar.addSeparator();
     menuItemSeparator.setStylePrimaryName("ode-ContextMenuItemSeparator");
+    return menuItemSeparator;
+  }
+
+  public void removeSeparator(MenuItemSeparator separator) {
+    menuBar.removeSeparator(separator);
   }
 
   /**

@@ -46,7 +46,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
     LANGUAGES.sort()
     COUNTRIES.sort()
-    if let plistPath = Bundle.main.url(forResource: "language-codes", withExtension: "plist") {
+    if let plistPath = Bundle(for: TextToSpeech.self).url(forResource: "language-codes", withExtension: "plist") {
       if let languageMapping = NSDictionary(contentsOf: plistPath) {
         for (lang3, lang2) in languageMapping as! [NSString: NSString] {
           ISO_LANG_3_TO_2[lang3 as String] = lang2 as String
@@ -54,7 +54,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
         }
       }
     }
-    if let plistPath = Bundle.main.url(forResource: "iso3166_1_2_to_iso3166_1_3", withExtension: "plist") {
+    if let plistPath = Bundle(for: TextToSpeech.self).url(forResource: "iso3166_1_2_to_iso3166_1_3", withExtension: "plist") {
       if let countryMapping = NSDictionary(contentsOf: plistPath) {
         for (country2, country3) in countryMapping as! [NSString: NSString] {
           ISO_COUNTRY_3_TO_2[country3 as String] = country2 as String
@@ -94,7 +94,9 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
   }
 
-  //MARK: Transformed SpeechRate. The below function maps an input of [0, 2] to [.19, .68], half-speed to double-speed (roughly). Speeds < .2 are virtually the same, and speeds > .62 are difficult to understand.
+  // Note: Transformed SpeechRate. The below function maps an input of [0, 2] to [.19, .68],
+  // half-speed to double-speed (roughly). Speeds < .2 are virtually the same,
+  // and speeds > .62 are difficult to understand.
   @objc open var SpeechRate: Float32 {
     get {
       return _speechRate
@@ -119,7 +121,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   @objc open var Language: String {
     get {
-      return _language.uppercased()
+      return _language
     }
     set(language) {
       let language = language.lowercased()
@@ -132,7 +134,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   @objc open var Country: String {
     get {
-      return _countryCode.lowercased()
+      return _countryCode
     }
     set(country) {
       let countryUpper = country.uppercased()
@@ -161,15 +163,17 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
   // MARK: Methods
 
   @objc open func Speak(_ message: String) throws {
-    BeforeSpeaking()
     try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
     try AVAudioSession.sharedInstance().setActive(true)
-    let utterance = AVSpeechUtterance(string: message)
-    utterance.pitchMultiplier = _pitch
-    utterance.rate = _speechRate
-    utterance.voice = _voice
-    _tts.stopSpeaking(at: AVSpeechBoundary.immediate)
-    _tts.speak(utterance)
+    DispatchQueue.main.async {
+      self.BeforeSpeaking()
+      let utterance = AVSpeechUtterance(string: message)
+      utterance.pitchMultiplier = self._pitch
+      utterance.rate = self._speechRate
+      utterance.voice = self._voice
+      self._tts.stopSpeaking(at: AVSpeechBoundary.immediate)
+      self._tts.speak(utterance)
+    }
   }
 
   @objc open func Stop() {
@@ -200,10 +204,35 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   // MARK: Private implementation
 
+  // VisibleForTesting
+  var voice: AVSpeechSynthesisVoice {
+    return _voice
+  }
+
   fileprivate func updateLanguage() {
     let language = _language + "-" + _countryCode2
     if let voice = AVSpeechSynthesisVoice(language: language) {
       _voice = voice
     }
+  }
+}
+
+extension TextToSpeech: LifecycleDelegate {
+  public func onResume() {
+    if _tts.isPaused {
+      _tts.continueSpeaking()
+    }
+  }
+
+  public func onPause() {
+    _tts.pauseSpeaking(at: .immediate)
+  }
+
+  public func onDestroy() {
+    Stop()
+  }
+
+  public func onDelete() {
+    Stop()
   }
 }

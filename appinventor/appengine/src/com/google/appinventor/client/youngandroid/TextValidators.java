@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
@@ -129,6 +130,41 @@ public final class TextValidators {
   }
 
   /**
+   * Determines whether the given folder name is valid, displaying an alert
+   * if it is not.  In order to be valid, the folder name must satisfy
+   * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
+   * folder name in the same parent folder.
+   *
+   * @param folderName the folder name to validate
+   * @param folder the folder whose children are to be checked against this new
+   *        folder name
+   * @return {@code true} if the folder name is valid, {@code false} otherwise
+   */
+  public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
+    // Check the format of the folder name
+    if (!isValidIdentifier(folderName)) {
+      // TODO: Decide whether to use new strings
+      Window.alert(MESSAGES.malformedProjectNameError());
+      return ProjectNameStatus.INVALIDFORMAT;
+    }
+
+    // Check for names that reserved words
+    if (isReservedName(folderName)) {
+      Window.alert(MESSAGES.reservedNameError());
+      return ProjectNameStatus.RESERVED;
+    }
+
+    // Check that folder does not already exist
+    for (ProjectFolder folder : parent.getChildFolders()) {
+      if (folderName.equals(folder.getName())) {
+        Window.alert(MESSAGES.duplicateProjectNameError(folderName));
+        return ProjectNameStatus.DUPLICATE;
+      }
+    }
+    return ProjectNameStatus.SUCCESS;
+  }
+
+  /**
    * Checks whether the argument is a legal identifier, specifically,
    * a non-empty string starting with a letter and followed by any number of
    * (unaccented English) letters, digits, or underscores.
@@ -178,7 +214,7 @@ public final class TextValidators {
   public static boolean isValidCharFilename(String filename){
     return !filename.contains("'") && filename.equals(URL.encodePathSegment(filename));
   }
-  
+
   /**
    * Checks whether the argument is a filename which meets the length
    * requirement imposed by aapt, which is:
@@ -206,7 +242,7 @@ public final class TextValidators {
     String temp = filename.trim().replaceAll("( )+", " ").replace(" ","_");
     if (temp.length() > 0) {
       if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        if (!temp.matches(firstCharacterLetter)) { 
+        if (!temp.matches(firstCharacterLetter)) {
           //Check to make sure that the first character is a letter
           errorMessage = MESSAGES.firstCharProjectNameError();
         } else { //The text contains a character that is not a letter, number, or underscore

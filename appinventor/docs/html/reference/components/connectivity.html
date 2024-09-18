@@ -260,14 +260,15 @@ set the following properties:
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.</dd>
   <dt id="BluetoothClient.DisconnectOnError" class="boolean"><em>DisconnectOnError</em></dt>
-  <dd>Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.</dd>
+  <dd>Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.</dd>
   <dt id="BluetoothClient.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
   <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothClient.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
   <dd>Specifies whether numbers are sent and received with the most significant
  byte first.</dd>
   <dt id="BluetoothClient.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">frue</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
   <dt id="BluetoothClient.NoLocationNeeded" class="boolean do"><em>NoLocationNeeded</em></dt>
   <dd>On Android 12 and later, indicates that Bluetooth is not used to determine the user’s location.</dd>
   <dt id="BluetoothClient.PollingRate" class="number"><em>PollingRate</em></dt>
@@ -386,7 +387,7 @@ set the following properties:
   <dd>Returns true if this BluetoothServer component is accepting an
  incoming connection.</dd>
   <dt id="BluetoothServer.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">frue</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
   <dt id="BluetoothServer.Secure" class="boolean"><em>Secure</em></dt>
   <dd>Specifies whether a secure connection should be used.</dd>
 </dl>
@@ -531,6 +532,8 @@ set the following properties:
   <dd>Specifies the name of the file where the response should be saved.
  If SaveResponse is true and ResponseFileName is empty, then a new file
  name will be generated.</dd>
+  <dt id="Web.ResponseTextEncoding" class="text"><em>ResponseTextEncoding</em></dt>
+  <dd>Specifies the Response Text Encoding.</dd>
   <dt id="Web.SaveResponse" class="boolean"><em>SaveResponse</em></dt>
   <dd>Specifies whether the response should be saved in a file.</dd>
   <dt id="Web.Timeout" class="number"><em>Timeout</em></dt>
@@ -838,7 +841,7 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -857,15 +860,16 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

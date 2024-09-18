@@ -795,6 +795,8 @@ public class FileUtil {
     File path;
     if (fileName.startsWith("//")) {  // Asset files in legacy mode
       path = new File(form.getAssetPath(fileName.substring(2)).substring(7));
+    } else if (fileName.startsWith("content:")) {
+      return fileName;
     } else if (scope == FileScope.App && Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
       path = new File(form.getExternalFilesDir(""), fileName);
     } else if (scope == FileScope.Asset) {
@@ -1045,8 +1047,13 @@ public class FileUtil {
           return null;
         } else if (mode == FileAccessMode.READ) {
           return READ_EXTERNAL_STORAGE;
-        } else {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+          // According to the Android documentation:
+          // > Note: If your app targets Build.VERSION_CODES.R or higher,
+          // > this permission has no effect.
           return WRITE_EXTERNAL_STORAGE;
+        } else {
+          return null;
         }
       }
     } else if (!path.contains(":")) {
@@ -1178,26 +1185,32 @@ public class FileUtil {
       case Private:
         return new FileInputStream(new File(URI.create(form.getPrivatePath(file.getFileName()))));
       case Shared:
-        String[] parts = file.getFileName().split("/", 2);
-        Uri contentUri = getContentUriForPath(parts[0]);
-        String[] projection = new String[] {
-            MediaStore.Files.FileColumns._ID,
-            MediaStore.Files.FileColumns.DISPLAY_NAME
-        };
-        Cursor cursor = null;
-        try {
-          cursor = form.getContentResolver().query(contentUri, projection,
-              MediaStore.Files.FileColumns.DISPLAY_NAME + " = ?", new String[] { parts[1] }, null);
-          int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
-          if (cursor.moveToFirst()) {
-            long id = cursor.getLong(idColumn);
-            Uri targetUri = ContentUris.withAppendedId(contentUri, id);
-            return form.getContentResolver().openInputStream(targetUri);
+        Uri targetUri;
+        if (file.getFileName().startsWith("content:")) {
+          targetUri = Uri.parse(file.getFileName());
+        } else {
+          String[] parts = file.getFileName().split("/", 2);
+          Uri contentUri = getContentUriForPath(parts[0]);
+          String[] projection = new String[]{
+              MediaStore.Files.FileColumns._ID,
+              MediaStore.Files.FileColumns.DISPLAY_NAME
+          };
+          Cursor cursor = null;
+          try {
+            cursor = form.getContentResolver().query(contentUri, projection,
+                MediaStore.Files.FileColumns.DISPLAY_NAME + " = ?", new String[]{parts[1]}, null);
+            int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
+            if (cursor.moveToFirst()) {
+              long id = cursor.getLong(idColumn);
+              targetUri = ContentUris.withAppendedId(contentUri, id);
+            } else {
+              throw new FileNotFoundException("Unable to find shared file: " + file.getFileName());
+            }
+          } finally {
+            IOUtils.closeQuietly(LOG_TAG, cursor);
           }
-        } finally {
-          IOUtils.closeQuietly(LOG_TAG, cursor);
         }
-        break;
+        return form.getContentResolver().openInputStream(targetUri);
       default:
         break;
     }
@@ -1232,12 +1245,16 @@ public class FileUtil {
       case Private:
         return new FileOutputStream(new File(URI.create(form.getPrivatePath(file.getFileName()))));
       case Shared:
+        final ContentResolver resolver = form.getContentResolver();
+        if (file.getFileName().startsWith("content:")) {
+          Log.d(LOG_TAG, "Opening content URI: " + file.getFileName());
+          return resolver.openOutputStream(Uri.parse(file.getFileName()));
+        }
         String[] parts = file.getFileName().split("/", 2);
         final ContentValues values = new ContentValues();
         values.put(MediaStore.MediaColumns.DISPLAY_NAME, parts[1]);
         values.put(MediaStore.MediaColumns.MIME_TYPE, "");
         values.put(MediaStore.MediaColumns.RELATIVE_PATH, parts[0]);
-        final ContentResolver resolver = form.getContentResolver();
         Uri contentUri = getContentUriForPath(parts[0]);
         if (contentUri == null) {
           throw new IOException("Unrecognized shared folder: " + parts[0]);
@@ -1295,11 +1312,14 @@ public class FileUtil {
         }
         return null;
       case Shared:
-        String filename = file.getFileName();
-        if (filename.startsWith("/")) {
-          filename = filename.substring(1);
+        String dirname = file.getFileName();
+        if (dirname.startsWith("/")) {
+          dirname = dirname.substring(1);
         }
-        String[] parts = filename.split("/", 2);
+        String[] parts = dirname.split("/", 2);
+        if (!dirname.endsWith("/")) {
+          dirname += "/";
+        }
         final ContentResolver resolver = form.getContentResolver();
         Uri contentUri = getContentUriForPath(parts[0]);
         if (contentUri == null) {
@@ -1321,10 +1341,14 @@ public class FileUtil {
           while (cursor.moveToNext()) {
             String name = cursor.getString(nameColumn);
             String path = cursor.getString(pathColumn);
+            String pathname;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-              results.add(path.replace(rootPath, ""));
+              pathname = path.replace(rootPath, "");
             } else {
-              results.add(path + name);
+              pathname = path + name;
+            }
+            if (pathname.startsWith(dirname)) {
+              results.add(pathname.substring(dirname.length()));
             }
           }
           return results;

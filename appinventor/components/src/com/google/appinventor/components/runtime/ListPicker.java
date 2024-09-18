@@ -51,7 +51,8 @@ import android.view.WindowManager;
     "<p>Setting property ShowFilterBar to true, will make the list searchable.  " +
     "Other properties affect the appearance of the button " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-    "whether it can be clicked on (<code>Enabled</code>).</p>")
+    "whether it can be clicked on (<code>Enabled</code>).</p>",
+    iconName = "images/listPicker.png")
 @SimpleObject
 @UsesActivities(activities = {
     @ActivityElement(name = "com.google.appinventor.components.runtime.ListPickerActivity",

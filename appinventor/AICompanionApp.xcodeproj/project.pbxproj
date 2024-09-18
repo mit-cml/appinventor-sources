@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		062ACEF81F705CD200FA31AD /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 062ACEF71F705CD200FA31AD /* Pods_AICompanionApp.framework */; };
 		062ACEF91F705D3F00FA31AD /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 062ACEF31F705B5C00FA31AD /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		062B743D2BC07549002E221F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */; };
 		063D678F1FA0CEB1002E907D /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063D678E1FA0CEB1002E907D /* SchemeKit.framework */; };
 		063D67901FA0CEB1002E907D /* SchemeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 063D678E1FA0CEB1002E907D /* SchemeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		063D67921FA0CEB1002E907D /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063D67911FA0CEB1002E907D /* AIComponentKit.framework */; };
@@ -76,6 +77,7 @@
 		062ACEF31F705B5C00FA31AD /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		062ACEF71F705CD200FA31AD /* Pods_AICompanionApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AICompanionApp.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/AIComponentKit-czkmnbdmmcqhgpfhwphanoynsffy/Build/Products/Debug-iphonesimulator/Pods_AICompanionApp.framework"; sourceTree = "<group>"; };
 		062ACEFA1F705D7700FA31AD /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AIComponentKit.framework; path = "build/Debug-iphoneos/AIComponentKit.framework"; sourceTree = "<group>"; };
+		062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = aicompanionapp/src/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		063D678E1FA0CEB1002E907D /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		063D67911FA0CEB1002E907D /* AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463EF81D95956800B23DCD /* AICompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AICompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +164,7 @@
 		06463EEF1D95956800B23DCD = {
 			isa = PBXGroup;
 			children = (
+				062B743C2BC07549002E221F /* PrivacyInfo.xcprivacy */,
 				06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */,
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
@@ -287,7 +290,7 @@
 				06463EF61D95956800B23DCD /* Resources */,
 				170B928B754926C8A96CC2CF /* [CP] Embed Pods Frameworks */,
 				063D67941FA0CEB2002E907D /* Embed Frameworks */,
-				061CEC0E297B4E2300C2879B /* ShellScript */,
+				061CEC0E297B4E2300C2879B /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -394,6 +397,7 @@
 				06B216181DBC5F1B000B3366 /* Instructions.png in Resources */,
 				06B216171DBC5F1B000B3366 /* connectwQR.png in Resources */,
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
+				062B743D2BC07549002E221F /* PrivacyInfo.xcprivacy in Resources */,
 				06B216161DBC5F1B000B3366 /* connectwCode.png in Resources */,
 				06B2161A1DBC5F1B000B3366 /* Title.png in Resources */,
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
@@ -422,7 +426,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		061CEC0E297B4E2300C2879B /* ShellScript */ = {
+		061CEC0E297B4E2300C2879B /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -432,6 +436,7 @@
 			inputPaths = (
 				"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework",
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -453,13 +458,17 @@
 				"${BUILT_PRODUCTS_DIR}/Base58Swift/Base58Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
 				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework",
 				"${BUILT_PRODUCTS_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/PSSRedisClient/PSSRedisClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
@@ -471,13 +480,17 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Base58Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleAPIClientForREST.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KTVJSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PSSRedisClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
@@ -553,13 +566,17 @@
 				"${BUILT_PRODUCTS_DIR}/Base58Swift/Base58Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
 				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework",
 				"${BUILT_PRODUCTS_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/PSSRedisClient/PSSRedisClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
@@ -571,13 +588,17 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Base58Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleAPIClientForREST.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KTVJSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PSSRedisClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
@@ -793,7 +814,7 @@
 				INFOPLIST_FILE = aicompanionapp/src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "9c96ca04-1d70-4a2b-bb01-28f545b35d28";
 				PROVISIONING_PROFILE_SPECIFIER = "MIT App Inventor Development";
@@ -815,7 +836,7 @@
 				INFOPLIST_FILE = aicompanionapp/src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "9c96ca04-1d70-4a2b-bb01-28f545b35d28";
 				PROVISIONING_PROFILE_SPECIFIER = "MIT App Inventor Production";
@@ -833,7 +854,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = aicompanionapp/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3Tests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AICompanionApp.app/AICompanionApp";
@@ -848,7 +869,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = aicompanionapp/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3Tests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AICompanionApp.app/AICompanionApp";
@@ -862,7 +883,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				INFOPLIST_FILE = aicompanionapp/uitests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = AICompanionApp;
@@ -876,7 +897,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				INFOPLIST_FILE = aicompanionapp/uitests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = AICompanionApp;

@@ -15,11 +15,6 @@ public final class AppInventorFeatures {
   private AppInventorFeatures() {
   }
 
-  public static boolean hasDebuggingView() {
-    // Set this to true if you want the Debugging view to show.
-    return true;
-  }
-
   public static boolean hasYailGenerationOption() {
     // Set this to true if you want the Package for Phone button to include an option to just
     // generate Yail
@@ -139,4 +134,18 @@ public final class AppInventorFeatures {
   public static boolean enableFutureFeatures() {
     return false;
   }
+
+  /**
+   * If set to true, redirect http connections to https if running in
+   * production (aka, not the Google Dev server).
+   */
+
+  public static boolean enableHttpRedirect() {
+    return true;
+  }
+
+  public static String chatBotHost() {
+    return "https://chatbot.appinventor.mit.edu/";
+  }
+
 }

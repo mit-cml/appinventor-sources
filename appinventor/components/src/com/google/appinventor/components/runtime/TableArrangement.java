@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -19,6 +20,7 @@ import android.app.Activity;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,7 +50,8 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.TABLEARRANGEMENT_COMPONENT_VERSION,
     description = "<p>A formatting element in which to place components " +
     "that should be displayed in tabular form.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/table.png")
 @SimpleObject
 public class TableArrangement extends AndroidViewComponent
     implements Component, ComponentContainer {
@@ -90,7 +93,7 @@ public class TableArrangement extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void Columns(int numColumns) {
     viewLayout.setNumColumns(numColumns);
   }
@@ -112,7 +115,7 @@ public class TableArrangement extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void Rows(int numRows) {
     viewLayout.setNumRows(numRows);
   }

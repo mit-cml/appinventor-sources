@@ -108,7 +108,10 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 
 ## DataFile  {#DataFile}
 
-Component for DataFile
+Component that allows reading CSV and JSON data. The DataFile contains functionality relevant to accessing CSV or
+ JSON parsed data in the form of rows or columns. Can be used together with the ChartData2D component to import data
+ directly from a file to the Chart. The component may also be dragged and dropped on a Chart after a file has been
+ selected and parsed successfully to create ChartData components automatically from the file onto the Chart.
 
 
 
@@ -341,9 +344,15 @@ Spreadsheet is a non-visible component for storing and receiving data from
  values on the table have been updated. Additionally, this returns the
  row number for the new row.
 
+{:id="Spreadsheet.FinishedAddSheet"} FinishedAddSheet(*sheetName*{:.text})
+: The callback event for the addSheet block, called once the values on the table have been updated.
+
 {:id="Spreadsheet.FinishedClearRange"} FinishedClearRange()
 : The callback event for the [`ClearRange`](#Spreadsheet.ClearRange) block, called once the
  values on the table have been updated.
+
+{:id="Spreadsheet.FinishedDeleteSheet"} FinishedDeleteSheet(*sheetName*{:.text})
+: The callback event for the DeleteSheet block, called once the values on the table have been updated.
 
 {:id="Spreadsheet.FinishedRemoveColumn"} FinishedRemoveColumn()
 : The callback event for the [`RemoveColumn`](#Spreadsheet.RemoveColumn) block, called once the
@@ -405,9 +414,15 @@ Spreadsheet is a non-visible component for storing and receiving data from
  continue to the right. Once complete, it triggers the [`FinishedAddRow`](#Spreadsheet.FinishedAddRow)
  callback event. Additionally, this returns the row number for the new row.
 
+{:id="Spreadsheet.AddSheet" class="method"} <i/> AddSheet(*sheetName*{:.text})
+: Adds a new sheet inside the Spreadsheet.
+
 {:id="Spreadsheet.ClearRange" class="method"} <i/> ClearRange(*sheetName*{:.text},*rangeReference*{:.text})
 : Empties the cells in the given range. Once complete, this block triggers
  the [`FinishedClearRange`](#Spreadsheet.FinishedClearRange) callback event.
+
+{:id="Spreadsheet.DeleteSheet" class="method"} <i/> DeleteSheet(*sheetName*{:.text})
+: Deletes the specified sheet inside the Spreadsheet.
 
 {:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*column*{:.number})
 : Converts the integer representation of rows and columns to A1-Notation used
@@ -532,6 +547,9 @@ None
 
 {:id="TinyDB.ClearTag" class="method"} <i/> ClearTag(*tag*{:.text})
 : Clear the entry with the given `tag`{:.text.block}.
+
+{:id="TinyDB.GetEntries" class="method returns dictionary"} <i/> GetEntries()
+: Method to get all data in form of Dictionary
 
 {:id="TinyDB.GetTags" class="method returns any"} <i/> GetTags()
 : Return a list of all the tags in the data store.

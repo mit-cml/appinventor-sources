@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
@@ -98,18 +99,18 @@ public abstract class MockVisibleComponent extends MockComponent {
     // Add standard per-child layout properties
     // NOTE: Not all layouts use these properties
     addProperty(PROPERTY_NAME_COLUMN, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addWidthHeightProperties();
   }
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -156,16 +157,5 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     }
-  }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
-    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
   }
 }

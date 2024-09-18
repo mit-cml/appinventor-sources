@@ -10,6 +10,7 @@ Table of Contents:
 
 * [Chart](#Chart)
 * [ChartData2D](#ChartData2D)
+* [Trendline](#Trendline)
 
 ## Chart  {#Chart}
 
@@ -68,7 +69,7 @@ The Chart component plots data originating from it's attached Data components. F
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
 
-{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .do} *Type*
+{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
 
 {:id="Chart.Visible" .boolean} *Visible*
@@ -101,6 +102,17 @@ The Chart component plots data originating from it's attached Data components. F
 ### Methods  {#Chart-Methods}
 
 {:.methods}
+
+{:id="Chart.ExtendDomainToInclude" class="method"} <i/> ExtendDomainToInclude(*x*{:.number})
+: Extends the domain of the chart to include the provided x value. If x is already within the
+ bounds of the domain, this method has no effect.
+
+{:id="Chart.ExtendRangeToInclude" class="method"} <i/> ExtendRangeToInclude(*y*{:.number})
+: Extends the range of the chart to include the provided y value. If y is already within the
+ bounds of the range, this method has no effect.
+
+{:id="Chart.ResetAxes" class="method"} <i/> ResetAxes()
+: Resets the axes of the chart to their original bounds.
 
 {:id="Chart.SetDomain" class="method"} <i/> SetDomain(*minimum*{:.number},*maximum*{:.number})
 : Sets the minimum and maximum for the domain of the X axis.
@@ -280,6 +292,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Returns all entries of the data series matching the specified y value.
  For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
 
+{:id="ChartData2D.HighlightDataPoints" class="method"} <i/> HighlightDataPoints(*dataPoints*{:.list},*color*{:.number})
+: Highlights all given data points on the Chart in the color of choice.
+
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
@@ -294,7 +309,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  for the x values, and the specified y column for the y values. The DataFile's source file
  is expected to be either a CSV or a JSON file.
 
-   Passing in empty test for any of the column parameters will result in the usage of
+   Passing in empty text for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
@@ -341,3 +356,107 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.RemoveEntry" class="method"} <i/> RemoveEntry(*x*{:.text},*y*{:.text})
 : Removes an entry with the specified x and y value, provided it exists.
  See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry values.
+
+## Trendline  {#Trendline}
+
+The Trendline component can be used to visualize the trend of a data series represented by a
+ ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
+ instance, either set the ChartData property in the design view of the app or use the setter
+ block. The Trendline will update automatically if its associated ChartData2D is changed.
+
+ There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.
+
+   * Linear: y = m*x + b, where m is LinearCoefficient and b is YIntercept
+   * Quadratic: y = a\*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+     LinearCoefficient, and c is YIntercept
+   * Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient
+   * Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+     ExponentialBase
+
+ For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.
+
+
+
+### Properties  {#Trendline-Properties}
+
+{:.properties}
+
+{:id="Trendline.ChartData" .component .wo} *ChartData*
+: The data series for which to compute the line of best fit.
+
+{:id="Trendline.Color" .color} *Color*
+: The color of the line of best fit.
+
+{:id="Trendline.CorrelationCoefficient" .number .ro .bo} *CorrelationCoefficient*
+: The correlation coefficient of the trendline to the data.
+
+{:id="Trendline.ExponentialBase" .number .ro .bo} *ExponentialBase*
+: The base of the exponential term in the equation y = a*b^x.
+
+{:id="Trendline.ExponentialCoefficient" .number .ro .bo} *ExponentialCoefficient*
+: The coefficient of the exponential term in the equation y = a*b^x.
+
+{:id="Trendline.Extend" .boolean} *Extend*
+: Whether to extend the line of best fit beyond the data.
+
+{:id="Trendline.LinearCoefficient" .number .ro .bo} *LinearCoefficient*
+: The coefficient of the linear term in the trendline.
+
+{:id="Trendline.LogarithmCoefficient" .number .ro .bo} *LogarithmCoefficient*
+: The coefficient of the logarithmic term in the equation y = a + b*ln(x).
+
+{:id="Trendline.LogarithmConstant" .number .ro .bo} *LogarithmConstant*
+: The constant term in the logarithmic equation y = a + b*ln(x).
+
+{:id="Trendline.Model" .com.google.appinventor.components.common.BestFitModelEnum} *Model*
+: The model to use for the line of best fit.
+
+{:id="Trendline.Predictions" .list .ro .bo} *Predictions*
+: The predictions for the trendline.
+
+{:id="Trendline.QuadraticCoefficient" .number .ro .bo} *QuadraticCoefficient*
+: The coefficient of the quadratic term in the trendline, if any.
+
+{:id="Trendline.RSquared" .number .ro .bo} *RSquared*
+: The r-squared coefficient of determination for the trendline.
+
+{:id="Trendline.Results" .dictionary .ro .bo} *Results*
+: Obtain a copy of the most recent values computed by the line of best fit.
+
+{:id="Trendline.StrokeStyle" .com.google.appinventor.components.common.StrokeStyleEnum} *StrokeStyle*
+: The style of the best fit line.
+
+{:id="Trendline.StrokeWidth" .number} *StrokeWidth*
+: The width of the best fit line.
+
+{:id="Trendline.Visible" .boolean} *Visible*
+: Whether the line of best fit is visible.
+
+{:id="Trendline.XIntercepts" .any .ro .bo} *XIntercepts*
+: The X-intercepts of the trendline (where the line crosses the X-axis), if any. Possible
+ values are NaN (no intercept), a single value (one intercept), or a list of values.
+
+{:id="Trendline.YIntercept" .number .ro .bo} *YIntercept*
+: The Y-intercept of the trendline (constant term).
+
+### Events  {#Trendline-Events}
+
+{:.events}
+
+{:id="Trendline.Updated"} Updated(*results*{:.dictionary})
+: Event indicating that the line of best fit has been updated.
+
+### Methods  {#Trendline-Methods}
+
+{:.methods}
+
+{:id="Trendline.DisconnectFromChartData" class="method"} <i/> DisconnectFromChartData()
+: Disconnect the Trendline from a previously associated ChartData2D.
+
+{:id="Trendline.GetResultValue" class="method returns any"} <i/> GetResultValue(*value*{:.text})
+: Get the field of the most recent values computed by the line of best fit. The available
+ values vary based on the model used. For example, a linear model will have slope and
+ Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.

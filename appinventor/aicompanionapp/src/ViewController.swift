@@ -72,6 +72,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+    self.delegate = self
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -218,7 +219,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     let code = phoneStatus.setHmacSeedReturnCode(text)
     NSLog("Seed = \(text)")
     NSLog("Code = \(code)")
-    let url = URL(string: "https://rendezvous.appinventor.mit.edu/rendezvous/");
+    let url = URL(string: "https://\(kDefaultRendezvousServer)/rendezvous/");
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
@@ -244,7 +245,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           return
         }
         DispatchQueue.main.async {
-          self.phoneStatus.startWebRTC("rendezvous.appinventor.mit.edu", responseContent)
+          self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent)
         }
       } else {
         var responseContent = ""
@@ -384,5 +385,22 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
                                  "No WiFi", "Continue without WiFi", "Exit", false)
     }
+  }
+}
+
+extension ViewController: UINavigationControllerDelegate {
+  public func navigationController(_ navigationController: UINavigationController,
+      animationControllerFor operation: UINavigationController.Operation,
+      from fromVC: UIViewController,
+      to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    guard let oldForm = fromVC as? Form, let newForm = toVC as? Form else {
+      return nil
+    }
+    oldForm.onPause()
+    if operation == .pop {
+      oldForm.onDestroy()
+    }
+    newForm.onResume()
+    return nil
   }
 }

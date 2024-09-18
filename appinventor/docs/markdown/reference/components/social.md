@@ -14,7 +14,6 @@ Table of Contents:
 * [PhoneNumberPicker](#PhoneNumberPicker)
 * [Sharing](#Sharing)
 * [Texting](#Texting)
-* [Twitter](#Twitter)
 
 ## ContactPicker  {#ContactPicker}
 
@@ -227,6 +226,9 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 {:id="EmailPicker.Hint" .text} *Hint*
 : `EmailPicker` hint for the user.
 
+{:id="EmailPicker.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the EmailPicker.
+
 {:id="EmailPicker.Text" .text} *Text*
 : The text in the `EmailPicker`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#EmailPicker.Enabled) property is false).
@@ -264,9 +266,21 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : Event raised when the `EmailPicker` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="EmailPicker.TextChanged"} TextChanged()
+: Event raised when the text of the EmailPicker is changed, either by the user or the program.
+
 ### Methods  {#EmailPicker-Methods}
 
 {:.methods}
+
+{:id="EmailPicker.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the EmailPicker before the character at the given 1-indexed position. If the given position is larger than the length of the EmailPicker, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.
+
+{:id="EmailPicker.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the EmailPicker's text.
+
+{:id="EmailPicker.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the EmailPicker's text.
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.
@@ -494,9 +508,12 @@ Sharing is a non-visible component that enables sharing files and/or messages be
 
  The file path can be taken directly from other components such as the
  [`Camera`](media.html#Camera) or the [`ImagePicker`](media.html#ImagePicker), but can also be
- specified directly to read from storage. Be aware that different devices treat storage
- differently, so a few things to try if, for instance, you have a file called `arrow.gif` in the
- folder `Appinventor/assets`, would be:
+ specified directly to read from storage. The default behaviour is to share files from the private
+ data directory associated with your app. If the file path starts with a slash (`/`), then the file
+ relative to `/` is shared.
+ 
+ Be aware that different devices treat storage differently, so a few things to try if, for
+ instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
 
  - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
  - `"/storage/Appinventor/assets/arrow.gif"`
@@ -620,203 +637,3 @@ None
 : Send a text message. **Using this block will add
  [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
  that will require additional approval if your app is submitted to the Google Play Store.**
-
-## Twitter  {#Twitter}
-
-A non-visible component that enables communication with [Twitter](https://twitter.com). Once a
- user has logged into their Twitter account (and the authorization has been confirmed successful
- by the [`IsAuthorized`](#Twitter.IsAuthorized) event), many more operations are available:
-
- - Searching Twitter for tweets or labels ([`SearchTwitter`](#Twitter.SearchTwitter))
- - Sending a Tweet ([`Tweet`](#Twitter.Tweet))
- - Sending a Tweet with an Image ([`TweetWithImage`](#Twitter.TweetWithImage))
- - Directing a message to a specific user ([`DirectMessage`](#Twitter.DirectMessage))
- - Receiving the most recent messages directed to the logged-in user ([`RequestDirectMessages`](#Twitter.RequestDirectMessages))
- - Following a specific user ([`Follow`](#Twitter.Follow))
- - Ceasing to follow a specific user ([`StopFollowing`](#Twitter.StopFollowing))
- - Getting a list of users following the logged-in user ([`RequestFollowers`](#Twitter.RequestFollowers))
- - Getting the most recent messages of users followed by the logged-in user ([`RequestFriendTimeline`](#Twitter.RequestFriendTimeline))
- - Getting the most recent mentions of the logged-in user ([`RequestMentions`](#Twitter.RequestMentions))
-
- You must obtain a Consumer Key and Consumer Secret for Twitter authorization specific to your
- app from http://twitter.com/oauth_clients/new
-
-
-
-### Properties  {#Twitter-Properties}
-
-{:.properties}
-
-{:id="Twitter.ConsumerKey" .text} *ConsumerKey*
-: The consumer key to be used when authorizing with Twitter via OAuth.
-
-{:id="Twitter.ConsumerSecret" .text} *ConsumerSecret*
-: The consumer secret to be used when authorizing with Twitter via OAuth.
-
-{:id="Twitter.DirectMessages" .list .ro .bo} *DirectMessages*
-: This property contains a list of the most recent messages mentioning the logged-in user.
- Initially, the list is empty. To set it, the program must:
-
-   1. Call the [`Authorize`](#Twitter.Authorize) method.
-   2. Wait for the [`IsAuthorized`](#Twitter.IsAuthorized) event.
-   3. Call the [`RequestDirectMessages`](#Twitter.RequestDirectMessages) method.
-   4, Wait for the [`DirectMessagesReceived`](#Twitter.DirectMessagesReceived) event.
-
-   The value of this property will then be set to the list of direct messages retrieved (and
- maintain that value until any subsequent call to [`RequestDirectMessages`](#Twitter.RequestDirectMessages)).
-
-{:id="Twitter.Followers" .list .ro .bo} *Followers*
-: This property contains a list of the followers of the logged-in user. Initially, the list is
- empty. To set it, the program must:
-
-   1. Call the [`Authorize`](#Twitter.Authorize) method.
-   2. Wait for the [`IsAuthorized`](#Twitter.IsAuthorized) event.
-   3. Call the [`RequestFollowers`](#Twitter.RequestFollowers) method.
-   4. Wait for the [`FollowersReceived`](#Twitter.FollowersReceived) event.
-
-   The value of this property will then be set to the list of followers (and maintain its value
- until any subsequent call to [`RequestFollowers`](#Twitter.RequestFollowers)).
-
-{:id="Twitter.FriendTimeline" .list .ro .bo} *FriendTimeline*
-: This property contains the 20 most recent messages of users being followed. Initially, the
- list is empty. To set it, the program must:
- 
-   1. Call the [`Authorize`](#Twitter.Authorize) method.
-   2. Wait for the [`IsAuthorized`](#Twitter.IsAuthorized) event.
-   3. Specify users to follow with one or more calls to the [`Follow`](#Twitter.Follow) method.
-   4. Call the [`RequestFriendTimeline`](#Twitter.RequestFriendTimeline)  method.
-   5. Wait for the [`FriendTimelineReceived`](#Twitter.FriendTimelineReceived) event.
-
-   The value of this property will then be set to the list of messages (and maintain its value
- until any subsequent call to [`RequestFriendTimeline`](#Twitter.RequestFriendTimeline).
-
-{:id="Twitter.Mentions" .list .ro .bo} *Mentions*
-: This property contains a list of mentions of the logged-in user. Initially, the list is empty.
- To set it, the program must:
- 
-   1. Call the [`Authorize`](#Twitter.Authorize) method.
-   2. Wait for the [`IsAuthorized`](#Twitter.IsAuthorized) event.
-   3. Call the [`RequestMentions`](#Twitter.RequestMentions) method.
-   4. Wait for the [`MentionsReceived`](#Twitter.MentionsReceived) event.
- 
-   The value of this property will then be set to the list of mentions (and will maintain its
- value until any subsequent calls to [`RequestMentions`](#Twitter.RequestMentions)).
-
-{:id="Twitter.SearchResults" .list .ro .bo} *SearchResults*
-: This property, which is initially empty, is set to a list of search results after the program:
-
-   1. Calls the [`SearchTwitter`](#Twitter.SearchTwitter) method.
-   2. Waits for the [`SearchSuccessful`](#Twitter.SearchSuccessful) event.
-
-   The value of the property will then be the same as the parameter to
- [`SearchSuccessful`](#Twitter.SearchSuccessful). Note that it is not necessary to call the [`Authorize`](#Twitter.Authorize)
- method before calling [`SearchTwitter`](#Twitter.SearchTwitter).
-
-{:id="Twitter.Username" .text .ro .bo} *Username*
-: The user name of the authorized user. Empty if there is no authorized user.
-
-### Events  {#Twitter-Events}
-
-{:.events}
-
-{:id="Twitter.DirectMessagesReceived"} DirectMessagesReceived(*messages*{:.list})
-: This event is raised when the recent messages requested through
- [`RequestDirectMessages`](#Twitter.RequestDirectMessages) have been retrieved. A list of the messages can then be found
- in the `messages`{:.variable.block} parameter or the [`DirectMessages`](#Twitter.DirectMessages) property.
-
-{:id="Twitter.FollowersReceived"} FollowersReceived(*followers2*{:.list})
-: This event is raised when all of the followers of the logged-in user requested through
- [`RequestFollowers`](#Twitter.RequestFollowers) have been retrieved. A list of the followers can then be found in
- the `followers`{:.variable.block} parameter or the [`Followers`](#Twitter.Followers) property.
-
-{:id="Twitter.FriendTimelineReceived"} FriendTimelineReceived(*timeline*{:.list})
-: This event is raised when the messages requested through [`RequestFriendTimeline`](#Twitter.RequestFriendTimeline) have
- been retrieved. The `timeline`{:.variable.block} parameter and the [`FriendTimeline`](#Twitter.FriendTimeline)
- property will contain a list of lists, where each sub-list contains a status update of the
- form (username message).
-
-{:id="Twitter.IsAuthorized"} IsAuthorized()
-: This event is raised after the program calls [`Authorize`](#Twitter.Authorize) if the authorization was
- successful. It is also called after a call to [`CheckAuthorized`](#Twitter.CheckAuthorized) if we already have a
- valid access token. After this event has been raised, any other method for this component can
- be called.
-
-{:id="Twitter.MentionsReceived"} MentionsReceived(*mentions*{:.list})
-: This event is raised when the mentions of the logged-in user requested through
- [`RequestMentions`](#Twitter.RequestMentions) have been retrieved. A list of the mentions can then be found in
- the `mentions`{:.variable.block} parameter or the [`Mentions`](#Twitter.Mentions) property.
-
-{:id="Twitter.SearchSuccessful"} SearchSuccessful(*searchResults*{:.list})
-: This event is raised when the results of the search requested through
- [`SearchTwitter`](#Twitter.SearchTwitter) have been retrieved. A list of the results can then be found in
- the `results`{:.variable.block} parameter or the [`SearchResults`](#Twitter.SearchResults) property.
-
-### Methods  {#Twitter-Methods}
-
-{:.methods}
-
-{:id="Twitter.Authorize" class="method"} <i/> Authorize()
-: Redirects user to login to Twitter via the Web browser using the OAuth protocol if we don't already have authorization.
-
-{:id="Twitter.CheckAuthorized" class="method"} <i/> CheckAuthorized()
-: Check whether we already have access, and if so, causes the [`IsAuthorized`](#Twitter.IsAuthorized) event
- handler to be called.
-
-{:id="Twitter.DeAuthorize" class="method"} <i/> DeAuthorize()
-: Removes Twitter authorization from this running app instance.
-
-{:id="Twitter.DirectMessage" class="method"} <i/> DirectMessage(*user*{:.text},*message*{:.text})
-: This sends a direct (private) message to the specified user. The message will be trimmed if it
- exceeds 160 characters.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.
-
-{:id="Twitter.Follow" class="method"} <i/> Follow(*user*{:.text})
-: Starts following a user.
-
-{:id="Twitter.RequestDirectMessages" class="method"} <i/> RequestDirectMessages()
-: Requests the 20 most recent direct messages sent to the logged-in user. When the messages have
- been retrieved, the system will raise the [`DirectMessagesReceived`](#Twitter.DirectMessagesReceived) event and set
- the [`DirectMessages`](#Twitter.DirectMessages) property to the list of messages.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.
-
-{:id="Twitter.RequestFollowers" class="method"} <i/> RequestFollowers()
-: Gets who is following you.
-
-{:id="Twitter.RequestFriendTimeline" class="method"} <i/> RequestFriendTimeline()
-: Gets the most recent 20 messages in the user's timeline.
-
-{:id="Twitter.RequestMentions" class="method"} <i/> RequestMentions()
-: Requests the 20 most recent mentions of the logged-in user. When the mentions have been
- retrieved, the system will raise the [`MentionsReceived`](#Twitter.MentionsReceived) event and set the
- [`Mentions`](#Twitter.Mentions) property to the list of mentions.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.
-
-{:id="Twitter.SearchTwitter" class="method"} <i/> SearchTwitter(*query*{:.text})
-: This searches Twitter for the given String query.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.
-
-{:id="Twitter.StopFollowing" class="method"} <i/> StopFollowing(*user*{:.text})
-: Stops following a user.
-
-{:id="Twitter.Tweet" class="method"} <i/> Tweet(*status*{:.text})
-: This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it
- exceeds 160 characters.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.
-
-{:id="Twitter.TweetWithImage" class="method"} <i/> TweetWithImage(*status*{:.text},*imagePath*{:.text})
-: This sends a tweet as the logged-in user with the specified Text and a path to the image to be
- uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or
- invalid, the update will not be sent.
-
-   __Requirements__: This should only be called after the [`IsAuthorized`](#Twitter.IsAuthorized) event has
- been raised, indicating that the user has successfully logged in to Twitter.

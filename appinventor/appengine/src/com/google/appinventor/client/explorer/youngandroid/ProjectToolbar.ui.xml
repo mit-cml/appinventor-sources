@@ -1,0 +1,50 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <!-- Projects Menu -->
+  <ai:Toolbar>
+    <g:Label text="{messages.projectsTabName}" styleName="ya-ProjectName"
+             ui:field="projectLabel"/>
+    <g:Label text="{messages.trashButton}" styleName="ya-ProjectName" visible="false"
+             ui:field="trashLabel"/>
+    <ai:ToolbarItem name="New" caption="{messages.newProjectButton}">
+      <actions:NewProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}">
+      <actions:SwitchToProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}">
+      <actions:NewFolderAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Move" caption="{messages.moveProjectButton}">
+      <actions:MoveProjectsAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}">
+      <actions:DeleteAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}">
+      <actions:TrashAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}">
+      <actions:RestoreProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}">
+      <actions:DeleteForeverProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false">
+      <actions:LoginToGalleryAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishToGalleryButton}" visible="false">
+      <actions:SendToGalleryAction/>
+    </ai:ToolbarItem>
+  </ai:Toolbar>
+</ui:UiBinder>

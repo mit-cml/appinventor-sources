@@ -7,10 +7,12 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.output.MotdUi;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Polls for new MOTDs and displays them.
@@ -23,6 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author kerr@google.com (Debby Wallach)
  */
 class MotdFetcher implements RpcListener {
+  private static final Logger LOG = Logger.getLogger(MotdFetcher.class.getName());
   private final int intervalMillis; // how long to wait between fetches
   private long lastFetchTime;
 
@@ -75,7 +78,7 @@ class MotdFetcher implements RpcListener {
     AsyncCallback<Motd> callback = new AsyncCallback<Motd>() {
       @Override
       public void onFailure(Throwable caught) {
-        OdeLog.log(MESSAGES.getMotdFailed());
+        LOG.log(Level.SEVERE, MESSAGES.getMotdFailed(), caught);
       }
 
       @Override

@@ -833,6 +833,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         return WRITE_ONLY;
       }
     }
+
+    protected PropertyCategory getCategory() {
+      return propertyCategory;
+    }
   }
 
   /**
@@ -1494,7 +1498,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.RELEASE_7;
+    try {
+      return (SourceVersion) SourceVersion.class.getDeclaredField("RELEASE_11").get(null);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      return SourceVersion.RELEASE_8;
+    }
   }
 
   @Override
@@ -2524,6 +2532,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             // name. This is an overridden property without the SimpleProperty annotation and we
             // need to remove it.
             componentInfo.properties.remove(propertyName);
+            if (designerProperty == null) {
+              componentInfo.designerProperties.remove(propertyName);
+            }
           }
         }
       } else {
@@ -2882,6 +2893,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     String typeString = type.toString();
+    if (!type.getAnnotationMirrors().isEmpty()) {
+      // Java 11 now includes parameter level annotations in the type string
+      if (type instanceof DeclaredType) {
+        typeString = ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString();
+      } else if (type instanceof PrimitiveType) {
+        typeString = type.getKind().toString().toLowerCase();
+      }
+    }
     // boolean -> boolean
     if (typeString.equals("boolean")) {
       return typeString;
@@ -2937,7 +2956,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
-    throw new IllegalArgumentException("Cannot convert Java type '" + typeString
+    throw new IllegalArgumentException("Cannot convert Java type '" + type.toString()
         + "' to Yail type");
   }
 

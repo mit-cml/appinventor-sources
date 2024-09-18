@@ -35,7 +35,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * This explorer is used to outline the structure of a source file. Note that
- * this explorer is shared by all it's clients. That means that clients (most
+ * this explorer is shared by all its clients. That means that clients (most
  * likely editors) need to update its content upon activation.
  *
  * @author lizlooney@google.com (Liz Looney)
@@ -136,8 +136,7 @@ public class SourceStructureExplorer extends Composite {
 
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
-    scrollPanel.setWidth("200px");  // wide enough to avoid a horizontal scrollbar most of the time
-    scrollPanel.setHeight("480px"); // approximately the same height as the viewer
+    scrollPanel.setStyleName("ode-SourceScrollPanel");
 
     HorizontalPanel buttonPanel = new HorizontalPanel();
     buttonPanel.setStyleName("ode-PanelButtons");
@@ -178,6 +177,10 @@ public class SourceStructureExplorer extends Composite {
     panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
+  }
+
+  public void setStyleName (String styleName){
+    setStylePrimaryName(styleName);
   }
 
   private void deleteItemFromTree() {

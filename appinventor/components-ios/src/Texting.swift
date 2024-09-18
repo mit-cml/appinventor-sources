@@ -38,8 +38,11 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
       return false  // Google Voice not supported on iOS
     }
     set(enabled) {
-      // Google Voice not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      if _form?.isRepl ?? false {
+        // Google Voice not supported on iOS
+        _form?.dispatchErrorOccurredEvent(self, "GoogleVoiceEnabled",
+                                          .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED)
+      }
     }
   }
 
@@ -48,8 +51,11 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
       return false  // Receiving messages not supported on iOS
     }
     set(enabled) {
-      // Receiving messages not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      if _form?.isRepl ?? false {
+        // Receiving messages not supported on iOS
+        _form?.dispatchErrorOccurredEvent(self, "ReceivingEnabled",
+                                          .ERROR_IOS_RECEIVING_NOT_SUPPORTED)
+      }
     }
   }
 

@@ -39,7 +39,15 @@ It may take a few minutes for Vagrant to initialize as it will pull down a virtu
 vagrant ssh
 ```
 
-This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine. To build App Inventor, you may now run:
+This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine. 
+
+Before you can build App Inventor, you will need to also obtain the dependencies as described [below](#checkout-dependencies) using `git submodule` command:
+
+```bash
+git submodule update --init
+```
+
+Now, you are ready to build App Inventor, you may now run:
 
 ```bash
 ant
@@ -208,8 +216,7 @@ There are two servers in App Inventor, the main server that deals with project i
 
 ### Running the main server
 
-    $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh
-            --port=8888 --address=0.0.0.0 appengine/build/war/
+    $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh --port=8888 --address=0.0.0.0 appengine/build/war/
 
 Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard drive you have placed the Google Cloud SDK.
 

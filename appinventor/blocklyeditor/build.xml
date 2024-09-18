@@ -155,7 +155,7 @@
 		<fileset dir="${run.lib.dir}" includes="*.jar" />
 		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
                 <pathelement location="${build.dir}/components/CommonConstants.jar" />
-		<pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+		<pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
 	</path>
 
 	<path id="BlocklyeditorTests.path">

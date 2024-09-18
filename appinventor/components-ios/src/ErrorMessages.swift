@@ -128,6 +128,9 @@ import Foundation
   // ImageBot Errors
   case ERROR_IMAGEBOT_ERROR = 4300
 
+  // ListView Errors
+  case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
+
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
   case ERROR_CLOUDDB_JSON_MALFORMED = 104002
@@ -140,13 +143,18 @@ import Foundation
   case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100100
   case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100101
   case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100102
+  case ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR = 100103
 
   // iOS Specific GyroscopeSensor Errors
   case ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR = 100200
 
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
-  
+
+  // iOS Specific Texting Errors
+  case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
+  case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
+
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -353,6 +361,10 @@ import Foundation
     case .ERROR_IMAGEBOT_ERROR:
       return "Error from the ImageBot code: %d %@"
 
+    // ListView Errors
+    case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
+      return "The index %d is out of bounds for the list view."
+
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
       return "Installing packages from URLs is not supported on iOS"
@@ -364,12 +376,19 @@ import Foundation
       return "Speech recognition encountered an error and is currently unavailable"
     case .ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR:
       return "An error occured when attempting to process audio"
+    case .ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR:
+      return "An error occurred when setting up audio for speech recognition: %s"
 
     case .ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR:
       return "The gyroscope is no longer recording data due to the following error %s"
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
+
+    case .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED:
+      return "Google Voice integration is unavailable."
+    case .ERROR_IOS_RECEIVING_NOT_SUPPORTED:
+      return "Receiving text messages is unavailable."
     }
   }
 }

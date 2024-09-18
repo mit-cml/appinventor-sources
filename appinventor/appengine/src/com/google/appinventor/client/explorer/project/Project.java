@@ -14,6 +14,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public final class Project {
 
   // Project specific settings
   private ProjectSettings settings; // lazily and asynchronously initialized
+
+  private ProjectFolder homeFolder = null;
 
   /**
    * Creates a new project.
@@ -136,6 +139,36 @@ public final class Project {
   }
 
   /**
+   * Returns the date of when the project was last exported as an apk/aab/other.
+   *
+   * @return  date modified in milliseconds
+   */
+  public long getDateBuilt() {
+    return projectInfo.getDateBuilt();
+  }
+
+  /**
+   * Sets the date of when the project was last exported.
+   *
+   */
+  public void setDateBuilt(long date) {
+     projectInfo.setDateBuilt(date);
+  }
+
+
+  /**
+   * The project-folder relationship is stored in the folder object.
+   * This is just a back-reference that is set when the folder is created.
+   */
+  public void setHomeFolder(ProjectFolder folder) {
+    homeFolder = folder;
+  }
+
+  public ProjectFolder getHomeFolder() {
+    return homeFolder;
+  }
+
+  /**
    * Returns the project specific settings, or null if the settings haven't
    * been loaded.
    *
@@ -214,7 +247,6 @@ public final class Project {
           }
         });
   }
-
 
   public void restoreFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,

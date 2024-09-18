@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -375,7 +376,7 @@ public final class Translator extends AndroidNonvisibleComponent {
       defaultValue = "")
   @SimpleProperty(description = "The API Key to use. MIT App Inventor will automatically fill this " +
     "value in. You should not need to change it.",
-    userVisible = true)
+      userVisible = true, category = PropertyCategory.ADVANCED)
   public void ApiKey(String apiKey) {
     this.apiKey = apiKey;
   }

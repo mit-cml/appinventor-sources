@@ -10,7 +10,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;

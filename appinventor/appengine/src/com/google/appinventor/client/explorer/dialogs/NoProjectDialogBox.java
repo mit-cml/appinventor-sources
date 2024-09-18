@@ -100,7 +100,7 @@ public class NoProjectDialogBox extends DialogBox {
   @UiHandler("noDialogNewProject")
   void handleNewProject(ClickEvent e) {
     this.hide();
-    new NewYoungAndroidProjectWizard(null).show();
+    new NewYoungAndroidProjectWizard().show();
   }
 
   public static void closeIfOpen() {

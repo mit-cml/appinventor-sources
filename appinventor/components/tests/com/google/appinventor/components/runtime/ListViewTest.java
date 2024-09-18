@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import org.junit.Test;
 
@@ -90,6 +91,28 @@ public class ListViewTest extends RobolectricTestBase {
       }
     }
     assertEquals(2, count);
+  }
+
+  /**
+   * Test removal of the selection for a list containing dictionary based elements.
+   *
+   * <p>In nb195 there was an issue (#3008) where setting the SelectionIndex to 0 to remove
+   * the selection instead resulted in an ArrayIndexOutOfBoundsException.
+   */
+  @Test
+  public void testSelectionRemovalWithDictBasedElements() {
+    ListView listView1 = new ListView(getForm());
+    Object listItem = listView1.CreateElement("main", "detail", "image");
+    YailList list = YailList.makeList(new Object[]{listItem});
+    listView1.Elements(list);
+    listView1.Height(200);
+    listView1.Width(320);
+
+    listView1.SelectionIndex(1);  // select the 1st element in the list.
+    assertEquals(1, listView1.SelectionIndex());
+
+    listView1.SelectionIndex(0);  // clear the selected element.
+    assertEquals(0, listView1.SelectionIndex());
   }
 
   private View getViewForPosition(ListView listView, int position) {
