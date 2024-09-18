@@ -79,30 +79,31 @@
     </uptodate>
   </target>
 
-	<target name="BlocklyTranslationGenerator"
-			description="This is the script for creating combined i18n files from blockly and app inventor"
-			depends="CheckBlocklyTranslations,BlocklyCompile"
-			unless="Blocklyi18n.uptodate">
-		<mkdir dir="${BlocklyTranslator-class.dir}" />
-		<mkdir dir="${BlocklyTranslations.dir}" />
-		<ai.javac destdir="${BlocklyTranslator-class.dir}">
-			<include name="msg/BlocklyTranslationGenerator.java" />
-			<classpath>
-				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-				<pathelement location="${lib.dir}/json/json.jar" />
-			</classpath>
-		</ai.javac>
-		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
-                      <arg value="${ai.i18n.src.dir}"/>
-                      <arg value="${lib.dir}/blockly/msg/json"/>
-                      <arg value="${BlocklyTranslations.dir}"/>
-			<classpath>
-				<pathelement location="${BlocklyTranslator-class.dir}"/>
-				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-				<pathelement location="${lib.dir}/json/json.jar" />
-			</classpath>
-		</java>
-	</target>
+  <target name="BlocklyTranslationGenerator"
+	  description="This is the script for creating combined i18n files from blockly and app inventor"
+	  depends="CheckBlocklyTranslations,BlocklyCompile"
+	  unless="Blocklyi18n.uptodate">
+    <mkdir dir="${BlocklyTranslator-class.dir}" />
+    <mkdir dir="${BlocklyTranslations.dir}" />
+    <ai.javac destdir="${BlocklyTranslator-class.dir}">
+      <include name="msg/BlocklyTranslationGenerator.java" />
+      <classpath>
+	<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+	<pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </ai.javac>
+    <java failonerror="true" classname="msg.BlocklyTranslationGenerator" fork="true">
+      <jvmarg value="-Dfile.encoding=UTF-8"/>
+      <arg value="${ai.i18n.src.dir}"/>
+      <arg value="${lib.dir}/blockly/msg/json"/>
+      <arg value="${BlocklyTranslations.dir}"/>
+      <classpath>
+	<pathelement location="${BlocklyTranslator-class.dir}"/>
+	<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+	<pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </java>
+  </target>
 
         <target name="CheckBlocklyCompile">
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
