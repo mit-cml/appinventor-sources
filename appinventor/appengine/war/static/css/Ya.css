@@ -700,6 +700,11 @@ div.StatusPanel {
   flex-flow: column;
 }
 
+.ode-SourceScrollPanel {
+  width: 200px;
+  height: 480px;
+}
+
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;
@@ -1517,13 +1522,13 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ComponentHelpPopup-Body {
-  padding: 10px;
   color: #555;
   font-size: 12px;
+  width: 250px;
 }
 
 .ode-ComponentHelpPopup-Link {
-  padding: 0 10px 10px 10px;
+  padding: 0 10px 10px 0;
   font-size: 12px;
 
 }
@@ -1856,10 +1861,6 @@ path.ode-SimpleMockMapFeature-selected {
   min-height: 40px;
 }
 
-.ode-DialogBox, .ode-DialogBox .dialogContent {
-  min-width: 340px;
-}
-
 .DialogBox-message {}
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1931,7 +1932,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogContent td {
-  padding: 2px 10px;
+  padding: 2px 2px;
   font-size: 12px;
   color: #555;
 }
@@ -1942,6 +1943,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
+  padding: 5px 10px;
 }
 
 .ode-DialogBox .buttonRow {
