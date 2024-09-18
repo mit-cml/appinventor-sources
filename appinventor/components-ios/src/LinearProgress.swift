@@ -7,17 +7,19 @@ import Foundation
 
 public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   private var _view: UIProgressView
-  private var _progress: Float = 0.0
+  private var _progress: Int32 = 0
   private var _isAnimating: Bool = false
   private var _animationTimer: Timer?
-  private var _maximum: Int = 100
-  private var _minimum: Int = 0
+  private var _maximum: Int32 = 100
+  private var _minimum: Int32 = 0
   public override init(_ parent: ComponentContainer) {
     _view = UIProgressView(progressViewStyle: .bar)
     super.init(parent)
     super.setDelegate(self)
     setupProgressView()
     parent.add(self)
+    Width = kLengthFillParent
+    Height = 6
   }
   
   private func setupProgressView() {
@@ -33,7 +35,15 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
       return _view
     }
   }
-  
+
+  // MARK: Properties
+
+  @objc open var Indeterminate: Bool = true {
+    didSet {
+      IsAnimating = Indeterminate
+    }
+  }
+
   @objc open var IndeterminateColor: Int32 {
     get {
       return _view.progressTintColor?.cgColor as! Int32
@@ -54,7 +64,7 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  @objc open var Maximum: Int {
+  @objc open var Maximum: Int32 {
     get {
       return _maximum
     }
@@ -63,7 +73,7 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  @objc open var Minimum: Int {
+  @objc open var Minimum: Int32 {
     get {
       return _minimum
     }
@@ -72,24 +82,39 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  @objc open var Progress: Int {
+  @objc open var Progress: Int32 {
     get {
-      return 0
+      return _progress
     }
     set(progress) {
       if progress < _minimum {
-        _progress = 0.0
+        _progress = _minimum
       } else if progress > _maximum {
-        _progress = 1.0
+        _progress = _maximum
       } else {
-        _progress = Float(progress) / Float(_maximum + _minimum)
+        _progress = progress
         print(_progress)
       }
       
       setProgressValue()
+      ProgressChanged(_progress)
     }
   }
-  
+
+  // MARK: Methods
+
+  @objc open func IncrementProgressBy(_ value: Int32) {
+    Progress += value
+  }
+
+  // MARK: Events
+
+  @objc open func ProgressChanged(_ value: Int32) {
+    EventDispatcher.dispatchEvent(of: self, called: "ProgressChanged", arguments: value as NSNumber)
+  }
+
+  // MARK: Private implementation
+
   public var IsAnimating: Bool {
     get {
       return _isAnimating
@@ -102,7 +127,7 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
   }
-  
+
   private func startAnimating() {
     if _isAnimating == true {
       return
@@ -113,27 +138,26 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   }
   
   private func stopAnimating() {
-    if _isAnimating == false {
+    guard _isAnimating else {
       return
     }
-    
+
     _isAnimating = false
     _animationTimer?.invalidate()
     _animationTimer = nil
   }
-  
+
   @objc private func updateProgress() {
-    _progress += 0.01
-    
-    if _progress >= 1.0 {
-      _progress = 1.0
-      stopAnimating()
+    _progress += 1
+
+    if _progress >= _maximum {
+      _progress = _minimum
     }
     
     setProgressValue()
   }
-  
+
   private func setProgressValue() {
-    _view.setProgress(_progress, animated: true)
+    _view.setProgress(Float(_progress - _minimum) / Float(_maximum - _minimum), animated: true)
   }
 }

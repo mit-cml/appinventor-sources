@@ -13,6 +13,8 @@ public class CircularProgress: ViewComponent, AbstractMethodsForViewComponent {
     super.init(parent)
     super.setDelegate(self)
     parent.add(self)
+    Width = 50
+    Height = 50
   }
   
   public override var view: UIView {
