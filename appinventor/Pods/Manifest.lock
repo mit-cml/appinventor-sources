@@ -5,6 +5,9 @@ PODS:
   - BigInt (5.0.0)
   - CocoaAsyncSocket (7.6.3)
   - CryptoSwift (1.7.1)
+  - DGCharts (5.0.0):
+    - DGCharts/Core (= 5.0.0)
+  - DGCharts/Core (5.0.0)
   - GCDWebServer (3.4.2):
     - GCDWebServer/Core (= 3.4.2)
   - GCDWebServer/Core (3.4.2)
@@ -38,6 +41,7 @@ DEPENDENCIES:
   - Alamofire (~> 4.8)
   - Base58Swift (~> 2.1.0)
   - CryptoSwift
+  - DGCharts (~> 5.0.0)
   - GCDWebServer (~> 3.4.1)
   - GEOSwift (~> 3.1.0)
   - GoogleAPIClientForREST/Sheets
@@ -58,6 +62,7 @@ SPEC REPOS:
     - BigInt
     - CocoaAsyncSocket
     - CryptoSwift
+    - DGCharts
     - GCDWebServer
     - geos
     - GEOSwift
@@ -98,6 +103,7 @@ SPEC CHECKSUMS:
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CryptoSwift: d3d18dc357932f7e6d580689e065cf1f176007c1
+  DGCharts: 6e0cf2644e8f81ad13f04caa8bc18502870a1c54
   GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
   geos: 4f86329dc270f513bc220c77d9079aef38c5960d
   GEOSwift: 663f79f312f61dbc50ea7d233b8d04642f9aa1fb
@@ -113,6 +119,6 @@ SPEC CHECKSUMS:
   Zip: 414f59909701fda9a84ab774ebe0f5449b1082cc
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 84d0771217b3dea91c6bb1a1032c8ce53d431fee
+PODFILE CHECKSUM: 9c8bd9b3ffd835e837f087bc7525ac6bd0f912a8
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2
