@@ -234,7 +234,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
       });
     } else {
       svgContent = null;
-      String url = convertImagePropertyValueToUrl(assetPath);
+      String url = MockComponentsUtil.convertAssetValueToUrl(editor, assetPath);
       if (url != null) {
         setMarkerAssetUrl(url);
       } else {

@@ -1406,6 +1406,28 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
+.ode-MockVisibleExtensionHost {
+  box-sizing: border-box;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.ode-MockVisibleExtensionHost-selected {
+  border: 2px solid #8fc202;
+}
+
+.ode-MockVisibleExtensionHost-error {
+  border: 3px dashed red;
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: italic;
+}
+
 .ode-SimpleMockMapFeature-selected svg * {
   stroke: #8fc202;
   stroke-opacity: 1;

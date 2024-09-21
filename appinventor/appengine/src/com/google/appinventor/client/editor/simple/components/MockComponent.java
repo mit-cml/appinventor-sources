@@ -17,7 +17,6 @@ import com.google.appinventor.client.editor.simple.components.utils.PropertiesUt
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
-import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -30,11 +29,6 @@ import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.youngandroid.TextValidators;
-import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -855,41 +849,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return sourceStructureExplorerItem;
   }
 
-  /**
-   * Returns the asset node with the given name.
-   *
-   * @param name  asset name
-   * @return  asset node found or {@code null}
-   */
-  protected ProjectNode getAssetNode(String name) {
-    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
-    if (project != null) {
-      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder =
-          (YoungAndroidProjectNode) project.getRootNode();
-      for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
-        if (asset.getName().equals(name)) {
-          return asset;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Converts the given image property value to an image url.
-   * Returns null if the image property value is blank or not recognized as an
-   * asset.
-   */
-  protected String convertImagePropertyValueToUrl(String text) {
-    if (text.length() > 0) {
-      ProjectNode asset = getAssetNode(text);
-      if (asset != null) {
-        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
-      }
-    }
-    return null;
-  }
-
   // For debugging purposes only
   private String describeElement(com.google.gwt.dom.client.Element element) {
     if (element == null) {
@@ -1249,7 +1208,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   /**
    * upgradeComplete()
-   * Mark a MockComponent upgrade complete.
+   * Updates component definitions and marks a MockComponent upgrade complete.
    * This MUST be called manually after calling upgrade()!
    * All subclasses overriding this method must call super.upgradeComplete()!
    */
