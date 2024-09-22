@@ -798,6 +798,9 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.Hint" .text} *Hint*
+: Sets hint on the filter bar.
+
 {:id="ListView.ImageHeight" .number} *ImageHeight*
 : Specifies the image height of ListView layouts containing images
 
