@@ -11,7 +11,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <g:VerticalPanel styleName="ode-SimpleFormDesigner">
     <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner">
-      <ed:HiddenComponentsCheckbox text="{messages.showHiddenComponentsCheckbox}"/>
+      <ed:HiddenComponentsCheckbox ui:field="HiddenComponentsCheckbox" text="{messages.showHiddenComponentsCheckbox}"/>
       <g:ListBox ui:field="listboxPhoneTablet">
         <g:item value="0">
           <ui:text from="{messages.previewPhoneSize}"/>

@@ -13,6 +13,7 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -24,6 +25,7 @@ public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPane
   @UiField(provided = true) protected ListBox listboxPhonePreview;
   @UiField Icon os_icon;
   @UiField Icon size_icon;
+  @UiField CheckBox HiddenComponentsCheckbox;
 
   public SimpleVisibleComponentsPanelNeo(final SimpleEditor editor,
                                          SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
@@ -90,5 +92,6 @@ public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPane
     super.listboxPhonePreview = listboxPhonePreview;
     super.listboxPhoneTablet = listboxPhoneTablet;
     super.phoneScreen = phoneScreen;
+    super.HiddenComponentsCheckbox = HiddenComponentsCheckbox;
   }
 }

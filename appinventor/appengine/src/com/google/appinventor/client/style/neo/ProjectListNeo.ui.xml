@@ -11,30 +11,36 @@
   <g:FlowPanel styleName='ode-ProjectTable'>
     <g:FlowPanel styleName='ode-ProjectHeaderRow'>
       <g:CheckBox ui:field='selectAllCheckBox' styleName="ode-ProjectCheckBox gwt-CheckBox"/>
-      <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListName">
-        <g:Label text='{messages.projectNameHeader}' ui:field='projectName'
-                 styleName="gwt-Label ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
-                       styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
-                       styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-      </g:FlowPanel>
-      <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
-        <g:Label text='{messages.projectDateCreatedHeader}' ui:field='createDate'
-                 styleName="gwt-Label ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='createDateSortDec' text="&#x25BC;" visible="false"
-                       styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='createDateSortAsc' text="&#x25B2;" visible="false"
-                       styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-      </g:FlowPanel>
-      <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
-        <g:Label text='{messages.projectDateModifiedHeader}' ui:field='modDate'
-                 styleName="gwt-Label ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='modDateSortDec' text="&#x25BC;" visible="false"
-                       styleName="gwt-Label ode-ProjectHeaderLabel"/>
-        <g:InlineLabel ui:field='modDateSortAsc' text="&#x25B2;" visible="false"
-                       styleName="gwt-Label ode-ProjectHeaderLabel"/>
-      </g:FlowPanel>
+      <g:FocusPanel ui:field='nameFocusPanel' styleName='ode-NameFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListName">
+          <g:Label text='{messages.projectNameHeader}' ui:field='projectName'
+                   styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
+                         styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
+                         styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+      <g:FocusPanel ui:field='createdateFocusPanel' styleName='ode-CreateDateFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
+          <g:Label text='{messages.projectDateCreatedHeader}' ui:field='createDate'
+                   styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='createDateSortDec' text="&#x25BC;" visible="false"
+                         styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='createDateSortAsc' text="&#x25B2;" visible="false"
+                         styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+      <g:FocusPanel ui:field='modDateFocusPanel' styleName='ode-ModifiedDateFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
+          <g:Label text='{messages.projectDateModifiedHeader}' ui:field='modDate'
+                   styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='modDateSortDec' text="&#x25BC;" visible="false"
+                         styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='modDateSortAsc' text="&#x25B2;" visible="false"
+                         styleName="gwt-Label ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
     </g:FlowPanel>
     <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='container'>
 

@@ -589,6 +589,26 @@ Blockly.ai_inject = function(container, workspace) {
   return workspace;
 };
 
+function isBlockEditorActive(e) {
+  var target = null;
+
+  if (e.target.tagName.toLowerCase() == 'div' && e.target.className == 'injectionDiv') {
+    target = e.target;
+  } else {
+    var parent = e.target;
+    while (parent.parentNode && !(parent.tagName.toLowerCase() == 'div' && parent.className == 'injectionDiv')) {
+      parent = parent.parentNode;
+    }
+    target = parent;
+  }
+
+  if (Blockly.mainWorkspace.getParentSvg().parentNode == target) {
+    return true;
+  }
+
+  return false;
+}
+
 // Preserve Blockly during Closure and GWT optimizations
 window['Blockly'] = Blockly;
 top['Blockly'] = Blockly;
@@ -613,5 +633,48 @@ top.document.addEventListener('mousedown', function(e) {
   // Make sure the workspace has been injected.
   if (Blockly.mainWorkspace) {
     Blockly.hideChaff();
+  }
+}, false);
+
+top.document.addEventListener('keydown', function(e) {
+  var selectedBlock = Blockly.selected;
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+
+  if (e.altKey) {
+      e.preventDefault(); 
+      if (e.key.toLowerCase() === 'o') {
+        selectedBlock.setCollapsed(!selectedBlock.isCollapsed());
+      } else if (e.key.toLowerCase() === 'i') {
+        selectedBlock.setInputsInline(!selectedBlock.getInputsInline());
+      } else if (e.key.toLowerCase() === 'w') {
+        if (allBlocks.length > 0) {
+          i = (i + 1) % allBlocks.length;
+          allBlocks[i].select();
+        }
+      } else if (e.key.toLowerCase() === 's') {
+        if (allBlocks.length > 0) {
+          i = (i - 1 + allBlocks.length) % allBlocks.length;
+          allBlocks[i].select();
+        }
+      } else if (e.key.toLowerCase() === 'k') {
+        if (!selectedBlock.isCollapsed()) {
+          if (selectedBlock.comment && selectedBlock.comment.isVisible()) {
+              selectedBlock.comment.setVisible(false);
+          } else {
+              selectedBlock.setCommentText('');
+              selectedBlock.comment.setVisible(true);
+          }
+      }
+      } else if (e.key === '+') {
+        Blockly.getMainWorkspace().zoomCenter(1);
+      } else if (e.key === '-') {
+        Blockly.getMainWorkspace().zoomCenter(-1);
+      } else if (e.key.toLowerCase() === 'g') {
+        var mainWorkspace = Blockly.getMainWorkspace();
+        mainWorkspace.setScale(mainWorkspace.options.zoomOptions.startScale);
+        mainWorkspace.scrollCenter();
+      } else if (e.key.toLowerCase() === 'b' && isBlockEditorActive(e)) {
+        Blockly.getMainWorkspace().getBackpack().openBackpack(e);
+      }
   }
 }, false);

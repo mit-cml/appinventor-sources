@@ -328,13 +328,18 @@ div.StatusPanel {
   align-items: center;
 }
 
+.ode-ProjectNameFocusPanel,
+.ode-ExpandButtonFocusPanel,
+.ode-NameFocusPanel {
+  flex-grow: 1;
+}
+
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
   color: #555;
   cursor: pointer;
   vertical-align: top;
-  padding-right: 10px;
   text-align: left;
   flex-grow: 1;
   min-width: 100px;
@@ -614,9 +619,13 @@ div.StatusPanel {
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
-.ActionDropDown-Options:hover {
+.ActionDropDown-Options:hover,
+.ode-TopPanelButton:focus,
+.ActionDropDown-Default:focus,
+.ActionDropDown-Options:focus {
   background: #E6E6E6;
   color: #5B5B5B;
+  outline: none;
 }
 
 .ode-TopPanelButton:active,
@@ -837,6 +846,10 @@ div.StatusPanel {
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
+}
+
+.gwt-Tree-focused {
+  outline: solid 2px #000000;
 }
 
 /* Young Android Toolbar */
@@ -1204,7 +1217,7 @@ div.StatusPanel {
 }
 
 .ode-ChoicePropertyEditor:focus {
-  border-color: #D3D3D3;
+  border-color: rgba(82, 168, 236, 0.8);
   outline: 0;
   outline: thin dotted \9;
   /* IE6-9 */
@@ -1235,13 +1248,14 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ColorChoicePropertyEditor:focus {
+  border-color: rgba(82, 168, 236, 0.8);
   outline: 0;
   outline: thin dotted \9;
   /* IE6-9 */
 
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
-  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.8);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.8);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px rgba(82, 168, 236, 0.8);
 }
 
 .ode-SimpleFormDesigner {
@@ -1250,6 +1264,10 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleFormDesigner .gwt-CheckBox {
   font-size: 12px;
+}
+
+.gwt-CheckBox input[type="checkbox"]:focus {
+  outline: 2px solid #333;
 }
 
 .ode-SimpleMockForm {
@@ -1622,6 +1640,19 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
+
+.FocusTrap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px; 
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
 
 /* Start of NoProjectsDialogBox. */
 .ode-noDialogDiv {
@@ -2163,6 +2194,7 @@ input[type="email"]:focus,
 input[type="url"]:focus,
 input[type="search"]:focus,
 input[type="tel"]:focus,
+input[type="checkbox"]:focus,
 input[type="color"]:focus,
 .uneditable-input:focus {
   border-color: rgba(82, 168, 236, 0.8);

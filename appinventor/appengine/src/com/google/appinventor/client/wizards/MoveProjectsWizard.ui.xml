@@ -12,12 +12,16 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <wiz:Dialog ui:field="moveDialog" caption="{messages.moveProjectWizard}" styleName="ode-DialogBox">
     <g:FlowPanel>
+    <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}:" />
-      <g:Tree ui:field='tree' />
+      <g:FlowPanel>
+        <g:Tree ui:field='tree' />
+      </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow" >
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
         <g:Button ui:field='moveButton' text='{messages.okButton}' />
       </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
     </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>

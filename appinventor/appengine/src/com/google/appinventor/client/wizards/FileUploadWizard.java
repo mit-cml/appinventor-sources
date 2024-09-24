@@ -23,6 +23,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetN
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -56,6 +57,8 @@ public class FileUploadWizard {
   @UiField FileUpload upload;
   @UiField Button okButton;
   @UiField Button cancelButton;
+  @UiField Button topInvisible;
+  @UiField Button bottomInvisible;
 
 
   private final FolderNode folderNode;
@@ -119,6 +122,7 @@ public class FileUploadWizard {
 
   public void show() {
     uploadDialog.center();
+    upload.setFocus(true);
   }
 
   @UiHandler("cancelButton")
@@ -262,6 +266,16 @@ public class FileUploadWizard {
     if (fileUploadedCallback != null) {
       fileUploadedCallback.onFileUploaded(folderNode, uploadedFileNode);
     }
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+    okButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+    upload.setFocus(true);
   }
 
 }

@@ -9,8 +9,14 @@ package com.google.appinventor.client.explorer;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -104,7 +110,7 @@ public class SourceStructureExplorer extends Composite {
     });
     tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
-      public void onSelection(SelectionEvent<TreeItem> event) {
+      public void onSelection(SelectionEvent<TreeItem> event) { 
         TreeItem treeItem = event.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
@@ -130,8 +136,29 @@ public class SourceStructureExplorer extends Composite {
         if (keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_BACKSPACE) {
           event.preventDefault();
           deleteItemFromTree();
+        } else if (event.isAltKeyDown() && keyCode == KeyCodes.KEY_N) {
+          event.preventDefault();
+          renameItem();
         }
       }
+    });
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().setStyleName("gwt-Tree-focused");
+      }
+    });
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
+      }
+    });
+    tree.addMouseUpHandler(new MouseUpHandler() {
+      @Override
+      public void onMouseUp(MouseUpEvent event) {
+        tree.setFocus(true);
+      } 
     });
 
     // Put a ScrollPanel around the tree.
@@ -147,14 +174,7 @@ public class SourceStructureExplorer extends Composite {
     renameButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        TreeItem treeItem = tree.getSelectedItem();
-        if (treeItem != null) {
-          Object userObject = treeItem.getUserObject();
-          if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.rename();
-          }
-        }
+        renameItem();
       }
     });
     buttonPanel.add(renameButton);
@@ -190,6 +210,17 @@ public class SourceStructureExplorer extends Composite {
       if (userObject instanceof SourceStructureExplorerItem) {
         SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
         item.delete();
+      }
+    }
+  }
+
+  private void renameItem() {
+    TreeItem treeItem = tree.getSelectedItem();
+    if (treeItem != null) {
+      Object userObject = treeItem.getUserObject();
+      if (userObject instanceof SourceStructureExplorerItem) {
+        SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+        item.rename();
       }
     }
   }
@@ -313,5 +344,9 @@ public class SourceStructureExplorer extends Composite {
    */
   public void unselectItem(SourceStructureExplorerItem item) {
     selectItem(item, false);
+  }
+
+  public Tree getTree() {
+    return tree;
   }
 }

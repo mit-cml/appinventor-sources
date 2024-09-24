@@ -39,10 +39,12 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.TouchCancelHandler;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
@@ -110,11 +112,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private final LabeledTextBox newNameTextBox;
 
     RenameDialog(String oldName) {
-      super(false, true);
-
+      super(false, false);
+      setGlassEnabled(true);
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.renameTitle());
       VerticalPanel contentPanel = new VerticalPanel();
+
+      Button topInvisible = new Button();
+      contentPanel.add(topInvisible);
 
       LabeledTextBox oldNameTextBox = new LabeledTextBox(MESSAGES.oldNameLabel());
       oldNameTextBox.setText(getName());
@@ -123,9 +128,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       newNameTextBox = new LabeledTextBox(MESSAGES.newNameLabel());
       newNameTextBox.setText(oldName);
-      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      newNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
         @Override
-        public void onKeyUp(KeyUpEvent event) {
+        public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
           if (keyCode == KeyCodes.KEY_ENTER) {
             handleOkClick();
@@ -150,9 +155,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           handleOkClick();
         }
       });
+
+      Button bottomInvisible = new Button();
+      bottomInvisible.setStyleName("FocusTrap");
+      topInvisible.setStyleName("FocusTrap");
+      topInvisible.addFocusHandler(new FocusHandler() {
+        @Override
+        public void onFocus(FocusEvent event) {
+          okButton.setFocus(true); 
+        }
+      });
+      bottomInvisible.addFocusHandler(new FocusHandler() {
+        public void onFocus(FocusEvent event) {
+          newNameTextBox.setFocus(true); 
+        }
+      });
+
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
+      buttonPanel.add(bottomInvisible);
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");

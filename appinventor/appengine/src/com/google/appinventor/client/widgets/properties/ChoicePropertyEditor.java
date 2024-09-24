@@ -108,6 +108,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
           if (autoupdate) {
             updateValue();
           }
+          dropDownButton.setFocus(true);
         }
       }));
       if (Objects.equals(choice.value, defaultValue)) {
@@ -139,6 +140,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
           boolean multiple = isMultipleValues();
           setMultipleValues(false);
           property.setValue(choice.value, multiple);
+          dropDownButton.setFocus(true);
         }
       }));
     }
