@@ -23,6 +23,7 @@ goog.require('AI.Blockly.Backpack');
 goog.require('AI.Blockly.BlockSvg')
 goog.require('AI.Blockly.ComponentDatabase');
 goog.require('AI.Blockly.ConnectionDB');
+goog.require('AI.Blockly.CustomizableConnectionChecker');
 goog.require('AI.Blockly.Drawer');
 goog.require('AI.Blockly.ExportBlocksImage');
 goog.require('AI.Blockly.Field');
@@ -987,6 +988,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       blockDragger: top.MultiselectBlockDragger,
       metricsManager: top.ScrollMetricsManager,
       connectionPreviewer: top.decoratePreviewer(Blockly.InsertionMarkerPreviewer),
+      [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
     },
     baseBlockDragger: top.ScrollBlockDragger,
     useDoubleClick: true,
