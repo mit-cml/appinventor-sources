@@ -57,6 +57,24 @@ Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
   } else {
     this.outputConnection.setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
   }
+  maybeBumpBlockOnFinishEdit(this);
+}
+
+/**
+ * Bumps the text block out of its connection iff it has an invalid type
+ * @block Blockly.Block
+ */
+function maybeBumpBlockOnFinishEdit(block) {
+  const outputConnection = block.outputConnection;
+  const targetConnection = outputConnection.targetConnection;
+  if (!targetConnection) {
+    return;
+  }
+  // If the connections are no longer compatible.
+  if (!(targetConnection.getConnectionChecker().canConnect(outputConnection, targetConnection, false))) {
+    targetConnection.disconnect();
+    targetConnection.sourceBlock_.bumpNeighbours();
+  }
 }
 
 Blockly.Blocks['text_join'] = {
