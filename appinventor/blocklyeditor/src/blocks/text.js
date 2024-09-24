@@ -22,66 +22,40 @@ Blockly.Blocks['text'] = {
   init: function () {
     var textInput = new Blockly.FieldTextInput('');
     textInput.onFinishEditing_ = Blockly.Blocks.text
-        .bumpBlockOnFinishEdit.bind(this);
+        .setOutputOnFinishEdit.bind(this);
 
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE)
         .appendField(textInput, 'TEXT')
         .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
-    this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
+  },
+  mutationToDom: function () {
+    const container = document.createElement('mutation');
+    container.setAttribute('output', JSON.stringify(this.outputConnection.getCheck()));
+    return container;
+  },
+  domToMutation: function (xmlElement) {
+    const output = JSON.parse(xmlElement.getAttribute('output'));
+    this.outputConnection.setCheck(output);
   },
   errors: [{name:"checkInvalidNumber"}],
   typeblock: [{translatedName: Blockly.Msg.LANG_CATEGORY_TEXT}]
 };
 
-Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, opt_value) {
-  var otherTypeArray = otherConnection.check_;
-  if (!otherTypeArray) {  // Other connection accepts everything.
-    return true;
-  }
-
-  var block = myConnection.sourceBlock_;
-  var shouldIgnoreError = Blockly.common.getMainWorkspace().isLoading;
-  var value = opt_value || block.getFieldValue('TEXT');
-
-  for (var i = 0; i < otherTypeArray.length; i++) {
-    if (otherTypeArray[i] == "String") {
-      return true;
-    } else if (otherTypeArray[i] == "Number") {
-      if (shouldIgnoreError) {
-        // Error may be noted by WarningHandler's checkInvalidNumber
-        return true;
-      } else if (AI.BlockUtils.NUMBER_REGEX.test(value)) {
-        // Value passes a floating point regex
-        return !isNaN(parseFloat(value));
-      }
-    } else if (otherTypeArray[i] == "Key") {
-      return true;
-    } else if (otherTypeArray[i] == "Key") {
-      return true;
-    }
-  }
-  return false;
-};
-
 /**
- * Bumps the text block out of its connection iff it is connected to a number
- * input and it no longer contains a number.
- * @param {string} finalValue The final value typed into the text input.
+ * Sets the output type of the text block based on the final value typed into the text input.
+ * @param {string} newValue The new value typed into the text input.
  * @this Blockly.Block
  */
-Blockly.Blocks.text.bumpBlockOnFinishEdit = function(finalValue) {
-  var connection = this.outputConnection.targetConnection;
-  if (!connection) {
-    return;
-  }
-  // If the connections are no longer compatible.
-  if (!Blockly.Blocks.text.connectionCheck(
-      this.outputConnection, connection, finalValue)) {
-    connection.disconnect();
-    connection.sourceBlock_.bumpNeighbours();
+Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
+  if (AI.BlockUtils.NUMBER_REGEX.test(newValue) && !isNaN(parseFloat(newValue))) {
+    this.outputConnection.setCheck(
+        AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT).concat('Number'));
+  } else {
+    this.outputConnection.setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
   }
 }
 
@@ -395,7 +369,7 @@ Blockly.Blocks['text_contains'] = {
 
 /**
  * Updates the block's PIECE input to reflect the current mode.
- * @param {string} mode 
+ * @param {string} mode
  * @this {!Blockly.BlockSvg}
  */
 Blockly.Blocks.text_contains.adjustToMode = function (mode) {
@@ -612,26 +586,19 @@ Blockly.Blocks['obfuscated_text'] = {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
         Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
-    var textInput = new AI.FieldTextBlockInput('');
+    var textInput = new Blockly.FieldTextInput('');
     textInput.onFinishEditing_ = Blockly.Blocks.text
-        .bumpBlockOnFinishEdit.bind(this);
+        .setOutputOnFinishEdit.bind(this);
     this.appendDummyInput()
         .appendField(label)
         .appendField(textInput,'TEXT')
         .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
-    this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
   },
-  domToMutation: function(xmlElement) {
-    var confounder = xmlElement.getAttribute('confounder');
-    this.confounder = confounder;
-  },
-  mutationToDom: function() {
-    var container = document.createElement('mutation')
-    container.setAttribute('confounder', this.confounder);
-    return container;
-  },
+  domToMutation: Blockly.Blocks.text.domToMutation,
+  mutationToDom: Blockly.Blocks.text.mutationToDom,
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE}]
 };
 
