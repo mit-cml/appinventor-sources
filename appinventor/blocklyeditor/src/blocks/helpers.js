@@ -29,7 +29,7 @@ Blockly.Blocks['helpers_dropdown'] = {
     this.setColour(Blockly.COLOUR_HELPERS);
     // Everything else gets handled by domToMutaiton.
   },
- 
+
   mutationToDom: function() {
     var mutation = document.createElement('mutation');
     mutation.setAttribute('key', this.key_);
@@ -53,7 +53,7 @@ Blockly.Blocks['helpers_dropdown'] = {
     this.appendDummyInput()
         .appendField(tag)
         .appendField(dropdown, 'OPTION');
-    
+
     var value = xml.getAttribute('value') || optionList.defaultOpt;
     this.setFieldValue(value, 'OPTION');
   },
@@ -283,7 +283,7 @@ Blockly.Blocks['helpers_assets'] = {
     // Must include the '' so .some returns true if no restrictions.
     var restrictedFormats = [''];
     var types = this.outputConnection.targetConnection &&
-        this.outputConnection.targetConnection.check_;
+        this.outputConnection.targetConnection.getCheck();
     if (types) {
       for (var i = 0, type; type = types[i]; i++) {
         if (Array.isArray(type)) {

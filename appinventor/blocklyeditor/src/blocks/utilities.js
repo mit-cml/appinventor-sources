@@ -26,12 +26,12 @@ goog.require('AI.Blockly.Msg');
 AI.BlockUtils.InstantInTime = function (myConn, otherConn) {
   if (!myConn.sourceBlock_.rendered ||
       !otherConn.sourceBlock_.rendered) {
-    if (otherConn.check_ && !otherConn.check_.includes('InstantInTime')) {
+    if (otherConn.getCheck() && !otherConn.getCheck().includes('InstantInTime')) {
       otherConn.sourceBlock_.badBlock();
     }
     return true;
   }
-  return !otherConn.check_ || otherConn.check_.includes('InstantInTime');
+  return !otherConn.getCheck() || otherConn.getCheck().includes('InstantInTime');
 };
 
 
@@ -95,7 +95,6 @@ AI.BlockUtils.INPUT = 'input';
  * Gets the equivalent Blockly type for a given Yail type.
  * @param {string} yail The Yail type.
  * @param {!string} inputOrOutput Either Utilities.OUTPUT or Utilities.INPUT.
- * @param {Array<string>=} opt_currentType A type array to append, or null.
  */
 AI.BlockUtils.YailTypeToBlocklyType = function(yail, inputOrOutput) {
   if (yail.indexOf('Enum') != -1) {
