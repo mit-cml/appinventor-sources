@@ -40,15 +40,22 @@ import AppKit
 struct NamedColors {
     
     /// Dictionary of named colors
-    private let colorDictionary = [
-        "aliceblue": UIColor(red: 240.0 / 255.0, green: 248.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0).cgColor,
-        "cyan": UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0).cgColor,
-        "none": UIColor.clear.cgColor
-    ]
+    private let fromJSON: [String : CGColor] = {
+        guard let colorDictionary: [String : String] = Dictionary(jsonFile: "cssColorNames") else {
+            return [:]
+        }
+        return colorDictionary
+            .compactMapValues({ (hexString) -> CGColor? in
+                guard let asColor = UIColor(hexString: hexString)?.cgColor else {
+                    return nil
+                }
+                return asColor
+            })
+    }()
     
     /// Subscript to access the named color. Must be one of the officially supported values listed [here](https://www.w3.org/TR/SVGColor12/#icccolor)
     subscript(index: String) -> CGColor? {
-        return self.colorDictionary[index]
+        return self.fromJSON[index]
     }
 }
 
@@ -58,9 +65,9 @@ public extension CGColor {
     /**
      Lazily loaded instance of `NamedColors`
      */
-    fileprivate static var named: NamedColors {
+    fileprivate static var named: NamedColors = {
         return NamedColors()
-    }
+    }()
 }
 
 public extension UIColor {
@@ -86,52 +93,63 @@ public extension UIColor {
             return
         }
         
-        self.init(named: svgString)
+        self.init(cssName: svgString)
     }
     
     /**
-     Convenience initializer that creates a new UIColor based on a 3 or 6 digit hex string. The leading `#` character is optional
-     - Parameter hexString: A 3 or 6 digit hex string
-     - Parameter alpha: Optional alpha value
+     Convenience initializer that creates a new UIColor based on a 3, 4, 6, or 8 digit hex string. The leading `#` character is optional
+     - Parameter hexString: A 3, 4, 6, or 8 digit hex string
      */
-    internal convenience init?(hexString: String, alpha: CGFloat = 1.0) {
+    internal convenience init?(hexString: String) {
         
         var workingString = hexString
         if workingString.hasPrefix("#") {
             workingString = String(workingString.dropFirst())
         }
+        workingString = workingString.lowercased()
+        let colorArray: [CGFloat]
         
-        var hexArray = [CChar]()
-        var colorArray = [CGFloat]()
-        let utf8View = workingString.utf8CString.dropLast()
-        
-        if utf8View.count == 6 {
-            for (index, thisScalar) in utf8View.enumerated() {
-                if index % 2 == 0 {
-                    hexArray.removeAll()
-                    hexArray.append(thisScalar)
-                } else {
-                    hexArray.append(thisScalar)
-                    guard let colorFloat = CGFloat(byteArray: hexArray, base:16) else {
-                        continue
-                    }
-                    colorArray.append(colorFloat)
-                }
+        if workingString.count == 3 {
+            guard let asInt = UInt16(workingString, radix: 16) else {
+                return nil
             }
-        } else if utf8View.count == 3 {
-            for thisScalar in utf8View {
-                hexArray.removeAll()
-                hexArray.append(thisScalar)
-                hexArray.append(thisScalar)
-                guard let colorFloat = CGFloat(byteArray: hexArray, base:16) else {
-                    continue
-                }
-                colorArray.append(colorFloat)
+            let red = CGFloat((asInt & 0xF00) >> 8) / 15
+            let green = CGFloat((asInt & 0x0F0) >> 4) / 15
+            let blue = CGFloat(asInt & 0x00F) / 15
+            colorArray = [red, green, blue, 1.0]
+        } else if workingString.count == 4 {
+            guard let asInt = UInt16(workingString, radix: 16) else {
+                return nil
             }
+            let red = CGFloat((asInt & 0xF000) >> 12) / 15
+            let green = CGFloat((asInt & 0x0F00) >>  8) / 15
+            let blue = CGFloat((asInt & 0x00F0) >>  4) / 15
+            let alpha = CGFloat(asInt & 0x000F) / 15
+            colorArray = [red, green, blue, alpha]
+        } else if workingString.count == 6 {
+            guard let asInt = UInt32(workingString, radix: 16) else {
+                return nil
+            }
+            let red = CGFloat((asInt & 0xFF0000) >> 16) / 255
+            let green = CGFloat((asInt & 0x00FF00) >> 8) / 255
+            let blue = CGFloat(asInt & 0x0000FF) / 255
+            colorArray = [red, green, blue, 1.0]
+        } else if workingString.count == 8 {
+            guard let asInt = UInt32(workingString, radix: 16) else {
+                return nil
+            }
+            let red = CGFloat((asInt & 0xFF000000) >> 24) / 255
+            let green = CGFloat((asInt & 0x00FF0000) >> 16) / 255
+            let blue = CGFloat((asInt & 0x0000FF00) >> 8) / 255
+            let alpha = CGFloat(asInt & 0x000000FF) / 255
+            colorArray = [red, green, blue, alpha]
         } else {
             return nil
         }
-        self.init(red: colorArray[0] / 255.0, green: colorArray[1] / 255.0, blue: colorArray[2] / 255.0, alpha: alpha)
+        guard colorArray.count == 4 else {
+            return nil
+        }
+        self.init(red: colorArray[0], green: colorArray[1], blue: colorArray[2], alpha: colorArray[3])
     }
     
     /**
@@ -164,8 +182,8 @@ public extension UIColor {
      Convenience initializer that creates a new UIColor from a CSS3 named color
      - SeeAlso: See here for all the colors: [https://www.w3.org/TR/css3-color/#svg-color](https://www.w3.org/TR/css3-color/#svg-color)
      */
-    public convenience init?(named: String) {
-        guard let namedColor = CGColor.named[named] else {
+	convenience init?(cssName: String) {
+        guard let namedColor = CGColor.named[cssName.lowercased()] else {
             return nil
         }
         self.init(cgColor: namedColor)

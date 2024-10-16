@@ -22,5 +22,6 @@
     "JSONWebToken/NSData+SHA.h",
     "JSONWebToken/NSData+HMAC.h"
   ],
+  "swift_versions": "4.1",
   "swift_version": "4.1"
 }
