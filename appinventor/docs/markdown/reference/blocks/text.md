@@ -155,6 +155,14 @@ Returns a new text string obtained by replacing all occurrences of the substring
 
 Replace all with *She loves eating. She loves writing. She loves coding* as the text, *She* as the segment, and *Hannah* as the replacement would result in *Hannah loves eating. Hannah loves writing. Hannah loves coding*.
 
+Note:
+Regular expressions (regex) are patterns used for matching character combinations in strings. When using the "replace all" block, it's essential to be aware of special characters in regular expressions.Special characters like $, *, ., etc., have special meanings in regular expressions.
+If you want to use these characters as literal characters in your pattern, you need to escape them with a backslash (\\). 
+
+Example:
+replace all with *Price: $50.00* as the text,  *\$* as the segment, *€* as the replacement
+this would result in *Price: €50.00*
+
 ### obfuscated text   {#obfuscatetext}
 
 ![](images/text/obfuscatetext.png)

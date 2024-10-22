@@ -7,6 +7,7 @@
 package com.google.appinventor.client.utils;
 
 import com.google.common.base.Function;
+import com.google.gwt.user.client.Window;
 
 /**
  * Utility class for working with URLs.
@@ -37,4 +38,33 @@ public final class Urls {
       }
     };
   }
+
+  private static boolean isSet(String str) {
+    return str != null && !str.isEmpty();
+  }
+
+  /**
+   * Constructs a relative URI from the current window's location, carrying over the locale,
+   * repo, and galleryId parameters from the current session.
+   *
+   * @param base the base URI
+   * @return the new URI to redirect to
+   */
+  public static String makeUri(String base) {
+    String[] params = new String[] { "locale", "repo", "galleryId" };
+    String separator = "?";
+    StringBuilder sb = new StringBuilder(base);
+    for (String param : params) {
+      String value = Window.Location.getParameter(param);
+      if (isSet(value)) {
+        sb.append(separator);
+        sb.append(param);
+        sb.append("=");
+        sb.append(value);
+        separator = "&";
+      }
+    }
+    return sb.toString();
+  }
+
 }

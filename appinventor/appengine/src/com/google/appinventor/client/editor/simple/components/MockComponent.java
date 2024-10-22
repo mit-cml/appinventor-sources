@@ -101,7 +101,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
-  public String currentPreview;
 
   /**
    * This class defines the dialog box for renaming a component.
@@ -538,19 +537,27 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editor  property editor
    */
   public final void addProperty(String name, String defaultValue, String caption, String category,
-      String description, String editorType, String[] editorArgs, PropertyEditor editor) {
+                                String editorType, String[] editorArgs, PropertyEditor editor) {
 
-    int type = EditableProperty.TYPE_NORMAL;
+    String propertyDesc = ComponentsTranslation.getPropertyDescription(name
+      + "PropertyDescriptions");
+    if (propertyDesc.equals(name + "PropertyDescriptions")) {
+      propertyDesc = ComponentsTranslation.getPropertyDescription((type.equals("Form")
+          ? "Screen" : type) + "." + propertyDesc);
+    }
+
+    int propertyType = EditableProperty.TYPE_NORMAL;
     if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
+      propertyType |= EditableProperty.TYPE_NONPERSISTED;
     }
     if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
+      propertyType |= EditableProperty.TYPE_INVISIBLE;
     }
     if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
+      propertyType |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, category, description, editor, type, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, ComponentsTranslation.getPropertyName(caption),
+        ComponentsTranslation.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
   }
 
   protected final void addProperty(String name) {
@@ -1142,11 +1149,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   public void delete() {
     this.editor.getProjectEditor().clearLocation(getName());
-    getForm().select(null);
     // Pass true to indicate that the component is being permanently deleted.
     getContainer().removeComponent(this, true);
     // tell the component its been removed, so it can remove children's blocks
     onRemoved();
+    getForm().select(null);
     properties.removePropertyChangeListener(this);
     properties.clear();
   }
@@ -1233,7 +1240,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
             property.getEditorType(), property.getDefaultValue(),
             (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(),
-            property.getCategory(), property.getDescription(), property.getEditorType(),
+            property.getCategory(), property.getEditorType(),
             property.getEditorArgs(), propertyEditor);
       }
     }

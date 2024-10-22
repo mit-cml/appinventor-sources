@@ -822,11 +822,18 @@ Blockly.ReplMgr.putYail = (function() {
             }
             rxhr = null;
             top.usewebrtc = false;
-            rs.hasfetchassets = false;
+            rs = top.ReplState;
+            if (rs) {
+                rs.hasfetchassets = false;
+            }
             phonereceiving = false;
         },
         "resetcompanion" : function() {
             console.log("reseting companion");
+            rs = top.ReplState;
+            if (!rs) {
+                return;  // ReplState not yet configured, so nothing to do
+            }
             rs.state = Blockly.ReplMgr.rsState.IDLE;
             rs.connection = null;
             rs.extensionurl = undefined;
@@ -1423,7 +1430,9 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
             }
         }
         try {
-            top.webrtcdata.send("#DONE#"); // This should kill the companion
+            if (top.webrtcdata) {
+                top.webrtcdata.send("#DONE#"); // This should kill the companion
+            }
         } catch (err) {
             console.log("webrtcdata: Error: " + err);
         }
@@ -1474,7 +1483,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
-                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
+                if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
                     rs.dialog.hide();
                     top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                     top.BlocklyPanel_indicateDisconnect();
@@ -1523,9 +1532,14 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     xmlhttp.send();
 };
 
-Blockly.ReplMgr.hasExtensions = function() {
+Blockly.ReplMgr.hasDisallowedIosExtensions = function() {
     var extensions = top.AssetManager_getExtensions();
-    return extensions.length > 0;
+    for (var i = 0; i < extensions.length; i++) {
+        if (top.ALLOWED_IOS_EXTENSIONS.indexOf(extensions[i]) == -1) {
+            return true;
+        }
+    }
+    return false;
 };
 
 Blockly.ReplMgr.rendezvousDone = function() {

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2023-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,23 +11,23 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.LOBFValues;
+import com.google.appinventor.components.common.LinearRegression;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A data science component to apply different regression models.
  * The component only requires a data source to apply the model on.
  *
- * The component is only responsible for the statistical calculations and
+ *   The component is only responsible for the statistical calculations and
  * provides the following properties for line of best fit:
  * "slope", "Yintercept", "correlation coefficient", and "predictions"
  *
- * To draw the line of best fit use the drawing block in ChartData2D component
+ *   To draw the line of best fit use the drawing block in ChartData2D component
  */
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
     description = "A component that contains regression models",
@@ -35,8 +35,9 @@ import java.util.List;
     iconName = "images/regression.png",
     nonVisible = true)
 @SimpleObject
-@SuppressWarnings("checkstyle:JavadocParagraph")
+@SuppressWarnings({"checkstyle:JavadocParagraph", "JavadocBlankLines"})
 public final class Regression extends DataCollection<ComponentContainer, DataModel<?>> {
+  private static final LinearRegression LINEAR_REGRESSION = new LinearRegression();
 
   /**
    * Creates a new Regression component.
@@ -48,68 +49,13 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
   /**
    * Calculates the line of best fit.
    *
-   * @param xEntries - the list of x values
-   * @param yEntries - the list of y values
+   * @param x - the list of x values
+   * @param y - the list of y values
    * @return list. 1st element of the list is the slope, 2nd element is the intercept, 3rd
    *     correlation coefficient, 4th element is the line of best fit prediction values
    */
-  public static YailDictionary computeLineOfBestFit(final YailList xEntries,
-      final YailList yEntries) {
-    LList xValues = (LList) xEntries.getCdr();
-    List<Double> x = castToDouble(xValues);
-
-    LList yValues = (LList) yEntries.getCdr();
-    List<Double> y = castToDouble(yValues);
-
-    if (xValues.size() != yValues.size()) {
-      throw new IllegalStateException("Must have equal X and Y data points");
-    }
-    if (xValues.isEmpty() || xValues.isEmpty()) {
-      throw new IllegalStateException("List must have at least one element");
-    }
-    int n = xValues.size();
-
-    double sumx = 0.0;
-    double sumy = 0.0;
-    double sumXY = 0.0;
-    double squareSumX = 0.0;
-    double squareSumY = 0.0;
-    for (int i = 0; i < n; i++) {
-      sumx += x.get(i);
-      sumXY = sumXY + x.get(i) * y.get(i);
-      sumy += y.get(i);
-      squareSumX = squareSumX + x.get(i) * x.get(i);
-      squareSumY = squareSumY + y.get(i) * y.get(i);
-    }
-    double xmean = sumx / n;
-    double ymean = sumy / n;
-
-    double xxmean = 0.0;
-    double xymean = 0.0;
-    List<Double> predictions = new ArrayList<>();
-    for (int i = 0; i < n; i++) {
-      xxmean += (x.get(i) - xmean) * (x.get(i) - xmean);
-      xymean += (x.get(i) - xmean) * (y.get(i) - ymean);
-    }
-    double slope = xymean / xxmean;
-    double intercept = ymean - slope * xmean;
-
-    for (int i = 0; i < n; i++) {
-      double prediction = slope * x.get(i) + intercept;
-      predictions.add(prediction);
-    }
-
-    // use formula for calculating correlation coefficient.
-    double corr = (n * sumXY - sumx * sumy)
-        / (Math.sqrt((n * squareSumX - sumx * sumx) * (n * squareSumY - sumy * sumy)));
-
-    YailDictionary resultDic = new YailDictionary();
-    resultDic.put("slope",slope);
-    resultDic.put("Yintercept", intercept);
-    resultDic.put("correlation coefficient", corr);
-    resultDic.put("predictions", predictions);
-
-    return resultDic;
+  public static YailDictionary computeLineOfBestFit(List<Double> x, List<Double> y) {
+    return new YailDictionary(LINEAR_REGRESSION.compute(x, y));
   }
 
   /**
@@ -127,7 +73,8 @@ public final class Regression extends DataCollection<ComponentContainer, DataMod
       + "returns the complete dictionary with all values if no specific value string is provided")
   public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList,
       @Options(LOBFValues.class) String value) {
-    YailDictionary result = computeLineOfBestFit(xList, yList);
+    YailDictionary result = computeLineOfBestFit(castToDouble((LList) xList.getCdr()),
+        castToDouble((LList) yList.getCdr()));
     if (result.containsKey(value)) {
       return result.get(value);
     } else {

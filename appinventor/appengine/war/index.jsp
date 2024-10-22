@@ -1,4 +1,5 @@
 <%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures" %>
+<%@page import="com.google.appinventor.server.flags.Flag" %>
 <%
    if (request.getScheme().equals("http") && Server.isProductionServer()
        && AppInventorFeatures.enableHttpRedirect()) {
@@ -16,9 +17,10 @@
    if (AppInventorFeatures.enableHttpRedirect()) {
        response.setHeader("Strict-Transport-Security", "max-age=3600");
    }
+   final String odeBase = Flag.createFlag("ode.base", "").get();
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
-<!-- Copyright 2011-2020 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -62,8 +64,27 @@
         <li> Firefox 52+ </li>
       </ul>
     </div>
+    <% if (!odeBase.isEmpty()) { %>
+    <div id=odeblock style="display: none;">
+        <h1>If you see this message for an extended period of time, it might be because
+        your internet service is blocking requests to <%= odeBase %>. Contact your
+        administrator to check on this and remove the block.
+        </h1>
+    </div>
+    <% } %>
+    <script type="text/javascript">
+      (function() {
+        setTimeout(function() {
+          var block = document.getElementById('odeblock');
+          if (block) {
+            block.style.display = 'block';
+          }
+        }, 2000);
+      })();
+    </script>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
-    <script type="text/javascript" src="ode/ode.nocache.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
+    <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
     <script src="static/leaflet/leaflet-vector-markers.min.js"></script>

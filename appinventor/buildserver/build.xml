@@ -13,6 +13,10 @@
     App Inventor build server
   </description>
 
+  <condition property="ecj.version" value="4.5.1" else="3.23.0">
+    <matches pattern="1.\d+" string="${java.specification.version}" />
+  </condition>
+
   <!-- Project Libraries -->
 
   <target name="all"
@@ -79,6 +83,7 @@
     <copy toFile="${classes.tools.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${classes.tools.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-1.7.1.jar" />
     <copy toFile="${classes.tools.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <copy toFile="${classes.tools.dir}/d8.jar" file="${lib.dir}/android/tools/d8.jar" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />
@@ -117,7 +122,7 @@
       <fileset dir="${lib.dir}" includes="android/tools/builder-model-1.3.0.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/sdk-common-24.3.0.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/layoutlib-api-24.3.0.jar"/>
-      <fileset dir="${lib.dir}" includes="ecj/ecj-4.5.1.jar"/>
+      <fileset dir="${lib.dir}" includes="ecj/ecj-${ecj.version}.jar"/>
       <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
@@ -379,14 +384,12 @@
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/bouncycastle/bcprov-jdk15on-149.jar" />
-    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
-    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
-    <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
-    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
-    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+
+    <!-- Powermock and dependencies -->
+    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
   </path>
 
   <path id="BuildServerTests.path">

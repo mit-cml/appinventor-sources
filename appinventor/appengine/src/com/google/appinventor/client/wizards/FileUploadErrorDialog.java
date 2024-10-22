@@ -23,7 +23,7 @@ import java.util.Collection;
 public class FileUploadErrorDialog {
   interface FileUploadErrorUiBinder extends UiBinder<Dialog, FileUploadErrorDialog> {}
 
-  private static final FileUploadErrorUiBinder UI_BINDER =
+  private static final FileUploadErrorUiBinder uibinder =
       GWT.create(FileUploadErrorDialog.FileUploadErrorUiBinder.class);
 
   @UiField Dialog uploadError;
@@ -41,7 +41,7 @@ public class FileUploadErrorDialog {
     this.acceptableTypes = acceptableTypes;
     this.fileUploadedCallback = fileUploadedCallback;
 
-    UI_BINDER.createAndBindUi(this);
+    uibinder.createAndBindUi(this);
     uploadError.setText(title);
     errorMessage.setHTML(body);
 
@@ -61,7 +61,7 @@ public class FileUploadErrorDialog {
   @UiHandler("okButton")
   void okDialog(@SuppressWarnings("unused") ClickEvent e) {
     uploadError.hide();
-    new FileUploadWizard(folderNode, acceptableTypes, fileUploadedCallback);
+    new FileUploadWizard(folderNode, acceptableTypes, fileUploadedCallback).show();
   }
 
   @UiHandler("infoButton")

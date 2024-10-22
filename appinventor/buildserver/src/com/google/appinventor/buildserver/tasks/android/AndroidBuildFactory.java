@@ -10,6 +10,8 @@ import com.google.appinventor.buildserver.Compiler;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
 import com.google.appinventor.buildserver.tasks.common.BuildFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The AndroidBuildFactory is responsible for setting up the sequence of tasks
@@ -17,6 +19,19 @@ import com.google.appinventor.buildserver.tasks.common.BuildFactory;
  * supports creating both Android Packages (APKs) and Android App Bundles (AABs).
  */
 public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompilerContext> {
+  private static final Logger LOG = Logger.getLogger(AndroidBuildFactory.class.getName());
+  private static final boolean USE_D8;
+
+  static {
+    double version = 1.8;
+    try {
+      version = Double.parseDouble(System.getProperty("java.specification.version"));
+    } catch (NumberFormatException e) {
+      // In theory this shouldn't happen, but we will assume Java 1.8 or earlier if it does
+      LOG.log(Level.SEVERE, "Unable to determine Java version", e);
+    }
+    USE_D8 = version >= 9;
+  }
 
   private final boolean isAab;
 
@@ -63,7 +78,7 @@ public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompi
   protected void compileSources(Compiler<AndroidPaths, AndroidCompilerContext> compiler) {
     super.compileSources(compiler);
     compiler.add(GenerateClasses.class);
-    compiler.add(RunMultidex.class);
+    compiler.add(USE_D8 ? RunD8.class : RunMultidex.class);
   }
 
   @Override

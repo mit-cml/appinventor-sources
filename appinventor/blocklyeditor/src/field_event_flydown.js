@@ -57,13 +57,13 @@ Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
         '<block type="lexical_variable_get">' +
           mutation +
           '<field name="VAR">' +
-            name +
+            this.param.name +
           '</field>' +
         '</block>' +
         '<block type="lexical_variable_set">' +
           mutation +
           '<field name="VAR">' +
-            name +
+            this.param.name +
           '</field>' +
           helper +
         '</block>' +

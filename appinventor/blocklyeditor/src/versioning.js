@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2022 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2024 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -183,6 +183,13 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
       systemYoungAndroidVersion >= 218) {
     // Spreadsheet was introduced as GoogleSheets in 217 but renamed in 218
     blocksRep = Blockly.Versioning.renameComponentType("GoogleSheets", "Spreadsheet")(blocksRep);
+  }
+
+  if ((versionTags.length === 0 ||
+       parseInt(versionTags[0].getAttribute('ya-version'), 10) <= 227) &&
+       systemYoungAndroidVersion >= 228) {
+    // Trendline was introduced as LineOfBestFit in 227 but renamed in 228
+    blocksRep = Blockly.Versioning.renameComponentType('LineOfBestFit', 'Trendline')(blocksRep);
   }
 
   // --------------------------------------------------------------------------------
@@ -1594,6 +1601,12 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ActivityStarter upgraders
 
+  "AnomalyDetection": {
+    // AI2: The AnomalyDetection.DetectAnomaliesInChartData method was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
+  }, // End AnomalyDetection upgraders
+
   "Ball": {
 
     // AI1: The PointTowards method was added (for all sprites).
@@ -1837,7 +1850,10 @@ Blockly.Versioning.AllUpgradeMaps =
   }, // End Canvas upgraders
 
   "Chart": {
-    2: "noUpgrade"
+    // AI2: The SetDomain and SetRange methods were added.
+    2: "noUpgrade",
+    // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
+    3: "noUpgrade"
 
   }, // End Chart upgraders
 
@@ -1851,6 +1867,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ApiKey property was made visible in the designer
     2: "noUpgrade",
+
+    // The ConverseWithImage method was added
+    3: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -1955,7 +1974,18 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // RequestFocus was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of EmailPicker (6).
+    4: "noUpgrade",
+    5: "noUpgrade",
+    6: "noUpgrade",
+
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
+      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
 
   }, // End EmailPicker upgraders
 
@@ -2169,6 +2199,12 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
             Blockly.Versioning.tryReplaceBlockWithAssets)],
 
+    // The MarkOrigin, OriginX, and OriginY properties were added.
+    9: "noUpgrade",
+
+    // A fix for the MarkOrigin, OriginX, and OriginY properties in the designer was fixed
+    10: "noUpgrade"
+
   }, // End ImageSprite upgraders
 
   "Label": {
@@ -2357,7 +2393,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added mode on List Mathematical Operations
     // AI2: Added "every component" block.
     36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
-         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')],
+
+    37: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2771,7 +2809,16 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // NumbersOnly was added
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of PasswordTextBox (6).
+    6: "noUpgrade",
+
+    // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    7: [
+      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
 
   }, // End PasswordTextBox upgraders
 
@@ -3142,8 +3189,23 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added RequestFocus method
     5: "noUpgrade",
 
-    // AI3: Added ReadOnly property
-    6: "noUpgrade"
+    // AI2: Added ReadOnly property
+    6: "noUpgrade",
+
+    // AI2: Jump to match Kodular's version of TextBox (13).
+    7: "noUpgrade",
+    8: "noUpgrade",
+    9: "noUpgrade",
+    10: "noUpgrade",
+    11: "noUpgrade",
+    12: "noUpgrade",
+    13: "noUpgrade",
+
+    // AI2: TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+    14: [
+      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
+      Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
+      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
 
   }, // End TextBox upgraders
 

@@ -107,12 +107,10 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
-        "Appearance", ComponentsTranslation.getPropertyDescription(getType() + ".WidthPropertyDescriptions"),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
-        "Appearance", ComponentsTranslation.getPropertyDescription(getType() + ".HeightPropertyDescriptions"),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -159,16 +157,5 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     }
-  }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
-    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
   }
 }

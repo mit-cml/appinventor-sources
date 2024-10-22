@@ -137,7 +137,6 @@
   <li><a href="#PhoneNumberPicker">PhoneNumberPicker</a></li>
   <li><a href="#Sharing">Sharing</a></li>
   <li><a href="#Texting">Texting</a></li>
-  <li><a href="#Twitter">Twitter</a></li>
 </ul>
 
 <h2 id="ContactPicker">ContactPicker</h2>
@@ -310,6 +309,8 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="EmailPicker.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">EmailPicker</code> hint for the user.</dd>
+  <dt id="EmailPicker.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the EmailPicker.</dd>
   <dt id="EmailPicker.Text" class="text"><em>Text</em></dt>
   <dd>The text in the <code class="highlighter-rouge">EmailPicker</code>, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the <a href="#EmailPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
@@ -340,11 +341,19 @@
   <dt id="EmailPicker.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">EmailPicker</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="EmailPicker.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the EmailPicker is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="EmailPicker-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="EmailPicker.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the EmailPicker before the character at the given 1-indexed position. If the given position is larger than the length of the EmailPicker, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="EmailPicker.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the EmailPicker’s text.</dd>
+  <dt id="EmailPicker.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the EmailPicker’s text.</dd>
   <dt id="EmailPicker.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">EmailPicker</code>.</dd>
 </dl>
@@ -544,9 +553,12 @@
 
 <p>The file path can be taken directly from other components such as the
  <a href="media.html#Camera"><code class="highlighter-rouge">Camera</code></a> or the <a href="media.html#ImagePicker"><code class="highlighter-rouge">ImagePicker</code></a>, but can also be
- specified directly to read from storage. Be aware that different devices treat storage
- differently, so a few things to try if, for instance, you have a file called <code class="highlighter-rouge">arrow.gif</code> in the
- folder <code class="highlighter-rouge">Appinventor/assets</code>, would be:</p>
+ specified directly to read from storage. The default behaviour is to share files from the private
+ data directory associated with your app. If the file path starts with a slash (<code class="highlighter-rouge">/</code>), then the file
+ relative to <code class="highlighter-rouge">/</code> is shared.</p>
+
+<p>Be aware that different devices treat storage differently, so a few things to try if, for
+ instance, you have a file called <code class="highlighter-rouge">arrow.gif</code> in the folder <code class="highlighter-rouge">Appinventor/assets</code>, would be:</p>
 
 <ul>
   <li><code class="highlighter-rouge">"file:///sdcard/Appinventor/assets/arrow.gif"</code>; or</li>
@@ -659,203 +671,6 @@
  that will require additional approval if your app is submitted to the Google Play Store.</strong></dd>
 </dl>
 
-<h2 id="Twitter">Twitter</h2>
-
-<p>A non-visible component that enables communication with <a href="https://twitter.com">Twitter</a>. Once a
- user has logged into their Twitter account (and the authorization has been confirmed successful
- by the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event), many more operations are available:</p>
-
-<ul>
-  <li>Searching Twitter for tweets or labels (<a href="#Twitter.SearchTwitter"><code class="highlighter-rouge">SearchTwitter</code></a>)</li>
-  <li>Sending a Tweet (<a href="#Twitter.Tweet"><code class="highlighter-rouge">Tweet</code></a>)</li>
-  <li>Sending a Tweet with an Image (<a href="#Twitter.TweetWithImage"><code class="highlighter-rouge">TweetWithImage</code></a>)</li>
-  <li>Directing a message to a specific user (<a href="#Twitter.DirectMessage"><code class="highlighter-rouge">DirectMessage</code></a>)</li>
-  <li>Receiving the most recent messages directed to the logged-in user (<a href="#Twitter.RequestDirectMessages"><code class="highlighter-rouge">RequestDirectMessages</code></a>)</li>
-  <li>Following a specific user (<a href="#Twitter.Follow"><code class="highlighter-rouge">Follow</code></a>)</li>
-  <li>Ceasing to follow a specific user (<a href="#Twitter.StopFollowing"><code class="highlighter-rouge">StopFollowing</code></a>)</li>
-  <li>Getting a list of users following the logged-in user (<a href="#Twitter.RequestFollowers"><code class="highlighter-rouge">RequestFollowers</code></a>)</li>
-  <li>Getting the most recent messages of users followed by the logged-in user (<a href="#Twitter.RequestFriendTimeline"><code class="highlighter-rouge">RequestFriendTimeline</code></a>)</li>
-  <li>Getting the most recent mentions of the logged-in user (<a href="#Twitter.RequestMentions"><code class="highlighter-rouge">RequestMentions</code></a>)</li>
-</ul>
-
-<p>You must obtain a Consumer Key and Consumer Secret for Twitter authorization specific to your
- app from http://twitter.com/oauth_clients/new</p>
-
-<h3 id="Twitter-Properties">Properties</h3>
-
-<dl class="properties">
-  <dt id="Twitter.ConsumerKey" class="text"><em>ConsumerKey</em></dt>
-  <dd>The consumer key to be used when authorizing with Twitter via OAuth.</dd>
-  <dt id="Twitter.ConsumerSecret" class="text"><em>ConsumerSecret</em></dt>
-  <dd>The consumer secret to be used when authorizing with Twitter via OAuth.</dd>
-  <dt id="Twitter.DirectMessages" class="list ro bo"><em>DirectMessages</em></dt>
-  <dd>This property contains a list of the most recent messages mentioning the logged-in user.
- Initially, the list is empty. To set it, the program must:
-
-    <ol>
-      <li>Call the <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event.</li>
-      <li>Call the <a href="#Twitter.RequestDirectMessages"><code class="highlighter-rouge">RequestDirectMessages</code></a> method.
- 4, Wait for the <a href="#Twitter.DirectMessagesReceived"><code class="highlighter-rouge">DirectMessagesReceived</code></a> event.</li>
-    </ol>
-
-    <p>The value of this property will then be set to the list of direct messages retrieved (and
- maintain that value until any subsequent call to <a href="#Twitter.RequestDirectMessages"><code class="highlighter-rouge">RequestDirectMessages</code></a>).</p>
-  </dd>
-  <dt id="Twitter.Followers" class="list ro bo"><em>Followers</em></dt>
-  <dd>This property contains a list of the followers of the logged-in user. Initially, the list is
- empty. To set it, the program must:
-
-    <ol>
-      <li>Call the <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event.</li>
-      <li>Call the <a href="#Twitter.RequestFollowers"><code class="highlighter-rouge">RequestFollowers</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.FollowersReceived"><code class="highlighter-rouge">FollowersReceived</code></a> event.</li>
-    </ol>
-
-    <p>The value of this property will then be set to the list of followers (and maintain its value
- until any subsequent call to <a href="#Twitter.RequestFollowers"><code class="highlighter-rouge">RequestFollowers</code></a>).</p>
-  </dd>
-  <dt id="Twitter.FriendTimeline" class="list ro bo"><em>FriendTimeline</em></dt>
-  <dd>This property contains the 20 most recent messages of users being followed. Initially, the
- list is empty. To set it, the program must:
-
-    <ol>
-      <li>Call the <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event.</li>
-      <li>Specify users to follow with one or more calls to the <a href="#Twitter.Follow"><code class="highlighter-rouge">Follow</code></a> method.</li>
-      <li>Call the <a href="#Twitter.RequestFriendTimeline"><code class="highlighter-rouge">RequestFriendTimeline</code></a>  method.</li>
-      <li>Wait for the <a href="#Twitter.FriendTimelineReceived"><code class="highlighter-rouge">FriendTimelineReceived</code></a> event.</li>
-    </ol>
-
-    <p>The value of this property will then be set to the list of messages (and maintain its value
- until any subsequent call to <a href="#Twitter.RequestFriendTimeline"><code class="highlighter-rouge">RequestFriendTimeline</code></a>.</p>
-  </dd>
-  <dt id="Twitter.Mentions" class="list ro bo"><em>Mentions</em></dt>
-  <dd>This property contains a list of mentions of the logged-in user. Initially, the list is empty.
- To set it, the program must:
-
-    <ol>
-      <li>Call the <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event.</li>
-      <li>Call the <a href="#Twitter.RequestMentions"><code class="highlighter-rouge">RequestMentions</code></a> method.</li>
-      <li>Wait for the <a href="#Twitter.MentionsReceived"><code class="highlighter-rouge">MentionsReceived</code></a> event.</li>
-    </ol>
-
-    <p>The value of this property will then be set to the list of mentions (and will maintain its
- value until any subsequent calls to <a href="#Twitter.RequestMentions"><code class="highlighter-rouge">RequestMentions</code></a>).</p>
-  </dd>
-  <dt id="Twitter.SearchResults" class="list ro bo"><em>SearchResults</em></dt>
-  <dd>This property, which is initially empty, is set to a list of search results after the program:
-
-    <ol>
-      <li>Calls the <a href="#Twitter.SearchTwitter"><code class="highlighter-rouge">SearchTwitter</code></a> method.</li>
-      <li>Waits for the <a href="#Twitter.SearchSuccessful"><code class="highlighter-rouge">SearchSuccessful</code></a> event.</li>
-    </ol>
-
-    <p>The value of the property will then be the same as the parameter to
- <a href="#Twitter.SearchSuccessful"><code class="highlighter-rouge">SearchSuccessful</code></a>. Note that it is not necessary to call the <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a>
- method before calling <a href="#Twitter.SearchTwitter"><code class="highlighter-rouge">SearchTwitter</code></a>.</p>
-  </dd>
-  <dt id="Twitter.Username" class="text ro bo"><em>Username</em></dt>
-  <dd>The user name of the authorized user. Empty if there is no authorized user.</dd>
-</dl>
-
-<h3 id="Twitter-Events">Events</h3>
-
-<dl class="events">
-  <dt id="Twitter.DirectMessagesReceived">DirectMessagesReceived(<em class="list">messages</em>)</dt>
-  <dd>This event is raised when the recent messages requested through
- <a href="#Twitter.RequestDirectMessages"><code class="highlighter-rouge">RequestDirectMessages</code></a> have been retrieved. A list of the messages can then be found
- in the <code class="variable block highlighter-rouge">messages</code> parameter or the <a href="#Twitter.DirectMessages"><code class="highlighter-rouge">DirectMessages</code></a> property.</dd>
-  <dt id="Twitter.FollowersReceived">FollowersReceived(<em class="list">followers2</em>)</dt>
-  <dd>This event is raised when all of the followers of the logged-in user requested through
- <a href="#Twitter.RequestFollowers"><code class="highlighter-rouge">RequestFollowers</code></a> have been retrieved. A list of the followers can then be found in
- the <code class="variable block highlighter-rouge">followers</code> parameter or the <a href="#Twitter.Followers"><code class="highlighter-rouge">Followers</code></a> property.</dd>
-  <dt id="Twitter.FriendTimelineReceived">FriendTimelineReceived(<em class="list">timeline</em>)</dt>
-  <dd>This event is raised when the messages requested through <a href="#Twitter.RequestFriendTimeline"><code class="highlighter-rouge">RequestFriendTimeline</code></a> have
- been retrieved. The <code class="variable block highlighter-rouge">timeline</code> parameter and the <a href="#Twitter.FriendTimeline"><code class="highlighter-rouge">FriendTimeline</code></a>
- property will contain a list of lists, where each sub-list contains a status update of the
- form (username message).</dd>
-  <dt id="Twitter.IsAuthorized">IsAuthorized()</dt>
-  <dd>This event is raised after the program calls <a href="#Twitter.Authorize"><code class="highlighter-rouge">Authorize</code></a> if the authorization was
- successful. It is also called after a call to <a href="#Twitter.CheckAuthorized"><code class="highlighter-rouge">CheckAuthorized</code></a> if we already have a
- valid access token. After this event has been raised, any other method for this component can
- be called.</dd>
-  <dt id="Twitter.MentionsReceived">MentionsReceived(<em class="list">mentions</em>)</dt>
-  <dd>This event is raised when the mentions of the logged-in user requested through
- <a href="#Twitter.RequestMentions"><code class="highlighter-rouge">RequestMentions</code></a> have been retrieved. A list of the mentions can then be found in
- the <code class="variable block highlighter-rouge">mentions</code> parameter or the <a href="#Twitter.Mentions"><code class="highlighter-rouge">Mentions</code></a> property.</dd>
-  <dt id="Twitter.SearchSuccessful">SearchSuccessful(<em class="list">searchResults</em>)</dt>
-  <dd>This event is raised when the results of the search requested through
- <a href="#Twitter.SearchTwitter"><code class="highlighter-rouge">SearchTwitter</code></a> have been retrieved. A list of the results can then be found in
- the <code class="variable block highlighter-rouge">results</code> parameter or the <a href="#Twitter.SearchResults"><code class="highlighter-rouge">SearchResults</code></a> property.</dd>
-</dl>
-
-<h3 id="Twitter-Methods">Methods</h3>
-
-<dl class="methods">
-  <dt id="Twitter.Authorize" class="method"><i></i> Authorize()</dt>
-  <dd>Redirects user to login to Twitter via the Web browser using the OAuth protocol if we don’t already have authorization.</dd>
-  <dt id="Twitter.CheckAuthorized" class="method"><i></i> CheckAuthorized()</dt>
-  <dd>Check whether we already have access, and if so, causes the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event
- handler to be called.</dd>
-  <dt id="Twitter.DeAuthorize" class="method"><i></i> DeAuthorize()</dt>
-  <dd>Removes Twitter authorization from this running app instance.</dd>
-  <dt id="Twitter.DirectMessage" class="method"><i></i> DirectMessage(<em class="text">user</em>,<em class="text">message</em>)</dt>
-  <dd>This sends a direct (private) message to the specified user. The message will be trimmed if it
- exceeds 160 characters.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-  <dt id="Twitter.Follow" class="method"><i></i> Follow(<em class="text">user</em>)</dt>
-  <dd>Starts following a user.</dd>
-  <dt id="Twitter.RequestDirectMessages" class="method"><i></i> RequestDirectMessages()</dt>
-  <dd>Requests the 20 most recent direct messages sent to the logged-in user. When the messages have
- been retrieved, the system will raise the <a href="#Twitter.DirectMessagesReceived"><code class="highlighter-rouge">DirectMessagesReceived</code></a> event and set
- the <a href="#Twitter.DirectMessages"><code class="highlighter-rouge">DirectMessages</code></a> property to the list of messages.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-  <dt id="Twitter.RequestFollowers" class="method"><i></i> RequestFollowers()</dt>
-  <dd>Gets who is following you.</dd>
-  <dt id="Twitter.RequestFriendTimeline" class="method"><i></i> RequestFriendTimeline()</dt>
-  <dd>Gets the most recent 20 messages in the user’s timeline.</dd>
-  <dt id="Twitter.RequestMentions" class="method"><i></i> RequestMentions()</dt>
-  <dd>Requests the 20 most recent mentions of the logged-in user. When the mentions have been
- retrieved, the system will raise the <a href="#Twitter.MentionsReceived"><code class="highlighter-rouge">MentionsReceived</code></a> event and set the
- <a href="#Twitter.Mentions"><code class="highlighter-rouge">Mentions</code></a> property to the list of mentions.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-  <dt id="Twitter.SearchTwitter" class="method"><i></i> SearchTwitter(<em class="text">query</em>)</dt>
-  <dd>This searches Twitter for the given String query.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-  <dt id="Twitter.StopFollowing" class="method"><i></i> StopFollowing(<em class="text">user</em>)</dt>
-  <dd>Stops following a user.</dd>
-  <dt id="Twitter.Tweet" class="method"><i></i> Tweet(<em class="text">status</em>)</dt>
-  <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it
- exceeds 160 characters.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-  <dt id="Twitter.TweetWithImage" class="method"><i></i> TweetWithImage(<em class="text">status</em>,<em class="text">imagePath</em>)</dt>
-  <dd>This sends a tweet as the logged-in user with the specified Text and a path to the image to be
- uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or
- invalid, the update will not be sent.
-
-    <p><strong>Requirements</strong>: This should only be called after the <a href="#Twitter.IsAuthorized"><code class="highlighter-rouge">IsAuthorized</code></a> event has
- been raised, indicating that the user has successfully logged in to Twitter.</p>
-  </dd>
-</dl>
-
 </article>
 <script>
   // Handle redirection to documentation based on locale query parameter (if specified)
@@ -934,7 +749,7 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -953,15 +768,16 @@
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

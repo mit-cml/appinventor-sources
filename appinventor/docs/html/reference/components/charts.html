@@ -133,6 +133,7 @@
 <ul>
   <li><a href="#Chart">Chart</a></li>
   <li><a href="#ChartData2D">ChartData2D</a></li>
+  <li><a href="#Trendline">Trendline</a></li>
 </ul>
 
 <h2 id="Chart">Chart</h2>
@@ -181,7 +182,7 @@
   <dt id="Chart.PieRadius" class="number wo do"><em>PieRadius</em></dt>
   <dd>Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.</dd>
-  <dt id="Chart.Type" class="com google appinventor components common ChartTypeEnum do"><em>Type</em></dt>
+  <dt id="Chart.Type" class="com google appinventor components common ChartTypeEnum ro"><em>Type</em></dt>
   <dd>Specifies the type of the Chart, which determines how to visualize the data.</dd>
   <dt id="Chart.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">Chart</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
@@ -210,6 +211,14 @@
 <h3 id="Chart-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="Chart.ExtendDomainToInclude" class="method"><i></i> ExtendDomainToInclude(<em class="number">x</em>)</dt>
+  <dd>Extends the domain of the chart to include the provided x value. If x is already within the
+ bounds of the domain, this method has no effect.</dd>
+  <dt id="Chart.ExtendRangeToInclude" class="method"><i></i> ExtendRangeToInclude(<em class="number">y</em>)</dt>
+  <dd>Extends the range of the chart to include the provided y value. If y is already within the
+ bounds of the range, this method has no effect.</dd>
+  <dt id="Chart.ResetAxes" class="method"><i></i> ResetAxes()</dt>
+  <dd>Resets the axes of the chart to their original bounds.</dd>
   <dt id="Chart.SetDomain" class="method"><i></i> SetDomain(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
   <dd>Sets the minimum and maximum for the domain of the X axis.</dd>
   <dt id="Chart.SetRange" class="method"><i></i> SetRange(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
@@ -359,8 +368,6 @@ numerical values are returned.</li>
  values exists. The boolean value of true is returned if the value exists,
  and a false value otherwise. See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a>
  for an explanation of the valid entry values.</dd>
-  <dt id="ChartData2D.DrawLineOfBestFit" class="method"><i></i> DrawLineOfBestFit(<em class="list">xList</em>,<em class="list">yList</em>)</dt>
-  <dd>Draws the line of best fit.</dd>
   <dt id="ChartData2D.GetAllEntries" class="method returns list"><i></i> GetAllEntries()</dt>
   <dd>Returns all entries of the data series.
  The returned value is a list, where each element of the list
@@ -387,7 +394,7 @@ numerical values are returned.</li>
  for the x values, and the specified y column for the y values. The DataFile’s source file
  is expected to be either a CSV or a JSON file.
 
-    <p>Passing in empty test for any of the column parameters will result in the usage of
+    <p>Passing in empty text for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.</p>
   </dd>
@@ -432,6 +439,91 @@ numerical values are returned.</li>
   <dt id="ChartData2D.RemoveEntry" class="method"><i></i> RemoveEntry(<em class="text">x</em>,<em class="text">y</em>)</dt>
   <dd>Removes an entry with the specified x and y value, provided it exists.
  See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a> for an explanation of the valid entry values.</dd>
+</dl>
+
+<h2 id="Trendline">Trendline</h2>
+
+<p>The Trendline component can be used to visualize the trend of a data series represented by a
+ ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
+ instance, either set the ChartData property in the design view of the app or use the setter
+ block. The Trendline will update automatically if its associated ChartData2D is changed.</p>
+
+<p>There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.</p>
+
+<ul>
+  <li>Linear: y = m*x + b, where m is LinearCoefficient and b is YIntercept</li>
+  <li>Quadratic: y = a*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+LinearCoefficient, and c is YIntercept</li>
+  <li>Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient</li>
+  <li>Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+ExponentialBase</li>
+</ul>
+
+<p>For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.</p>
+
+<h3 id="Trendline-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Trendline.ChartData" class="component wo"><em>ChartData</em></dt>
+  <dd>The data series for which to compute the line of best fit.</dd>
+  <dt id="Trendline.Color" class="color"><em>Color</em></dt>
+  <dd>The color of the line of best fit.</dd>
+  <dt id="Trendline.CorrelationCoefficient" class="number ro bo"><em>CorrelationCoefficient</em></dt>
+  <dd>The correlation coefficient of the trendline to the data.</dd>
+  <dt id="Trendline.ExponentialBase" class="number ro bo"><em>ExponentialBase</em></dt>
+  <dd>The base of the exponential term in the equation y = a*b^x.</dd>
+  <dt id="Trendline.ExponentialCoefficient" class="number ro bo"><em>ExponentialCoefficient</em></dt>
+  <dd>The coefficient of the exponential term in the equation y = a*b^x.</dd>
+  <dt id="Trendline.Extend" class="boolean"><em>Extend</em></dt>
+  <dd>Whether to extend the line of best fit beyond the data.</dd>
+  <dt id="Trendline.LinearCoefficient" class="number ro bo"><em>LinearCoefficient</em></dt>
+  <dd>The coefficient of the linear term in the trendline.</dd>
+  <dt id="Trendline.LogarithmCoefficient" class="number ro bo"><em>LogarithmCoefficient</em></dt>
+  <dd>The coefficient of the logarithmic term in the equation y = a + b*ln(x).</dd>
+  <dt id="Trendline.LogarithmConstant" class="number ro bo"><em>LogarithmConstant</em></dt>
+  <dd>The constant term in the logarithmic equation y = a + b*ln(x).</dd>
+  <dt id="Trendline.Model" class="com google appinventor components common BestFitModelEnum"><em>Model</em></dt>
+  <dd>The model to use for the line of best fit.</dd>
+  <dt id="Trendline.Predictions" class="list ro bo"><em>Predictions</em></dt>
+  <dd>The predictions for the trendline.</dd>
+  <dt id="Trendline.QuadraticCoefficient" class="number ro bo"><em>QuadraticCoefficient</em></dt>
+  <dd>The coefficient of the quadratic term in the trendline, if any.</dd>
+  <dt id="Trendline.RSquared" class="number ro bo"><em>RSquared</em></dt>
+  <dd>The r-squared coefficient of determination for the trendline.</dd>
+  <dt id="Trendline.Results" class="dictionary ro bo"><em>Results</em></dt>
+  <dd>Obtain a copy of the most recent values computed by the line of best fit.</dd>
+  <dt id="Trendline.StrokeStyle" class="com google appinventor components common StrokeStyleEnum"><em>StrokeStyle</em></dt>
+  <dd>The style of the best fit line.</dd>
+  <dt id="Trendline.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>The width of the best fit line.</dd>
+  <dt id="Trendline.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Whether the line of best fit is visible.</dd>
+  <dt id="Trendline.XIntercepts" class="any ro bo"><em>XIntercepts</em></dt>
+  <dd>The X-intercepts of the trendline (where the line crosses the X-axis), if any. Possible
+ values are NaN (no intercept), a single value (one intercept), or a list of values.</dd>
+  <dt id="Trendline.YIntercept" class="number ro bo"><em>YIntercept</em></dt>
+  <dd>The Y-intercept of the trendline (constant term).</dd>
+</dl>
+
+<h3 id="Trendline-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Trendline.Updated">Updated(<em class="dictionary">results</em>)</dt>
+  <dd>Event indicating that the line of best fit has been updated.</dd>
+</dl>
+
+<h3 id="Trendline-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Trendline.DisconnectFromChartData" class="method"><i></i> DisconnectFromChartData()</dt>
+  <dd>Disconnect the Trendline from a previously associated ChartData2D.</dd>
+  <dt id="Trendline.GetResultValue" class="method returns any"><i></i> GetResultValue(<em class="text">value</em>)</dt>
+  <dd>Get the field of the most recent values computed by the line of best fit. The available
+ values vary based on the model used. For example, a linear model will have slope and
+ Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.</dd>
 </dl>
 
 </article>
@@ -512,7 +604,7 @@ numerical values are returned.</li>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -531,15 +623,16 @@ numerical values are returned.</li>
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

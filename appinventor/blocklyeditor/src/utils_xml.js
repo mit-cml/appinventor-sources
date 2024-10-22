@@ -144,6 +144,10 @@ Blockly.Util.xml.helperKeyToXML= function(helperKey) {
       return this.blockTypeToXML('helpers_dropdown', {key: helperKey.key});
     case 'ASSET':
       return this.blockTypeToXML('helpers_assets');
+    case 'PROVIDER_MODEL':
+      return this.blockTypeToXML('helpers_providermodel');
+    case 'PROVIDER':
+      return this.blockTypeToXML('helpers_provider');
   }
 }
 

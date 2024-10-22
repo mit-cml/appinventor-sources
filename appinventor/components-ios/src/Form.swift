@@ -263,6 +263,7 @@ let kMinimumToastWait = 10.0
     for subview in subviews {
       subview.removeFromSuperview()
     }
+    _linearView.resetView()
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
@@ -279,6 +280,7 @@ let kMinimumToastWait = 10.0
       _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(origin: .zero, size: view.frame.size))
     }
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
+    _linearView.scrollEnabled = _scrollable
     _scaleFrameLayout.addSubview(_linearView)
     view.addSubview(_scaleFrameLayout)
     _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
@@ -467,9 +469,16 @@ let kMinimumToastWait = 10.0
       return _backgroundImage
     }
     set(path) {
-      if let image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
-        _linearView.backgroundColor = UIColor(patternImage: image)
+      if path == _backgroundImage {
+        // Already using this image
+        return
+      } else if path != "", let image = AssetManager.shared.imageFromPath(path: path) {
+        _linearView.image = image
         _backgroundImage = path
+      } else {
+        _backgroundImage = ""
+        _linearView.image = nil
+        _linearView.backgroundColor = argbToColor(_backgroundColor)
       }
     }
   }
