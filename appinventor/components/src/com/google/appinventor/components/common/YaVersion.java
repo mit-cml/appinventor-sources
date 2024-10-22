@@ -1152,7 +1152,9 @@ public class YaVersion {
   // - Added ...
   // For LISTVIEW_COMPONENT_VERSION 7:
   // - Added RemoveItemAtIndex method
-  public static final int LISTVIEW_COMPONENT_VERSION = 7;
+  // For LISTVIEW_COMPONENT_VERSION 8:
+  // Added HintText property, performance optimization
+  public static final int LISTVIEW_COMPONENT_VERSION = 8;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

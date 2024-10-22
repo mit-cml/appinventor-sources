@@ -140,7 +140,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
     txtSearchBox.setPadding(10, 10, 10, 10);
-    Hint("Search list...");
+    HintText("Search list...");
     if (!AppInventorCompatActivity.isClassicMode()) {
       txtSearchBox.setBackgroundColor(COLOR_WHITE);
     }
@@ -237,13 +237,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       defaultValue= "Search list...")
   @SimpleProperty (description = "Sets hint on the filter bar.",
       category = PropertyCategory.BEHAVIOR)
-  public void Hint(String hint) {
+  public void HintText(String hint) {
     this.hint = hint;
     txtSearchBox.setHint(hint);
   }
 
   @SimpleProperty
-  public String Hint() {
+  public String HintText() {
     return hint;
   }
 

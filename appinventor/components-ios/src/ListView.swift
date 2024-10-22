@@ -307,7 +307,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  @objc open var Hint: String {
+  @objc open var HintText: String {
     get {
       return _hint
     }
