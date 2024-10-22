@@ -93,7 +93,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc public var ScaleGraduation: Int32 {
     get {
-      return Int(_scaleGraduationInt)
+      return Int32(_scaleGraduationInt)
     }
     set(value) {
       _scaleGraduationInt = value
