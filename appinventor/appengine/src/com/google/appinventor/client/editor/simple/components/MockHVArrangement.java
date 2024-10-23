@@ -167,7 +167,7 @@ public class MockHVArrangement extends MockContainer {
    */
   private void setImageProperty(String text) {
     imagePropValue = text;
-    String url = convertImagePropertyValueToUrl(text);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, text);
     if (url == null) {
       hasImage = false;
       url = "";

@@ -324,6 +324,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return component.getTypeDescription();
   }
 
+  @Override
+  public MockInfo getMockInfo(String componentName) {
+    final ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new ComponentNotFoundException(componentName);
+    }
+    return component.getMockInfo();
+  }
+
   public String getComponentsJSONString() {
     return componentsJSONString;
   }
@@ -339,6 +348,17 @@ class ComponentDatabase implements ComponentDatabaseInterface {
       // This must be a component upgrade! We remove existing entry
       components.remove(name);
     }
+    final MockInfo mockInfo;
+    if (properties.get("mock") != null) {
+      final JSONObject obj = properties.get("mock").asObject();
+      final JSONValue css = obj.get("css");
+      mockInfo =
+          new MockInfo(
+              obj.get("script").asString().getString(),
+              css != null ? css.asString().getString() : null);
+    } else {
+      mockInfo = null;
+    }
     ComponentDefinition component = new ComponentDefinition(name,
         Integer.parseInt(properties.get("version").asString().getString()),
         optString(properties.get("versionName"), ""),
@@ -352,7 +372,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
         properties.get("iconName").asString().getString(),
         properties.containsKey("licenseName") ? properties.get("licenseName").asString().getString() : "",
-        componentNode.toJson());
+        componentNode.toJson(),
+        mockInfo
+    );
     findComponentProperties(component, properties.get("properties").asArray(),
         properties.get("blockProperties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
