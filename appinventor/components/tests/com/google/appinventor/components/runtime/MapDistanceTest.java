@@ -12,7 +12,6 @@ import org.junit.Test;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.ONE_DEG_IN_METERS;
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class MapDistanceTest extends MapTestBase {
 
   @Test

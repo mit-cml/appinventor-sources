@@ -14,6 +14,7 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -35,18 +36,13 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   // don't want the question-mark click to reopen it.
   private long lastClosureTime = 0;
 
-  private class ComponentHelpPopup extends PopupPanel {
+  private class ComponentHelpPopup extends DialogBox {
 
     private ComponentHelpPopup() {
       // Create popup panel.
-      super(true);
-      setStyleName("ode-ComponentHelpPopup");
-      setTitle(scd.getName());
-
-      // Create title from component name.
-      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));
-      setTitle(scd.getName());
-      titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
+      super(true, true);
+      setStyleName("ode-DialogBox");
+      setText(scd.getName());
 
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
@@ -61,7 +57,6 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       // Create panel to hold the above three widgets and act as the
       // popup's widget.
       VerticalPanel inner = new VerticalPanel();
-      inner.add(titleBar);
       inner.add(helpText);
 
       // Create link to more information.  This would be cleaner if
@@ -121,7 +116,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
         inner.add(viewLicenseHTML);
       }
 
-      setWidget(inner);
+      add(inner);
 
       // When the panel is closed, save the time in milliseconds.
       // This will help us avoid immediately reopening it if the user
@@ -132,29 +127,8 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             lastClosureTime = System.currentTimeMillis();
           }
         });
-
-      // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
-      // avoid the Google Chrome Pinch Zoom bug.
-      setPopupPositionAndShow(new PZAwarePositionCallback(ComponentHelpWidget.this.getElement()) {
-        @Override
-        public void setPosition(int offsetWidth, int offsetHeight) {
-          // Position the upper-left of the panel just to the right of the
-          // question-mark icon, unless that would make it too low.
-          final int X_OFFSET = 20;
-          final int Y_OFFSET = -5;
-          if(Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()) {
-            setPopupPosition(getTrueAbsoluteLeft() + 1 + X_OFFSET,
-                Math.min(getTrueAbsoluteTop() + 1 + Y_OFFSET,
-                    Math.max(0, Window.getClientHeight()
-                        - offsetHeight + Y_OFFSET)));
-          } else {
-            setPopupPosition(ComponentHelpWidget.this.getAbsoluteLeft() + X_OFFSET,
-                Math.min(ComponentHelpWidget.this.getAbsoluteTop() + Y_OFFSET,
-                    Math.max(0, Window.getClientHeight()
-                        - offsetHeight + Y_OFFSET)));
-          }
-        }
-      });
+      
+      showRelativeTo(ComponentHelpWidget.this);
     }
   }
 

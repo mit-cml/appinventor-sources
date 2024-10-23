@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit tests for the Marker component.
  */
-@Ignore
 public class MarkerTest extends MapTestBase {
 
   private Marker marker;
