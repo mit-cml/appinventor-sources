@@ -2454,7 +2454,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade",
     // AI2:
     // - Added RemoveItemAtList method
-    7: "noUpgrade"
+    7: "noUpgrade",
+    // AI2:
+    // - Added HintText property, performance optimization
+    8: "noUpgrade"
 
   }, // End ListView upgraders
 
