@@ -12,31 +12,63 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
 fileprivate var TRANSFER_MODEL_PREFIX: String? = nil
 fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
 
+/**
+ * The `BaseAiComponent` class serves as a starting point for any AI-enabled components that rely
+ * on a `WebViewer` to execute their JavaScript based models.
+ */
 @objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
-
   public static let ERROR_WEBVEWER_REQUIRED = -7
   public static let ERROR_CLASSIFICATION_FAILED = -2;
   public static let ERROR_INVALID_MODEL_FILE = -8;
 
-  private var _labels = [String]()
   private var _modelPath: String? = nil
   internal var _webview: WKWebView? = nil
   private var _webviewer: WebViewer?
-  private var assetPath: String? = nil
 
-  @objc public override init(_ container: ComponentContainer) {
+  private var assetPath: String
+  private var transferModelPrefix: String? = nil
+  private var personalModelPrefix: String? = nil
+  private var callbacks: [String:(String)->Void] = [:]
+
+  /**
+   * Constructs a new `BaseAiComponent` that loads the file named by `basePath` into the WebViewer
+   * it is connected to.
+   *
+   * - Parameter container: The container for the component (i.e., `Form`).
+   * - Parameter basePath: The base name of the HTML file to load with the component's logic
+   */
+  @objc public convenience init(_ container: ComponentContainer, _ basePath: String) {
+    self.init(container, basePath, nil, nil)
+  }
+
+  /**
+   * Constructs a new `BaseAiComponent` that loads the file named by `basePath` into the WebViewer
+   * it is connected to. If specified, URLs matching the `transferModelPrefix` and
+   * `personalModelPrefix` will be interecepted and mapped to local assets rather than being
+   * loaded over the network.
+   *
+   * - Parameter container: The container for the component (i.e., `Form`).
+   * - Parameter basePath: The base name of the HTML file to load with the component's logic
+   * - Parameter transferModelPrefix: The optional prefix string to match the base model used in transfer learning
+   * - Parameter personalModelPrefix: The optional prefix string to match the personalized layers created during transfer learning
+   */
+  @objc public init(_ container: ComponentContainer, _ basePath: String, _ transferModelPrefix: String?, _ personalModelPrefix: String?) {
+    assetPath = basePath
+    self.transferModelPrefix = transferModelPrefix
+    self.personalModelPrefix = personalModelPrefix
     super.init(container)
+    registerHandler(named: "ready", callback: self.onModelReady(_:))
+    registerHandler(named: "reportResult", callback: self.onReportResult(_:))
+    registerHandler(named: "error", callback: self.onError(_:))
   }
 
-  //MARK: Methods
+  // MARK: Properties
 
-  @objc public func Initialize() {
-      guard let webview = _webview else {
-      _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
-      return
-      }
-  }
-
+  /**
+   * Sets the model file to use for lookups when the JavaScript code requests a model.
+   *
+   * - Parameter path: The name of the model file, ending in .mdl
+   */
   @objc public func setModel(_ path: String) {
     if path.hasSuffix(MODEL_PATH_SUFFIX) {
         _modelPath = path
@@ -45,140 +77,202 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
     }
   }
 
-  @objc public var ModelLabels: [String] {
-    return _labels
-  }
-
-
+  /**
+   * The WebViewer to use for loading the model JavaScript and other logic.
+   */
   @objc open var WebViewer: WebViewer {
     get {
       return _webviewer!
-      }
-      set {
-        newValue.aiSchemeHandler = self
-        configureWebView(newValue.view as! WKWebView)
-        print("configurewebview called")
-      if self is PersonalAudioClassifier{
-        assetPath = "personal_audio_classifier"
-      } else {
-          // implement checks for other AI components
-      }
+    }
+    set {
+      newValue.aiSchemeHandler = self
+      configureWebView(newValue.view as! WKWebView)
       if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
         let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
         let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath ?? "").html")!)
         _webview?.load(request)
         print("request loaded")
-      }else{
+      } else {
         print("request not loaded")
       }
     }
   }
 
+  // MARK: Methods
 
-  open func ClassifierReady(){}
-  open func GotClassification(_ result: AnyObject){}
+  /**
+   * Initialize the component. This is called by the App Inventor runtime.
+   */
+  @objc public func Initialize() {
+    if _webview == nil {
+      _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
+      return
+    }
+  }
+
+  // MARK: Events
+
+  /**
+   * `ModelReady` is called when the model has been loaded and is ready to run.
+   */
+  open func ModelReady() {}
+
+  /**
+   * `GotResult(_:)` is called when the model has computed some results.
+   */
+  open func GotResult(_ result: AnyObject) {}
+
+  /**
+   * `Error(_:)` is called when the model encounters an error.
+   */
   open func Error(_ errorCode: Int32){}
 
   // MARK: Private Implementation
 
-  private func configureWebView(_ webview: WKWebView) {
-    _webview = webview
-    if #available (iOS 16.4, *){
-      webview.isInspectable = true
-    }
-    _webview!.configuration.preferences.javaScriptEnabled = true
-    _webview!.configuration.allowsInlineMediaPlayback = true
-    _webview!.configuration.mediaTypesRequiringUserActionForPlayback = []
-  
-    if self is PersonalAudioClassifier{
-      print("PersonalAudioClassifier")
-      _webview!.configuration.userContentController.add(self, name: "PersonalAudioClassifier")
-     TRANSFER_MODEL_PREFIX = "appinventor://personal-audio-classifier/transfer/"
-     PERSONAL_MODEL_PREFIX = "appinventor://personal-audio-classifier/personal/"
-    } else {
-        // implement checks for other AI components
-    }
-      
-  }
 
-  private func parseLabels(_ labels: String) throws -> [String] {
-      var result = [String]()
-      let data = Data(labels.utf8)
-      do {
-          if let arr = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
-              for item in arr {
-                  result.append(labels)
-              }
-          } else {
-              throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
-          }
-      } catch {
-          throw YailRuntimeError("Got unparsable array from Javascript", "RuntimeError")
-      }
-      return result
+  open func configureWebView(_ webview: WKWebView) {
+    debugPrint("configurewebview called")
+    _webview = webview
+    let fqcn = "\(type(of: self))"
+    let name = fqcn.contains("\\.") ? fqcn.split(".").last ?? fqcn : fqcn
+    webview.configuration.userContentController.add(self, name: name)
+    var source = "const \(fqcn) = {\n"
+    for entry in callbacks {
+      let key = entry.key
+      source += """
+      \(key): function() {
+        window.webkit.messageHandlers.\(name).postMessage({
+          functionCall: '\(key)',
+          args: JSON.stringify(Array.prototype.slice.call(arguments))
+        })
+      },
+      """
+    }
+    source += "}\n"
+    debugPrint(source)
+    let userScript = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+    webview.configuration.userContentController.addUserScript(userScript)
   }
 
   internal func assertWebView(_ method: String, _ frontFacing: Bool = true) throws {
-    guard let _webview = _webview else {
+    if _webview == nil {
       throw AIError.webviewerNotSet
     }
   }
 
+  /**
+   * Register a handler relationship between the JavaScript code and the Swift code. By default,
+   * `BaseAiComponent` will register handlers for `ready`, `reportResult`, and `error`. Handlers
+   * must be registered prior to the `WebViewer` property being set, ideally in the `init` function.
+   *
+   * The handler should take a single argument that is a `String` containing the JSON-serialized
+   * arguments. For example:
+   *
+   *    ```
+   *    func doFoo(_ argdata: String) {
+   *      do {
+   *        // Parse args into an array
+   *        guard let args = try getYailObjectFromJson(args, true) as? YailList<AnyObject> else {
+   *          return
+   *        }
+   *      } catch {
+   *      }
+   *    }
+   *
+   *    registerHandler("foo": self.doFoo(_:))
+   *    ```
+   *
+   * - Parameter name: The name of the handler. This must be a valid JavaScript identifier.
+   * - Parameter callback: The callback function to invoke when a message is posted to the handler
+   *                       from JavaScript.
+   */
+  func registerHandler(named name: String, callback: @escaping (String)->Void) {
+    if callbacks.first(where: { (key: String, value: (String) -> Void) in
+      key == name
+    }) != nil {
+      print("Overwriting existing AI handler for \(name)")
+    }
+    callbacks[name] = callback
+  }
+
+  /**
+   * Unregister a handler with the given name.
+   *
+   * - Parameter name: The name of the handler to remove.
+   * - Returns: true if the handler was previously registered, otherwise false.
+   */
+  func unregisterHandler(named name: String) -> Bool {
+    return callbacks.removeValue(forKey: name) == nil
+  }
+
   // MARK: WKScriptMessageHandler
 
-  public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+  public func userContentController(_ userContentController: WKUserContentController,
+                                    didReceive message: WKScriptMessage) {
     guard let dict = message.body as? [String: Any],
-          var functionCall = dict["functionCall"] as? String,
+          let functionCall = dict["functionCall"] as? String,
           let args = dict["args"] else {
       print("JSON Error message not recieved")
       return
     }
-    print(message.body)
-    if functionCall == "ready" {
-      print("ready")
-      do {
-        guard let result = try getYailObjectFromJson(args as? String, true) as? YailList<AnyObject> else {
-          print("Unable to parse result")
-          return
-        }
-        print(result)
-        var labelList: [String] = []
-        for el in result {
-          if let label = el as? String {
-            labelList.append(label)
-          }
-        }
-        _labels = labelList
-        ClassifierReady()
-      } catch {
-        print("Error parsing JSON from web view function ready")
-      }
-    }
-    if functionCall == "reportResult" {
-      do {
-        let result = try getYailObjectFromJson(args as? String, true)
-        GotClassification(result)
-      } catch {
-        print("Error parsing JSON from web view function reportResult")
-      }
-    }
-    if functionCall == "error" {
-      print("error")
-      do {
-        let result = try getYailObjectFromJson(args as? String, true)
-        print(result)
-        Error(args as! Int32)
-      } catch {
-        print("Error parsing JSON from web view function error")
-      }
-    }
 
+    debugPrint(message.body)
+    guard let handler = callbacks[functionCall] else {
+      print("No handler registered for \(functionCall)")
+      return
+    }
+    handler(args as? String ?? "[]")
+  }
+
+  /**
+   * `onModelReady` is called when the model reports that it is ready. The arguments from
+   * JavaScript are passed via `args`. Subclasses can override this method to process the
+   * arguments.
+   */
+  open func onModelReady(_ args: String) {
+    ModelReady()
+  }
+
+  /**
+   * `onReportResult` is called when the model reports results. By default, it will process the
+   * arguments and pass the first argument as a `String` to the `GotResult(_:)` event. Subclasses
+   * can override either this method or `GotResult` to adjust how the arguments are (further)
+   * processed.
+   */
+  open func onReportResult(_ args: String) {
+    do {
+      guard let arguments = try getYailObjectFromJson(args, true) as? YailList<AnyObject> else {
+        return
+      }
+      let result = try getYailObjectFromJson(arguments[1] as? String, true)
+      GotResult(result)
+    } catch {
+      print("Error parsing JSON from web view function reportResult")
+    }
+  }
+
+  /**
+   * `onError` is called when an error ocurrs. By default, it extracts the first argument, which
+   * should be an error code and passes it to the `Error(_:)` event handler.
+   */
+  open func onError(_ args: String) {
+    print("error")
+    do {
+      guard let result = try getYailObjectFromJson(args, true) as? YailList<AnyObject> else {
+        print("Unable to parse error: \(args)")
+        return
+      }
+      debugPrint(result)
+      Error(result[0] as? Int32 ?? -999)
+    } catch {
+      print("Error parsing JSON from web view function error")
+    }
   }
 
   // MARK: WKURLSchemeHandler
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-    print("WKURLSchemeHandler")
+    debugPrint("WKURLSchemeHandler")
     var fileData: Data? = nil
     guard let url = urlSchemeTask.request.url?.absoluteString else {
       urlSchemeTask.didFailWithError(AIError.FileNotFound)
@@ -188,10 +282,10 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
       urlSchemeTask.didFailWithError(AIError.FileNotFound)
       return
     }
-    print(url)
-    if url.hasPrefix(TRANSFER_MODEL_PREFIX!) {
-      print("transfer model")
-      let fileName = url.replacingOccurrences(of: TRANSFER_MODEL_PREFIX!, with: "")
+    debugPrint(url)
+    if let modelPrefix = transferModelPrefix, url.hasPrefix(modelPrefix) {
+      debugPrint("transfer model")
+      let fileName = url.replacingOccurrences(of: modelPrefix, with: "")
       if let assetURL = Bundle(for: BaseAiComponent.self).url(forResource: fileName, withExtension: nil) {
         do {
           fileData = try Data(contentsOf: assetURL)
@@ -203,9 +297,9 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
         urlSchemeTask.didFailWithError(AIError.FileNotFound)
         return
       }
-    } else if url.hasPrefix(PERSONAL_MODEL_PREFIX!) {
-      print("personal model")
-      let fileName = url.replacingOccurrences(of: PERSONAL_MODEL_PREFIX!, with: "")
+    } else if let modelPrefix = personalModelPrefix, url.hasPrefix(modelPrefix) {
+      debugPrint("personal model")
+      let fileName = url.replacingOccurrences(of: modelPrefix, with: "")
       guard let _modelPath = _modelPath else {
         urlSchemeTask.didFailWithError(AIError.FileNotFound)
         return
@@ -261,19 +355,17 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
       urlSchemeTask.didReceive(response!)
       urlSchemeTask.didReceive(fileData)
       urlSchemeTask.didFinish()
-      print("Did send data for \(fileName)")
+      debugPrint("Did send data for \(fileName)")
     } else {
       urlSchemeTask.didFailWithError(AIError.FileNotFound)
       print("Failed to locate \(fileName)")
     }
   }
 
-
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // We deliver the payload in one go so it cannot be cancelled.
   }
-  
-  
+
   enum AIError: Error {
     case FileNotFound
     case webviewerNotSet
