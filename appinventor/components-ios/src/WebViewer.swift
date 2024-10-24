@@ -7,8 +7,8 @@ import Foundation
 import WebKit
 import CoreLocation
 
-open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler {
-  fileprivate var _view : WKWebView
+open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, WKURLSchemeHandler {
+  fileprivate var _view : WKWebView!
   fileprivate var _homeURL : String = ""
   fileprivate var _webViewString : String = ""
   fileprivate var _ignoreSSLErrors : Bool = false
@@ -18,6 +18,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript
   private var _webAlert: UIAlertController? = nil
+  var aiSchemeHandler: WKURLSchemeHandler? = nil
 
   public override init(_ parent: ComponentContainer) {
     do {
@@ -32,28 +33,21 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     controller.addUserScript(_webviewerApi)
     let config = WKWebViewConfiguration()
     config.preferences.javaScriptEnabled = true
+    config.allowsInlineMediaPlayback = true
     config.userContentController = controller
+    super.init(parent)
+    config.setURLSchemeHandler(self, forURLScheme: "appinventor")
     _view = WKWebView(frame: CGRect.zero, configuration: config)
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.allowsBackForwardNavigationGestures = true
-    super.init(parent)
     let swipeRecog = UISwipeGestureRecognizer(target: self, action: #selector(navigation))
     _view.addGestureRecognizer(swipeRecog)
     _view.navigationDelegate = self
     _view.uiDelegate = self
     controller.add(self, name: "webString")
     parent.add(self)
-    Width = kLengthPreferred
-    Height = kLengthPreferred
-  }
-
-  @objc open func Initialize() {
-    if _lastSetWidth == kLengthPreferred {
-      Width = kLengthFillParent
-    }
-    if _lastSetHeight == kLengthPreferred {
-      Height = kLengthFillParent
-    }
+    Width = kLengthFillParent
+    Height = kLengthFillParent
   }
 
   @objc open func CurrentPageTitle() -> String {
@@ -321,24 +315,24 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
     let url = webView.url?.absoluteString ?? ""
-      DispatchQueue.main.async {
-        self.PageLoaded(url)
+    DispatchQueue.main.async {
+      self.PageLoaded(url)
     }
     _wantLoad = false
   }
 
   open func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
-                      initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+                    initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
     self._webAlert = UIAlertController(title: message,
-                                            message: nil,
-                                            preferredStyle: .alert)
+                                       message: nil,
+                                       preferredStyle: .alert)
     self._webAlert?.addAction(UIAlertAction(title: "OK", style: .cancel) {
-        _ in completionHandler()}
+      _ in completionHandler()}
     )
-    
+
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,          completionHandler: @escaping (Bool) -> Void) {
     self._webAlert = UIAlertController(title: message, message: nil, preferredStyle: .actionSheet)
     self._webAlert?.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
@@ -347,13 +341,13 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     self._webAlert?.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
       completionHandler(false)
     }))
-    
+
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?,
-                        initiatedByFrame frame: WKFrameInfo,
-                        completionHandler: @escaping (String?) -> Void) {
+                    initiatedByFrame frame: WKFrameInfo,
+                    completionHandler: @escaping (String?) -> Void) {
     self._webAlert = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
     self._webAlert?.addTextField { (textField) in
       textField.text = defaultText
@@ -370,7 +364,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     }))
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
     guard message.name == "webString" else {
       return  // Message intended for someone else...
@@ -397,5 +391,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
       return _view
     }
   }
-}
 
+  // MARK: WKURLSchemeHandler implementation
+
+  public func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, start: urlSchemeTask)
+  }
+
+  public func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, stop: urlSchemeTask)
+  }
+}

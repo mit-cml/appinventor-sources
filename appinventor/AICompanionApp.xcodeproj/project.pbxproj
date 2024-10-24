@@ -169,9 +169,9 @@
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
 				063D678E1FA0CEB1002E907D /* SchemeKit.framework */,
-				06463EFA1D95956800B23DCD /* aicompanionapp/src */,
-				06463F0F1D95956800B23DCD /* aicompanionapp/tests */,
-				06463F1A1D95956800B23DCD /* aicompanionapp/uitests */,
+				06463EFA1D95956800B23DCD /* src */,
+				06463F0F1D95956800B23DCD /* tests */,
+				06463F1A1D95956800B23DCD /* uitests */,
 				06463EF91D95956800B23DCD /* Products */,
 				06EC0A1A1D959648001CD8DC /* Frameworks */,
 				9F048C59E0A8D7BC18969732 /* Pods */,
@@ -190,7 +190,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		06463EFA1D95956800B23DCD /* aicompanionapp/src */ = {
+		06463EFA1D95956800B23DCD /* src */ = {
 			isa = PBXGroup;
 			children = (
 				06B2161D1DBC7B4C000B3366 /* resources */,
@@ -210,7 +210,7 @@
 			path = aicompanionapp/src;
 			sourceTree = "<group>";
 		};
-		06463F0F1D95956800B23DCD /* aicompanionapp/tests */ = {
+		06463F0F1D95956800B23DCD /* tests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F101D95956800B23DCD /* AICompanionTests.swift */,
@@ -219,7 +219,7 @@
 			path = aicompanionapp/tests;
 			sourceTree = "<group>";
 		};
-		06463F1A1D95956800B23DCD /* aicompanionapp/uitests */ = {
+		06463F1A1D95956800B23DCD /* uitests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F1B1D95956800B23DCD /* AICompanionUITests.swift */,
@@ -470,6 +470,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
+				"${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
@@ -492,6 +493,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZIPFoundation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
@@ -578,6 +580,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyBase64/SwiftyBase64.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
+				"${BUILT_PRODUCTS_DIR}/ZIPFoundation/ZIPFoundation.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
@@ -600,6 +603,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBase64.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZIPFoundation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
