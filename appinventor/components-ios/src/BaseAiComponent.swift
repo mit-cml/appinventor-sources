@@ -89,7 +89,7 @@ fileprivate var PERSONAL_MODEL_PREFIX: String? = nil
       configureWebView(newValue.view as! WKWebView)
       if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
         let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
-        let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath ?? "").html")!)
+        let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath).html")!)
         _webview?.load(request)
         print("request loaded")
       } else {

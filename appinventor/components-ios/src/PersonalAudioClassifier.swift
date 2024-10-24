@@ -6,12 +6,17 @@
 import Foundation
 import UIKit
 
+fileprivate let TRANSFER_MODEL_PREFIX = "https://appinventor.mit.edu/personal-audio-classifier/transfer/"
+fileprivate let PERSONAL_MODEL_PREFIX = "https://appinventor.mit.edu/personal-audio-classifier/personal/"
+
 @objc open class PersonalAudioClassifier: BaseAiComponent{
   
   
-  @objc public override init(_ container: ComponentContainer) {
-    super.init(container)
+  @objc public init(_ container: ComponentContainer) {
+    super.init(container, "personal_audio_classifier", TRANSFER_MODEL_PREFIX, PERSONAL_MODEL_PREFIX)
   }
+  
+  
   
   //MARK: Methods
 
@@ -53,14 +58,14 @@ import UIKit
 
     // MARK: Events
 
-    @objc override public func ClassifierReady() {
+    @objc public func ClassifierReady() {
       print("classifierReady")
         DispatchQueue.main.async { [self] in
         EventDispatcher.dispatchEvent(of: self, called: "ClassifierReady")
         }
     }
 
-    @objc override public func GotClassification(_ result: AnyObject) {
+    @objc public func GotClassification(_ result: AnyObject) {
         print("GotClassification")
         DispatchQueue.main.async { [self] in
         EventDispatcher.dispatchEvent(of: self, called: "GotClassification", arguments: result)
