@@ -189,7 +189,8 @@ function createDownloadLink(blob) {
 
     }
   }).catch(error => {
-    window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'error', args: ERROR_CANNOT_CREATE_SPECTROGRAM});
+    PersonalAudioClassifier.error(ERROR_CANNOT_CREATE_SPECTROGRAM,
+        "Cannot create spectrogram: " + error);
   });
 }
 
@@ -260,10 +261,11 @@ const loadModel = async () => {
     console.log(modelLabels)
 
     console.log("PersonalAudioClassifier: transfer model activation and personal model are ready");
-    window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'ready', args: JSON.stringify(Object.values(modelLabels))});
+    PersonalAudioClassifier.ready(JSON.stringify(Object.values(modelLabels)))
   } catch (error) {
     console.log("PersonalAudioClassifier: " + error);
-    window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
+    PersonalAudioClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED,
+        "Classification not supported: " + error);
   }
 };
 
@@ -300,10 +302,11 @@ async function predict(pixels) {
     }
 
     console.log("PersonalAudioClassifier: prediction is " + JSON.stringify(result));
-    window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'reportResult', args: JSON.stringify(result)});
+    PersonalAudioClassifier.reportResult(JSON.stringify(result));
   } catch (error) {
     console.log("PersonalAudioClassifier: " + error);
-    window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'error', args: ERROR_CLASSIFICATION_NOT_SUPPORTED});
+    PersonalAudioClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED,
+        "Classification not supported: " + error);
   }
 }
 
@@ -333,7 +336,7 @@ async function classifyImageData(imageURL) {
   }
 
   console.log(result)
-  window.webkit.messageHandlers.PersonalAudioClassifier.postMessage({functionCall: 'reportResult', args: JSON.stringify(result)});
+  PersonalAudioClassifier.reportResult(JSON.stringify(result));
 }
 
 async function convertImg(imgUrl) {

@@ -6,10 +6,10 @@
 import Foundation
 import UIKit
 
-fileprivate let TRANSFER_MODEL_PREFIX = "https://appinventor.mit.edu/personal-audio-classifier/transfer/"
-fileprivate let PERSONAL_MODEL_PREFIX = "https://appinventor.mit.edu/personal-audio-classifier/personal/"
+fileprivate let TRANSFER_MODEL_PREFIX = "appinventor://personal-audio-classifier/transfer/"
+fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-audio-classifier/personal/"
 
-@objc open class PersonalAudioClassifier: BaseAiComponent{
+@objc open class PersonalAudioClassifier: BaseClassifier{
   
   
   @objc public init(_ container: ComponentContainer) {
@@ -54,28 +54,31 @@ fileprivate let PERSONAL_MODEL_PREFIX = "https://appinventor.mit.edu/personal-au
         }
     }
 
-
-
     // MARK: Events
 
-    @objc public func ClassifierReady() {
-      print("classifierReady")
-        DispatchQueue.main.async { [self] in
-        EventDispatcher.dispatchEvent(of: self, called: "ClassifierReady")
-        }
+  /**
+   * `onError` is called when an error ocurrs. By default, it extracts two arguments,
+   *  which should be the numeric error code and the string error message.
+   */
+  
+  open override func onError(_ args: String) {
+    print("error")
+    do {
+      guard let result = try getYailObjectFromJson(args, true) as? YailList<AnyObject> else {
+        print("Unable to parse error: \(args)")
+        return
+      }
+      debugPrint(result)
+      Error(result[0] as? Int32 ?? -999, result[1] as? String ?? "")
+    } catch {
+      print("Error parsing JSON from web view function error")
     }
+  }
 
-    @objc public func GotClassification(_ result: AnyObject) {
-        print("GotClassification")
-        DispatchQueue.main.async { [self] in
-        EventDispatcher.dispatchEvent(of: self, called: "GotClassification", arguments: result)
-        }
+  @objc public func Error(_ errorCode: Int32, _ errorMsg: String) {
+    debugPrint("ErrorFunction")
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "Error", arguments: errorCode as AnyObject, errorMsg as AnyObject)
     }
-
-    @objc override public func Error(_ errorCode: Int32) {
-        print("ErrorFunction")
-        DispatchQueue.main.async {
-        EventDispatcher.dispatchEvent(of: self, called: "Error", arguments: errorCode as AnyObject)
-        }
-    }
+  }
 }
