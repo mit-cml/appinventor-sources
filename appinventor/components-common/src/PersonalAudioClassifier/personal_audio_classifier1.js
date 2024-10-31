@@ -44,13 +44,9 @@ var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext //audio context to help us record
 
 var recordButton = document.getElementById("recordButton");
-// var stopButton = document.getElementById("stopButton");
-// var pauseButton = document.getElementById("pauseButton");
 
 //add events to those 2 buttons
 recordButton.addEventListener("click", startRecording);
-// stopButton.addEventListener("click", stopRecording);
-// pauseButton.addEventListener("click", pauseRecording);
 
 function startRecording() {
   console.log("recordButton clicked");
@@ -62,9 +58,6 @@ function startRecording() {
   */
 
   recordButton.disabled = true;
-  // stopButton.disabled = false;
-  // pauseButton.disabled = false
-
 
   /*
       We're using the standard promise based getUserMedia()
@@ -81,8 +74,6 @@ function startRecording() {
       the sampleRate defaults to the one set in your OS for your playback device
     */
     audioContext = new AudioContext();
-
-    // audioContext = new AudioContext({sampleRate: 24000});
 
     //update the format
     // document.getElementById("formats").innerHTML="Format: 1 channel pcm @ "+audioContext.sampleRate/1000+"kHz"
@@ -121,12 +112,7 @@ function stopRecording() {
   recordButton.className = "not_recording"
 
   //disable the stop button, enable the record too allow for new recordings
-  // stopButton.disabled = true;
   recordButton.disabled = false;
-  // pauseButton.disabled = true;
-
-  //reset button just in case the recording is stopped while paused
-  // pauseButton.innerHTML="Pause";
 
   //tell the recorder to stop the recording
   rec.stop();
@@ -141,26 +127,13 @@ function stopRecording() {
 function createDownloadLink(blob) {
   var url = URL.createObjectURL(blob);
   var au = document.createElement('audio');
-  // var li = document.createElement('li');
-  // var link = document.createElement('a');
-  //add controls to the <audio> element
   au.controls = true;
   au.src = url;
-  //link the a element to the blob
-  // link.href = url;
-  // link.download = new Date().toISOString() + '.wav';
-  // link.innerHTML = link.download;
-  //add the new audio and a elements to the li element
 
-  // li.appendChild(au);
-  // li.appendChild(link);
-  //add the li element to the ordered list
   while (recordingsList.firstChild) {
     recordingsList.removeChild(recordingsList.firstChild);
   }
   recordingsList.appendChild(au);
-
-  // getSpectrogram(blob)
 
   getSpectrogram(blob).then(reader => {
     reader.onload = async () => {
@@ -171,22 +144,6 @@ function createDownloadLink(blob) {
       console.log(result)
 
       await classifyImageData(result)
-
-
-      //
-      // var canvas = document.createElement('canvas')
-      // var ctx = canvas.getContext('2d');
-      //
-      // canvas.width = 200;
-      // canvas.height = 200;
-      //
-      // var img = new Image;
-      // img.onload = function(){
-      //   ctx.drawImage(img,0,0); // Or at whatever offset you like
-      // };
-      // img.src = result;
-      // document.body.appendChild(canvas)
-
     }
   }).catch(error => {
     PersonalAudioClassifier.error(ERROR_CANNOT_CREATE_SPECTROGRAM,
@@ -223,11 +180,6 @@ function blobToFile(blob, fileName) {
 }
 
 async function getSpectrogram(blob) {
-
-  // const spectrogram = require('./spectrogram/spectrogram');
-
-  //get blob from encoded sound
-
   console.log("PersonalAudioClassifier: " + "Audio Blob:")
   console.log(blob)
 
@@ -236,7 +188,6 @@ async function getSpectrogram(blob) {
     body: blob
   });
   const resultBlob = await response.blob()
-  // let matrixBlob = new Blob([res.data], {type:"image/png"});
   let reader = new FileReader();
   reader.readAsDataURL(resultBlob);
   return reader;
