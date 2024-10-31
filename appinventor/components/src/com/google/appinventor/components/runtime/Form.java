@@ -2061,7 +2061,7 @@ public class Form extends AppInventorCompatActivity
      "in App Inventor’s designer. Choose Classic if you want detailed control of the appearance " +
      "of your app. </li><li> <code>Device Default</code>: This theme makes your app resemble the other " +
      "apps on your device. With the default theme, however, your app won’t look consistent across " +
-     "Android, iOS, and App Inventor’s designer. The best way to see the true appearance of your app is to view it using the Companion.",
+     "Android, iOS, and App Inventor’s designer. The best way to see the true appearance of your app is to view it using the Companion.</ul>",
       category = PropertyCategory.THEMING)
   public void Theme(String theme) {
     if (usesDefaultBackground) {

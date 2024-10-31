@@ -442,6 +442,10 @@ public final class SimpleComponentDescriptor {
     return cachedMockComponent;
   }
 
+  public static void resetImageBundle() {
+    imagesInitialized = false;
+  }
+
   public static Image getImageFromPath(String iconPath, String packageName, long projectId) {
     if (!imagesInitialized) {
       initBundledImages();

@@ -12,7 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <wiz:Dialog ui:field="moveDialog" caption="{messages.moveProjectWizard}" styleName="ode-DialogBox">
     <g:FlowPanel>
-      <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}" />
+      <g:Label styleName="ode-TreeLabel dialogContent" text="{messages.moveProjectWizard}:" />
       <g:Tree ui:field='tree' />
       <g:FlowPanel styleName="buttonRow" >
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />

@@ -282,7 +282,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Protocol Buffers -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <!-- OWASP -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
@@ -419,7 +419,7 @@
     <pathelement location="${lib.dir}/gcs/google-api-services-storage-v1-rev91-1.22.0.jar" />
     <pathelement location="${lib.dir}/gcs/httpclient-4.0.1.jar" />
     <pathelement location="${lib.dir}/gcs/joda-time-2.6.jar" />
-    <pathelement location="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />
+    <pathelement location="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
@@ -634,6 +634,8 @@
       <arg value="${build.extra.dir}"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
+    <copy todir="${build.war.dir}/ode"
+          file="${appinventor.dir}/appengine/extra/cdnok.js" />
   </target>
 
   <target name="devmode"

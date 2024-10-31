@@ -596,7 +596,11 @@ public class YaVersion {
   // - TRENDLINE_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 228:
   // - Renamed LineOfBestFit to Trendline
-  public static final int YOUNG_ANDROID_VERSION = 228;
+  // For YOUNG_ANDROID_VERSION 229:
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 230:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 37.
+  public static final int YOUNG_ANDROID_VERSION = 230;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -689,13 +693,15 @@ public class YaVersion {
   // - Add stats blocks
   // - Rename lists_*_number to lists_*_value
   // - Added "every component" block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 36;
+  // For BLOCKS_LANGUAGE_VERSION 37
+  // - Add pull-downs for the ChatBot provider and model
+  public static final int BLOCKS_LANGUAGE_VERSION = 37;
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 33;
+  public static final int TARGET_SDK_VERSION = 34;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 13.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 14.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -885,7 +891,10 @@ public class YaVersion {
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made visible in the designer view
-  public static final int CHATBOT_COMPONENT_VERSION = 2;
+  // For CHATBOT_COMPONENT_VERSION 3:
+  // - GPT-4 with Vision can be used to handle image inputs
+  // - The ConverseWithImage method was added
+  public static final int CHATBOT_COMPONENT_VERSION = 3;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1117,7 +1126,9 @@ public class YaVersion {
   // - Assets helper block was added.
   // For IMAGESPRITE_COMPONENT_VERSION 9:
   // - The MarkOrigin, OriginX, and OriginY properties were added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 9;
+  // For IMAGESPRITE_COMPONENT_VERSION 10:
+  // - A fix for MarkOrigin, OriginX, and OriginY properties was added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 10;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1170,7 +1181,9 @@ public class YaVersion {
   // - Added ...
   // For LISTVIEW_COMPONENT_VERSION 7:
   // - Added RemoveItemAtIndex method
-  public static final int LISTVIEW_COMPONENT_VERSION = 7;
+  // For LISTVIEW_COMPONENT_VERSION 8:
+  // Added HintText property, performance optimization
+  public static final int LISTVIEW_COMPONENT_VERSION = 8;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1672,12 +1685,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.70";
+  public static final String PREFERRED_COMPANION = "2.72";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.70", "2.70u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.72", "2.72u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

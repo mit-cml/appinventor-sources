@@ -73,7 +73,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onClick(ClickEvent event) {
         if (assetsFolder != null) {
-          new FileUploadWizard(assetsFolder);
+          new FileUploadWizard(assetsFolder).show();
         }
       }
     });
@@ -182,7 +182,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    LOG.info("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId()
+    LOG.info("AssetList: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();

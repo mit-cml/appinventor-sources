@@ -156,6 +156,10 @@ import Foundation
   case ERROR_WEBVIEW_AI = 100402
   case ERROR_MODEL_AI = 100403
   
+  // iOS Specific Texting Errors
+  case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
+  case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
+
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -395,6 +399,10 @@ import Foundation
     case .ERROR_WEBVIEW_AI:
       return "Invalid webview"
 
+    case .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED:
+      return "Google Voice integration is unavailable."
+    case .ERROR_IOS_RECEIVING_NOT_SUPPORTED:
+      return "Receiving text messages is unavailable."
     }
   }
 }
