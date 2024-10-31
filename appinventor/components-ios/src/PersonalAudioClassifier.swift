@@ -31,7 +31,7 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-audio-classifier
         }
     }
 
-    @objc func classifySoundData(_ sound: String) {
+    @objc public func ClassifySoundData(_ sound: String) {
         guard let webview = _webview else {
             print("WebView is not set")
             return
