@@ -22,7 +22,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 // GTMMIMEDocumentPart represents a part of a MIME document.
 //
 // +[GTMMIMEDocument MIMEPartsWithBoundary:data:] returns an array of these.
