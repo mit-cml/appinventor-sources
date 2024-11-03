@@ -318,8 +318,13 @@ public class Form extends AppInventorCompatActivity
       @Override
       public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
         Log.e(LOG_TAG, "Uncaught Exception", e);
-        ErrorOccurred(Form.this, "<unknown>",
-            ErrorMessages.ERROR_UNCAUGHT_EXCEPTION_IN_THREAD, e.toString());
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            ErrorOccurred(Form.this, "<unknown>",
+                ErrorMessages.ERROR_UNCAUGHT_EXCEPTION_IN_THREAD, e.toString());
+          }
+        });
       }
     });
 
