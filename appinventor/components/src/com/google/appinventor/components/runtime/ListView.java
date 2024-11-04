@@ -67,7 +67,7 @@ import java.util.List;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-@UsesLibraries(libraries ="recyclerview.jar, cardview.jar, cardview.aar")
+@UsesLibraries(libraries ="recyclerview.jar, recyclerview.aar, cardview.jar, cardview.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
