@@ -22,6 +22,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -41,10 +42,12 @@ import dalvik.system.DexClassLoader;
 
 import gnu.expr.Language;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -133,6 +136,18 @@ public class ReplForm extends Form {
       replCompDir = getCacheDir().getAbsolutePath() + "/external_comps/";
     }
     super.onCreate(icicle);
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+        Log.e(LOG_TAG, "Uncaught exception", e);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream temp = new PrintStream(baos);
+        e.printStackTrace(temp);
+        temp.flush();
+        RetValManager.sendError(baos.toString());
+        temp.close();
+      }
+    });
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
     processExtrasAndData(intent, false);
