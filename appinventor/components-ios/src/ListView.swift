@@ -150,6 +150,15 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
+  // This property is not supported in iOS
+  @objc open var BounceEdgeEffect: Bool {
+    get {
+      return false;
+    }
+    set(addEffect) {
+    }
+  }
+
   //ListData
   @objc open var ListData: String {
     get {
@@ -357,6 +366,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   // MARK: Methods
+
+  @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
+    _listData.append(["Text1": mainText, "Text2": detailText, "Image": imageName])
+  }
+
+  @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
+    _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
+  }
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
