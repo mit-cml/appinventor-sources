@@ -1514,6 +1514,10 @@ public final class YoungAndroidFormUpgrader {
       // Added RemoveItemAtIndex method
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // Added HintText property, performance optimization
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 

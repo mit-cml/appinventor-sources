@@ -519,6 +519,10 @@ Blockly.ComponentDatabase.prototype.processHelper = function(helper) {
       return this.processOptionList(helper.data);
     case "ASSET":
       return this.processAssetHelper(helper.data);
+    case "PROVIDER_MODEL":
+      return this.processProviderModelHelper(helper.data);
+    case "PROVIDER":
+      return this.processProviderHelper(helper.data);
   }
   return null;
 }
@@ -603,6 +607,76 @@ Blockly.ComponentDatabase.prototype.processAssetHelper = function(data) {
   }
   return {
     type: "ASSET",
+    key: index
+  }
+}
+
+/**
+ * Processes data defining an provider model (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderModelHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER_MODEL",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+}
+
+/**
+ * Processes data defining an provider (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+
+  var index = this.filters_.reduce(findIndex, -1);
+  if (index == -1) {
+    // TODO: If filters_ was instead a sorted list we could optimize index
+    //   finding algorithm using a binary search.
+    this.filters_.push(filter);
+    index = this.filters_.length - 1;
+  }
+  return {
+    type: "PROVIDER",
     key: index
   }
 }
