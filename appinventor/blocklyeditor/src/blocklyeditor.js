@@ -985,12 +985,12 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
-      blockDragger: top.MultiselectBlockDragger,
-      metricsManager: top.ScrollMetricsManager,
-      connectionPreviewer: top.decoratePreviewer(Blockly.InsertionMarkerPreviewer),
+      blockDragger: MultiselectBlockDragger,
+      metricsManager: ScrollMetricsManager,
+      connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
       [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
     },
-    baseBlockDragger: top.ScrollBlockDragger,
+    baseBlockDragger: ScrollBlockDragger,
     useDoubleClick: true,
     bumpNeighbours: true,
     multiselectIcon: {
@@ -1005,12 +1005,12 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     renderer: 'geras2_renderer',
   };
   var workspace = Blockly.inject(container, options);
-  AI.Blockly.multiselect = top.Multiselect;
+  AI.Blockly.multiselect = Multiselect;
   var multiselectPlugin = new AI.Blockly.multiselect(workspace);
   multiselectPlugin.init(options);
-  var lexicalVariablesPlugin = top.LexicalVariablesPlugin;
+  var lexicalVariablesPlugin = LexicalVariablesPlugin;
   lexicalVariablesPlugin.init(workspace);
-  var searchPlugin = new top.WorkspaceSearch(workspace);
+  var searchPlugin = new WorkspaceSearch(workspace);
   searchPlugin.init();
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;

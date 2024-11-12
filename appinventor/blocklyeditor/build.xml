@@ -147,18 +147,8 @@
 			<arg line="--source_map_input ${blockly.src.dir}/blockly_compressed.js|${blockly.src.dir}/blockly_compressed.js.map"/>
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
-<!--			<arg line="&#45;&#45;dependency_mode=SORT_ONLY" unless:true="${release}"/>-->
 		</java>
 	</target>
-
-	<!--  property name="js.tests.dir" location="./tests" /-->
-	<!-- Change as needed -->
-
-	<!--target name="tests">
-    <exec executable="phantomjs" failonerror="true">
-      <arg path="${js.tests.dir}/buttonClickTest.js"/>
-    </exec>
-  </target-->
 
 	<!-- =====================================================================
        BlocklyeditorTests: build and run the Blocklyeditor tests and
@@ -185,6 +175,7 @@
 		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
                 <pathelement location="${build.dir}/components/CommonConstants.jar" />
 		<pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
+		<pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
 	</path>
 
 	<path id="BlocklyeditorTests.path">
@@ -196,25 +187,30 @@
 		      description="Blocklyeditor: build and run the test suite"
 		      depends="BlocklyCompile, BlocklyTestbed" >
 		<sequential>
-			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
-			</ai.dojunit>
-			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
-				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
-				<arg value="tests/com/google/appinventor/mocha/index.html"/>
-				<arg value="xunit"/>
+			<mkdir dir="${class.dir}/BlocklyeditorTests" />
+			<ai.javac srcdir="${tests.dir}" destdir="${class.dir}/BlocklyeditorTests">
+				<classpath>
+					<path refid="BlocklyeditorTests.path" />
+				</classpath>
+				<include name="**/BlocklyEvalTestBuilder.java" />
+			</ai.javac>
+			<jar destfile="${run.lib.dir}/BlocklyeditorTests.jar">
+				<fileset dir="${class.dir}/BlocklyeditorTests">
+					<include name="**/*.class" />
+				</fileset>
+			</jar>
+			<mkdir dir="${local.build.dir}/javascript" />
+			<java classname="com.google.appinventor.blocklyeditor.BlocklyEvalTestBuilder" fork="true">
+				<classpath>
+					<path refid="BlocklyeditorTests.path" />
+				</classpath>
+				<jvmarg value="-Dfile.encoding=UTF-8"/>
+				<jvmarg value="-Djava.awt.headless=true"/>
+			</java>
+			<exec executable="node_modules/.bin/karma" dir="${appinventor.dir}" failonerror="true">
+				<arg value="start"/>
+				<arg value="--single-run"/>
 			</exec>
-			<!--Remove anything before the first < (start of xml)-->
-			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
-				match="^[^&lt;]*"
-				replace=""/>
-			<!--Add package name to file-->
-			<replace file="reports/raw/TEST-MochaTests.xml"
-					 token="name=&quot;Mocha Tests&quot;"
-					 value="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
-			<junitreport todir="${reports.dir}">
-				<fileset file="reports/raw/TEST-*.xml"/>
-				<report format="frames" todir="${reports.dir}/html"/>
-			</junitreport>
 		</sequential>
 	</target>
 </project>

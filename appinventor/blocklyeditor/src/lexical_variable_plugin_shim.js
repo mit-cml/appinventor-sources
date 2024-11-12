@@ -3,7 +3,7 @@
 goog.provide('AI.NameSet');
 goog.provide('AI.Substitution');
 
-var lexVarPlugin = top.LexicalVariablesPlugin;
+var lexVarPlugin = LexicalVariablesPlugin;
 
 /**
  * Flydown

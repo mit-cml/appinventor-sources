@@ -213,7 +213,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
  */
 Blockly.ComponentBlock.checkDeprecated = function(block, data) {
   if (data && data.deprecated && block.workspace == Blockly.common.getMainWorkspace()) {
-    block.setDisabled(true);
+    block.setEnabled(false);
   }
 }
 
