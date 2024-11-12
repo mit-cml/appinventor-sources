@@ -600,6 +600,7 @@ public class YaVersion {
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 10.
   // For YOUNG_ANDROID_VERSION 230:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 37.
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
   public static final int YOUNG_ANDROID_VERSION = 230;
 
   // ............................... Blocks Language Version Number ...............................
