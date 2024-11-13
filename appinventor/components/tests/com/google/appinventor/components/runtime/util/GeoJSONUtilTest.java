@@ -47,7 +47,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Ignore
 public class GeoJSONUtilTest extends MapTestBase {
 
   private static final String LOG_TAG = GeoJSONUtilTest.class.getSimpleName();
