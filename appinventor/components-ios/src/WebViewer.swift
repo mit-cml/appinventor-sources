@@ -7,8 +7,8 @@ import Foundation
 import WebKit
 import CoreLocation
 
-open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler {
-  fileprivate var _view : WKWebView
+open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, WKURLSchemeHandler {
+  fileprivate var _view : WKWebView!
   fileprivate var _homeURL : String = ""
   fileprivate var _webViewString : String = ""
   fileprivate var _ignoreSSLErrors : Bool = false
@@ -18,6 +18,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript
   private var _webAlert: UIAlertController? = nil
+  var aiSchemeHandler: WKURLSchemeHandler? = nil
 
   public override init(_ parent: ComponentContainer) {
     do {
@@ -32,11 +33,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     controller.addUserScript(_webviewerApi)
     let config = WKWebViewConfiguration()
     config.preferences.javaScriptEnabled = true
+    config.allowsInlineMediaPlayback = true
+    config.mediaTypesRequiringUserActionForPlayback =  []
     config.userContentController = controller
+    super.init(parent)
+    config.setURLSchemeHandler(self, forURLScheme: "appinventor")
     _view = WKWebView(frame: CGRect.zero, configuration: config)
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.allowsBackForwardNavigationGestures = true
-    super.init(parent)
     let swipeRecog = UISwipeGestureRecognizer(target: self, action: #selector(navigation))
     _view.addGestureRecognizer(swipeRecog)
     _view.navigationDelegate = self
@@ -396,6 +400,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     get {
       return _view
     }
+  }
+  
+  public func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, start: urlSchemeTask)
+  }
+  
+  public func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, stop: urlSchemeTask)
   }
 }
 

@@ -11,6 +11,7 @@ Table of Contents:
 * [ChatBot](#ChatBot)
 * [FirebaseDB](#FirebaseDB)
 * [ImageBot](#ImageBot)
+* [PersonalAudioClassifier](#PersonalAudioClassifier)
 
 ## ChatBot  {#ChatBot}
 
@@ -217,3 +218,39 @@ The ImageBot is a non-visible component that uses DALL-E 2 to create and edit im
 : Edit the imageSource using the given description. The editable area of the image should be
  indicated by the maskSource. The sources can be a Canvas, an Image, or a string
  representing the path to a file.
+
+## PersonalAudioClassifier  {#PersonalAudioClassifier}
+
+Component for PersonalAudioClassifier
+
+
+
+### Properties  {#PersonalAudioClassifier-Properties}
+
+{:.properties}
+
+{:id="PersonalAudioClassifier.Model" .text .wo .do} *Model*
+: Property for Model
+
+{:id="PersonalAudioClassifier.WebViewer" .component .wo .do} *WebViewer*
+: Property for WebViewer
+
+### Events  {#PersonalAudioClassifier-Events}
+
+{:.events}
+
+{:id="PersonalAudioClassifier.ClassifierReady"} ClassifierReady()
+: Event indicating that the classifier is ready.
+
+{:id="PersonalAudioClassifier.Error"} Error(*errorCode*{:.number})
+: Event indicating that an error has occurred.
+
+{:id="PersonalAudioClassifier.GotClassification"} GotClassification(*result*{:.dictionary})
+: Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].
+
+### Methods  {#PersonalAudioClassifier-Methods}
+
+{:.methods}
+
+{:id="PersonalAudioClassifier.ClassifySoundData" class="method"} <i/> ClassifySoundData(*sound*{:.text})
+: Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.

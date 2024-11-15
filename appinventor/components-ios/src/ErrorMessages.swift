@@ -150,7 +150,12 @@ import Foundation
 
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
-
+  
+  //PIC erros
+  case ERROR_INPUT_MODE = 100401
+  case ERROR_WEBVIEW_AI = 100402
+  case ERROR_MODEL_AI = 100403
+  
   // iOS Specific Texting Errors
   case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
   case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
@@ -384,6 +389,15 @@ import Foundation
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
+    
+    case .ERROR_INPUT_MODE:
+      return "Invalid input mode"
+      
+    case .ERROR_MODEL_AI:
+      return "Invalid model file"
+      
+    case .ERROR_WEBVIEW_AI:
+      return "Invalid webview"
 
     case .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED:
       return "Google Voice integration is unavailable."

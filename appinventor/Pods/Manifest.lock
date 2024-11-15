@@ -30,6 +30,7 @@ PODS:
   - SwiftyBase64 (1.1.1)
   - Toast-Swift (4.0.1)
   - Zip (2.1.2)
+  - ZIPFoundation (0.9.19)
   - ZXingObjC (3.6.2):
     - ZXingObjC/All (= 3.6.2)
   - ZXingObjC/All (3.6.2)
@@ -49,6 +50,7 @@ DEPENDENCIES:
   - SwiftyBase64
   - Toast-Swift (~> 4.0.0)
   - Zip (~> 2.1)
+  - ZIPFoundation
   - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
 
 SPEC REPOS:
@@ -69,6 +71,7 @@ SPEC REPOS:
     - SwiftyBase64
     - Toast-Swift
     - Zip
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   KTVJSONWebToken:
@@ -111,8 +114,9 @@ SPEC CHECKSUMS:
   SwiftyBase64: 8de4de96a08454e742fdda614dff12d2c62ecbe9
   Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
+  ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 84d0771217b3dea91c6bb1a1032c8ce53d431fee
+PODFILE CHECKSUM: 6f439c463f17fe4f99d571f17afabe081626b43c
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
