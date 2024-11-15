@@ -8,7 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -85,7 +85,7 @@ public class BlocklyPanel extends HTMLPanel {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
     addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
-    SIMPLE_COMPONENT_TRANSLATIONS = NativeTranslationMap.transform(ComponentsTranslation.myMap);
+    SIMPLE_COMPONENT_TRANSLATIONS = NativeTranslationMap.transform(ComponentTranslationTable.myMap);
   }
 
   /**

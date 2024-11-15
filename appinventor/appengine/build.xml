@@ -624,7 +624,7 @@
         <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx3G"/>
+      <jvmarg value="-Xmx4G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg value="-war"/>

@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 
@@ -44,7 +44,7 @@ public final class PropertyHelpWidget extends Image {
       setStyleName("ode-DialogBox");
 
       // Create title from component name.
-      setText(ComponentsTranslation.getPropertyName(prop.getName()));
+      setText(ComponentTranslationTable.getPropertyName(prop.getName()));
 
       // Create content from help string.
       HTML helpText = new HTML(prop.getDescription());
