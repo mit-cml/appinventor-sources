@@ -8,7 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -143,7 +143,7 @@ public final class PropertiesBox extends Box {
       // setProperties clears the caption!
       String componentType = components.get(0).getType();
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-          ComponentsTranslation.getComponentName(componentType.equals("Form")
+          ComponentTranslationTable.getComponentName(componentType.equals("Form")
               ? "Screen" : componentType) + ")");
     }
   }

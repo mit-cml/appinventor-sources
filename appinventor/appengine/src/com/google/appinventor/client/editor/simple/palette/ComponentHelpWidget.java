@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
@@ -46,7 +46,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
-      String translatedHelpText = ComponentsTranslation.getComponentHelpString(helpTextKey);
+      String translatedHelpText = ComponentTranslationTable.getComponentHelpString(helpTextKey);
       if (!scd.getExternal() && translatedHelpText.equals(scd.getName())
           && !scd.getHelpString().isEmpty()) {
         translatedHelpText = scd.getHelpString();
