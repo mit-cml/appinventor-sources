@@ -43,7 +43,6 @@ open class ChartDataModel {
   }
 
   func setLabel(_ text: String) {
-    print("got in here")
     dataset?.label = text
   }
 

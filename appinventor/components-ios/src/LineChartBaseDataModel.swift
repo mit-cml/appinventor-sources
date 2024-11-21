@@ -11,7 +11,14 @@ class LineChartBaseDataModel: PointChartDataModel {
     super.init(data: data, view: view)
     let dataset = LineChartDataSet(entries: _entries, label: " ")
     self.dataset = dataset
-    self.data.dataSets = [dataset]
+    self.data.dataSets.append(dataset)
+    setDefaultStylingProperties()
+  }
+
+  init(data: DGCharts.LineChartData, view: LineChartViewBase, dataset: DGCharts.ChartDataSet) {
+    super.init(data: data, view: view)
+    self.dataset = dataset
+    self.data.dataSets.append(dataset)
     setDefaultStylingProperties()
   }
 

@@ -6,25 +6,19 @@
 import Foundation
 import DGCharts
 
-@objc class ChartDataBase: NSObject, Component, DataSourceChangeListener, ChartViewDelegate {
+@objc open class ChartDataBase: DataCollection, Component, DataSourceChangeListener, ChartViewDelegate, ChartComponent {
   var _chartDataModel: ChartDataModel?
   var _container: Chart
   var _color: Int32 = AIComponentKit.Color.black.int32
   var _colors: [UIColor] = []
   var _label: String?
 
-  var dataFileColumns: Array<String> = []
   var _lineType = AIComponentKit.LineType.Linear
   var _pointshape = PointStyle.Circle
   var sheetColumns: Array<String> = ["", ""]
-  var webColumns: Array<String> = []
-  var dataSourceKey: String?
   var colors: YailList<AnyObject>?
   var dataSource: DataSource?
   var lastDataSourceValue: AnyObject?
-  var _elements: String? // elements designer property
-  var _initialized = false // keep track whether the screen has already been intialized
-  var _tick : Int = 0
 
   @objc public init(_ chartContainer: Chart) {
     self._container = chartContainer
@@ -41,12 +35,11 @@ import DGCharts
     set {
       _color = newValue
       _chartDataModel?.setColor(argbToColor(newValue))
-     refreshChart()
+      refreshChart()
     }
   }
 
   @objc public func Initialize() {
-    print("in Initialize")
     _initialized = true
     if dataSource != nil {
       // Source(dataSource)
@@ -89,14 +82,12 @@ import DGCharts
     }
     set {
       _label = newValue
-      print("_label in Label", _label)
       _chartDataModel?.setLabel(newValue)
      onDataChange()
     }
   }
 
   func initChartData() {
-    print("in initChartData")
     _chartDataModel = _container.chartView?.createChartModel()
 
     // set default values
@@ -150,7 +141,7 @@ import DGCharts
   }
 
   // TODO: CANT FIND WHERE COPY IS DEFINED IN JAVA CODE
-  func copy(with zone: NSZone? = nil) -> Any {
+  public func copy(with zone: NSZone? = nil) -> Any {
     //let copy = ChartDataBase()
     //return copy
     return -1
@@ -168,9 +159,7 @@ import DGCharts
     dataSourceKey = key
   }
 
-  var dispatchDelegate: HandlesEventDispatching?
-
-
+  public var dispatchDelegate: HandlesEventDispatching?
 
   func uiColorFromHex(rgbValue: Int) -> UIColor {
 
@@ -316,6 +305,11 @@ import DGCharts
   func onDataChange(){
     // update the chart with the chart data model's current data and refresh the chart itself
     _container._chartView?.refresh(model: _chartDataModel!)
+    for listener in listeners {
+      if let listener = listener as? DataSourceChangeListener {
+        listener.onDataSourceValueChange(self, nil, nil)
+      }
+    }
   }
 
   // MARK: Private Implementation

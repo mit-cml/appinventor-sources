@@ -6,7 +6,7 @@
 import Foundation
 import DGCharts
 
-@objc class ChartData2D: ChartDataBase {
+@objc open class ChartData2D: ChartDataBase {
 
   override init(_ chartContainer: Chart) {
     super.init(chartContainer)
@@ -46,7 +46,6 @@ import DGCharts
     DispatchQueue.global(qos: .default).async {
       var pair: YailList<AnyObject> = [x, y]
       holder =  self._chartDataModel!.doesEntryExist(pair)
-      print("holder", holder)
       group.leave()
     }
     group.wait()
@@ -56,11 +55,8 @@ import DGCharts
   // Highlights data points of choice on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
   @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
     let dataPointsList: Array<AnyObject> = dataPoints as! Array
-    print("dataPointsList", dataPointsList)
     if !dataPoints.isEmpty {
       let entries = _chartDataModel?.entries
-      print("entries", entries)
-      print("entries count", entries?.count)
 
       // convert _colors to Int
       var colorsInt: Array<Int> = []
@@ -72,24 +68,15 @@ import DGCharts
       // if any colors are present, add them to highlights
       for index in colorsInt.indices {
         highlights[index] = colorsInt[index]
-        print("highlights[index]", highlights[index])
       }
-      print("highlights", highlights)
       for dataPoint in dataPointsList {
         if let dataPoint = dataPoint as? YailList<AnyObject> {
-          print("dataPoint", dataPoint)
-          print("type dataPoint", type(of: dataPoint[0]))
           var dataPointInt: Array<Int> = []
           for point in dataPoint {
             dataPointInt.append(point as! Int)
           }
 
           let dataPointIndex: Int = dataPointInt[0]  // anomaly detection replacement
-          print("dataPointIndex", dataPointIndex)
-          print("dataPointIndex-1", dataPointIndex-1)
-          print("dataPointIndextype", type(of: dataPointIndex))
-          print("highlights.count", highlights.count)
-          print("highlights2", highlights)
 
           if dataPointIndex >= highlights.count {
             continue

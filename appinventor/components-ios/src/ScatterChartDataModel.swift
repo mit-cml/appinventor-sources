@@ -13,7 +13,14 @@ class ScatterChartDataModel: PointChartDataModel {
     super.init(data: data, view: view)
     let dataset = ScatterChartDataSet(entries: chartDataEntry, label: " ")
     self.dataset = dataset
-    self.data.dataSets = [dataset]
+    self.data.dataSets.append(dataset)
+    setDefaultStylingProperties()
+  }
+
+  init(data: DGCharts.ScatterChartData, view: ScatterChartView, dataset: DGCharts.ChartDataSet) {
+    super.init(data: data, view: view)
+    self.dataset = dataset
+    self.data.dataSets.append(dataset)
     setDefaultStylingProperties()
   }
 
@@ -53,15 +60,15 @@ class ScatterChartDataModel: PointChartDataModel {
     scatterDataSet.setScatterShape(.circle)
   }
 
-//  @objc open var `PointShape`: PointStyle {
-//    get {
-//      return _pointshape
-//    }
-//    set {
-//      _pointshape = newValue
-//      setPointShape(_pointshape)
-//    }
-//  }
+  //  @objc open var `PointShape`: PointStyle {
+  //    get {
+  //      return _pointshape
+  //    }
+  //    set {
+  //      _pointshape = newValue
+  //      setPointShape(_pointshape)
+  //    }
+  //  }
 
   public func setPointShape(_ shape: PointStyle) {
     guard let scatterDataSet = dataset as? DGCharts.ScatterChartDataSet else {
