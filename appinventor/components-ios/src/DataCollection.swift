@@ -39,4 +39,19 @@ import Foundation
     guard let listenerObject = listener as? NSObject else { return }
     listeners.remove(listenerObject)
   }
+
+  static func castToDouble(_ origList: YailList<AnyObject>) -> [Double] {
+    var result: [Double] = []
+    for item in origList {
+      if item is SCMSymbol {
+        continue
+      }
+      if let item = item as? NSNumber {
+        result.append(item.doubleValue)
+      } else if let item = item as? NSString, let value = Double(item as String) {
+        result.append(value)
+      }
+    }
+    return result
+  }
 }
