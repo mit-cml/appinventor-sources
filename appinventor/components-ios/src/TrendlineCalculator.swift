@@ -74,6 +74,7 @@ class LinearRegression: TrendlineCalculator {
       "slope": slope,
       "Yintercept": intercept,
       "correlation coefficient": corr,
+      "predictions": predictions,
       "r^2": corr * corr,
       "Xintercepts": slope == 0 ? Double.nan : -intercept / slope
     ]

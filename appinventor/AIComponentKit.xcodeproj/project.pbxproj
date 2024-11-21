@@ -32,6 +32,8 @@
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0618D2751F34DC3400A127A2 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618D2741F34DC3400A127A2 /* ListView.swift */; };
+		061A3C692CEEE66E000E2FBB /* Regression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061A3C682CEEE66E000E2FBB /* Regression.swift */; };
+		061A3C6C2CEEEA3F000E2FBB /* RegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061A3C6A2CEEE9C9000E2FBB /* RegressionTests.swift */; };
 		061DC7B0223C34A900539213 /* classic_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7AF223C34A900539213 /* classic_button.png */; };
 		061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B1223C395F00539213 /* classic_button.pressed.png */; };
 		061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B2223C395F00539213 /* classic_button.disabled.png */; };
@@ -391,6 +393,8 @@
 		0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIComponentKitTests.swift; sourceTree = "<group>"; };
 		0618A2931D8CF4EE0013A191 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0618D2741F34DC3400A127A2 /* ListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		061A3C682CEEE66E000E2FBB /* Regression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regression.swift; sourceTree = "<group>"; };
+		061A3C6A2CEEE9C9000E2FBB /* RegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegressionTests.swift; sourceTree = "<group>"; };
 		061CEC0D297B47B400C2879B /* install-webrtc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "install-webrtc.sh"; sourceTree = "<group>"; };
 		061DC7AF223C34A900539213 /* classic_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.png; sourceTree = "<group>"; };
 		061DC7B1223C395F00539213 /* classic_button.pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.pressed.png; sourceTree = "<group>"; };
@@ -792,7 +796,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0618A2851D8CF4EE0013A191 /* src */ = {
+		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
@@ -818,7 +822,7 @@
 			path = "components-ios/src";
 			sourceTree = "<group>";
 		};
-		0618A2901D8CF4EE0013A191 /* tests */ = {
+		0618A2901D8CF4EE0013A191 /* components-ios/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06E2D6001FDB16CC00A1D52A /* yail */,
@@ -848,6 +852,46 @@
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
 			);
 			name = extensions;
+			sourceTree = "<group>";
+		};
+		068F9856289A2FB800E2883F /* charts */ = {
+			isa = PBXGroup;
+			children = (
+				068F9857289A2FD600E2883F /* Chart.swift */,
+				B49FD9BD2AF894E40049FA79 /* LineType.swift */,
+				159AC16E2B9929C6002906B7 /* PointShape.swift */,
+				068F9859289A320200E2883F /* ChartData2D.swift */,
+				068F985B289A323400E2883F /* ChartDataBase.swift */,
+				068F985F289A344C00E2883F /* DataSource.swift */,
+				156726242BB6063D00AECCEA /* DataCollection.swift */,
+				068F9863289A34F000E2883F /* ObservableDataSource.swift */,
+				068F9861289A34B100E2883F /* RealTimeDataSource.swift */,
+				06C791D02950E94500C1BB1B /* ChartView.swift */,
+				06C791D22950F1CC00C1BB1B /* ChartDataModel.swift */,
+				B48808CB2ACFB3770046DF4F /* PointChartView.swift */,
+				B48808CD2ACFB9030046DF4F /* AxisChartView.swift */,
+				06C791D829511A4A00C1BB1B /* PointChartDataModel.swift */,
+				06C791DA29511CDC00C1BB1B /* Chart2DDataModel.swift */,
+				1556D4E72C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift */,
+				B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */,
+				B49FD9BB2AF6E1690049FA79 /* LineChartBaseDataModel.swift */,
+				B48808C72ACFB1AD0046DF4F /* LineChartView.swift */,
+				06C791D4295110E900C1BB1B /* LineChartDataModel.swift */,
+				067EFDDC2B9B727D001C852C /* AreaChartDataModel.swift */,
+				067EFDDE2B9B787A001C852C /* AreaChartView.swift */,
+				1585F44C2B7D1F68005C905F /* BarChartView.swift */,
+				158C86B62B8E336C00D33EE4 /* BarChartDataModel.swift */,
+				068F5D7D2B8D16EA00A24EB0 /* PieChartView.swift */,
+				068F5D7F2B8D16FA00A24EB0 /* PieChartDataModel.swift */,
+				159AC1682B98E9CF002906B7 /* ScatterChartView.swift */,
+				159AC16A2B98E9E2002906B7 /* ScatterChartDataModel.swift */,
+				159AC1702BAA0C30002906B7 /* Trendline.swift */,
+				159AC1722BAA1086002906B7 /* ChartComponent.swift */,
+				159AC1762BB4C174002906B7 /* TrendlineCalculator.swift */,
+				156726262BB607CF00AECCEA /* DataModel.swift */,
+				15C9E0222C2B11650080EE9D /* LineWithTrendlineRenderer.swift */,
+			);
+			name = charts;
 			sourceTree = "<group>";
 		};
 		069D1C692C9C4FBF00C0CA96 /* assets */ = {
@@ -925,46 +969,6 @@
 				069D1CE22C9C50B700C0CA96 /* PersonalImageClassifier.d.ts */,
 			);
 			name = PersonalImageClassifier;
-			sourceTree = "<group>";
-		};
-		068F9856289A2FB800E2883F /* charts */ = {
-			isa = PBXGroup;
-			children = (
-				068F9857289A2FD600E2883F /* Chart.swift */,
-				B49FD9BD2AF894E40049FA79 /* LineType.swift */,
-				159AC16E2B9929C6002906B7 /* PointShape.swift */,
-				068F9859289A320200E2883F /* ChartData2D.swift */,
-				068F985B289A323400E2883F /* ChartDataBase.swift */,
-				068F985F289A344C00E2883F /* DataSource.swift */,
-				156726242BB6063D00AECCEA /* DataCollection.swift */,
-				068F9863289A34F000E2883F /* ObservableDataSource.swift */,
-				068F9861289A34B100E2883F /* RealTimeDataSource.swift */,
-				06C791D02950E94500C1BB1B /* ChartView.swift */,
-				06C791D22950F1CC00C1BB1B /* ChartDataModel.swift */,
-				B48808CB2ACFB3770046DF4F /* PointChartView.swift */,
-				B48808CD2ACFB9030046DF4F /* AxisChartView.swift */,
-				06C791D829511A4A00C1BB1B /* PointChartDataModel.swift */,
-				06C791DA29511CDC00C1BB1B /* Chart2DDataModel.swift */,
-				1556D4E72C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift */,
-				B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */,
-				B49FD9BB2AF6E1690049FA79 /* LineChartBaseDataModel.swift */,
-				B48808C72ACFB1AD0046DF4F /* LineChartView.swift */,
-				06C791D4295110E900C1BB1B /* LineChartDataModel.swift */,
-				067EFDDC2B9B727D001C852C /* AreaChartDataModel.swift */,
-				067EFDDE2B9B787A001C852C /* AreaChartView.swift */,
-				1585F44C2B7D1F68005C905F /* BarChartView.swift */,
-				158C86B62B8E336C00D33EE4 /* BarChartDataModel.swift */,
-				068F5D7D2B8D16EA00A24EB0 /* PieChartView.swift */,
-				068F5D7F2B8D16FA00A24EB0 /* PieChartDataModel.swift */,
-				159AC1682B98E9CF002906B7 /* ScatterChartView.swift */,
-				159AC16A2B98E9E2002906B7 /* ScatterChartDataModel.swift */,
-				159AC1702BAA0C30002906B7 /* Trendline.swift */,
-				159AC1722BAA1086002906B7 /* ChartComponent.swift */,
-				159AC1762BB4C174002906B7 /* TrendlineCalculator.swift */,
-				156726262BB607CF00AECCEA /* DataModel.swift */,
-				15C9E0222C2B11650080EE9D /* LineWithTrendlineRenderer.swift */,
-			);
-			name = charts;
 			sourceTree = "<group>";
 		};
 		06C70BA32A8BB6A800C6C78D /* GoogleAuth */ = {
@@ -1204,6 +1208,7 @@
 				068E0EB21DC251890086FFDA /* PhoneCall.swift */,
 				06E59EA31D92C68900C42804 /* PhoneStatus.swift */,
 				0644F6BF1F37CAD800642E4D /* Player.swift */,
+				061A3C682CEEE66E000E2FBB /* Regression.swift */,
 				068E0EB41DC251A20086FFDA /* Sharing.swift */,
 				06E59EAE1D92D14F00C42804 /* Sound.swift */,
 				CBE5DE991FE1C421009A139F /* SoundRecorder.swift */,
@@ -1281,8 +1286,8 @@
 			children = (
 				062B743A2BC06AD9002E221F /* PrivacyInfo.xcprivacy */,
 				061CEC0D297B47B400C2879B /* install-webrtc.sh */,
-				0618A2851D8CF4EE0013A191 /* src */,
-				0618A2901D8CF4EE0013A191 /* tests */,
+				0618A2851D8CF4EE0013A191 /* components-ios/src */,
+				0618A2901D8CF4EE0013A191 /* components-ios/tests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
 				0618A27A1D8CECAC0013A191 /* Frameworks */,
 				7474807A747CFE996FC4893A /* Pods */,
@@ -1346,6 +1351,7 @@
 			children = (
 				CB8539242075549A009E9030 /* ClockTests.swift */,
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
+				061A3C6A2CEEE9C9000E2FBB /* RegressionTests.swift */,
 				06E624A529F698EC007DA752 /* TextToSpeechTests.swift */,
 				0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */,
 				DE68A88C20B4971400233AF9 /* XMLTests.swift */,
@@ -1785,6 +1791,7 @@
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
 				0618D2751F34DC3400A127A2 /* ListView.swift in Sources */,
 				CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */,
+				061A3C692CEEE66E000E2FBB /* Regression.swift in Sources */,
 				DEB9C5502101199E0069BAD7 /* PolygonBaseWithPoints.swift in Sources */,
 				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
@@ -1958,6 +1965,7 @@
 				06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */,
 				06009FF82285BEEB00E4EC4A /* SpinnerTests.swift in Sources */,
 				0623BBF02476291D00FEB2B6 /* TinyDBTests.swift in Sources */,
+				061A3C6C2CEEEA3F000E2FBB /* RegressionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
