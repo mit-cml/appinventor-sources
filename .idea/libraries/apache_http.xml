@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="apache-http">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/apache-http/httpmime-4.3.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/apache-http/httpcore-4.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

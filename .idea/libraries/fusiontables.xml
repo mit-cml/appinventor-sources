@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="fusiontables">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/fusiontables/fusiontables.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

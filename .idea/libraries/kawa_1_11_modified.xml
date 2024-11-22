@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="kawa-1.11-modified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/kawa/kawa-1.11-modified.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

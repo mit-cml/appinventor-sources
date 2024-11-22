@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="AndroidRuntime">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/aiplayapp/assets/external_comps/edu.mit.appinventor.companionextras/files/AndroidRuntime.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

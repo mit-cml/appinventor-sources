@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="powermock">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/javassist-3.27.0-GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/easymock-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-module-junit4-common-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/cglib-nodep-3.2.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-core-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/objenesis-3.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-api-support-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/byte-buddy-1.10.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/byte-buddy-agent-1.10.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/hamcrest-core-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-module-junit4-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-api-easymock-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/powermock/powermock-reflect-2.0.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

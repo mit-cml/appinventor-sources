@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="AI2MergerApp">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/aimerger/AI2MergerApp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

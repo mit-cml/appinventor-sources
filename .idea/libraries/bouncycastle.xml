@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="bouncycastle">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/bouncycastle/bcpkix-jdk15on-149.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/bouncycastle/bcprov-jdk15on-149.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="responderiq-test">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/responder-iq/responderiq-test.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

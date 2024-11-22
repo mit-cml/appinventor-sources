@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SnapchatRemix">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/SnapchatRemix/SnapchatRemix.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

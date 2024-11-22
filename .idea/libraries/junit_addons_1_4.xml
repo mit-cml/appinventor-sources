@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="junit-addons-1.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/junit-addons/junit-addons-1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
