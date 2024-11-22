@@ -98,7 +98,7 @@ public final class ListView extends AndroidViewComponent {
   private int backgroundColor;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
-  private int elementColor;
+  private int elementColor = COLOR_NONE;
 
   private int textColor;
   private int detailTextColor;
@@ -217,7 +217,6 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    ElementColor(Component.COLOR_BLACK);
     BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
@@ -525,6 +524,7 @@ public final class ListView extends AndroidViewComponent {
     backgroundColor = argb;
     recyclerView.setBackgroundColor(backgroundColor);
     linearLayout.setBackgroundColor(backgroundColor);
+    setAdapterData();
   }
 
   /**
@@ -552,7 +552,7 @@ public final class ListView extends AndroidViewComponent {
    * indicates fully transparent and {@code FF} means opaque.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+      defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
   @SimpleProperty
   public void ElementColor(int argb) {
     elementColor = argb;
@@ -1271,7 +1271,9 @@ public final class ListView extends AndroidViewComponent {
    * Create a new adapter and apply visual changes, load data if it exists.
    */
   public void setAdapterData() {
-    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, items, layout, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, elementColor, selectionColor, imageWidth, imageHeight, radius);
+    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, items, layout,
+        textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail,
+        elementColor, selectionColor, imageWidth, imageHeight, radius);
     listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
       @Override
       public void onItemClick(int position, View v) {
