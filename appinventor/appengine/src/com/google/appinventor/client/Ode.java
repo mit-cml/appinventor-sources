@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.utils.resolve;
 import static com.google.appinventor.client.utils.Promise.reject;
 import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
@@ -774,6 +775,70 @@ public class Ode implements EntryPoint {
 
     // load project based on current url
     // TODO(sharon): Seems like a possible race condition here if the onValueChange
+    @Override 
+    public void onModuleLoad() { 
+    // Initialize global Ode instance 
+    instance = this; 
+
+    // Setup RPC services 
+    setupOrigin(projectService); 
+    setupOrigin(userInfoService); 
+    setupOrigin(getMotdService); 
+    setupOrigin(componentService); 
+    setupOrigin(adminInfoService); 
+    setupOrigin(tokenAuthService); 
+
+    // Start the initialization process
+    initializeApp().then(result -> {
+        // Handle successful initialization, such as loading the UI
+        return resolve(result);
+    }).error(caught -> {
+        // Handle errors appropriately
+        handleError(caught);
+    });
+}
+
+private Promise<Object> initializeApp() {
+    return Promise.allOf(
+        Promise.wrap(this::getSystemConfigAndUser Settings),
+        Promise.wrap(this::loadTranslations)
+    ).then(result -> {
+        // Further initialization steps
+        return resolve(result);
+    }).error(caught -> {
+        // Log the error for debugging
+        LOG.severe("Error during initialization: " + caught.getMessage());
+        return reject(caught);
+    });
+}
+
+private Promise<Object> getSystemConfigAndUser Settings() {
+    return Promise.<Config>call(MESSAGES.serverUnavailable(), c -> 
+        userInfoService.getSystemConfig(sessionId, c)
+    ).then(configResult -> {
+        config = configResult;
+        user = configResult.getUser ();
+        isReadOnly = user.isReadOnly();
+        return loadUser Settings(); // Load user settings after config
+    }).error(caught -> {
+        // Log the error for debugging
+        LOG.severe("Error fetching system config: " + caught.getMessage());
+        return reject(caught);
+    });
+}
+
+private Promise<UserSettings> loadUser Settings() {
+    userSettings = new UserSettings(user);
+    return userSettings.loadSettings()
+        .then(result -> {
+            // Handle successful loading of user settings
+            return resolve(result);
+        }).error(caught -> {
+            // Log the error for debugging
+            LOG.severe("Error loading user settings: " + caught.getMessage());
+            return reject(caught);
+        });
+}
     // handler defined above gets called before the getSystemConfig call sets
     // userSettings.
     // The following line causes problems with GWT debugging, and commenting
@@ -975,6 +1040,66 @@ public class Ode implements EntryPoint {
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
     // TODO: Tidy up user preference variable
+    public class UserPreferences {
+      private UserSettings userSettings;
+  
+      public UserPreferences(User user) {
+          this.userSettings = new UserSettings(user);
+      }
+  
+      public boolean isDyslexicFontEnabled() {
+          String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
+          return Boolean.parseBoolean(value);
+      }
+  
+      public void setDyslexicFont(boolean enabled) {
+          userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT, String.valueOf(enabled));
+          userSettings.saveSettings(null);
+      }
+  
+      public boolean isDarkThemeEnabled() {
+          String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+          return Boolean.parseBoolean(value);
+      }
+  
+      public void setDarkThemeEnabled(boolean enabled) {
+          userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED, String.valueOf(enabled));
+          userSettings.saveSettings(null);
+      }
+  
+      public boolean isNewLayoutEnabled() {
+          String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+          return Boolean.parseBoolean(value);
+      }
+  
+      public void setNewLayoutEnabled(boolean enabled) {
+          userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+                  .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT, String.valueOf(enabled));
+      }
+  }
+  
+  // In Ode.java
+  public class Ode implements EntryPoint {
+      private UserPreferences userPreferences;
+  
+      @Override
+      public void onModuleLoad() {
+          // Existing initialization code...
+          
+          userPreferences = new UserPreferences(user);
+          
+          // Example usage
+          if (userPreferences.isDyslexicFontEnabled()) {
+              // Apply dyslexic font settings
+          }
+      }
+  }
+
     projectListbox = ProjectListBox.create(uiFactory);
     String layout;
     if (Ode.getUserNewLayout()) {
