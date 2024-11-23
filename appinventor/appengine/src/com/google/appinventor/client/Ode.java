@@ -187,7 +187,8 @@ public class Ode implements EntryPoint {
   // Collection of folders
   private FolderManager folderManager;
 
-  // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
+  // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or
+  // null.
   private FileEditor currentFileEditor;
 
   private AssetManager assetManager = AssetManager.getInstance();
@@ -202,42 +203,59 @@ public class Ode implements EntryPoint {
   public static int currentView = PROJECTS;
 
   /*
-   * The following fields define the general layout of the UI as seen in the following diagram:
+   * The following fields define the general layout of the UI as seen in the
+   * following diagram:
    *
-   *  +-- mainPanel --------------------------------+
-   *  |+-- topPanel -------------------------------+|
-   *  ||                                           ||
-   *  |+-------------------------------------------+|
-   *  |+-- overDeckPanel --+-----------------------+|
-   *  || tutorialPanel     |  deckPanel            ||
-   *  |+-------------------+-----------------------+|
-   *  |+-- statusPanel ----------------------------+|
-   *  ||                                           ||
-   *  |+-------------------------------------------+|
-   *  +---------------------------------------------+
+   * +-- mainPanel --------------------------------+
+   * |+-- topPanel -------------------------------+|
+   * || ||
+   * |+-------------------------------------------+|
+   * |+-- overDeckPanel --+-----------------------+|
+   * || tutorialPanel | deckPanel ||
+   * |+-------------------+-----------------------+|
+   * |+-- statusPanel ----------------------------+|
+   * || ||
+   * |+-------------------------------------------+|
+   * +---------------------------------------------+
    */
-  @UiField(provided = true) protected DeckPanel deckPanel;
-  @UiField(provided = true) protected FlowPanel overDeckPanel;
-  @UiField protected TutorialPanel tutorialPanel;
+  @UiField(provided = true)
+  protected DeckPanel deckPanel;
+  @UiField(provided = true)
+  protected FlowPanel overDeckPanel;
+  @UiField
+  protected TutorialPanel tutorialPanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
-  @UiField protected TopPanel topPanel;
-  @UiField protected StatusPanel statusPanel;
-  @UiField protected FlowPanel workColumns;
-  @UiField protected FlowPanel structureAndAssets;
-  @UiField protected ProjectToolbar projectToolbar;
-  @UiField (provided = true) protected ProjectListBox projectListbox;
-  @UiField protected DesignToolbar designToolbar;
-  @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
-  @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
-  @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
-  @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
-  @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField
+  protected TopPanel topPanel;
+  @UiField
+  protected StatusPanel statusPanel;
+  @UiField
+  protected FlowPanel workColumns;
+  @UiField
+  protected FlowPanel structureAndAssets;
+  @UiField
+  protected ProjectToolbar projectToolbar;
+  @UiField(provided = true)
+  protected ProjectListBox projectListbox;
+  @UiField
+  protected DesignToolbar designToolbar;
+  @UiField(provided = true)
+  protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField(provided = true)
+  protected ViewerBox viewerBox = ViewerBox.getViewerBox();
+  @UiField(provided = true)
+  protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField(provided = true)
+  protected SourceStructureBox sourceStructureBox;
+  @UiField(provided = true)
+  protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
   // mode
-  @UiField(provided = true) static Resources.Style style;
+  @UiField(provided = true)
+  static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -259,7 +277,7 @@ public class Ode implements EntryPoint {
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
-  //Web service for Token authentication operations
+  // Web service for Token authentication operations
   private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
 
   private boolean windowClosing;
@@ -295,7 +313,7 @@ public class Ode implements EntryPoint {
 
   // The flags below are used by the Build menus. Because we have two
   // different buildservers, we have two sets of build menu items, one
-  // for each buildserver.  The first time one is selected, we put up
+  // for each buildserver. The first time one is selected, we put up
   // a warning/notice dialog box explaining its purpose. We don't show
   // it again during the same session, and keeping track of that is
   // the purpose of these two flags.
@@ -306,7 +324,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns global instance of Ode.
    *
-   * @return  global Ode instance
+   * @return global Ode instance
    */
   public static Ode getInstance() {
     return instance;
@@ -327,7 +345,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns instance of the aggregate image bundle for the application.
    *
-   * @return  image bundle
+   * @return image bundle
    */
   public static Images getImageBundle() {
     return IMAGES;
@@ -354,7 +372,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the system config.
    *
-   * @return  system config
+   * @return system config
    */
   public static Config getSystemConfig() {
     return config;
@@ -363,7 +381,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the user settings.
    *
-   * @return  user settings
+   * @return user settings
    */
   public static UserSettings getUserSettings() {
     return userSettings;
@@ -372,7 +390,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the asset manager.
    *
-   * @return  asset manager
+   * @return asset manager
    */
   public AssetManager getAssetManager() {
     return assetManager;
@@ -409,25 +427,26 @@ public class Ode implements EntryPoint {
     hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
-        @Override
-        public void run() {
-          ProjectListBox.getProjectListBox().loadProjectList();
-          currentView = PROJECTS;
-          getTopToolbar().updateFileMenuButtons(currentView);
-          deckPanel.showWidget(projectsTabIndex);
-          // If we started a project, then the start button was disabled (to avoid
-          // a second press while the new project wizard was starting (aka we "debounce"
-          // the button). When the person switches to the projects list view again (here)
-          // we re-enable it.
-          projectToolbar.enableStartButton();
-          projectToolbar.setProjectTabButtonsVisible(true);
-          projectToolbar.setTrashTabButtonsVisible(false);
-        }
-      };
+      @Override
+      public void run() {
+        ProjectListBox.getProjectListBox().loadProjectList();
+        currentView = PROJECTS;
+        getTopToolbar().updateFileMenuButtons(currentView);
+        deckPanel.showWidget(projectsTabIndex);
+        // If we started a project, then the start button was disabled (to avoid
+        // a second press while the new project wizard was starting (aka we "debounce"
+        // the button). When the person switches to the projects list view again (here)
+        // we re-enable it.
+        projectToolbar.enableStartButton();
+        projectToolbar.setProjectTabButtonsVisible(true);
+        projectToolbar.setTrashTabButtonsVisible(false);
+      }
+    };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
     } else {
-      // maybe take a screenshot, second argument is true so we wait for i/o to complete
+      // maybe take a screenshot, second argument is true so we wait for i/o to
+      // complete
       screenShotMaybe(next, true);
     }
   }
@@ -474,18 +493,20 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
+   * Switch to the Designer tab. Shows an error message if there is no
+   * currentFileEditor.
    */
   public void switchToDesignView() {
     hideChaff();
     // Only show designer if there is a current editor.
-    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT
+    // EDITOR. *****
     showTutorials();
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
-    } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
+    } else if (!editorManager.hasOpenEditor()) { // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
@@ -507,7 +528,8 @@ public class Ode implements EntryPoint {
   /**
    * Processes the template and galleryId flags.
    *
-   * @return true if a template or gallery id is present and being handled, otherwise false.
+   * @return true if a template or gallery id is present and being handled,
+   *         otherwise false.
    */
   private boolean handleQueryString() {
     if (userSettings == null) {
@@ -518,8 +540,8 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag) {  // We are loading a template, open it instead
-                                // of the last project
+    if (templateLoadingFlag) { // We are loading a template, open it instead
+                               // of the last project
       NewProjectCommand callbackCommand = new NewProjectCommand() {
         @Override
         public void execute(Project project) {
@@ -532,13 +554,13 @@ public class Ode implements EntryPoint {
     } else if (newGalleryLoadingFlag) {
       final DialogBox dialog = galleryLoadingDialog();
       NewProjectCommand callback = new NewProjectCommand() {
-          @Override
-          public void execute(Project project) {
-            newGalleryLoadingFlag = false;
-            dialog.hide();      // Get rid of the project loading dialog
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-          }
-        };
+        @Override
+        public void execute(Project project) {
+          newGalleryLoadingFlag = false;
+          dialog.hide(); // Get rid of the project loading dialog
+          Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+      };
       LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
       return true;
     }
@@ -564,11 +586,12 @@ public class Ode implements EntryPoint {
     } else if (!projectIdString.equals("0")) {
       final long projectId = Long.parseLong(projectIdString);
       Project project = projectManager.getProject(projectId);
-      if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
+      if (project != null && !project.isInTrash()) { // If last opened project is now in the trash, don't open it.
         openYoungAndroidProjectInDesigner(project);
       } else {
         // The project hasn't been added to the ProjectManager yet.
-        // Add a ProjectManagerEventListener so we'll be notified when it has been added.
+        // Add a ProjectManagerEventListener so we'll be notified when it has been
+        // added.
         // Alternatively, it is an invalid projectId. In which case,
         // nothing happens since if the listener eventually fires
         // it will not match the projectId.
@@ -577,7 +600,7 @@ public class Ode implements EntryPoint {
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
-            switchToProjectsView();  // the user will need to select a project...
+            switchToProjectsView(); // the user will need to select a project...
             ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
           return null;
@@ -622,6 +645,7 @@ public class Ode implements EntryPoint {
 
   /**
    * Returns i18n compatible messages
+   * 
    * @return messages
    */
   public static OdeMessages getMessages() {
@@ -630,6 +654,7 @@ public class Ode implements EntryPoint {
 
   /**
    * Returns the rpcStatusPopup object.
+   * 
    * @return RpcStatusPopup
    */
   public static RpcStatusPopup getRpcStatusPopup() {
@@ -1040,6 +1065,18 @@ private Promise<UserSettings> loadUser Settings() {
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
     // TODO: Tidy up user preference variable
+    // Retrieve user preferences for layout and theme settings
+    boolean isNewLayout = Ode.getUser NewLayout();
+    boolean isDarkThemeEnabled = Ode.getUser DarkThemeEnabled();
+
+    // Determine layout and style based on user preferences
+    String layout = isNewLayout ? "modern" : "classic";
+    style = (isNewLayout ? 
+         (isDarkThemeEnabled ? Resources.INSTANCE.stylemodernDark() : Resources.INSTANCE.stylemodernLight()) : 
+         (isDarkThemeEnabled ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight()));
+         
+// Create the project list box with the UI factory
+projectListbox = ProjectListBox.create(uiFactory);
     public class UserPreferences {
       private UserSettings userSettings;
   
@@ -1202,7 +1239,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the editor manager.
    *
-   * @return  {@link EditorManager}
+   * @return {@link EditorManager}
    */
   public EditorManager getEditorManager() {
     return editorManager;
@@ -1211,7 +1248,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the project manager.
    *
-   * @return  {@link ProjectManager}
+   * @return {@link ProjectManager}
    */
   public ProjectManager getProjectManager() {
     return projectManager;
@@ -1220,7 +1257,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the folder manager.
    *
-   * @return  {@link FolderManager}
+   * @return {@link FolderManager}
    */
   public FolderManager getFolderManager() {
     return folderManager;
@@ -1229,7 +1266,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the project tool bar.
    *
-   * @return  {@link ProjectToolbar}
+   * @return {@link ProjectToolbar}
    */
   public ProjectToolbar getProjectToolbar() {
     return projectToolbar;
@@ -1238,7 +1275,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the structureAndAssets panel.
    *
-   * @return  {@link VerticalPanel}
+   * @return {@link VerticalPanel}
    */
   public FlowPanel getStructureAndAssets() {
     return structureAndAssets;
@@ -1247,7 +1284,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the workColumns panel.
    *
-   * @return  {@link HorizontalPanel}
+   * @return {@link HorizontalPanel}
    */
   public FlowPanel getWorkColumns() {
     return workColumns;
@@ -1256,7 +1293,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the design tool bar.
    *
-   * @return  {@link DesignToolbar}
+   * @return {@link DesignToolbar}
    */
   public DesignToolbar getDesignToolbar() {
     return designToolbar;
@@ -1265,7 +1302,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the design tool bar.
    *
-   * @return  {@link DesignToolbar}
+   * @return {@link DesignToolbar}
    */
   public TopToolbar getTopToolbar() {
     return topPanel.getTopToolbar();
@@ -1274,7 +1311,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the top panel.
    *
-   * @return  {@link TopPanel}
+   * @return {@link TopPanel}
    */
   public TopPanel getTopPanel() {
     return topPanel;
@@ -1330,14 +1367,14 @@ private Promise<UserSettings> loadUser Settings() {
    *
    * @return TokenAuth web service instance
    */
-  public TokenAuthServiceAsync getTokenAuthService(){
+  public TokenAuthServiceAsync getTokenAuthService() {
     return tokenAuthService;
   }
 
   /**
    * Set the current file editor.
    *
-   * @param fileEditor  the file editor, can be null.
+   * @param fileEditor the file editor, can be null.
    */
   public void setCurrentFileEditor(FileEditor fileEditor) {
     currentFileEditor = fileEditor;
@@ -1352,24 +1389,25 @@ private Promise<UserSettings> loadUser Settings() {
       switchToDesignView();
     }
     if (!windowClosing) {
-      userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
+      userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(
+          SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
   }
 
   /**
-   * @return  currently open FileEditor, or null if none
+   * @return currently open FileEditor, or null if none
    */
   public FileEditor getCurrentFileEditor() {
     return currentFileEditor;
   }
 
   /**
-   * Returns the project root node for the current project, or null if there is no current project.
+   * Returns the project root node for the current project, or null if there is no
+   * current project.
    *
-   * @return  project root node corresponding to current project
+   * @return project root node corresponding to current project
    */
   public ProjectRootNode getCurrentYoungAndroidProjectRootNode() {
     if (currentFileEditor != null) {
@@ -1381,7 +1419,8 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Updates the modification date for the requested projected in the local
    * cached data structure based on the date received from the server.
-   * @param date  the date to update it to
+   * 
+   * @param date the date to update it to
    */
   public void updateModificationDate(long projectId, long date) {
     Project project = getProjectManager().getProject(projectId);
@@ -1393,7 +1432,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the current project id, or 0 if there is no current project.
    *
-   * @return  the current project id
+   * @return the current project id
    */
   public long getCurrentYoungAndroidProjectId() {
     if (currentFileEditor != null) {
@@ -1405,7 +1444,7 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Returns the current source node, or null if there is no current source node.
    *
-   * @return  the current source node
+   * @return the current source node
    */
   public YoungAndroidSourceNode getCurrentYoungAndroidSourceNode() {
     if (currentFileEditor != null) {
@@ -1452,14 +1491,15 @@ private Promise<UserSettings> loadUser Settings() {
       currentFileEditor.hideChaff();
     }
   }
+
   /**
    * Returns user dyslexic font setting.
    *
    * @return user default font
    */
   public static boolean getUserDyslexicFont() {
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
     return Boolean.parseBoolean(value);
   }
 
@@ -1469,20 +1509,20 @@ private Promise<UserSettings> loadUser Settings() {
    * @param dyslexicFont new value for the user default font
    */
   public static void setUserDyslexicFont(boolean dyslexicFont) {
-    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
-                    "" + dyslexicFont);
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(
+        SettingsConstants.USER_DYSLEXIC_FONT,
+        "" + dyslexicFont);
     userSettings.saveSettings(new Command() {
-        @Override
-        public void execute() {
-          // Reload for the new font to take effect. We
-          // do this here because we need to make sure that
-          // the user settings were saved before we terminate
-          // this browsing session. This is particularly important
-          // for Firefox
-          Window.Location.reload();
-        }
-      });
+      @Override
+      public void execute() {
+        // Reload for the new font to take effect. We
+        // do this here because we need to make sure that
+        // the user settings were saved before we terminate
+        // this browsing session. This is particularly important
+        // for Firefox
+        Window.Location.reload();
+      }
+    });
   }
 
   /**
@@ -1492,7 +1532,7 @@ private Promise<UserSettings> loadUser Settings() {
    */
   public static boolean getUserDarkThemeEnabled() {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+        .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
     if (value == null) {
       return false;
     }
@@ -1506,19 +1546,19 @@ private Promise<UserSettings> loadUser Settings() {
    */
   public static void setUserDarkThemeEnabled(boolean enabled) {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
-                    "" + enabled);
+        .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+            "" + enabled);
     // userSettings.saveSettings(new Command() {
-    //     @Override
-    //     public void execute() {
-    //       // Reload for the UI preferences to take effect. We
-    //       // do this here because we need to make sure that
-    //       // the user settings were saved before we terminate
-    //       // this browsing session. This is particularly important
-    //       // for Firefox
-    //       Window.Location.reload();
-    //     }
-    //   });
+    // @Override
+    // public void execute() {
+    // // Reload for the UI preferences to take effect. We
+    // // do this here because we need to make sure that
+    // // the user settings were saved before we terminate
+    // // this browsing session. This is particularly important
+    // // for Firefox
+    // Window.Location.reload();
+    // }
+    // });
   }
 
   /**
@@ -1528,7 +1568,7 @@ private Promise<UserSettings> loadUser Settings() {
    */
   public static boolean getUserNewLayout() {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+        .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
     return Boolean.parseBoolean(value);
     // return true;
   }
@@ -1540,8 +1580,8 @@ private Promise<UserSettings> loadUser Settings() {
    */
   public static void setUserNewLayout(boolean newLayout) {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
-                    "" + newLayout);
+        .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+            "" + newLayout);
   }
 
   public static void saveUserDesignSettings() {
@@ -1572,12 +1612,12 @@ private Promise<UserSettings> loadUser Settings() {
   /**
    * Helper method to create push buttons.
    *
-   * @param img  image to shown on face of push button
-   * @param tip  text to show in tooltip
-   * @return  newly created push button
+   * @param img image to shown on face of push button
+   * @param tip text to show in tooltip
+   * @return newly created push button
    */
   public static PushButton createPushButton(ImageResource img, String tip,
-                                            ClickHandler handler) {
+      ClickHandler handler) {
     PushButton pb = new PushButton(new Image(img));
     pb.addClickHandler(handler);
     pb.setTitle(tip);
@@ -1585,13 +1625,15 @@ private Promise<UserSettings> loadUser Settings() {
   }
 
   /**
-   * Compares two locales and determines if they are equal. We consider oldLocale value
+   * Compares two locales and determines if they are equal. We consider oldLocale
+   * value
    * of null to be equal to the empty string to handle default values.
-   * @param oldLocale one locale
-   * @param newLocale another locale
+   * 
+   * @param oldLocale    one locale
+   * @param newLocale    another locale
    * @param defaultValue the default locale
-   * @return  true if the locale ISO strings are equal modulo case or if both
-   *          are empty, otherwise false
+   * @return true if the locale ISO strings are equal modulo case or if both
+   *         are empty, otherwise false
    */
   @VisibleForTesting
   static boolean compareLocales(String oldLocale, String newLocale, String defaultValue) {
@@ -1614,13 +1656,15 @@ private Promise<UserSettings> loadUser Settings() {
    */
   public static Promise<Boolean> handleUserLocale(UserSettings userSettings) {
     String locale = Window.Location.getParameter("locale");
-    String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
+    String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
     if (!compareLocales(locale, lastUserLocale, "en")) {
       if (locale == null) {
         Window.Location.assign(Window.Location.createUrlBuilder().setParameter("locale", lastUserLocale).buildString());
         return rejectWithReason("Reloading to apply user locale");
       } else {
-        userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);
+        userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);
         userSettings.saveSettings(null);
       }
     }
@@ -1657,10 +1701,10 @@ private Promise<UserSettings> loadUser Settings() {
     // editors because saving work is more important then
     // getting this screenshot!
     screenShotMaybe(new Runnable() {
-        @Override
-        public void run() {
-        }
-      }, true);                 // Wait for i/o!!!
+      @Override
+      public void run() {
+      }
+    }, true); // Wait for i/o!!!
 
     doCloseProxy();
 
@@ -1670,6 +1714,7 @@ private Promise<UserSettings> loadUser Settings() {
    * Creates, visually centers, and optionally displays the dialog box
    * that informs the user how to start learning about using App Inventor
    * or create a new project.
+   * 
    * @param showDialog Convenience variable to show the created DialogBox.
    * @return The created and optionally displayed Dialog box.
    */
@@ -1685,42 +1730,42 @@ private Promise<UserSettings> loadUser Settings() {
 
   /**
    * Creates a dialog box to show empty trash list message.
+   * 
    * @param showDialog Convenience variable to show the created DialogBox.
    * @return The created and optionally displayed Dialog box.
    */
 
   public DialogBox createEmptyTrashDialog(boolean showDialog) {
     // Create the UI elements of the DialogBox
-    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
+    final DialogBox dialogBox = new DialogBox(true, false); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
     Grid mainGrid = new Grid(2, 2);
     mainGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+        0,
+        HasHorizontalAlignment.ALIGN_CENTER,
+        HasVerticalAlignment.ALIGN_MIDDLE);
     mainGrid.getCellFormatter().setAlignment(0,
-            1,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+        1,
+        HasHorizontalAlignment.ALIGN_CENTER,
+        HasVerticalAlignment.ALIGN_MIDDLE);
     mainGrid.getCellFormatter().setAlignment(1,
-            1,
-            HasHorizontalAlignment.ALIGN_RIGHT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+        1,
+        HasHorizontalAlignment.ALIGN_RIGHT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
     Grid messageGrid = new Grid(2, 1);
     messageGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_JUSTIFY,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+        0,
+        HasHorizontalAlignment.ALIGN_JUSTIFY,
+        HasVerticalAlignment.ALIGN_MIDDLE);
     messageGrid.getCellFormatter().setAlignment(1,
-            0,
-            HasHorizontalAlignment.ALIGN_LEFT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-
+        0,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
     messageGrid.setWidget(1, 0, messageChunk2);
@@ -1775,17 +1820,17 @@ private Promise<UserSettings> loadUser Settings() {
     Button ok = new Button(MESSAGES.createWelcomeDialogButton());
     final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());
     ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          if (noshow.getValue()) { // User checked the box
-            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-                "" + splashConfig.version);
-            userSettings.saveSettings(null);
-          }
-          maybeShowNoProjectsDialog();
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        if (noshow.getValue()) { // User checked the box
+          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).changePropertyValue(
+              SettingsConstants.SPLASH_SETTINGS_VERSION,
+              "" + splashConfig.version);
+          userSettings.saveSettings(null);
         }
-      });
+        maybeShowNoProjectsDialog();
+      }
+    });
     holder.add(ok);
     holder.add(noshow);
     DialogBoxContents.add(message);
@@ -1795,18 +1840,19 @@ private Promise<UserSettings> loadUser Settings() {
   }
 
   /**
-   * Check the number of projects for the user and show the "no projects" dialog if no projects
+   * Check the number of projects for the user and show the "no projects" dialog
+   * if no projects
    * are present.
    */
   private void maybeShowNoProjectsDialog() {
     projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
       for (Project p : projectManager.getProjects()) {
         if (!p.isInTrash()) {
-          return null;  // We have at least one valid project so exit early
+          return null; // We have at least one valid project so exit early
         }
       }
       if (!templateLoadingFlag && !newGalleryLoadingFlag) {
-        ErrorReporter.hide();  // hide the "Please choose a project" message
+        ErrorReporter.hide(); // hide the "Please choose a project" message
         createNoProjectsDialog(true);
       }
       return null;
@@ -1819,13 +1865,13 @@ private Promise<UserSettings> loadUser Settings() {
    * then return false so they do not see it again. Return true to show it
    */
   private boolean shouldShowWelcomeDialog() {
-    if (splashConfig.version == 0) {   // Never show splash if version is 0
-      return false;             // Check first to avoid others unnecessary calls
+    if (splashConfig.version == 0) { // Never show splash if version is 0
+      return false; // Check first to avoid others unnecessary calls
     }
-    String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-      getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
+    String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS)
+        .getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
     int uversion;
-    if (value == null) {        // Nothing stored
+    if (value == null) { // Nothing stored
       uversion = 0;
     } else {
       uversion = Integer.parseInt(value);
@@ -1843,7 +1889,7 @@ private Promise<UserSettings> loadUser Settings() {
    */
   private void showSurveySplash() {
     // Create the UI elements of the DialogBox
-    if (isReadOnly) {           // Bypass the survey if we are read-only
+    if (isReadOnly) { // Bypass the survey if we are read-only
       maybeShowSplash();
       return;
     }
@@ -1861,44 +1907,45 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button takesurvey = new Button(MESSAGES.showSurveySplashButtonNow());
     takesurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // Update Splash Settings here
-          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-              "" + YaVersion.SPLASH_SURVEY);
-          userSettings.saveSettings(null);
-          takeSurvey();         // Open survey in a new window
-          maybeShowSplash();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // Update Splash Settings here
+        userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).changePropertyValue(
+            SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+            "" + YaVersion.SPLASH_SURVEY);
+        userSettings.saveSettings(null);
+        takeSurvey(); // Open survey in a new window
+        maybeShowSplash();
+      }
+    });
     holder.add(takesurvey);
     Button latersurvey = new Button(MESSAGES.showSurveySplashButtonLater());
     latersurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          maybeShowSplash();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        maybeShowSplash();
+      }
+    });
     holder.add(latersurvey);
     Button neversurvey = new Button(MESSAGES.showSurveySplashButtonNever());
     neversurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // Update Splash Settings here
-          Settings settings =
-            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
-          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // Update Splash Settings here
+        Settings settings = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
+        settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
             "" + YaVersion.SPLASH_SURVEY);
-          String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
-          if (declined == null) declined = ""; // Shouldn't happen
-          if (declined != "") declined += ",";
-          declined += "" + YaVersion.SPLASH_SURVEY; // Record that we declined this survey
-          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);
-          userSettings.saveSettings(null);
-          maybeShowSplash();
-        }
-      });
+        String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
+        if (declined == null)
+          declined = ""; // Shouldn't happen
+        if (declined != "")
+          declined += ",";
+        declined += "" + YaVersion.SPLASH_SURVEY; // Record that we declined this survey
+        settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);
+        userSettings.saveSettings(null);
+        maybeShowSplash();
+      }
+    });
     holder.add(neversurvey);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -1918,7 +1965,7 @@ private Promise<UserSettings> loadUser Settings() {
     projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
       if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
           && !templateLoadingFlag && !newGalleryLoadingFlag) {
-        ErrorReporter.hide();  // hide the "Please choose a project" message
+        ErrorReporter.hide(); // hide the "Please choose a project" message
         showSplashScreens();
       }
       return null;
@@ -1927,7 +1974,7 @@ private Promise<UserSettings> loadUser Settings() {
 
   public void requestShowSplashScreens() {
     mayNeedSplash = true;
-    if (didTransitionFromProjectList) {  // do immediately
+    if (didTransitionFromProjectList) { // do immediately
       showSplashScreens();
     }
   }
@@ -1939,8 +1986,8 @@ private Promise<UserSettings> loadUser Settings() {
     boolean showSplash = false;
     if (AppInventorFeatures.showSurveySplashScreen()) {
       int nvalue = 0;
-      String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-        getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);
+      String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS)
+          .getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);
       if (value != null) {
         nvalue = Integer.parseInt(value);
       }
@@ -1987,11 +2034,11 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button reloadSession = new Button(MESSAGES.reloadWindow());
     reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          reloadWindow(true);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        reloadWindow(true);
+      }
+    });
     holder.add(reloadSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2026,27 +2073,27 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button closeSession = new Button(MESSAGES.invalidSessionDialogButtonEnd());
     closeSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          finalDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        finalDialog();
+      }
+    });
     holder.add(closeSession);
     Button reloadSession = new Button(MESSAGES.invalidSessionDialogButtonCurrent());
     reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          reloadWindow(false);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        reloadWindow(false);
+      }
+    });
     holder.add(reloadSession);
     Button continueSession = new Button(MESSAGES.invalidSessionDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          bashWarningDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        bashWarningDialog();
+      }
+    });
     holder.add(continueSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2086,23 +2133,23 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          sessionId = "force";  // OK, over-ride in place!
-          // Because we ultimately got here from a failure in the save function...
-          ChainableCommand cmd = new SaveAllEditorsCommand(null);
-          cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
-          // Will now go back to our regularly scheduled main loop
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        sessionId = "force"; // OK, over-ride in place!
+        // Because we ultimately got here from a failure in the save function...
+        ChainableCommand cmd = new SaveAllEditorsCommand(null);
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
+        // Will now go back to our regularly scheduled main loop
+      }
+    });
     holder.add(continueSession);
     Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());
     cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          invalidSessionDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        invalidSessionDialog();
+      }
+    });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2165,7 +2212,8 @@ private Promise<UserSettings> loadUser Settings() {
   }
 
   /**
-   * corruptionDialog -- Put up a dialog box explaining that we detected corruption
+   * corruptionDialog -- Put up a dialog box explaining that we detected
+   * corruption
    * while reading in a project file. There is no continuing once this happens.
    *
    */
@@ -2187,7 +2235,8 @@ private Promise<UserSettings> loadUser Settings() {
     dialogBox.show();
   }
 
-  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback callback) {
+  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content,
+      final OdeAsyncCallback callback) {
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.blocksTruncatedDialogText());
@@ -2196,7 +2245,7 @@ private Promise<UserSettings> loadUser Settings() {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    String [] fileParts = fileId.split("/");
+    String[] fileParts = fileId.split("/");
     String screenNameParts = fileParts[fileParts.length - 1];
     final String screenName = screenNameParts.split("\\.")[0]; // Get rid of the .bky part
     final String userEmail = user.getUserEmail();
@@ -2206,44 +2255,46 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // call save2 again, this time with force = true so the empty workspace will be written
-          getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // call save2 again, this time with force = true so the empty workspace will be
+        // written
+        getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
+      }
+    });
     holder.add(continueSession);
     final Button cancelSession = new Button(MESSAGES.blocksTruncatedDialogButtonNoSave());
-    final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
+    final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void>() {
       @Override
       public void onSuccess(Void result) {
         reloadWindow(false);
       }
     };
     cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          // Note: We do *not* remove the dialog, this locks the UI up (our intent)
-          // Wait for a few seconds for other I/O to complete
-          cancelSession.setEnabled(false); // Disable button to prevent further clicking
-          continueSession.setEnabled(false); // This one as well
-          Timer t = new Timer() {
-              int count = 5;
-              @Override
-              public void run() {
-                if (count > 0) {
-                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
-                  html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
-                  count -= 1;
-                } else {
-                  this.cancel();
-                  getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
-                      " fileId = " + fileId + " User = " + userEmail, logReturn);
-                }
-              }
-            };
-          t.scheduleRepeating(1000);     // Run every second
-        }
-      });
+      public void onClick(Widget sender) {
+        // Note: We do *not* remove the dialog, this locks the UI up (our intent)
+        // Wait for a few seconds for other I/O to complete
+        cancelSession.setEnabled(false); // Disable button to prevent further clicking
+        continueSession.setEnabled(false); // This one as well
+        Timer t = new Timer() {
+          int count = 5;
+
+          @Override
+          public void run() {
+            if (count > 0) {
+              HTML html = (HTML) ((VerticalPanel) dialogBox.getWidget()).getWidget(0);
+              html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
+              count -= 1;
+            } else {
+              this.cancel();
+              getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
+                  " fileId = " + fileId + " User = " + userEmail, logReturn);
+            }
+          }
+        };
+        t.scheduleRepeating(1000); // Run every second
+      }
+    });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2273,10 +2324,10 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+      }
+    });
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2306,10 +2357,10 @@ private Promise<UserSettings> loadUser Settings() {
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+      }
+    });
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2376,9 +2427,9 @@ private Promise<UserSettings> loadUser Settings() {
   public void recordCorruptProject(long projectId, String fileId, String message) {
     getProjectService().recordCorruption(projectId, fileId, message,
         new OdeAsyncCallback<Void>(
-          "") {                   // No failure message
+            "") { // No failure message
           @Override
-            public void onSuccess(Void result) {
+          public void onSuccess(Void result) {
             // do nothing
           }
         });
@@ -2448,8 +2499,9 @@ private Promise<UserSettings> loadUser Settings() {
    * may still be happening. We wait in the case of logout or window
    * closing, where we want to hold things up until i/o is done.
    *
-   * @param next a runnable to run when we are finished
-   * @param deferred whether to run the runnable immediately or after i/o is finished
+   * @param next     a runnable to run when we are finished
+   * @param deferred whether to run the runnable immediately or after i/o is
+   *                 finished
    */
 
   public void screenShotMaybe(final Runnable next, final boolean deferred) {
@@ -2468,21 +2520,21 @@ private Promise<UserSettings> loadUser Settings() {
     FileEditor editor = Ode.getInstance().getCurrentFileEditor();
     final long projectId = editor.getProjectId();
     final FileNode fileNode = editor.getFileNode();
-    currentFileEditor.getBlocksImage(new Callback<String,String>() {
-        @Override
-        public void onSuccess(String result) {
-          int comma = result.indexOf(",");
-          if (comma < 0) {
-            LOG.info("screenshot invalid");
-            next.run();
-            return;
-          }
-          result = result.substring(comma+1); // Strip off url header
-          String screenShotName = fileNode.getName();
-          int period = screenShotName.lastIndexOf(".");
-          screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
-          LOG.info("ScreenShotName = " + screenShotName);
-          projectService.screenshot(sessionId, projectId, screenShotName, result,
+    currentFileEditor.getBlocksImage(new Callback<String, String>() {
+      @Override
+      public void onSuccess(String result) {
+        int comma = result.indexOf(",");
+        if (comma < 0) {
+          LOG.info("screenshot invalid");
+          next.run();
+          return;
+        }
+        result = result.substring(comma + 1); // Strip off url header
+        String screenShotName = fileNode.getName();
+        int period = screenShotName.lastIndexOf(".");
+        screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
+        LOG.info("ScreenShotName = " + screenShotName);
+        projectService.screenshot(sessionId, projectId, screenShotName, result,
             new OdeAsyncCallback<RpcResult>() {
               @Override
               public void onSuccess(RpcResult result) {
@@ -2490,6 +2542,7 @@ private Promise<UserSettings> loadUser Settings() {
                   next.run();
                 }
               }
+
               public void OnFailure(Throwable caught) {
                 super.onFailure(caught);
                 if (deferred) {
@@ -2497,16 +2550,17 @@ private Promise<UserSettings> loadUser Settings() {
                 }
               }
             });
-          if (!deferred) {
-            next.run();
-          }
-        }
-        @Override
-        public void onFailure(String error) {
-          LOG.info("Screenshot failed: " + error);
+        if (!deferred) {
           next.run();
         }
-      });
+      }
+
+      @Override
+      public void onFailure(String error) {
+        LOG.info("Screenshot failed: " + error);
+        next.run();
+      }
+    });
   }
 
   // Used internally here so that the tutorial panel is only shown on
@@ -2539,12 +2593,16 @@ private Promise<UserSettings> loadUser Settings() {
 
   /**
    * Indicate if the tutorial panel is currently visible.
+   * 
    * @return true if the tutorial panel is visible.
    *
-   * Note: This value is only valid if in the blocks editor or the designer.
-   * As of this note this routine is called when the "Toogle Tutorial" button
-   * is clicked, and it is only displayed when in the Designer of the Blocks
-   * Editor.
+   *         Note: This value is only valid if in the blocks editor or the
+   *         designer.
+   *         As of this note this routine is called when the "Toogle Tutorial"
+   *         button
+   *         is clicked, and it is only displayed when in the Designer of the
+   *         Blocks
+   *         Editor.
    */
 
   public boolean isTutorialVisible() {
@@ -2583,16 +2641,14 @@ private Promise<UserSettings> loadUser Settings() {
     }
   }
 
-
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
   private Promise<String> loadBackpack() {
     return Promise.call("Fetching backpack failed",
-        userInfoService::getUserBackpack
-    ).then(result -> {
-      BlocklyPanel.setInitialBackpack(result);
-      return resolve(result);
-    });
+        userInfoService::getUserBackpack).then(result -> {
+          BlocklyPanel.setInitialBackpack(result);
+          return resolve(result);
+        });
   }
 
   public boolean hasSecondBuildserver() {
@@ -2622,10 +2678,10 @@ private Promise<UserSettings> loadUser Settings() {
   public static void setupOrigin(Object service) {
     if (service instanceof ServiceDefTarget) {
       String host = Window.Location.getProtocol() + "//" + Window.Location.getHost();
-      String oldUrl = ((ServiceDefTarget)service).getServiceEntryPoint();
+      String oldUrl = ((ServiceDefTarget) service).getServiceEntryPoint();
       if (oldUrl.startsWith(GWT.getModuleBaseURL())) {
         String newUrl = host + "/" + GWT.getModuleName() + "/" + oldUrl.substring(GWT.getModuleBaseURL().length());
-        ((ServiceDefTarget)service).setServiceEntryPoint(newUrl);
+        ((ServiceDefTarget) service).setServiceEntryPoint(newUrl);
       }
     }
   }
@@ -2636,7 +2692,7 @@ private Promise<UserSettings> loadUser Settings() {
    * Setup the Rendezvous server location.
    *
    * There are two places where the rendezvous servers is setup. The
-   * "compiled in" version is in YaVersion.RENDEZVOUS_SERVER.  The
+   * "compiled in" version is in YaVersion.RENDEZVOUS_SERVER. The
    * runtime version is in appengine-web.xml. If they differ, we set
    * "top.includeQRcode" to true so that when we display the
    * QRCode, we include the name of the Rendezvous server. Note: What
@@ -2645,8 +2701,9 @@ private Promise<UserSettings> loadUser Settings() {
    * the default version from YaVersion, but from the blocks that are
    * used to build the Companion.
    *
-   * @param server the domain name of the Rendezvous servers
-   * @param inclQRcode true to indicate that the rendezvous server domain name should be included in the QR Code
+   * @param server     the domain name of the Rendezvous servers
+   * @param inclQRcode true to indicate that the rendezvous server domain name
+   *                   should be included in the QR Code
    *
    */
   private native void setRendezvousServer(String server, boolean inclQRcode) /*-{
@@ -2713,27 +2770,27 @@ private Promise<UserSettings> loadUser Settings() {
 
   public interface Resources extends ClientBundle {
 
-    public static final Resources INSTANCE =  GWT.create(Resources.class);
-    
+    public static final Resources INSTANCE = GWT.create(Resources.class);
+
     @Source({
-      "com/google/appinventor/client/light.css"
+        "com/google/appinventor/client/light.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css"
+        "com/google/appinventor/client/dark.css"
     })
     Style styleclassicDark();
 
     @Source({
-      "com/google/appinventor/client/style/neo/lightNeo.css",
-      "com/google/appinventor/client/style/neo/neo.css"
+        "com/google/appinventor/client/style/neo/lightNeo.css",
+        "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernLight();
 
     @Source({
-      "com/google/appinventor/client/style/neo/darkNeo.css",
-      "com/google/appinventor/client/style/neo/neo.css"
+        "com/google/appinventor/client/style/neo/darkNeo.css",
+        "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernDark();
 
