@@ -21,6 +21,9 @@ class CustomizableConnectionChecker extends Blockly.ConnectionChecker {
      * @override
      */
     doTypeChecks(connA, connB) {
+        if (Blockly.getMainWorkspace().isLoading) {
+            return true;
+        }
         if (super.doTypeChecks(connA, connB)) {
             return true;
         }
@@ -40,36 +43,6 @@ class CustomizableConnectionChecker extends Blockly.ConnectionChecker {
     }
 }
 
-// function connectionCheck(myConnection, otherConnection, opt_value) {
-//     const otherTypeArray = otherConnection.getCheck();
-//     if (!otherTypeArray) {  // Other connection accepts everything.
-//         return true;
-//     }
-//
-//     var block = myConnection.sourceBlock_;
-//     var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
-//     var value = opt_value || block.getFieldValue('TEXT');
-//
-//     for (var i = 0; i < otherTypeArray.length; i++) {
-//         if (otherTypeArray[i] == "String") {
-//             return true;
-//         } else if (otherTypeArray[i] == "Number") {
-//             if (shouldIgnoreError) {
-//                 // Error may be noted by WarningHandler's checkInvalidNumber
-//                 return true;
-//             } else if (Blockly.Blocks.Utilities.NUMBER_REGEX.test(value)) {
-//                 // Value passes a floating point regex
-//                 return !isNaN(parseFloat(value));
-//             }
-//         } else if (otherTypeArray[i] == "Key") {
-//             return true;
-//         } else if (otherTypeArray[i] == "Key") {
-//             return true;
-//         }
-//     }
-//     return false;
-// };
-
 const registrationType = Blockly.registry.Type.CONNECTION_CHECKER;
 const registrationName = 'CustomizableConnectionChecker';
 
@@ -80,6 +53,3 @@ Blockly.registry.register(
     CustomizableConnectionChecker,
 );
 
-// export const pluginInfo = {
-//     [registrationType]: registrationName,
-// };
