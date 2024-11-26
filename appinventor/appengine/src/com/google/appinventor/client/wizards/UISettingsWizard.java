@@ -7,11 +7,12 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Button;
 
 import java.util.logging.Logger;
@@ -27,13 +28,15 @@ public class UISettingsWizard {
   @UiField protected Dialog UIDialog;
   @UiField protected Button applyButton;
   @UiField protected Button cancelButton;
+  @UiField protected Label introText;
 //  @UiField protected Button darkModeButton;
 //  @UiField protected RadioButton lightModeRadioButton;
 //  @UiField protected RadioButton darkModeRadioButton;
-  @UiField protected RadioButton classicRadioButton;
-  @UiField protected RadioButton modernRadioButton;
+  @UiField protected InputElement classicRadioButton;
+  @UiField protected InputElement modernRadioButton;
   Boolean userThemePreference;
   Boolean userLayoutPreference;
+  Boolean firstUIChoice = false;
 
   /**
    * Creates a new YoungAndroid project wizard.
@@ -43,16 +46,22 @@ public class UISettingsWizard {
     userThemePreference = Ode.getUserDarkThemeEnabled();
     userLayoutPreference = Ode.getUserNewLayout();
     if (userLayoutPreference) {
-      modernRadioButton.setValue(true);
+      modernRadioButton.setChecked(true);
     } else {
-      classicRadioButton.setValue(true);
-    }   
+      classicRadioButton.setChecked(true);
+    }
 //    if (userThemePreference){
 //      darkModeRadioButton.setValue(true);
 //    }else{
 //      lightModeRadioButton.setValue(true);
 //    }
-    show();
+  }
+
+  public UISettingsWizard(boolean intro) {
+    this();
+    introText.setVisible(intro);
+    cancelButton.setVisible(!intro);
+    firstUIChoice = intro;
   }
 
   public void bindUI() {
@@ -103,15 +112,10 @@ public class UISettingsWizard {
 //          Ode.setUserDarkThemeEnabled(true);
 //      }
 //    }
-    if (classicRadioButton.getValue()) {
-      if (Ode.getUserNewLayout()) {
-        Ode.setUserNewLayout(false);
-      }
-    } else {
-      if (!Ode.getUserNewLayout()) {
-        Ode.setUserNewLayout(true);
-      }
+    if (firstUIChoice) {
+      Ode.setShowUIPicker(false);
     }
+    Ode.setUserNewLayout(modernRadioButton.isChecked());
     Ode.saveUserDesignSettings();
     UIDialog.hide();
   }
