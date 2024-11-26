@@ -1908,6 +1908,14 @@ path.ode-SimpleMockMapFeature-selected {
    text-shadow: none;
  }
 
+ .ode-DialogBox .ExtendedText {
+   padding-left: 10px;
+   font-size: 16px;
+   color: #555;
+   padding-bottom: 20px;
+   padding-top: 10px;
+ }
+
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
 }

@@ -5687,4 +5687,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message to display when Mark Origin is attempted before an image is set")
   String provideImageFirst();
 
+  @DefaultMessage("App Inventor now offers multiple user interface styles. In addition to Classic, the original user interface, you may choose our more modern style Neo. Choose which one you would like to use."
+      + "\nYou can always change your user interface under the Settings menu.")
+  @Description("Dialog to introduce users to new UI. Shown once to each user.")
+  String selectUIStyle();
 }
