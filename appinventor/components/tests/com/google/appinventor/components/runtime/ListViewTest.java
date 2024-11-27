@@ -83,7 +83,8 @@ public class ListViewTest extends RobolectricTestBase {
     Thread.sleep(100);  // Filtering runs on a separate thread for performance reasons
     runAllEvents();
 
-    RecyclerView rv = (RecyclerView) ((LinearLayout) listView1.getView()).getChildAt(1);
+    LinearLayout listlayout = (LinearLayout) ((LinearLayout) listView1.getView()).getChildAt(1);
+    RecyclerView rv = (RecyclerView) listlayout.getChildAt(0);
     int count = 0;
     for (int i = 0; i < rv.getLayoutManager().getChildCount(); i++) {
       if (rv.getLayoutManager().getChildAt(i).getVisibility() == View.VISIBLE) {
@@ -116,7 +117,8 @@ public class ListViewTest extends RobolectricTestBase {
   }
 
   private View getViewForPosition(ListView listView, int position) {
-    RecyclerView rv = (RecyclerView) ((LinearLayout) listView.getView()).getChildAt(1);
+    LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
+    RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);
     RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(position);
     assertNotNull(vh);
     return vh.itemView;
