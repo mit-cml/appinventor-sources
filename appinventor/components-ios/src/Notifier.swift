@@ -262,13 +262,13 @@ open class Notifier: NonvisibleComponent {
   fileprivate var _backgroundColor = Int32(bitPattern: Color.darkGray.rawValue)
   fileprivate var _textColor = Int32(bitPattern: Color.white.rawValue)
   static var notices = NotifierArray()
-  fileprivate var _activeAlert: CustomAlertView? = nil {
-    didSet {
-      if _activeAlert == nil {
-        _alertType = nil
-      }
-    }
-  }
+//  fileprivate var _activeAlert: CustomAlertView? = nil {
+//    didSet {
+//      if _activeAlert == nil {
+//        _alertType = nil
+//      }
+//    }
+//  }
   private var _alertType: ActiveAlertType? = nil
 
   public override init(_ container: ComponentContainer) {
@@ -305,16 +305,112 @@ open class Notifier: NonvisibleComponent {
       _textColor = argb
     }
   }
+  //beginning of revision 1
+  fileprivate var _activeAlerts: [CustomAlertView] = []
+  fileprivate var _activeAlert: CustomAlertView? {_activeAlerts.last}
 
-  // MARK: Notifier Methods
   @objc open func DismissProgressDialog() {
-    guard _alertType == .Progress else {
+      guard _alertType == .Progress else { return }
+      // Dismiss only the active progress dialog, if it exists in `_activeAlerts`
+      if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
+        print("Dismissing progress alert at index: \(index)")
+        activeAlert.dismiss(animated: true) { [weak self] _ in
+          //self?._activeAlerts.remove(at: index)
+          // Clear `_activeAlert` reference after dismissal
+          self?._alertType = nil
+          print("Progress dialog dismissed. Promoting next alert...")
+          self?.promoteNextAlert()
+        }
+      } else {
+        print("Active progress alert not found in _activeAlerts.")
+      }
+  }
+  
+  //revision 1, comment out to revert back
+//  @objc open func DismissActiveDialog() {
+//    guard let activeAlert = _activeAlert else { return }
+//    activeAlert.dismiss(animated: true) { [weak self] _ in
+//      guard let self = self else { return }
+//      if let index = self._activeAlerts.firstIndex(of: activeAlert) {
+//        //self.promoteNextAlert(afterRemovingAt: index)
+//        self.promoteNextAlert()
+//      } else {
+//        self._activeAlert = nil
+//      }
+//    }
+//  }
+  
+  //revision 2
+  @objc open func DismissActiveDialog() {
+    guard let activeAlert = _activeAlert else {
+      print("No active alert to dismiss.")
       return
     }
-    _activeAlert?.dismiss(animated: true)
-    _activeAlert = nil
+    activeAlert.dismiss(animated: true) { [weak self] _ in
+      guard let self = self else { return }
+      if let index = self._activeAlerts.firstIndex(of: activeAlert) {
+        print("Removing dismissed alert at index: \(index)")
+        //self._activeAlerts.remove(at: index) // Remove the dismissed alert
+      } else {
+        print("Dismissed alert not found in _activeAlerts.")
+      }
+      print("Promoting the next alert...")
+      self.promoteNextAlert() // Promote the next alert
+    }
+  }
+  
+  //revision 1, comment out to revert back (promoteNextAlert() the one without parameter)
+//  private func promoteNextAlert(afterRemovingAt index: Int) {
+//      _activeAlerts.remove(at: index)
+//      
+//      // If there are more alerts, set the next one as the active alert
+//      if let nextAlert = _activeAlerts.first {
+//          _activeAlert = nextAlert
+//          nextAlert.show(animated: true)
+//      } else {
+//          _activeAlert = nil
+//      }
+//  }
+  
+  private func promoteNextAlert() {
+    print("promoteNextAlert called. Remaining alerts: \(_activeAlerts.count)")
+      if !_activeAlerts.isEmpty {
+        // Remove the dismissed alert from the list if necessary
+        _activeAlerts.removeLast()
+        print("Promoting alert: \(_activeAlert)")
+        // Promote the next alert if available
+        if let nextAlert = _activeAlert {
+          nextAlert.show(animated: true)
+        } else {
+          print("No more alerts to promote.")
+        }
+      }
   }
 
+  @objc open func ShowProgressDialog(_ message: String, _ title: String) {
+    let alert = CustomAlertView(title: title, message: message)
+    let spinner = UIActivityIndicatorView(style: .gray)
+    spinner.startAnimating()
+    alert.stack.addArrangedSubview(spinner)
+    // Add to the list and update `_activeAlert`
+    _activeAlerts.append(alert)
+    _alertType = .Progress
+    alert.show(animated: true)
+    print("Added progress dialog. Total alerts: \(_activeAlerts.count)")
+  }
+  
+  //end of revision 1
+  
+  
+  // MARK: Notifier Methods
+//  @objc open func DismissProgressDialog() {
+//    guard _alertType == .Progress else {
+//      return
+//    }
+//    _activeAlert?.dismiss(animated: true)
+//    _activeAlert = nil
+//  }
+  
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
   }
@@ -332,26 +428,56 @@ open class Notifier: NonvisibleComponent {
     Notifier.notices.addAlert(notice, for: duration)
   }
 
+  //comment out to revert back to original code
+//  @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
+//    if _activeAlert == nil {
+//      _activeAlert = CustomAlertView(title: title, message: message)
+//      _alertType = .Choose
+//      let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
+//      makeBorder(for: button1, vertical: false)
+//      let button2 = makeButton(button2text, with: button2text as NSString, action: #selector(afterChoosing(sender:)))
+//      makeBorder(for: button2, vertical: false)
+//      _activeAlert?.stack.addArrangedSubview(button1)
+//      _activeAlert?.stack.addArrangedSubview(button2)
+//      if cancelable {
+//        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
+//        makeBorder(for: cancel, vertical: false)
+//        cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+//        _activeAlert?.stack.addArrangedSubview(cancel)
+//      }
+//      
+//      _activeAlert?.show(animated: true)
+//    }
+//  }
+  
+  //ShowChooseDialog Revision 1
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
-    if _activeAlert == nil {
-      _activeAlert = CustomAlertView(title: title, message: message)
+      let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
       _alertType = .Choose
+
+      // Configure buttons
       let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
       makeBorder(for: button1, vertical: false)
       let button2 = makeButton(button2text, with: button2text as NSString, action: #selector(afterChoosing(sender:)))
       makeBorder(for: button2, vertical: false)
-      _activeAlert?.stack.addArrangedSubview(button1)
-      _activeAlert?.stack.addArrangedSubview(button2)
+      newAlert.stack.addArrangedSubview(button1)
+      newAlert.stack.addArrangedSubview(button2)
+
+      // Add cancel button if needed
       if cancelable {
-        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
-        makeBorder(for: cancel, vertical: false)
-        cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
-        _activeAlert?.stack.addArrangedSubview(cancel)
+          let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
+          makeBorder(for: cancel, vertical: false)
+          cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+          newAlert.stack.addArrangedSubview(cancel)
       }
-      _activeAlert?.show(animated: true)
-    }
+
+      // Add the alert to the queue
+      _activeAlerts.append(newAlert)
+      print("Added new alert to _activeAlerts. Total alerts: \(_activeAlerts.count)")
+      newAlert.show(animated: true)
   }
 
+  //comment out to revert back to original
   @objc open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
     let alert = CustomAlertView(title: title, message: message)
     let button = makeButton(buttonText, with: alert, action: #selector(dismissAlertView(_:)))
@@ -360,6 +486,7 @@ open class Notifier: NonvisibleComponent {
     alert.show(animated: true)
   }
 
+ // comment out to revert back to original code
   @objc fileprivate func dismissAlertView(_ sender: CustomButton) {
     if let alert = sender.value as? CustomAlertView {
       alert.dismiss(animated: true)
@@ -370,17 +497,18 @@ open class Notifier: NonvisibleComponent {
     showTextInputDialog(message: message, title: title, cancelable: cancelable, maskInput: true)
   }
 
-  @objc open func ShowProgressDialog(_ message: String, _ title: String) {
-    if _activeAlert == nil {
-      let alert = CustomAlertView(title: title, message: message)
-      let spinner = UIActivityIndicatorView(style: .gray)
-      spinner.startAnimating()
-      alert.stack.addArrangedSubview(spinner)
-      alert.show(animated: true)
-      _activeAlert = alert
-      _alertType = .Progress
-    }
-  }
+  //comment out to revert back to original code
+//  @objc open func ShowProgressDialog(_ message: String, _ title: String) {
+//    if _activeAlert == nil {
+//      let alert = CustomAlertView(title: title, message: message)
+//      let spinner = UIActivityIndicatorView(style: .gray)
+//      spinner.startAnimating()
+//      alert.stack.addArrangedSubview(spinner)
+//      alert.show(animated: true)
+//      _activeAlert = alert
+//      _alertType = .Progress
+//    }
+//  }
 
   @objc open func ShowTextDialog(_ message: String, _ title: String, _ cancelable: Bool) {
     showTextInputDialog(message: message, title: title, cancelable: cancelable)
@@ -389,7 +517,7 @@ open class Notifier: NonvisibleComponent {
   private func showTextInputDialog(message: String, title: String, cancelable: Bool, maskInput: Bool = false) {
     guard _activeAlert == nil else { return }
 
-    _activeAlert = CustomAlertView(title: title, message: message)
+    _activeAlerts.append(CustomAlertView(title: title, message: message))
     _alertType = .Text
 
     let actions = UIStackView()
@@ -459,7 +587,6 @@ open class Notifier: NonvisibleComponent {
 
   @objc fileprivate func afterTextInput(sender: UIButton) {
     _activeAlert?.dismiss(animated: true)
-    _activeAlert = nil
     if let button = sender as? CustomButton {
       if let field = button.value as? UITextField {
         AfterTextInput(field.text ?? "")
@@ -469,18 +596,25 @@ open class Notifier: NonvisibleComponent {
       }
     }
   }
-
+  //comment out to revert back to original
   @objc fileprivate func afterChoosing(sender: UIButton) {
+    print("afterChoosing called. Current _activeAlert: \(_activeAlert)")
     _activeAlert?.dismiss(animated: true)
-    _activeAlert = nil
+    if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
+      print("Removing active alert at index: \(index)")
+      _activeAlerts.remove(at: index) // Remove the dismissed alert from the array
+    } //if statement is new code
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
       }
       AfterChoosing(choice)
     }
+    print("promoting next alert")
+    promoteNextAlert()
   }
-
+  
+  //comment out to revert back to original
   @objc fileprivate func cancelChoosing(sender: UIButton) {
     ChoosingCanceled()
     afterChoosing(sender: sender)
