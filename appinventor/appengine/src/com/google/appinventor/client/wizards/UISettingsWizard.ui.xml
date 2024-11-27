@@ -11,9 +11,11 @@
   <wiz:Dialog ui:field="UIDialog" caption="{messages.uiSettings}"
               styleName="ode-DialogBox" width="340px" height="40px">
     <g:FlowPanel>
-      <g:Label ui:field="introText" text='{messages.selectUIStyle}' styleName="ExtendedText" visible="false" />
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectStyle}" />
+      </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label ui:field="introText" text='{messages.selectUIStyle}' styleName="ExtendedText" visible="false" />
       </g:FlowPanel>
       <g:FlowPanel styleName="ode-DialogRow">
         <g:HTML>
