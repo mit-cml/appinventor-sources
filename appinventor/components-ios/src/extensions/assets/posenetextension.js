@@ -21,9 +21,8 @@ let running = false;
 
 async function setupCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'error', args: })
-//    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO:
-//      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
+    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA,
+      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     return;
   }
 
@@ -84,11 +83,9 @@ function detectPoseInRealTime(video, net) {
 
     poses.forEach(({score, keypoints}) => {
       const dataURL = canvas.toDataURL();
-        window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'reportImage', args: dataURL})
-      // PosenetExtension.reportImage(dataURL); //TODO:
+      PosenetExtension.reportImage(dataURL);
       if (score >= minPoseConfidence) {
-          window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'reportResult', args: JSON.stringify(keypoints)})
-        // PosenetExtension.reportResult(JSON.stringify(keypoints)); //TODO:
+        PosenetExtension.reportResult(JSON.stringify(keypoints));
       }
     });
 
@@ -108,9 +105,8 @@ async function loadModel() {
       quantBytes: defaultQuantBytes
     });
   } catch (e) {
-      window.webkit.messageHandlers.PosenetExtension.postMessage({ functionCall: 'error', args: })
-//    PosenetExtension.error(ERROR_MODEL_LOAD,
-//      ERRORS[ERROR_MODEL_LOAD]);
+    PosenetExtension.error(ERROR_MODEL_LOAD,
+      ERRORS[ERROR_MODEL_LOAD]);
     throw e;
   }
 }
@@ -123,9 +119,8 @@ async function runModel() {
   try {
     video = await loadVideo();
   } catch (e) {
-      window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'error', 'args': })
-//    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA, //TODO
-//      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
+    PosenetExtension.error(ERROR_WEBVIEW_NO_MEDIA,
+      ERRORS.ERROR_WEBVIEW_NO_MEDIA);
     throw e;
   }
 
@@ -163,6 +158,5 @@ navigator.getUserMedia = navigator.getUserMedia ||
 
 loadModel().then(model => {
   net = model;
-    window.webkit.messageHandlers.PosenetExtension.postMessage({ 'functionCall': 'ready', 'args': })
- // PosenetExtension.ready();
+  PosenetExtension.ready();
 });

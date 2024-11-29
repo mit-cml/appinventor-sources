@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tensorflow.js Extension</title>
-    <script type="text/javascript">
-        if (!window.PosenetExtension) {
-          window.PosenetExtension = { ready: function() {}, error: function(code, msg) {}, reportResult(result) {} };
-        }
-    </script>
 </head>
 <body style="margin: 0">
     <div id="main">
@@ -18,6 +13,6 @@
     <script src="tf-core.min.js"></script>
     <script src="tf-converter.min.js"></script>
     <script src="posenet.min.js"></script>
-    <script src="app.js"></script>
+    <script src="posenetextension.js"></script>
 </body>
 </html>
