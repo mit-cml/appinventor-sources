@@ -3319,3 +3319,69 @@ div.dropdiv p {
   margin-left: 1px;
   font-size: 11px;
 }
+
+.ode-UserSettingsDialog .dialogContent {
+  width: 768px;
+}
+
+.image-radio-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.image-radio {
+  position: relative;
+  text-align: center;
+}
+
+.hidden-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.image-label {
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  height: 100%;
+}
+
+.image-label img {
+  box-sizing: border-box;
+  width: 360px;
+  object-fit: cover;
+  border: 3px solid transparent;
+  border-radius: 5px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.hidden-radio:checked + img {
+  border-color: #7D9D36;
+}
+
+.image-label:hover img {
+  border-color: #b3c833;
+}
+
+.hidden-radio:focus + img {
+  box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
+}
+
+.image-label > .gwt-Label {
+  flex-grow: 1;
+  align-content: flex-end;
+}
+
+@media(max-width: 768px) {
+  .ode-UserSettingsDialog .dialogContent {
+    width: 100%;
+    max-width: 360px;
+    flex-direction: column;
+  }
+  .image-radio-group {
+    flex-direction: column;
+  }
+}
