@@ -10,14 +10,14 @@ import GoogleAPIClientForREST
 @objc class Spreadsheet : NonvisibleComponent {
   
   private var _service = GTLRSheetsService()
-  fileprivate var _columns: YailList<AnyObject> = []
+  fileprivate var _columns: NSArray = []
   private let _workQueue = DispatchQueue(label: "Spreadsheet", qos: .userInitiated)
   private var _initialized = false
   private var _spreadsheetId = ""
   // This gets changed to the name of the project by MockSpreadsheet by default
   private var _sheetIdDict: [String: Int] = [:]
+  private let _observers = NSMutableSet()
 
-  
   // MARK: Properties
   
   @objc var ApplicationName: String = ""
@@ -1108,9 +1108,7 @@ import GoogleAPIClientForREST
   
   // Description: The callback event for the ReadSheet block. The sheetData is a list of rows.
   @objc func GotSheetData(_ sheet: YailList<AnyObject>) {
-    DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "GotSheetData", arguments: sheet as AnyObject)
-    }
+    EventDispatcher.dispatchEvent(of: self, called: "GotSheetData", arguments: sheet as AnyObject)
   }
   
   // Description: The callback event for the ReadCell block. The cellData is the text value in the cell (and not the underlying formula)
@@ -1273,9 +1271,10 @@ import GoogleAPIClientForREST
           return
         }
         do {
-          let parsedCSV: YailList = try CsvUtil.fromCsvTable(responseString)
+          let parsedCsv: YailList = try CsvUtil.fromCsvTable(responseString)
           DispatchQueue.main.async {
-            // TODO: add updateColumns() and notifyDataObservers() when charts are made
+            self.updateColumns(parsedCsv as! YailList<YailList<AnyObject>>)
+            self.notifyDataObservers(nil, nil)
             if fireEvent {
               if colId >= 0 {
                 print("colID>=0")
@@ -1283,8 +1282,8 @@ import GoogleAPIClientForREST
                   var return_rows: Array<Int> = []
                   var return_data: Array<Array<String>> = []
                   var rowNum: Int = 0
-                  while rowNum < parsedCSV.count {
-                    var sheet_row: YailList = try CsvUtil.fromCsvRow(parsedCSV[rowNum] as! String)
+                  while rowNum < parsedCsv.count {
+                    var sheet_row: YailList = try CsvUtil.fromCsvRow(parsedCsv[rowNum] as! String)
                     if sheet_row.count >= colId {
                       //why is sheet row index of a int and not a string?
                       if (exact && sheet_row[colId - 1] as! String == value) || (!exact && (sheet_row[colId - 1] as AnyObject).contains(value!)) {
@@ -1300,7 +1299,7 @@ import GoogleAPIClientForREST
                   self.ErrorOccurred("\(error)")
                 }
               } else {
-                self.GotSheetData(YailList(array: parsedCSV))
+                self.GotSheetData(YailList(array: parsedCsv))
               }
             }
           }
@@ -1327,7 +1326,10 @@ import GoogleAPIClientForREST
       } else {
         let readResult = result as? GTLRSheets_ValueRange
         var values: Array<Array<String>> = readResult?.values as! Array<Array<String>>
-        
+
+        self.updateColumns(values as! YailList<YailList<AnyObject>>)
+        self.notifyDataObservers(nil, nil)
+
         // no Data found
         if values.isEmpty {
           self.ErrorOccurred("ReadSheet: No data found")
@@ -1477,6 +1479,79 @@ import GoogleAPIClientForREST
         return -1
       }
     }
+  }
+}
+
+extension Spreadsheet: ObservableDataSource {
+  func addDataObserver(_ listener: any DataSourceChangeListener) {
+    _observers.add(listener)
+  }
+
+  func removeDataObserver(_ listener: any DataSourceChangeListener) {
+    _observers.remove(listener)
+  }
+
+  func getDataValue(_ key: AnyObject) -> AnyObject {
+    return getDataValue(key, false)
+  }
+
+  func getDataValue(_ key: AnyObject, _ useHeaders: Bool) -> AnyObject {
+    return getColumns(key, useHeaders)
+  }
+
+  func updateColumns(_ parsedCsv: YailList<YailList<AnyObject>>) {
+    _columns = getTranspose(matrix: parsedCsv as [AnyObject])
+  }
+
+  func notifyDataObservers(_ key: AnyObject?, _ newValue: AnyObject?) {
+    for listener in _observers {
+      guard let listener = listener as? DataSourceChangeListener else {
+        continue
+      }
+      listener.onDataSourceValueChange(self, nil, _columns)
+    }
+  }
+
+  func getColumns(_ keyColumns: AnyObject, _ useHeaders: Bool) -> NSMutableArray {
+    guard let keyColumns = (keyColumns as? [AnyObject])?.toStringArray() else {
+      return NSMutableArray()
+    }
+    let resultingColumns = NSMutableArray()
+    keyColumns.forEach { columnName in
+      let column: NSArray
+      if useHeaders {
+        column = getColumn(named: columnName)
+      } else {
+        var colIndex = 0
+        for c in columnName.bytes {
+          colIndex *= 26
+          colIndex += Int(c) - 0x40
+        }
+        colIndex -= 1
+        column = getColumn(at: colIndex)
+      }
+      resultingColumns.add(column)
+    }
+    return resultingColumns
+  }
+
+  func getColumn(named name: String) -> NSArray {
+    for column in _columns {
+      guard let column = column as? NSArray else {
+        continue
+      }
+      if !column.isEmpty && (column[0] as? String) == name {
+        return column
+      }
+    }
+    return []
+  }
+
+  func getColumn(at index: Int) -> NSArray {
+    guard index >= 0 && index < _columns.count else {
+      return []
+    }
+    return _columns[index] as? NSArray ?? NSArray()
   }
 }
 
