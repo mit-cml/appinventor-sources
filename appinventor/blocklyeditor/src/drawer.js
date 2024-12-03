@@ -717,6 +717,13 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  matrices_create: {xmlString:
+  '<xml>' +
+    '<block type="matrices_create">' +
+      '<value name="ROWS"><block type="math_number"><title name="NUM">2</title></block></value>' +
+      '<value name="COLS"><block type="math_number"><title name="NUM">2</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},

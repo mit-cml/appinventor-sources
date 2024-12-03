@@ -3225,6 +3225,38 @@ Dictionary implementation.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Matrix implementation.
+
+- make matrix           (make-yail-matrix rows cols data)
+- get matrix row        (yail-matrix-get-row yail-matrix row)
+- get matrix column     (yail-matrix-get-column yail-matrix col)
+- get matrix cell       (yail-matrix-get-cell yail-matrix row col)
+- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
+
+|#
+
+(define (make-yail-matrix rows cols data)
+  (YailMatrix:makeMatrix rows cols data))
+
+(define (yail-matrix-get-row matrix row)
+  (*:getRow (as YailMatrix matrix) row))
+
+(define (yail-matrix-get-column matrix col)
+  (*:getColumn (as YailMatrix matrix) col))
+
+(define (yail-matrix-get-cell matrix row col)
+  (*:getCell (as YailMatrix matrix) row col))
+
+(define (yail-matrix-set-cell! matrix row col value)
+  (*:setCell (as YailMatrix matrix) row col value))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Matrix implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

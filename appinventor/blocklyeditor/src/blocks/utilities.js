@@ -46,6 +46,10 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
     'input': ['Number'],
     'output': ['Number', 'String', 'Key']
   },
+  'matrix': {
+    'input': ['Matrix'],
+    'output': ['Matrix', 'String', 'Array']
+  },
   'text': {
     'input': ['String'],
     'output': ['Number', 'String', 'Key']

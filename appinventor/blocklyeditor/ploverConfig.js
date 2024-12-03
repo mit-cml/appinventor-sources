@@ -132,6 +132,7 @@
     './src/blocks/colors.js',
     './src/blocks/components.js',
     './src/blocks/dictionaries.js',
+    './src/blocks/matrices.js',
     './src/blocks/helpers.js',
 
     //generator files
@@ -146,6 +147,7 @@
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
     "./src/generators/yail/dictionaries.js",
+    './src/generators/yail/matrices.js',
     './src/generators/yail/helpers.js',
     './src/generators/swift.js',
 
