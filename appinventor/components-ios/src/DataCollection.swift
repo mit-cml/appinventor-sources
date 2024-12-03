@@ -9,8 +9,16 @@
 import Foundation
 
 @objc open class DataCollection: NSObject, DataSource {
-  func getDataValue(_ key: AnyObject) -> AnyObject {
-    return key
+  weak var container: ComponentContainer?
+  var dataModel: DataModel?
+
+  public init(_ container: ComponentContainer) {
+    self.container = container
+    super.init()
+  }
+
+  func getDataValue(_ key: AnyObject?) -> [Any] {
+    return dataModel?.entries ?? []
   }
   
   private var _dataFileColumns: [String]?

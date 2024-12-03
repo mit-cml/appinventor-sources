@@ -33,7 +33,7 @@ class ScatterChartDataModel: PointChartDataModel {
     }
     // Assuming a correctly implemented binarySearch function that returns the index
     // where the entry should be inserted or the negative index - 1 if not found.
-    var index = binarySearch(entry, entries)
+    var index = binarySearch(entry, chartEntries)
     if index < 0 {
       index = -(index + 1)
     } else {
@@ -49,7 +49,7 @@ class ScatterChartDataModel: PointChartDataModel {
     // Assuming you're updating some dataset that needs to be replaced entirely.
     // Performing UI updates asynchronously on the main thread.
     DispatchQueue.main.async {
-      self.dataset?.replaceEntries(self._entries)
+      self.dataset?.replaceEntries(self.chartEntries)
     }
   }
 

@@ -18,7 +18,7 @@ import DGCharts
   @objc func AddEntry(_ x: String, _ y: String) {
     // create a 2-tuple, and add the tuple to the Data series
     let pair: YailList<AnyObject> = [x, y]
-    _chartDataModel?.addEntryFromTuple(pair)
+    chartDataModel?.addEntryFromTuple(pair)
     // refresh chart with new data
     refreshChart()
   }
@@ -26,7 +26,7 @@ import DGCharts
   @objc func RemoveEntry(_ x: String, _ y: String){
     // create a 2-tuple, and remove the tuple from the Data series
     let pair: YailList<AnyObject> = [x, y]
-    _chartDataModel?.removeEntryFromTuple(pair)
+    chartDataModel?.removeEntryFromTuple(pair)
     // refresh chart with new data
     refreshChart()
   }
@@ -45,7 +45,7 @@ import DGCharts
     // avoid deadlocks by not using .main queue here
     DispatchQueue.global(qos: .default).async {
       var pair: YailList<AnyObject> = [x, y]
-      holder =  self._chartDataModel!.doesEntryExist(pair)
+      holder =  self.chartDataModel!.doesEntryExist(pair)
       group.leave()
     }
     group.wait()
@@ -56,7 +56,7 @@ import DGCharts
   @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
     let dataPointsList: Array<AnyObject> = dataPoints as! Array
     if !dataPoints.isEmpty {
-      let entries = _chartDataModel?.entries
+      let entries = chartDataModel?.entries
 
       // convert _colors to Int
       var colorsInt: Array<Int> = []
@@ -86,7 +86,7 @@ import DGCharts
         }
       }
 
-      let lineDataSet: LineChartDataSet = _chartDataModel?.dataset as! LineChartDataSet
+      let lineDataSet: LineChartDataSet = chartDataModel?.dataset as! LineChartDataSet
       var highlightsUI: Array<NSUIColor> = []
       for highlight in highlights {
         highlightsUI.append(argbToColor(Int32(highlight)))

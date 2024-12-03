@@ -153,7 +153,7 @@ import UIKit
   func onDataSourceValueChange(_ component: DataSource, _ key: String?, _ newValue: AnyObject?) {
     lastResults.removeAll()
 
-    guard let chartDataEntries = _chartData?._chartDataModel?._entries as? [DGCharts.ChartDataEntry] else {
+    guard let chartDataEntries = _chartData?.chartDataModel?._entries as? [DGCharts.ChartDataEntry] else {
       print("No entries in the data source")
       return
     }
@@ -493,7 +493,7 @@ import UIKit
 
     override var description: String {
       if let chartData = trendline._chartData {
-        return (chartData._chartDataModel?.dataset!.description)!
+        return (chartData.chartDataModel?.dataset!.description)!
       } else {
         return super.description
       }
@@ -563,7 +563,7 @@ import UIKit
 
     override var description: String {
       if let chartData = trendline._chartData {
-        return chartData._chartDataModel?.dataset?.description ?? super.description
+        return chartData.chartDataModel?.dataset?.description ?? super.description
       } else {
         return super.description
       }
