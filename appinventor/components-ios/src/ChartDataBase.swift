@@ -98,6 +98,7 @@ import DGCharts
     // set default values
     chartDataModel?.setColor(argbToColor(_color))
     chartDataModel?.setLabel(_label ?? "")
+    chartDataModel?.view.chart?.delegate = self
   }
 
   @objc open var LineType: LineType {
@@ -307,6 +308,13 @@ import DGCharts
     refreshChart()
   }
 
+  // MARK: Events
+
+  @objc open func EntryClick(_ x: AnyObject, _ y: Double) {
+    EventDispatcher.dispatchEvent(of: self, called: "EntryClick", arguments: x, y as NSNumber)
+    _container.EntryClick(self, x, y)
+  }
+
   func onDataChange(){
     // update the chart with the chart data model's current data and refresh the chart itself
     _container._chartView?.refresh(model: chartDataModel!)
@@ -314,6 +322,14 @@ import DGCharts
       if let listener = listener as? DataSourceChangeListener {
         listener.onDataSourceValueChange(self, nil, nil)
       }
+    }
+  }
+
+  public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+    if let entry = entry as? PieChartDataEntry {
+      EntryClick((entry.label ?? "") as NSString, entry.y)
+    } else {
+      EntryClick(entry.x as NSNumber, entry.y)
     }
   }
 
