@@ -66,26 +66,35 @@ open class Geometry: NSObject {
     public convenience init?(WKT: String) {
         let WKTReader = GEOSWKTReader_create_r(GEOS_HANDLE)
         defer { GEOSWKTReader_destroy_r(GEOS_HANDLE, WKTReader) }
-        guard let GEOSGeom = GEOSWKTReader_read_r(GEOS_HANDLE, WKTReader, (WKT as NSString).utf8String),
-            Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
-                return nil
+        guard let GEOSGeom = GEOSWKTReader_read_r(GEOS_HANDLE, WKTReader, (WKT as NSString).utf8String) else {
+            return nil
+        }
+        guard Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
+            GEOSGeom_destroy_r(GEOS_HANDLE, GEOSGeom)
+            return nil
         }
         self.init(storage: GeometryStorage(GEOSGeom: GEOSGeom, parent: nil))
     }
 
     public convenience init?(WKB: [UInt8]) {
         var buffer = WKB
-        guard let GEOSGeom = GEOSGeomFromWKB_buf_r(GEOS_HANDLE, &buffer, WKB.count),
-            Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
-                return nil
+        guard let GEOSGeom = GEOSGeomFromWKB_buf_r(GEOS_HANDLE, &buffer, WKB.count) else {
+            return nil
+        }
+        guard Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
+            GEOSGeom_destroy_r(GEOS_HANDLE, GEOSGeom)
+            return nil
         }
         self.init(storage: GeometryStorage(GEOSGeom: GEOSGeom, parent: nil))
     }
 
     public convenience init?(data: Data) {
-        guard let GEOSGeom = data.withUnsafeBytes({ GEOSGeomFromWKB_buf_r(GEOS_HANDLE, $0, data.count) }),
-            Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
+        guard let GEOSGeom = data.withUnsafeBytes({ GEOSGeomFromWKB_buf_r(GEOS_HANDLE, $0, data.count) }) else {
                 return nil
+        }
+        guard Geometry.classForGEOSGeom(GEOSGeom) === type(of: self) else {
+            GEOSGeom_destroy_r(GEOS_HANDLE, GEOSGeom)
+            return nil
         }
         self.init(storage: GeometryStorage(GEOSGeom: GEOSGeom, parent: nil))
     }

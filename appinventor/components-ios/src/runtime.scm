@@ -1591,7 +1591,7 @@ Dictionary implementation.
 
 (define (yail-dictionary-lookup key yail-dictionary default)
   (let ((result
-    (cond ((instance? yail-dictionary YailList)
+    (cond ((or (yail-list? yail-dictionary) (instance? yail-dictionary YailList))
            (yail-alist-lookup key yail-dictionary default))
           ((instance? yail-dictionary YailDictionary)
             (yail:invoke yail-dictionary 'objectForKey: key))

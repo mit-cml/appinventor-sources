@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.editor.youngandroid.palette;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -166,7 +166,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     panel.setWidth("100%");
 
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      String translationName = ComponentsTranslation.getComponentName(component).toLowerCase();
+      String translationName = ComponentTranslationTable.getComponentName(component).toLowerCase();
       arrayString.push(translationName);
       translationMap.put(translationName, component);
     }
@@ -428,7 +428,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     if (ComponentCategory.EXTENSION.equals(category)) {
       title = MESSAGES.extensionComponentPallette();
     } else {
-      title = ComponentsTranslation.getCategoryName(category.getName());
+      title = ComponentTranslationTable.getCategoryName(category.getName());
     }
     stackPalette.add(panel, category, title);
     // When the categories are loaded, we want the first one open, which will almost always be User Interface

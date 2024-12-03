@@ -57,6 +57,8 @@ extern int64_t const kGTMSessionUploadFetcherMaximumDemandBufferSize;
 
 // Notification that the upload location URL was provided by the server.
 extern NSString *const kGTMSessionFetcherUploadLocationObtainedNotification;
+// Notification that the exponential backoff for upload has started.
+extern NSString *const kGTMSessionFetcherUploadInitialBackoffStartedNotification;
 
 // Block to provide data during uploads.
 //
@@ -133,6 +135,10 @@ typedef void (^GTMSessionUploadFetcherCancellationHandler)(GTMSessionFetcher *_N
 @property(atomic, copy) NSString *uploadMIMEType;
 @property(atomic, readonly, assign) int64_t chunkSize;
 @property(atomic, readonly, assign) int64_t currentOffset;
+@property(atomic, assign) double uploadRetryFactor;
+@property(atomic, assign) NSTimeInterval maxUploadRetryInterval;
+@property(atomic, assign) NSTimeInterval minUploadRetryInterval;
+
 // Reflects the original NSURLRequest's @c allowCellularAccess property.
 @property(atomic, readonly, assign) BOOL allowsCellularAccess;
 
@@ -155,7 +161,7 @@ typedef void (^GTMSessionUploadFetcherCancellationHandler)(GTMSessionFetcher *_N
 //
 // Unlike other callbacks, since this is related specifically to the stopFetching flow it is not
 // cleared by stopFetching. It will instead clear itself after it is invoked or if the completion
-// has occured before stopFetching is called.
+// has occurred before stopFetching is called.
 @property(atomic, copy, nullable) GTMSessionUploadFetcherCancellationHandler cancellationHandler;
 
 // Exposed for testing only.

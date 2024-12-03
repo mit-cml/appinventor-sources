@@ -34,6 +34,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
   fileprivate var _orientation = Int32(1)
+  fileprivate let filter = UISearchBar()
+  fileprivate var _hint = "Search list..."
 
 
   public override init(_ parent: ComponentContainer) {
@@ -145,6 +147,15 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     set(FontTypefaceDetail) {
       _fontTypefaceDetail = FontTypefaceDetail
       _view.reloadData()
+    }
+  }
+
+  // This property is not supported in iOS
+  @objc open var BounceEdgeEffect: Bool {
+    get {
+      return false;
+    }
+    set(addEffect) {
     }
   }
 
@@ -293,7 +304,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     set(filterBar) {
       _showFilter = filterBar
       if _showFilter && _view.tableHeaderView == nil {
-        let filter = UISearchBar()
         _view.tableHeaderView = filter
         filter.sizeToFit()
         filter.delegate = self
@@ -302,6 +312,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
     }
   }
+
+  @objc open var HintText: String {
+    get {
+      return _hint
+    }
+    set(hint) {
+      _hint = hint
+      filter.placeholder = _hint
+    }
+  }
+
 
   @objc open var TextColor: Int32 {
     get {
@@ -345,6 +366,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   }
 
   // MARK: Methods
+
+  @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
+    _listData.append(["Text1": mainText, "Text2": detailText, "Image": imageName])
+  }
+
+  @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
+    _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
+  }
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
