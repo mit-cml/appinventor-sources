@@ -23,6 +23,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifndef GTLR_DEPRECATED
+#define GTLR_DEPRECATED __attribute__((deprecated))
+#endif
+
 /**
  *  Protocol that can be implemented to provide custom logic for what class
  *  should be created out of the given JSON.

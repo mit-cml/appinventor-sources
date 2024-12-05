@@ -467,6 +467,42 @@ Blockly.WorkspaceSvg.prototype.getAssetList = function() {
   return this.assetList_;
 }
 
+/**
+ * Returns the list of provider/models tracked by the workspace.
+ * @return {!Array<string>} The list of asset names.
+ */
+Blockly.WorkspaceSvg.prototype.getProviderModelList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getProviderModelList();
+  }
+  if(!top.chatproxyinfo) {      // This will happen if the proxy server doesn't respond
+    return [];
+  }
+  var model_object_list = top.chatproxyinfo["model"];
+  if (model_object_list) {
+    return Object.keys(model_object_list);
+  }
+  return [];
+}
+
+/**
+ * Returns the list of providers tracked by the workspace.
+ * @return {!Array<string>} The list of asset names.
+ */
+Blockly.WorkspaceSvg.prototype.getProviderList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getProviderList();
+  }
+  if(!top.chatproxyinfo) {      // This will happen if the proxy server doesn't respond
+    return [];
+  }
+  var model_list = top.chatproxyinfo["provider"];
+  if (model_list) {
+    return model_list;
+  }
+  return [];
+}
+
 //noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java
 /**
  * Add a new component to the workspace.

@@ -803,6 +803,7 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY": "every",
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
+	"Blockly.Msg.LANG_NO_PROVIDERMODEL": "No known models",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",
 	"Blockly.Msg.HIDE_WARNINGS": "Hide Warnings",
 	"Blockly.Msg.MISSING_SOCKETS_WARNINGS": "You should fill all of the sockets with blocks",

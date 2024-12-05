@@ -121,3 +121,15 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 }
+
+extension TinyDB: DataSource {
+  func getDataValue(_ key: AnyObject) -> AnyObject {
+    if let tag = key as? String {
+      let result = GetValue(tag, YailList<AnyObject>())
+      if result is YailList<AnyObject> {
+        return result
+      }
+    }
+    return YailList<AnyObject>()
+  }
+}

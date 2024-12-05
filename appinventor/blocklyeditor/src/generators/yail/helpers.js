@@ -46,3 +46,22 @@ AI.Yail['helpers_assets'] = function() {
   }
   return [AI.Yail.quote_(field.getValue()), AI.Yail.ORDER_ATOMIC];
 }
+
+Blockly.Yail['helpers_providermodel'] = function() {
+  var field = this.getField('PROVIDERMODEL');
+  if (!field) {
+    return [Blockly.Yail.quote_(''), Blockly.Yail.ORDER_ATOMIC];
+  }
+  var fielddisplayvalue = field.getValue();
+  var fieldvalue = top.chatproxyinfo['model'][fielddisplayvalue];
+  return [Blockly.Yail.quote_(fieldvalue), Blockly.Yail.ORDER_ATOMIC];
+}
+
+Blockly.Yail['helpers_provider'] = function() {
+  var field = this.getField('PROVIDER');
+  if (!field) {
+    return [Blockly.Yail.quote_(''), Blockly.Yail.ORDER_ATOMIC];
+  }
+  var fieldvalue = field.getValue();
+  return [Blockly.Yail.quote_(fieldvalue), Blockly.Yail.ORDER_ATOMIC];
+}

@@ -1514,6 +1514,25 @@ public final class YoungAndroidFormUpgrader {
       // Added RemoveItemAtIndex method
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // Added HintText property, performance optimization.
+
+      // !!! NB: Note that because of a behavior issue introduced in nb199, if we get to this point
+      // we immediately jump to version 9 since this project predates the introduction of the
+      // ElementColor property.
+      srcCompVersion = 9;
+    }
+    if (srcCompVersion < 9) {
+      srcCompVersion = 9;
+      if (componentProperties.containsKey("ElementColor")) {
+        // ElementColor default was changed to None. If the user manually changed it to None,
+        // remove it to keep the project size down.
+        String elementColor = componentProperties.get("ElementColor").asString().getString();
+        if ("&H00FFFFFF".equals(elementColor)) {
+          componentProperties.remove("ElementColor");
+        }
+      }
+    }
     return srcCompVersion;
   }
 

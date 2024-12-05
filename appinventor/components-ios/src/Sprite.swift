@@ -21,8 +21,8 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   fileprivate var _enabled = DEFAULT_ENABLED
   fileprivate var _heading = DEFAULT_HEADING
   fileprivate var _headingRadians = DEFAULT_HEADING
-  fileprivate var _xLeft: CGFloat = 0
-  fileprivate var _yTop: CGFloat = 0
+  internal var _xLeft: CGFloat = 0
+  internal var _yTop: CGFloat = 0
   fileprivate var _z = DEFAULT_Z
   fileprivate var _xCenter: CGFloat = 0
   fileprivate var _yCenter: CGFloat = 0
@@ -31,6 +31,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   fileprivate var _initialized = false
   fileprivate var _registeredCollisions = Set<Sprite>()
   fileprivate var _originAtCenter: Bool = DEFAULT_ORIGIN_AT_CENTER
+  var xOrigin = 0.0
+  var yOrigin = 0.0
+  var u = 0.0
+  var v = 0.0
   @objc var _canvas: Canvas
 
   // Layer displays either ball or image set by user.
@@ -45,12 +49,12 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     _canvas = parent as! Canvas
     _displayLayer = CAShapeLayer()
     _displayLayer.zPosition = CGFloat(_z)
-    
+
     super.init(parent)
     parent.add(self)
     _canvas.addSprite(self)
   }
-  
+
   @objc open func Initialize() {
     guard !_initialized else {
       print("Sprite \(self) is already initialized")
@@ -62,7 +66,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       restartTimer()
     }
   }
-  
+
   // MARK: Properties
   /**
    * Controls whether the sprite moves when its speed is non-zero.
@@ -83,7 +87,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   /**
    * The direction in which sprite should move.
    */
@@ -97,13 +101,13 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       _headingRadians = _heading * CGFloat.pi / 180
     }
   }
-  
+
   @objc public var HeadingRadians: CGFloat {
     get {
       return _headingRadians
     }
   }
-  
+
   /**
    * The interval in milliseconds at which the sprite's
    * position is updated. For example, if the interval is
@@ -121,7 +125,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   /**
    * The speed is the magnitude in pixels moved every
    * interval.
@@ -136,7 +140,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   /**
    * Whether the sprite is visible.
    */
@@ -151,87 +155,109 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   open var OriginAtCenter: Bool {
     get {
       return _originAtCenter
     }
     set(originAtCenter) {
-      if originAtCenter != _originAtCenter {
-        _originAtCenter = originAtCenter
+      _originAtCenter = originAtCenter
+      if originAtCenter {
+        u = 0.5
+        v = 0.5
+      } else {
+        u = 0.0
+        v = 0.0
       }
+      _xLeft = xOriginToLeft(xOrigin: xOrigin)
+      _yTop = yOriginToTop(yOrigin: yOrigin)
     }
   }
-  
+
+  open var U: Double {
+    get {
+      return u
+    }
+    set {
+      u = newValue
+      _xLeft = xOriginToLeft(xOrigin: xOrigin)
+      registerChanges()
+      updateDisplayLayer()
+    }
+  }
+
+  open var V: Double {
+    get {
+      return v
+    }
+    set {
+      v = newValue
+      _yTop = yOriginToTop(yOrigin: yOrigin)
+      registerChanges()
+      updateDisplayLayer()
+    }
+  }
+
   open var XCenter: Double {
     return Double(_xCenter)
   }
-  
+
   open var YCenter: Double {
     return Double(_yCenter)
   }
-  
-  private func xLeftToCenter(xLeft: Double) -> Double {
-    return xLeft + Double(Width / 2)
+
+  public func xLeftToOrigin(xLeft: Double) -> Double {
+    return xLeft + Double(Width) * u
   }
 
-  private func xCenterToLeft(xCenter: Double) -> Double {
-    return xCenter - Double(Width / 2)
+  public func xOriginToLeft(xOrigin: Double) -> Double {
+    return xOrigin - Double(Width) * u
   }
-  
+
   private func updateX(x: Double) {
-    if (_originAtCenter) {
-      _xCenter = CGFloat(x)
-      _xLeft = CGFloat(xCenterToLeft(xCenter: x))
-    } else {
-      _xLeft = CGFloat(x)
-      _xCenter = CGFloat(xLeftToCenter(xLeft: x))
-    }
+    xOrigin = x
+    _xLeft = xOriginToLeft(xOrigin: x)
   }
-  
+
   /**
    * Distance to the left edge of the canvas.
    */
   @objc open var X: Double {
     get {
-      return _originAtCenter ? Double(_xCenter) : Double(_xLeft)
+      return xOrigin
     }
     set(x) {
       updateX(x: x)
       registerChanges()
     }
   }
-  
-  private func yTopToCenter(yTop: Double) -> Double {
-    return yTop + Double(Height / 2)
+
+  public func yTopToOrigin(yTop: Double) -> Double {
+    return yTop + Double(Height) * v
   }
 
-  private func yCenterToTop(yCenter: Double) -> Double {
-    return yCenter - Double(Height / 2)
+  public func yOriginToTop(yOrigin: Double) -> Double {
+    return yOrigin - Double(Height) * v
   }
-  
+
   private func updateY(y: Double) {
-    if (_originAtCenter) {
-      _yCenter = CGFloat(y)
-      _yTop = CGFloat(yCenterToTop(yCenter: y))
-    } else {
-      _yTop = CGFloat(y)
-      _yCenter = CGFloat(yTopToCenter(yTop: y))
-    }
+    yOrigin = y
+    _yTop = yOriginToTop(yOrigin: yOrigin)
   }
+
   /**
    * Distance from the top edge of canvas.
    */
   @objc open var Y: Double {
     get {
-      return _originAtCenter ? Double(_yCenter) : Double(_yTop)
+      return yOrigin
     }
     set(y) {
       updateY(y: y)
       registerChanges()
     }
   }
-  
+
   /**
    * The layer of the sprite, indicating whether it will
    * appear in front of or behind other sprites.
@@ -250,13 +276,13 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   override open var view: UIView {
     get {
       return _view
     }
   }
-  
+
   @objc open var DisplayLayer: CAShapeLayer {
     get {
       return _displayLayer
@@ -282,7 +308,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       EventDispatcher.dispatchEvent(of: self, called: "CollidedWith", arguments: other as AnyObject)
     }
   }
-  
+
   // Handler called when a pair of sprites cease colliding.
   @objc open func NoLongerCollidingWith(_ other: Sprite) {
     _registeredCollisions.remove(other)
@@ -290,13 +316,13 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       EventDispatcher.dispatchEvent(of: self, called: "NoLongerCollidingWith", arguments: other as AnyObject)
     }
   }
-  
+
   @objc open func EdgeReached(_ edge: Direction) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "EdgeReached", arguments: edge.rawValue as NSNumber)
     }
   }
-  
+
   //MARK: Methods
   /**
    * Makes this sprite bounce, as if off a wall.
@@ -305,7 +331,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   @objc open func Bounce(_ edge: Int32) {
     let e = Direction(rawValue: edge)
     MoveIntoBounds()
-    
+
     // Normalize heading to [0, 360)
     var normalizedAngle = -_heading.truncatingRemainder(dividingBy: 360)
     if (normalizedAngle < 0) {
@@ -333,7 +359,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       Heading = 180 + normalizedAngle
     }
   }
-  
+
   /**
    * Returns whether Sprite is currently colliding with other Sprite
    */
@@ -351,10 +377,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     var moved = false
     let canvasWidth = Int32(_canvas.canvasView.bounds.width)
     let canvasHeight = Int32(_canvas.canvasView.bounds.height)
-    
+
     // We set the xLeft and/or yTop fields directly, instead of calling X(123) and Y(123), to avoid
     // having multiple calls to registerChange.
-    
+
     // Check if the sprite is too wide to fit on the canvas.
     if (Width > canvasWidth) {
       // Sprite is too wide to fit. If it isn't already at the left edge, move it there.
@@ -362,16 +388,19 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       // overflow.
       if (_xLeft != 0) {
         _xLeft = 0
+        xOrigin = xLeftToOrigin(xLeft: _xLeft)
         moved = true
       }
     } else if (overWestEdge()) {
       _xLeft = 0
+      xOrigin = xLeftToOrigin(xLeft: _xLeft)
       moved = true
     } else if (overEastEdge(canvasWidth)) {
       _xLeft = CGFloat(canvasWidth - Width)
+      xOrigin = xLeftToOrigin(xLeft: _xLeft)
       moved = true
     }
-    
+
     // Check if the sprite is too tall to fit on the canvas. We don't want to cause a stack
     // overflow by moving the sprite to the top edge and then to the bottom edge, repeatedly.
     if (Height > Int32(canvasHeight)) {
@@ -380,21 +409,24 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       // overflow.
       if (_yTop != 0) {
         _yTop = 0
+        yOrigin = yTopToOrigin(yTop: _yTop)
         moved = true
       }
     } else if (overNorthEdge()) {
       _yTop = 0
+      yOrigin = yTopToOrigin(yTop: _yTop)
       moved = true
     } else if (overSouthEdge(canvasHeight)) {
       _yTop = CGFloat(canvasHeight - Height)
+      yOrigin = yTopToOrigin(yTop: _yTop)
       moved = true
     }
-    
+
     if moved {
       registerChanges()
     }
   }
-  
+
   /**
    * Moves the sprite so that its left top corner is at the specfied x and y coordinates.
    */
@@ -412,45 +444,45 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     let yCoord = coerceToDouble(coordinates[2] as AnyObject)
     self.MoveTo(xCoord, yCoord)
   }
-  
+
   /**
    * Helper function for MoveToPoint
    */
   private func coerceToDouble(_ coordinate: AnyObject ) -> Double {
-      //unpack coordinate (check if are numbers and parse if string)
-      if let number = coordinate as? NSNumber {
-        return number.doubleValue
-      } else if let number = Double(coordinate as? NSString as? String ?? "") {
-        return number
-      } else {
-        return Double.nan
-      }
+    //unpack coordinate (check if are numbers and parse if string)
+    if let number = coordinate as? NSNumber {
+      return number.doubleValue
+    } else if let number = Double(coordinate as? NSString as? String ?? "") {
+      return number
+    } else {
+      return Double.nan
     }
-    
+  }
+
   /**
    * Turns the sprite to point towards the point with coordinates as (x, y).
    */
   @objc open func PointInDirection(_ x: Double, _ y: Double) {
     // we adjust for the fact that the sprite's X() and Y()
     // is not the center point.
-    let yDiff = y - Y - Double(Height) / 2
-    let xDiff = x - X - Double(Width) / 2
+    let yDiff = y - yOrigin
+    let xDiff = x - xOrigin
     let radians = atan2(CGFloat(yDiff), CGFloat(xDiff))
     Heading = -radians / CGFloat.pi * 180
   }
-  
+
   /**
    * Turns the sprite to point towards a designated target sprite.
    * The new heading will be parallel to the line joining the centerpoints of the two sprites.
    */
   @objc open func PointTowards(_ target: Sprite) {
     // we adjust for the fact that the sprites' X() and Y() are not the center points.
-    let yDiff = target.Y - Y + Double(target.Height - Height) / 2
-    let xDiff = target.X - X - Double(target.Width - Width) / 2
+    let yDiff = target.yOrigin - yOrigin
+    let xDiff = target.xOrigin - xOrigin
     let radians = atan2(CGFloat(yDiff), CGFloat(xDiff))
     Heading = -radians / CGFloat.pi * 180
   }
-  
+
   @objc open func Touched(_ x: Float, _ y: Float) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber)
@@ -470,16 +502,16 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   @objc open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
-                  _ velocityX: Float, _ velocityY: Float) {
+                        _ velocityX: Float, _ velocityY: Float) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
                                     flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
                                     velocityX as NSNumber, velocityY as NSNumber)
     }
   }
-  
+
   @objc open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
-                    _ currentX: Float, _ currentY: Float) {
+                          _ currentX: Float, _ currentY: Float) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
                                     startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
@@ -489,7 +521,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
 
   // To be overriden in sub-classes (ImageSprite and Ball)
   @objc func updateDisplayLayer(){}
-  
+
   // Notifies canvas of a sprite change and raises any EdgeReached events.
   @objc func registerChanges() {
     if _initialized {
@@ -500,28 +532,28 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       self._canvas.registerChange(self)
     }
   }
-  
+
   // Returns which edge the sprite overlaps with and moves the sprite into bounds if
   // it is out of bounds.
   fileprivate func hitEdge() -> Direction {
     if !_canvas.canvasView.Drawn {
       return Direction.none
     }
-    
+
     let canvasWidth = Int32(_canvas.canvasView.bounds.width)
     let canvasHeight = Int32(_canvas.canvasView.bounds.height)
-    
+
     let west = overWestEdge()
     let north = overNorthEdge()
     let east = overEastEdge(canvasWidth)
     let south = overSouthEdge(canvasHeight)
-    
+
     if !(west || north || east || south) {
       return Direction.none
     }
-    
+
     MoveIntoBounds()
-    
+
     if (west) {
       if (north) {
         return Direction.northwest
@@ -531,7 +563,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
         return Direction.west
       }
     }
-    
+
     if (east) {
       if (north) {
         return Direction.northeast
@@ -541,26 +573,26 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
         return Direction.east
       }
     }
-    
+
     if (north) {
       return Direction.north
     }
-    
+
     return Direction.south
   }
-  
+
   fileprivate func overWestEdge() -> Bool {
     return X < 0
   }
-  
+
   fileprivate func overNorthEdge() -> Bool {
     return Y < 0
   }
-  
+
   fileprivate func overEastEdge(_ canvasWidth: Int32) -> Bool {
     return X + Double(Width) > Double(canvasWidth)
   }
-  
+
   fileprivate func overSouthEdge(_ canvasHeight: Int32) -> Bool {
     return Y + Double(Height) > Double(canvasHeight)
   }
@@ -568,62 +600,41 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   @objc open func intersectsWith(_ rect: CGRect) -> Bool {
     return getBoundingBox(border: 0).intersects(rect)
   }
-  
+
   // Returns bounding box of sprite
   @objc open func getBoundingBox(border: Int) -> CGRect {
     let start_x = CGFloat(X)
     let start_y = CGFloat(Y)
     return CGRect(origin: CGPoint(x: start_x, y: start_y), size: CGSize(width: CGFloat(Width), height: CGFloat(Height)))
   }
-  
-  @objc static public func colliding(_ sprite1: Sprite, _ sprite2: Sprite) -> Bool {
-    let box1 = sprite1.getBoundingBox(border: 1)
-    let box2 = sprite2.getBoundingBox(border: 1)
-    let intersect = box1.intersection(box2)
-    if intersect.isNull {
-      return false
-    }
-    
-    // If we get here, intersect has been mutated to hold the intersection of the
-    // two bounding boxes. Now check every point in the intersection to see if
-    // both sprites contain any of those points.
-    for x in stride(from: intersect.minX, through: intersect.maxX, by: 1) {
-      for y in stride(from: intersect.minY, through: intersect.maxY, by: 1) {
-        if sprite1.contains(CGPoint(x: x, y: y)) && sprite2.contains(CGPoint(x: x, y: y)) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-  
+
   @objc func contains(_ point: CGPoint) -> Bool {
     return CGFloat(X) <= point.x && point.x <= CGFloat(X + Double(Width)) && CGFloat(Y) <= point.y && point.y <= CGFloat(Y + Double(Height))
   }
-  
+
   @objc func restartTimer() {
     removeTimer()
-    
+
     if Enabled {
       let timer = Timer.scheduledTimer(timeInterval: TimeInterval(Double(Interval) / 1000.0), target: self, selector: #selector(animate), userInfo: nil, repeats: true)
       RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
       self._timer = timer
     }
   }
-  
+
   @objc func removeTimer() {
     if let t = _timer {
       t.invalidate()
     }
     _timer = nil
   }
-  
+
   @objc func updateWidth(){}
   @objc func updateHeight(){}
-  
+
   @objc func animate() {
-    let oldX = CGFloat(X)
-    let oldY = CGFloat(Y)
+    let oldX = xOrigin
+    let oldY = yOrigin
     let headingCos = cos(_headingRadians)
     let headingSin = sin(_headingRadians)
     let newX = oldX + CGFloat(Speed) * headingCos
@@ -639,5 +650,69 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     updateY(y: Double(newY))
     registerChanges()
   }
-}
 
+  var centerVector: Vector2D {
+    return Vector2D(x: XCenter, y: YCenter)
+  }
+
+  @objc public static func colliding(_ sprite1: Sprite, _ sprite2: Sprite) -> Bool {
+    if let ball1 = sprite1 as? Ball {
+      if let ball2 = sprite2 as? Ball {
+        return collidingBalls(ball1, ball2)
+      } else if let imageSprite = sprite2 as? ImageSprite {
+        return collidingBallAndImageSprite(ball1, imageSprite)
+      }
+    } else if let imageSprite1 = sprite1 as? ImageSprite {
+      if let imageSprite2 = sprite2 as? ImageSprite {
+        return collidingImageSprites(imageSprite1, imageSprite2)
+      } else if let ball = sprite2 as? Ball {
+        return collidingBallAndImageSprite(ball, imageSprite1)
+      }
+    }
+    return false
+  }
+
+  private static func collidingBalls(_ ball1: Ball, _ ball2: Ball) -> Bool {
+    let dx = ball1.XCenter - ball2.XCenter
+    let dy = ball1.YCenter - ball2.YCenter
+    let dist2 = dx * dx + dy * dy
+    let maxdist = Double(ball1.Radius) + Double(ball2.Radius)
+    return dist2 <= maxdist * maxdist
+  }
+
+  private static func collidingImageSprites(_ sprite1: ImageSprite, _ sprite2: ImageSprite) -> Bool {
+    var axes = sprite1.normalAxes
+    axes.append(contentsOf: sprite2.normalAxes)
+    for a in axes {
+      let minA = sprite1.getMinProjection(a)
+      let maxA = sprite1.getMaxProjection(a)
+      let minB = sprite2.getMinProjection(a)
+      let maxB = sprite2.getMaxProjection(a)
+      if maxA < minB || maxB < minA {
+        return false
+      }
+    }
+    return true
+  }
+
+  private static func collidingBallAndImageSprite(_ ball: Ball, _ imageSprite: ImageSprite) -> Bool {
+    var axes = imageSprite.normalAxes
+    let imageCorners = imageSprite.extremityVectors
+    let ballCenter = ball.centerVector
+    guard let closestCorner = ballCenter.closestVector(in: imageCorners) else {
+      return false
+    }
+    let ballCenterToClosestCorner = closestCorner - ballCenter
+    axes.append(ballCenterToClosestCorner)
+    for a in axes {
+      let minA = imageSprite.getMinProjection(a)
+      let maxA = imageSprite.getMaxProjection(a)
+      let minB = ball.getMinProjection(a)
+      let maxB = ball.getMaxProjection(a)
+      if maxA < minB || maxB < minA {
+        return false
+      }
+    }
+    return true
+  }
+}

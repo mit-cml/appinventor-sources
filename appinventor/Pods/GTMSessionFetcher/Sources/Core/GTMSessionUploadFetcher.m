@@ -45,6 +45,8 @@ static NSString *const kGTMSessionXGoogUploadProtocolResumable = @"resumable";
 static NSString *const kGTMSessionHeaderXGoogUploadSizeReceived = @"X-Goog-Upload-Size-Received";
 static NSString *const kGTMSessionHeaderXGoogUploadStatus = @"X-Goog-Upload-Status";
 static NSString *const kGTMSessionHeaderXGoogUploadURL = @"X-Goog-Upload-URL";
+static const NSTimeInterval kDefaultMaxUploadRetryInterval = 60.0 * 10.;
+static const NSTimeInterval kDefaultMinUploadRetryInterval = 1.0;
 
 // Property of chunk fetchers identifying the parent upload fetcher.  Non-retained NSValue.
 static NSString *const kGTMSessionUploadFetcherChunkParentKey = @"_uploadFetcherChunkParent";
@@ -70,6 +72,8 @@ typedef NS_ENUM(NSUInteger, GTMSessionUploadFetcherStatus) {
 
 NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
     @"kGTMSessionFetcherUploadLocationObtainedNotification";
+NSString *const kGTMSessionFetcherUploadInitialBackoffStartedNotification =
+    @"kGTMSessionFetcherUploadInitialBackoffStartedNotification";
 
 #if !GTMSESSION_BUILD_COMBINED_SOURCES
 @interface GTMSessionFetcher (ProtectedMethods)
@@ -135,10 +139,15 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   NSString *_uploadMIMEType;
   int64_t _chunkSize;
   int64_t _uploadGranularity;
+  double _uploadRetryFactor;
+  NSTimeInterval _nextUploadRetryInterval;
+  NSTimeInterval _maxUploadRetryInterval;
+  NSTimeInterval _minUploadRetryInterval;
   BOOL _isPaused;
   BOOL _isRestartedUpload;
   BOOL _shouldInitiateOffsetQuery;
 
+  NSTimer *_uploadRetryTimer;
   // Tied to useBackgroundSession property, since this property is applicable to chunk fetchers.
   BOOL _useBackgroundSessionOnChunkFetchers;
 
@@ -155,6 +164,20 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   BOOL _isCancelInFlight;
 
   GTMSessionUploadFetcherCancellationHandler _cancellationHandler;
+}
+
+- (NSTimeInterval)nextUploadRetryIntervalUnsynchronized {
+  GTMSessionCheckSynchronized(self);
+
+  // The next wait interval is the factor (2.0) times the last interval,
+  // but never less than the minimum interval.
+  NSTimeInterval secs = _nextUploadRetryInterval * _uploadRetryFactor;
+  if (_maxUploadRetryInterval > 0) {
+    secs = MIN(secs, _maxUploadRetryInterval);
+  }
+  secs = MAX(secs, _minUploadRetryInterval);
+
+  return secs;
 }
 
 + (void)load {
@@ -513,8 +536,7 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
     int hasFileHandle = (_uploadFileHandle != nil) ? 1 : 0;
     int hasFileURL = (_uploadFileURL != nil) ? 1 : 0;
     int hasUploadDataProvider = (_uploadDataProvider != nil) ? 1 : 0;
-    int numberOfSources = hasData + hasFileHandle + hasFileURL + hasUploadDataProvider;
-#pragma unused(numberOfSources)
+    __unused int numberOfSources = hasData + hasFileHandle + hasFileURL + hasUploadDataProvider;
     GTMSESSION_ASSERT_DEBUG(numberOfSources == 1, @"Need just one upload source (%d)",
                             numberOfSources);
   }  // @synchronized(self)
@@ -768,7 +790,15 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
     }
     if (offset > 0 || length < fullUploadLength) {
       NSRange range = NSMakeRange((NSUInteger)offset, (NSUInteger)length);
-      resultData = [mappedData subdataWithRange:range];
+      @try {
+        resultData = [mappedData subdataWithRange:range];
+      } @catch (NSException *exception) {
+        NSString *errorMessage = exception.description;
+        GTMSESSION_ASSERT_DEBUG(NO, @"%@", errorMessage);
+        response(nil, kGTMSessionUploadFetcherUnknownFileSize,
+                 [self uploadChunkUnavailableErrorWithDescription:errorMessage]);
+        return;
+      }
     } else {
       resultData = mappedData;
     }
@@ -906,10 +936,27 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   [super beginFetchForRetry];
 }
 
+- (void)destroyUploadRetryTimer {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+    [_uploadRetryTimer invalidate];
+    _uploadRetryTimer = nil;
+  }
+}
+
 - (void)beginFetchWithCompletionHandler:(GTMSessionFetcherCompletionHandler)handler {
   GTMSessionCheckNotSynchronized(self);
 
   [self setInitialBodyLength:[self bodyLength]];
+  if (_minUploadRetryInterval <= 0.0) {
+    _minUploadRetryInterval = kDefaultMinUploadRetryInterval;
+  }
+  if (_maxUploadRetryInterval <= 0.0) {
+    _maxUploadRetryInterval = kDefaultMaxUploadRetryInterval;
+  }
+  if (_uploadRetryFactor <= 0.0) {
+    _uploadRetryFactor = 2.0;
+  }
 
   // We'll hold onto the superclass's callback queue so we can invoke the handler
   // even after the superclass has released the queue and its callback handler, as
@@ -982,8 +1029,8 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   // resumable request/response.
   if (self.downloadedData.length > 0) {
     NSData *downloadedData = self.downloadedData;
-    NSString *str = [[NSString alloc] initWithData:downloadedData encoding:NSUTF8StringEncoding];
-#pragma unused(str)
+    __unused NSString *str = [[NSString alloc] initWithData:downloadedData
+                                                   encoding:NSUTF8StringEncoding];
     GTMSESSION_ASSERT_DEBUG(NO, @"unexpected response data (uploading to the wrong URL?)\n%@", str);
   }
 #endif
@@ -1109,6 +1156,7 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
 
 - (void)stopFetchReleasingCallbacks:(BOOL)shouldReleaseCallbacks {
   GTMSessionCheckNotSynchronized(self);
+  [self destroyUploadRetryTimer];
 
   // Clear _fetcherInFlight when stopped. Moved from stopFetching, since that's a public method,
   // where this method does the work. Fixes issue clearing value when retryBlock included.
@@ -1321,6 +1369,101 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   }
 }
 
+- (void)beginUploadRetryTimer {
+  if (![NSThread isMainThread]) {
+    // Defer creating and starting the timer until we're on the main thread to ensure it has
+    // a run loop.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self beginUploadRetryTimer];
+    });
+    return;
+  }
+
+  [self destroyUploadRetryTimer];
+
+  if (_nextUploadRetryInterval == 0.0) {
+    [self.chunkFetcher beginFetchWithDelegate:self
+                            didFinishSelector:@selector(chunkFetcher:finishedWithData:error:)];
+    return;
+  }
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    NSTimeInterval nextInterval = _nextUploadRetryInterval;
+    NSTimeInterval maxInterval = _maxUploadRetryInterval;
+    NSTimeInterval newInterval = MIN(nextInterval, (maxInterval > 0 ? maxInterval : DBL_MAX));
+    NSTimeInterval newIntervalTolerance = (newInterval / 10) > 1.0 ?: 1.0;
+
+    _nextUploadRetryInterval = newInterval;
+
+    _uploadRetryTimer = [NSTimer timerWithTimeInterval:newInterval
+                                                target:self
+                                              selector:@selector(uploadRetryTimerFired:)
+                                              userInfo:nil
+                                               repeats:NO];
+    _uploadRetryTimer.tolerance = newIntervalTolerance;
+    [[NSRunLoop mainRunLoop] addTimer:_uploadRetryTimer forMode:NSDefaultRunLoopMode];
+  }  // @synchronized(self)
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc postNotificationName:kGTMSessionFetcherUploadInitialBackoffStartedNotification object:self];
+}
+
+- (void)uploadRetryTimerFired:(NSTimer *)timer {
+  [self destroyUploadRetryTimer];
+
+  NSOperationQueue *queue = self.sessionDelegateQueue;
+  [queue addOperationWithBlock:^{
+    [self.chunkFetcher beginFetchWithDelegate:self
+                            didFinishSelector:@selector(chunkFetcher:finishedWithData:error:)];
+  }];
+}
+
+- (NSTimer *)uploadRetryTimer {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    return _uploadRetryTimer;
+  }  // @synchronized(self)
+}
+
+- (NSTimeInterval)maxUploadRetryInterval {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    return _maxUploadRetryInterval;
+  }  // @synchronized(self)
+}
+- (void)setMaxUploadRetryInterval:(NSTimeInterval)secs {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    if (secs > 0) {
+      _maxUploadRetryInterval = secs;
+    } else {
+      _maxUploadRetryInterval = kDefaultMaxUploadRetryInterval;
+    }
+  }  // @synchronized(self)
+}
+- (void)setMinUploadRetryInterval:(NSTimeInterval)secs {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    if (secs > 0) {
+      _minUploadRetryInterval = secs;
+    } else {
+      _minUploadRetryInterval = kDefaultMinUploadRetryInterval;
+    }
+  }  // @synchronized(self)
+}
+
+- (NSTimeInterval)minUploadRetryInterval {
+  @synchronized(self) {
+    GTMSessionMonitorSynchronized(self);
+
+    return _minUploadRetryInterval;
+  }  // @synchronized(self)
+}
+
 - (void)beginChunkFetcher:(GTMSessionFetcher *)chunkFetcher offset:(int64_t)offset {
   // Track the current offset for progress reporting
   self.currentOffset = offset;
@@ -1334,8 +1477,14 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   // Update the last chunk request, including any request headers.
   self.lastChunkRequest = chunkFetcher.request;
 
-  [chunkFetcher beginFetchWithDelegate:self
-                     didFinishSelector:@selector(chunkFetcher:finishedWithData:error:)];
+  if (_nextUploadRetryInterval < _maxUploadRetryInterval) {
+    [self beginUploadRetryTimer];
+
+  } else {
+    NSError *responseError =
+        [self uploadChunkUnavailableErrorWithDescription:@"Retry Limit Reached"];
+    [self invokeFinalCallbackWithData:nil error:responseError shouldInvalidateLocation:NO];
+  }
 }
 
 - (void)attachSendProgressBlockToChunkFetcher:(GTMSessionFetcher *)chunkFetcher {
@@ -1415,6 +1564,7 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   chunkFetcher.allowedInsecureSchemes = self.allowedInsecureSchemes;
   chunkFetcher.allowLocalhostRequest = self.allowLocalhostRequest;
   chunkFetcher.allowInvalidServerCertificates = self.allowInvalidServerCertificates;
+  chunkFetcher.stopFetchingTriggersCompletionHandler = self.stopFetchingTriggersCompletionHandler;
   chunkFetcher.useUploadTask = !isQueryFetch;
 
   if (self.uploadFileURL && !isQueryFetch && self.useBackgroundSession) {
@@ -1505,6 +1655,11 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
       self.shouldInitiateOffsetQuery = NO;
       [self destroyChunkFetcher];
       hasDestroyedOldChunkFetcher = YES;
+      @synchronized(self) {
+        GTMSessionMonitorSynchronized(self);
+        _nextUploadRetryInterval = self.nextUploadRetryIntervalUnsynchronized;
+      }
+
       [self sendQueryForUploadOffsetWithFetcherProperties:chunkFetcher.properties];
     } else {
       // Some unexpected status has occurred; handle it as we would a regular
@@ -1512,14 +1667,21 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
       [self invokeFinalCallbackWithData:data error:error shouldInvalidateLocation:NO];
     }
   } else {
+    int64_t newOffset;
     // The chunk has uploaded successfully.
-    int64_t newOffset = self.currentOffset + previousContentLength;
+    NSString *uploadSizeReceived =
+        [chunkFetcher.responseHeaders objectForKey:kGTMSessionHeaderXGoogUploadSizeReceived];
+
+    if (uploadSizeReceived) {
+      newOffset = [uploadSizeReceived longLongValue];
+    } else {
+      newOffset = self.currentOffset + previousContentLength;
+    }
 #if DEBUG
     // Verify that if we think all of the uploading data has been sent, the server responded with
     // the "final" upload status.
-    BOOL hasUploadAllData = (newOffset == [self fullUploadLength]);
-    BOOL isFinalStatus = (uploadStatus == kStatusFinal);
-#pragma unused(hasUploadAllData, isFinalStatus)
+    __unused BOOL hasUploadAllData = (newOffset == [self fullUploadLength]);
+    __unused BOOL isFinalStatus = (uploadStatus == kStatusFinal);
     GTMSESSION_ASSERT_DEBUG(hasUploadAllData == isFinalStatus || !hasKnownChunkSize,
                             @"uploadStatus:%@  newOffset:%lld (%lld + %lld)  fullUploadLength:%lld"
                             @" chunkFetcher:%@ requestHeaders:%@ responseHeaders:%@",
@@ -1561,7 +1723,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
       // before we create a new chunk fetcher.
       [self destroyChunkFetcher];
       hasDestroyedOldChunkFetcher = YES;
-
       [self uploadNextChunkWithOffset:newOffset fetcherProperties:props];
     }
   }
@@ -1754,10 +1915,10 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
     }
   }
 
-  GTMSESSION_ASSERT_DEBUG(offset < fullUploadLength || fullUploadLength == 0,
+  GTMSESSION_ASSERT_DEBUG(offset <= fullUploadLength || fullUploadLength == 0,
                           @"offset %lld exceeds data length %lld", offset, fullUploadLength);
 
-  if (granularity > 0) {
+  if (granularity > 0 && offset < fullUploadLength) {
     offset = offset - (offset % granularity);
   }
 
@@ -1809,7 +1970,8 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
             lastChunkRequest = _lastChunkRequest,
             subdataGenerating = _subdataGenerating,
             shouldInitiateOffsetQuery = _shouldInitiateOffsetQuery,
-            uploadGranularity = _uploadGranularity;
+            uploadGranularity = _uploadGranularity,
+            uploadRetryFactor = _uploadRetryFactor;
 // clang-format on
 
 // Internal properties.
