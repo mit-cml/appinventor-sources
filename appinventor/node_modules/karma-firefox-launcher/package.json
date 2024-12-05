@@ -1,0 +1,69 @@
+{
+  "name": "karma-firefox-launcher",
+  "version": "2.1.3",
+  "description": "A Karma plugin. Launcher for Firefox.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "karma start --single-run",
+    "_postinstall": "husky install",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/karma-runner/karma-firefox-launcher.git"
+  },
+  "keywords": [
+    "karma",
+    "testing",
+    "karma-plugin",
+    "karma-launcher",
+    "firefox"
+  ],
+  "author": "Vojta Jina <vojta.jina@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/npm": "^9.0.0",
+    "husky": "^8.0.0",
+    "karma": "^6.3.4",
+    "karma-mocha": "^2.0.1",
+    "mocha": "^10.0.0",
+    "pinst": "^3.0.0",
+    "semantic-release": "^19.0.2",
+    "standard": "^17.0.0"
+  },
+  "contributors": [
+    "Alex Zaslavsky <alex.zaslavsky.1990@gmail.com>",
+    "Andrei Khveras <Andrei_Khveras@epam.com>",
+    "Brian Birtles <birtles@gmail.com>",
+    "Chad McElligott <cmcelligott@digium.com>",
+    "dignifiedquire <dignifiedquire@gmail.com>",
+    "Erwann Mest <erwann.mest@gmail.com>",
+    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Friedel Ziegelmayer <friedel.ziegelmayer@gmail.com>",
+    "James Talmage <james@talmage.io>",
+    "Jan Brecka <jan.brecka@gmail.com>",
+    "Jonathan Ginsburg <jon@than.ml>",
+    "Liam Newman <lnewman@book.com>",
+    "Maksim Ryzhikov <rv.maksim@gmail.com>",
+    "Mario Vejlupek <mario@vejlupek.cz>",
+    "Mark Ethan Trostler <mark@zzo.com>",
+    "Martin Fochler <martin.fochler@senacor.com>",
+    "Michał Gołębiowski <m.goleb@gmail.com>",
+    "Parashuram <code@nparashuram.com>",
+    "Peter Johanson <peter@peterjohanson.com>",
+    "Salvador de la Puente <salva@unoyunodiez.com>",
+    "Schaaf, Martin <mschaaf@datameer.com>",
+    "Žilvinas Urbonas <zilvinas.urbon@gmail.com>"
+  ],
+  "dependencies": {
+    "is-wsl": "^2.2.0",
+    "which": "^3.0.0"
+  }
+}
