@@ -17,10 +17,10 @@ Blockly.Yail['matrices_create'] = function() {
   var cols = this.getFieldValue('COLS') || 2;
   code += rows + Blockly.Yail.YAIL_SPACER + cols + Blockly.Yail.YAIL_SPACER;
 
-  code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   for (var i = 0; i < rows; i++) {
-    code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
+    code += Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
     code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
     for (var j = 0; j < cols; j++) {
       code += "0";
@@ -34,10 +34,17 @@ Blockly.Yail['matrices_create'] = function() {
     code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
     code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   }
-  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  for (var l = 0; l < rows; l++) {
+    code += "list" + Blockly.Yail.YAIL_SPACER;
+  }  
+  code +=  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE;
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code += "number number list" +  Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "create a matrix" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  console.log("GENERATED CODE: ", code);
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
