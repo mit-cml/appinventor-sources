@@ -205,6 +205,11 @@ public class AssetFetcher {
           throw new IOException("Unable to create assets directory " + parentOutFile);
         }
 
+        // Before we attempt to write to the outFile, make sure that we can. If it is a classes.jar
+        // file, we may already have a read-only version stored.
+        if (!outFile.canWrite()) {
+          outFile.setWritable(true);
+        }
         BufferedInputStream in = new BufferedInputStream(connection.getInputStream(), 0x1000);
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile), 0x1000);
         //noinspection TryFinallyCanBeTryWithResources

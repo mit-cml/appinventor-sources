@@ -43,6 +43,8 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.FOLDERS, "",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.SHOW_UIPICKER,
+        "True", EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override

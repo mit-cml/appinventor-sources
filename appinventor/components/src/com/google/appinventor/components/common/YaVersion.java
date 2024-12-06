@@ -601,7 +601,9 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 230:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 37.
   // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
-  public static final int YOUNG_ANDROID_VERSION = 230;
+  // For YOUNG_ANDROID_VERSION 231:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
+  public static final int YOUNG_ANDROID_VERSION = 231;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1183,8 +1185,10 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 7:
   // - Added RemoveItemAtIndex method
   // For LISTVIEW_COMPONENT_VERSION 8:
-  // Added HintText property, performance optimization
-  public static final int LISTVIEW_COMPONENT_VERSION = 8;
+  // - Added HintText property, performance optimization
+  // For LISTVIEW_COMPONENT_VERSION 9:
+  // - Changed the default ElementColor from Black to None
+  public static final int LISTVIEW_COMPONENT_VERSION = 9;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1686,12 +1690,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.73";
+  public static final String PREFERRED_COMPANION = "2.73a";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.73", "2.73u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.73a", "2.73au" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

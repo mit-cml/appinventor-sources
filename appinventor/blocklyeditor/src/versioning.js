@@ -2457,7 +2457,9 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
     // AI2:
     // - Added HintText property, performance optimization
-    8: "noUpgrade"
+    8: "noUpgrade",
+    // AI2: Fixed a designer property issue with ElementColor
+    9: "noUpgrade"
 
   }, // End ListView upgraders
 

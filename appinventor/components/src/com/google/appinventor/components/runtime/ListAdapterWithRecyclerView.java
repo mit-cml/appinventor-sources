@@ -148,8 +148,8 @@ public class ListAdapterWithRecyclerView
     cardView.setMaxCardElevation(3f);
     cardView.setCardBackgroundColor(backgroundColor);
     cardView.setRadius(radius);
-    cardView.setCardElevation(2.1f);
-    ViewCompat.setElevation(cardView, 20);
+    cardView.setCardElevation(0.0f);
+    ViewCompat.setElevation(cardView, 0);
 
     cardView.setClickable(true);
     final int idCard = ViewCompat.generateViewId();
