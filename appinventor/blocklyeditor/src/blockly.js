@@ -13,23 +13,42 @@
 
 goog.provide('AI.Blockly');
 
-goog.require('Blockly');
-
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument');
-goog.require('Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlock');
 goog.require('AI.Blockly.WorkspaceSvg');
+
+/**
+ * Constant indicating a horizontal arrangement.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_HORIZONTAL = 0;
+
+/**
+ * Constant indicating a vertical arrangement.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_VERTICAL = 1;
+
+/**
+ * Constant indicating arrangement by cateogry.
+ *
+ * @const {number}
+ */
+AI.Blockly.BLKS_CATEGORY = 2;
 
 /**
  * ENUM for an indented value input.  Similar to next_statement but with value
  * input shape.
- * @const
+ * @const {number}
  */
 Blockly.INDENTED_VALUE = 6;
 
 /**
  * Path to Blockly's directory.  Can be relative, absolute, or remote.
  * Used for loading additional resources.
+ * @const {string}
  */
 Blockly.pathToBlockly = './';
 
@@ -44,7 +63,7 @@ Blockly.hideChaff = (function(func) {
       var argCopy = Array.prototype.slice.call(arguments);
       func.apply(this, argCopy);
       // [lyn, 10/06/13] for handling parameter & procedure flydowns
-      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.getMainWorkspace(), argCopy);
+      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.common.getMainWorkspace(), argCopy);
     };
     f.isWrapped = true;
     return f;
@@ -59,11 +78,11 @@ Blockly.hideChaff = (function(func) {
 Blockly.confirmDeletion = function(callback) {
   var DELETION_THRESHOLD = 3;
 
-  var descendantCount = Blockly.mainWorkspace.getAllBlocks().length;
-  if (Blockly.selected != null) {
-    descendantCount = Blockly.selected.getDescendants().length;
-    if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
-      descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
+  var descendantCount = Blockly.common.getMainWorkspace().getAllBlocks().length;
+  if (Blockly.common.getSelected() != null) {
+    descendantCount = Blockly.common.getSelected().getDescendants().length;
+    if (Blockly.common.getSelected().nextConnection && Blockly.common.getSelected().nextConnection.targetConnection) {
+      descendantCount -= Blockly.common.getSelected().nextConnection.targetBlock().getDescendants().length;
     }
   }
 
@@ -76,7 +95,7 @@ Blockly.confirmDeletion = function(callback) {
       var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
         dialog.hide();
         if (button == deleteButton) {
-          Blockly.mainWorkspace.playAudio('delete');
+          Blockly.common.getMainWorkspace().playAudio('delete');
           callback(true);
         } else {
           callback(false);
@@ -85,13 +104,13 @@ Blockly.confirmDeletion = function(callback) {
     } else {
       var response = confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)));
       if (response) {
-        Blockly.mainWorkspace.playAudio('delete');
+        Blockly.common.getMainWorkspace().playAudio('delete');
       }
       callback(response);
     }
   }
   else {
-    Blockly.mainWorkspace.playAudio('delete');
+    Blockly.common.getMainWorkspace().playAudio('delete');
     callback(true);
   }
 };
@@ -104,7 +123,9 @@ Blockly.confirmDeletion = function(callback) {
  * Fixing the values to 100% gives the desired resizing behavior in AI2.
  * @param {!Blockly.WorkspaceSvg} workspace The workspace to resize
  */
+/*
 Blockly.svgResize = function(workspace) {
+  console.log("Blockly.svgResize");
   var mainWorkspace = workspace;
   while (mainWorkspace.options.parentWorkspace) {
     mainWorkspace = mainWorkspace.options.parentWorkspace;
@@ -127,37 +148,4 @@ Blockly.svgResize = function(workspace) {
   }
   mainWorkspace.resize();
 };
-
-/**
- * Wrap Blockly's onKeyDown_ method with a check to ensure that the Blockly editor is active and
- * focused before sending it the keydown event. This prevents users from accidentally deleting
- * blocks on the workspace if they switch back to the Designer view and press the delete key.
- */
-Blockly.onKeyDown_ = (function(f) {
-  if (f.isWrapped) {
-    return f;
-  } else {
-    var wrappedFunc = function(e) {
-      var target = null;
-      // Is the target of the event the injection div?
-      if (e.target.tagName.toLowerCase() == 'div' && e.target.className == 'injectionDiv') {
-        target = e.target;
-      } else {
-        // see if the injection div is an ancestor of the current target element
-        // (i.e. it is in the BlocklyPanel)
-        var parent = e.target;
-        while (parent.parentNode && parent.tagName.toLowerCase() != 'div'
-            && parent.className != 'injectionDiv') {
-          parent = parent.parentNode;
-        }
-        target = parent;
-      }
-      // check that the main workspace's parent is the target injection div (if any)
-      if (Blockly.mainWorkspace.getParentSvg().parentNode == target) {
-        f.call(this, e);
-      }
-    };
-    f.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.onKeyDown_);
+*/

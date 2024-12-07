@@ -13,11 +13,6 @@
 
 goog.provide('AI.Blockly.Workspace');
 
-goog.require('Blockly.Workspace');
-
-// App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument'); // lyn's instrumentation code
-
 Blockly.Workspace.prototype.arranged_type_ = null;
 Blockly.Workspace.prototype.arranged_latest_position_ = null;  // used to default to (previous is used for menus)
 Blockly.Workspace.prototype.arranged_position_ = null;
@@ -49,8 +44,8 @@ Blockly.Workspace.prototype.addTopBlock = (function(func) {
     return func;
   } else {
     var wrappedAddTopBlock = function(block) {
-      if (block.workspace == Blockly.getMainWorkspace()) //Do not reset arrangements for the flyout
-        Blockly.getMainWorkspace().resetArrangements();
+      if (block.workspace == Blockly.common.getMainWorkspace()) //Do not reset arrangements for the flyout
+        Blockly.common.getMainWorkspace().resetArrangements();
       func.call(this, block);
       if (this.warningIndicator) {
         this.warningIndicator.updateWarningAndErrorCount();
@@ -67,8 +62,8 @@ Blockly.Workspace.prototype.removeTopBlock = (function(func) {
     return func;
   } else {
     var wrappedRemoveTopBlock = function(block) {
-      if (block.workspace == Blockly.getMainWorkspace())
-        Blockly.getMainWorkspace().resetArrangements();
+      if (block.workspace == Blockly.common.getMainWorkspace())
+        Blockly.common.getMainWorkspace().resetArrangements();
       func.call(this, block);
     };
     wrappedRemoveTopBlock.isWrapped = true;
@@ -76,6 +71,7 @@ Blockly.Workspace.prototype.removeTopBlock = (function(func) {
   }
 })(Blockly.Workspace.prototype.removeTopBlock);
 
+/*
 Blockly.Workspace.prototype.getTopBlocks = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -95,7 +91,8 @@ Blockly.Workspace.prototype.getTopBlocks = (function(func) {
     return instrumentedFunc;
   }
 })(Blockly.Workspace.prototype.getTopBlocks);
-
+*/
+/*
 // Override Blockly's getAllBlocks with optimized version from lyn
 Blockly.Workspace.prototype.getAllBlocks = function() {
   var start = new Date().getTime(); //*** lyn instrumentation
@@ -125,7 +122,7 @@ Blockly.Workspace.prototype.getAllBlocks = function() {
   Blockly.Instrument.stats.getAllBlocksTime += timeDiff;
   return blocks;
 };
-
+*/
 Blockly.Workspace.prototype.dispose = (function(func) {
     if (func.isWrapped) {
       return func;

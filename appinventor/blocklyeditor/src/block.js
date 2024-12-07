@@ -13,7 +13,7 @@
 
 goog.provide('AI.Blockly.Block');
 
-goog.require('Blockly.Block');
+goog.require('goog.asserts');
 
 Blockly.Block.mutationToDom = function() {
   var container = details.mutationToDomFunc ? details.mutationToDomFunc()
@@ -64,7 +64,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
     if (field instanceof Blockly.Field) {
       this.appendField(field);
     } else {
-      goog.asserts.assert(goog.isArray(field));
+      goog.asserts.assert(Array.isArray(field));
       this.appendField(field[1], field[0]);
     }
   }
@@ -74,9 +74,9 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   goog.asserts.assertString(msg);
   var dummyAlign = arguments[arguments.length - 1];
   goog.asserts.assert(
-      dummyAlign === Blockly.ALIGN_LEFT ||
+      dummyAlign === Blockly.inputs.Align.LEFT ||
       dummyAlign === Blockly.ALIGN_CENTRE ||
-      dummyAlign === Blockly.ALIGN_RIGHT,
+      dummyAlign === Blockly.inputs.Align.RIGHT,
       'Illegal final argument "%d" is not an alignment.', dummyAlign);
   arguments.length = arguments.length - 1;
 

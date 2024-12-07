@@ -10,17 +10,14 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.logic');
-
-goog.require('Blockly.Mutator');
-goog.require('Blockly.Blocks.Utilities');
+goog.provide('AI.Blocks.logic');
 
 Blockly.Blocks['logic_boolean'] = {
   // Boolean data type: true and false.
   category: 'Logic',
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
     var thisBlock = this;
@@ -74,7 +71,7 @@ Blockly.Blocks['logic_false'] = {
   category: 'Logic',
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_boolean.OPERATORS), 'BOOL');
     this.setFieldValue('FALSE', 'BOOL');
@@ -96,9 +93,9 @@ Blockly.Blocks['logic_negate'] = {
   helpUrl: Blockly.Msg.LANG_LOGIC_NEGATE_HELPURL,
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('BOOL')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT);
     this.setTooltip(Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP);
   },
@@ -114,7 +111,7 @@ Blockly.Blocks['logic_compare'] = {
   },
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('A');
     this.appendValueInput('B')
         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
@@ -170,18 +167,18 @@ Blockly.Blocks['logic_operation'] = {
      */
     this.lastMutator = null;
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
     this.appendValueInput('A')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT));
     this.appendValueInput('B')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(this.opField, 'OP');
     this.setFieldValue(op, 'OP');
     this.setInputsInline(true);
     this.setTooltip(function () {
       return Blockly.Blocks.logic_operation.TOOLTIPS()[thisBlock.getFieldValue('OP')];
     });
-    this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['logic_mutator_item'], this));
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'BOOL';
     this.itemCount_ = 2;
@@ -229,7 +226,7 @@ Blockly.Blocks['logic_operation'] = {
     var containerBlockName = 'mutator_container';
     var containerBlock = workspace.newBlock(containerBlockName);
     containerBlock.setColour(this.getColour());
-    containerBlock.setFieldValue(this.opField.getText(), 'CONTAINER_TEXT');
+    containerBlock.setFieldValue(this.opField.getValue(), 'CONTAINER_TEXT');
     containerBlock.initSvg();
     var connection = containerBlock.getInput('STACK').connection;
     for (var x = 0; x < this.itemCount_; x++) {
@@ -297,12 +294,12 @@ Blockly.Blocks['logic_operation'] = {
   addInput: function (inputNum) {
     var name = inputNum > 1 ? this.repeatingInputName + inputNum : ['A', 'B'][inputNum];
     var input = this.appendValueInput(name)
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT));
     if (this.getInputsInline()) {
       if (inputNum === 1) {
         this.makeDropdown(input);
       } else if (inputNum > 1) {
-        var field = new Blockly.FieldLabel(this.opField.getText());
+        var field = new Blockly.FieldLabel(this.opField.getValue());
         input.appendField(field);
         field.init();
       } else if (this.itemCount_ === 1) {
@@ -343,7 +340,7 @@ Blockly.Blocks['logic_operation'] = {
         this.makeDropdown(binput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        var field = new Blockly.FieldLabel(this.opField.getText());
+        var field = new Blockly.FieldLabel(this.opField.getValue());
         input.appendField(field);
         field.init();
       }
@@ -366,13 +363,13 @@ Blockly.Blocks['logic_operation'] = {
       var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
         Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        input.fieldRow[0].setText(text);
+        input.fieldRow[0].setValue(text);
       }
     }
     if (this.itemCount_ === 1) {
       var identity = this.getField('IDENTITY');
       if (identity) {
-        identity.setText(Blockly.Blocks.logic_operation.IDENTITY(op));
+        identity.setValue(Blockly.Blocks.logic_operation.IDENTITY(op));
       }
     }
     // Update the mutator container block if the mutator is open

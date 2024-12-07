@@ -16,7 +16,7 @@
      App Inventor appengine app
      ====================================================================== -->
 
-<project name="appengine" default="all">
+<project name="appengine" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>
     Appengine server and client code
   </description>
@@ -26,6 +26,7 @@
        ===================================================================== -->
 
   <property name="release" value="false"/>
+  <property name="sourceMaps" value="false"/>
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
@@ -38,20 +39,6 @@
              else="-style pretty">
     <equals arg1="${release}" arg2="true" />
   </condition>
-
-  <scriptdef name="generateguid" language="javascript">
-    <attribute name="property" />
-    <![CDATA[
-             try {
-               load("nashorn:mozilla_compat.js");
-             }
-             catch (exception) {
-               // Ignore the exception as the compat mode is only needed for Java 8
-             }
-             importClass( java.util.UUID );
-             project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
-    ]]>
-  </scriptdef>
 
   <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
     <os family="mac"/>
@@ -131,7 +118,9 @@
           depends="init,blocklyeditor_BlocklyTranslationGenerator,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war" />
+      <fileset dir="war">
+        <exclude name="index.jsp" />
+      </fileset>
       <fileset dir="${docs.dir}">
         <include name="companions/*"/>
       </fileset>
@@ -170,13 +159,35 @@
         <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
+    <checksum property="blocklyeditor_BlocklyChecksum" algorithm="SHA-256" if:true="${release}">
+      <fileset dir="${build.dir}">
+        <include name="blocklyeditor/blockly-all.js"/>
+      </fileset>
+    </checksum>
+    <property name="blocklyeditor_BlocklyChecksum" value="0"/>
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/static/js/aiblockly-${blocklyeditor_BlocklyChecksum}.js" />
+    <copy todir="${build.war.dir}/static/js">
+      <fileset dir="${build.dir}/blocklyeditor">
+        <include name="*.js.map"/>
+      </fileset>
+    </copy>
+    <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}" />
+    <copy todir="${build.war.dir}" filtering="true">
+      <fileset dir="war">
+        <include name="index.jsp"/>
+      </fileset>
+    </copy>
 
     <!-- Move Blockly translations into place -->
     <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
     <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
       <fileset dir="${build.dir}/blocklyeditor/msg">
         <include name="*.json"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.war.dir}/static/js/">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.js"/>
       </fileset>
     </copy>
 
@@ -205,6 +216,10 @@
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+    <!-- Compile the Blockly translations map -->
+    <javac destdir="${build.war.dir}/WEB-INF/classes" srcdir="${public.build.dir}/../blocklyeditor" source="1.8" target="1.8">
+      <include name="msg/i18n.java"/>
+    </javac>
   </target>
 
   <!-- =====================================================================
@@ -632,10 +647,20 @@
       <arg line="-logLevel INFO"/>
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
+      <arg line="-setProperty locale=${locale}" if:set="locale"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
     <copy todir="${build.war.dir}/ode"
           file="${appinventor.dir}/appengine/extra/cdnok.js" />
+    <copy todir="${build.war.dir}/ode" if:true="${sourceMaps}">
+      <fileset dir="${build.war.dir}/WEB-INF/deploy/ode/symbolMaps">
+        <include name="*.json"/>
+      </fileset>
+      <fileset dir="${src.dir}/">
+        <include name="${appinventor.pkg}/client/**/*.java"/>
+        <include name="${appinventor.pkg}/shared/**/*.java"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="devmode"

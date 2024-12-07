@@ -14,7 +14,8 @@
 
 goog.provide('AI.Blockly.WarningHandler');
 
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.BlockUtils');
+goog.require('AI.Blockly.FieldLexicalVariable');
 
 Blockly.WarningHandler = function(workspace) {
   this.workspace = workspace;
@@ -115,19 +116,13 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
   if (!this.workspace.rendered) {
     return;
   }
-  if (Blockly.Instrument.isOn) {
-    var start = new Date().getTime();
-    var topBlocks = this.workspace.getTopBlocks();
-  }
   var allBlocks = this.workspace.getAllBlocks();
   try {
-    if (Blockly.Instrument.useLynCacheGlobalNames) {
-      // Compute and cache the list of global names once only
-      // so that each call to checkDropDownContainsValidValue needn't recalculate this.
-      this.cacheGlobalNames = false; // Set to false to actually compute names in next line.
-      this.cachedGlobalNames = Blockly.FieldLexicalVariable.getGlobalNames();
-      this.cacheGlobalNames = true;
-    }
+    // Compute and cache the list of global names once only
+    // so that each call to checkDropDownContainsValidValue needn't recalculate this.
+    this.cacheGlobalNames = false; // Set to false to actually compute names in next line.
+    this.cachedGlobalNames = Blockly.FieldLexicalVariable.getGlobalNames();
+    this.cacheGlobalNames = true;
     for(var i=0;i<allBlocks.length;i++) {
       var blockErrorResult = this.checkErrors(allBlocks[i]);
     }
@@ -135,14 +130,6 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
     // [lyn, 04/13/14] Ensure that these are reset no matter what:
     this.cacheGlobalNames = false;
     this.cachedGlobalNames = [];
-  }
-  if (Blockly.Instrument.isOn) {
-    var stop = new Date().getTime();
-    var timeDiff = stop - start;
-    Blockly.Instrument.stats.topBlockCount = topBlocks.length;
-    Blockly.Instrument.stats.blockCount = allBlocks.length;
-    Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsCalls++;
-    Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsTime += timeDiff;
   }
 };
 
@@ -310,7 +297,9 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
 
   //check if there are any errors
   for(var i=0;i<errorTestArray.length;i++){
-    if(this[errorTestArray[i].name].call(this,block,errorTestArray[i])){
+    let errorObj = errorTestArray[i];
+    var errorFunc = this[errorObj.name] || errorObj.func;
+    if(errorFunc.call(this,block,errorObj)){
 
       //remove warning marker, if present
       if(block.warning) {
@@ -351,7 +340,9 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   }
   //if there are no errors, check for warnings
   for(var i=0;i<warningTestArray.length;i++){
-    if(this[warningTestArray[i].name].call(this,block,warningTestArray[i])){
+    var warningObj = warningTestArray[i];
+    var warningFunc = this[warningObj.name] || warningObj.func;
+    if(warningFunc.call(this,block,warningObj)){
       if(!block.hasWarning) {
         block.hasWarning = true;
         this.warningCount++;
@@ -418,9 +409,6 @@ Blockly.WarningHandler.prototype['checkIfUndefinedBlock'] = function(block) {
 
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(block, params){
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
-    return false;  // wait until the user is done dragging to check validity.
-  }
   for(var i=0;i<params.dropDowns.length;i++){
     var dropDown = block.getField(params.dropDowns[i]);
     var dropDownList = dropDown.menuGenerator_();
@@ -435,7 +423,7 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
         textInDropDown = true;
         // A mismatch in the untranslated value and translated text can be corrected.
         if (dropDownList[k][0] != text) {
-          dropDown.setText(dropDownList[k][0]);
+          // dropDown.setText(dropDownList[k][0]);
         }
         break;
       }
@@ -463,7 +451,7 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
   var value = block.getFieldValue('TEXT');
   if (targetChecks && targetChecks.indexOf('String') == -1 &&
       targetChecks.indexOf('Number') >= 0 &&
-      (value == '' || !Blockly.Blocks.Utilities.NUMBER_REGEX.test(value))) {
+      (value == '' || !AI.BlockUtils.NUMBER_REGEX.test(value))) {
     block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
     return true;
   }
@@ -474,9 +462,6 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
 // if so, create an error
 
 Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
-  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
-    return false;  // wait until the user is done dragging to check validity.
-  }
   if (Blockly_containedInLoop(block)) {
     return false;  // false means it is within a loop
   } else {
@@ -549,7 +534,7 @@ Blockly.WarningHandler.prototype['checkComponentTypeNotExistsError'] = function(
 //
 // This function is called once as a change handler on the main workspace every
 // time there is a change to the space, before any error handlers are called.
-// (via Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange'
+// (via Blockly.browserEvents.bind(Blockly.common.getMainWorkspace().getCanvas(), 'blocklyWorkspaceChange'
 // in blocklyeditor.js). So the checkIfImADuplicateEventHandler for an event handler
 // block can use the IAmADuplicate property set by this function.
 //
@@ -565,7 +550,7 @@ Blockly.WarningHandler.prototype['determineDuplicateComponentEventHandlers'] = f
   var eventHandlers = {}; // Object for storing event handler info
   for (var i = 0; i < len; i++) {
     var topBlock = topBlocks[i];
-    if (topBlock.type == "component_event") {
+    if (topBlock.type == "component_event" && !topBlock.isInsertionMarker()) {
       topBlock.IAmADuplicate = false; // default value for this field; may be changed to true below
       var typeName = topBlock.typeName;
       var propertyName = typeName + ":" + topBlock.eventName + ":" + topBlock.instanceName + ":" + topBlock.disabled;
@@ -617,7 +602,7 @@ Blockly.WarningHandler.prototype['checkIfIAmADuplicateEventHandler'] = function(
 // Currently, this is an inefficient process that is called on each handler block.
 // Should really only be called once on the whole workspace.
 Blockly.WarningHandler.checkDuplicateErrorHandler = function(params){
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+  var topBlocks = Blockly.common.getMainWorkspace().getTopBlocks(false);
   var len = topBlocks.length;
   Blockly.WarningHandler.outerCount++;
   console.log("outer checkDuplicateErrorHandler (topBlocks: " + len + "; outer: "
@@ -799,3 +784,15 @@ Blockly.WarningHandler.prototype['checkReplErrors'] = function(block) {
   }
   return false;
 };
+
+// Part of the contract of a warning handler is that it has the following functions
+// which can be called by plugins which may define blocks that have their own error
+// checkers.
+
+Blockly.WarningHandler.prototype.setError = function(block, message) {
+  block.setErrorIconText(message);
+}
+
+Blockly.WarningHandler.prototype.setWarning = function(block, message) {
+  block.setWarningText(message);
+}

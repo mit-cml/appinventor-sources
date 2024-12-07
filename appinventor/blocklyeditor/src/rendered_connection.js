@@ -32,7 +32,7 @@ Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   block.getSvgRoot().style.display = visible ? 'block' : 'none';
 };
 
-Blockly.RenderedConnection.prototype.input_;
+Blockly.RenderedConnection.prototype.input_ = undefined;
 
 /**
  * Returns the input this connection belongs to, or null if this connection
@@ -75,7 +75,3 @@ Blockly.RenderedConnection.prototype.disconnectInternal_ = function(parentBlock,
   childBlock.getSvgRoot().style.display = 'block';
 };
 
-// TODO(ewpatton): Can be removed once we upgrade to a newer version of Blockly
-Blockly.Connection.prototype.getCheck = function() {
-  return this.check_;
-}

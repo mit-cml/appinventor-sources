@@ -75,8 +75,12 @@ function myStringify (obj) {
 
 'use strict';
 
-goog.provide('Blockly.Blocks.lexicalvariables');
-goog.require('Blockly.Blocks.Utilities');
+goog.provide('AI.Blocks.lexicalvariables');
+
+goog.require('AI.Blockly.FieldGlobalFlydown');
+goog.require('AI.BlockUtils');
+goog.require('AI.NameSet');
+goog.require('AI.Substitution');
 goog.require('goog.dom');
 
 /**
@@ -97,12 +101,15 @@ Blockly.Blocks['global_declaration'] = {
   },
   getVars: function() {
     var field = this.getField('NAME');
-    return field ? [field.getText()] : [];
+    return field ? [field.getValue()] : [];
   },
   renameVar: function(oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
       this.setFieldValue(newName, 'NAME');
     }
+  },
+  getGlobalNames: function() {
+    return this.getVars();
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }]
 };
@@ -131,6 +138,54 @@ Blockly.Blocks['lexical_variable_get'] = {
   domToMutation: function(xmlElement) { // Handler getters for event parameters specially (to support i8n)
     Blockly.LexicalVariable.eventParamDomToMutation(this, xmlElement);
   },
+  referenceResults: function(name, prefix, env) {
+    const childrensReferenceResults = this.getChildren().map(function(blk) {
+      return Blockly.LexicalVariable.referenceResult(blk, name, prefix, env);
+    });
+    let blocksToRename = [];
+    let capturables = [];
+    for (let r = 0; r < childrensReferenceResults.length; r++) {
+      blocksToRename = blocksToRename.concat(childrensReferenceResults[r][0]);
+      capturables = capturables.concat(childrensReferenceResults[r][1]);
+    }
+    const possiblyPrefixedReferenceName = this.getField('VAR').getValue();
+    const unprefixedPair = Blockly.unprefixName(possiblyPrefixedReferenceName);
+    const referencePrefix = unprefixedPair[0];
+    const referenceName = unprefixedPair[1];
+    const referenceNotInEnv = ((Blockly.usePrefixInCode &&
+            (env.indexOf(possiblyPrefixedReferenceName) == -1)) ||
+        ((!Blockly.usePrefixInCode) && (env.indexOf(referenceName) == -1)));
+    if (!(referencePrefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX)) {
+      if ((referenceName === name) && referenceNotInEnv) {
+        // if referenceName refers to name and not some intervening
+        // declaration, it's a reference to be renamed:
+        blocksToRename.push(this);
+        // Any intervening declared name with the same prefix as the searched
+        // for name can be captured:
+        if (Blockly.usePrefixInCode) {
+          for (let i = 0; i < env.length; i++) {
+            // env is a list of prefixed names.
+            const unprefixedEntry = Blockly.unprefixName(env[i]);
+            if (prefix === unprefixedEntry[0]) {
+              capturables.push(unprefixedEntry[1]);
+            }
+          }
+        } else { // Blockly.usePrefixInCode
+          capturables = capturables.concat(env);
+        }
+      } else if (referenceNotInEnv &&
+          (!Blockly.usePrefixInCode || prefix === referencePrefix)) {
+        // If reference is not in environment, it's externally declared and
+        // capturable When Blockly.usePrefixInYail is true, only consider names
+        // with same prefix to be capturable
+        capturables.push(referenceName);
+      }
+    }
+    if (this.eventparam) {  // also capture untranslated param names
+      capturables.push(this.eventparam);
+    }
+    return [[blocksToRename, capturables]];
+  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -140,9 +195,9 @@ Blockly.Blocks['lexical_variable_get'] = {
       if (oldName === this.getFieldValue('VAR')) {
         this.setFieldValue(newName, 'VAR');
       }
-    } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getText()) {
+    } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getValue()) {
       // Global variables
-      this.fieldVar_.setText(newTranslatedName);
+      this.fieldVar_.setValue(newTranslatedName);
       if (oldName === newName) {
         this.setFieldValue(newName, 'VAR');
       }
@@ -200,6 +255,7 @@ Blockly.Blocks['lexical_variable_set'] = {
   domToMutation: function(xmlElement) { // Handler setters for event parameters specially (to support i8n)
     Blockly.LexicalVariable.eventParamDomToMutation(this, xmlElement);
   },
+  referenceResults: Blockly.Blocks.lexical_variable_get.referenceResults,
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
@@ -255,6 +311,46 @@ Blockly.Blocks['local_declaration_statement'] = {
     this.setNextStatement(true);
 
     this.setTooltip(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
+  },
+  referenceResults: function(name, prefix, env) {
+    // Collect locally declared names ...
+    const localDeclNames = [];
+    for (let i = 0; this.getInput('DECL' + i); i++) {
+      let localName = this.getFieldValue('VAR' + i);
+      // Invariant: Blockly.showPrefixToUser must also be true!
+      if (Blockly.usePrefixInCode) {
+        localName = (Blockly.possiblyPrefixMenuNameWith(Blockly.localNamePrefix))(
+            localName);
+      }
+      localDeclNames.push(localName);
+    }
+    const newEnv = env.concat(localDeclNames); // ... and add to environment
+    // Collect locally initialization expressions:
+    const localInits = [];
+    for (let i = 0; this.getInput('DECL' + i); i++) {
+      const init = this.getInputTargetBlock('DECL' + i);
+      if (init) {
+        localInits.push(init);
+      }
+    }
+    const initResults = localInits.map(function(init) {
+      return Blockly.LexicalVariable.referenceResult(init, name, prefix, env);
+    });
+    const doResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('STACK'), name, prefix, newEnv);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        Blockly.LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    return initResults.concat([doResults, nextResults]);
+  },
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock(this.bodyInputName) == child) {
+      const localNames = this.declaredNames();
+      // not arguments_ instance var
+      for (let i = 0; i < localNames.length; i++) {
+        proc(localNames[i], this.lexicalVarPrefix);
+      }
+    }
   },
   initLocals: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
@@ -263,10 +359,10 @@ Blockly.Blocks['local_declaration_statement'] = {
     declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
              .appendField(this.parameterFlydown(0), 'VAR0')
              .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
-             .setAlign(Blockly.ALIGN_RIGHT);
+             .setAlign(Blockly.inputs.Align.RIGHT);
 
     // Add mutator for editing local variable names
-    this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['local_mutatorarg'], this));
   },
   onchange: function () {
      this.localNames_ = this.declaredNames(); // ensure localNames_ is in sync with paramFlydown fields
@@ -328,7 +424,7 @@ Blockly.Blocks['local_declaration_statement'] = {
       var declInput = this.appendValueInput('DECL' + i);
       // [lyn, 11/06/12]
       //   This was for case where tried to put "local" keyword on same line with first local name.
-      //   But even though alignment set to Blockly.ALIGN_RIGHT, the input was left justified
+      //   But even though alignment set to Blockly.inputs.Align.RIGHT, the input was left justified
       //   and covered the plus sign for popping up the mutator. So I put the "local" keyword
       //   on it's own line even though this wastes vertical space. This should be fixed in the future.
       // if (i == 0) {
@@ -337,7 +433,7 @@ Blockly.Blocks['local_declaration_statement'] = {
       declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
                .appendField(this.parameterFlydown(i), 'VAR' + i)
                .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
-               .setAlign(Blockly.ALIGN_RIGHT);
+               .setAlign(Blockly.inputs.Align.RIGHT);
       if (inits && inits[i]) { // If there is an initializer, connect it
         declInput.connection.connect(inits[i]);
       }
@@ -462,7 +558,7 @@ Blockly.Blocks['local_declaration_statement'] = {
   getVars: function() {
     var varList = [];
     for (var i = 0, input; input = this.getField('VAR' + i); i++) {
-      varList.push(input.getText());
+      varList.push(input.getValue());
     }
     return varList;
   },
@@ -521,7 +617,8 @@ Blockly.Blocks['local_declaration_statement'] = {
     Blockly.LexicalVariable.renameFree(this.getInputTargetBlock(this.bodyInputName), newFreeSubstitution);
     var newMutation = Blockly.Xml.domToText(this.mutationToDom());
     if (Blockly.Events.isEnabled()) {
-      Blockly.Events.fire(new Blockly.Events.Change(this, 'mutation', null, oldMutation, newMutation));
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+        this, 'mutation', null, oldMutation, newMutation));
     }
     if (this.nextConnection) {
       var nextBlock = this.nextConnection.targetBlock();
@@ -581,12 +678,41 @@ Blockly.Blocks['local_declaration_expression'] = {
   bodyInputName: 'RETURN',
   init: function() {
     this.initLocals();
-    this.appendIndentedValueInput('RETURN')
+    this.appendInputFromRegistry('indented_input', 'RETURN')
         .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN);
     // Create plug for expression output
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP);
   },
+  referenceResults: function(name, prefix, env) {
+    // Collect locally declared names ...
+    const localDeclNames = [];
+    for (let i = 0; this.getInput('DECL' + i); i++) {
+      let localName = this.getFieldValue('VAR' + i);
+      // Invariant: Blockly.showPrefixToUser must also be true!
+      if (Blockly.usePrefixInCode) {
+        localName = (Blockly.possiblyPrefixMenuNameWith(Blockly.localNamePrefix))(
+            localName);
+      }
+      localDeclNames.push(localName);
+    }
+    const newEnv = env.concat(localDeclNames); // ... and add to environment
+    // Collect locally initialization expressions:
+    const localInits = [];
+    for (let i = 0; this.getInput('DECL' + i); i++) {
+      const init = this.getInputTargetBlock('DECL' + i);
+      if (init) {
+        localInits.push(init);
+      }
+    }
+    const initResults = localInits.map(function(init) {
+      return Blockly.LexicalVariable.referenceResult(init, name, prefix, env);
+    });
+    const returnResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('RETURN'), name, prefix, newEnv);
+    return initResults.concat([returnResults]);
+  },
+  withLexicalVarsAndPrefix: Blockly.Blocks.local_declaration_statement.withLexicalVarsAndPrefix,
   onchange: Blockly.Blocks.local_declaration_statement.onchange,
   mutationToDom: Blockly.Blocks.local_declaration_statement.mutationToDom,
   domToMutation: Blockly.Blocks.local_declaration_statement.domToMutation,

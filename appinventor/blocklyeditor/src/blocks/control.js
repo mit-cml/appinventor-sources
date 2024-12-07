@@ -33,9 +33,12 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.control');
+goog.provide('AI.Blocks.control');
 
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.Blockly.FieldFlydown');
+goog.require('AI.BlockUtils');
+goog.require('AI.Substitution');
+goog.require('AI.Blockly.Mixins');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.
@@ -44,14 +47,14 @@ Blockly.Blocks['controls_if'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('IF0')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_IF);
     this.appendStatementInput('DO0')
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setMutator(new Blockly.Mutator(['controls_if_elseif',
-      'controls_if_else']));
+    this.setMutator(new Blockly.icons.MutatorIcon(['controls_if_elseif',
+      'controls_if_else'], this));
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function () {
@@ -86,7 +89,7 @@ Blockly.Blocks['controls_if'] = {
   domToMutation: function (xmlElement) {
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10) || 0;
-    this.updateShape_();
+    this.rebuildShape_();
   },
   decompose: function (workspace) {
     var containerBlock = workspace.newBlock('controls_if_if');
@@ -129,13 +132,8 @@ Blockly.Blocks['controls_if'] = {
       clauseBlock = clauseBlock.nextConnection &&
         clauseBlock.nextConnection.targetBlock();
     }
-    this.updateShape_();
-    // Reconnect any child blocks.
-    for (var i = 1; i <= this.elseifCount_; i++) {
-      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
-      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
-    }
-    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
+    this.rebuildShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection);
   },
   saveConnections: function (containerBlock) {
     // Store a pointer to any connected child blocks.
@@ -166,6 +164,32 @@ Blockly.Blocks['controls_if'] = {
     }
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF}],
+  rebuildShape_: function () {
+    console.log('rebuidShape');
+    var valueConnections = [null];
+    var statementConnections = [null];
+    var elseStatementConnection = null;
+
+    if (this.getInput('ELSE')) {
+      elseStatementConnection =
+          this.getInput('ELSE').connection.targetConnection;
+    }
+    for (var i = 1; this.getInput('IF' + i); i++) {
+      var inputIf = this.getInput('IF' + i);
+      var inputDo = this.getInput('DO' + i);
+      valueConnections.push(inputIf.connection.targetConnection);
+      statementConnections.push(inputDo.connection.targetConnection);
+    }
+    this.updateShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection);
+  },
+  reconnectChildBlocks_: function (valueConnections, statementConnections, elseStatementConnection) {
+    for (let i = 1; i <= this.elseifCount_; i++) {
+      valueConnections[i]?.reconnect(this, 'IF' + i);
+      statementConnections[i]?.reconnect(this, 'DO' + i);
+    }
+    elseStatementConnection?.reconnect(this, 'ELSE');
+   },
   updateShape_: function() {
     // Delete everything.
     if (this.getInput('ELSE')) {
@@ -180,7 +204,7 @@ Blockly.Blocks['controls_if'] = {
     // Rebuild block.
     for (var i = 1; i <= this.elseifCount_; i++) {
       this.appendValueInput('IF' + i)
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('boolean', Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('boolean', AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
       this.appendStatementInput('DO' + i)
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
@@ -239,28 +263,56 @@ Blockly.Blocks['controls_forRange'] = {
     // Need to deal with variables here
     // [lyn, 11/30/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
     // Old code:
-    // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.ALIGN_RIGHT);
+    // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.inputs.Align.RIGHT);
+    // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('START')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR, true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('END')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('STEP')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
+  },
+  referenceResults: function(name, prefix, env) {
+    let loopVar = this.getFieldValue('VAR');
+    // Invariant: Blockly.showPrefixToUser must also be true!
+    if (Blockly.usePrefixInCode) {
+      loopVar =
+          (Blockly.possiblyPrefixMenuNameWith(Blockly.loopRangeParameterPrefix))(
+              loopVar);
+    }
+    const newEnv = env.concat([loopVar]);
+    const startResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('START'), name, prefix, env);
+    const endResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('END'), name, prefix, env);
+    const stepResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('STEP'), name, prefix, env);
+    const doResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DO'), name, prefix, newEnv);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        Blockly.LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    return [startResults, endResults, stepResults, doResults, nextResults];
+  },
+  withLexicalVarsAndPrefix: function(child, proc) {
+    if (this.getInputTargetBlock('DO') == child) {
+      const lexVar = this.getFieldValue('VAR');
+      proc(lexVar, this.lexicalVarPrefix);
+    }
   },
   getVars: function () {
     return [this.getFieldValue('VAR')];
@@ -339,20 +391,37 @@ Blockly.Blocks['controls_forEach'] = {
     // [lyn, 10/07/13] Changed default name from "i" to "item"
     // [lyn, 11/29/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
     // Old code:
-    // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.ALIGN_RIGHT);
+    // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.inputs.Align.RIGHT);
+    // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR,
             true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendStatementInput('DO').appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP);
   },
+  referenceResults: function(name, prefix, env) {
+    let loopVar = this.getFieldValue('VAR');
+    // Invariant: Blockly.showPrefixToUser must also be true!
+    if (Blockly.usePrefixInCode) {
+      loopVar = (Blockly.possiblyPrefixMenuNameWith(Blockly.loopParameterPrefix))(
+          loopVar);
+    }
+    const newEnv = env.concat([loopVar]);
+    const listResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('LIST'), name, prefix, env);
+    const doResults = Blockly.LexicalVariable.referenceResult(
+        this.getInputTargetBlock('DO'), name, prefix, newEnv);
+    const nextResults = Blockly.LexicalVariable.referenceResult(
+        Blockly.LexicalVariable.getNextTargetBlock(this), name, prefix, env);
+    return [listResults, doResults, nextResults];
+  },
+  withLexicalVarsAndPrefix: Blockly.Blocks.controls_forRange.withLexicalVarsAndPrefix,
   getVars: function () {
     return [this.getFieldValue('VAR')];
   },
@@ -423,8 +492,8 @@ Blockly.Blocks['controls_for_each_dict'] = {
 
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    var checkTypeDict = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        'dictionary', Blockly.Blocks.Utilities.INPUT);
+    var checkTypeDict = AI.BlockUtils.YailTypeToBlocklyType(
+        'dictionary', AI.BlockUtils.INPUT);
     var keyField = new Blockly.FieldParameterFlydown(
         Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
         true, Blockly.FieldFlydown.DISPLAY_BELOW);
@@ -434,110 +503,28 @@ Blockly.Blocks['controls_for_each_dict'] = {
     this.interpolateMsg(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT,
         ['KEY', keyField],
         ['VALUE', valueField],
-        ['DICT', checkTypeDict, Blockly.ALIGN_LEFT],
-        Blockly.ALIGN_LEFT);
+        ['DICT', checkTypeDict, Blockly.inputs.Align.LEFT],
+        Blockly.inputs.Align.LEFT);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO);
     this.setInputsInline(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
 
-  getVars: function () {
-    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
+  getDeclaredVarFieldNamesAndPrefixes: function() {
+    return [['KEY', 'key'], ['VALUE', 'value']];
   },
 
-  blocksInScope: function () {
-    var doBlock = this.getInputTargetBlock('DO');
-    if (doBlock) {
-      return [doBlock];
-    } else {
-      return [];
-    }
+  getScopedInputName: function() {
+    return 'DO';
   },
 
-  declaredNames: function () {
-    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
-  },
-
-  renameVar: function (oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
-      this.setFieldValue(newName, 'KEY');
-    }
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VALUE'))) {
-      this.setFieldValue(newName, 'VALUE');
-    }
-  },
-
-  renameBound: function (boundSubstitution, freeSubstitution) {
-    Blockly.LexicalVariable.renameFree(
-        this.getInputTargetBlock('DICT'), freeSubstitution);
-
-    var varFieldIds = ['KEY', 'VALUE'];
-
-    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
-      var oldVar = this.getFieldValue(fieldId);
-      var newVar = boundSubstitution.apply(oldVar);
-      if (newVar !== oldVar) {
-        this.renameVar(oldVar, newVar);
-        var keySubstitution = Blockly.Substitution.simpleSubstitution(
-            oldVar, newVar);
-        freeSubstitution = freeSubstitution.extend(keySubstitution);
-      } else {
-        freeSubstitution = freeSubstitution.remove([oldVar]);
-      }
-    }
-
-    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), modifiedSubstitution);
-
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
-    }
-  },
-
-  renameFree: function (freeSubstitution) {
-    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DO'));
-
-    var varFieldIds = ['KEY', 'VALUE'];
-    var boundSubstitution = new Blockly.Substitution();
-
-    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
-      var oldVar = this.getFieldValue(fieldId);
-      bodyFreeVars.deleteName(oldVar);
-      var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
-      if (renamedBodyFreeVars.isMember(oldVar)) {
-        var newVar = Blockly.FieldLexicalVariable.nameNotIn(
-            oldVar, renamedBodyFreeVars.toList());
-        var substitution = Blockly.Substitution.simpleSubstitution(
-            oldVar, newVar);
-        boundSubstitution.extend(substitution);
-      }
-    }
-  },
-
-  freeVariables: function () { // return the free variables of this block
-    var result = Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DO'));
-
-    // Remove bound variables from body free vars.
-    result.deleteName(this.getFieldValue('KEY'));
-    result.deleteName(this.getFieldValue('VALUE'));
-
-    result.unite(Blockly.LexicalVariable.freeVariables(
-        this.getInputTargetBlock('DICT')));
-
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
-    }
-
-    return result;
-  },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE}]
 };
+AI.Blockly.Mixins.extend(Blockly.Blocks['controls_for_each_dict'], AI.Blockly.Mixins.LexicalVariableMethods);
 
 Blockly.Blocks['controls_while'] = {
   // While condition.
@@ -546,13 +533,13 @@ Blockly.Blocks['controls_while'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP);
@@ -569,18 +556,18 @@ Blockly.Blocks['controls_choose'] = {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendStatementInput('DO0').appendField('then-do').setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    // this.appendStatementInput('DO0').appendField('then-do').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('THENRETURN')
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendStatementInput('ELSE').appendField('else-do').setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    // this.appendStatementInput('ELSE').appendField('else-do').setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('ELSERETURN')
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     /* this.setTooltip('If the condition being tested is true, the agent will '
      + 'run all the blocks attached to the \'then-do\' section and return the value attached '
      + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
@@ -608,7 +595,7 @@ Blockly.Blocks['controls_do_then_return'] = {
         .appendField(Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO);
     this.appendValueInput('VALUE')
         .appendField(Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
   },
@@ -639,8 +626,8 @@ Blockly.Blocks['controls_openAnotherScreen'] = {
     this.appendValueInput('SCREEN')
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME)
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
   },
@@ -654,13 +641,13 @@ Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREENNAME')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('STARTVALUE')
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
   },
@@ -704,7 +691,7 @@ Blockly.Blocks['controls_closeScreenWithValue'] = {
     this.appendValueInput('SCREEN')
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP);
   },
@@ -730,7 +717,7 @@ Blockly.Blocks['controls_getPlainStartText'] = {
   helpUrl: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
@@ -745,10 +732,10 @@ Blockly.Blocks['controls_closeScreenWithPlainText'] = {
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
   },

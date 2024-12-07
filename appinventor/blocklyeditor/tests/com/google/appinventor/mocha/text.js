@@ -7,40 +7,57 @@
  */
 
 suite('Text Blocks', function() {
-
+  let workspace
   setup(function() {
-    this.workspace = Blockly.inject('blocklyDiv', {});
+    workspace = Blockly.inject('blocklyDiv', {
+      plugins: {
+        [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
+      }
+    });
   });
 
   teardown(function() {
-    this.workspace.dispose();
-    Blockly.mainWorkspace = null;
+    workspace.dispose();
   })
 
   suite('Text connection check', function() {
 
     setup(function() {
-      Blockly.mainWorkspace.isLoading = false;
+      workspace.isLoading = false;
     });
 
-    function mockConnection(value) {
+    function mockBlock(outputConnection) {
       return {
-        sourceBlock_: {
-          getFieldValue: function() {
-            return value;
-          }
-        }
+        outputConnection: outputConnection,
+      }
+    }
+
+    function check(connection, typeConnection) {
+      const block = mockBlock(connection);
+      Blockly.Blocks.text.setOutputOnFinishEdit.bind(block)(connection.value);
+      return workspace.connectionChecker.doTypeChecks(connection, typeConnection);
+    }
+
+    function mockConnection(value, check) {
+      return {
+        value: value,
+        check_: check,
+        setCheck: function(check) { this.check_ = check; },
+        getCheck: function() { return this.check_; }
       };
     }
 
-    var check = Blockly.Blocks.text.connectionCheck;
-    var number = { check_: ['Number'] };
-    var boolean = { check_: ['Boolean'] };
-    var string = { check_: ['String'] };
-    var key = { check_: ['Key'] };
-    var many = { check_: ['Number', 'String'] };
-    var untyped = { check_: null };
-    var invalidNumbers = [
+    function mockConnection2(check) {
+      return mockConnection(null, check);
+    }
+
+    const number = mockConnection2(['Number']);
+    const boolean = mockConnection2(['Boolean']);
+    const string = mockConnection2(['String']);
+    const key = mockConnection2(['Key']);
+    const many = mockConnection2(['Number', 'String']);
+    const untyped = mockConnection2( null);
+    const invalidNumbers = [
       'cat', '4cat', 'e', '  zero  ', '0x0', '.', '-', '+', '', '-e-', '+e+'
     ];
 
@@ -76,7 +93,7 @@ suite('Text Blocks', function() {
     });
 
     test('Should allow invalid numbers during load', function() {
-      Blockly.mainWorkspace.isLoading = true;
+      workspace.isLoading = true;
       invalidNumbers.forEach(function(value) {
         chai.assert.isTrue(check(mockConnection(value), number));
       })

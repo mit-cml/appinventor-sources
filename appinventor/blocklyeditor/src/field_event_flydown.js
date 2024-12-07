@@ -18,24 +18,23 @@ goog.require('AI.Blockly.FieldParameterFlydown');
 
 /**
  * Flydown field representing a component event parameter.
- * @param {!ParameterDescriptor} param The parameter this flydown is representing.
- * @param {!Blockly.ComponentDatabase} componentDb The component database the
- *     previous ParameterDescriptor is associated with.
- * @param {string=} opt_displayLocation The location to display the flydown at
- *     Either: Blockly.FieldFlydown.DISPLAY_BELOW,
- *             Blockly.FieldFlydown.DISPLAY_RIGHT
- *     Defaults to DISPLAY_RIGHT.
  */
-Blockly.FieldEventFlydown = function(param, componentDb, opt_displayLocation) {
+Blockly.FieldEventFlydown = class extends Blockly.FieldParameterFlydown {
+  /**
+   * Create a new FieldEventFlydown.
+   * @param {!ParameterDescriptor} param The parameter this flydown is representing.
+   * @param {!Blockly.ComponentDatabase} componentDb The component database the
+   *     previous ParameterDescriptor is associated with.
+   * @param {string=} opt_displayLocation The location to display the flydown at
+   *     Either: Blockly.FieldFlydown.DISPLAY_BELOW,
+   *             Blockly.FieldFlydown.DISPLAY_RIGHT
+   *     Defaults to DISPLAY_RIGHT.   */
+  constructor(param, componentDb, opt_displayLocation) {
+    super(componentDb.getInternationalizedParameterName(param.name), false, opt_displayLocation);
     this.componentDb = componentDb;
     this.param = param;
-
-    var name = componentDb.getInternationalizedParameterName(param.name);
-
-    Blockly.FieldEventFlydown.superClass_.constructor.call(
-        this, name, false, opt_displayLocation);
+  }
 }
-goog.inherits(Blockly.FieldEventFlydown, Blockly.FieldParameterFlydown);
 
 Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
   // TODO: Refactor this to use getValue() instead of getText(). getText()

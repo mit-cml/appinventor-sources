@@ -11,11 +11,10 @@
 
 'use strict';
 
-goog.provide('AI2.Blockly.Warning');
+goog.provide('AI.Blockly.Warning');
 
-goog.require('Blockly.Warning');
-
-Blockly.Warning.prototype.drawIcon_ = (function(func) {
+/*
+Blockly.icons.WarningIcon.prototype.drawIcon_ = (function(func) {
   if (func.isWrapped) {
     return func;
   } else {
@@ -27,4 +26,5 @@ Blockly.Warning.prototype.drawIcon_ = (function(func) {
     wrappedFunc.isWrapped = true;
     return wrappedFunc;
   }
-})(Blockly.Warning.prototype.drawIcon_);
+})(Blockly.icons.WarningIcon.prototype.drawIcon_);
+*/

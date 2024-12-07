@@ -27,7 +27,6 @@ import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbo
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
-import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -721,7 +720,6 @@ public class Ode implements EntryPoint {
         .then0(this::handleGalleryId)
         .then0(this::checkTos)
         .then0(this::loadUserSettings)
-        .then0(this::loadTranslations)  // translation based on user setting last locale
         .then0(() -> Promise.allOf(
             Promise.wrap(this::processSettings),
             Promise.wrap(this::loadUserBackpack)
@@ -765,13 +763,6 @@ public class Ode implements EntryPoint {
           }
           return null;
         });
-
-    History.addValueChangeHandler(new ValueChangeHandler<String>() {
-      @Override
-      public void onValueChange(ValueChangeEvent<String> event) {
-        openProject(event.getValue());
-      }
-    });
 
     // load project based on current url
     // TODO(sharon): Seems like a possible race condition here if the onValueChange
@@ -837,10 +828,6 @@ public class Ode implements EntryPoint {
     return null;
   }
 
-  private Promise<Boolean> loadTranslations() {
-    return BlocklyMsg.Loader.loadTranslations();
-  }
-
   private Promise<String> loadUserBackpack() {
     String backPackId = user.getBackpackId();
     if (backPackId == null || backPackId.isEmpty()) {
@@ -848,10 +835,8 @@ public class Ode implements EntryPoint {
       return this.loadBackpack();
     } else {
       LOG.info("Have a shared backpack backPackId = " + backPackId);
-      return BlocklyMsg.Loader.loadTranslations().then(result -> {
-        BlocklyPanel.setSharedBackpackId(backPackId);
-        return null;
-      });
+      BlocklyPanel.setSharedBackpackId(backPackId);
+      return resolve("");
     }
   }
 
@@ -1036,6 +1021,13 @@ public class Ode implements EntryPoint {
     if (getUserDyslexicFont()) {
       RootPanel.get().addStyleName("dyslexic");
     }
+
+    History.addValueChangeHandler(new ValueChangeHandler<String>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<String> event) {
+        openProject(event.getValue());
+      }
+    });
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
@@ -1506,8 +1498,7 @@ public class Ode implements EntryPoint {
         userSettings.saveSettings(null);
       }
     }
-    return BlocklyMsg.Loader.loadTranslations()
-        .then(result -> resolve(true));
+    return resolve(true);
   }
 
   private void resizeWorkArea(WorkAreaPanel workArea) {

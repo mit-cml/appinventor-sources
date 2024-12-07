@@ -13,11 +13,10 @@
 
 goog.provide('AI.Blockly.BlockSvg');
 
-goog.require('Blockly.BlockSvg');
-
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument');
-goog.require('AI.Blockly.Error');
+goog.require('AI.Blockly.Block');
+goog.require('AI.Blockly.FieldFlydown');
+goog.require('AI.ErrorIcon');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
   (Blockly.BlockSvg.CORNER_RADIUS - 1) + 1;
@@ -26,7 +25,7 @@ Blockly.BlockSvg.DISTANCE_45_OUTSIDE = (1 - Math.SQRT1_2) *
 
 /**
  * Block's error icon (if any).
- * @type {Blockly.Error}
+ * @type {AI.ErrorIcon}
  */
 Blockly.BlockSvg.prototype.error = null;
 
@@ -59,6 +58,7 @@ Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
  * Returns a list of mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
+/*
 Blockly.BlockSvg.prototype.getIcons = (function(func) {
   return function() {
     var icons = func.call(this);
@@ -68,6 +68,7 @@ Blockly.BlockSvg.prototype.getIcons = (function(func) {
     return icons;
   };
 })(Blockly.BlockSvg.prototype.getIcons);
+ */
 
 /**
  * Obtains starting coordinates so the block can return to spot after copy.
@@ -85,7 +86,7 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
         workspace.getParentSvg().parentNode.focus();
       }
       if (Blockly.FieldFlydown.openFieldFlydown_) {
-        var flydown = Blockly.getMainWorkspace().getFlydown();
+        var flydown = Blockly.common.getMainWorkspace().getFlydown();
         if (flydown) {
           if (goog.dom.contains(flydown.svgGroup_, this.svgGroup_)) {
             //prevent hiding the flyout if a child block is the target
@@ -110,81 +111,28 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
   }
 })(Blockly.BlockSvg.prototype.onMouseDown_);
 
-// Adds backpack detection on mouse move
-Blockly.BlockSvg.prototype.onMouseMove_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var wrappedFunc = function(e) {
-      func.call(this, e);
-      if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
-        if (Blockly.getMainWorkspace().hasBackpack()) {
-          Blockly.getMainWorkspace().getBackpack().onMouseMove(e);
-        }
-      }
-    };
-    wrappedFunc.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.BlockSvg.prototype.onMouseMove_);
-
-/**
- * Handle a mouse-up anywhere in the SVG pane.  Is only registered when a
- * block is clicked.  We can't use mouseUp on the block since a fast-moving
- * cursor can briefly escape the block before it catches up.
- * @param {!Event} e Mouse up event.
- * @private
- */
-Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
-  if (func.isInstrumented) {
-    return func;
-  } else {
-    var instrumentedFunc = function(e) {
-      var start = new Date().getTime();
-      Blockly.Instrument.initializeStats('onMouseUp');
-      Blockly.getMainWorkspace().resetArrangements();
-      try {
-        var result = func.call(this, e);
-        if (Blockly.getMainWorkspace().hasBackpack() &&
-            Blockly.getMainWorkspace().getBackpack().isOpen) {
-          var backpack = Blockly.getMainWorkspace().getBackpack();
-          goog.Timer.callOnce(backpack.close, 100, backpack);
-          backpack.addToBackpack(Blockly.selected, true);
-          backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
-        }
-        return result;
-      } finally {
-        if (! Blockly.Instrument.avoidRenderWorkspaceInMouseUp) {
-          Blockly.mainWorkspace.render();
-        }
-        var stop = new Date().getTime();
-        Blockly.Instrument.stats.totalTime = stop - start;
-        Blockly.Instrument.displayStats('onMouseUp');
-      }
-    };
-    instrumentedFunc.isInstrumented = true;
-    return instrumentedFunc;
-  }
-})(Blockly.BlockSvg.prototype.onMouseUp_);
-
 /**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
  */
 Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
-  if (!Blockly.Error) {
+  if (!AI.ErrorIcon) {
     throw 'Warnings not supported.';
   }
+  if (this.isDeadOrDying()) {
+    return;  // do not process errors if the block is being destroyed
+  }
   var changedState = false;
-  if (goog.isString(text)) {
+  if (typeof text === 'string') {
     if (!this.error) {
-      this.error = new Blockly.Error(this);
+      this.error = new AI.ErrorIcon(this);
+      this.addIcon(this.error);
       changedState = true;
     }
     this.error.setText(/** @type {string} */ (text));
   } else {
     if (this.error) {
-      this.error.dispose();
+      this.removeIcon(this.error.getType());
       this.error = null;
       changedState = true;
     }
@@ -197,7 +145,7 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
 
 /**
  * [lyn, 04/01/14] Global flag to control whether rendering is done.
- * There is no need to render blocks in Blocky.SaveFile.load.
+ * There is no need to render blocks in Blockly.SaveFile.load.
  * We only need to render them when a Screen is loaded in the Blockly editor.
  * This flag is used to turn off rendering for first case and turn it on for the second.
  * @type {boolean}
@@ -216,7 +164,6 @@ Blockly.BlockSvg.prototype.render = (function(func) {
         //if (Blockly.Realtime.isEnabled() && !Blockly.Realtime.withinSync) {
         //  Blockly.Realtime.blockChanged(this);
         //}
-        Blockly.Instrument.stats.renderCalls++;
         // [lyn, 04/08/14] Because render is recursive, doesn't make sense to track its time here.
       }
     };
@@ -226,7 +173,7 @@ Blockly.BlockSvg.prototype.render = (function(func) {
 })(Blockly.BlockSvg.prototype.render);
 */
 
-if (Blockly.Instrument.useRenderDown) {
+if (false) {
 
 Blockly.BlockSvg.prototype.render = function(opt_bubble) {
   if (opt_bubble !== false) {
@@ -261,8 +208,7 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  */
 Blockly.BlockSvg.prototype.renderDown_ = function() {
   // Recursively renderDown all my children (as long as I'm not collapsed)
-  if (!this.isCollapsed() || !Blockly.Instrument
-      .avoidRenderDownOnCollapsedSubblocks) {
+  if (!this.isCollapsed()) {
     var childBlocks = this.getChildren();  // Includes next block.
     for (var i = 0, childBlock; (childBlock = childBlocks[i]); i++) {
       childBlock.render(false);
@@ -274,7 +220,6 @@ Blockly.BlockSvg.prototype.renderDown_ = function() {
     }
   }
   this.renderHere_();
-  Blockly.Instrument.stats.renderDownCalls++; //***lyn
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
@@ -283,8 +228,7 @@ Blockly.BlockSvg.prototype.renderDown_ = function() {
  * @private Should only be called from renderDown_.
  */
 Blockly.BlockSvg.prototype.renderHere_ = function() {
-  var start = new Date().getTime();
-  Blockly.Field.startCache();
+  Blockly.utils.dom.startTextWidthCache();
   this.rendered = true;
 
   if (this.isCollapsed()) {
@@ -317,11 +261,7 @@ Blockly.BlockSvg.prototype.renderHere_ = function() {
     this.removeBadBlock();
   }
 
-  Blockly.Field.stopCache();
-  var stop = new Date().getTime();
-  var timeDiff = stop-start;
-  Blockly.Instrument.stats.renderHereCalls++;
-  Blockly.Instrument.stats.renderHereTime += timeDiff;
+  Blockly.utils.dom.stopTextWidthCache();
 };
 
 /**
@@ -380,6 +320,7 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
 }
 
 // Instruments the real setCollapsed function
+/*
 Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -391,23 +332,20 @@ Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
       } finally {
         var stop = new Date().getTime();
         var timeDiff = stop - start;
-        if (! collapsed) {
-          Blockly.Instrument.stats.expandCollapsedCalls++;
-          Blockly.Instrument.stats.expandCollapsedTime += timeDiff;
-        }
       }
     };
     instrumentedFunc.isInstrumented = true;
     return instrumentedFunc;
   }
 })(Blockly.BlockSvg.prototype.setCollapsed);
+ */
 
 /**
  * Mark this block as bad.  Highlight it visually in red.
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
                            'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
@@ -419,7 +357,7 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgGroup_),
                               'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
@@ -430,7 +368,7 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  return Blockly.utils.hasClass(/** @type {!Element} */ (this.svgGroup_),
+  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
     'badBlock');
 };
 
@@ -439,7 +377,7 @@ Blockly.BlockSvg.prototype.isBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.badBlock = function() {
   this.isBad = true;
-  if (this.workspace == Blockly.getMainWorkspace()) {
+  if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
     goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
     this.addBadBlock();
@@ -451,7 +389,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
  */
 Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
-  if (this.workspace == Blockly.getMainWorkspace()) {
+  if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
     goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
     this.removeBadBlock();
@@ -505,7 +443,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
     clearTimeout(this.setErrorText.pid_[id]);
     delete this.setErrorText.pid_[id];
   }
-  if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
+  if (this.workspace && this.workspace.isDragging()) {
     // Don't change the error text during a drag.
     // Wait until the drag finishes.
     var thisBlock = this;
@@ -537,7 +475,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
   var changedState = false;
   if (goog.isString(text)) {
     if (!this.error) {
-      this.error = new Blockly.Error(this);
+      this.error = new AI.ErrorIcon(this);
       changedState = true;
     }
     this.error.setText(/** @type {string} */ (text), id);
@@ -559,7 +497,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
   if (changedState && this.rendered) {
     this.render();
     // Adding or removing a error icon will cause the block to change shape.
-    this.bumpNeighbours_();
+    this.bumpNeighbours();
   }
 };
 
@@ -577,7 +515,7 @@ Blockly.BlockSvg.prototype.getTopWorkspace = function() {
  * Add the selection highlight to the block.
  */
 Blockly.BlockSvg.prototype.addSelect = function() {
-  Blockly.utils.addClass(this.svgGroup_, 'blocklySelected');
+  Blockly.utils.dom.addClass(this.svgGroup_, 'blocklySelected');
   var block_0 = this;
   do {
     var root = block_0.getSvgRoot();

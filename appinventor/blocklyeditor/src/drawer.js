@@ -19,8 +19,7 @@
 
 goog.provide('AI.Blockly.Drawer');
 
-goog.require('Blockly.Flyout');
-goog.require('Blockly.Options');
+goog.require('AI.Blockly.Util.xml');
 goog.require('goog.object');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
@@ -35,17 +34,9 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
     opt_options = opt_options || {};
     this.options = new Blockly.Options(opt_options);
   }
-  this.options.languageTree = Blockly.Drawer.buildTree_();
   this.workspace_ = parentWorkspace;
-  this.flyout_ = new Blockly.Flyout(this.options);
-  var flyoutGroup = this.flyout_.createDom('g'),
-      svg = this.workspace_.getParentSvg();
-  if (this.workspace_.svgGroup_.nextSibling == null) {
-    svg.appendChild(flyoutGroup);
-  } else {
-    svg.insertBefore(flyoutGroup, this.workspace_.svgGroup_.nextSibling);
-  }
-  this.flyout_.init(parentWorkspace);
+  this.flyout_ = this.workspace_.getFlyout();
+  this.flyout_.setAutoClose(true);
   this.lastComponent = null;
 };
 
@@ -64,7 +55,7 @@ Blockly.Drawer.PREFIX_ = 'cat_';
  */
 Blockly.Drawer.buildTree_ = function() {
   var tree = {};
-  var formName = Blockly.mainWorkspace.formName;
+  var formName = Blockly.common.getMainWorkspace().formName;
   var screenName = formName.substring(formName.indexOf("_") + 1);
 
   // Check to see if a Blocks Toolkit is defined. If so, use that to build the tree.
@@ -79,7 +70,6 @@ Blockly.Drawer.buildTree_ = function() {
 
   // Populate the tree structure.
   for (var name in Blockly.Blocks) {
-    if (!Blockly.Blocks.hasOwnProperty(name)) continue;
     var block = Blockly.Blocks[name];
     // Blocks without a category are fragments used by the mutator dialog.
     if (block.category) {
@@ -134,6 +124,9 @@ Blockly.Drawer.buildToolkitTree_ = function(jsonToolkit) {
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
+  if (!this.options.languageTree) {
+    this.options.languageTree = Blockly.Drawer.buildTree_();
+  }
   var blockSet = this.options.languageTree[drawerName];
   if (drawerName == "cat_Procedures") {
     var newBlockSet = [];
@@ -224,7 +217,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var typeName = instanceRecord.typeName;
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
-  var formName = Blockly.mainWorkspace.formName;
+  var formName = Blockly.common.getMainWorkspace().formName;
   var screenName = formName.substring(formName.indexOf("_") + 1);
   var subsetJsonString = "";
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
@@ -551,16 +544,16 @@ Blockly.Drawer.prototype.blockTypeToXML = function(blockType, mutatorAttributes)
 
     switch (blockType) {
       case 'procedures_callnoreturn':
-        return Blockly.Xml.textToDom(
+        return Blockly.utils.xml.textToDom(
             utils.procedureCallersXMLString(false, this.workspace_));
       case 'procedures_callreturn':
-        return Blockly.Xml.textToDom(
+        return Blockly.utils.xml.textToDom(
             utils.procedureCallersXMLString(true, this.workspace_));
       default:
         var xmlString = Blockly.Drawer.getDefaultXMLString(
             blockType, mutatorAttributes);
         if (xmlString != null) {
-          return Blockly.Xml.textToDom(xmlString);
+          return Blockly.utils.xml.textToDom(xmlString);
         } else {
           return utils.blockTypeToXML(blockType, mutatorAttributes);
         }

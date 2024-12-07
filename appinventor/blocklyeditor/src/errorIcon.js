@@ -28,159 +28,179 @@
 
 'use strict';
 
-goog.provide('AI.Blockly.Error');
-
-goog.require('Blockly.Bubble');
-goog.require('Blockly.Icon');
-
+goog.provide('AI.ErrorIcon');
 
 /**
  * Class for an error.
  * @param {!Blockly.Block} block The block associated with this error.
  * @constructor
  */
-Blockly.Error = function(block) {
-  Blockly.Error.superClass_.constructor.call(this, block);
-  this.createIcon();
-  this.text_ = {};
-};
-goog.inherits(Blockly.Error, Blockly.Icon);
+AI.ErrorIcon = class extends Blockly.icons.Icon {
+  constructor(block) {
+    super(block);
+    this.text_ = {};
+    this.textBubble = null;
+    this.bubbleSize = new Blockly.utils.Size(160, 80);
+  }
 
-/**
- * If set to true, the icon will be hidden when the block it is
- * attached to is collapsed. Otherwise, the icon will be visible even
- * if the block is collapsed.
- */
-Blockly.Error.prototype.collapseHidden = false;
+  getType() {
+    return AI.ErrorIcon.TYPE;
+  }
+
+  initView(listener) {
+    if (this.svgRoot) {
+      return;
+    }
+
+    super.initView(listener);
+    /* Here's the markup that will be generated:
+    <g class="blocklyIconGroup">
+      <path class="blocklyIconShield" d="..."/>
+      <text class="blocklyIconMark" x="8" y="13">!</text>
+    </g>
+    */
+    Blockly.utils.dom.createSvgElement('circle',
+      {'class': 'blocklyErrorIconOutline',
+        'r': AI.ErrorIcon.ICON_RADIUS,
+        'cx': AI.ErrorIcon.ICON_RADIUS,
+        'cy': AI.ErrorIcon.ICON_RADIUS},
+      this.svgRoot);
+    Blockly.utils.dom.createSvgElement('path',
+      {'class': 'blocklyErrorIconX',
+        'd': 'M 4,4 12,12 8,8 4,12 12,4'},
+      // X fills circle vvv
+      //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
+      this.svgRoot);
+    Blockly.utils.dom.addClass(this.svgRoot, 'blockly-icon-error');
+  }
+
+  getSize() {
+    return AI.ErrorIcon.SIZE;
+  }
+
+  getWeight() {
+    return 0;
+  }
+
+  isShownWhenCollapsed() {
+    return true;
+  }
+
+  updateCollapsed() {
+    // Do nothing
+  }
+
+  isVisible() {
+    return !!this.textBubble;
+  }
+
+  setBubbleVisible(visible) {
+    if (this.isBubbleVisible() === visible) {
+      return;
+    }
+    if (visible) {
+      this.textBubble = new Blockly.bubbles.TextBubble(
+        this.getText(),
+        this.sourceBlock.workspace,
+        this.getAnchorLocation(),
+        this.getBubbleOwnerRect());
+      this.textBubble.setColour(this.sourceBlock.style.colourPrimary);
+    } else {
+      this.textBubble.dispose();
+      this.textBubble = null;
+    }
+    Blockly.Events.fire(
+      new (Blockly.Events.get(Blockly.Events.BUBBLE_OPEN))(
+        this.sourceBlock,
+        visible,
+        'error'
+      )
+    );
+  }
+
+  getAnchorLocation() {
+    const size = this.getSize();
+    const midIcon = new Blockly.utils.Coordinate(size.width / 2, size.height / 2);
+    return Blockly.utils.Coordinate.sum(this.workspaceLocation, midIcon);
+  }
+
+  dispose() {
+    super.dispose();
+    if (this.textBubble) {
+      this.textBubble.dispose();
+    }
+  }
+
+  onLocationChange(blockOrigin) {
+    super.onLocationChange(blockOrigin);
+    if (this.textBubble) {
+      this.textBubble.setAnchorLocation(this.getAnchorLocation());
+    }
+  }
+
+  isBubbleVisible() {
+    return !!this.textBubble;
+  }
+
+  onClick() {
+    super.onClick();
+    this.setBubbleVisible(!this.isBubbleVisible());
+  }
+
+  getBubbleOwnerRect() {
+    const bbox = this.sourceBlock.getSvgRoot().getBBox();
+    return new Blockly.utils.Rect(bbox.y, bbox.y + bbox.height, bbox.x, bbox.x + bbox.width);
+  }
+
+  /**
+   * Set this error's text.
+   *
+   * @param {string} text Error text.
+   * @param {string} id Error id.
+   */
+  setText(text, id) {
+    if (this.text_[id] === text) {
+      return;
+    }
+    if (text) {
+      this.text_[id] = text;
+    } else {
+      delete this.text_[id];
+    }
+    if (this.isVisible()) {
+      this.setBubbleVisible(false);
+      this.setBubbleVisible(true);
+    }
+  }
+
+  /**
+   * Get this error's texts.
+   *
+   * @return {string} All texts concatenated into one string.
+   */
+  getText() {
+    const allErrors = [];
+    for (const id in this.text_) {
+      allErrors.push(this.text_[id]);
+    }
+    return allErrors.join('\n');
+  }
+};
 
 /**
  * Radius of the warning icon.
  */
-Blockly.Error.ICON_RADIUS = 8;
+AI.ErrorIcon.ICON_RADIUS = 8;
 
 /**
- * Create the icon on the block.
- * @private
+ * Type for the Error icon.
  */
-Blockly.Error.prototype.drawIcon_ = function(group) {
-  /* Here's the markup that will be generated:
-  <g class="blocklyIconGroup">
-    <path class="blocklyIconShield" d="..."/>
-    <text class="blocklyIconMark" x="8" y="13">!</text>
-  </g>
-  */
-  Blockly.utils.createSvgElement('circle',
-      {'class': 'blocklyErrorIconOutline',
-       'r': Blockly.Error.ICON_RADIUS,
-       'cx': Blockly.Error.ICON_RADIUS,
-       'cy': Blockly.Error.ICON_RADIUS}, group);
-  Blockly.utils.createSvgElement('path',
-      {'class': 'blocklyErrorIconX',
-       'd': 'M 4,4 12,12 8,8 4,12 12,4'},
-                           // X fills circle vvv
-       //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
-      group);
-};
+AI.ErrorIcon.TYPE = new Blockly.icons.IconType('error');
 
 /**
- * Create the text for the error's bubble.
- * @param {string} text The text to display.
- * @return {!Element} The top-level node of the text.
- * @private
+ * Size of the Error icon.
  */
-Blockly.Error.textToDom_ = function(text) {
-  var paragraph = Blockly.utils.createSvgElement('text',
-      {'class': 'blocklyText blocklyBubbleText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
-  var lines = text.split('\n');
-  for (var i = 0; i < lines.length; i++) {
-    var tspanElement = Blockly.utils.createSvgElement('tspan',
-        {'dy': '1em', 'x': Blockly.Bubble.BORDER_WIDTH}, paragraph);
-    var textNode = document.createTextNode(lines[i]);
-    tspanElement.appendChild(textNode);
-  }
-  return paragraph;
-};
+AI.ErrorIcon.SIZE = new Blockly.utils.Size(
+  AI.ErrorIcon.ICON_RADIUS * 2, AI.ErrorIcon.ICON_RADIUS * 2);
 
-/**
- * Show or hide the error bubble.
- * @param {boolean} visible True if the bubble should be visible.
- */
-Blockly.Error.prototype.setVisible = function(visible) {
-  if (visible == this.isVisible()) {
-    // No change.
-    return;
-  }
-  if (visible) {
-    // Create the bubble.
-    var paragraph = Blockly.Error.textToDom_(this.getText());
-    this.bubble_ = new Blockly.Bubble(
-        /** @type {!Blockly.Workspace} */ (this.block_.workspace),
-        paragraph, this.block_.svgPath_, this.iconXY_, null, null);
-    if (this.block_.RTL) {
-      // Right-align the paragraph.
-      // This cannot be done until the bubble is rendered on screen.
-      var maxWidth = paragraph.getBBox().width;
-      for (var x = 0, textElement; textElement = paragraph.childNodes[x]; x++) {
-        textElement.setAttribute('text-anchor', 'end');
-        textElement.setAttribute('x', maxWidth + Blockly.Bubble.BORDER_WIDTH);
-      }
-    }
-    this.updateColour();
-    // Bump the warning into the right location.
-    var size = this.bubble_.getBubbleSize();
-    this.bubble_.setBubbleSize(size.width, size.height);
-  } else {
-    // Dispose of the bubble.
-    this.bubble_.dispose();
-    this.bubble_ = null;
-    this.body_ = null;
-  }
-};
-
-/**
- * Bring the target to the top of the stack when clicked on.
- * @param {!Event} e Mouse up event.
- * @private
- */
-Blockly.Error.prototype.bodyFocus_ = function(e) {
-  this.bubble_.promote_();
-};
-
-/**
- * Set this error's text.
- * @param {string} text Error text.
- */
-Blockly.Error.prototype.setText = function(text, id) {
-  if (this.text_[id] == text) {
-    return;
-  }
-  if (text) {
-    this.text_[id] = text;
-  } else {
-    delete this.text_[id];
-  }
-  if (this.isVisible()) {
-    this.setVisible(false);
-    this.setVisible(true);
-  }
-};
-
-/**
- * Get this error's texts.
- * @return {string} All texts concatenated into one string.
- */
-Blockly.Error.prototype.getText = function() {
-  var allErrors = [];
-  for (var id in this.text_) {
-    allErrors.push(this.text_[id]);
-  }
-  return allErrors.join('\n');
-};
-
-/**
- * Dispose of this error.
- */
-Blockly.Error.prototype.dispose = function() {
-  this.block_.error = null;
-  Blockly.Icon.prototype.dispose.call(this);
-};
+Blockly.icons.registry.register(AI.ErrorIcon.TYPE, AI.ErrorIcon);

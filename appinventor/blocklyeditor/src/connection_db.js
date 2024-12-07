@@ -15,8 +15,6 @@
  */
 
 goog.provide('AI.Blockly.ConnectionDB');
-goog.require('Blockly.ConnectionDB');
-
 
 /**
  * A version of addConnection that maintains the invariant that the DB will contain the
@@ -26,6 +24,7 @@ goog.require('Blockly.ConnectionDB');
  * @param connection The connection to be added
  * @private
  */
+/*
 Blockly.ConnectionDB.prototype.addConnection = function(connection) {
   if (connection.inDB_) {
     return;  // already in the database
@@ -51,6 +50,7 @@ Blockly.ConnectionDB.prototype.addConnection = function(connection) {
   this.splice(position, 0, connection);
   connection.inDB_ = true;
 };
+*/
 
 /**
  * A version of removeConnection_ that maintains the invariant that the DB won't contain the
@@ -60,6 +60,7 @@ Blockly.ConnectionDB.prototype.addConnection = function(connection) {
  * @param connection The connection to be removed
  * @private
  */
+/*
 Blockly.ConnectionDB.prototype.removeConnection_ = function(connection) {
   if (!connection.inDB_) {
     return;  // connection already not in database
@@ -78,10 +79,12 @@ Blockly.ConnectionDB.prototype.removeConnection_ = function(connection) {
     this.splice(removalIndex, 1);
   }
 };
+ */
 
 /**
  * O(n) removal of duplicate connections.
  */
+/*
 Blockly.ConnectionDB.prototype.removeDupes = function() {
   var map = {};
   for (var i = 0; i < this.length; i++) {
@@ -92,3 +95,4 @@ Blockly.ConnectionDB.prototype.removeDupes = function() {
   this.splice(0, this.length);
   Array.prototype.push.apply(this, Object.values(map));
 };
+*/

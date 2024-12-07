@@ -9,13 +9,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.TypeBlock');
-goog.require('Blockly.Xml');
+goog.provide('AI.Blockly.TypeBlock');
 
-goog.require('goog.events');
-goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyHandler');
-goog.require('goog.ui.ac');
 goog.require('goog.style');
 
 goog.require('goog.ui.ac.ArrayMatcher');
@@ -35,7 +31,7 @@ goog.require('goog.ui.ac.Renderer');
  * stating the ids of the attributes to be used in the html enclosing page
  * create a new block
  */
-Blockly.TypeBlock = function( htmlConfig, workspace ){
+AI.Blockly.TypeBlock = function( htmlConfig, workspace ){
   this.workspace_ = workspace;
   /**
    * Used as an optimisation trick to avoid reloading components and built-ins unless there is a real
@@ -67,13 +63,13 @@ Blockly.TypeBlock = function( htmlConfig, workspace ){
  * Div where the type block panel will be rendered
  * @private
  */
-Blockly.TypeBlock.prototype.typeBlockDiv_ = null;
+AI.Blockly.TypeBlock.prototype.typeBlockDiv_ = null;
 
 /**
  * input text contained in the type block panel used as input
  * @private
  */
-Blockly.TypeBlock.prototype.inputText_ = null;
+AI.Blockly.TypeBlock.prototype.inputText_ = null;
 
 /**
  * Document key handler applied to the frame area, and used to catch keyboard
@@ -81,7 +77,7 @@ Blockly.TypeBlock.prototype.inputText_ = null;
  * re-attached when the Panel is dismissed.
  * @private
  */
-Blockly.TypeBlock.prototype.docKh_ = null;
+AI.Blockly.TypeBlock.prototype.docKh_ = null;
 
 /**
  * Input key handler applied to the Type Block Panel, and used to catch
@@ -89,12 +85,12 @@ Blockly.TypeBlock.prototype.docKh_ = null;
  * dettached when the Panel is dismissed.
  * @private
  */
-Blockly.TypeBlock.prototype.inputKh_ = null;
+AI.Blockly.TypeBlock.prototype.inputKh_ = null;
 
 /**
  * Is the Type Block panel currently showing?
  */
-Blockly.TypeBlock.prototype.visible = false;
+AI.Blockly.TypeBlock.prototype.visible = false;
 
 /**
  * Mapping of options to show in the auto-complete panel. This maps the
@@ -110,21 +106,21 @@ Blockly.TypeBlock.prototype.visible = false;
  *   used to manage the loading of options in the auto-complete matcher.
  * @private
  */
-Blockly.TypeBlock.prototype.TBOptions_ = {};
+AI.Blockly.TypeBlock.prototype.TBOptions_ = {};
 
 /**
- * This array contains only the Keys of Blockly.TypeBlock.TBOptions_ to be used
+ * This array contains only the Keys of AI.Blockly.TypeBlock.TBOptions_ to be used
  * as options in the autocomplete widget.
  * @private
  */
-Blockly.TypeBlock.prototype.TBOptionsNames_ = [];
+AI.Blockly.TypeBlock.prototype.TBOptionsNames_ = [];
 
 /**
  * pointer to the automcomplete widget to be able to change its contents when
  * the Language tree is modified (additions, renaming, or deletions)
  * @private
  */
-Blockly.TypeBlock.prototype.ac_ = null;
+AI.Blockly.TypeBlock.prototype.ac_ = null;
 
 /**
  * We keep a listener pointer in case of needing to unlisten to it. We only want
@@ -132,14 +128,14 @@ Blockly.TypeBlock.prototype.ac_ = null;
  * unlisten first and then listen back
  * @private
  */
-Blockly.TypeBlock.prototype.currentListener_ = null;
+AI.Blockly.TypeBlock.prototype.currentListener_ = null;
 
 /**
  *
  * @param {goog.events.KeyEvent} e
  */
-Blockly.TypeBlock.prototype.handleKey = function(e){
-    if (Blockly.mainWorkspace !== this.workspace_) return;  // not targeting this workspace
+AI.Blockly.TypeBlock.prototype.handleKey = function(e){
+    if (Blockly.common.getMainWorkspace() !== this.workspace_) return;  // not targeting this workspace
     // test blocks editor displayed/visible to user
     if (!this.workspace_.getParentSvg() ||
         this.workspace_.getParentSvg().parentElement.offsetParent == null) return;
@@ -160,8 +156,8 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     }
     if (e.keyCode === 27){ //Dismiss the panel with esc
       this.hide();
-      Blockly.mainWorkspace.getParentSvg().parentNode.focus();  // refocus workspace div
-      Blockly.mainWorkspace.hideChaff();
+      Blockly.common.getMainWorkspace().getParentSvg().parentNode.focus();  // refocus workspace div
+      Blockly.common.getMainWorkspace().hideChaff();
       return;
     }
     switch (e.keyCode) {
@@ -219,7 +215,7 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
  * function to hide the autocomplete panel. Also used from hideChaff in
  * Blockly.js
  */
-Blockly.TypeBlock.prototype.hide = function(){
+AI.Blockly.TypeBlock.prototype.hide = function(){
 //  if (this.typeBlockDiv_ == null)
 //    return;
   goog.style.showElement(goog.dom.getElement(this.typeBlockDiv_), false);
@@ -233,7 +229,7 @@ Blockly.TypeBlock.prototype.hide = function(){
 /**
  * function to show the auto-complete panel to start typing block names
  */
-Blockly.TypeBlock.prototype.show = function(){
+AI.Blockly.TypeBlock.prototype.show = function(){
   this.lazyLoadOfOptions_();
   var panel = goog.dom.getElement(this.typeBlockDiv_);
   goog.style.setStyle(panel, 'top', this.workspace_.latestClick.y);
@@ -256,7 +252,7 @@ Blockly.TypeBlock.prototype.show = function(){
  * renaming of variables and procedures (leaving it until the moment they are used, if ever).
  * @private
  */
-Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
+AI.Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
   // Optimisation to avoid reloading all components and built-in objects unless it is needed.
   // needsReload.components is setup when adding/renaming/removing a component in components.js
   if (this.needsReload.components ||
@@ -283,7 +279,7 @@ Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
  * call 'reloadOptionsAfterChanges_' after calling this. The function lazyLoadOfOptions_ is an
  * example of how to call this function.
  */
-Blockly.TypeBlock.prototype.generateOptions = function() {
+AI.Blockly.TypeBlock.prototype.generateOptions = function() {
 
   var buildListOfOptions = function() {
     var listOfOptions = {};
@@ -341,7 +337,7 @@ Blockly.TypeBlock.prototype.generateOptions = function() {
  * options, only needs one call of this function; and example of that is lazyLoadOfOptions_
  * @private
  */
-Blockly.TypeBlock.prototype.reloadOptionsAfterChanges_ = function () {
+AI.Blockly.TypeBlock.prototype.reloadOptionsAfterChanges_ = function () {
   this.TBOptionsNames_ = goog.object.getKeys(this.TBOptions_);
   goog.array.sort(this.TBOptionsNames_);
   this.ac_.matcher_.setRows(this.TBOptionsNames_);
@@ -353,7 +349,7 @@ Blockly.TypeBlock.prototype.reloadOptionsAfterChanges_ = function () {
  * example of how to call this function.
  * @private
  */
-Blockly.TypeBlock.prototype.loadProcedures_ = function(){
+AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
   // Clean up any previous procedures in the list.
   this.TBOptions_ = goog.object.filter(this.TBOptions_,
       function(opti){ return !opti.isProcedure;});
@@ -410,7 +406,7 @@ Blockly.TypeBlock.prototype.loadProcedures_ = function(){
  * Call 'reloadOptionsAfterChanges_' after calling this one. The function lazyLoadOfOptions_ is an
  * example of how to call this function.
  */
-Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
+AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
   // Remove any global vars from the list so that we can re-add them.
   this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
     return !option.isGlobalvar;
@@ -452,13 +448,13 @@ Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
  * to call this function.
  * @private
  */
-Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
+AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
   // Remove any local vars from the list so that we can re-add them.
   this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
     return !option.isLocalVar;
   });
 
-  var selected = Blockly.selected;
+  var selected = Blockly.common.getSelected();
   if (!selected) {
     return;
   }
@@ -505,7 +501,7 @@ Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
  * Creates the auto-complete panel, powered by Google Closure's ac widget
  * @private
  */
-Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
+AI.Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
   this.TBOptionsNames_ = goog.object.getKeys( this.TBOptions_ );
   goog.array.sort(this.TBOptionsNames_);
   goog.events.unlistenByKey(this.currentListener_); //if there is a key, unlisten
@@ -513,7 +509,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
     this.ac_.dispose(); //Make sure we only have 1 at a time
 
   // 3 objects needed to create a goog.ui.ac.AutoComplete instance
-  var matcher = new Blockly.TypeBlock.ac.AIArrayMatcher(this.TBOptionsNames_, false);
+  var matcher = new AI.Blockly.TypeBlock.ac.AIArrayMatcher(this.TBOptionsNames_, false);
   var renderer = new goog.ui.ac.Renderer();
   var inputHandler = new goog.ui.ac.InputHandler(null, null, false);
 
@@ -572,14 +568,14 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
 
             xmlString += '>';
             xmlString += '</mutation></block></xml>';
-            var xml = Blockly.Xml.textToDom(xmlString);
+            var xml = Blockly.utils.xml.textToDom(xmlString);
             block = Blockly.Xml.domToBlock(xml.firstChild, self.workspace_);
           } else {
             block = self.workspace_.newBlock(blockToCreateName);
             block.initSvg(); //Need to init the block before doing anything else
             if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
               //Need to make sure Procedure Block inputs are updated
-              Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
+              AI.Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
             }
           }
 
@@ -587,16 +583,16 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             block.setFieldValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
             // change type checking for split blocks
             if (blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
-              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+              block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT));
             } else if (blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
-              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT));
+              block.getInput("AT").setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT));
             }
           }
         } else {
           throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
         }
         block.render();
-        var blockSelected = Blockly.selected;
+        var blockSelected = Blockly.common.getSelected();
         var selectedX, selectedY, selectedXY;
         if (blockSelected) {
           selectedXY = blockSelected.getRelativeToSurfaceXY();
@@ -605,8 +601,8 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
           self.connectIfPossible(blockSelected, block);
           if (!block.parentBlock_) {
             //Place it close but a bit out of the way from the one we created.
-            block.moveBy(Blockly.selected.getRelativeToSurfaceXY().x + 110,
-                Blockly.selected.getRelativeToSurfaceXY().y + 50);
+            block.moveBy(Blockly.common.getSelected().getRelativeToSurfaceXY().x + 110,
+                Blockly.common.getSelected().getRelativeToSurfaceXY().y + 50);
           }
           block.select();
         } else {
@@ -632,10 +628,11 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
  * A block with no outputConnection could be connected to its parent's next
  * connection.
  */
-Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdBlock) {
+AI.Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdBlock) {
   var i = 0,
     inputList = blockSelected.inputList,
     ilLength = inputList.length;
+  const connectionChecker = blockSelected.workspace.connectionChecker;
 
   //If createdBlock has an output connection, we need to:
   //  connect to parent (eg: connect equals into if)
@@ -645,8 +642,8 @@ Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdB
     try {
       if (createdBlock.outputConnection != null){
         //Check for type validity (connect does not do it)
-        if ( inputList[i].connection &&
-             inputList[i].connection.checkType_(createdBlock.outputConnection) ){
+        if (inputList[i].connection &&
+            connectionChecker.canConnect(inputList[i].connection, createdBlock.outputConnection, false)){
             if (!inputList[i].connection.targetConnection){ // is connection empty?
               createdBlock.outputConnection.connect(inputList[i].connection);
               break;
@@ -695,7 +692,7 @@ Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdB
 //--------------------------------------
 // A custom matcher for the auto-complete widget that can handle numbers as well as the default
 // functionality of goog.ui.ac.ArrayMatcher
-goog.provide('Blockly.TypeBlock.ac.AIArrayMatcher');
+goog.provide('AI.Blockly.TypeBlock.ac.AIArrayMatcher');
 
 goog.require('goog.iter');
 goog.require('goog.string');
@@ -709,17 +706,17 @@ goog.require('goog.string');
  * input token against the dictionary.
  * @extends {goog.ui.ac.ArrayMatcher}
  */
-Blockly.TypeBlock.ac.AIArrayMatcher = function(rows, opt_noSimilar) {
+AI.Blockly.TypeBlock.ac.AIArrayMatcher = function(rows, opt_noSimilar) {
   goog.ui.ac.ArrayMatcher.call(rows, opt_noSimilar);
   this.rows_ = rows;
   this.useSimilar_ = !opt_noSimilar;
 };
-goog.inherits(Blockly.TypeBlock.ac.AIArrayMatcher, goog.ui.ac.ArrayMatcher);
+goog.inherits(AI.Blockly.TypeBlock.ac.AIArrayMatcher, goog.ui.ac.ArrayMatcher);
 
 /**
  * @inheritDoc
  */
-Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(token, maxMatches,
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(token, maxMatches,
     matchHandler, opt_fullString) {
 
   var matches = this.getPrefixMatches(token, maxMatches);
@@ -752,7 +749,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   matchHandler(token, matches);
 };
 
-Blockly.TypeBlock.hide = function() {
-  if (Blockly.mainWorkspace && Blockly.mainWorkspace.typeBlock_)
-    Blockly.mainWorkspace.typeBlock_.hide();
+AI.Blockly.TypeBlock.hide = function() {
+  if (Blockly.common.getMainWorkspace() && Blockly.common.getMainWorkspace().typeBlock_)
+    Blockly.common.getMainWorkspace().typeBlock_.hide();
 };

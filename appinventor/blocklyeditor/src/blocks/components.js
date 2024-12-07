@@ -12,11 +12,11 @@
 
 'use strict';
 
-goog.provide('AI.Blockly.Blocks.components');
-goog.provide('AI.Blockly.ComponentBlock');
-goog.require('Blockly.Blocks.Utilities');
+goog.provide('AI.Blocks.components');
+goog.require('AI.Blockly.FieldEventFlydown');
+goog.require('AI.Blockly.FieldNoCheckDropdown');
+goog.require('AI.BlockUtils');
 
-Blockly.Blocks.components = {};
 Blockly.ComponentBlock = {};
 
 /*
@@ -70,8 +70,10 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     block.domToMutation(mutation);
     block.initSvg();  // block shape may have changed
     block.render();
-    Blockly.Events.fire(new Blockly.Events.Change(
-      block, 'mutation', null, oldMutation, newMutation));
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+        block, 'mutation', null, oldMutation, newMutation));
+    }
     if (block.type === 'component_event') opt_replacementDom = false;
     if (opt_replacementDom !== false) {
       if (opt_replacementDom === undefined) {
@@ -79,19 +81,21 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
           '<mutation component_type="' + block.typeName + '" instance_name="' + instanceName + '"></mutation>' +
           '<field name="COMPONENT_SELECTOR">' + instanceName + '</field>' +
           '</block></xml>';
-        opt_replacementDom = Blockly.Xml.textToDom(compBlockXml).firstElementChild;
+        opt_replacementDom = Blockly.utils.xml.textToDom(compBlockXml).firstElementChild;
       }
       var replacement = Blockly.Xml.domToBlock(opt_replacementDom, block.workspace);
       replacement.initSvg();
       block.getInput('COMPONENT').connection.connect(replacement.outputConnection);
     }
-    var group = Blockly.Events.getGroup();
-    setTimeout(function() {
-      Blockly.Events.setGroup(group);
-      // noinspection JSAccessibilityCheck
-      block.bumpNeighbours_();
-      Blockly.Events.setGroup(false);
-    }, Blockly.BUMP_DELAY);
+    if (Blockly.Events.isEnabled()) {
+      var group = Blockly.Events.getGroup();
+      setTimeout(function () {
+        Blockly.Events.setGroup(group);
+        // noinspection JSAccessibilityCheck
+        block.bumpNeighbours();
+        Blockly.Events.setGroup(false);
+      }, Blockly.BUMP_DELAY);
+    }
   }
 
   var item = { enabled: false };
@@ -113,15 +117,17 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         block.domToMutation(mutation);
         block.initSvg();  // block shape may have changed
         block.render();
-        Blockly.Events.fire(new Blockly.Events.Change(
-          block, 'mutation', null, oldMutation, newMutation));
-        var group = Blockly.Events.getGroup();
-        setTimeout(function () {
-          Blockly.Events.setGroup(group);
-          // noinspection JSAccessibilityCheck
-          block.bumpNeighbours_();
-          Blockly.Events.setGroup(false);
-        }, Blockly.BUMP_DELAY);
+        if (Blockly.Events.isEnabled()) {
+          Blockly.Events.fire(new Blockly.Events.BlockChange(
+            block, 'mutation', null, oldMutation, newMutation));
+          var group = Blockly.Events.getGroup();
+          setTimeout(function () {
+            Blockly.Events.setGroup(group);
+            // noinspection JSAccessibilityCheck
+            block.bumpNeighbours();
+            Blockly.Events.setGroup(false);
+          }, Blockly.BUMP_DELAY);
+        }
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -170,12 +176,12 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
         var varBlockXml = '<xml><block type="lexical_variable_get">' +
           '<mutation><eventparam name="component"></eventparam></mutation>' +
           '<field name="VAR">' + intlName + '</field></block></xml>';
-        var varBlockDom = Blockly.Xml.textToDom(varBlockXml).firstElementChild;
+        var varBlockDom = Blockly.utils.xml.textToDom(varBlockXml).firstElementChild;
         makeGeneric(block);  // Do this first so 'component' is defined.
         block.walk(function(block) {
             if ((block.type === 'component_method' || block.type === 'component_set_get') &&
               block.instanceName === instanceName) {
-            makeGeneric(/** @type Blockly.BlockSvg */ block, varBlockDom);
+            makeGeneric(/** @type {Blockly.BlockSvg} */ (block), varBlockDom);
           }
         });
       } finally {
@@ -206,8 +212,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
  *     associated with the block which is possibly deprecated.
  */
 Blockly.ComponentBlock.checkDeprecated = function(block, data) {
-  if (data && data.deprecated && block.workspace == Blockly.mainWorkspace) {
-    block.setDisabled(true);
+  if (data && data.deprecated && block.workspace == Blockly.common.getMainWorkspace()) {
+    block.setEnabled(false);
   }
 }
 
@@ -224,6 +230,7 @@ Blockly.Blocks.component_event = {
 
   init: function() {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
+    this.lexicalVarPrefix = Blockly.localNamePrefix;
   },
 
   mutationToDom : function() {
@@ -252,6 +259,10 @@ Blockly.Blocks.component_event = {
   },
 
   domToMutation : function(xmlElement) {
+    // The preexisting component dropdown cannot be reused since it might already been
+    // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+    // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+    this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     var oldRendered = this.rendered;
     this.rendered = false;
     var oldDo = null;
@@ -381,7 +392,7 @@ Blockly.Blocks.component_event = {
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
-                               .setAlign(Blockly.ALIGN_LEFT);
+                               .setAlign(Blockly.inputs.Align.LEFT);
           for (i = 0; param = params[i]; i++) {
             var field = new Blockly.FieldEventFlydown(
                 param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
@@ -411,7 +422,7 @@ Blockly.Blocks.component_event = {
           var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
               .appendField(field, 'VAR' + i)
-              .setAlign(Blockly.ALIGN_RIGHT);
+              .setAlign(Blockly.inputs.Align.RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO);
@@ -420,9 +431,8 @@ Blockly.Blocks.component_event = {
         }
       }
       if (Blockly.Events.isEnabled()) {
-        // Trigger a Blockly UI change event
-        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
-          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()))
+        Blockly.Events.fire(new Blockly.Events.BlockChange(
+            this, 'parameter_orientation', null, !this.horizontalParameters, this.horizontalParameters));
       }
     }
   },
@@ -502,8 +512,8 @@ Blockly.Blocks.component_event = {
   declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
     var names = [];
     for (var i = 0, param; param = this.getField('VAR' + i); i++) {
-      names.push(param.getText());
-      if (param.eventparam && param.eventparam != param.getText()) {
+      names.push(param.getValue());
+      if (param.eventparam && param.eventparam != param.getValue()) {
         names.push(param.eventparam);
       }
     }
@@ -513,9 +523,17 @@ Blockly.Blocks.component_event = {
   declaredVariables: function() {
     var names = [];
     for (var i = 0, param; param = this.getField('VAR' + i); i++) {
-      names.push(param.getText());
+      names.push(param.getValue());
     }
     return names;
+  },
+
+  withLexicalVarsAndPrefix: function(_, proc) {
+    const params = this.declaredNames();
+    // not arguments_ instance var
+    for (let i = 0; i < params.length; i++) {
+      proc(params[i], this.lexicalVarPrefix);
+    }
   },
 
   blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
@@ -536,7 +554,7 @@ Blockly.Blocks.component_event = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
     var types = {};
 
@@ -575,11 +593,15 @@ Blockly.Blocks.component_event = {
     return tb;
   },
   customContextMenu: function (options) {
+    // Remove "do it" option
+    const doiItIndex = options.findIndex(function(option) {
+      return option.text === Blockly.Msg['DO_IT']
+    });
+    options.splice(doiItIndex, 1);
+
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.BlocklyEditor.addPngExportOption(this, options);
-    Blockly.BlocklyEditor.addGenerateYailOption(this, options);
-  },
+   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
   verify : function () {
@@ -686,6 +708,10 @@ Blockly.Blocks.component_method = {
   },
 
   domToMutation : function(xmlElement) {
+    // The preexisting component dropdown cannot be reused since it might already been
+    // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+    // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+    this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     var oldRendered = this.rendered;
     this.rendered = false;
     var oldInputValues = [];
@@ -776,7 +802,7 @@ Blockly.Blocks.component_method = {
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedMethodName);
       this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     }
 
     var tooltipDescription;
@@ -799,11 +825,11 @@ Blockly.Blocks.component_method = {
 
       var input = this.appendValueInput("ARG" + i)
           .appendField(name)
-          .setAlign(Blockly.ALIGN_RIGHT)
+          .setAlign(Blockly.inputs.Align.RIGHT)
           .setCheck(check);
 
       if (oldInputValues[i] && input.connection) {
-        Blockly.Mutator.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
+        Blockly.icons.MutatorIcon.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
       }
     }
 
@@ -828,7 +854,7 @@ Blockly.Blocks.component_method = {
       }
     } // methodType.returnType is a Yail type
     else if (methodTypeObject.returnType) {
-      this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(methodTypeObject.returnType,Blockly.Blocks.Utilities.OUTPUT));
+      this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType(methodTypeObject.returnType,AI.BlockUtils.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
@@ -871,8 +897,8 @@ Blockly.Blocks.component_method = {
   getParamBlocklyType : function(param) {
     var check = [];
 
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        param.type, Blockly.Blocks.Utilities.INPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        param.type, AI.BlockUtils.INPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -882,7 +908,7 @@ Blockly.Blocks.component_method = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(param.helperKey, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -892,8 +918,8 @@ Blockly.Blocks.component_method = {
 
   getReturnBlocklyType : function(methodObj) {
     var check = [];
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        methodObj.returnType, Blockly.Blocks.Utilities.OUTPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        methodObj.returnType, AI.BlockUtils.OUTPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -903,7 +929,7 @@ Blockly.Blocks.component_method = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities
+    var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(methodObj.returnHelperKey, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -941,7 +967,7 @@ Blockly.Blocks.component_method = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
     var typeNameDict = {};
     componentDb.forEachInstance(function(instance) {
@@ -1053,7 +1079,6 @@ Blockly.Blocks.component_method = {
 
   customContextMenu: function(options) {
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.Block.prototype.customContextMenu.call(this, options);
   }
 
 };
@@ -1150,7 +1175,6 @@ Blockly.Blocks.component_set_get = {
       },
       // change the output type and tooltip to match the new selection
       function(selection) {
-        this.setValue(selection);
         thisBlock.propertyName = selection;
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
@@ -1169,6 +1193,11 @@ Blockly.Blocks.component_set_get = {
 
       if(!this.isGeneric) {
         //non-generic get
+
+        // The preexisting component dropdown cannot be reused since it might already been
+        // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+        // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+        this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
         this.appendDummyInput()
           .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
           .appendField('.')
@@ -1182,13 +1211,17 @@ Blockly.Blocks.component_set_get = {
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
       }
     } else { //this.setOrGet == "set"
       //a notches for set block
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       if(!this.isGeneric) {
+        // The preexisting component dropdown cannot be reused since it might already been
+        // used here due to a previous call to mutationToDom. Reusing the dropdown is not
+        // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
+        this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
         this.appendValueInput("VALUE")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET)
           .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
@@ -1205,17 +1238,17 @@ Blockly.Blocks.component_set_get = {
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
 
         this.appendValueInput("VALUE")
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO)
-          .setAlign(Blockly.ALIGN_RIGHT);
+          .setAlign(Blockly.inputs.Align.RIGHT);
       }
     }
 
     if (oldInput) {
       this.getInput('VALUE').init();
-      Blockly.Mutator.reconnect(oldInput.outputConnection, this, 'VALUE');
+      Blockly.icons.MutatorIcon.reconnect(oldInput.outputConnection, this, 'VALUE');
     }
 
     //for non-generic blocks, set the value of the component drop down
@@ -1251,9 +1284,9 @@ Blockly.Blocks.component_set_get = {
   },
 
   setTypeCheck : function() {
-    var inputOrOutput = Blockly.Blocks.Utilities.OUTPUT;
+    var inputOrOutput = AI.BlockUtils.OUTPUT;
     if(this.setOrGet == "set") {
-      inputOrOutput = Blockly.Blocks.Utilities.INPUT;
+      inputOrOutput = AI.BlockUtils.INPUT;
     }
 
     var newType = this.getPropertyBlocklyType(this.propertyName,inputOrOutput);
@@ -1274,7 +1307,7 @@ Blockly.Blocks.component_set_get = {
     if (property) {
       yailType = property.type;
     }
-    var blocklyType = Blockly.Blocks.Utilities
+    var blocklyType = AI.BlockUtils
         .YailTypeToBlocklyType(yailType, inputOrOutput);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
@@ -1286,7 +1319,7 @@ Blockly.Blocks.component_set_get = {
     }
 
     if (property) {
-      var helperType = Blockly.Blocks.Utilities
+      var helperType = AI.BlockUtils
         .helperKeyToBlocklyType(property.helperKey, this);
       if (helperType && helperType != blocklyType) {
         check.push(helperType);
@@ -1330,7 +1363,7 @@ Blockly.Blocks.component_set_get = {
     return false;
   },
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     function pushBlock(prefix, mode, property, typeName, instanceName) {
@@ -1439,7 +1472,6 @@ Blockly.Blocks.component_set_get = {
 
   customContextMenu: function(options) {
     Blockly.ComponentBlock.addGenericOption(this, options);
-    Blockly.Block.prototype.customContextMenu.call(this, options);
   }
 
 };
@@ -1496,7 +1528,7 @@ Blockly.Blocks.component_component_block = {
   },
 
   typeblock : function(){
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {
@@ -1551,7 +1583,7 @@ Blockly.Blocks['component_all_component_block'] = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY)
       .appendField(this.componentTypeDropDown, Blockly.ComponentBlock.COMPONENT_TYPE_SELECTOR);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.OUTPUT));
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkComponentTypeNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title
@@ -1560,7 +1592,7 @@ Blockly.Blocks['component_all_component_block'] = {
   },
 
   typeblock : function() {
-    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {
@@ -1611,7 +1643,7 @@ Blockly.ComponentBlock.isClockMethodName =  function  (name) {
 };
 
 Blockly.ComponentBlock.createComponentDropDown = function(block){
-  var componentDropDown = new Blockly.FieldDropdown([["",""]]);
+  var componentDropDown = new AI.Blockly.FieldNoCheckDropdown([["",""]]);
   componentDropDown.menuGenerator_ = function(){ return block.getTopWorkspace().getComponentDatabase().getComponentNamesByType(block.typeName); };
   return componentDropDown;
 };
