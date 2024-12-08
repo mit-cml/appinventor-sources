@@ -10,18 +10,19 @@
     ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
     ui:generateLocales="default">
 
-  <ui:with type="com.google.appinventor.client.Images" field="res" />
+  <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
   <g:HTMLPanel>
-     <div class="ode-noDialogDivHeader">
+    <div class="ode-noDialogDivHeader">
       <div class="ode-noDialogDivInnerHeader">
         <h3 class="ode-headerTitle">
           <ui:msg key="welcome"
-                  description="Welcome text preceding the App Inventor logo">Welcome to</ui:msg>
+                  description="Welcome text preceding the App Inventor logo">Welcome to
+          </ui:msg>
         </h3>
 
         <div id='ode-codiLogoDiv'>
-          <g:Image resource="{res.logo}" altText="MIT App Inventor" height="64px" width="120px" />
+          <g:Image resource="{res.logo}" altText="MIT App Inventor" height="64px" width="120px"/>
         </div>
       </div>
     </div>
@@ -38,10 +39,11 @@
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">
             <ui:msg key="helloPurrTitle"
-                    description="Title of the Hello Purr app">Hello Purr</ui:msg>
+                    description="Title of the Hello Purr app">Hello Purr
+            </ui:msg>
           </h4>
           <div class="ode-noDialogExampleImage">
-            <g:Image resource="{res.wilson}" altText="Wilson Logo" />
+            <g:Image resource="{res.wilson}" altText="Wilson Logo"/>
           </div>
           <p class="ode-noDialogExampleAbout">
             <ui:msg key="helloPurrDescription" description="Description of the Hello Purr app">
@@ -55,7 +57,8 @@
 
         <g:Button ui:field='goToPurr' styleName='ode-tutorialButton'>
           <ui:msg key="startTutorialButton"
-                  description="Text of the button to open a tutorial">Go to Tutorial</ui:msg>
+                  description="Text of the button to open a tutorial">Go to Tutorial
+          </ui:msg>
         </g:Button>
       </div>
 
@@ -63,16 +66,17 @@
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">
             <ui:msg key="talkToMeTitle"
-                    description="Title of the Talk to Me app">Talk to Me</ui:msg>
+                    description="Title of the Talk to Me app">Talk to Me
+            </ui:msg>
           </h4>
           <div class="ode-noDialogExampleImage">
-            <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo" />
+            <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo"/>
           </div>
 
           <p class="ode-noDialogExampleAbout">
             <ui:msg key="talkToMeDescription" description="Description of the Talk to Me app">
-            Text to Speech is surprisingly fun. Find out for yourself with this
-            starter app that talks.
+              Text to Speech is surprisingly fun. Find out for yourself with this
+              starter app that talks.
             </ui:msg>
           </p>
         </div>
@@ -86,10 +90,11 @@
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">
             <ui:msg key="translateAppTitle"
-                    description="Title of the Translate App">Translate App</ui:msg>
+                    description="Title of the Translate App">Translate App
+            </ui:msg>
           </h4>
           <div class="ode-noDialogExampleImage">
-            <g:Image resource="{res.YRLogo}" altText="YR Media Logo" />
+            <g:Image resource="{res.YRLogo}" altText="YR Media Logo"/>
           </div>
           <p class="ode-noDialogExampleAbout">
             <ui:msg key="translateAppDescription" description="Description of the Translate app">
@@ -110,17 +115,19 @@
     </div>
 
     <div class="ode-bottomRow">
-        <g:Button ui:field='noDialogNewProject' styleName="ode-noDialogNewProject">
-          <ui:msg key="startProjectButton" description="Text of the button to start a new project"
-          >Start a blank project</ui:msg>
-        </g:Button>
-        <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>
-          <ui:msg key="closeButton" description="Text of the button to close the dialog box"
-          >Close</ui:msg>
-        </g:Button>
+      <g:Button ui:field='noDialogNewProject' styleName="ode-noDialogNewProject">
+        <ui:msg key="startProjectButton" description="Text of the button to start a new project"
+        >Start a blank project
+        </ui:msg>
+      </g:Button>
+      <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>
+        <ui:msg key="closeButton" description="Text of the button to close the dialog box"
+        >Close
+        </ui:msg>
+      </g:Button>
     </div>
 
-      
+
   </g:HTMLPanel>
 
 </ui:UiBinder>

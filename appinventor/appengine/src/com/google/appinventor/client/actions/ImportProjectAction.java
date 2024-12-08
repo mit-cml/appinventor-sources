@@ -12,6 +12,6 @@ import com.google.gwt.user.client.Command;
 public class ImportProjectAction implements Command {
   @Override
   public void execute() {
-    new ProjectUploadWizard().center();
+    new ProjectUploadWizard().show();
   }
 }

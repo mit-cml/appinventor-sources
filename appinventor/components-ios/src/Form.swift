@@ -56,6 +56,13 @@ let kMinimumToastWait = 10.0
   private var _bigDefaultText = false
   private var _highContrast = false
 
+  /**
+   * Returns whether the current theme selected by the user is Dark or not.
+   */
+  public var isDarkTheme: Bool {
+    return _theme == .Dark
+  }
+
   public init(application: Application) {
     super.init(nibName: nil, bundle: nil)
     self.application = application

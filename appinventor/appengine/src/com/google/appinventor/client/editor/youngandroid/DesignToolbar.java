@@ -134,23 +134,21 @@ public class DesignToolbar extends Toolbar {
   public static LinkedList<String> pushedScreens = Lists.newLinkedList();
 
   interface DesignToolbarUiBinder extends UiBinder<Toolbar, DesignToolbar> {}
-  private static final DesignToolbarUiBinder UI_BINDER = GWT.create(DesignToolbarUiBinder.class);
 
-  @UiField DropDownButton pickFormItem;
-  @UiField ToolbarItem addFormItem;
-  @UiField ToolbarItem removeFormItem;
-  @UiField ToolbarItem switchToDesign;
-  @UiField ToolbarItem switchToBlocks;
-  @UiField ToolbarItem sendToGalleryItem;
-  @UiField ToolbarItem projectPropertiesDialog;
+  @UiField protected DropDownButton pickFormItem;
+  @UiField protected ToolbarItem addFormItem;
+  @UiField protected ToolbarItem removeFormItem;
+  @UiField protected ToolbarItem switchToDesign;
+  @UiField protected ToolbarItem switchToBlocks;
+  @UiField protected ToolbarItem sendToGalleryItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
   public DesignToolbar() {
     super();
+    bindUI();
 
-    populateToolbar(UI_BINDER.createAndBindUi(this));
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
       setVisibleItem(removeFormItem, false);
@@ -162,6 +160,11 @@ public class DesignToolbar extends Toolbar {
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+  }
+
+  public void bindUI() {
+    DesignToolbarUiBinder uibinder = GWT.create(DesignToolbarUiBinder.class);
+    populateToolbar(uibinder.createAndBindUi(this));
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {

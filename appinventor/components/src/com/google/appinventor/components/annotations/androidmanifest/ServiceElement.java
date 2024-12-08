@@ -78,6 +78,8 @@ public @interface ServiceElement {
    * device location.
    * You can assign multiple foreground service types to a particular service.
    *
+   * Note: Starting in Android 14, this property is required on all services.
+   *
    * @return  the service foregroundServiceType attribute
    */
   String foregroundServiceType() default "";

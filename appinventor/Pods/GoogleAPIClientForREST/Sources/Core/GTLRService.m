@@ -129,7 +129,10 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
 // Internal properties copied from the service.
 @property(nonatomic, assign) BOOL allowInsecureQueries;
 @property(nonatomic, strong) GTMSessionFetcherService *fetcherService;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 @property(nonatomic, strong, nullable) id<GTMFetcherAuthorizationProtocol> authorizer;
+#pragma clang diagnostic pop
 
 // Internal properties copied from serviceExecutionParameters.
 @property(nonatomic, getter=isRetryEnabled) BOOL retryEnabled;
@@ -216,6 +219,7 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
   NSString *_overrideUserAgent;
   NSDictionary *_serviceProperties;  // Properties retained for the convenience of the client app.
   NSUInteger _uploadChunkSize;       // Only applies to resumable chunked uploads.
+  dispatch_queue_t _requestCreationQueue;
 }
 
 @synthesize additionalHTTPHeaders = _additionalHTTPHeaders,
@@ -242,15 +246,14 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
             uploadProgressBlock = _uploadProgressBlock,
             userAgentAddition = _userAgentAddition;
 
-+ (Class)ticketClass {
-  return [GTLRServiceTicket class];
-}
-
 - (instancetype)init {
   self = [super init];
   if (self) {
     _parseQueue = dispatch_queue_create("com.google.GTLRServiceParse", DISPATCH_QUEUE_SERIAL);
     _callbackQueue = dispatch_get_main_queue();
+    _requestCreationQueue =
+        dispatch_queue_create("com.google.GTLRServiceRequestCreation", DISPATCH_QUEUE_SERIAL);
+
     _fetcherService = [[GTMSessionFetcherService alloc] init];
 
     // Make the session fetcher use a background delegate queue instead of bouncing
@@ -320,10 +323,26 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
   self.APIKeyRestrictionBundleID = [[NSBundle mainBundle] bundleIdentifier];
 }
 
-- (NSMutableURLRequest *)requestForURL:(NSURL *)url
-                                  ETag:(NSString *)etag
-                            httpMethod:(NSString *)httpMethod
-                                ticket:(GTLRServiceTicket *)ticket {
+- (void)requestForURL:(NSURL *)url
+                 ETag:(NSString *)etag
+           httpMethod:(NSString *)httpMethod
+               ticket:(GTLRServiceTicket *)ticket
+           completion:(void (^)(NSMutableURLRequest *))completion {
+  dispatch_async(_requestCreationQueue, ^{
+    NSMutableURLRequest *request = [self createRequestForURL:url
+                                                        ETag:etag
+                                                  httpMethod:httpMethod
+                                                      ticket:ticket];
+    completion(request);
+  });
+}
+
+- (NSMutableURLRequest *)createRequestForURL:(NSURL *)url
+                                        ETag:(NSString *)etag
+                                  httpMethod:(NSString *)httpMethod
+                                      ticket:(GTLRServiceTicket *)ticket {
+  // This method may block, so make sure it's not on the caller's queue when executing a query.
+  dispatch_assert_queue_debug(_requestCreationQueue);
 
   // subclasses may add headers to this
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url
@@ -372,19 +391,20 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
   return request;
 }
 
-// objectRequestForURL returns an NSMutableURLRequest for a GTLRObject
+// objectRequestForURL asynchronously returns an NSMutableURLRequest for a GTLRObject
 //
 // the object is the object being sent to the server, or nil;
 // the http method may be nil for get, or POST, PUT, DELETE
 
-- (NSMutableURLRequest *)objectRequestForURL:(NSURL *)url
-                                      object:(GTLRObject *)object
-                                 contentType:(NSString *)contentType
-                               contentLength:(NSString *)contentLength
-                                        ETag:(NSString *)etag
-                                  httpMethod:(NSString *)httpMethod
-                           additionalHeaders:(NSDictionary *)additionalHeaders
-                                      ticket:(GTLRServiceTicket *)ticket {
+- (void)objectRequestForURL:(NSURL *)url
+                     object:(GTLRObject *)object
+                contentType:(NSString *)contentType
+              contentLength:(NSString *)contentLength
+                       ETag:(NSString *)etag
+                 httpMethod:(NSString *)httpMethod
+          additionalHeaders:(NSDictionary *)additionalHeaders
+                     ticket:(GTLRServiceTicket *)ticket
+                 completion:(void (^)(NSMutableURLRequest *))completion {
   if (object) {
     // if the object being sent has an etag, add it to the request header to
     // avoid retrieving a duplicate or to avoid writing over an updated
@@ -397,10 +417,23 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
     }
   }
 
-  NSMutableURLRequest *request = [self requestForURL:url
-                                                ETag:etag
-                                          httpMethod:httpMethod
-                                              ticket:ticket];
+  [self requestForURL:url
+                 ETag:etag
+           httpMethod:httpMethod
+               ticket:ticket
+           completion:^(NSMutableURLRequest *request) {
+             [self handleRequestCompletion:request
+                               contentType:contentType
+                             contentLength:contentLength
+                         additionalHeaders:additionalHeaders];
+             completion(request);
+           }];
+}
+
+- (void)handleRequestCompletion:(NSMutableURLRequest *)request
+                    contentType:(NSString *)contentType
+                  contentLength:(NSString *)contentLength
+              additionalHeaders:(NSDictionary<NSString *, NSString *> *)additionalHeaders {
   [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
 
@@ -422,17 +455,43 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
     NSString *value = [headers objectForKey:key];
     [request setValue:value forHTTPHeaderField:key];
   }
-
-  return request;
 }
 
 #pragma mark -
 
 - (NSMutableURLRequest *)requestForQuery:(GTLRQuery *)query {
-  GTLR_DEBUG_ASSERT(query.bodyObject == nil,
-                    @"requestForQuery: supports only GET methods, but was passed: %@", query);
+  // This public API will block the calling thread waiting for a completion to be dispatched onto
+  // this queue, so it cannot be called on this queue.
+  //
+  // Thankfully, this queue is an internal implementation detail, so this just guards against
+  // someone in the future accidentally calling this method on the request creation queue.
+  dispatch_assert_queue_not_debug(_requestCreationQueue);
+
+  dispatch_semaphore_t requestCompleteSemaphore = dispatch_semaphore_create(0);
+
+  __block NSMutableURLRequest *result;
+  [self requestForQuery:query
+        completionQueue:_requestCreationQueue
+             completion:^(NSMutableURLRequest *request) {
+               result = request;
+               dispatch_semaphore_signal(requestCompleteSemaphore);
+             }];
+
+  dispatch_semaphore_wait(requestCompleteSemaphore, DISPATCH_TIME_FOREVER);
+  return result;
+}
+
+- (void)requestForQuery:(GTLRQuery *)query completion:(void (^)(NSMutableURLRequest *))completion {
+  [self requestForQuery:query completionQueue:self.callbackQueue completion:completion];
+}
+
+- (void)requestForQuery:(GTLRQuery *)query
+        completionQueue:(dispatch_queue_t)completionQueue
+             completion:(void (^)(NSMutableURLRequest *))completion {
+  GTLR_DEBUG_ASSERT(query.bodyObject == nil, @"%s supports only GET methods, but was passed: %@",
+                    __func__, query);
   GTLR_DEBUG_ASSERT(query.uploadParameters == nil,
-                    @"requestForQuery: does not support uploads, but was passed: %@", query);
+                    @"%s does not support uploads, but was passed: %@", __func__, query);
 
   NSURL *url = [self URLFromQueryObject:query
                         usePartialPaths:NO
@@ -447,10 +506,19 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
                      queryParameters:queryParameters];
   }
 
-  NSMutableURLRequest *request = [self requestForURL:url
-                                                ETag:nil
-                                          httpMethod:query.httpMethod
-                                              ticket:nil];
+  [self requestForURL:url
+                 ETag:nil
+           httpMethod:query.httpMethod
+               ticket:nil
+           completion:^(NSMutableURLRequest *request) {
+             [self handleRequestCompletion:request forQuery:query];
+             dispatch_async(completionQueue, ^{
+               completion(request);
+             });
+           }];
+}
+
+- (void)handleRequestCompletion:(NSMutableURLRequest *)request forQuery:(GTLRQuery *)query {
   NSString *apiRestriction = self.APIKeyRestrictionBundleID;
   if ([apiRestriction length] > 0) {
     [request setValue:apiRestriction forHTTPHeaderField:kXIosBundleIdHeader];
@@ -467,8 +535,6 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
     NSString *value = [headers objectForKey:key];
     [request setValue:value forHTTPHeaderField:key];
   }
-
-  return request;
 }
 
 // common fetch starting method
@@ -499,8 +565,8 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
 
   // We need to create a ticket unless one was created earlier (like during authentication.)
   if (!ticket) {
-    ticket = [[[[self class] ticketClass] alloc] initWithService:self
-                                             executionParameters:executionParams];
+    ticket = [[GTLRServiceTicket alloc] initWithService:self
+                                    executionParameters:executionParams];
     [ticket notifyStarting:YES];
   }
 
@@ -575,14 +641,6 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
     }
   }
 
-  NSURLRequest *request = [self objectRequestForURL:targetURL
-                                             object:bodyObject
-                                        contentType:contentType
-                                      contentLength:contentLength
-                                               ETag:etag
-                                         httpMethod:httpMethod
-                                  additionalHeaders:additionalHeaders
-                                             ticket:ticket];
   ticket.postedObject = bodyObject;
   ticket.executingQuery = executingQuery;
 
@@ -592,10 +650,39 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
     ticket.originalQuery = originalQuery;
   }
 
+  [self objectRequestForURL:targetURL
+                     object:bodyObject
+                contentType:contentType
+              contentLength:contentLength
+                       ETag:etag
+                 httpMethod:httpMethod
+          additionalHeaders:additionalHeaders
+                     ticket:ticket
+                 completion:^(NSMutableURLRequest *request) {
+                   [self handleObjectRequestCompletionWithRequest:request
+                                                      objectClass:objectClass
+                                                       dataToPost:dataToPost
+                                                     mayAuthorize:mayAuthorize
+                                                completionHandler:completionHandler
+                                                   executingQuery:executingQuery
+                                                           ticket:ticket];
+                 }];
+
+  return ticket;
+}
+
+- (void)handleObjectRequestCompletionWithRequest:(NSMutableURLRequest *)request
+                                     objectClass:(Class)objectClass
+                                      dataToPost:(NSData *)dataToPost
+                                    mayAuthorize:(BOOL)mayAuthorize
+                               completionHandler:(GTLRServiceCompletionHandler)completionHandler
+                                  executingQuery:(id<GTLRQueryProtocol>)executingQuery
+                                          ticket:(GTLRServiceTicket *)ticket {
   // Some proxy servers (and some web servers) have issues with GET URLs being
   // too long, trap that and move the query parameters into the body. The
   // uploadParams and dataToPost should be nil for a GET, but playing it safe
   // and confirming.
+  GTLRUploadParameters *uploadParams = executingQuery.uploadParameters;
   NSString *requestHTTPMethod = request.HTTPMethod;
   BOOL isDoingHTTPGet =
       (requestHTTPMethod == nil
@@ -631,7 +718,7 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
                         testBlock:testBlock
                        dataToPost:dataToPost
                 completionHandler:completionHandler];
-    return ticket;
+    return;
   }
 
   GTMSessionFetcherService *fetcherService = ticket.fetcherService;
@@ -822,17 +909,6 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
        hasSentParsingStartNotification:NO
                      completionHandler:completionHandler];
   }];  // fetcher completion handler
-
-  // If something weird happens and the networking callbacks have been called
-  // already synchronously, we don't want to return the ticket since the caller
-  // will never know when to stop retaining it, so we'll make sure the
-  // success/failure callbacks have not yet been called by checking the
-  // ticket
-  if (ticket.hasCalledCallback) {
-    return nil;
-  }
-
-  return ticket;
 }
 
 - (GTMSessionUploadFetcher *)uploadFetcherWithRequest:(NSURLRequest *)request
@@ -2286,6 +2362,8 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
   return props;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 - (void)setAuthorizer:(id <GTMFetcherAuthorizationProtocol>)authorizer {
   self.fetcherService.authorizer = authorizer;
 }
@@ -2293,6 +2371,7 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
 - (id <GTMFetcherAuthorizationProtocol>)authorizer {
   return self.fetcherService.authorizer;
 }
+#pragma clang diagnostic pop
 
 + (NSUInteger)defaultServiceUploadChunkSize {
   // Subclasses may override this method.
@@ -2531,7 +2610,10 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
   }
 
   NSString *authorizerInfo = @"";
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
   id <GTMFetcherAuthorizationProtocol> authorizer = self.objectFetcher.authorizer;
+#pragma clang diagnostic pop
   if (authorizer != nil) {
     authorizerInfo = [NSString stringWithFormat:@" authorizer:%@", authorizer];
   }

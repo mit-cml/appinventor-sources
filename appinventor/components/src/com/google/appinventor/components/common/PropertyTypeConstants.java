@@ -422,4 +422,17 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor}
    */
   public static final String PROPERTY_TYPE_ORIGIN = "origin";
+
+  /**
+   * Chatbot Providers
+   *
+   */
+  public static final String PROPERTY_TYPE_CHATBOT_PROVIDER = "chatbotprovider";
+
+  /**
+   * Chatbot Models
+   *
+   */
+  public static final String PROPERTY_TYPE_CHATBOT_MODEL = "chatbotmodel";
+
 }

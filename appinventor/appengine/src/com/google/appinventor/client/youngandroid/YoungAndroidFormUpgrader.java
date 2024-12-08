@@ -874,6 +874,10 @@ public final class YoungAndroidFormUpgrader {
       // The ApiKey property was made visible in the designer.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The ConverseWithImage block was added
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1385,6 +1389,39 @@ public final class YoungAndroidFormUpgrader {
       // The MarkOrigin, OriginX, and OriginY properties were added.
       srcCompVersion = 9;
     }
+    if (srcCompVersion < 10) {
+      JSONValue value = componentProperties.get("MarkOrigin");
+      if (value != null) {
+        String origin = value.asString().getString();
+        if (origin.startsWith("(") && origin.endsWith(")")) {
+          String[] parts = origin.substring(1, origin.length() - 1).split(", ");
+          double x = Double.parseDouble(parts[0]);
+          double y = Double.parseDouble(parts[1]);
+          if (x == 0.0 && y == 0.0) {
+            // Clean up the default value
+            componentProperties.remove("MarkOrigin");
+          }
+        }
+      }
+      value = componentProperties.get("OriginX");
+      if (value != null) {
+        double x = Double.parseDouble(value.asString().getString());
+        if (x == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginX");
+        }
+      }
+      // I haven't seen this in the wild but just in case...
+      value = componentProperties.get("OriginY");
+      if (value != null) {
+        double y = Double.parseDouble(value.asString().getString());
+        if (y == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginY");
+        }
+      }
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 
@@ -1476,6 +1513,25 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // Added RemoveItemAtIndex method
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Added HintText property, performance optimization.
+
+      // !!! NB: Note that because of a behavior issue introduced in nb199, if we get to this point
+      // we immediately jump to version 9 since this project predates the introduction of the
+      // ElementColor property.
+      srcCompVersion = 9;
+    }
+    if (srcCompVersion < 9) {
+      srcCompVersion = 9;
+      if (componentProperties.containsKey("ElementColor")) {
+        // ElementColor default was changed to None. If the user manually changed it to None,
+        // remove it to keep the project size down.
+        String elementColor = componentProperties.get("ElementColor").asString().getString();
+        if ("&H00FFFFFF".equals(elementColor)) {
+          componentProperties.remove("ElementColor");
+        }
+      }
     }
     return srcCompVersion;
   }
