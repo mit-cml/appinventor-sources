@@ -124,7 +124,6 @@ public final class ListView extends AndroidViewComponent {
   private String propertyValue;  // JSON string representing data entered through the Designer
 
   private boolean multiSelect;
-  private boolean divider;
   private Paint dividerPaint;
   private int dividerColor;
   private int dividerSize;
@@ -217,7 +216,7 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    BackgroundColor(Component.COLOR_BLACK);
+    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
     TextColorDetail(Component.COLOR_WHITE);
@@ -1361,14 +1360,22 @@ public final class ListView extends AndroidViewComponent {
           outRect.setEmpty();
         }
       } else {
-        int column = position % spanCount;
-        outRect.left = margins - column * margins / spanCount;
-        outRect.right = (column + 1) * margins / spanCount;
-        if (position < spanCount || first) {
-          first = false;
-          outRect.top = margins;
+        if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+          if (position == 0) {
+            outRect.set(margins, margins, margins, margins);
+          } else {
+            outRect.set(0, margins, margins, margins);
+          }
+        } else {
+          int column = position % spanCount;
+          outRect.left = margins - column * margins / spanCount;
+          outRect.right = (column + 1) * margins / spanCount;
+          if (position < spanCount || first) {
+            first = false;
+            outRect.top = margins;
+          }
+          outRect.bottom = margins;
         }
-        outRect.bottom = margins;
       }
     }
   }
