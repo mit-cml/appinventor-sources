@@ -1,10 +1,7 @@
-//
-//  ScatterWithTrendlineRenderer.swift
-//  AIComponentKit
-//
-//  Created by David Kim on 9/17/24.
-//  Copyright © 2024 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
 import UIKit

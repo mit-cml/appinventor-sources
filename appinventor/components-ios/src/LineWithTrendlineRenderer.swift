@@ -1,10 +1,7 @@
-//
-//  LineWithTrendlineRenderer.swift
-//  AIComponentKit
-//
-//  Created by David Kim on 6/25/24.
-//  Copyright © 2024 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
 import UIKit
@@ -45,11 +42,6 @@ class LineWithTrendlineRenderer: LineChartRenderer {
     if points.isEmpty {
       return
     }
-
-//    print(points[0].x)
-//    if (points[0].x == 1.7976931348623157e+308){
-//      return
-//    }
 
     let linePath = CGMutablePath()
     for (index, point) in points.enumerated() {
