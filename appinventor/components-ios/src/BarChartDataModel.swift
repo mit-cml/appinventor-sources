@@ -67,37 +67,15 @@ open class BarChartDataModel: Chart2DDataModel {
     }
   }
 
-  public override func removeEntry(_ index: Int) {
-    // Check if the index is within the bounds of the entries array
-    guard index >= 0 && index < entries.count else { return }
-
-    entries[index].y = 0.0
-  }
-
-  public override func addTimeEntry(_ tuple: YailList<AnyObject>) {
-    // Ensure there's a mechanism to convert the tuple to a BarChartDataEntry
-    guard let entry = getEntryFromTuple(tuple ) as? BarChartDataEntry else {
-      return
+  public override func areEntriesEqual(_ e1: AnyObject, _ e2: AnyObject) -> Bool {
+    guard let barEntry1 = e1 as? BarChartDataEntry,
+          let barEntry2 = e2 as? BarChartDataEntry else {
+      return false
     }
 
-    // If the entry count exceeds the maximum allowed time entries, remove the first one
-    if entries.count >= maximumTimeEntries {
-      _entries.append(BarChartDataEntry(x: Double(entries.count), y: 0.0))
-    }
-
-    // Add the new entry
-    _entries.append(entry)
-  }
-
-  public override func areEntriesEqual(_ e1: ChartDataEntry, _ e2: ChartDataEntry) -> Bool {
-      guard let barEntry1 = e1 as? BarChartDataEntry,
-            let barEntry2 = e2 as? BarChartDataEntry else {
-          return false
-      }
-
-      // Floor the x values to compare without the decimal part,
-      // and directly compare the y values.
-      return floor(barEntry1.x) == floor(barEntry2.x) && barEntry1.y == barEntry2.y
+    // Floor the x values to compare without the decimal part,
+    // and directly compare the y values.
+    return floor(barEntry1.x) == floor(barEntry2.x) && barEntry1.y == barEntry2.y
   }
 
 

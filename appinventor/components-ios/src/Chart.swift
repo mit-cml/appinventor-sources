@@ -51,7 +51,7 @@ import DGCharts
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
-  var _dataComponents: Array<ChartDataBase> = []
+  var _dataComponents: Array<ChartComponent> = []
 
   @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
@@ -289,7 +289,7 @@ import DGCharts
     PieRadius = _pieRadius
   }
 
-  func addDataComponent(_ dataComponent: ChartDataBase) {
+  func addDataComponent(_ dataComponent: ChartComponent) {
     _dataComponents.append(dataComponent)
   }
 }

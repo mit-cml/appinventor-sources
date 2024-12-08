@@ -11,7 +11,7 @@ open class Chart2DDataModel: ChartDataModel {
     super.init(data: data, view: view)
   }
 
-  public func getTupleSize() -> Int {
+  public override func getTupleSize() -> Int {
     return 2
   }
 

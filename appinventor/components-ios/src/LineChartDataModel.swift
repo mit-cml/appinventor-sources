@@ -10,5 +10,9 @@ class LineChartDataModel: LineChartBaseDataModel {
   public init(data: DGCharts.LineChartData, view: LineChartView) {
     super.init(data: data, view: view)
   }
+
+  public override init(data: DGCharts.LineChartData, view: LineChartViewBase, dataset: DGCharts.ChartDataSet) {
+    super.init(data: data, view: view, dataset: dataset)
+  }
 }
 
