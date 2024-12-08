@@ -393,6 +393,10 @@ open class Web: NonvisibleComponent {
     }
   }
 
+  @objc public static func decodeJson(_ jsonText: String) -> AnyObject? {
+    return try? getYailObjectFromJson(jsonText, true)
+  }
+
   @objc open func UriDecode(_ text: String) -> String {
     return text.removingPercentEncoding ?? text
   }
