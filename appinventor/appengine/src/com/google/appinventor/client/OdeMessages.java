@@ -5333,6 +5333,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Terrain map type")
   String mapTypeTerrain();
 
+  @DefaultMessage("Custom")
+  @Description("Custom map type")
+  String mapTypeCustom();
+
+  @DefaultMessage("CustomUrl")
+  @Description("The URL of the custom tile layer to use as the base of the map")
+  String mapCustomUrl();
+
   @DefaultMessage("Metric")
   @Description("Display name for the metric unit system")
   String mapScaleUnitsMetric();
@@ -5400,6 +5408,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("The value supplied for {0} was not a valid latitude, longitude pair.")
   @Description("")
   String expectedLatLongPair(String property);
+
+  @DefaultMessage("The provided URL {0} does not contain placeholders for {1}.") // Can't use {x} here, Java compiler tries to interpret the variable x
+  @Description("")
+  String customUrlNoPlaceholders(String property, String placeholders);
+
+  @DefaultMessage("The provided URL {0}, when tested, failed authentication (with HTTP status code {1}).")
+  @Description("")
+  String customUrlBadAuthentication(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned a bad HTTP status code ({1}).")
+  @Description("")
+  String customUrlBadStatusCode(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned an exception ({1}).")
+  @Description("")
+  String customUrlException(String property, String e);
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")
