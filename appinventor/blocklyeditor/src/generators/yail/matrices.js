@@ -15,7 +15,7 @@ Blockly.Yail['matrices_create'] = function() {
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-matrix" + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_OPEN_COMBINATION;
   var rows = this.getFieldValue('ROWS') || 2;
   var cols = this.getFieldValue('COLS') || 2;
-  code += rows + Blockly.Yail.YAIL_SPACER + cols + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER + rows + Blockly.Yail.YAIL_SPACER + cols + Blockly.Yail.YAIL_SPACER;
 
   code += Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
@@ -31,8 +31,13 @@ Blockly.Yail['matrices_create'] = function() {
     for (var k = 0; k < cols; k++) {
       code += "number" + Blockly.Yail.YAIL_SPACER;
     }
-    code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
-    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+    code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE 
+    if (i == rows - 1) {
+      code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    } else {
+      code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    }
+    code += Blockly.Yail.YAIL_SPACER;
   }
   code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   for (var l = 0; l < rows; l++) {
@@ -40,7 +45,7 @@ Blockly.Yail['matrices_create'] = function() {
   }  
   code +=  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE;
-  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code += "number number list" +  Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "create a matrix" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;

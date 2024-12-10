@@ -1039,6 +1039,7 @@
 (define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailDictionary <com.google.appinventor.components.runtime.util.YailDictionary>)
+(define-alias YailMatrix <com.google.appinventor.components.runtime.util.YailMatrix>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 
 (define-alias JavaCollection <java.util.Collection>)
@@ -1488,6 +1489,7 @@
      ((equal? type 'pair) (coerce-to-pair arg))
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
+     ((equal? type 'matrix) (coerce-to-matrix arg))
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
@@ -1745,6 +1747,21 @@
             (arg:toYailDictionary)
             (exception java.lang.Exception
               (*non-coercible-value*))))))
+
+(define (coerce-to-matrix arg)
+  (cond
+    ((yail-matrix? arg) arg)
+    ((yail-list? arg)
+      (let* ((rows (length arg))
+             (is-valid-matrix (and (> rows 0)
+                                   (every (lambda (row)
+                                            (and (yail-list? row)
+                                                 (= (length (car arg)) (length row))))
+                                          arg))))
+        (if is-valid-matrix
+            (make-yail-matrix rows (length (car arg)) arg)
+            *non-coercible-value*)))
+    (else *non-coercible-value*))) ; Cannot coerce
 
 (define (coerce-to-boolean arg)
   (cond
@@ -2267,7 +2284,7 @@
 (define (minl l)
   (let ((l-content (yail-list-contents l)))
   (if (null? l-content) ; edge case: empty list
-      1/0             ; default is positive infinity   
+      1/0             ; default is positive infinity
       (apply min l-content))))
 
 (define (mean l-content)
@@ -2291,7 +2308,7 @@
                (get-display-representation lst))
        "List smaller than 2")
       (sqrt
-          (yail-divide  
+          (yail-divide
             (sum-mean-square-diff lst (mean lst))
             (length lst)))))
 )
@@ -2313,7 +2330,7 @@
                (get-display-representation lst))
        "List smaller than 2")
 
-      (yail-divide  
+      (yail-divide
           (sample-std-dev lst)
           (sqrt (length lst)))))
 )
@@ -3251,6 +3268,9 @@ Matrix implementation.
 (define (yail-matrix-set-cell! matrix row col value)
   (*:setCell (as YailMatrix matrix) row col value))
 
+(define (yail-matrix? x)
+  (instance? x YailMatrix))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Matrix implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3304,8 +3324,8 @@ Matrix implementation.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at) 
-  (JavaStringUtils:split text (Pattern:quote at))) 
+(define (string-split text at)
+  (JavaStringUtils:split text (Pattern:quote at)))
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
