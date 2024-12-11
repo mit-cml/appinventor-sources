@@ -124,6 +124,7 @@ fileprivate class CustomAlertView: UIView {
   var stack = UIStackView()
   let kDefaultSpacing: CGFloat = 12
   private var dialogConstraint: NSLayoutConstraint!
+  var alertType: ActiveAlertType? = nil
 
   convenience init(title: String, message: String?) {
     self.init(frame: UIScreen.main.bounds)
@@ -262,7 +263,6 @@ open class Notifier: NonvisibleComponent {
   fileprivate var _backgroundColor = Int32(bitPattern: Color.darkGray.rawValue)
   fileprivate var _textColor = Int32(bitPattern: Color.white.rawValue)
   static var notices = NotifierArray()
-  private var _alertType: ActiveAlertType? = nil
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -303,19 +303,18 @@ open class Notifier: NonvisibleComponent {
 
   // MARK: Notifier Methods
   @objc open func DismissProgressDialog() {
-      guard _alertType == .Progress else { return }
-      // Dismiss only the active progress dialog, if it exists in `_activeAlerts`
-      if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
-        print("Dismissing progress alert at index: \(index)")
-        activeAlert.dismiss(animated: true) { [weak self] _ in
-          // Clear `_activeAlert` reference after dismissal
-          self?._alertType = nil
-          print("Progress dialog dismissed. Promoting next alert...")
-          self?.promoteNextAlert()
-        }
-      } else {
-        print("Active progress alert not found in _activeAlerts.")
+    guard _activeAlert?.alertType == .Progress else { return }
+    // Dismiss only the active progress dialog, if it exists in `_activeAlerts`
+    if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
+      print("Dismissing progress alert at index: \(index)")
+      activeAlert.dismiss(animated: true) { [weak self] _ in
+        // Clear `_activeAlert` reference after dismissal
+        print("Progress dialog dismissed. Promoting next alert...")
+        self?.promoteNextAlert()
       }
+    } else {
+      print("Active progress alert not found in _activeAlerts.")
+    }
   }
 
   @objc open func DismissActiveDialog() {
@@ -343,11 +342,11 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func ShowProgressDialog(_ message: String, _ title: String) {
     let alert = CustomAlertView(title: title, message: message)
+    alert.alertType = .Progress
     let spinner = UIActivityIndicatorView(style: .gray)
     spinner.startAnimating()
     alert.stack.addArrangedSubview(spinner)
     _activeAlerts.append(alert)
-    _alertType = .Progress
     alert.show(animated: true)
   }
   
@@ -370,7 +369,7 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
       let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
-      _alertType = .Choose
+    newAlert.alertType = .Choose
 
       // Configure buttons
       let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
@@ -419,8 +418,9 @@ open class Notifier: NonvisibleComponent {
   private func showTextInputDialog(message: String, title: String, cancelable: Bool, maskInput: Bool = false) {
     guard _activeAlert == nil else { return }
 
-    _activeAlerts.append(CustomAlertView(title: title, message: message))
-    _alertType = .Text
+    let newAlert = CustomAlertView(title: title, message: message)
+    newAlert.alertType = .Text
+    _activeAlerts.append(newAlert)
 
     let actions = UIStackView()
     actions.axis = .horizontal
