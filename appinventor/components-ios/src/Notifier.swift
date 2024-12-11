@@ -301,6 +301,7 @@ open class Notifier: NonvisibleComponent {
   fileprivate var _activeAlerts: [CustomAlertView] = []
   fileprivate var _activeAlert: CustomAlertView? {_activeAlerts.last}
 
+  // MARK: Notifier Methods
   @objc open func DismissProgressDialog() {
       guard _alertType == .Progress else { return }
       // Dismiss only the active progress dialog, if it exists in `_activeAlerts`
@@ -328,16 +329,16 @@ open class Notifier: NonvisibleComponent {
   }
   
   private func promoteNextAlert() {
-      if !_activeAlerts.isEmpty {
-        // Remove the dismissed alert from the list if necessary
-        _activeAlerts.removeLast()
-        // Promote the next alert if available
-        if let nextAlert = _activeAlert {
-          nextAlert.show(animated: true)
-        } else {
-          print("No more alerts to promote.")
-        }
+    if !_activeAlerts.isEmpty {
+      // Remove the dismissed alert from the list if necessary
+      _activeAlerts.removeLast()
+      // Promote the next alert if available
+      if let nextAlert = _activeAlert {
+        nextAlert.show(animated: true)
+      } else {
+        print("No more alerts to promote.")
       }
+    }
   }
 
   @objc open func ShowProgressDialog(_ message: String, _ title: String) {
@@ -350,7 +351,6 @@ open class Notifier: NonvisibleComponent {
     alert.show(animated: true)
   }
   
-  // MARK: Notifier Methods
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
   }
@@ -367,7 +367,7 @@ open class Notifier: NonvisibleComponent {
     let duration = TimeInterval(_notifierLength == 1 ? 3.5 : 2.0)
     Notifier.notices.addAlert(notice, for: duration)
   }
-  
+
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
       let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
       _alertType = .Choose
@@ -382,10 +382,10 @@ open class Notifier: NonvisibleComponent {
 
       // Add cancel button if needed
       if cancelable {
-          let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
-          makeBorder(for: cancel, vertical: false)
-          cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
-          newAlert.stack.addArrangedSubview(cancel)
+        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
+        makeBorder(for: cancel, vertical: false)
+        cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+        newAlert.stack.addArrangedSubview(cancel)
       }
 
       // Add the alert to the queue
@@ -512,7 +512,7 @@ open class Notifier: NonvisibleComponent {
     }
     promoteNextAlert()
   }
-  
+
   @objc fileprivate func cancelChoosing(sender: UIButton) {
     ChoosingCanceled()
     afterChoosing(sender: sender)
