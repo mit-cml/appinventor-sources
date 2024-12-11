@@ -693,10 +693,6 @@ div.StatusPanel {
   vertical-align: top;
 }
 
-.ode-WorkColumns>div:not(.ViewerBox) {
-  flex-shrink: 0;
-}
-
 .ViewerBox {
   min-width: 368px;
   flex-grow: 1;
@@ -3261,6 +3257,7 @@ div.dropdiv p {
 }
 
 .ya-Toolbar .right {
+  min-width: 410px;
   text-align: right;
 }
 
