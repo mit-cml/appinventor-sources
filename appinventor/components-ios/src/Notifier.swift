@@ -262,13 +262,6 @@ open class Notifier: NonvisibleComponent {
   fileprivate var _backgroundColor = Int32(bitPattern: Color.darkGray.rawValue)
   fileprivate var _textColor = Int32(bitPattern: Color.white.rawValue)
   static var notices = NotifierArray()
-//  fileprivate var _activeAlert: CustomAlertView? = nil {
-//    didSet {
-//      if _activeAlert == nil {
-//        _alertType = nil
-//      }
-//    }
-//  }
   private var _alertType: ActiveAlertType? = nil
 
   public override init(_ container: ComponentContainer) {
@@ -305,7 +298,6 @@ open class Notifier: NonvisibleComponent {
       _textColor = argb
     }
   }
-  //beginning of revision 1
   fileprivate var _activeAlerts: [CustomAlertView] = []
   fileprivate var _activeAlert: CustomAlertView? {_activeAlerts.last}
 
@@ -315,7 +307,6 @@ open class Notifier: NonvisibleComponent {
       if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
         print("Dismissing progress alert at index: \(index)")
         activeAlert.dismiss(animated: true) { [weak self] _ in
-          //self?._activeAlerts.remove(at: index)
           // Clear `_activeAlert` reference after dismissal
           self?._alertType = nil
           print("Progress dialog dismissed. Promoting next alert...")
@@ -325,8 +316,7 @@ open class Notifier: NonvisibleComponent {
         print("Active progress alert not found in _activeAlerts.")
       }
   }
-  
-  //revision 2
+
   @objc open func DismissActiveDialog() {
     guard let activeAlert = _activeAlert else {
       return
@@ -360,9 +350,6 @@ open class Notifier: NonvisibleComponent {
     alert.show(animated: true)
   }
   
-  //end of revision 1
-  
-  
   // MARK: Notifier Methods
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
@@ -381,7 +368,6 @@ open class Notifier: NonvisibleComponent {
     Notifier.notices.addAlert(notice, for: duration)
   }
   
-  //ShowChooseDialog Revision 1
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
       let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
       _alertType = .Choose
@@ -512,12 +498,12 @@ open class Notifier: NonvisibleComponent {
       }
     }
   }
-  //comment out to revert back to original
+
   @objc fileprivate func afterChoosing(sender: UIButton) {
     _activeAlert?.dismiss(animated: true)
     if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
       _activeAlerts.remove(at: index) // Remove the dismissed alert from the array
-    } //if statement is new code
+    }
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
@@ -527,7 +513,6 @@ open class Notifier: NonvisibleComponent {
     promoteNextAlert()
   }
   
-  //comment out to revert back to original
   @objc fileprivate func cancelChoosing(sender: UIButton) {
     ChoosingCanceled()
     afterChoosing(sender: sender)
