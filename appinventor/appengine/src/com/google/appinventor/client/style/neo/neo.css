@@ -606,12 +606,10 @@ they get cut off in Windows.
 
   .ode-Designer-LeftColumn {
     min-width: 265px;
-    flex-shrink: 0;
   }
 
   .ode-Designer-RightColumns {
     width: 222px;
-    flex-shrink: 0;
   }
 
   .ode-NavArrow {
