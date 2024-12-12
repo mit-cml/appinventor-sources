@@ -305,6 +305,7 @@ import UIKit
     (lastResults["r^2"]) ?? Double.nan
   }
 
+  // TODO : make strokeStyle and stokeWidth work
   @objc open var strokeStyle: StrokeStyle {
     get {
       return _strokeStyle

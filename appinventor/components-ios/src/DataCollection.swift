@@ -27,6 +27,7 @@ import Foundation
   var _initialized: Bool = false
   var _tick: Int = 0
 
+  // TODO : We need to test this to make sure it doesn't create a reference cycle.
   internal var listeners = Set<NSObject>()
   func addDataSourceChangeListener(_ listener: DataSourceChangeListener) {
     guard let listenerObject = listener as? NSObject else { return }
