@@ -21,8 +21,8 @@ If your code changes how something works on the device (i.e., it affects the com
 
 Further, if you've changed the blocks language or another user-facing designer/blocks API (added a SimpleProperty, etc.):
 
-- [ ] I have updated the corresponding version number in appinventor/components/common/YaVersion.java
-- [ ] I have updated the corresponding upgrader in appinventor/client/youngandroid/YoungAndroidFormUpgrader.java (components only)
+- [ ] I have updated the corresponding version number in appinventor/components/src/.../common/YaVersion.java
+- [ ] I have updated the corresponding upgrader in appinventor/appengine/src/.../client/youngandroid/YoungAndroidFormUpgrader.java (components only)
 - [ ] I have updated the corresponding entries in appinventor/blocklyeditor/src/versioning.js
 
 <!--
