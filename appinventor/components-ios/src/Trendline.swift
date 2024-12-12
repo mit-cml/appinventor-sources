@@ -55,17 +55,17 @@ import UIKit
     self.value = value
   }
 
-  @objc public class func fromUnderlyingValue(_ value: Int) -> StrokeStyle? {
-    return lookup[value]
+  @objc public class func fromUnderlyingValue(_ value: Any) -> StrokeStyle? {
+      if let intValue = value as? Int {
+          // Handle Int case
+          return lookup[intValue]
+      } else if let stringValue = value as? String, let intValue = Int(stringValue) {
+          // Handle String case (convert to Int)
+          return lookup[intValue]
+      }
+      // Return nil for unsupported types or invalid String to Int conversion
+      return nil
   }
-
-  //TODO: how can we resolve this?
-  //  @objc public class func fromUnderlyingValue(_ value: String) -> StrokeStyle? {
-  //    if let intValue = Int(value) {
-  //      return fromUnderlyingValue(intValue)
-  //    }
-  //    return nil
-  //  }
 
   @objc public func toUnderlyingValue() -> Int {
     return value
@@ -196,7 +196,11 @@ import UIKit
 
   @objc public var ChartData: ChartData2D {
     get {
-      return _chartData!
+      guard let data = _chartData else {
+        print("Warning: _chartData is nil. Returning a default ChartData2D object.")
+        return ChartData2D(_container)
+      }
+      return data
     }
     set {
       if _chartData != nil {
@@ -225,19 +229,19 @@ import UIKit
     }
   }
 
-  @objc open var correlationCoefficient: Any {
+  @objc open var CorrelationCoefficient: Any {
     return lastResults["correlation coefficient"] ?? Double.nan
   }
 
-  @objc open var exponentialBase: Any {
+  @objc open var ExponentialBase: Any {
     return lastResults["b"] ?? Double.nan
   }
 
-  @objc open var exponentialCoefficient: Any {
+  @objc open var ExponentialCoefficient: Any {
     return lastResults["a"] ?? Double.nan
   }
 
-  @objc open var extend: Bool {
+  @objc open var Extend: Bool {
     get {
       return _extend
     }
@@ -249,15 +253,15 @@ import UIKit
     }
   }
 
-  @objc open var linearCoefficient: Any {
+  @objc open var LinearCoefficient: Any {
     return lastResults["slope"] ?? Double.nan
   }
 
-  @objc open var logarithmCoefficient: Any {
+  @objc open var LogarithmCoefficient: Any {
     return lastResults["b"] ?? Double.nan
   }
 
-  @objc open var logarithmConstant: Any {
+  @objc open var LogarithmConstant: Any {
     return lastResults["a"] ?? Double.nan
   }
 
@@ -285,19 +289,19 @@ import UIKit
     }
   }
 
-  @objc open var predictions: [Double] {
+  @objc open var Predictions: [Double] {
     lastResults["predictions"] as? [Double] ?? []
   }
 
-  @objc open var quadraticCoefficient: Any {
+  @objc open var QuadraticCoefficient: Any {
     (lastResults["x^2"]) ?? 0.0
   }
 
-  @objc open var results: [String: Any] {
+  @objc open var Results: [String: Any] {
     lastResults
   }
 
-  @objc open var rSquared: Any {
+  @objc open var RSquared: Any {
     (lastResults["r^2"]) ?? Double.nan
   }
 

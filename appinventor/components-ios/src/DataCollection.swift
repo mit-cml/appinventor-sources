@@ -1,10 +1,7 @@
-//
-//  DataCollection.swift
-//  AIComponentKit
-//
-//  Created by David Kim on 3/28/24.
-//  Copyright © 2024 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2022 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
 
@@ -21,53 +18,14 @@ import Foundation
     return dataModel?.entries ?? []
   }
   
-  private var _dataFileColumns: [String]?
-  var dataFileColumns: [String]? {
-    get { _dataFileColumns }
-    set { _dataFileColumns = newValue }
-  }
-
-  private var _useSheetHeaders: Bool = false
-  var useSheetHeaders: Bool {
-    get { _useSheetHeaders }
-    set { _useSheetHeaders = newValue }
-  }
-
-  private var _sheetsColumns: [String]?
-  var sheetsColumns: [String]? {
-    get { _sheetsColumns }
-    set { _sheetsColumns = newValue }
-  }
-
-  private var _webColumns: [String]?
-  var webColumns: [String]? {
-    get { _webColumns }
-    set { _webColumns = newValue }
-  }
-
-  private var _dataSourceKey: String?
-  var dataSourceKey: String? {
-    get { _dataSourceKey }
-    set { _dataSourceKey = newValue }
-  }
-
-  private var __elements: String?
-  var _elements: String? {
-    get { __elements }
-    set { __elements = newValue }
-  }
-
-  private var __initialized: Bool = false
-  var _initialized: Bool {
-    get { __initialized }
-    set { __initialized = newValue }
-  }
-
-  private var __tick: Int = 0
-  var _tick: Int {
-    get { __tick }
-    set { __tick = newValue }
-  }
+  var dataFileColumns: [String]?
+  var useSheetHeaders: Bool = false
+  var sheetsColumns: [String]?
+  var webColumns: [String]?
+  var dataSourceKey: String?
+  var _elements: String?
+  var _initialized: Bool = false
+  var _tick: Int = 0
 
   internal var listeners = Set<NSObject>()
   func addDataSourceChangeListener(_ listener: DataSourceChangeListener) {
