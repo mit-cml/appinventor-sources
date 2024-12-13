@@ -9,9 +9,6 @@ import Charts
 import DGCharts
 
 class LineWithTrendlineRenderer: LineChartRenderer {
-  private let logTag = "LineWithTrendlineRenderer"
-  private let debug = false
-
   init(chart: DGCharts.LineChartView, animator: Animator, viewPortHandler: ViewPortHandler) {
     super.init(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler)
   }

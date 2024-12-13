@@ -56,15 +56,15 @@ import UIKit
   }
 
   @objc public class func fromUnderlyingValue(_ value: Any) -> StrokeStyle? {
-      if let intValue = value as? Int {
-          // Handle Int case
-          return lookup[intValue]
-      } else if let stringValue = value as? String, let intValue = Int(stringValue) {
-          // Handle String case (convert to Int)
-          return lookup[intValue]
-      }
-      // Return nil for unsupported types or invalid String to Int conversion
-      return nil
+    if let intValue = value as? Int {
+      // Handle Int case
+      return lookup[intValue]
+    } else if let stringValue = value as? String, let intValue = Int(stringValue) {
+      // Handle String case (convert to Int)
+      return lookup[intValue]
+    }
+    // Return nil for unsupported types or invalid String to Int conversion
+    return nil
   }
 
   @objc public func toUnderlyingValue() -> Int {

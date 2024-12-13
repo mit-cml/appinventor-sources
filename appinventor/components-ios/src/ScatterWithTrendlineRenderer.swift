@@ -9,9 +9,6 @@ import Charts
 import DGCharts
 
 class ScatterWithTrendlineRenderer: ScatterChartRenderer {
-  private let logTag = "ScatterWithTrendlineRenderer"
-  private let debug = false
-
   init(chart: DGCharts.ScatterChartView, animator: Animator, viewPortHandler: ViewPortHandler) {
     super.init(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler)
   }
