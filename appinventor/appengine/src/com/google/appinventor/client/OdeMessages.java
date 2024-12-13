@@ -5687,4 +5687,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message to display when Mark Origin is attempted before an image is set")
   String provideImageFirst();
 
+  @DefaultMessage("You can always change your user interface under the Settings menu.")
+  @Description("Dialog to introduce users to new UI. Shown once to each user.")
+  String selectUIStyle();
 }

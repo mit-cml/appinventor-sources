@@ -688,6 +688,10 @@ path.ode-SimpleMockMapFeature-selected {
   color: panel-shadow;
 }
 
+.ode-DialogBox .ExtendedText {
+  color: top-panel-color;
+}
+
 .ode-DialogBox .gwt-Tree {
   border: thin solid border-color;
 }
