@@ -1012,6 +1012,14 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   lexicalVariablesPlugin.init(workspace);
   var searchPlugin = new WorkspaceSearch(workspace);
   searchPlugin.init();
+  /*
+    Keyboard navigation -- needs to be fixed with multiselect
+  if (!AI.Blockly.navigationController) {
+    AI.Blockly.navigationController = new NavigationController();
+    AI.Blockly.navigationController.init();
+  }
+  AI.Blockly.navigationController.addWorkspace(workspace);
+  */
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
@@ -1129,6 +1137,7 @@ Blockly.ai_inject = function(container, workspace) {
         workspace.notYetRendered = false;
         workspace.scrollCenter();
       }
+      //AI.Blockly.navigationController.enable(workspace);
     });
     return;
   }

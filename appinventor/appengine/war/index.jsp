@@ -98,6 +98,7 @@
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta1.min.js"></script>
+    <script type="text/javascript" src="static/js/keyboard-navigation-0.5.13.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
