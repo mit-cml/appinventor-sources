@@ -1325,9 +1325,10 @@ import GoogleAPIClientForREST
         self.ErrorOccurred("\(error)")
       } else {
         let readResult = result as? GTLRSheets_ValueRange
-        var values: Array<Array<String>> = readResult?.values as! Array<Array<String>>
+        let values: Array<Array<String>> = readResult?.values as! Array<Array<String>>
 
-        self.updateColumns(values as! YailList<YailList<AnyObject>>)
+        let yailValues = YailList<YailList<AnyObject>>(array: values.map { YailList<AnyObject>(array: $0.map { $0 as NSString }) })
+        self.updateColumns(yailValues)
         self.notifyDataObservers(nil, nil)
 
         // no Data found
@@ -1491,12 +1492,12 @@ extension Spreadsheet: ObservableDataSource {
     _observers.remove(listener)
   }
 
-  func getDataValue(_ key: AnyObject) -> AnyObject {
-    return getDataValue(key, false)
+  func getDataValue(_ key: AnyObject?) -> [Any] {
+    return getDataValue(key ?? "" as NSString, false)
   }
 
-  func getDataValue(_ key: AnyObject, _ useHeaders: Bool) -> AnyObject {
-    return getColumns(key, useHeaders)
+  func getDataValue(_ key: AnyObject, _ useHeaders: Bool) -> [Any] {
+    return getColumns(key, useHeaders) as! [Any]
   }
 
   func updateColumns(_ parsedCsv: YailList<YailList<AnyObject>>) {

@@ -13,7 +13,14 @@ class ScatterChartDataModel: PointChartDataModel {
     super.init(data: data, view: view)
     let dataset = ScatterChartDataSet(entries: chartDataEntry, label: " ")
     self.dataset = dataset
-    self.data.dataSets = [dataset]
+    self.data.dataSets.append(dataset)
+    setDefaultStylingProperties()
+  }
+
+  init(data: DGCharts.ScatterChartData, view: ScatterChartView, dataset: DGCharts.ChartDataSet) {
+    super.init(data: data, view: view)
+    self.dataset = dataset
+    self.data.dataSets.append(dataset)
     setDefaultStylingProperties()
   }
 
@@ -26,7 +33,7 @@ class ScatterChartDataModel: PointChartDataModel {
     }
     // Assuming a correctly implemented binarySearch function that returns the index
     // where the entry should be inserted or the negative index - 1 if not found.
-    var index = binarySearch(entry, entries)
+    var index = binarySearch(entry, chartEntries)
     if index < 0 {
       index = -(index + 1)
     } else {
@@ -42,7 +49,7 @@ class ScatterChartDataModel: PointChartDataModel {
     // Assuming you're updating some dataset that needs to be replaced entirely.
     // Performing UI updates asynchronously on the main thread.
     DispatchQueue.main.async {
-      self.dataset?.replaceEntries(self._entries)
+      self.dataset?.replaceEntries(self.chartEntries)
     }
   }
 
@@ -52,16 +59,6 @@ class ScatterChartDataModel: PointChartDataModel {
     }
     scatterDataSet.setScatterShape(.circle)
   }
-
-//  @objc open var `PointShape`: PointStyle {
-//    get {
-//      return _pointshape
-//    }
-//    set {
-//      _pointshape = newValue
-//      setPointShape(_pointshape)
-//    }
-//  }
 
   public func setPointShape(_ shape: PointStyle) {
     guard let scatterDataSet = dataset as? DGCharts.ScatterChartDataSet else {
