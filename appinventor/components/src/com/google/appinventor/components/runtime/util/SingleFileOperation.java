@@ -47,8 +47,13 @@ public abstract class SingleFileOperation extends FileOperation {
     this.accessMode = accessMode;
     this.fileName = fileName;
     this.scopedFile = new ScopedFile(scope, fileName);
-    this.file = scopedFile.resolve(form);
-    this.resolvedPath = file.getAbsolutePath();
+    if (fileName.startsWith("content:")) {
+      this.file = null;
+      this.resolvedPath = fileName;
+    } else {
+      this.file = scopedFile.resolve(form);
+      this.resolvedPath = file.getAbsolutePath();
+    }
     Log.d(LOG_TAG, "resolvedPath = " + resolvedPath);
   }
 
@@ -70,8 +75,13 @@ public abstract class SingleFileOperation extends FileOperation {
     this.accessMode = accessMode;
     this.fileName = file.getFileName();
     this.scopedFile = file;
-    this.file = scopedFile.resolve(form);
-    this.resolvedPath = this.file.getAbsolutePath();
+    if (fileName.startsWith("content:")) {
+      this.file = null;
+      this.resolvedPath = this.fileName;
+    } else {
+      this.file = scopedFile.resolve(form);
+      this.resolvedPath = this.file.getAbsolutePath();
+    }
     Log.d(LOG_TAG, "resolvedPath = " + resolvedPath);
   }
 

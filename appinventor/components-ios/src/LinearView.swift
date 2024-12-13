@@ -101,6 +101,7 @@ public class LinearView: UIView {
   fileprivate var _innerEqualConstraint: NSLayoutConstraint!
   fileprivate var _equalConstraint: NSLayoutConstraint!
   fileprivate var _backgroundView = UIView()  // View for background color
+  fileprivate var _imageView = UIImageView()  // View for background image
   fileprivate var _fillParentView = UIView()
   private var widthConstraints = [UIView:Length]()
   private var widthFillParent = 0
@@ -126,14 +127,24 @@ public class LinearView: UIView {
     _inner.translatesAutoresizingMaskIntoConstraints = false
     _scrollview.translatesAutoresizingMaskIntoConstraints = false
     _backgroundView.translatesAutoresizingMaskIntoConstraints = false
+    _imageView.translatesAutoresizingMaskIntoConstraints = false
     _fillParentView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(_backgroundView)
+    addSubview(_imageView)
     addSubview(_fillParentView)
     addSubview(_outer)
     _backgroundView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     _backgroundView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
     _backgroundView.topAnchor.constraint(equalTo: topAnchor).isActive = true
     _backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    _imageView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+    _imageView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+    _imageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    _imageView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    _imageView.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
+    _imageView.setContentHuggingPriority(FillParentHuggingPriority, for: .vertical)
+    _imageView.setContentCompressionResistancePriority(FillParentHuggingPriority, for: .horizontal)
+    _imageView.setContentCompressionResistancePriority(FillParentHuggingPriority, for: .vertical)
     _outer.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     _outer.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
     _outer.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -263,6 +274,25 @@ public class LinearView: UIView {
     }
   }
 
+  open func resetView() {
+    /* Resets the all the width*/
+    widthFillParent = 0
+    widthFillParentConstraint?.isActive = false
+    widthFillParentConstraint = nil
+
+    /* Resets the all the height*/
+    heightFillParent = 0
+    heightFillParentConstraint?.isActive = false
+    heightFillParentConstraint = nil
+
+    _innerEqualConstraint.isActive = true
+    _innerHeadZero.isActive = false
+    _innerTailZero.isActive = false
+
+    updatePositioningConstraints()
+    updatePriorities()
+  }
+
   open func removeAllItems() {
     for item in _items {
       _inner.removeArrangedSubview(item.view)
@@ -307,6 +337,15 @@ public class LinearView: UIView {
     }
     set(color) {
       _backgroundView.backgroundColor = color
+    }
+  }
+
+  open var image: UIImage? {
+    get {
+      return _imageView.image
+    }
+    set(img) {
+      _imageView.image = img
     }
   }
 

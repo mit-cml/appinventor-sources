@@ -7,16 +7,16 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mock for the non-visible ImageBot component. This needs a separate mock
@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 public class MockImageBot extends MockNonVisibleComponent {
-
+  private static final Logger LOG = Logger.getLogger(MockImageBot.class.getName());
   public static final String TYPE = "ImageBot";
 
   private static final String PROPERTY_NAME_TOKEN = "Token";
@@ -95,7 +95,7 @@ public class MockImageBot extends MockNonVisibleComponent {
         token.setType(tokenType);
         getTokenFromServer();
         return;                 // Callback from getTokenFromServer finishes up
-      } else if (newValue.substring(0, 1) == "%") {
+      } else if (newValue.charAt(0) == '%') {
         tokenType &= ~EditableProperty.TYPE_NONPERSISTED;
       }
       token.setType(tokenType);
@@ -108,17 +108,23 @@ public class MockImageBot extends MockNonVisibleComponent {
    * because the tokens are identical. Someday this may change, but not today!
    */
   private void getTokenFromServer() {
-    OdeLog.log("getTokenFromServer Called");
+    LOG.info("getTokenFromServer Called");
     Ode.getInstance().getTokenAuthService().getChatBotToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        EditableProperty tokenProperty = MockImageBot.this.properties.getProperty(PROPERTY_NAME_TOKEN);
-        if (tokenProperty != null) {
-          String existingToken = tokenProperty.getValue();
-          if (!existingToken.isEmpty()) {
-            OdeLog.log("bailing on getTokenFromServer existingToken = " + existingToken);
-            return;             // If we have a value, don't over-write it
-          }
+        if (token == null) {
+          onFailure(new UnsupportedOperationException(
+              "Server is not configured to generate ImageBot tokens."));
+          return;
+        }
+        EditableProperty tokenProperty = properties.getProperty(PROPERTY_NAME_TOKEN);
+        if (tokenProperty == null) {
+          return;
+        }
+        String existingToken = tokenProperty.getValue();
+        if (!existingToken.isEmpty()) {
+          LOG.info("bailing on getTokenFromServer existingToken = " + existingToken);
+          return;             // If we have a value, don't over-write it
         }
         int tokenType = tokenProperty.getType();
         tokenType |= EditableProperty.TYPE_NONPERSISTED;

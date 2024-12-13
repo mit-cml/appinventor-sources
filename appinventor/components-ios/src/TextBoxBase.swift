@@ -17,6 +17,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   func textFieldDidBeginEditing(_ textField: UITextField)
   func textFieldDidEndEditing(_ textfield: UITextField)
   func setTextbase(_ base: TextBoxBase)
+  func setCursor(at position: Int32)
 }
 
 // method for creating toolbar to allow users to dismiss keyboard
@@ -47,6 +48,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   fileprivate var _userFontSize = kFontSizeDefault
   fileprivate var _userBackgroundColor: Int32 = Color.default.int32
   fileprivate var _userTextColor: Int32 = Color.default.int32
+  private var _lastText = ""
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
@@ -224,6 +226,22 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
     }
   }
 
+  @objc open var HintColor: Int32 {
+    get {
+      return _hintColor
+    }
+    set {
+      _hintColor = newValue
+      if _hintColor != Color.default.int32 {
+        _delegate?.placeholderColor = _hintColor
+      } else if _isHighContrast || (form?.HighContrast ?? false) {
+        _delegate?.placeholderColor = Color.yellow.int32
+      } else {
+        _delegate?.placeholderColor = colorToArgb(kDefaultPlaceholderColor)
+      }
+    }
+  }
+
   @objc open var LargeFont: Bool {
     get {
       return _isBigText
@@ -253,6 +271,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       return ""
     }
     set(text) {
+      _lastText = text
       _delegate?.text = text
     }
   }
@@ -268,6 +287,26 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   }
   
   // MARK: TextboxBase Methods
+
+  @objc open func MoveCursorTo(_ position: Int32) {
+    let len = _delegate.text?.count ?? 0
+    if position > len {
+      _delegate?.setCursor(at: Int32(len))
+    } else if position <= 1 {
+      _delegate?.setCursor(at: 0)
+    } else {
+      _delegate?.setCursor(at: position - 1)
+    }
+  }
+
+  @objc open func MoveCursorToStart() {
+    MoveCursorTo(0)
+  }
+
+  @objc open func MoveCursorToEnd() {
+    MoveCursorTo(Int32(_delegate?.text?.count ?? 0) + 1)
+  }
+
   @objc open func RequestFocus() {
     _delegate?.view.becomeFirstResponder()
   }
@@ -281,6 +320,12 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }
 
+  @objc open func TextChanged() {
+    if _lastText != (_delegate?.text ?? "") {
+      EventDispatcher.dispatchEvent(of: self, called: "TextChanged")
+    }
+  }
+
   // MARK: UITextViewDelegate implementation
   open func textViewDidBeginEditing(_ textView: UITextView) {
     GotFocus()
@@ -288,5 +333,9 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
 
   open func textViewDidEndEditing(_ textView: UITextView) {
     LostFocus()
+  }
+
+  @objc open func textFieldChanged(_ textField: UITextField) {
+    TextChanged()
   }
 }

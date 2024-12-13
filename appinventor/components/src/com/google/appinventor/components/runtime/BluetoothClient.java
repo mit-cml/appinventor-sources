@@ -11,7 +11,13 @@ import static android.Manifest.permission.BLUETOOTH_ADMIN;
 import static android.Manifest.permission.BLUETOOTH_CONNECT;
 import static android.Manifest.permission.BLUETOOTH_SCAN;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.os.Build;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PermissionConstraint;
@@ -20,25 +26,25 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
-import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.util.Log;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -68,7 +74,7 @@ public final class BluetoothClient extends BluetoothConnectionBase
   private Set<Integer> acceptableDeviceClasses;
 
   // Set of observers
-  private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
+  private final HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   // Executor Service to poll data continuously from the Input Stream
   // which holds data sent by Bluetooth connections. Used for sending
@@ -89,18 +95,21 @@ public final class BluetoothClient extends BluetoothConnectionBase
   }
 
   /**
-   * Returns whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+   * Returns whether BluetoothClient should be disconnected
+   * automatically when an error occurs.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Disconnects BluetoothClient automatically when an error occurs.")
+      description = "Disconnects BluetoothClient automatically when an error occurs.")
   public boolean DisconnectOnError() {
     return disconnectOnError;
   }
 
   /**
-   * Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+   * Specifies whether BluetoothClient should be disconnected
+   * automatically when an error occurs.
    *
-   * @param disconnectOnError {@code true} to disconnect BluetoothClient/BluetoothServer automatically when an error occurs.
+   * @param disconnectOnError {@code true} to disconnect BluetoothClient
+   *                          automatically when an error occurs.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
           defaultValue = "False")
@@ -153,18 +162,17 @@ public final class BluetoothClient extends BluetoothConnectionBase
    * @param address the MAC address of the Bluetooth device
    * @return true if the device is paired, false otherwise
    */
-  @SimpleFunction(description = "Checks whether the Bluetooth device with the specified address " +
-  "is paired.")
+  @SimpleFunction(description = "Checks whether the Bluetooth device with the specified address "
+      + "is paired.")
   public boolean IsDevicePaired(String address) {
     String functionName = "IsDevicePaired";
-    Object bluetoothAdapter = BluetoothReflection.getBluetoothAdapter();
-    if (bluetoothAdapter == null) {
+    if (adapter == null) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_AVAILABLE);
       return false;
     }
 
-    if (!BluetoothReflection.isBluetoothEnabled(bluetoothAdapter)) {
+    if (!adapter.isEnabled()) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_ENABLED);
       return false;
@@ -177,14 +185,14 @@ public final class BluetoothClient extends BluetoothConnectionBase
       address = address.substring(0, firstSpace);
     }
 
-    if (!BluetoothReflection.checkBluetoothAddress(bluetoothAdapter, address)) {
+    if (!BluetoothAdapter.checkBluetoothAddress(address)) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_INVALID_ADDRESS);
       return false;
     }
 
-    Object bluetoothDevice = BluetoothReflection.getRemoteDevice(bluetoothAdapter, address);
-    return BluetoothReflection.isBonded(bluetoothDevice);
+    BluetoothDevice device = adapter.getRemoteDevice(address);
+    return device.getBondState() == BluetoothDevice.BOND_BONDED;
   }
 
   /**
@@ -210,23 +218,27 @@ public final class BluetoothClient extends BluetoothConnectionBase
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       for (String permission : RUNTIME_PERMISSIONS) {
         if (form.isDeniedPermission(permission)) {
-          throw new PermissionException(permission);
+          form.askPermission(new BulkPermissionRequest(this, "AddressesAndNames",
+              RUNTIME_PERMISSIONS) {
+            @Override
+            public void onGranted() {
+              // Possibly, if we had call/cc
+            }
+          });
+          throw new StopBlocksExecution();
         }
       }
     }
 
-    List<String> addressesAndNames = new ArrayList<String>();
+    List<String> addressesAndNames = new ArrayList<>();
 
-    Object bluetoothAdapter = BluetoothReflection.getBluetoothAdapter();
-    if (bluetoothAdapter != null) {
-      if (BluetoothReflection.isBluetoothEnabled(bluetoothAdapter)) {
-        for (Object bluetoothDevice : BluetoothReflection.getBondedDevices(bluetoothAdapter)) {
-          if (isDeviceClassAcceptable(bluetoothDevice)) {
-            String name = BluetoothReflection.getBluetoothDeviceName(bluetoothDevice);
-            String address = BluetoothReflection.getBluetoothDeviceAddress(bluetoothDevice);
-            addressesAndNames.add(address + " " + name);
-          }
-        }
+    if (adapter == null) {
+      return addressesAndNames;
+    }
+
+    for (BluetoothDevice device : adapter.getBondedDevices()) {
+      if (isDeviceClassAcceptable(device)) {
+        addressesAndNames.add(device.getAddress() + " " + device.getName());
       }
     }
 
@@ -243,11 +255,7 @@ public final class BluetoothClient extends BluetoothConnectionBase
   @DesignerProperty(defaultValue = "10")
   public void PollingRate(int rate) {
     // Resolve polling rate values that are too small to the smallest possible value.
-    if (rate < 1) {
-      this.pollingRate = 1;
-    } else {
-      this.pollingRate = rate;
-    }
+    this.pollingRate = Math.max(rate, 1);
   }
 
   /**
@@ -283,22 +291,21 @@ public final class BluetoothClient extends BluetoothConnectionBase
   /**
    * Returns true if the class of the given device is acceptable.
    *
-   * @param bluetoothDevice the Bluetooth device
+   * @param device the Bluetooth device
    */
-  private boolean isDeviceClassAcceptable(Object bluetoothDevice) {
+  private boolean isDeviceClassAcceptable(BluetoothDevice device) {
     if (acceptableDeviceClasses == null) {
-      // Add devices are acceptable.
+      // All devices are acceptable.
       return true;
     }
 
-    Object bluetoothClass = BluetoothReflection.getBluetoothClass(bluetoothDevice);
-    if (bluetoothClass == null) {
+    BluetoothClass clazz = device.getBluetoothClass();
+    if (clazz == null) {
       // This device has no class.
       return false;
     }
 
-    int deviceClass = BluetoothReflection.getDeviceClass(bluetoothClass);
-    return acceptableDeviceClasses.contains(deviceClass);
+    return acceptableDeviceClasses.contains(clazz.getDeviceClass());
   }
 
   /**
@@ -320,8 +327,8 @@ public final class BluetoothClient extends BluetoothConnectionBase
    * @param uuid the UUID
    * @return true if the connection was successful, false otherwise
    */
-  @SimpleFunction(description = "Connect to the Bluetooth device with the specified address and " +
-  "UUID. Returns true if the connection was successful.")
+  @SimpleFunction(description = "Connect to the Bluetooth device with the specified address and "
+      + "UUID. Returns true if the connection was successful.")
   public boolean ConnectWithUUID(String address, String uuid) {
     return connect("ConnectWithUUID", address, uuid);
   }
@@ -349,14 +356,13 @@ public final class BluetoothClient extends BluetoothConnectionBase
       return false;
     }
 
-    Object bluetoothAdapter = BluetoothReflection.getBluetoothAdapter();
-    if (bluetoothAdapter == null) {
+    if (adapter == null) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_AVAILABLE);
       return false;
     }
 
-    if (!BluetoothReflection.isBluetoothEnabled(bluetoothAdapter)) {
+    if (!adapter.isEnabled()) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_ENABLED);
       return false;
@@ -369,20 +375,20 @@ public final class BluetoothClient extends BluetoothConnectionBase
       address = address.substring(0, firstSpace);
     }
 
-    if (!BluetoothReflection.checkBluetoothAddress(bluetoothAdapter, address)) {
+    if (!BluetoothAdapter.checkBluetoothAddress(address)) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_INVALID_ADDRESS);
       return false;
     }
 
-    Object bluetoothDevice = BluetoothReflection.getRemoteDevice(bluetoothAdapter, address);
-    if (!BluetoothReflection.isBonded(bluetoothDevice)) {
+    BluetoothDevice device = adapter.getRemoteDevice(address);
+    if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_PAIRED_DEVICE);
       return false;
     }
 
-    if (!isDeviceClassAcceptable(bluetoothDevice)) {
+    if (!isDeviceClassAcceptable(device)) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_REQUIRED_CLASS_OF_DEVICE);
       return false;
@@ -400,7 +406,7 @@ public final class BluetoothClient extends BluetoothConnectionBase
     Disconnect();
 
     try {
-      connect(bluetoothDevice, uuid);
+      connect(device, uuid);
       return true;
     } catch (IOException e) {
       Disconnect();
@@ -410,21 +416,18 @@ public final class BluetoothClient extends BluetoothConnectionBase
     }
   }
 
-  private void connect(Object bluetoothDevice, UUID uuid) throws IOException {
-    Object bluetoothSocket;
-    if (!secure && SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD_MR1) {
+  private void connect(BluetoothDevice device, UUID uuid) throws IOException {
+    BluetoothSocket socket;
+    if (!secure && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
       // createInsecureRfcommSocketToServiceRecord was introduced in level 10
-      bluetoothSocket = BluetoothReflection.createInsecureRfcommSocketToServiceRecord(
-          bluetoothDevice, uuid);
+      socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
     } else {
-      bluetoothSocket = BluetoothReflection.createRfcommSocketToServiceRecord(
-          bluetoothDevice, uuid);
+      socket = device.createRfcommSocketToServiceRecord(uuid);
     }
-    BluetoothReflection.connectToBluetoothSocket(bluetoothSocket);
-    setConnection(bluetoothSocket);
-    Log.i(logTag, "Connected to Bluetooth device " +
-        BluetoothReflection.getBluetoothDeviceAddress(bluetoothDevice) + " " +
-        BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
+    socket.connect();
+    setConnection(socket);
+    Log.i(logTag, "Connected to Bluetooth device " + device.getAddress() + " "
+        + device.getName() + ".");
   }
 
   /**

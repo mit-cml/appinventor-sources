@@ -20,6 +20,7 @@
   <!--inherits name="com.google.gwt.i18n.CldrLocales"/-->
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
+  <inherits name="com.google.gwt.logging.Logging"/>
   <inherits name="com.google.gwt.resources.Resources" />
   <inherits name="com.google.gwt.widgetideas.WidgetIdeas" />
   <inherits name="com.google.gwt.widgetideas.GWTCanvas" />
@@ -33,6 +34,10 @@
   <inherits name="com.google.gwt.query.Query" />
   <inherits name="org.pepstock.charba.Charba"/>
   <inherits name="com.google.gwt.xml.XML" />
+
+  <set-property name="gwt.logging.logLevel" value="INFO"/>
+  <set-property name="gwt.logging.enabled" value="TRUE"/>
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
 
   <!-- servlets -->
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
@@ -154,6 +159,10 @@
   <extend-property name="locale" values="hy"/>
   <!-- Catalan -->
   <extend-property name="locale" values="ca"/>
+  <!-- Ukrainian -->
+  <extend-property name="locale" values="uk"/>
+  <!-- Japanese -->
+  <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
 </module>

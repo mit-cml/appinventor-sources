@@ -1,12 +1,10 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2022 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components.utils;
-
-import com.google.appinventor.client.ComponentsTranslation;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
@@ -18,11 +16,14 @@ import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPal
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAccelerometerSensitivityChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChatbotModelPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChatbotProviderPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty;
@@ -51,6 +52,8 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorDistIntervalChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorTimeIntervalChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSizingChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidStrokeStylePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
@@ -127,18 +130,15 @@ public class PropertiesUtil {
    */
   public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefinitions,
                                         YaFormEditor editor) {
-
-    String componentType = mockComponent.getType();
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          ComponentsTranslation.getPropertyName(property.getCaption()),
-          property.getEditorType(), property.getEditorArgs(),
-          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor, property.getEditorArgs()));
+          property.getCaption(), property.getCategory(), property.getEditorType(), property.getEditorArgs(),
+          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor,
+          property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
-
   }
 
   // Use individual methods for each property since we can't write the generic
@@ -216,6 +216,8 @@ public class PropertiesUtil {
       return new YoungAndroidVerticalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ASSET)) {
       return new YoungAndroidAssetSelectorPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BEST_FIT_MODEL)) {
+      return new YoungAndroidBestFitModelPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BLUETOOTHCLIENT)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor,
           // Pass the set of component types that will be shown in the property editor,
@@ -284,6 +286,8 @@ public class PropertiesUtil {
       return new YoungAndroidSensorTimeIntervalChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_STRING)) {
       return new StringPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_STROKE_STYLE)) {
+      return new YoungAndroidStrokeStylePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT)) {
       return new YoungAndroidAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)) {
@@ -310,6 +314,10 @@ public class PropertiesUtil {
       return new ScalingChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FIREBASE_URL)) {
       return new YoungAndroidDefaultURLPropertyEditor("DEFAULT");
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE)) {
+      return new YoungAndroidFloatRangePropertyEditor(0, 1);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ORIGIN)) {
+      return new YoungAndroidSpriteOriginPropertyEditor(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)) {
       return new YoungAndroidListViewAddDataPropertyEditor(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT)) {
@@ -331,7 +339,11 @@ public class PropertiesUtil {
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE)) {
       return new YoungAndroidChartLineTypeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION)) {
-      return new YoungAndroidRecyclerViewOrientationPropertyEditor(); 
+      return new YoungAndroidRecyclerViewOrientationPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_PROVIDER)) {
+      return new YoungAndroidChatbotProviderPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL)) {
+      return new YoungAndroidChatbotModelPropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
@@ -151,7 +151,7 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
     }
     name = name.replaceAll("[ \t]+", "_");
     if (name.equalsIgnoreCase("")) {
-      name = ComponentsTranslation.getComponentName(feature.getType()) + "1";
+      name = ComponentTranslationTable.getComponentName(feature.getType()) + "1";
     }
     name = ensureUniqueName(name, parent.editor.getComponentNames());
     parent.addVisibleComponent(feature, -1);

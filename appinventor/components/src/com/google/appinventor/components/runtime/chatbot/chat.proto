@@ -36,6 +36,7 @@ message request {
     optional string apikey = 6;
     optional string provider = 7 [default = "chatgpt"];
     optional string model = 8;
+    optional bytes inputimage = 9;
 }
 
 message response {

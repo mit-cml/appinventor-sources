@@ -110,6 +110,9 @@ open class AssetManager: NSObject {
     if FileManager.default.fileExists(atPath: path) {
       return path
     }
+    if filename.hasPrefix("file://") {
+      return filename.chopPrefix(count: 7).removingPercentEncoding ?? ""
+    }
     return ""
   }
 

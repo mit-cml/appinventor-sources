@@ -308,13 +308,27 @@
      ((equal? type 'text) (coerce-to-text arg))
      ((equal? type 'boolean) (coerce-to-boolean arg))
      ((equal? type 'list) (coerce-to-yail-list arg))
+     ((equal? type 'list-of-number) (coerce-to-number-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
      ((equal? type 'pair) (coerce-to-pair arg))
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'any) arg)
+     ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+(define (enum-type? type)
+  (string-contains (symbol->string type) "Enum"))
+
+(define (enum? arg)
+  (instance? arg AIComponentKit.OptionList))
+
+(define (coerce-to-enum arg type)
+  (if (and (enum? arg)
+       (apply yail:isa (list arg (string->symbol (string-replace-all (string-replace-all (symbol->string type) "Enum" "") "com.google.appinventor.components.common" "AIComponentKit")))))
+      arg
+      (or (yail:invoke (string->symbol (string-replace-all (string-replace-all (symbol->string type) "Enum" "") "com.google.appinventor.components.common" "AIComponentKit")) 'fromUnderlyingValue arg) *non-coercible-value*)))
 
 (define (coerce-to-text arg)
   (if (eq? arg *the-null-value*)
@@ -1577,7 +1591,7 @@ Dictionary implementation.
 
 (define (yail-dictionary-lookup key yail-dictionary default)
   (let ((result
-    (cond ((instance? yail-dictionary YailList)
+    (cond ((or (yail-list? yail-dictionary) (instance? yail-dictionary YailList))
            (yail-alist-lookup key yail-dictionary default))
           ((instance? yail-dictionary YailDictionary)
             (yail:invoke yail-dictionary 'objectForKey: key))

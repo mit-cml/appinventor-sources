@@ -94,6 +94,9 @@ public class StoredData {
     // TODO(): Make required
     long dateModified;
 
+    // Date project last built/exported as a runnable binary
+    long dateBuilt;
+
     // The specially formatted project history
     String history;
 
@@ -313,6 +316,16 @@ public class StoredData {
     // datastore editing tools
     String allowedUrls;
 
+  }
+
+  @Cached(expirationSeconds = 120)
+  @Unindexed
+  public static final class AllowedIosExtensions {
+    // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
+    @Id Long id;
+
+    // list of allowed extension packages as JSON
+    String allowedExtensions;
   }
 
   public static final class ProjectNotFoundException extends IOException {

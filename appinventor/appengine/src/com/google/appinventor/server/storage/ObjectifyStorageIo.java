@@ -23,8 +23,10 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
 import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
@@ -113,7 +115,7 @@ import org.json.JSONObject;
  * @author sharon@google.com (Sharon Perl)
  *
  */
-public class ObjectifyStorageIo implements  StorageIo {
+public class ObjectifyStorageIo implements StorageIo {
   static final Flag<Boolean> requireTos = Flag.createFlag("require.tos", false);
 
   private static final Logger LOG = Logger.getLogger(ObjectifyStorageIo.class.getName());
@@ -123,6 +125,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final long MOTD_ID = 1;
   private static final long ALLOWEDURL_ID = 1;
   private static final long SPLASHDATA_ID = 1;
+  private static final long ALLOWED_IOS_EXTENSIONS_ID = 1;
 
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
@@ -203,6 +206,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(SplashData.class);
     ObjectifyService.register(Backpack.class);
     ObjectifyService.register(AllowedTutorialUrls.class);
+    ObjectifyService.register(AllowedIosExtensions.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
@@ -508,6 +512,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.id = null;  // let Objectify auto-generate the project id
           pd.dateCreated = date;
           pd.dateModified = date;
+          pd.dateBuilt = 0;
           pd.history = project.getProjectHistory();
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
@@ -813,7 +818,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified, projectData.t.projectMovedToTrashFlag);
+          projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -845,7 +850,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       for (ProjectData projectData : projectDatas.t.values()) {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
-            projectData.dateModified, projectData.projectMovedToTrashFlag));
+            projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }
@@ -894,6 +899,50 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return modDate.t;
+  }
+
+  @Override
+  public long getProjectDateBuilt(final String userId, final long projectId) {
+    final Result<Long> builtDate = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            builtDate.t = pd.dateBuilt;
+          } else {
+            builtDate.t = (long) 0;
+          }
+        }
+      }, false); // Transaction not needed, and we want the caching we get if we don't
+                 // use them.
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return builtDate.t;
+  }
+
+  @Override
+  public long updateProjectBuiltDate(final String userId, final long projectId, final long builtDate) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            pd.dateBuilt = builtDate;
+            datastore.put(pd);
+          }
+        }
+      }, false); // Transaction not needed, and we want the caching we get if we don't
+                 // use them.
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return builtDate;
   }
 
   @Override
@@ -1789,7 +1838,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
-              throw new IOException("FATAL Error, external component in gallery app");
+              throw new GalleryExtensionException();
             }
             if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
               it.remove();
@@ -2755,6 +2804,32 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public String getIosExtensionsConfig() {
+    final Result<String> result = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          AllowedIosExtensions iosSettingsData = datastore.find(AllowedIosExtensions.class,
+              ALLOWED_IOS_EXTENSIONS_ID);
+          if (iosSettingsData != null) {
+            result.t = iosSettingsData.allowedExtensions;
+          } else {
+            AllowedIosExtensions firstIosSettingsData = new AllowedIosExtensions();
+            firstIosSettingsData.id = ALLOWED_IOS_EXTENSIONS_ID;
+            firstIosSettingsData.allowedExtensions = "[]";
+            datastore.put(firstIosSettingsData);
+            result.t = firstIosSettingsData.allowedExtensions;
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
   }
 
   /*

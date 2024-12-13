@@ -802,6 +802,7 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY": "every",
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
+	"Blockly.Msg.LANG_NO_PROVIDERMODEL": "No known models",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",
 	"Blockly.Msg.HIDE_WARNINGS": "Hide Warnings",
 	"Blockly.Msg.MISSING_SOCKETS_WARNINGS": "You should fill all of the sockets with blocks",
@@ -1206,6 +1207,9 @@
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL": "/reference/components/charts.html#Chart",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL": "/reference/components/charts.html#ChartData2D",
+
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_ANOMALYDETECTION_HELPURL": "/reference/components/datascience.html#AnomalyDetect",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_REGRESSION_HELPURL": "/reference/components/datascience.html#Regression",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",

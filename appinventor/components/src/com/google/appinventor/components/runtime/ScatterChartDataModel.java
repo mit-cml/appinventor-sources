@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -33,8 +33,13 @@ public class ScatterChartDataModel extends PointChartDataModel<
    * @param view Scatter Chart View to link model to
    */
   public ScatterChartDataModel(ScatterData data, ScatterChartView view) {
+    this(data, view, new ScatterDataSet(new ArrayList<Entry>(), ""));
+  }
+
+  protected ScatterChartDataModel(ScatterData data, ScatterChartView view,
+      IScatterDataSet dataset) {
     super(data, view);
-    dataset = new ScatterDataSet(new ArrayList<Entry>(), "");
+    this.dataset = dataset;
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();
   }

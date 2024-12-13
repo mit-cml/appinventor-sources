@@ -95,6 +95,11 @@ Blockly.Blocks['helpers_dropdown'] = {
         options.push([i18nName, option.name]);
       }
     }
+    if (this.shouldSortOptions()) {
+      options.sort(function(a, b) {
+        return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+      });
+    }
     return options;
   },
 
@@ -115,6 +120,10 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
     return options;
+  },
+
+  shouldSortOptions: function() {
+    return this.key_ === 'Permission';
   },
 
   typeblock: function() {
@@ -314,6 +323,250 @@ Blockly.Blocks['helpers_assets'] = {
         translatedName: asset,
         mutatorAttributes: {
           value: asset
+        }
+      })
+    }
+    return tb;
+  }
+}
+
+Blockly.Blocks['helpers_providermodel'] = {
+  init: function() {
+    var utils = Blockly.Blocks.Utilities;
+
+    this.setColour(Blockly.COLOUR_HELPERS);
+
+    this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
+    this.appendDummyInput('INPUT')
+
+    this.addField();
+  },
+
+  onchange: function(e) {
+    if (e.type != AI.Events.SCREEN_SWITCH &&
+        !(e.type == Blockly.Events.MOVE)) {
+      return;
+    }
+
+    if (this.addField()) {
+      var value = this.getFieldValue('PROVIDERMODEL');
+      var options = this.generateOptions();
+      if (this.isInFlyout && options.length) {
+        value = options[0][1];
+      }
+      this.setFieldValue(value, 'PROVIDERMODEL');
+    }
+  },
+
+  domToMutation: function(xml) {
+    var field = this.getField('PROVIDERMODEL');
+    if (!field) {
+      return;
+    }
+    var value = xml.getAttribute('value');
+    field.setValue(value);
+  },
+
+  addField: function() {
+    if (!this.workspace) {  // Disposed.
+      return;
+    }
+    var input = this.getInput('INPUT');
+    var modelproviders = this.workspace.getProviderModelList();
+
+    if (modelproviders.length) {
+      if (!this.getField('PROVIDERMODEL')) {
+        var dropdown = new Blockly.FieldInvalidDropdown(
+            this.generateOptions.bind(this));
+        input.appendField(dropdown, 'PROVIDERMODEL');
+      }
+      if (this.getField('TEXT')) {
+        input.removeField('TEXT');
+      }
+    } else {
+      if (!this.getField('TEXT')) {
+        var label = new Blockly.FieldLabel(Blockly.Msg.LANG_NO_PROVIDERMODEL);
+        input.appendField(label, 'TEXT');
+      }
+      if (this.getField('PROVIDERMODEL')) {
+        input.removeField('PROVIDERMODEL');
+      }
+    }
+
+    return modelproviders.length;
+  },
+
+  generateOptions: function() {
+    if (!this.workspace) {
+      return [['', '']];
+    }
+
+    // Must include the '' so .some returns true if no restrictions.
+    var restrictedFormats = [''];
+    var types = this.outputConnection.targetConnection &&
+        this.outputConnection.targetConnection.check_;
+    if (types) {
+      for (var i = 0, type; type = types[i]; i++) {
+        if (Array.isArray(type)) {
+          // Not actually a type check. An array in the type check array is used
+          // to restrict formats.
+          restrictedFormats = type;
+        }
+      }
+    }
+
+    var modelproviders = this.workspace.getProviderModelList();
+    if (modelproviders.length) {
+      var values = modelproviders.map(function (elem) {
+        var modelValid = restrictedFormats.some(function(fileType) {
+          return elem.includes(fileType);
+        })
+        if (modelValid) {
+          return [elem, elem];
+        }
+        return undefined;  // Not necessary just more explicit.
+      });
+      values = values.filter(function(elem) {
+        return elem !== undefined;
+      })
+      if (values.length) {
+        return values;
+      }
+    }
+
+    return [['', '']]
+  },
+
+  typeblock: function() {
+    tb = [];
+    var modelproviders = Blockly.mainWorkspace.getProviderModelList();
+    for (var i = 0, providermodel; (providermodel = modelproviders[i]); i++) {
+      tb.push({
+        translatedName: providermodel,
+        mutatorAttributes: {
+          value: providermodel
+        }
+      })
+    }
+    return tb;
+  }
+}
+
+Blockly.Blocks['helpers_provider'] = {
+  init: function() {
+    var utils = Blockly.Blocks.Utilities;
+
+    this.setColour(Blockly.COLOUR_HELPERS);
+
+    this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
+    this.appendDummyInput('INPUT')
+
+    this.addField();
+  },
+
+  onchange: function(e) {
+    if (e.type != AI.Events.SCREEN_SWITCH &&
+        !(e.type == Blockly.Events.MOVE)) {
+      return;
+    }
+
+    if (this.addField()) {
+      var value = this.getFieldValue('PROVIDER');
+      var options = this.generateOptions();
+      if (this.isInFlyout && options.length) {
+        value = options[0][1];
+      }
+      this.setFieldValue(value, 'PROVIDER');
+    }
+  },
+
+  domToMutation: function(xml) {
+    var field = this.getField('PROVIDER');
+    if (!field) {
+      return;
+    }
+    var value = xml.getAttribute('value');
+    field.setValue(value);
+  },
+
+  addField: function() {
+    if (!this.workspace) {  // Disposed.
+      return;
+    }
+    var input = this.getInput('INPUT');
+    var providers = this.workspace.getProviderList();
+
+    if (providers.length) {
+      if (!this.getField('PROVIDER')) {
+        var dropdown = new Blockly.FieldInvalidDropdown(
+          this.generateOptions.bind(this));
+        input.appendField(dropdown, 'PROVIDER');
+      }
+      if (this.getField('TEXT')) {
+        input.removeField('TEXT');
+      }
+    } else {
+      if (!this.getField('TEXT')) {
+        var label = new Blockly.FieldLabel(Blockly.Msg.LANG_NO_PROVIDERMODEL);
+        input.appendField(label, 'TEXT');
+      }
+      if (this.getField('PROVIDER')) {
+        input.removeField('PROVIDER');
+      }
+    }
+
+    return providers.length;
+  },
+
+  generateOptions: function() {
+    if (!this.workspace) {
+      return [['', '']];
+    }
+
+    // Must include the '' so .some returns true if no restrictions.
+    var restrictedFormats = [''];
+    var types = this.outputConnection.targetConnection &&
+        this.outputConnection.targetConnection.check_;
+    if (types) {
+      for (var i = 0, type; type = types[i]; i++) {
+        if (Array.isArray(type)) {
+          // Not actually a type check. An array in the type check array is used
+          // to restrict formats.
+          restrictedFormats = type;
+        }
+      }
+    }
+
+    var providers = this.workspace.getProviderList();
+    if (providers.length) {
+        var values = providers.map(function (elem) {
+          var providerValid = restrictedFormats.some(function(fileType) {
+            return elem.includes(fileType);
+        })
+        if (providerValid) {
+          return [elem, elem];
+        }
+        return undefined;  // Not necessary just more explicit.
+      });
+      values = values.filter(function(elem) {
+        return elem !== undefined;
+      })
+      if (values.length) {
+        return values;
+      }
+    }
+
+    return [['', '']]
+  },
+
+  typeblock: function() {
+    tb = [];
+    var providers = Blockly.mainWorkspace.getProviderList();
+    for (var i = 0, provider; (provider = providers[i]); i++) {
+      tb.push({
+        translatedName: provider,
+        mutatorAttributes: {
+          value: provider
         }
       })
     }

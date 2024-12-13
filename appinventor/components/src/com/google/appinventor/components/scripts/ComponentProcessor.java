@@ -833,6 +833,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         return WRITE_ONLY;
       }
     }
+
+    protected PropertyCategory getCategory() {
+      return propertyCategory;
+    }
   }
 
   /**
@@ -841,7 +845,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * blocks editor. This is associated with the OptionList data type, ie OptionList data always has
    * an OPTION_LIST style UI in the blocks editor (as of now).
    */
-  protected enum HelperType { OPTION_LIST, ASSET }
+  protected enum HelperType { OPTION_LIST, ASSET, PROVIDER_MODEL, PROVIDER }
 
   /**
    * A key that allows you to access info about a helper block.
@@ -1494,7 +1498,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.RELEASE_7;
+    try {
+      return (SourceVersion) SourceVersion.class.getDeclaredField("RELEASE_11").get(null);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      return SourceVersion.RELEASE_8;
+    }
   }
 
   @Override
@@ -1987,6 +1995,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (key != null) {
       return key;
     }
+    key = hasProviderModelHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
+    key = hasProviderHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
     // Add more possibilities here.
     return null;
   }
@@ -2223,6 +2239,74 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           index = filters.indexOf(filter);
         }
         return new HelperKey(HelperType.ASSET, index);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the associated helper key if the element has an @ProviderModel annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @ProviderModel annotation.
+   */
+  private HelperKey hasProviderModelHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("ProviderModel")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.PROVIDER_MODEL, index);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the associated helper key if the element has an @Provider annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @Provider annotation.
+   */
+  private HelperKey hasProviderHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Provider")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.PROVIDER, index);
       }
     }
     return null;
@@ -2524,6 +2608,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             // name. This is an overridden property without the SimpleProperty annotation and we
             // need to remove it.
             componentInfo.properties.remove(propertyName);
+            if (designerProperty == null) {
+              componentInfo.designerProperties.remove(propertyName);
+            }
           }
         }
       } else {
@@ -2882,6 +2969,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     String typeString = type.toString();
+    if (!type.getAnnotationMirrors().isEmpty()) {
+      // Java 11 now includes parameter level annotations in the type string
+      if (type instanceof DeclaredType) {
+        typeString = ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString();
+      } else if (type instanceof PrimitiveType) {
+        typeString = type.getKind().toString().toLowerCase();
+      }
+    }
     // boolean -> boolean
     if (typeString.equals("boolean")) {
       return typeString;
@@ -2937,7 +3032,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
-    throw new IllegalArgumentException("Cannot convert Java type '" + typeString
+    throw new IllegalArgumentException("Cannot convert Java type '" + type.toString()
         + "' to Yail type");
   }
 

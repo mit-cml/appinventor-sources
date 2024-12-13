@@ -65,15 +65,15 @@
     <property name="sdk" value="iphonesimulator" />
     <ai.xcbuild scheme="SchemeKit" sdk="${sdk}" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X" />
+      <arg value="platform=iOS Simulator,name=iPhone 14 Pro" />
     </ai.xcbuild>
     <ai.xcbuild scheme="AIComponentKit" sdk="${sdk}" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X" />
+      <arg value="platform=iOS Simulator,name=iPhone 14 Pro" />
     </ai.xcbuild>
     <ai.xcbuild scheme="AICompanionApp" sdk="${sdk}" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X" />
+      <arg value="platform=iOS Simulator,name=iPhone 14 Pro" />
     </ai.xcbuild>
   </target>
 

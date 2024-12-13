@@ -1,25 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.user.client.ui.DockPanel;
 
 /**
  * Box implementation for source structure explorer.
- *
  */
-public final class SourceStructureBox extends Box {
+public class SourceStructureBox extends Box implements ISourceStructureBox {
   // Singleton source structure explorer box instance
   private static final SourceStructureBox INSTANCE = new SourceStructureBox();
-
-  // Source structure explorer
-  private final SourceStructureExplorer sourceStructureExplorer;
+  // Singleton source structure explorer child instance
+  private static ISourceStructureBox SUBINSTANCE;
 
   /**
    * Return the singleton source structure explorer box.
@@ -39,17 +40,37 @@ public final class SourceStructureBox extends Box {
         false,  // minimizable
         false); // removable
 
-    sourceStructureExplorer = new SourceStructureExplorer();
+    // Creates the child instance according to the enabled features.
+    SUBINSTANCE = new SourceStructureBoxFilter(this);
 
-    setContent(sourceStructureExplorer);
+    setContent(SUBINSTANCE.getSourceStructureExplorer());
   }
 
   /**
    * Returns source structure explorer associated with box.
    *
-   * @return  source structure explorer
+   * @return source structure explorer
    */
   public SourceStructureExplorer getSourceStructureExplorer() {
-    return sourceStructureExplorer;
+    return SUBINSTANCE.getSourceStructureExplorer();
+  }
+
+  /**
+   * Calls the child box and renders it according to its behaviour.
+   * @param form current form
+   */
+  public void show(MockForm form) {
+    getSourceStructureExplorer().updateTree(form.buildComponentsTree(),
+        form.getLastSelectedComponent().getSourceStructureExplorerItem());
+    getSourceStructureBox().setVisible(true);
+    setContent(SUBINSTANCE.getSourceStructureExplorer());
+  }
+
+  /**
+   * Returns the header container for the source structure box (used by childs).
+   * @return DockPanel header container
+   */
+  public DockPanel getHeaderContainer() {
+    return super.getHeaderContainer();
   }
 }

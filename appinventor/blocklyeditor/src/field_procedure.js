@@ -123,6 +123,10 @@ Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
  * @returns {string} The new, validated name of the block
  */
 Blockly.AIProcedure.renameProcedure = function (newName) {
+  if (this.sourceBlock_ && this.sourceBlock_.isInFlyout) {
+    // Do not rename procedures in flyouts
+    return newName;
+  }
   // this is bound to field_textinput object
   var oldName = this.oldName_ || this.text_;
 

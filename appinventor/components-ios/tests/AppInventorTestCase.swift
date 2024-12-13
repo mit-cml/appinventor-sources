@@ -143,6 +143,10 @@ class AppInventorTestCase: XCTestCase {
    */
   open func verify(timeout: TimeInterval = 0.5) {
     wait(for: expectations, timeout: timeout)
+
+    // Clean up expectations otherwise the test framework will throw an exception due to repeat use
+    expectations.removeAll()
+    form.checkerMap.removeAll()
   }
 
   /**

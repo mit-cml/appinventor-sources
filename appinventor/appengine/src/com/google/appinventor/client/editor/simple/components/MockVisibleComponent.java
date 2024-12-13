@@ -47,7 +47,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
-  protected static final String PROPERTY_NAME_HINT = "Hint";
+  protected static final String PROPERTY_NAME_HINT = "HintText";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";
@@ -98,18 +98,18 @@ public abstract class MockVisibleComponent extends MockComponent {
     // Add standard per-child layout properties
     // NOTE: Not all layouts use these properties
     addProperty(PROPERTY_NAME_COLUMN, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addWidthHeightProperties();
   }
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -156,16 +156,5 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     }
-  }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
-    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
   }
 }

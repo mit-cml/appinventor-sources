@@ -219,22 +219,4 @@ public final class MockSlider extends MockVisibleComponent {
     }
 
   }
-
-  /*
-   * We add the DesignPreviewChangeListener here instead of in the
-   * constructor because at construction time we do not have a
-   * container so getForm() fails.
-   */
-
-  @Override
-  protected void setContainer(MockContainer container) {
-    super.setContainer(container);
-    getForm().addDesignPreviewChangeListener(this);
-  }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    paintSlider();
-  }
 }

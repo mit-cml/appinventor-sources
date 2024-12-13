@@ -747,6 +747,11 @@ yail_invoke(pic_state *pic) {
   
   NSMutableArray *argTypes = [NSMutableArray arrayWithCapacity:argc];
   SCMMethod *method = nil;
+  if (pic_sym_p(pic, native_object)) {
+    // Convert the symbol to the class/protocol/instance it names
+    yail_resolve_native_symbol(pic, native_object);
+    native_object = pic_weak_ref(pic, pic->globals, native_object);
+  }
   int isStatic = yail_native_class_p(pic, native_object) ? 1 : 0;
   if (yail_native_method_p(pic, native_method)) {
     method = yail_native_method_ptr(pic, native_method)->method_;
@@ -919,7 +924,15 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
     } else if (pic_str_p(pic, args[i])) {
       const char *str_value = pic_str(pic, args[i]);
       NSString *native_str = [NSString stringWithUTF8String:str_value];
-      [invocation setArgument:&native_str atIndex:j];
+      switch ([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
+        case 'i': {
+          int value = [native_str intValue];
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        default:
+          [invocation setArgument:&native_str atIndex:j];
+      }
     } else if (pic_true_p(pic, args[i])) {
       if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
         NSNumber *value = [NSNumber numberWithBool:YES];
@@ -1471,7 +1484,7 @@ yail_static_field(pic_state *pic) {
 
   NSInvocation *invocation = [method staticInvocation];
   [invocation invoke];
-  id result = nil;
+  __unsafe_unretained id result = nil;
   [invocation getReturnValue:&result];
   return yail_make_native_instance(pic, result);
 }

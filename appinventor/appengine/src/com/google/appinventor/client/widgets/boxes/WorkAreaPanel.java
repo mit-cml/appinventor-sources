@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.widgets.boxes;
 
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.boxes.Box.BoxDescriptor;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -21,6 +20,7 @@ import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Desktop-like container for boxes.
@@ -33,6 +33,7 @@ import java.util.Map;
  *
  */
 public final class WorkAreaPanel extends SimplePanel implements LayoutChangeListener {
+  private static final Logger LOG = Logger.getLogger(WorkAreaPanel.class.getName());
 
   // Field names for JSON object encoding of work area state
   private static final String NAME_ACTIVE_LAYOUT = "ActiveLayout";
@@ -114,7 +115,7 @@ public final class WorkAreaPanel extends SimplePanel implements LayoutChangeList
     String boxType = bd.getType();
     Box box = boxRegistry.getBox(boxType);
     if (box == null) {
-      OdeLog.wlog("Unknown box type: " + boxType);
+      LOG.warning("Unknown box type: " + boxType);
     } else {
       widgetDragController.makeDraggable(box, box.getHeader());
     }
