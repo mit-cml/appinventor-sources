@@ -5,6 +5,8 @@
 
 import Foundation
 
-@objc protocol DataSource {
-  func getDataValue(_ key: AnyObject?) -> [Any]
+// Define a protocol to represent the common functionalities for chart components
+protocol ChartComponent: Component {
+  // Method to initialize the chart data object
+  func initChartData()
 }
