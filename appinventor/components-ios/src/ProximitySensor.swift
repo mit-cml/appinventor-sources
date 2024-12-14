@@ -7,7 +7,7 @@ import Foundation
 import UIKit
 import CoreMotion
 
-open class ProximitySensor: NonvisibleComponent {
+@objc open class ProximitySensor: NonvisibleComponent {
   private var motionManager = CMMotionManager()
   private var enabled: Bool = true
   private var distance: Float = 0.0
@@ -15,14 +15,6 @@ open class ProximitySensor: NonvisibleComponent {
   
   override init(_ container: ComponentContainer) {
     super.init(container)
-    // Check if the proximity sensor is available
-    let device = UIDevice.current
-    device.isProximityMonitoringEnabled = true
-    // Register for proximity state changes
-    NotificationCenter.default.addObserver(self, selector: #selector(proximityStateChanged(_:)), name: UIDevice.proximityStateDidChangeNotification, object: device)
-    // Configure motion manager for maximum range
-    motionManager.startDeviceMotionUpdates()
-    initialise()
   }
   
   deinit {
@@ -67,7 +59,7 @@ open class ProximitySensor: NonvisibleComponent {
     return Float(motionManager.deviceMotion?.attitude.roll ?? 0.0)
   }
   
-  @objc func initialise() {
+  @objc func Initialize() {
     guard enabled else {
       return
     }
@@ -106,11 +98,20 @@ open class ProximitySensor: NonvisibleComponent {
   private func startListening() {
     guard enabled else { return }
     
+    // Check if the proximity sensor is available
+    let device = UIDevice.current
+    device.isProximityMonitoringEnabled = true
+    // Register for proximity state changes
+    NotificationCenter.default.addObserver(self, selector: #selector(proximityStateChanged(_:)), name: UIDevice.proximityStateDidChangeNotification, object: device)
+    // Configure motion manager for maximum range
+    motionManager.startDeviceMotionUpdates()
+
     NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
   }
   
   private func stopListening() {
+    motionManager.stopDeviceMotionUpdates()
     NotificationCenter.default.removeObserver(self)
   }
   

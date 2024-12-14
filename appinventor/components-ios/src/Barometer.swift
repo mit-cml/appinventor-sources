@@ -6,7 +6,7 @@
 import Foundation
 import CoreMotion
 
-open class Barometer: NonvisibleComponent {
+@objc open class Barometer: NonvisibleComponent {
   private let motionManager = CMAltimeter()
   private var refreshTimer: Timer?
   private var enabled = true
@@ -17,7 +17,6 @@ open class Barometer: NonvisibleComponent {
   override init(_ container: ComponentContainer) {
     super.init(container)
     checkAvailability()
-    initialise()
   }
   
   @objc var Enabled: Bool {
@@ -55,7 +54,7 @@ open class Barometer: NonvisibleComponent {
     }
   }
   
-  @objc func initialise() {
+  @objc func Initialize() {
     guard enabled else {
       return
     }
@@ -94,5 +93,4 @@ open class Barometer: NonvisibleComponent {
   func checkAvailability() {
     Available = CMAltimeter.isRelativeAltitudeAvailable()
   }
-  
 }

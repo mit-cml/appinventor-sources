@@ -6,7 +6,7 @@
 import Foundation
 import CoreMotion
 
-open class MagneticFieldSensor: NonvisibleComponent {
+@objc open class MagneticFieldSensor: NonvisibleComponent {
   private let motionManager = CMMotionManager()
   private var enabled : Bool = true
   
@@ -37,7 +37,6 @@ open class MagneticFieldSensor: NonvisibleComponent {
   
   override init(_ container: ComponentContainer) {
     super.init(container)
-    initialise()
   }
   
   @objc var Enabled: Bool {
@@ -56,7 +55,7 @@ open class MagneticFieldSensor: NonvisibleComponent {
     }
   }
   
-  @objc func initialise() {
+  @objc func Initialize() {
     guard enabled else {
       return
     }
@@ -97,5 +96,4 @@ open class MagneticFieldSensor: NonvisibleComponent {
       motionManager.stopMagnetometerUpdates()
     }
   }
-  
 }

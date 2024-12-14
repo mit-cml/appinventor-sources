@@ -1070,11 +1070,11 @@
 			isa = PBXGroup;
 			children = (
 				06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */,
+				4618099E2A671451001854C4 /* Barometer.swift */,
 				DE3E730720C72AFE0063B339 /* GyroscopeSensor.swift */,
+				4618099C2A671448001854C4 /* MagneticFieldSensor.swift */,
 				DE1443D520C80BF900A250F1 /* OrientationSensor.swift */,
 				DE1443D720C842EE00A250F1 /* Pedometer.swift */,
-				4618099C2A671448001854C4 /* MagneticFieldSensor.swift */,
-				4618099E2A671451001854C4 /* Barometer.swift */,
 				461809A02A671463001854C4 /* ProximitySensor.swift */,
 			);
 			name = sensors;
