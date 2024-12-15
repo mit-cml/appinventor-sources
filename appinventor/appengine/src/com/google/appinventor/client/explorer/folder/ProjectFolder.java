@@ -167,9 +167,9 @@ public class ProjectFolder extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleName("ode-ProjectRow-Highlighted");
+      container.addStyleName("ode-ProjectRowHighlighted");
     } else {
-      container.removeStyleName("ode-ProjectRow-Highlighted");
+      container.removeStyleName("ode-ProjectRowHighlighted");
     }
   }
 
