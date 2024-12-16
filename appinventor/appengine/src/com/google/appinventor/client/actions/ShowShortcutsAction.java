@@ -47,7 +47,7 @@ public class ShowShortcutsAction implements Command {
       $wnd.document.addEventListener("keydown", function (event) {
           if (event.altKey && event.key === "?") {
               event.preventDefault();
-              action.@com.google.appinventor.client.actions.ShowShortcutsAction::onShortcutTriggered()();
+              action.@com.google.appinventor.client.actions.ShowShortcutsAction::shortcutPressed()();
           } else if (event.key === "Escape"){
               action.@com.google.appinventor.client.actions.ShowShortcutsAction::escPressed()();
           }
