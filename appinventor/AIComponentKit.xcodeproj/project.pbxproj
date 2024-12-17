@@ -274,6 +274,9 @@
 		159AC1772BB4C174002906B7 /* TrendlineCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159AC1762BB4C174002906B7 /* TrendlineCalculator.swift */; };
 		15C9E0232C2B11650080EE9D /* LineWithTrendlineRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C9E0222C2B11650080EE9D /* LineWithTrendlineRenderer.swift */; };
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
+		4618099D2A671448001854C4 /* MagneticFieldSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4618099C2A671448001854C4 /* MagneticFieldSensor.swift */; };
+		4618099F2A671451001854C4 /* Barometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4618099E2A671451001854C4 /* Barometer.swift */; };
+		461809A12A671463001854C4 /* ProximitySensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 461809A02A671463001854C4 /* ProximitySensor.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
@@ -632,6 +635,9 @@
 		15C9E0222C2B11650080EE9D /* LineWithTrendlineRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWithTrendlineRenderer.swift; sourceTree = "<group>"; };
 		22843756284F89DF00EC3133 /* AssetFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetFetcher.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		4618099C2A671448001854C4 /* MagneticFieldSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagneticFieldSensor.swift; sourceTree = "<group>"; };
+		4618099E2A671451001854C4 /* Barometer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Barometer.swift; sourceTree = "<group>"; };
+		461809A02A671463001854C4 /* ProximitySensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProximitySensor.swift; sourceTree = "<group>"; };
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -1067,6 +1073,9 @@
 				DE3E730720C72AFE0063B339 /* GyroscopeSensor.swift */,
 				DE1443D520C80BF900A250F1 /* OrientationSensor.swift */,
 				DE1443D720C842EE00A250F1 /* Pedometer.swift */,
+				4618099C2A671448001854C4 /* MagneticFieldSensor.swift */,
+				4618099E2A671451001854C4 /* Barometer.swift */,
+				461809A02A671463001854C4 /* ProximitySensor.swift */,
 			);
 			name = sensors;
 			sourceTree = "<group>";
@@ -1772,6 +1781,7 @@
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
 				086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */,
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
+				461809A12A671463001854C4 /* ProximitySensor.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
 				068F5D7E2B8D16EA00A24EB0 /* PieChartView.swift in Sources */,
 				06C791D12950E94500C1BB1B /* ChartView.swift in Sources */,
@@ -1824,6 +1834,7 @@
 				DED1129F20E53D940051DEDC /* FeatureCollection.swift in Sources */,
 				06C8CE982A3B5EFA00C39EBC /* ChatBot.swift in Sources */,
 				06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */,
+				4618099D2A671448001854C4 /* MagneticFieldSensor.swift in Sources */,
 				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
@@ -1855,6 +1866,7 @@
 				158C86B72B8E336C00D33EE4 /* BarChartDataModel.swift in Sources */,
 				068F5D802B8D16FA00A24EB0 /* PieChartDataModel.swift in Sources */,
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
+				4618099F2A671451001854C4 /* Barometer.swift in Sources */,
 				DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */,
 				B49FD9BE2AF894E40049FA79 /* LineType.swift in Sources */,
 				06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */,
