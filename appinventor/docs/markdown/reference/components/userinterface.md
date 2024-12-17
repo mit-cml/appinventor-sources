@@ -1378,15 +1378,13 @@ This class is used to display a `Slider`.
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
  current minimum, then minimum and maximum will both be set to this value.
- Setting `MaxValue` resets the thumb position to halfway between [`MinValue`](#Slider.MinValue)
- and `MaxValue` and signals the [`PositionChanged`](#Slider.PositionChanged)` event.
 
 {:id="Slider.MinValue" .number} *MinValue*
 : Sets the minimum value of slider. If the new minimum is greater than the
  current maximum, then minimum and maximum will both be set to this value.
- Setting `MinValue` resets the thumb position to halfway between `MinValue`
- and [`MaxValue`](#Slider.MaxValue) and signals the [`PositionChanged`](#Slider.PositionChanged)`
- event.
+
+{:id="Slider.ScaleGraduation" .number} *ScaleGraduation*
+: Returns the slider increase.
 
 {:id="Slider.ThumbEnabled" .boolean} *ThumbEnabled*
 : Whether or not the slider thumb is being be shown.
@@ -1413,6 +1411,12 @@ This class is used to display a `Slider`.
 
 {:id="Slider.PositionChanged"} PositionChanged(*thumbPosition*{:.number})
 : Indicates that position of the slider thumb has changed.
+
+{:id="Slider.TouchDown"} TouchDown()
+: Indicates that the user has started a touch gesture.
+
+{:id="Slider.TouchUp"} TouchUp()
+: Indicates that the user has finished a touch gesture.
 
 ### Methods  {#Slider-Methods}
 
