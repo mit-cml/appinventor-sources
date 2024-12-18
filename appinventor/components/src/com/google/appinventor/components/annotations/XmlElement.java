@@ -21,21 +21,23 @@ import java.lang.annotation.Target;
 public @interface XmlElement {
 
   /**
-   * The name of the resource directory for the xml file being created.
+   * The name of the resource directory for the xml file being created. One of those permitted:
+   * layout|values|drawable|mipmap|xml|color|menu|animator|anim
    *
    * @return the name of the dir item
    */
   String dir();
 
   /**
-   * Name of the xml file being created, excluding the file extension.
+   * The name of the xml file being created, along with the file extension.
+   * e.g. automotive_app_desc.xml
    *
    * @return the name of the data item
    */
   String name();
 
   /**
-   * Contents of the xml file excluding declarations.
+   * Contents of the xml file.
    *
    * @return a reference to the specified resource
    */

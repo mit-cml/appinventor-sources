@@ -1856,18 +1856,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Gather the required xml files and build their element strings.
     UsesXmls usesXmls = element.getAnnotation(UsesXmls.class);
     if (usesXmls != null) {
-      try {
-        for (XmlElement xe : usesXmls.xmls()) {
-          updateWithNonEmptyValue(componentInfo.xmls, xmlElementToString(xe));
-        }
-      } catch (IllegalAccessException e) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
-            "xml attributes and subelements for component " + componentInfo.name);
-        throw new RuntimeException(e);
-      } catch (InvocationTargetException e) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
-            "xml attributes and subelements for component " + componentInfo.name);
-        throw new RuntimeException(e);
+      for (XmlElement xe : usesXmls.xmls()) {
+        updateWithNonEmptyValue(componentInfo.xmls, xmlElementToString(xe));
       }
     }
 
@@ -2417,13 +2407,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   // Transform a @XmlElement into an String for use later
   // in creating xml files.
-  private static String xmlElementToString(XmlElement element)
-      throws IllegalAccessException, InvocationTargetException {
-    // create string: "dir/name.xml:<?xml version=\"1.0\" encoding=\"utf-8\"?>\n + content
+  private static String xmlElementToString(XmlElement element) {
+    // create string: "dir/name:<?xml version=\"1.0\" encoding=\"utf-8\"?>\n + content
     StringBuilder elementString = new StringBuilder(element.dir());
     elementString.append("/");
     elementString.append(element.name());
-    elementString.append(".xml:<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    elementString.append(":");
 
     return elementString.append(element.content()).toString();
   }

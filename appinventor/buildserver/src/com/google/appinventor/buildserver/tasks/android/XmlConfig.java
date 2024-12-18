@@ -170,18 +170,21 @@ public class XmlConfig implements AndroidTask {
     return true;
   }
 
-  /**
-   * Create the custom xml files for the app.
-   */
+  /** Create the custom xml files for the app. */
   private boolean createXmls(Map<String, Set<String>> xmlsNeeded) {
     for (Map.Entry<String, Set<String>> component : xmlsNeeded.entrySet()) {
       for (String xml : component.getValue()) {
         String[] parts = xml.split(":", 2);
-        context.getReporter().log("Creating " + parts[0]);
+        String path = parts[0];
+        if (parts[0].matches(
+            "^(?:(layout|values|drawable|mipmap|xml|color|menu|animator|anim)[a-zA-Z0-9-+_]*/)?[a-z][a-zA-Z0-9-+_]*\\.xml$")) {
+          context.getReporter().error("The file " + parts[0] + " being created has an invalid path or name.");
+          return false;
+        }
         File file =
             new File(
                 createDir(context.getPaths().getResDir(), new File(parts[0]).getParent()),
-                new File(parts[0]).getName());
+                new File(path).getName());
         if (!writeXmlFile(file, parts[1])) {
           context.getReporter().error("Error writing custom XML file");
           return false;
