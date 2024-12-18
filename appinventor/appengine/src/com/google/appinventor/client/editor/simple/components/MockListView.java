@@ -305,7 +305,7 @@ public final class MockListView extends MockVisibleComponent {
    */
   private Image createImage(String imageName, String widthValue, String heightValue) {
     Image image = new Image();
-    String url = convertImagePropertyValueToUrl(imageName);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, imageName);
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
       image.setUrl(getIconImage().getUrl());
