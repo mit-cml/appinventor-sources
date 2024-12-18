@@ -244,7 +244,7 @@ public class LoadComponentInfo implements CommonTask {
   private boolean generateContentProviders() {
     try {
       loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(),
-          ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET);
+          ComponentDescriptorConstants.SERVICES_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Content Providers stage", true);
