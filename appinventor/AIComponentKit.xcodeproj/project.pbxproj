@@ -109,6 +109,8 @@
 		068F9862289A34B100E2883F /* RealTimeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9861289A34B100E2883F /* RealTimeDataSource.swift */; };
 		068F9864289A34F000E2883F /* ObservableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9863289A34F000E2883F /* ObservableDataSource.swift */; };
 		06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06925558228B01B60091057E /* NSLock+Synchronized.swift */; };
+		06925B402C8B40D60085DC83 /* facemesh.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06925B3E2C8B40D60085DC83 /* facemesh.min.js */; };
+		06925B412C8B40D60085DC83 /* facemesh_model.json in Resources */ = {isa = PBXBuildFile; fileRef = 06925B3F2C8B40D60085DC83 /* facemesh_model.json */; };
 		06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06941F3F2603B4A900F8E1B2 /* StringUtil.swift */; };
 		069D1C6B2C9C4FD600C0CA96 /* tfjs-0.13.2.js in Resources */ = {isa = PBXBuildFile; fileRef = 069D1C6A2C9C4FD600C0CA96 /* tfjs-0.13.2.js */; };
 		069D1CA42C9C4FF000C0CA96 /* mobilenet_group26-shard1of1 in Resources */ = {isa = PBXBuildFile; fileRef = 069D1C6C2C9C4FEF00C0CA96 /* mobilenet_group26-shard1of1 */; };
@@ -248,13 +250,11 @@
 		06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */; };
 		06FB67DD247D4AB200ABEAD6 /* ListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */; };
 		06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */; };
-		06FD68532CF98F3B00D17515 /* group1-shard1of1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */; };
-		06FD68542CF98F3B00D17515 /* model-stride16.json in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684D2CF98F3B00D17515 /* model-stride16.json */; };
+		06FD68532CF98F3B00D17515 /* posenet_group1-shard1of1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684C2CF98F3B00D17515 /* posenet_group1-shard1of1.bin */; };
+		06FD68542CF98F3B00D17515 /* posenet_model-stride16.json in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684D2CF98F3B00D17515 /* posenet_model-stride16.json */; };
 		06FD68552CF98F3B00D17515 /* posenetextension.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684E2CF98F3B00D17515 /* posenetextension.js */; };
-		06FD68562CF98F3B00D17515 /* tf-core.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684F2CF98F3B00D17515 /* tf-core.min.js */; };
 		06FD68572CF98F3B00D17515 /* posenet.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68502CF98F3B00D17515 /* posenet.min.js */; };
 		06FD68582CF98F3B00D17515 /* posenet.html in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68512CF98F3B00D17515 /* posenet.html */; };
-		06FD68592CF98F3B00D17515 /* tf-converter.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68522CF98F3B00D17515 /* tf-converter.min.js */; };
 		080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */; };
 		080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
@@ -285,6 +285,13 @@
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
+		5F7ED1062C35C950004418C5 /* tf-converter-1.7.4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */; };
+		5F7ED1072C35C950004418C5 /* facemesh.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1012C35C94D004418C5 /* facemesh.js */; };
+		5F7ED1082C35C950004418C5 /* facemesh.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1022C35C94E004418C5 /* facemesh.html */; };
+		5F7ED1092C35C950004418C5 /* facemesh_group1-shard1of1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1032C35C94F004418C5 /* facemesh_group1-shard1of1.bin */; };
+		5F7ED10A2C35C950004418C5 /* VERSIONS.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1042C35C94F004418C5 /* VERSIONS.txt */; };
+		5F7ED10B2C35C950004418C5 /* tf-core-1.7.4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1052C35C950004418C5 /* tf-core-1.7.4.min.js */; };
+		5F7ED10D2C35C987004418C5 /* FaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7ED10C2C35C987004418C5 /* FaceExtension.swift */; };
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
@@ -480,6 +487,8 @@
 		068F9861289A34B100E2883F /* RealTimeDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeDataSource.swift; sourceTree = "<group>"; };
 		068F9863289A34F000E2883F /* ObservableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableDataSource.swift; sourceTree = "<group>"; };
 		06925558228B01B60091057E /* NSLock+Synchronized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLock+Synchronized.swift"; sourceTree = "<group>"; };
+		06925B3E2C8B40D60085DC83 /* facemesh.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = facemesh.min.js; sourceTree = "<group>"; };
+		06925B3F2C8B40D60085DC83 /* facemesh_model.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = facemesh_model.json; sourceTree = "<group>"; };
 		06941F3F2603B4A900F8E1B2 /* StringUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringUtil.swift; sourceTree = "<group>"; };
 		069D1C6A2C9C4FD600C0CA96 /* tfjs-0.13.2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tfjs-0.13.2.js"; path = "lib/tfjs/tfjs-0.13.2.js"; sourceTree = SOURCE_ROOT; };
 		069D1C6C2C9C4FEF00C0CA96 /* mobilenet_group26-shard1of1 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "mobilenet_group26-shard1of1"; path = "lib/mobilenet/mobilenet_group26-shard1of1"; sourceTree = SOURCE_ROOT; };
@@ -616,13 +625,11 @@
 		06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearViewTests.swift; sourceTree = "<group>"; };
 		06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewTests.swift; sourceTree = "<group>"; };
 		06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPickerTests.swift; sourceTree = "<group>"; };
-		06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "group1-shard1of1.bin"; path = "extensions/assets/group1-shard1of1.bin"; sourceTree = "<group>"; };
-		06FD684D2CF98F3B00D17515 /* model-stride16.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "model-stride16.json"; path = "extensions/assets/model-stride16.json"; sourceTree = "<group>"; };
+		06FD684C2CF98F3B00D17515 /* posenet_group1-shard1of1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "posenet_group1-shard1of1.bin"; path = "extensions/assets/posenet_group1-shard1of1.bin"; sourceTree = "<group>"; };
+		06FD684D2CF98F3B00D17515 /* posenet_model-stride16.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "posenet_model-stride16.json"; path = "extensions/assets/posenet_model-stride16.json"; sourceTree = "<group>"; };
 		06FD684E2CF98F3B00D17515 /* posenetextension.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = posenetextension.js; path = extensions/assets/posenetextension.js; sourceTree = "<group>"; };
-		06FD684F2CF98F3B00D17515 /* tf-core.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tf-core.min.js"; path = "extensions/assets/tf-core.min.js"; sourceTree = "<group>"; };
 		06FD68502CF98F3B00D17515 /* posenet.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = posenet.min.js; path = extensions/assets/posenet.min.js; sourceTree = "<group>"; };
 		06FD68512CF98F3B00D17515 /* posenet.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = posenet.html; path = extensions/assets/posenet.html; sourceTree = "<group>"; };
-		06FD68522CF98F3B00D17515 /* tf-converter.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tf-converter.min.js"; path = "extensions/assets/tf-converter.min.js"; sourceTree = "<group>"; };
 		080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ResponseManager.swift; sourceTree = "<group>"; };
 		080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ReportDelegate.swift; sourceTree = "<group>"; };
 		082778F620112FE300ACC99A /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -654,6 +661,13 @@
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-converter-1.7.4.min.js"; sourceTree = "<group>"; };
+		5F7ED1012C35C94D004418C5 /* facemesh.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = facemesh.js; sourceTree = "<group>"; };
+		5F7ED1022C35C94E004418C5 /* facemesh.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = facemesh.html; sourceTree = "<group>"; };
+		5F7ED1032C35C94F004418C5 /* facemesh_group1-shard1of1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "facemesh_group1-shard1of1.bin"; sourceTree = "<group>"; };
+		5F7ED1042C35C94F004418C5 /* VERSIONS.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSIONS.txt; sourceTree = "<group>"; };
+		5F7ED1052C35C950004418C5 /* tf-core-1.7.4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-core-1.7.4.min.js"; sourceTree = "<group>"; };
+		5F7ED10C2C35C987004418C5 /* FaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceExtension.swift; sourceTree = "<group>"; };
 		681D59042A84138A007B5DB5 /* FileScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileScope.swift; sourceTree = "<group>"; };
 		681D59062A84139E007B5DB5 /* OptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionList.swift; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -798,6 +812,28 @@
 			name = maps;
 			sourceTree = "<group>";
 		};
+		06009F362D130E4600F0364E /* FaceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				06925B3E2C8B40D60085DC83 /* facemesh.min.js */,
+				06925B3F2C8B40D60085DC83 /* facemesh_model.json */,
+				5F7ED1012C35C94D004418C5 /* facemesh.js */,
+				5F7ED1032C35C94F004418C5 /* facemesh_group1-shard1of1.bin */,
+				5F7ED1022C35C94E004418C5 /* facemesh.html */,
+			);
+			name = FaceExtension;
+			sourceTree = "<group>";
+		};
+		06009F372D1319D600F0364E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */,
+				5F7ED1052C35C950004418C5 /* tf-core-1.7.4.min.js */,
+				5F7ED1042C35C94F004418C5 /* VERSIONS.txt */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -870,6 +906,7 @@
 				069D1C692C9C4FBF00C0CA96 /* assets */,
 				067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */,
 				069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */,
+				5F7ED10C2C35C987004418C5 /* FaceExtension.swift */,
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
 				8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */,
 			);
@@ -919,6 +956,8 @@
 		069D1C692C9C4FBF00C0CA96 /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				06009F372D1319D600F0364E /* Common */,
+				06009F362D130E4600F0364E /* FaceExtension */,
 				069D1CE52C9C50BE00C0CA96 /* PersonalImageClassifier */,
 				06FD684B2CF98ECC00D17515 /* PosenetExtension */,
 				069D1C982C9C4FF000C0CA96 /* mobilenet_group1-shard1of1 */,
@@ -1342,13 +1381,11 @@
 		06FD684B2CF98ECC00D17515 /* PosenetExtension */ = {
 			isa = PBXGroup;
 			children = (
-				06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */,
-				06FD684D2CF98F3B00D17515 /* model-stride16.json */,
+				06FD684C2CF98F3B00D17515 /* posenet_group1-shard1of1.bin */,
+				06FD684D2CF98F3B00D17515 /* posenet_model-stride16.json */,
 				06FD68512CF98F3B00D17515 /* posenet.html */,
 				06FD68502CF98F3B00D17515 /* posenet.min.js */,
 				06FD684E2CF98F3B00D17515 /* posenetextension.js */,
-				06FD68522CF98F3B00D17515 /* tf-converter.min.js */,
-				06FD684F2CF98F3B00D17515 /* tf-core.min.js */,
 			);
 			name = PosenetExtension;
 			sourceTree = "<group>";
@@ -1549,10 +1586,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06925B402C8B40D60085DC83 /* facemesh.min.js in Resources */,
+				5F7ED1082C35C950004418C5 /* facemesh.html in Resources */,
+				5F7ED1092C35C950004418C5 /* facemesh_group1-shard1of1.bin in Resources */,
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
+				5F7ED10B2C35C950004418C5 /* tf-core-1.7.4.min.js in Resources */,
 				DE962F5F20ADCD2C004AA45A /* comodo_usrtrust.der in Resources */,
 				069D1CDB2C9C4FF000C0CA96 /* mobilenet_group40-shard1of1 in Resources */,
-				06FD68562CF98F3B00D17515 /* tf-core.min.js in Resources */,
 				069D1CDF2C9C4FFE00C0CA96 /* squeezenet_group1-shard1of1 in Resources */,
 				069D1CD42C9C4FF000C0CA96 /* mobilenet_group19-shard1of1 in Resources */,
 				069D1CCA2C9C4FF000C0CA96 /* mobilenet_group42-shard1of1 in Resources */,
@@ -1579,6 +1619,8 @@
 				069D1CA42C9C4FF000C0CA96 /* mobilenet_group26-shard1of1 in Resources */,
 				069D1CB82C9C4FF000C0CA96 /* mobilenet_group2-shard1of1 in Resources */,
 				DE962F6620ADCDE0004AA45A /* sub_script in Resources */,
+				5F7ED1062C35C950004418C5 /* tf-converter-1.7.4.min.js in Resources */,
+				5F7ED1072C35C950004418C5 /* facemesh.js in Resources */,
 				069D1CBF2C9C4FF000C0CA96 /* mobilenet_group53-shard1of1 in Resources */,
 				069D1CBE2C9C4FF000C0CA96 /* mobilenet_group10-shard1of1 in Resources */,
 				069D1CB02C9C4FF000C0CA96 /* mobilenet_model.json in Resources */,
@@ -1600,7 +1642,7 @@
 				069D1CBB2C9C4FF000C0CA96 /* mobilenet_group51-shard1of1 in Resources */,
 				069D1CC22C9C4FF000C0CA96 /* mobilenet_group15-shard1of1 in Resources */,
 				069D1CD52C9C4FF000C0CA96 /* mobilenet_group41-shard1of1 in Resources */,
-				06FD68542CF98F3B00D17515 /* model-stride16.json in Resources */,
+				06FD68542CF98F3B00D17515 /* posenet_model-stride16.json in Resources */,
 				069D1CAF2C9C4FF000C0CA96 /* mobilenet_group52-shard1of1 in Resources */,
 				069D1CD72C9C4FF000C0CA96 /* mobilenet_group20-shard1of1 in Resources */,
 				069D1CDA2C9C4FF000C0CA96 /* mobilenet_group7-shard1of1 in Resources */,
@@ -1612,7 +1654,9 @@
 				069D1CAB2C9C4FF000C0CA96 /* mobilenet_group23-shard1of1 in Resources */,
 				069D1CC82C9C4FF000C0CA96 /* mobilenet_group6-shard1of1 in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
+				06925B412C8B40D60085DC83 /* facemesh_model.json in Resources */,
 				062B743B2BC06AD9002E221F /* PrivacyInfo.xcprivacy in Resources */,
+				5F7ED10A2C35C950004418C5 /* VERSIONS.txt in Resources */,
 				069D1CE32C9C50B700C0CA96 /* personal_image_classifier.html in Resources */,
 				069D1CDE2C9C4FFE00C0CA96 /* squeezenet_model.json in Resources */,
 				069D1CD82C9C4FF000C0CA96 /* mobilenet_group21-shard1of1 in Resources */,
@@ -1623,7 +1667,6 @@
 				069D1CCD2C9C4FF000C0CA96 /* mobilenet_group50-shard1of1 in Resources */,
 				069D1CBA2C9C4FF000C0CA96 /* mobilenet_group43-shard1of1 in Resources */,
 				06FD68552CF98F3B00D17515 /* posenetextension.js in Resources */,
-				06FD68592CF98F3B00D17515 /* tf-converter.min.js in Resources */,
 				069D1CA72C9C4FF000C0CA96 /* mobilenet_group39-shard1of1 in Resources */,
 				069D1CA92C9C4FF000C0CA96 /* mobilenet_group45-shard1of1 in Resources */,
 				069D1CA52C9C4FF000C0CA96 /* mobilenet_group44-shard1of1 in Resources */,
@@ -1632,7 +1675,7 @@
 				069D1CC12C9C4FF000C0CA96 /* mobilenet_group54-shard1of1 in Resources */,
 				069D1CCF2C9C4FF000C0CA96 /* mobilenet_group47-shard1of1 in Resources */,
 				069D1CA62C9C4FF000C0CA96 /* mobilenet_group34-shard1of1 in Resources */,
-				06FD68532CF98F3B00D17515 /* group1-shard1of1.bin in Resources */,
+				06FD68532CF98F3B00D17515 /* posenet_group1-shard1of1.bin in Resources */,
 				069D1CB12C9C4FF000C0CA96 /* mobilenet_group38-shard1of1 in Resources */,
 				069D1CC52C9C4FF000C0CA96 /* mobilenet_group22-shard1of1 in Resources */,
 			);
@@ -1781,6 +1824,7 @@
 				06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */,
 				06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */,
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
+				5F7ED10D2C35C987004418C5 /* FaceExtension.swift in Sources */,
 				DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */,
 				0633F362297D0B1400C3C3E9 /* Translator.swift in Sources */,
 				159AC1772BB4C174002906B7 /* TrendlineCalculator.swift in Sources */,

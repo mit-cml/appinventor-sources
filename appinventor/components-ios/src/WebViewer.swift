@@ -38,6 +38,11 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     super.init(parent)
     config.setURLSchemeHandler(self, forURLScheme: "appinventor")
     _view = WKWebView(frame: CGRect.zero, configuration: config)
+#if DEBUG
+    if #available(iOS 16.4, *) {
+      _view.isInspectable = true
+    }
+#endif
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.allowsBackForwardNavigationGestures = true
     let swipeRecog = UISwipeGestureRecognizer(target: self, action: #selector(navigation))
