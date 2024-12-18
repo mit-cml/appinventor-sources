@@ -248,6 +248,13 @@
 		06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */; };
 		06FB67DD247D4AB200ABEAD6 /* ListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */; };
 		06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */; };
+		06FD68532CF98F3B00D17515 /* group1-shard1of1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */; };
+		06FD68542CF98F3B00D17515 /* model-stride16.json in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684D2CF98F3B00D17515 /* model-stride16.json */; };
+		06FD68552CF98F3B00D17515 /* posenetextension.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684E2CF98F3B00D17515 /* posenetextension.js */; };
+		06FD68562CF98F3B00D17515 /* tf-core.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD684F2CF98F3B00D17515 /* tf-core.min.js */; };
+		06FD68572CF98F3B00D17515 /* posenet.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68502CF98F3B00D17515 /* posenet.min.js */; };
+		06FD68582CF98F3B00D17515 /* posenet.html in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68512CF98F3B00D17515 /* posenet.html */; };
+		06FD68592CF98F3B00D17515 /* tf-converter.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FD68522CF98F3B00D17515 /* tf-converter.min.js */; };
 		080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */; };
 		080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
@@ -281,6 +288,7 @@
 		681D59052A84138A007B5DB5 /* FileScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59042A84138A007B5DB5 /* FileScope.swift */; };
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
+		8B77A2E92AE1EFD9009F09B2 /* PosenetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */; };
 		B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C72ACFB1AD0046DF4F /* LineChartView.swift */; };
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
@@ -608,6 +616,13 @@
 		06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearViewTests.swift; sourceTree = "<group>"; };
 		06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewTests.swift; sourceTree = "<group>"; };
 		06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPickerTests.swift; sourceTree = "<group>"; };
+		06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "group1-shard1of1.bin"; path = "extensions/assets/group1-shard1of1.bin"; sourceTree = "<group>"; };
+		06FD684D2CF98F3B00D17515 /* model-stride16.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "model-stride16.json"; path = "extensions/assets/model-stride16.json"; sourceTree = "<group>"; };
+		06FD684E2CF98F3B00D17515 /* posenetextension.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = posenetextension.js; path = extensions/assets/posenetextension.js; sourceTree = "<group>"; };
+		06FD684F2CF98F3B00D17515 /* tf-core.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tf-core.min.js"; path = "extensions/assets/tf-core.min.js"; sourceTree = "<group>"; };
+		06FD68502CF98F3B00D17515 /* posenet.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = posenet.min.js; path = extensions/assets/posenet.min.js; sourceTree = "<group>"; };
+		06FD68512CF98F3B00D17515 /* posenet.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = posenet.html; path = extensions/assets/posenet.html; sourceTree = "<group>"; };
+		06FD68522CF98F3B00D17515 /* tf-converter.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tf-converter.min.js"; path = "extensions/assets/tf-converter.min.js"; sourceTree = "<group>"; };
 		080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ResponseManager.swift; sourceTree = "<group>"; };
 		080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ReportDelegate.swift; sourceTree = "<group>"; };
 		082778F620112FE300ACC99A /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -643,6 +658,7 @@
 		681D59062A84139E007B5DB5 /* OptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionList.swift; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+EllipticalArc.swift"; sourceTree = "<group>"; };
+		8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosenetExtension.swift; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		B48808C72ACFB1AD0046DF4F /* LineChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
@@ -803,6 +819,7 @@
 		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
+				8B77A2E72AE1EFBF009F09B2 /* extensions */,
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
 				06E59EA21D92C66B00C42804 /* components */,
 				DE962F6020ADCD58004AA45A /* resources */,
@@ -854,6 +871,7 @@
 				067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */,
 				069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */,
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
+				8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */,
 			);
 			name = extensions;
 			sourceTree = "<group>";
@@ -902,6 +920,7 @@
 			isa = PBXGroup;
 			children = (
 				069D1CE52C9C50BE00C0CA96 /* PersonalImageClassifier */,
+				06FD684B2CF98ECC00D17515 /* PosenetExtension */,
 				069D1C982C9C4FF000C0CA96 /* mobilenet_group1-shard1of1 */,
 				069D1C802C9C4FEF00C0CA96 /* mobilenet_group2-shard1of1 */,
 				069D1C7E2C9C4FEF00C0CA96 /* mobilenet_group3-shard1of1 */,
@@ -1320,6 +1339,20 @@
 			path = util;
 			sourceTree = "<group>";
 		};
+		06FD684B2CF98ECC00D17515 /* PosenetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				06FD684C2CF98F3B00D17515 /* group1-shard1of1.bin */,
+				06FD684D2CF98F3B00D17515 /* model-stride16.json */,
+				06FD68512CF98F3B00D17515 /* posenet.html */,
+				06FD68502CF98F3B00D17515 /* posenet.min.js */,
+				06FD684E2CF98F3B00D17515 /* posenetextension.js */,
+				06FD68522CF98F3B00D17515 /* tf-converter.min.js */,
+				06FD684F2CF98F3B00D17515 /* tf-core.min.js */,
+			);
+			name = PosenetExtension;
+			sourceTree = "<group>";
+		};
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
@@ -1340,6 +1373,13 @@
 				58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		8B77A2E72AE1EFBF009F09B2 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = extensions;
 			sourceTree = "<group>";
 		};
 		CBC78691202E0B35005363A3 /* components */ = {
@@ -1512,6 +1552,7 @@
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
 				DE962F5F20ADCD2C004AA45A /* comodo_usrtrust.der in Resources */,
 				069D1CDB2C9C4FF000C0CA96 /* mobilenet_group40-shard1of1 in Resources */,
+				06FD68562CF98F3B00D17515 /* tf-core.min.js in Resources */,
 				069D1CDF2C9C4FFE00C0CA96 /* squeezenet_group1-shard1of1 in Resources */,
 				069D1CD42C9C4FF000C0CA96 /* mobilenet_group19-shard1of1 in Resources */,
 				069D1CCA2C9C4FF000C0CA96 /* mobilenet_group42-shard1of1 in Resources */,
@@ -1525,6 +1566,7 @@
 				069D1CCC2C9C4FF000C0CA96 /* mobilenet_group8-shard1of1 in Resources */,
 				06B216201DBDACBF000B3366 /* runtime.scm in Resources */,
 				069D1CBC2C9C4FF000C0CA96 /* mobilenet_group29-shard1of1 in Resources */,
+				06FD68582CF98F3B00D17515 /* posenet.html in Resources */,
 				061DC7B0223C34A900539213 /* classic_button.png in Resources */,
 				069D1CD02C9C4FF000C0CA96 /* mobilenet_group1-shard1of1 in Resources */,
 				069D1CB62C9C4FF000C0CA96 /* mobilenet_group3-shard1of1 in Resources */,
@@ -1558,6 +1600,7 @@
 				069D1CBB2C9C4FF000C0CA96 /* mobilenet_group51-shard1of1 in Resources */,
 				069D1CC22C9C4FF000C0CA96 /* mobilenet_group15-shard1of1 in Resources */,
 				069D1CD52C9C4FF000C0CA96 /* mobilenet_group41-shard1of1 in Resources */,
+				06FD68542CF98F3B00D17515 /* model-stride16.json in Resources */,
 				069D1CAF2C9C4FF000C0CA96 /* mobilenet_group52-shard1of1 in Resources */,
 				069D1CD72C9C4FF000C0CA96 /* mobilenet_group20-shard1of1 in Resources */,
 				069D1CDA2C9C4FF000C0CA96 /* mobilenet_group7-shard1of1 in Resources */,
@@ -1565,6 +1608,7 @@
 				061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */,
 				069D1CAA2C9C4FF000C0CA96 /* mobilenet_group11-shard1of1 in Resources */,
 				069D1CC62C9C4FF000C0CA96 /* mobilenet_group37-shard1of1 in Resources */,
+				06FD68572CF98F3B00D17515 /* posenet.min.js in Resources */,
 				069D1CAB2C9C4FF000C0CA96 /* mobilenet_group23-shard1of1 in Resources */,
 				069D1CC82C9C4FF000C0CA96 /* mobilenet_group6-shard1of1 in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
@@ -1578,6 +1622,8 @@
 				069D1CD22C9C4FF000C0CA96 /* mobilenet_group13-shard1of1 in Resources */,
 				069D1CCD2C9C4FF000C0CA96 /* mobilenet_group50-shard1of1 in Resources */,
 				069D1CBA2C9C4FF000C0CA96 /* mobilenet_group43-shard1of1 in Resources */,
+				06FD68552CF98F3B00D17515 /* posenetextension.js in Resources */,
+				06FD68592CF98F3B00D17515 /* tf-converter.min.js in Resources */,
 				069D1CA72C9C4FF000C0CA96 /* mobilenet_group39-shard1of1 in Resources */,
 				069D1CA92C9C4FF000C0CA96 /* mobilenet_group45-shard1of1 in Resources */,
 				069D1CA52C9C4FF000C0CA96 /* mobilenet_group44-shard1of1 in Resources */,
@@ -1586,6 +1632,7 @@
 				069D1CC12C9C4FF000C0CA96 /* mobilenet_group54-shard1of1 in Resources */,
 				069D1CCF2C9C4FF000C0CA96 /* mobilenet_group47-shard1of1 in Resources */,
 				069D1CA62C9C4FF000C0CA96 /* mobilenet_group34-shard1of1 in Resources */,
+				06FD68532CF98F3B00D17515 /* group1-shard1of1.bin in Resources */,
 				069D1CB12C9C4FF000C0CA96 /* mobilenet_group38-shard1of1 in Resources */,
 				069D1CC52C9C4FF000C0CA96 /* mobilenet_group22-shard1of1 in Resources */,
 			);
@@ -1930,6 +1977,7 @@
 				DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */,
 				069D1CE72C9DA49A00C0CA96 /* BaseClassifier.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
+				8B77A2E92AE1EFD9009F09B2 /* PosenetExtension.swift in Sources */,
 				DEA5C6E020E17FDA0083A49B /* Polygon.swift in Sources */,
 				06C70BB12A8BB76B00C6C78D /* ServiceAccountAuthorizer.swift in Sources */,
 				CBC78688202A23F6005363A3 /* MapFeatureContainerBase.swift in Sources */,

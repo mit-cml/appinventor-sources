@@ -16,6 +16,8 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
  */
 @objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
   public static let ERROR_WEBVEWER_REQUIRED = -7
+  public static let ERROR_WEBVIEWER_NOT_SET =
+      "You must specify a WebViewer using the WebViewer designer property before you can call"
   public static let ERROR_CLASSIFICATION_FAILED = -2;
   public static let ERROR_INVALID_MODEL_FILE = -8;
 
@@ -26,6 +28,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   private var transferModelPrefix: String? = nil
   private var personalModelPrefix: String? = nil
   private var callbacks: [String:(String)->Void] = [:]
+  private var _initialized = false
 
   /**
    * Constructs a new `BaseAiComponent` that loads the file named by `basePath` into the WebViewer
@@ -75,6 +78,13 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   }
 
   /**
+   * Returns whether the component has been successfully initialized or not.
+   */
+  @objc public var isInitialized: Bool {
+    _initialized
+  }
+
+  /**
    * The WebViewer to use for loading the model JavaScript and other logic.
    */
   @objc open var WebViewer: WebViewer {
@@ -90,7 +100,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
         _webview?.load(request)
         print("request loaded")
       } else {
-        print("request not loaded")
+        print("Starting resource \(assetPath) not loaded")
       }
     }
   }
@@ -105,6 +115,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
       _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
       return
     }
+    _initialized = true
   }
 
   // MARK: Events
