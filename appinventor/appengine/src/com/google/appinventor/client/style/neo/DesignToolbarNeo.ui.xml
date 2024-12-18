@@ -18,10 +18,6 @@
       <ca:SwitchToProjectAction/>
     </ai:ToolbarItem>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
-    <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
-                    visible="false">
-      <ya:ToggleTutorialAction/>
-    </ai:ToolbarItem>
 
     <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false"/>
     <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
@@ -35,6 +31,11 @@
                     align="center" styleName="ode-ProjectListButton inline bright primary"
                     tooltip="{messages.removeFormButton}">
       <ya:RemoveFormAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="TutorialToggle" icon="school" tooltip="{messages.toggleTutorialButton}"
+        visible="false" align="center" styleName="ode-ProjectListButton inline">
+      <ya:ToggleTutorialAction/>
     </ai:ToolbarItem>
 
     <ai:ToolbarItem name="ProjectPropertiesDialog" icon="manufacturing"

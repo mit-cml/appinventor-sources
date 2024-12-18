@@ -15,9 +15,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.Provider;
+import com.google.appinventor.components.annotations.ProviderModel;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -211,8 +215,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     "xxXtAa5ywbp6IRF37QuQChcYnOx7zIylYI1PIENfQFC2BA==\n" +
     "-----END CERTIFICATE-----\n";
 
-  public static final String CHATBOT_SERVICE_URL =
-    "https://chatbot.appinventor.mit.edu/chat/v1";
+  private static final String CHATBOT_SERVICE_URL = AppInventorFeatures.chatBotHost() + "chat/v1";
   private static final String LOG_TAG = "ChatBot";
   private static final boolean DEBUG = false;
 
@@ -394,7 +397,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     return system;
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
     defaultValue = "")
   @SimpleProperty(description = "The \"System\" value given to ChatGPT. It is " +
     "used to set the tone of a conversation. For example: \"You are a funny person.\"",
@@ -453,13 +456,13 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     return provider;
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_PROVIDER,
     defaultValue = "chatgpt")
   @SimpleProperty(description = "Set the name of the provider to use. " +
     "See https://appinv.us/chatbot for the current list of supported " +
     "providers.",
     userVisible = true)
-  public void Provider(String provider) {
+  public void Provider(@Provider String provider) {
     this.provider = provider;
   }
 
@@ -477,14 +480,14 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     return model;
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL,
     defaultValue = "")
   @SimpleProperty(description = "Set the name of the model to use. " +
     "See https://appinv.us/chatbot for the current list of supported " +
     "models. Leaving this blank will result in the default model set by " +
     "the provider being used",
     userVisible = true)
-  public void Model(String model) {
+  public void Model(@ProviderModel String model) {
     this.model = model;
   }
 

@@ -36,6 +36,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
   private final boolean isReadOnly;
+  private final boolean isGalleryReadyOnly;
   private final boolean galleryEnabled;
   @UiField protected Label projectLabel;
   @UiField protected Label trashLabel;
@@ -48,12 +49,13 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
+    isGalleryReadyOnly = Ode.getInstance().getGalleryReadOnly();
     // Is the new gallery enabled
     galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
     bindProjectToolbar();
     if (galleryEnabled) {
       setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, true);
-      if (!Ode.getInstance().getGalleryReadOnly()) {
+      if (!isGalleryReadyOnly) {
         setButtonVisible(WIDGET_NAME_SENDTONG, true);
       }
     }
@@ -85,7 +87,8 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible("ImportProject", visible);
     setButtonVisible("ImportTemplate", visible);
     setButtonVisible("Move", visible);
-    setButtonVisible("Publish", visible);
+    setButtonVisible(WIDGET_NAME_SENDTONG, visible && galleryEnabled && !isGalleryReadyOnly);
+    setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, visible && galleryEnabled);
     setDropDownButtonVisible("Export", visible);
     projectLabel.setVisible(visible);
   }

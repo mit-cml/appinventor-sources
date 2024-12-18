@@ -39,6 +39,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -310,6 +311,22 @@ public class Form extends AppInventorCompatActivity
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
+
+    // This version is for production apps. See {@link ReplForm#onCreate} for the REPL version,
+    // which overrides this method.
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+        Log.e(LOG_TAG, "Uncaught Exception", e);
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            ErrorOccurred(Form.this, "<unknown>",
+                ErrorMessages.ERROR_UNCAUGHT_EXCEPTION_IN_THREAD, e.toString());
+          }
+        });
+      }
+    });
 
     // Figure out the name of this form.
     String className = getClass().getName();

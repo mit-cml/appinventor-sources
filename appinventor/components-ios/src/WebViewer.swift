@@ -36,7 +36,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     config.allowsInlineMediaPlayback = true
     config.userContentController = controller
     super.init(parent)
-       config.setURLSchemeHandler(self, forURLScheme: "appinventor")
+    config.setURLSchemeHandler(self, forURLScheme: "appinventor")
     _view = WKWebView(frame: CGRect.zero, configuration: config)
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.allowsBackForwardNavigationGestures = true
@@ -315,24 +315,24 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
     let url = webView.url?.absoluteString ?? ""
-      DispatchQueue.main.async {
-        self.PageLoaded(url)
+    DispatchQueue.main.async {
+      self.PageLoaded(url)
     }
     _wantLoad = false
   }
 
   open func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
-                      initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+                    initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
     self._webAlert = UIAlertController(title: message,
-                                            message: nil,
-                                            preferredStyle: .alert)
+                                       message: nil,
+                                       preferredStyle: .alert)
     self._webAlert?.addAction(UIAlertAction(title: "OK", style: .cancel) {
-        _ in completionHandler()}
+      _ in completionHandler()}
     )
-    
+
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,          completionHandler: @escaping (Bool) -> Void) {
     self._webAlert = UIAlertController(title: message, message: nil, preferredStyle: .actionSheet)
     self._webAlert?.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
@@ -341,13 +341,13 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     self._webAlert?.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
       completionHandler(false)
     }))
-    
+
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?,
-                        initiatedByFrame frame: WKFrameInfo,
-                        completionHandler: @escaping (String?) -> Void) {
+                    initiatedByFrame frame: WKFrameInfo,
+                    completionHandler: @escaping (String?) -> Void) {
     self._webAlert = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
     self._webAlert?.addTextField { (textField) in
       textField.text = defaultText
@@ -364,7 +364,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     }))
     _container?.form?.present(self._webAlert!, animated: true)
   }
-  
+
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
     guard message.name == "webString" else {
       return  // Message intended for someone else...
@@ -394,13 +394,11 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
 
   // MARK: WKURLSchemeHandler implementation
 
-    public func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
-      aiSchemeHandler?.webView(webView, start: urlSchemeTask)
-    }
-
-    public func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
-      aiSchemeHandler?.webView(webView, stop: urlSchemeTask)
-    }
+  public func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, start: urlSchemeTask)
   }
 
-
+  public func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
+    aiSchemeHandler?.webView(webView, stop: urlSchemeTask)
+  }
+}

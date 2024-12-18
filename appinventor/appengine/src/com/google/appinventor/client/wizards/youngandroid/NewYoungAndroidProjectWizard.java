@@ -10,7 +10,7 @@ package com.google.appinventor.client.wizards.youngandroid;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.components.common.ComponentConstants.DEFAULT_THEME;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
@@ -76,7 +76,7 @@ public class NewYoungAndroidProjectWizard {
     themeEditor = new YoungAndroidThemeChoicePropertyEditor(DEFAULT_THEME);
     theme = new EditableProperty(themes, MESSAGES.themeTitle(), DEFAULT_THEME,
         MESSAGES.themeTitle(), null,
-        ComponentsTranslation.getPropertyDescription("ThemePropertyDescriptions"),
+        ComponentTranslationTable.getPropertyDescription("ThemePropertyDescriptions"),
         themeEditor, 0x01, "", null);
     themeEditor.setProperty(theme);
 
@@ -84,7 +84,7 @@ public class NewYoungAndroidProjectWizard {
     blockstoolkitEditor = new SubsetJSONPropertyEditor(true);
     toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "",
         MESSAGES.blocksToolkitTitle(), null,
-        ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
+        ComponentTranslationTable.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
         blockstoolkitEditor, 0x01, "", null);
     blockstoolkitEditor.setProperty(toolkit);
 
