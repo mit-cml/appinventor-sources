@@ -109,28 +109,39 @@ class QuadraticRegression: TrendlineCalculator {
     return 3
   }
 
-  func compute(x: [Double], y: [Double]) -> [String: Any] {  // Changed Double to Any to accommodate array of Double
+  func compute(x: [Double], y: [Double]) -> [String: Any] {
     guard !x.isEmpty, !y.isEmpty, x.count == y.count else {
-      fatalError("Lists must not be empty and must have equal numbers of elements")
+      return ["error": "Lists must not be empty and must have equal numbers of elements"]
     }
 
     let n = Double(x.count)
-    let sumx = x.reduce(0, +)
-    let sumy = y.reduce(0, +)
-    let sumxy = zip(x, y).reduce(0) { $0 + $1.0 * $1.1 }
-    let sumxSquared = x.reduce(0) { $0 + $1 * $1 }
-    let sumySquared = y.reduce(0) { $0 + $1 * $1 }
+    let sumX = x.reduce(0, +)
+    let sumY = y.reduce(0, +)
+    let sumX2 = x.reduce(0) { $0 + $1 * $1 }
+    let sumX3 = x.reduce(0) { $0 + $1 * $1 * $1 }
+    let sumX4 = x.reduce(0) { $0 + $1 * $1 * $1 * $1 }
+    let sumXY = zip(x, y).reduce(0) { $0 + $1.0 * $1.1 }
+    let sumX2Y = zip(x, y).reduce(0) { $0 + $1.0 * $1.0 * $1.1 }
 
-    let xmean = sumx / n
-    let ymean = sumy / n
+    // Calculate adjusted sums
+    let xx = sumX2 - (sumX * sumX) / n
+    let xy = sumXY - (sumX * sumY) / n
+    let xx2 = sumX3 - (sumX2 * sumX) / n
+    let x2y = sumX2Y - (sumX2 * sumY) / n
+    let x2x2 = sumX4 - (sumX2 * sumX2) / n
 
-    let xxmean = x.reduce(0) { $0 + ($1 - xmean) * ($1 - xmean) }
-    let xymean = zip(x, y).reduce(0) { $0 + ($1.0 - xmean) * ($1.1 - ymean) }
+    // Calculate coefficients
+    let denominator = (xx * x2x2) - (xx2 * xx2)
+    guard denominator != 0 else {
+      return ["error": "Invalid input data, cannot compute coefficients"]
+    }
 
-    let b = xymean / xxmean
-    let a = ymean - b * xmean
+    let a = ((x2y * xx) - (xy * xx2)) / denominator
+    let b = ((xy * x2x2) - (x2y * xx2)) / denominator
+    let c = (sumY / n) - b * (sumX / n) - a * (sumX2 / n)
 
-    let discriminant = b * b - 4 * a * ymean
+    // Calculate discriminant for roots
+    let discriminant = b * b - 4 * a * c
     var intercepts = [Double]()
     if discriminant > 0 {
       let sqrtDiscriminant = sqrt(discriminant)
@@ -140,24 +151,26 @@ class QuadraticRegression: TrendlineCalculator {
       intercepts.append(-b / (2 * a))
     }
 
-    let corrNumerator = n * sumxy - sumx * sumy
-    let corrDenominator = sqrt((n * sumxSquared - sumx * sumx) * (n * sumySquared - sumy * sumy))
-    let corr = corrNumerator / corrDenominator
-
-    var results: [String: Any] = [
-      "slope": b,
-      "Yintercept": a,
-      "correlation coefficient": corr,
-      "r^2": corr * corr
-    ]
-
-    if intercepts.isEmpty {
-      results["Xintercepts"] = [Double.nan] // Use array even for NaN
-    } else {
-      results["Xintercepts"] = intercepts // Always store as an array
+    // Correlation coefficient and R²
+    let meanY = sumY / n
+    var ssTotal = 0.0, ssResidual = 0.0
+    for i in 0..<x.count {
+      let predictedY = (a * x[i] + b) * x[i] + c
+      ssTotal += (y[i] - meanY) * (y[i] - meanY)
+      ssResidual += (y[i] - predictedY) * (y[i] - predictedY)
     }
 
-    return results
+    let rSquared = 1 - ssResidual / ssTotal
+    let correlationCoefficient = sqrt(rSquared)
+
+    return [
+      "x^2": a,
+      "slope": b,
+      "Yintercept": c,
+      "correlation coefficient": correlationCoefficient,
+      "r^2": rSquared,
+      "Xintercepts": intercepts.isEmpty ? [Double.nan] : intercepts
+    ]
   }
 
   func computePoints(results: [String: Double], xMin: Double, xMax: Double, viewWidth: Int, steps: Int) -> [CGPoint] {
