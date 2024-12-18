@@ -463,8 +463,17 @@ public class ReplForm extends Form {
         if (!extensions.contains(compFolder.getName())) {
           continue;  // Skip extensions on the phone but not required by the project
         }
-        File loadComponent = new File(compFolder.getPath() + File.separator
+        File loadComponent;
+        // If we are on Android 14 or higher, the final jar file's name is based
+        // on the name of the extension.
+        // Older versions just name it classes.jar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+          loadComponent = new File(compFolder.getPath() + File.separator
             + compFolder.getName() + ".jar");
+        } else {
+          loadComponent = new File(compFolder.getPath() + File.separator
+            + "classes.jar");
+        }
         if (loadComponent.canWrite() && !loadComponent.setReadOnly()) {
           throw new YailRuntimeError("Unable to set " + loadComponent.getName() + " to read only",
               "Permission Error");
