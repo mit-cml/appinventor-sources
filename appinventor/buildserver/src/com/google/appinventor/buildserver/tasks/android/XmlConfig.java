@@ -176,7 +176,7 @@ public class XmlConfig implements AndroidTask {
       for (String xml : component.getValue()) {
         String[] parts = xml.split(":", 2);
         String path = parts[0];
-        if (parts[0].matches(
+        if (!parts[0].matches(
             "^(?:(layout|values|drawable|mipmap|xml|color|menu|animator|anim)[a-zA-Z0-9-+_]*/)?[a-z][a-zA-Z0-9-+_]*\\.xml$")) {
           context.getReporter().error("The file " + parts[0] + " being created has an invalid path or name.");
           return false;
