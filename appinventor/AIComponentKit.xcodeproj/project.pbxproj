@@ -174,6 +174,8 @@
 		069D1CE32C9C50B700C0CA96 /* personal_image_classifier.html in Resources */ = {isa = PBXBuildFile; fileRef = 069D1CE02C9C50B700C0CA96 /* personal_image_classifier.html */; };
 		069D1CE42C9C50B700C0CA96 /* personal_image_classifier.js in Resources */ = {isa = PBXBuildFile; fileRef = 069D1CE12C9C50B700C0CA96 /* personal_image_classifier.js */; };
 		069D1CE72C9DA49A00C0CA96 /* BaseClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */; };
+		069EDEC628EC96670020B1B1 /* BluetoothLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069EDEC528EC96670020B1B1 /* BluetoothLE.swift */; };
+		069EDEC828EC9E850020B1B1 /* Microbit_Uart_Simple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069EDEC728EC9E850020B1B1 /* Microbit_Uart_Simple.swift */; };
 		06A47CD323F12EF400668126 /* PermissionException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A47CD223F12EF400668126 /* PermissionException.swift */; };
 		06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623832507BC3200961743 /* Array+AIHelpers.swift */; };
 		06A623862507BDA800961743 /* CoercionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623852507BDA800961743 /* CoercionTests.swift */; };
@@ -553,6 +555,8 @@
 		069D1CE12C9C50B700C0CA96 /* personal_image_classifier.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = personal_image_classifier.js; path = "components-common/src/PersonalImageClassifier/personal_image_classifier.js"; sourceTree = SOURCE_ROOT; };
 		069D1CE22C9C50B700C0CA96 /* PersonalImageClassifier.d.ts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.typescript; name = PersonalImageClassifier.d.ts; path = "components-common/src/PersonalImageClassifier/PersonalImageClassifier.d.ts"; sourceTree = SOURCE_ROOT; };
 		069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseClassifier.swift; sourceTree = "<group>"; };
+		069EDEC528EC96670020B1B1 /* BluetoothLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothLE.swift; sourceTree = "<group>"; };
+		069EDEC728EC9E850020B1B1 /* Microbit_Uart_Simple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Microbit_Uart_Simple.swift; sourceTree = "<group>"; };
 		06A47CD223F12EF400668126 /* PermissionException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionException.swift; sourceTree = "<group>"; };
 		06A623832507BC3200961743 /* Array+AIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+AIHelpers.swift"; sourceTree = "<group>"; };
 		06A623852507BDA800961743 /* CoercionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoercionTests.swift; sourceTree = "<group>"; };
@@ -906,7 +910,9 @@
 				069D1C692C9C4FBF00C0CA96 /* assets */,
 				067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */,
 				069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */,
+				069EDEC528EC96670020B1B1 /* BluetoothLE.swift */,
 				5F7ED10C2C35C987004418C5 /* FaceExtension.swift */,
+				069EDEC728EC9E850020B1B1 /* Microbit_Uart_Simple.swift */,
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
 				8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */,
 			);
@@ -1929,6 +1935,7 @@
 				B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
 				0846B64620BBBF92008FB20C /* Sprite.swift in Sources */,
+				069EDEC828EC9E850020B1B1 /* Microbit_Uart_Simple.swift in Sources */,
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,
 				DEE8A98D1FAF9E59000C7E6B /* EmailPicker.swift in Sources */,
 				159AC16F2B9929C6002906B7 /* PointShape.swift in Sources */,
@@ -1967,6 +1974,7 @@
 				06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
 				06E4F9982CFE3DCF00B59DA7 /* AnomalyDetection.swift in Sources */,
+				069EDEC628EC96670020B1B1 /* BluetoothLE.swift in Sources */,
 				DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */,
 				681D59052A84138A007B5DB5 /* FileScope.swift in Sources */,
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,

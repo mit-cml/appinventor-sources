@@ -29,6 +29,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>App Inventor uses Bluetooth when you include a BluetoothClient or BluetoothLE component in your app.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>scanning barcodes and taking pictures</string>
 	<key>NSContactsUsageDescription</key>
