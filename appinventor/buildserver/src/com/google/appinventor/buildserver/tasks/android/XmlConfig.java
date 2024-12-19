@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * compiler.createValuesXml()
@@ -104,6 +105,15 @@ public class XmlConfig implements AndroidTask {
       return generateError("There was an error creating the adaptive icon background file");
     }
 
+    // Generate custom xml files
+    final Map<String, Set<String>> xmlsNeeded = context.getComponentInfo().getXmlsNeeded();
+    if (!xmlsNeeded.isEmpty()) {
+      context.getReporter().info("Generating custom xml files");
+      if (!this.createXmls(xmlsNeeded)) {
+        return generateError("There was an error creating the custom xml files");
+      }
+    }
+
     return TaskResult.generateSuccess();
   }
 
@@ -160,6 +170,28 @@ public class XmlConfig implements AndroidTask {
     return true;
   }
 
+  /** Create the custom xml files for the app. */
+  private boolean createXmls(Map<String, Set<String>> xmlsNeeded) {
+    for (Map.Entry<String, Set<String>> component : xmlsNeeded.entrySet()) {
+      for (String xml : component.getValue()) {
+        String[] parts = xml.split(":", 2);
+        if (!parts[0].matches(
+            "^(?:(layout|values|drawable|mipmap|xml|color|menu|animator|anim)[a-zA-Z0-9-+_]*/)?[a-z][a-zA-Z0-9-+_]*\\.xml$")) {
+          context.getReporter().error("The file " + parts[0] + " being created has an invalid path or name.");
+          return false;
+        }
+        File file =
+            new File(
+                createDir(context.getPaths().getResDir(), new File(parts[0]).getParent()),
+                new File(parts[0]).getName());
+        if (!writeXmlFile(file, parts[1])) {
+          context.getReporter().error("Error writing custom XML file");
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   /**
    * Create the default color and styling for the app.
