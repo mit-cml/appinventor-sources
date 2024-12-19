@@ -111,7 +111,7 @@ class QuadraticRegression: TrendlineCalculator {
 
   func compute(x: [Double], y: [Double]) -> [String: Any] {
     guard !x.isEmpty, !y.isEmpty, x.count == y.count else {
-      return ["error": "Lists must not be empty and must have equal numbers of elements"]
+      fatalError("Lists must not be empty and must have equal numbers of elements")
     }
 
     let n = Double(x.count)
