@@ -293,6 +293,18 @@ class BleWriteOperation: BleOperation {
       // TODO: Error
       return true
     }
+    if type == .withResponse {
+      owner.writeCallback = { [self] in
+        let serviceUuid = characteristic.service?.uuid.uuidString ?? ""
+        let characteristicUuid = characteristic.uuid.uuidString
+        let array = data.withUnsafeBytes { (pointer: UnsafePointer<Int8>) -> [Int8] in
+          let buffer = UnsafeBufferPointer(start: pointer, count: data.count)
+          return Array<Int8>(buffer)
+        }
+        owner.BytesWritten(serviceUuid, characteristicUuid, array.map({ Int32($0) }))
+        owner.runNextOperation()
+      }
+    }
     peripheral.writeValue(data, for: characteristic, type: type)
     return type == .withoutResponse
   }
@@ -373,6 +385,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   private var pendingOperationsMutex = DispatchSemaphore(value: 1)
   private var operationWaiting = false
   private var operationPending = DispatchSemaphore(value: 0)
+  fileprivate var writeCallback: (() -> Void)? = nil
 
   @objc public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -432,7 +445,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   @objc public var IsDeviceConnected: Bool {
-    return self.peripheral != nil
+    return self.peripheral?.state == .connected
   }
 
   @objc public var NullTerminatedStrings: Bool = false
@@ -711,7 +724,9 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       pendingOperationsMutex.wait()
       let runNext = operation.run()
       if runNext {
-
+        DispatchQueue.main.async {
+          self.runNextOperation()
+        }
       }
       pendingOperationsMutex.signal()
     }
@@ -792,7 +807,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   @objc public func BytesWritten(_ serviceUuid: String, _ characteristicUuid: String,
-                                 _ values: [Int]) {
+                                 _ values: [Int32]) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "BytesWritten", arguments: serviceUuid as AnyObject, characteristicUuid as AnyObject, values as NSArray)
     }
@@ -907,6 +922,14 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     self.peripheral = peripheral
     peripheral.delegate = self
     peripheral.discoverServices(nil)
+  }
+
+  public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: (any Error)?) {
+    guard let error = error else {
+      ConnectionFailed("Unknown reason")
+      return
+    }
+    ConnectionFailed("\(error)")
   }
 
   public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
@@ -1037,6 +1060,11 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       pendingOperationsMutex.signal()
     }
 
+    if let callback = writeCallback {
+      writeCallback = nil
+      callback()
+    }
+
     var operationQueue = pendingOperationsByUuid[characteristic.uuid, default: []]
     guard let pendingOperation = operationQueue.first as? BleWriteOperation else {
       return
@@ -1053,6 +1081,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   }
 
   func runNextOperation() {
-
+    // TODO: Figure out the next operation that needs to be run if any are queued.
   }
 }
