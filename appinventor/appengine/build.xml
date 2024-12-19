@@ -190,6 +190,10 @@
         <include name="closure-library/closure/goog/css/dialog.css"/>
         <include name="closure-library/closure/goog/css/hsvapalette.css"/>
         <include name="closure-library/closure/goog/deps.js"/>
+        <!-- include the DOMPurify lib used for sanitizing HTML of extension mocks -->
+        <include name="dompurify/purify.min.js" />
+        <!-- include the linkedom lib used for supporting DOM manipulation of mocks -->
+        <include name="linkedom/linkedom.min.js" />
       </fileset>
       <fileset dir="${docs.dir}/html/static">
         <include name="js/*"/>
@@ -633,6 +637,7 @@
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
       <arg line="${client.flags} ${client.module}"/>
+      <arg line="-generateJsInteropExports"/>
     </java>
     <copy todir="${build.war.dir}/ode"
           file="${appinventor.dir}/appengine/extra/cdnok.js" />
