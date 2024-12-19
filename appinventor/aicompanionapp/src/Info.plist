@@ -31,6 +31,8 @@
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>App Inventor uses Bluetooth when you include a BluetoothClient or BluetoothLE component in your app.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>App Inventor connects to Bluetooth peripherals when you use the BluetoothClient or BluetoothLE components</string>
 	<key>NSCameraUsageDescription</key>
 	<string>scanning barcodes and taking pictures</string>
 	<key>NSContactsUsageDescription</key>
