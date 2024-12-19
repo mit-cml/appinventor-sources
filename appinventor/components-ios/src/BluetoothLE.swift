@@ -1060,7 +1060,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       pendingOperationsMutex.signal()
     }
 
-    if let callback = writeCallback {
+    if error == nil, let callback = writeCallback {
       writeCallback = nil
       callback()
     }
