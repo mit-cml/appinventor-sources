@@ -105,6 +105,9 @@ import Foundation
   // Form errors that are signalled in runtime.scm
   case ERROR_DIVISION_BY_ZERO = 3200
 
+  // Extension errors
+  case ERROR_EXTENSION_ERROR = 3300
+
   // Map Errors
   case ERROR_LINESTRING_TOO_FEW_POINTS = 3401
   case ERROR_LINESTRING_PARSE_ERROR = 3402
@@ -295,6 +298,9 @@ import Foundation
     // DatePicker Errors
     case .ERROR_ILLEGAL_DATE:
       return "The date you entered is invalid."
+
+    case .ERROR_EXTENSION_ERROR:
+      return "Error %d in extension %@: %@"
 
     // Map Errors
     case .ERROR_LINESTRING_TOO_FEW_POINTS:

@@ -101,7 +101,7 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
   } else if ([localName hasPrefix:JAVA_COMMON_PACKAGE]) {
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_COMMON_PACKAGE withString:SWIFT_PACKAGE];
-  } else if ([localName hasPrefix:JAVA_EXTENSION_PACKAGE]) {
+  } else if ([localName hasPrefix:JAVA_EXTENSION_PACKAGE] || [localName hasPrefix:@"com.bbc.microbit."]) {
     localName = [NSString stringWithFormat:@"AIComponentKit.%@", [localName componentsSeparatedByString:@"."].lastObject];
   }
   return NSClassFromString(localName);
