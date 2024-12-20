@@ -440,7 +440,7 @@ Blockly.Blocks['helpers_providermodel'] = {
 
   typeblock: function() {
     tb = [];
-    var modelproviders = Blockly.mainWorkspace.getProviderModelList();
+    var modelproviders = Blockly.getMainWorkspace().getProviderModelList();
     for (var i = 0, providermodel; (providermodel = modelproviders[i]); i++) {
       tb.push({
         translatedName: providermodel,
@@ -562,7 +562,7 @@ Blockly.Blocks['helpers_provider'] = {
 
   typeblock: function() {
     tb = [];
-    var providers = Blockly.mainWorkspace.getProviderList();
+    var providers = Blockly.getMainWorkspace().getProviderList();
     for (var i = 0, provider; (provider = providers[i]); i++) {
       tb.push({
         translatedName: provider,
