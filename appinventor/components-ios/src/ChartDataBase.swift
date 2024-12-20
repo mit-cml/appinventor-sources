@@ -26,6 +26,10 @@ import DGCharts
     return dataModel as? ChartDataModel
   }
 
+  public var dispatchDelegate: HandlesEventDispatching? {
+    return container?.form
+  }
+
   @objc public init(_ chartContainer: Chart) {
     super.init(chartContainer)
     chartContainer.addDataComponent(self)
@@ -164,8 +168,6 @@ import DGCharts
   func DataSourceKey(_ key: String) {
     dataSourceKey = key
   }
-
-  public var dispatchDelegate: HandlesEventDispatching?
 
   func uiColorFromHex(rgbValue: Int) -> UIColor {
 
