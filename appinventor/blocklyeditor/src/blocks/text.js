@@ -52,10 +52,15 @@ Blockly.Blocks['text'] = {
  */
 Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
   if (AI.BlockUtils.NUMBER_REGEX.test(newValue) && !isNaN(parseFloat(newValue))) {
-    this.outputConnection.setCheck(
-        AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT).concat('Number'));
-  } else {
     this.outputConnection.setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+  } else {
+    // Remove the Number type from the output connection check if it exists.
+    const check = Array.from(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    const numberIndex = check.indexOf('Number');
+    if (numberIndex !== -1) {
+      check.splice(numberIndex, 1);
+    }
+    this.outputConnection.setCheck(check);
   }
   maybeBumpBlockOnFinishEdit(this);
 }

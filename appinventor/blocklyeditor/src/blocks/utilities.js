@@ -48,7 +48,7 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
   },
   'text': {
     'input': ['String'],
-    'output': ['String', 'Key']
+    'output': ['Number', 'String', 'Key']
   },
   'boolean': {
     'input': ['Boolean'],
