@@ -259,6 +259,7 @@ fileprivate let FRONT_CAMERA = "Front"
 
   @objc open override func ModelReady() {
     super.ModelReady()
+    EventDispatcher.dispatchEvent(of: self, called: "ModelReady")
     if _enabled, let webview = _webview {
       webview.evaluateJavaScript("minPoseConfidence = \(_minPoseConfidence);")
       webview.evaluateJavaScript("minPartConfidence = \(_minPartConfidence);")
