@@ -18,7 +18,6 @@ fileprivate let FRONT_CAMERA = "Front"
   fileprivate var _minPoseConfidence: Double = 0.1
   fileprivate var _minPartConfidence: Double = 0.5
   fileprivate lazy var _cameraMode: String = FRONT_CAMERA
-  fileprivate var _initialized: Bool = false
   fileprivate var _enabled: Bool = true
   fileprivate var _backgroundImage: String = ""
 
@@ -61,7 +60,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _minPoseConfidence = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("MinPoseConfidence")
         } catch {
@@ -77,7 +76,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _minPartConfidence = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("MinPartConfidence")
         } catch {
@@ -213,7 +212,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _enabled = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("Enabled")
         } catch {
@@ -230,7 +229,7 @@ fileprivate let FRONT_CAMERA = "Front"
     set {
       if newValue == BACK_CAMERA || newValue == FRONT_CAMERA {
         _cameraMode = newValue
-        if _initialized {
+        if isInitialized {
           do {
             let frontFacing = (newValue == FRONT_CAMERA)
             try assertWebView("UseCamera", frontFacing)
