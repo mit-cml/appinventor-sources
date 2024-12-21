@@ -492,11 +492,14 @@
   (cond
    ((yail-dictionary? arg) arg)
    ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+   ((string? arg) (invoke AIComponentKit.Web 'decodeJson: arg))
    (else
-    (let ((result (invoke arg 'toYailDictionary)))
-      (if result
-          result
-          *non-coercible-value*)))))
+    (try-catch
+      (let ((result (invoke arg 'toYailDictionary)))
+        (if result
+            result
+            *non-coercible-value*))
+      (exception java.lang.Exception *non-coercible-value*)))))
 
 (define (coerce-to-boolean arg)
   (cond

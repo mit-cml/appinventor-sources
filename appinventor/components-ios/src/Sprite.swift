@@ -423,7 +423,13 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     }
 
     if moved {
-      registerChanges()
+      // Originally registerChanges was called directly, but if the sprite is larger than the
+      // canvas, this will result in a stack overflow as we keep trying to move the sprite in
+      // bounds, which is impossible. We defer the change update so at least the app remains
+      // responsive in case the sizes are being updated in an event handler.
+      DispatchQueue.main.async {
+        self.registerChanges()
+      }
     }
   }
 

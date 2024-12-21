@@ -91,7 +91,7 @@ import UIKit
   private var _extend: Bool = true
   private var _model = BestFitModel.Linear
   private var _strokeWidth: CGFloat = 1.0
-  private var _strokeStyle = StrokeStyle.Solid
+  private var _strokeStyle = AIComponentKit.StrokeStyle.Solid
   private var _visible: Bool = true
   private var regression: LinearRegression = LinearRegression()
   private var quadraticRegression: QuadraticRegression = QuadraticRegression()
@@ -132,19 +132,6 @@ import UIKit
     let dotLength = 2 * density
     let dotGap = 10 * density
     return [dotLength, dotGap]
-  }
-
-  func draw(context: CGContext) {
-    switch _strokeStyle {
-    case .Dashed:
-      context.setLineDash(phase: 0, lengths: _dashed ?? [])
-    case .Dotted:
-      context.setLineDash(phase: 0, lengths: _dotted ?? [])
-    case .Solid:
-      context.setLineDash(phase: 0, lengths: [])
-    default:
-      break
-    }
   }
 
   func onDataSourceValueChange(_ component: DataSource, _ key: String?, _ newValue: AnyObject?) {
@@ -270,22 +257,28 @@ import UIKit
     lastResults[key] ?? Double.nan
   }
 
-  @objc public func setModel(_ newModel: BestFitModel) {
-    switch newModel {
-    case .Linear:
-      currentModel = LinearRegression()
-    case .Quadratic:
-      currentModel = QuadraticRegression()
-    case .Exponential:
-      currentModel = ExponentialRegression()
-    case .Logarithmic:
-      currentModel = LogarithmicRegression()
-    default:
-      print("Unknown model: \(String(describing: newModel))")
+  @objc open var Model: BestFitModel {
+    get {
+      return _model
     }
+    set {
+      _model = newValue
+      switch _model {
+      case .Linear:
+        currentModel = regression
+      case .Quadratic:
+        currentModel = quadraticRegression
+      case .Exponential:
+        currentModel = exponentialRegression
+      case .Logarithmic:
+        currentModel = logarithmicRegression
+      default:
+        print("Unknown model: \(String(describing: _model))")
+      }
 
-    if initialized {
-      _container.refresh()
+      if initialized {
+        _container.refresh()
+      }
     }
   }
 
@@ -294,7 +287,7 @@ import UIKit
   }
 
   @objc open var QuadraticCoefficient: Any {
-    (lastResults["x^2"]) ?? 0.0
+    lastResults["x^2"] ?? 0.0
   }
 
   @objc open var Results: [String: Any] {
@@ -302,11 +295,11 @@ import UIKit
   }
 
   @objc open var RSquared: Any {
-    (lastResults["r^2"]) ?? Double.nan
+    lastResults["r^2"] ?? Double.nan
   }
 
   // TODO : make strokeStyle and stokeWidth work
-  @objc open var strokeStyle: StrokeStyle {
+  @objc open var StrokeStyle: AIComponentKit.StrokeStyle {
     get {
       return _strokeStyle
     }
@@ -318,7 +311,7 @@ import UIKit
     }
   }
 
-  @objc open var strokeWidth: CGFloat {
+  @objc open var StrokeWidth: CGFloat {
     get {
       return _strokeWidth
     }
@@ -381,8 +374,6 @@ import UIKit
   }
 
   func getDashPathEffect() {
-    // Assuming this method is supposed to update the stroke style
-    // This might need to be adjusted based on how StrokeStyle is used in your app
     switch _strokeStyle {
     case .Dashed:
       _strokeStyle = .Dashed
@@ -423,7 +414,7 @@ import UIKit
     }
 
     let strokeStep: Int
-    switch strokeStyle {
+    switch StrokeStyle {
     case .Dashed:
       strokeStep = 20
     case .Dotted:
@@ -473,7 +464,7 @@ import UIKit
     }
 
     func getDashPattern() -> [CGFloat]? {
-      switch trendline.strokeStyle {
+      switch trendline.StrokeStyle {
       case .Dashed:
         return trendline._dashed
       case .Dotted:
@@ -486,7 +477,7 @@ import UIKit
     }
 
     func getLineWidth() -> CGFloat {
-      return trendline.strokeWidth * CGFloat(trendline._density)
+      return trendline.StrokeWidth * CGFloat(trendline._density)
     }
 
     func isVisible() -> Bool {
@@ -543,7 +534,7 @@ import UIKit
     }
 
     func getDashPattern() -> [CGFloat]? {
-      switch trendline.strokeStyle {
+      switch trendline.StrokeStyle {
       case .Dashed:
         return trendline._dashed
       case .Dotted:
@@ -556,7 +547,7 @@ import UIKit
     }
 
     func getLineWidth() -> CGFloat {
-      return trendline.strokeWidth * CGFloat(trendline._density)
+      return trendline.StrokeWidth * CGFloat(trendline._density)
     }
 
     func isVisible() -> Bool {
