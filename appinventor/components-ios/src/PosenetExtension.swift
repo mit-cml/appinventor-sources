@@ -18,7 +18,6 @@ fileprivate let FRONT_CAMERA = "Front"
   fileprivate var _minPoseConfidence: Double = 0.1
   fileprivate var _minPartConfidence: Double = 0.5
   fileprivate lazy var _cameraMode: String = FRONT_CAMERA
-  fileprivate var _initialized: Bool = false
   fileprivate var _enabled: Bool = true
   fileprivate var _backgroundImage: String = ""
 
@@ -61,7 +60,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _minPoseConfidence = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("MinPoseConfidence")
         } catch {
@@ -77,7 +76,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _minPartConfidence = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("MinPartConfidence")
         } catch {
@@ -136,71 +135,71 @@ fileprivate let FRONT_CAMERA = "Front"
   }
   
   @objc open var Nose: [Double] {
-    return _keyPoints["nose"]!
+    return _keyPoints["nose"] ?? []
   }
   
   @objc open var LeftEye: [Double] {
-    return _keyPoints["leftEye"]!
+    return _keyPoints["leftEye"] ?? []
   }
   
   @objc open var RightEye: [Double] {
-    return _keyPoints["rightEye"]!
+    return _keyPoints["rightEye"] ?? []
   }
   
   @objc open var LeftEar: [Double] {
-    return _keyPoints["leftEar"]!
+    return _keyPoints["leftEar"] ?? []
   }
   
   @objc open var RightEar: [Double] {
-    return _keyPoints["rightEar"]!
+    return _keyPoints["rightEar"] ?? []
   }
   
   @objc open var LeftShoulder: [Double] {
-    return _keyPoints["leftShoulder"]!
+    return _keyPoints["leftShoulder"] ?? []
   }
   
   @objc open var RightShoulder: [Double] {
-    return _keyPoints["rightShoulder"]!
+    return _keyPoints["rightShoulder"] ?? []
   }
   
   @objc open var LeftElbow: [Double] {
-    return _keyPoints["leftElbow"]!
+    return _keyPoints["leftElbow"] ?? []
   }
   
   @objc open var RightElbow: [Double] {
-    return _keyPoints["rightElbow"]!
+    return _keyPoints["rightElbow"] ?? []
   }
   
   @objc open var LeftWrist: [Double] {
-    return _keyPoints["leftWrist"]!
+    return _keyPoints["leftWrist"] ?? []
   }
   
   @objc open var RightWrist: [Double] {
-    return _keyPoints["rightWrist"]!
+    return _keyPoints["rightWrist"] ?? []
   }
   
   @objc open var LeftHip: [Double] {
-    return _keyPoints["leftHip"]!
+    return _keyPoints["leftHip"] ?? []
   }
   
   @objc open var RightHip: [Double] {
-    return _keyPoints["rightHip"]!
+    return _keyPoints["rightHip"] ?? []
   }
   
   @objc open var LeftKnee: [Double] {
-    return _keyPoints["leftKnee"]!
+    return _keyPoints["leftKnee"] ?? []
   }
   
   @objc open var RightKnee: [Double] {
-    return _keyPoints["rightKnee"]!
+    return _keyPoints["rightKnee"] ?? []
   }
   
   @objc open var LeftAnkle: [Double] {
-    return _keyPoints["leftAnkle"]!
+    return _keyPoints["leftAnkle"] ?? []
   }
   
   @objc open var RightAnkle: [Double] {
-    return _keyPoints["rightAnkle"]!
+    return _keyPoints["rightAnkle"] ?? []
   }
   
   @objc open var BackgroundImage: String {
@@ -213,7 +212,7 @@ fileprivate let FRONT_CAMERA = "Front"
     }
     set {
       _enabled = newValue
-      if _initialized {
+      if isInitialized {
         do {
           try assertWebView("Enabled")
         } catch {
@@ -230,7 +229,7 @@ fileprivate let FRONT_CAMERA = "Front"
     set {
       if newValue == BACK_CAMERA || newValue == FRONT_CAMERA {
         _cameraMode = newValue
-        if _initialized {
+        if isInitialized {
           do {
             let frontFacing = (newValue == FRONT_CAMERA)
             try assertWebView("UseCamera", frontFacing)
@@ -260,6 +259,7 @@ fileprivate let FRONT_CAMERA = "Front"
 
   @objc open override func ModelReady() {
     super.ModelReady()
+    EventDispatcher.dispatchEvent(of: self, called: "ModelReady")
     if _enabled, let webview = _webview {
       webview.evaluateJavaScript("minPoseConfidence = \(_minPoseConfidence);")
       webview.evaluateJavaScript("minPartConfidence = \(_minPartConfidence);")

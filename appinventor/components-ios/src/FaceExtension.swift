@@ -246,6 +246,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".tflite"
 
   @objc open override func ModelReady() {
     super.ModelReady()
+    EventDispatcher.dispatchEvent(of: self, called: "ModelReady")
     if _enabled {
       let frontFacing = _FRONT_CAMERA == _cameraMode
       _webview?.evaluateJavaScript("setCameraFacingMode(\(frontFacing))")

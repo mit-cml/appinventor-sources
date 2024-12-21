@@ -315,7 +315,12 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     if let url = navigationAction.request.url?.absoluteString {
       _temporaryLink = url
     }
-    decisionHandler((_followLinks || _wantLoad) ? .allow: .cancel)
+    // We want to load the page if any of the following is true:
+    // 1. FollowLinks is turned on
+    // 2. The blocks have explicitly requested a URL be loaded
+    // 3. We are a WebView running AI extensions
+    // Otherwise, do not load the page
+    decisionHandler((_followLinks || _wantLoad || aiSchemeHandler != nil) ? .allow: .cancel)
   }
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
