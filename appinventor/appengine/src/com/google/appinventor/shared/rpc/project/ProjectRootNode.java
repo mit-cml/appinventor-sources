@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -51,8 +51,8 @@ public abstract class ProjectRootNode extends ProjectNode {
    *
    * @return list of source project nodes
    */
-  public List<ProjectNode> getAllSourceNodes() {
-    List<ProjectNode> sourceNodes = new ArrayList<ProjectNode>();
+  public List<SourceNode> getAllSourceNodes() {
+    List<SourceNode> sourceNodes = new ArrayList<SourceNode>();
     findSourceNodes(sourceNodes);
     return sourceNodes;
   }
@@ -61,8 +61,8 @@ public abstract class ProjectRootNode extends ProjectNode {
    * Returns the source node with the given fileId, or null if there is no source node with the
    * given fileId.
    */
-  public ProjectNode getSourceNode(String fileId) {
-    for (ProjectNode node : getAllSourceNodes()) {
+  public SourceNode getSourceNode(String fileId) {
+    for (SourceNode node : getAllSourceNodes()) {
       if (node.getFileId().equals(fileId)) {
         return node;
       }
