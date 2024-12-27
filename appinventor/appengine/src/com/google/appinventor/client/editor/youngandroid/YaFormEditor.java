@@ -15,6 +15,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -1022,6 +1023,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           getVisibleComponentsPanel().focusCheckbox();
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+          AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
         }
       }
     }, KeyDownEvent.getType());

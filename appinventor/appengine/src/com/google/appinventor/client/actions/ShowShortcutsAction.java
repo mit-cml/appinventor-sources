@@ -8,6 +8,7 @@ package com.google.appinventor.client.actions;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -34,13 +35,14 @@ public class ShowShortcutsAction implements Command {
     public void execute() {
         VerticalPanel DialogBoxContents = new VerticalPanel();
         HTML message = new HTML(MESSAGES.KeyBoardShortcuts());
-        Button button = new Button("OK");
+        Button button = new Button(Ode.MESSAGES.okButton());
         button.addClickHandler(event -> db.hide());
         DialogBoxContents.add(message);
         DialogBoxContents.add(button);
         db.setWidget(DialogBoxContents);
         db.center();
         db.show();
+        button.setFocus(true);
     }
 
     private native void shortcutKeyHandler(ShowShortcutsAction action) /*-{
