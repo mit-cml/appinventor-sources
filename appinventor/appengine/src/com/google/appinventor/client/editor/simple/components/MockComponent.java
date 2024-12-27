@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -249,8 +250,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * This class defines the dialog box for deleting a component.
    */
   private class DeleteDialog extends DialogBox {
+    private final Button deleteButton;
     DeleteDialog() {
-      super(false, true);
+      super(false, false);
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.deleteComponentButton());
@@ -264,13 +266,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           hide();
         }
       });
-      Button deleteButton = new Button(MESSAGES.deleteButton());
+      deleteButton = new Button(MESSAGES.deleteButton());
       deleteButton.addStyleName("destructive-action");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           hide();
           MockComponent.this.delete();
+          SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         }
       });
       HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -285,16 +288,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     @Override
     protected void onPreviewNativeEvent(NativePreviewEvent event) {
       super.onPreviewNativeEvent(event);
-      switch (event.getTypeInt()) {
-        case Event.ONKEYDOWN:
-          if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
-            hide();
-          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
-            hide();
-            MockComponent.this.delete();
-          }
-          break;
+      if (event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+        hide();
       }
+    }
+
+    public void center() {
+      super.center();
+      deleteButton.setFocus(true);
     }
   }
 

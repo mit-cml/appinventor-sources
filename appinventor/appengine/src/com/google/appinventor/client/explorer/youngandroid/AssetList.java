@@ -24,6 +24,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Event;
@@ -105,6 +111,18 @@ public class AssetList extends Composite implements ProjectChangeListener {
         // type in CommandRegistry.java
         ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
       }});
+    assetList.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        assetList.addStyleName("gwt-Tree-focused");
+      }
+    });
+    assetList.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        assetList.removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   /*
@@ -187,5 +205,9 @@ public class AssetList extends Composite implements ProjectChangeListener {
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
     }
+  }
+
+  public Tree getTree() {
+    return assetList;
   }
 }
