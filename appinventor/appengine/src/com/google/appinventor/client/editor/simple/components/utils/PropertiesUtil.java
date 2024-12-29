@@ -45,6 +45,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapScaleUnitsPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapTypePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapCustomUrlPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidRecyclerViewOrientationPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
@@ -266,6 +267,8 @@ public class PropertiesUtil {
       return new YoungAndroidFloatRangePropertyEditor(-180, 180);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_TYPE)) {
       return new YoungAndroidMapTypePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_CUSTOMURL)) {
+      return new YoungAndroidMapCustomUrlPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM)) {
       return new YoungAndroidMapScaleUnitsPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_ZOOM)) {

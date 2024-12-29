@@ -2505,9 +2505,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Adds Units and MapType dropdowns.
     6: [Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'ScaleUnits', 'ScaleUnits'),
-        Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'MapType', 'MapType')]
+      'Map', 'ScaleUnits', 'ScaleUnits'),
+    Blockly.Versioning.makeSetterUseDropdown(
+      'Map', 'MapType', 'MapType')],
+
+    // AI2:
+    // - Adds CustomUrl (MapType 4).
+    7: "noUpgrade"
 
   }, // End Map upgraders
 
