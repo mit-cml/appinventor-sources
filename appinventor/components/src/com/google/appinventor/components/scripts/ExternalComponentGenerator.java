@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
@@ -75,10 +76,10 @@ public class ExternalComponentGenerator {
    * Container class to store information about an extension.
    */
   private static class ExternalComponentInfo {
-    private String type;
-    private String packageName;
-    private JSONObject descriptor;
-    private JSONObject buildInfo;
+    private final String type;
+    private final String packageName;
+    private final JSONObject descriptor;
+    private final JSONObject buildInfo;
 
     ExternalComponentInfo(JSONObject descriptor, JSONObject buildInfo) {
       this.descriptor = descriptor;
@@ -103,11 +104,13 @@ public class ExternalComponentGenerator {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
       String logComponentType =  "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
+      addMockInfoToDescriptorsOfVisibleComps(entry.getValue());
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.descriptor);
         copyLicense(name, info.descriptor);
         copyAssets(name, info.descriptor);
+        copyMock(name, info.descriptor);
       }
       generateExternalComponentBuildFiles(name, entry.getValue());
       generateExternalComponentOtherFiles(name);
@@ -216,6 +219,37 @@ public class ExternalComponentGenerator {
     }
   }
 
+  private static void addMockInfoToDescriptorsOfVisibleComps(List<ExternalComponentInfo> extensions)
+      throws JSONException {
+    final Path srcDir = Paths.get(externalComponentsDirPath, "..", "..", "src");
+    for (ExternalComponentInfo ext : extensions) {
+      final boolean isNonVisible = ext.descriptor.getBoolean("nonVisible");
+      if (isNonVisible) continue;
+
+      final String packagePath = ext.packageName.replace('.', File.separatorChar);
+      final String name = ext.descriptor.getString("name");
+      final Path mockScript = Paths.get(srcDir.toString(), packagePath, "mocks", name + ".mock.js");
+      final Path mockCss = Paths.get(srcDir.toString(), packagePath, "mocks", name + ".mock.css");
+
+      if (!mockScript.toFile().exists()) {
+        System.err.println(
+            "Extensions :\n[ERR] Visible extension " + ext.type + " does not have a mock script");
+        System.err.println(
+            "\t\tHelp: Make sure that the mock script is placed under directory: " + mockScript.getParent().normalize());
+        System.err.println(
+            "\t\tHelp: Also make sure that filename of mock script is: " + name + ".mock.js");
+        throw new IllegalStateException("Mock script doesn't exist");
+      }
+
+      final JSONObject mockObj = new JSONObject();
+      mockObj.put("script", "mocks/" + name + ".mock.js");
+      if (mockCss.toFile().exists()) {
+        mockObj.put("css", "mocks/" + name + ".mock.css");
+      }
+      ext.descriptor.put("mock", mockObj);
+    }
+  }
+
   private static void copyIcon(String packageName, JSONObject componentDescriptor)
       throws IOException, JSONException {
     String icon = componentDescriptor.getString("iconName");
@@ -285,6 +319,36 @@ public class ExternalComponentGenerator {
             assetDestDir.getAbsolutePath() + File.separator + asset)) {
           throw new IllegalStateException("Unable to copy asset to destination.");
         }
+      }
+    }
+  }
+
+  private static void copyMock(String packageName, JSONObject componentDescriptor) throws JSONException, IOException {
+    boolean nonVisible = componentDescriptor.getBoolean("nonVisible");
+    if (nonVisible) {
+      return;
+    }
+
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src", File.separator + packagePath);
+    File mockScript = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.js");
+
+    if (mockScript.exists()) {
+      File destDir =
+          new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+      File mockDestDir = new File(destDir, "mocks");
+      ensureFreshDirectory(
+          mockDestDir.getPath(), "Unable to delete the mock directory for the extension.");
+
+      File mockScriptDest = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.js");
+      System.out.println("Extensions : " + "Copying mock script " + mockScript.getAbsolutePath());
+      copyFile(mockScript.getAbsolutePath(), mockScriptDest.getAbsolutePath());
+
+      File mockCss = new File(sourceDir, "mocks" + File.separator + componentDescriptor.getString("name") + ".mock.css");
+      if (mockCss.exists()) {
+        File mockCssDest = new File(mockDestDir, componentDescriptor.getString("name") + ".mock.css");
+        System.out.println("Extensions : " + "Copying mock stylesheets " + mockScript.getAbsolutePath());
+        copyFile(mockCss.getAbsolutePath(), mockCssDest.getAbsolutePath());
       }
     }
   }

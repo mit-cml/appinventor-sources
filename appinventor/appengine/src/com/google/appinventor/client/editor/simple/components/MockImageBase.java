@@ -70,7 +70,7 @@ abstract class MockImageBase extends MockVisibleComponent {
    */
   private void setPictureProperty(String text) {
     picturePropValue = text;
-    String url = convertImagePropertyValueToUrl(text);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, text);
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
       image.setUrl(getIconImage().getUrl());

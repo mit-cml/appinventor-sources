@@ -806,7 +806,7 @@ public final class MockForm extends MockContainer {
    * Sets the form's BackgroundImage property to a new value.
    */
   private void setBackgroundImageProperty(String text) {
-    String url = convertImagePropertyValueToUrl(text);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, text);
     if (url == null) {
       // text was not recognized as an asset.
       url = "";

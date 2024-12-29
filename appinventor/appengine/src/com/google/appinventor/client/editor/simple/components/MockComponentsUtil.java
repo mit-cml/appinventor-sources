@@ -198,17 +198,18 @@ public final class MockComponentsUtil {
     }
     return null;
   }
-  
+
   /**
-   * Converts the given font typeface property value to font resource URL
+   * Converts the given asset name to a file URL. Returns null if the name is
+   * blank or not recognized as an asset.
    *
    * @param editor the editor
-   * @param text   asset name
+   * @param name   asset name
    * @return the string value of font resource URL
    */
-  static String convertFontPropertyValueToUrl(SimpleEditor editor, String text) {
-    if (text.length() > 0) {
-      ProjectNode asset = getAssetNode(editor, text);
+  static String convertAssetValueToUrl(SimpleEditor editor, String name) {
+    if (!name.isEmpty()) {
+      ProjectNode asset = getAssetNode(editor, name);
       if (asset != null) {
         return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
       }
@@ -254,7 +255,7 @@ public final class MockComponentsUtil {
     } else {
       fontFamily = typeface.substring(0, typeface.lastIndexOf("."));
       String resourceID = typeface.toLowerCase().substring(0, typeface.lastIndexOf("."));
-      String resourceURL = convertFontPropertyValueToUrl(editor, typeface);
+      String resourceURL = convertAssetValueToUrl(editor, typeface);
       if (Document.get().getElementById(resourceID) == null)  {
         createFontResource(fontFamily, resourceURL, resourceID);
       }
