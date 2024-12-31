@@ -127,7 +127,7 @@ public class SimplePaletteItem extends DragSourcePanel {
     cacheInternalComponentPrototype();
 
     MockComponent returnedComponentPrototype = componentPrototype;
-    componentPrototype = null;
+    // componentPrototype = null;
     return returnedComponentPrototype;
   }
 
