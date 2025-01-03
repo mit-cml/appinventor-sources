@@ -403,6 +403,8 @@
              (yail:isa arg NSDictionary))
          (yail:invoke arg 'toString))
         ((yail:isa arg NSDate) (yail:format-date arg))
+        ((yail:isa arg AIComponentKit.OptionList)
+         (coerce-to-string (yail:invoke arg 'toUnderlyingValue)))
         ((list? arg)
          (if (use-json-format)
              (let ((pieces (map get-json-display-representation arg)))
