@@ -65,6 +65,14 @@ open class Ball: Sprite {
     }
   }
 
+  @objc open override var XCenter: Double {
+    return _xLeft + CGFloat(Radius)
+  }
+
+  @objc open override var YCenter: Double {
+    return _yTop + CGFloat(Radius)
+  }
+
   // Changes to width and height are only allowed via changes to radius.
   override open var Width: Int32 {
     get {
