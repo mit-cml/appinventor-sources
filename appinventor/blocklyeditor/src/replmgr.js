@@ -1155,7 +1155,7 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
     block.comment.setVisible(true);
 };
 
-Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
+Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
     var first = true;
     var context = this;
     var counter = 0;            // Used to for counting down
@@ -1376,7 +1376,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopback) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1389,9 +1389,16 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     if (!already) {
         if (top.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
-        if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvou server
-            this.startAdbDevice(rs, usb);
-            rs.state = this.rsState.WAITING; // Wait for the emulator to start
+        if (emulator || usb || loopback) {         // If we are talking to the emulator, don't use rendezvou server
+            this.startAdbDevice(rs, usb, loopback);
+            if (loopback) {
+                rs.state = this.rsState.ASSET;
+                top.AssetManager_refreshAssets(function() {
+                    Blockly.ReplMgr.loadExtensions();
+                });
+            } else {
+                rs.state = this.rsState.WAITING; // Wait for the emulator to start
+            }
             rs.replcode = "emulator";          // Must match code in Companion Source
             rs.url = 'http://127.0.0.1:8001/_newblocks';
             rs.rurl = 'http://127.0.0.1:8001/_values';

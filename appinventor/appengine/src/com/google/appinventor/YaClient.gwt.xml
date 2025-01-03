@@ -165,4 +165,29 @@
   <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
+
+  <!-- Support for running App Inventor client side without a backend server -->
+
+  <define-property name="local.services" values="false,true"/>
+  <set-property name="local.services" value="false"/>
+
+  <replace-with class="com.google.appinventor.client.local.LocalProjectService">
+    <when-type-is class="com.google.appinventor.shared.rpc.project.ProjectService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUserInfoService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.UserInfoService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalGetMotdService">
+    <when-type-is class="com.google.appinventor.shared.rpc.GetMotdService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalTokenAuthService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.TokenAuthService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
 </module>
