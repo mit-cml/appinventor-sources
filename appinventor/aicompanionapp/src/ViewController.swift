@@ -41,6 +41,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc public var Height: Int32 = 0
   @objc public var Width: Int32 = 0
   private static var controller: ViewController?
+  private var connectProgressDialog: UIAlertController?
+  private var connectProgressView: UIProgressView?
 
   @objc public func setChildHeight(of component: ViewComponent, height: Int32) {
     
@@ -216,6 +218,18 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
     form.application?.makeCurrent()
+    let alertView = UIAlertController(title: "Connecting", message: nil, preferredStyle: .alert)
+    alertView.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    present(alertView, animated: true) {
+      let rect = CGRect(x: 8.0, y: 72.0, width: alertView.view.frame.width - 16.0, height: 2.0)
+      let progressView = UIProgressView(frame: rect)
+      self.connectProgressView = progressView
+      progressView.progress = 0.05
+      progressView.tintColor = self.view.tintColor
+      alertView.view.addSubview(progressView)
+      alertView.message = "Initial Rendezvous"
+    }
+    self.connectProgressDialog = alertView
     let code = phoneStatus.setHmacSeedReturnCode(text)
     NSLog("Seed = \(text)")
     NSLog("Code = \(code)")
@@ -245,9 +259,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           return
         }
         DispatchQueue.main.async {
-          self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent)
+          self.connectProgressDialog?.message = "Waiting for remote..."
+          self.connectProgressView?.progress = 0.15
+          self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent, self)
         }
       } else {
+        self.connectProgressDialog?.dismiss(animated: true)
         var responseContent = ""
         if let data = data {
           guard let responseContentStr = String(data: data, encoding: .utf8) else {
@@ -402,5 +419,30 @@ extension ViewController: UINavigationControllerDelegate {
     }
     newForm.onResume()
     return nil
+  }
+}
+
+extension ViewController: WebRTCConnectionDelegate {
+  public func webRTCDidGetLocalOffer() {
+    connectProgressView?.progress = 0.4
+    connectProgressDialog?.message = "Generating routes..."
+  }
+
+  public func webRTCDidGetRemoteOffer() {
+    connectProgressView?.progress = 0.3
+    connectProgressDialog?.message = "Sending local answer..."
+  }
+
+  public func webRTCDidGenerateICECandidate() {
+    guard let progressView = connectProgressView else {
+      return
+    }
+    progressView.progress = min(0.01 + progressView.progress, 0.9)
+  }
+
+  public func webRTCDataChannelOpened() {
+    connectProgressDialog?.dismiss(animated: true)
+    connectProgressView = nil
+    connectProgressDialog = nil
   }
 }
