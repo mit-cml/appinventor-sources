@@ -600,7 +600,9 @@ Blockly.Blocks.component_event = {
     const doiItIndex = options.findIndex(function(option) {
       return option.text === Blockly.Msg['DO_IT']
     });
-    options.splice(doiItIndex, 1);
+    if (doiItIndex > -1) {
+      options.splice(doiItIndex, 1);
+    }
 
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
