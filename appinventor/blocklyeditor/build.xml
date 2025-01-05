@@ -24,10 +24,10 @@
              else="ploverConfig-dev.js">
     <equals arg1="${release}" arg2="true"/>
   </condition>
-	<condition property="compilation_level"
-						 value="SIMPLE" else="BUNDLE">
-		<equals arg1="${release}" arg2="true"/>
-	</condition>
+  <condition property="compilation_level"
+	     value="SIMPLE" else="BUNDLE">
+    <equals arg1="${release}" arg2="true"/>
+  </condition>
 
   <target name="all"
           depends="BlocklyTranslationGenerator">
@@ -68,18 +68,18 @@
   <target name="CheckBlocklyTranslations">
     <uptodate property="Blocklyi18n.uptodate">
       <srcfiles dir="${ai.i18n.src.dir}">
-				<include name="*.json" />
+	<include name="*.json" />
       </srcfiles>
       <srcfiles dir="${blockly.src.dir}/msg/json">
-				<include name="en.json" />
+	<include name="en.json" />
       </srcfiles>
       <srcfiles dir="${i18n.src.dir}">
-				<include name="*.java"/>
+	<include name="*.java"/>
       </srcfiles>
       <firstmatchmapper>
-				<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
-				<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.js" />
-				<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.js" />
+	<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
+	<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.js" />
+	<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.js" />
       </firstmatchmapper>
     </uptodate>
   </target>
@@ -111,14 +111,14 @@
     </java>
   </target>
 
-	<target name="CheckBlocklyCompile">
-		<uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
-			<srcfiles dir="src/" includes="**/*.js" />
-			<srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
-			<srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-			<srcfiles dir="${basedir}" includes="${blockly.config}" />
-		</uptodate>
-	</target>
+  <target name="CheckBlocklyCompile">
+    <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
+      <srcfiles dir="src/" includes="**/*.js" />
+      <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
+      <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
+      <srcfiles dir="${basedir}" includes="${blockly.config}" />
+    </uptodate>
+  </target>
 
 	<target name="BlocklyCompile"
 		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
