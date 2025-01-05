@@ -75,7 +75,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   var dummyAlign = arguments[arguments.length - 1];
   goog.asserts.assert(
       dummyAlign === Blockly.inputs.Align.LEFT ||
-      dummyAlign === Blockly.ALIGN_CENTRE ||
+      dummyAlign === Blockly.inputs.Align.CENTRE ||
       dummyAlign === Blockly.inputs.Align.RIGHT,
       'Illegal final argument "%d" is not an alignment.', dummyAlign);
   arguments.length = arguments.length - 1;
