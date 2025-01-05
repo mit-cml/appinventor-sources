@@ -51,6 +51,9 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   if ((block.type === 'component_event' && block.isGeneric) || block.typeName === 'Form') {
     return;  // Cannot make a generic component_event specific for now...
   }
+  if (block.workspace && block.workspace.isFlyout) {
+    return;  // Flyouts are not mutable
+  }
 
   /**
    * Helper function used to make component blocks generic.
