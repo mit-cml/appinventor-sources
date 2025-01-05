@@ -253,6 +253,7 @@
 		06E79AD92D1601EF007BFAC0 /* personal_audio_classifier1.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD72D1601EF007BFAC0 /* personal_audio_classifier1.js */; };
 		06E79ADA2D1601EF007BFAC0 /* personal_audio_classifier.html in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */; };
 		06E79ADC2D16718B007BFAC0 /* tfjs-1.5.2.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */; };
+		06E91E122D2B236800377845 /* LOBFValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E91E112D2B236800377845 /* LOBFValues.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EF26592998A94600D6093C /* ComponentUtil.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
@@ -642,6 +643,7 @@
 		06E79AD72D1601EF007BFAC0 /* personal_audio_classifier1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = personal_audio_classifier1.js; path = "components-common/src/PersonalAudioClassifier/personal_audio_classifier1.js"; sourceTree = SOURCE_ROOT; };
 		06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = personal_audio_classifier.html; path = "components-common/src/PersonalAudioClassifier/personal_audio_classifier.html"; sourceTree = SOURCE_ROOT; };
 		06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tfjs-1.5.2.js"; path = "assets/tfjs-1.5.2.js"; sourceTree = "<group>"; };
+		06E91E112D2B236800377845 /* LOBFValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LOBFValues.swift; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06EF26592998A94600D6093C /* ComponentUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentUtil.swift; sourceTree = "<group>"; };
@@ -1446,6 +1448,7 @@
 			isa = PBXGroup;
 			children = (
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
+				06E91E112D2B236800377845 /* LOBFValues.swift */,
 				681D59062A84139E007B5DB5 /* OptionList.swift */,
 				06208B512BD9D7380097EF43 /* ScreenOrientation.swift */,
 			);
@@ -2029,6 +2032,7 @@
 				DE3E730820C72AFE0063B339 /* GyroscopeSensor.swift in Sources */,
 				DE4CDF572093982F008412BC /* FontUtil.swift in Sources */,
 				065E429D2866BC5500479153 /* Navigation.swift in Sources */,
+				06E91E122D2B236800377845 /* LOBFValues.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
 				062217F02A37767F00B89562 /* image.pb.swift in Sources */,
 				06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */,

@@ -356,8 +356,11 @@ import UIKit
     refreshContainer()
   }
 
-  func getResultValue(for key: String) -> Any? {
-    return lastResults[key] ?? Double.nan
+  @objc public func GetResultValue(_ key: String) -> AnyObject {
+    guard let result = lastResults[key] else {
+      return Double.nan as NSNumber
+    }
+    return result as AnyObject
   }
 
   func updated(with results: [String: Any]) {
