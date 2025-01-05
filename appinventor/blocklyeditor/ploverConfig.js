@@ -37,7 +37,6 @@
     "./src/exportBlocksImage.js",
     "./src/nameSet.js",
     "./src/substitution.js",
-    "./src/warning.js",
     "./src/toolboxController.js",
     "./src/rendered_connection.js",
     "./src/field_event_flydown.js",
