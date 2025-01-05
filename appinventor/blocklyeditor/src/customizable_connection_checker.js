@@ -1,5 +1,7 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2020 Massachusetts Institute of Technology. All rights reserved.
+// -*- mode: javascript; js-indent-level: 2; -*-
+// Copyright 2024 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 goog.provide('AI.Blockly.CustomizableConnectionChecker');
 
@@ -9,38 +11,38 @@ goog.provide('AI.Blockly.CustomizableConnectionChecker');
  * @implements {Blockly.IConnectionChecker}
  */
 class CustomizableConnectionChecker extends Blockly.ConnectionChecker {
-    /**
-     * Constructor for the connection checker.
-     */
-    constructor() {
-        super();
-    }
+  /**
+   * Constructor for the connection checker.
+   */
+  constructor() {
+    super();
+  }
 
-    /**
-     * Type check arrays must either intersect or both be null.
-     * @override
-     */
-    doTypeChecks(connA, connB) {
-        if (Blockly.getMainWorkspace().isLoading) {
-            return true;
-        }
-        if (super.doTypeChecks(connA, connB)) {
-            return true;
-        }
-        // Check if any of the connA checks are functions, amd if so call them
-        for (let i = 0; i < connA.length; i++) {
-            if (typeof connA[i] == "function" && connA[i](connB)) {
-                return true;
-            }
-        }
-        // Check if any of the connB checks are functions, amd if so call them
-        for (let i = 0; i < connB.length; i++) {
-            if (typeof connB[i] == "function" && connB[i](connB)) {
-                return true;
-            }
-        }
-        return false;
+  /**
+   * Type check arrays must either intersect or both be null.
+   * @override
+   */
+  doTypeChecks(connA, connB) {
+    if (Blockly.getMainWorkspace().isLoading) {
+      return true;
     }
+    if (super.doTypeChecks(connA, connB)) {
+      return true;
+    }
+    // Check if any of the connA checks are functions, and if so call them
+    for (let i = 0; i < connA.length; i++) {
+      if (typeof connA[i] == "function" && connA[i](connB)) {
+        return true;
+      }
+    }
+    // Check if any of the connB checks are functions, and if so call them
+    for (let i = 0; i < connB.length; i++) {
+      if (typeof connB[i] == "function" && connB[i](connB)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 const registrationType = Blockly.registry.Type.CONNECTION_CHECKER;
