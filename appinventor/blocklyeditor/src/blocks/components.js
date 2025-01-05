@@ -604,6 +604,9 @@ Blockly.Blocks.component_event = {
       options.splice(doiItIndex, 1);
     }
 
+    if (this.workspace && this.workspace.isFlyout) {
+      return;  // Flyouts are not mutable
+    }
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
    },
