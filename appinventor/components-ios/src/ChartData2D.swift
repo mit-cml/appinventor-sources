@@ -53,46 +53,56 @@ import DGCharts
   }
 
   // Highlights data points of choice on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
-  @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int) {
-    let dataPointsList: Array<AnyObject> = dataPoints as! Array
-    if !dataPoints.isEmpty {
-      let entries = chartDataModel?.entries
+  @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int32) {
+    let points = dataPoints as Array<AnyObject>
 
-      // convert _colors to Int
-      var colorsInt: Array<Int> = []
-      for color in _colors {
-        colorsInt.append(color as! Int)
+    guard !points.isEmpty, let entries = chartDataModel?.entries, let lineDataSet = chartDataModel?.dataset as? LineChartDataSet else {
+      return
+    }
+
+    var anomalyMap: [Double:AnomalyManager] = [:]
+    for (i, entry) in entries.enumerated() {
+      guard let entry = entry as? DGCharts.ChartDataEntry else {
+        continue
       }
-
-      var highlights: Array<Int> = [Int](repeating: 0, count: entries!.count)
-      // if any colors are present, add them to highlights
-      for index in colorsInt.indices {
-        highlights[index] = colorsInt[index]
+      let y = entry.y
+      var manager: AnomalyManager! = anomalyMap[y]
+      if manager == nil {
+        manager = AnomalyManager()
+        anomalyMap[y] = manager
       }
-      for dataPoint in dataPointsList {
-        if let dataPoint = dataPoint as? YailList<AnyObject> {
-          var dataPointInt: Array<Int> = []
-          for point in dataPoint {
-            dataPointInt.append(point as! Int)
-          }
+      manager.xValues.insert(entry.x)
+      manager.indexes.insert(i)
+    }
 
-          let dataPointIndex: Int = dataPointInt[0]  // anomaly detection replacement
-
-          if dataPointIndex >= highlights.count {
-            continue
-          }
-          highlights[dataPointIndex - 1] = color // TODO: WHY IS THIS ALWAYS OUT OF RANGE?
-          print(highlights[dataPointIndex - 1])
+    var highlights = [Int32](repeating: _color, count: entries.count)
+    for point in points {
+      guard let point = point as? Array<AnyObject>,
+            point.count >= 3 else {
+        continue
+      }
+      guard let y = point[2] as? Double else {
+        continue
+      }
+      guard let anomalyManager = anomalyMap[y] else {
+        continue
+      }
+      guard let x = point[1] as? Double else {
+        continue
+      }
+      if anomalyManager.xValues.contains(x) || anomalyManager.indexes.contains(Int(x) - 1) {
+        for index in anomalyManager.indexes {
+          highlights[index] = color
         }
       }
-
-      let lineDataSet: LineChartDataSet = chartDataModel?.dataset as! LineChartDataSet
-      var highlightsUI: Array<NSUIColor> = []
-      for highlight in highlights {
-        highlightsUI.append(argbToColor(Int32(highlight)))
-      }
-      lineDataSet.circleColors = highlightsUI
-      onDataChange()
     }
+
+    lineDataSet.circleColors = highlights.map(argbToColor(_:))
+    onDataChange()
+  }
+
+  private class AnomalyManager {
+    var indexes = Set<Int>()
+    var xValues = Set<Double>()
   }
 }

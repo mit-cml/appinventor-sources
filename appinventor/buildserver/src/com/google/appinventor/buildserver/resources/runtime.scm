@@ -1741,6 +1741,7 @@
   (cond
     ((yail-dictionary? arg) arg)
     ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+    ((string? arg) (com.google.appinventor.components.runtime.Web:decodeJsonText arg #t))
     (else (try-catch
             (arg:toYailDictionary)
             (exception java.lang.Exception
