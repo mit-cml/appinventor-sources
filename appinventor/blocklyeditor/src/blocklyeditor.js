@@ -22,11 +22,9 @@ goog.require('AI.Blockly');
 goog.require('AI.Blockly.Backpack');
 goog.require('AI.Blockly.BlockSvg')
 goog.require('AI.Blockly.ComponentDatabase');
-goog.require('AI.Blockly.ConnectionDB');
 goog.require('AI.Blockly.CustomizableConnectionChecker');
 goog.require('AI.Blockly.Drawer');
 goog.require('AI.Blockly.ExportBlocksImage');
-goog.require('AI.Blockly.Field');
 goog.require('AI.Blockly.Flydown');
 goog.require('AI.Blockly.ProcedureDatabase');
 goog.require('AI.Blockly.ReplMgr');

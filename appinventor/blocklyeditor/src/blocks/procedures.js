@@ -69,16 +69,6 @@ goog.require('AI.NameSet');
 goog.require('AI.Substitution');
 goog.require('goog.dom');
 
-// Blockly.ProcedureNameDropdown = class extends Blockly.FieldDropdown {
-//   constructor(menuGenerator, validator, config) {
-//     super(menuGenerator, validator, config);
-//   }
-//
-//   doClassValidation_(newValue) {
-//     return newValue;
-//   }
-// }
-
 Blockly.Blocks['procedures_defnoreturn'] = {
   // Define a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
