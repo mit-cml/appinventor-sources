@@ -1112,7 +1112,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-Blockly.ai_inject = function(container, workspace) {
+AI.inject = function(container, workspace) {
   Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
