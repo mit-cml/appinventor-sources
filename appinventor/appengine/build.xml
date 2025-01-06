@@ -534,6 +534,8 @@
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
           depends="components_AndroidRuntime">
+    <property name="AiClientLib-class.dir" location="${class.dir}/AiClientLib" />
+    <mkdir dir="${AiClientLib-class.dir}" />
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -563,6 +565,10 @@
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
     </ai.javac>
+    <copy todir="${AiClientLib-class.dir}">
+      <fileset dir="${build.war.dir}/WEB-INF/classes/${appinventor.pkg}/client/"/>
+    </copy>
+
     <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor"
           file="${build.dir}/components/simple_components.json" />
     <copy todir="${build.war.dir}/WEB-INF/classes">
