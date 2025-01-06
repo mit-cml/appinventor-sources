@@ -712,7 +712,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
 
       }
       _lastPoint = coordinate
-    case .ended:
+    case .recognized:
       if let overlay = _activeOverlay {
         if overlay.feature!.Draggable {
           overlay.feature!.StopDrag()
