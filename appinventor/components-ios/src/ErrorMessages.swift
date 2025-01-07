@@ -300,7 +300,7 @@ import Foundation
       return "The date you entered is invalid."
 
     case .ERROR_EXTENSION_ERROR:
-      return "Error %d in extension %@: %@"
+      return "Error %d in extension %s: %s"
 
     // Map Errors
     case .ERROR_LINESTRING_TOO_FEW_POINTS:

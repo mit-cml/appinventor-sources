@@ -126,6 +126,20 @@ extension Array where Element == AnyObject {
   }
 }
 
+struct Registration: Hashable {
+  let object: ObjectIdentifier
+  let type: String
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(object.hashValue)
+    hasher.combine(type.hashValue)
+  }
+
+  static func == (lhs: Registration, rhs: Registration) -> Bool {
+    return lhs.object == rhs.object && lhs.type == rhs.type
+  }
+}
+
 @objc protocol BleDevice {
   var broadcastUuid: CBUUID? { get }
   var deviceCallback: ((CBPeripheral) -> Bool)? { get }
@@ -378,7 +392,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   private var listeners = NSMutableSet()
   private var pendingOperations = DispatchQueue(label: "edu.mit.appinventor.ble.BluetoothLE", qos: .userInitiated)
   private var pendingOperationsByUuid: [CBUUID: [BleOperation]] = [:]
-  private var registeredHandlers: [CBUUID: [ObjectIdentifier:(Data) -> ()]] = [:]
+  private var registeredHandlers: [CBUUID: [Registration: (Data) -> ()]] = [:]
   private var lastReadRssi: Int32 = -100
   private var handlers = [CBUUID: NSMutableArray]()
   private var connectionTimer: Timer? = nil
@@ -469,25 +483,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     connect(deviceInfo.peripheral)
   }
 
-  private func connect(_ peripheral: CBPeripheral) {
-    var options: [String:Any]? = nil
-    if AutoReconnect {
-      if #available(iOS 17.0, *) {
-        options = [
-          CBConnectPeripheralOptionEnableAutoReconnect: true
-        ]
-      } else {
-        // Fallback on earlier versions
-      }
-    }
-    manager.connect(peripheral, options: options)
-    if ConnectionTimeout > 0 {
-      connectionTimer?.invalidate()
-      connectingPeripheral = peripheral
-      connectionTimer = Timer.scheduledTimer(timeInterval: Double(ConnectionTimeout) / 1000.0, target: self, selector: #selector(cancelConnection(_:)), userInfo: nil, repeats: false)
-    }
-  }
-
   @objc public func ConnectMatchingName(_ name: String) {
     startScanningForService("ConnectMatchingName", nil) { [self] peripheral in
       print("In callback")
@@ -512,6 +507,39 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     }
   }
 
+  @objc public func ConnectWithAddress(_ address: String) {
+    guard let uuid = UUID(uuidString: address) else {
+      // foo
+      return
+    }
+    let devices = manager.retrievePeripherals(withIdentifiers: [uuid])
+    guard devices.count > 0 else {
+      // foo
+      return
+    }
+    let device = devices[0]
+    connect(device)
+  }
+
+  private func connect(_ peripheral: CBPeripheral) {
+    var options: [String:Any]? = nil
+    if AutoReconnect {
+      if #available(iOS 17.0, *) {
+        options = [
+          CBConnectPeripheralOptionEnableAutoReconnect: true
+        ]
+      } else {
+        // Fallback on earlier versions
+      }
+    }
+    manager.connect(peripheral, options: options)
+    if ConnectionTimeout > 0 {
+      connectionTimer?.invalidate()
+      connectingPeripheral = peripheral
+      connectionTimer = Timer.scheduledTimer(timeInterval: Double(ConnectionTimeout) / 1000.0, target: self, selector: #selector(cancelConnection(_:)), userInfo: nil, repeats: false)
+    }
+  }
+
   @objc func cancelConnection(_ sender: Timer) {
     guard let peripheral = connectingPeripheral else {
       return
@@ -526,6 +554,10 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       return
     }
     manager.cancelPeripheralConnection(peripheral)
+  }
+
+  @objc public func RequestMTU(_ size: Int32) {
+    // TODO: Warn callers that iOS does not
   }
 
   @objc public func StartScanning() {
@@ -547,6 +579,10 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     }
     scanTest = device.deviceCallback
     startScanningForService("ScanForDevice", device.broadcastUuid?.uuidString)
+  }
+
+  @objc public func ScanForService(_ serviceUuid: String) {
+    startScanningForService("ScanForService", serviceUuid)
   }
 
   var scanTest: ((CBPeripheral) -> Bool)? = nil
@@ -580,22 +616,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     manager.stopScan()
   }
 
-  @objc public func ReadBytes(_ serviceUuid: String, _ characteristicUuid: String, _ signed: Bool) {
-    guard peripheral != nil else {
-      // TODO: Error
-      return
-    }
-    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
-      // TODO: Error
-      return
-    }
-    schedule(BleReadBytesOperation(self, "ReadBytes", characteristic, signed) { result in
-      DispatchQueue.main.async { [self] in
-        self.BytesReceived(serviceUuid, characteristicUuid, result)
-      }
-    })
-  }
-
   @objc public func ReadStrings(_ serviceUuid: String, _ characteristicUuid: String,
       _ utf16: Bool) {
     guard peripheral != nil else {
@@ -613,69 +633,60 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     })
   }
 
+  private func registerHandler(_ caller: AnyObject, _ serviceUuid: String,
+                               _ characteristicUuid: String, _ type: String,
+                               _ handler: @escaping ((Data)->())) {
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    guard let peripheral = peripheral else {
+      return
+    }
+    let id = Registration(object: ObjectIdentifier(caller), type: type)
+    var handlerTable = self.registeredHandlers[characteristic.uuid, default: [:]]
+    handlerTable[id] = handler
+    registeredHandlers[characteristic.uuid] = handlerTable
+    if handlerTable.count == 1 {
+      peripheral.setNotifyValue(true, for: characteristic)
+    }
+  }
+
+  private func unregister(_ caller: AnyObject, _ serviceUuid: String,
+                          _ characteristicUuid: String) {
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    guard let peripheral = peripheral else {
+      return
+    }
+    let id = ObjectIdentifier(caller)
+    var handlerTable = registeredHandlers[characteristic.uuid, default: [:]]
+    handlerTable = handlerTable.filter { $0.key.object != id }
+    registeredHandlers[characteristic.uuid] = handlerTable
+
+    // We can turn off notifications if nobody is listening.
+    if handlerTable.isEmpty {
+      peripheral.setNotifyValue(false, for: characteristic)
+    }
+  }
+
   @objc public func RegisterForStrings(_ serviceUuid: String, _ characteristicUuid: String,
                                             _ utf16: Bool) {
-    registerForStrings(serviceUuid, characteristicUuid, utf16)
-  }
-
-  @objc public func WriteBytes(_ serviceUuid: String, _ characteristicUuid: String,
-                               _ signed: Bool, _ values: [AnyObject]) {
-    guard let peripheral = peripheral else {
-      // TODO: Raise an error
-      return
-    }
-    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
-      return
-    }
-    var data = Data()
-    for value in values {
-      if let number = value as? NSNumber {
-        if signed {
-          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
-        } else {
-          data.append(contentsOf: [number.uint8Value])
-        }
-      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
-        data.append(strdata)
+    registerHandler(self, serviceUuid, characteristicUuid, "strings") { data in
+      guard let string = String(data: data, encoding: utf16 ? .utf16LittleEndian : .utf8) else {
+        return
       }
+      self.StringsReceived(serviceUuid, characteristicUuid, [string])
     }
-    schedule(BleWriteOperation(self, "WriteBytes", characteristic, data, false))
-  }
-
-  @objc public func WriteBytesWithResponse(_ serviceUuid: String, _ characteristicUuid: String,
-                                           _ signed: Bool, _ values: [AnyObject]) {
-    guard let peripheral = peripheral else {
-      // TODO: Raise an error
-      return
-    }
-    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
-      return
-    }
-    var data = Data()
-    for value in values {
-      if let number = value as? NSNumber {
-        if signed {
-          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
-        } else {
-          data.append(contentsOf: [number.uint8Value])
-        }
-      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
-        data.append(strdata)
-      }
-    }
-    schedule(BleWriteOperation(self, "WriteBytesWithResponse", characteristic, data, true))
   }
 
   @objc public func WriteStrings(_ serviceUuid: String, _ characteristicUuid: String,
                                  _ utf16: Bool, _ values: [AnyObject]) {
-    guard let peripheral = peripheral else {
+    guard peripheral != nil else {
       // TODO: Raise an error
       return
     }
-    guard let uuid = bleStringToUuid(characteristicUuid) else {
-      return
-    }
-    guard let characteristic = characteristics[uuid] else {
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
       return
     }
 
@@ -689,19 +700,10 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       }
     }
 
-    peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
-  }
-
-  private func registerForStrings(_ serviceUuid: String, _ characteristicUuid: String,
-                                  _ utf16: Bool, _ handler: (([String])->())? = nil) {
-    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
-      return
+    let chunks = chunk(data, false)
+    for chunk in chunks {
+      schedule(BleWriteOperation(self, "WriteStrings", characteristic, chunk, false))
     }
-    guard let peripheral = peripheral else {
-      return
-    }
-    peripheral.setNotifyValue(true, for: characteristic)
-//    schedulePendingOperation(BleReadStringsOperation(characteristic, utf16, handler, true))
   }
 
   private func findCharacteristic(_ serviceUuid: String, _ characteristicUuid: String) -> CBCharacteristic? {
@@ -722,16 +724,17 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     pendingOperationsByUuid[operation.characteristic.uuid] = operationQueue
     pendingOperations.async { [self] in
       pendingOperationsMutex.wait()
+      defer {
+        pendingOperationsMutex.signal()
+      }
       let runNext = operation.run()
       if runNext {
         DispatchQueue.main.async {
           self.runNextOperation()
         }
       }
-      pendingOperationsMutex.signal()
     }
   }
-
 
   // MARK: Events
 
@@ -771,13 +774,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     EventDispatcher.dispatchEvent(of: self, called: "RssiChanged", arguments: rssi as AnyObject)
   }
 
-  @objc public func BytesReceived(_ serviceUuid: String, _ characteristicUuid: String,
-                                  _ values: [Int32]) {
-    DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "BytesReceived", arguments: values as AnyObject)
-    }
-  }
-
   @objc public func ShortsReceived(_ serviceUuid: String, _ characteristicUuid: String,
                                    _ values: [Int32]) {
     DispatchQueue.main.async {
@@ -803,13 +799,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
                                     _ values: [String]) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "StringsReceived", arguments: serviceUuid as AnyObject, characteristicUuid as AnyObject, values as NSArray)
-    }
-  }
-
-  @objc public func BytesWritten(_ serviceUuid: String, _ characteristicUuid: String,
-                                 _ values: [Int32]) {
-    DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "BytesWritten", arguments: serviceUuid as AnyObject, characteristicUuid as AnyObject, values as NSArray)
     }
   }
 
@@ -850,32 +839,31 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
   @objc public func ExRegisterForStringValues(_ service: String, _ characteristic: String,
       _ utf16: Bool, _ component: Component, _ handler: @escaping (String, String, [String]) -> Void) {
-    guard let characteristic = findCharacteristic(service, characteristic) else {
-      // TODO: Report an error
-      return
-    }
-    var entries = registeredHandlers[characteristic.uuid] ?? [:]
-    entries[ObjectIdentifier(component)] = { data in
-      print("Handling strings from peripheral")
+    registerHandler(component, service, characteristic, "String") { data in
       guard let str = String(data: data, encoding: utf16 ? .utf16LittleEndian : .utf8) else {
         return
       }
-      handler(service, characteristic.uuid.uuidString, [str])
-    }
-    registeredHandlers[characteristic.uuid] = entries
-    if entries.count == 1 {
-      print("Registered for string values \(characteristic.uuid)")
-      peripheral?.setNotifyValue(true, for: characteristic)
+      handler(service, characteristic, [str])
     }
   }
 
   @objc public func ExUnregisterForValues(_ service: String, _ characteristic: String,
       _ component: Component, _ handler: (String, String, [String]) -> Void) {
-    // TODO: Implementation
-    guard let characteristic = findCharacteristic(service, characteristic) else {
-      return
+    unregister(component, service, characteristic)
+  }
+
+  private func chunk(_ data: Data, _ withResponse: Bool) -> [Data] {
+    guard let maxLen = peripheral?.maximumWriteValueLength(for: withResponse ? .withResponse : .withoutResponse) else {
+      return []
     }
-    
+    var chunks: [Data] = []
+    var start = 0
+    for _ in 0..<Int(ceil(Double(data.count) / Double(maxLen))) {
+      let chunk = data.subdata(in: start..<min(start + maxLen, data.count))
+      chunks.append(chunk)
+      start += maxLen
+    }
+    return chunks
   }
 
   @objc public func ExWriteStringValuesWithResponse(_ service: String, _ characteristic: String,
@@ -1017,11 +1005,6 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
         print("No data provided")
         return
       }
-      guard let str = String(data: data, encoding: .utf8) else {
-        print("Unable to decode message")
-        return
-      }
-      StringsReceived(serviceUuid, characteristicUuid, [str])
       guard let callbacks = registeredHandlers[characteristic.uuid] else {
         return
       }
@@ -1052,6 +1035,12 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
 
   public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
     print("Did write characteristic \(characteristic)")
+    if let error = error {
+      print("Error: \(error)")
+      DispatchQueue.main.async { [self] in
+        _form?.dispatchErrorOccurredEvent(self, "WriteBytes", .ERROR_EXTENSION_ERROR, 1, self, "\(error)")
+      }
+    }
 
     pendingOperationsMutex.wait()
 
@@ -1066,7 +1055,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
     }
 
     var operationQueue = pendingOperationsByUuid[characteristic.uuid, default: []]
-    guard let pendingOperation = operationQueue.first as? BleWriteOperation else {
+    guard operationQueue.first != nil else {
       return
     }
     operationQueue.removeFirst()
@@ -1083,4 +1072,131 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   func runNextOperation() {
     // TODO: Figure out the next operation that needs to be run if any are queued.
   }
+}
+
+// MARK: Byte support
+
+extension BluetoothLE {
+
+  @objc public func ReadBytes(_ serviceUuid: String, _ characteristicUuid: String, _ signed: Bool) {
+    guard peripheral != nil else {
+      // TODO: Error
+      return
+    }
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      // TODO: Error
+      return
+    }
+    schedule(BleReadBytesOperation(self, "ReadBytes", characteristic, signed) { result in
+      DispatchQueue.main.async { [self] in
+        self.BytesReceived(serviceUuid, characteristicUuid, result)
+      }
+    })
+  }
+
+  @objc public func RegisterForBytes(_ serviceUuid: String, _ characteristicUuid: String,
+                                     _ signed: Bool) {
+    registerHandler(self, serviceUuid, characteristicUuid, signed ? "Int8" : "UInt8") { data in
+      var bytes: [Int32] = []
+      if signed {
+        bytes = data.map { Int8(bitPattern: $0) }.map { Int32($0) }
+      } else {
+        bytes = data.withUnsafeBytes({ [UInt8]($0) }).map { Int32($0) }
+      }
+      self.BytesReceived(serviceUuid, characteristicUuid, bytes)
+    }
+  }
+
+  @objc public func BytesReceived(_ serviceUuid: String, _ characteristicUuid: String,
+                                  _ values: [Int32]) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "BytesReceived", arguments: values as AnyObject)
+    }
+  }
+
+  @objc public func ExRegisterForByteValues(_ service: String, _ characteristic: String, _ signed: Bool, _ component: Component, _ handler: @escaping (String, String, [Int32]) -> Void) {
+    registerHandler(component, service, characteristic, signed ? "Int8" : "UInt8") { data in
+      let result: [Int32]
+      if signed {
+        result = data.interpret(as: Int8.self)
+      } else {
+        result = data.interpret(as: UInt8.self)
+      }
+      handler(service, characteristic, result)
+    }
+  }
+
+  @objc public func WriteBytes(_ serviceUuid: String, _ characteristicUuid: String,
+                               _ signed: Bool, _ values: [AnyObject]) {
+    guard peripheral != nil else {
+      // TODO: Raise an error
+      return
+    }
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    var data = Data()
+    for value in values {
+      if let number = value as? NSNumber {
+        if signed {
+          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
+        } else {
+          data.append(contentsOf: [number.uint8Value])
+        }
+      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
+        data.append(strdata)
+      }
+    }
+
+    let chunks = chunk(data, false)
+    for chunk in chunks {
+      schedule(BleWriteOperation(self, "WriteBytes", characteristic, chunk, false))
+    }
+  }
+
+  @objc public func WriteBytesWithResponse(_ serviceUuid: String, _ characteristicUuid: String,
+                                           _ signed: Bool, _ values: [AnyObject]) {
+    guard peripheral != nil else {
+      // TODO: Raise an error
+      return
+    }
+    guard let characteristic = findCharacteristic(serviceUuid, characteristicUuid) else {
+      return
+    }
+    var data = Data()
+    for value in values {
+      if let number = value as? NSNumber {
+        if signed {
+          data.append(contentsOf: [UInt8(bitPattern: number.int8Value)])
+        } else {
+          data.append(contentsOf: [number.uint8Value])
+        }
+      } else if let string = value as? String, let strdata = string.data(using: .utf8) {
+        data.append(strdata)
+      }
+    }
+
+    let chunks = chunk(data, true)
+    for chunk in chunks {
+      schedule(BleWriteOperation(self, "WriteBytesWithResponse", characteristic, chunk, true))
+    }
+  }
+
+  @objc public func ExWriteByteValues(_ service: String, _ characteristic: String, _ signed: Bool, _ message: [Int32]) {
+    guard let characteristic = findCharacteristic(service, characteristic) else {
+      return
+    }
+    let data = Data(message.map({ UInt8($0) }))
+    for c in chunk(data, false) {
+      schedule(BleWriteOperation(self, "ExWriteByteValues", characteristic, c, false))
+    }
+  }
+
+  @objc public func BytesWritten(_ serviceUuid: String, _ characteristicUuid: String,
+                                 _ values: [Int32]) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "BytesWritten", arguments: serviceUuid as AnyObject, characteristicUuid as AnyObject, values as NSArray)
+    }
+  }
+
 }
