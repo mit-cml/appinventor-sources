@@ -1085,7 +1085,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
         }
       }
     };
-    //workspace.addChangeListener(workspaceChanged);
+    workspace.addChangeListener(workspaceChanged);
   }
   workspace.drawer_ = new Blockly.Drawer(workspace, { scrollbars: true });
   workspace.flyout_ = workspace.getFlyout();
