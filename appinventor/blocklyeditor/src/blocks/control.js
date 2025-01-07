@@ -185,10 +185,16 @@ Blockly.Blocks['controls_if'] = {
   },
   reconnectChildBlocks_: function (valueConnections, statementConnections, elseStatementConnection) {
     for (let i = 1; i <= this.elseifCount_; i++) {
-      valueConnections[i]?.reconnect(this, 'IF' + i);
-      statementConnections[i]?.reconnect(this, 'DO' + i);
+      if (valueConnections[i]) {
+        valueConnections[i].reconnect(this, 'IF' + i);
+      }
+      if (statementConnections[i]) {
+        statementConnections[i].reconnect(this, 'DO' + i);
+      }
     }
-    elseStatementConnection?.reconnect(this, 'ELSE');
+    if (elseStatementConnection) {
+      elseStatementConnection.reconnect(this, 'ELSE');
+    }
    },
   updateShape_: function() {
     // Delete everything.
