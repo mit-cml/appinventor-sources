@@ -363,7 +363,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 A two-dimensional container that renders map tiles in the background and allows for multiple
  [`Marker`](#Marker) elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey.
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
 
  The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -392,6 +392,11 @@ A two-dimensional container that renders map tiles in the background and allows 
    In blocks code, it is recommended for performance reasons to use
  [`PanTo`](#Map.PanTo) with numerical latitude and longitude rather than convert
  to the string representation for use with this property.
+
+{:id="Map.CustomUrl" .text} *CustomUrl*
+: Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername
 
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.
@@ -433,6 +438,7 @@ A two-dimensional container that renders map tiles in the background and allows 
    1. Roads
    2. Aerial
    3. Terrain
+   4. Custom
 
    **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
  provided by the U.S. Geological Survey.

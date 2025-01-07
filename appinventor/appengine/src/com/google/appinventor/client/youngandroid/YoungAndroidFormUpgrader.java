@@ -2064,6 +2064,10 @@ public final class YoungAndroidFormUpgrader {
       // Adds ScaleUnits and MapType dropdowns.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Adds CustomUrl (MapType 4).
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

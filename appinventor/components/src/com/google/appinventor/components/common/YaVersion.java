@@ -1212,7 +1212,9 @@ public class YaVersion {
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
   // - Adds ScaleUnits and MapType dropdowns.
-  public static final int MAP_COMPONENT_VERSION = 6;
+  // For MAP_COMPONENT_VERSION 7:
+  // - Adds CustomUrl (MapType 4).
+  public static final int MAP_COMPONENT_VERSION = 7;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
