@@ -620,8 +620,16 @@ Blockly.Blocks['obfuscated_text'] = {
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
   },
-  domToMutation: Blockly.Blocks.text.domToMutation,
-  mutationToDom: Blockly.Blocks.text.mutationToDom,
+  domToMutation: function(xmlElement) {
+    Blockly.Blocks['text'].domToMutation.call(this, xmlElement);
+    var confounder = xmlElement.getAttribute('confounder');
+    this.confounder = confounder;
+  },
+  mutationToDom: function() {
+    var container = Blockly.Blocks['text'].mutationToDom.call(this);
+    container.setAttribute('confounder', this.confounder);
+    return container;
+  },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE}]
 };
 
