@@ -26,6 +26,10 @@ The Chart component plots data originating from it's attached Data components. F
 
 {:.properties}
 
+{:id="Chart.AxesTextColor" .color} *AxesTextColor*
+: Specifies the chart's axes text color as an alpha-red-green-blue
+ integer.
+
 {:id="Chart.BackgroundColor" .color} *BackgroundColor*
 : Specifies the chart's background color as an alpha-red-green-blue
  integer.
