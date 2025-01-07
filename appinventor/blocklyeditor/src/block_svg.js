@@ -18,11 +18,6 @@ goog.require('AI.Blockly.Block');
 goog.require('AI.Blockly.FieldFlydown');
 goog.require('AI.ErrorIcon');
 
-Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
-  (Blockly.BlockSvg.CORNER_RADIUS - 1) + 1;
-Blockly.BlockSvg.DISTANCE_45_OUTSIDE = (1 - Math.SQRT1_2) *
-  (Blockly.BlockSvg.CORNER_RADIUS + 1) - 1;
-
 /**
  * Block's error icon (if any).
  * @type {AI.ErrorIcon}
@@ -53,47 +48,6 @@ Blockly.BlockSvg.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
  * @const {string}
  */
 Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
-
-/**
- * Obtains starting coordinates so the block can return to spot after copy.
- *
- * @param {!Event} e Mouse down event.
- */
-Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var wrappedFunc = function(e){
-      var workspace = this.getTopWorkspace();
-      if (workspace && workspace.getParentSvg() && workspace.getParentSvg().parentNode &&
-          typeof workspace.getParentSvg().parentNode.focus === 'function') {  // Firefox 49 doesn't have focus function on SVG elements
-        workspace.getParentSvg().parentNode.focus();
-      }
-      if (Blockly.FieldFlydown.openFieldFlydown_) {
-        var flydown = Blockly.common.getMainWorkspace().getFlydown();
-        if (flydown) {
-          if (goog.dom.contains(flydown.svgGroup_, this.svgGroup_)) {
-            //prevent hiding the flyout if a child block is the target
-            flydown.shouldHide = false;
-          }
-        } else {
-          console.warn('openFieldFlydown_ was set but flydown_ was undefined!');
-        }
-      }
-      var retval = func.call(this, e);
-      var xy = goog.style.getPageOffset(this.svgGroup_);
-      this.startX = xy.x;
-      this.startY = xy.y;
-      if (workspace && workspace.getParentSvg() && workspace.getParentSvg().parentNode &&
-        typeof workspace.getParentSvg().parentNode.focus === 'function') {  // Firefox 49 doesn't have focus function on SVG elements
-        workspace.getParentSvg().parentNode.focus();
-      }
-      return retval;
-    };
-    wrappedFunc.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.BlockSvg.prototype.onMouseDown_);
 
 /**
  * Set this block's warning text.
@@ -308,28 +262,15 @@ Blockly.BlockSvg.prototype.getTopWorkspace = function() {
 };
 
 /**
- * Add the selection highlight to the block.
- */
-Blockly.BlockSvg.prototype.addSelect = function() {
-  Blockly.utils.dom.addClass(this.svgGroup_, 'blocklySelected');
-  var block_0 = this;
-  do {
-    var root = block_0.getSvgRoot();
-    if (!root.parentNode) break;  // not yet attached to DOM
-    root.parentNode.appendChild(root);
-    block_0 = block_0.getParent();
-  } while (block_0);
-};
-
-/**
  * Load the block's help page in a new window. This version overrides the implementation in Blockly
  * in order to include the locale query parameter that the documentation page will use to redirect
  * the user if a translation exists for their language.
  *
  * @private
  */
-Blockly.BlockSvg.prototype.showHelp_ = function() {
-  var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
+Blockly.BlockSvg.prototype.showHelp = function() {
+  const url =
+      typeof this.helpUrl === 'function' ? this.helpUrl() : this.helpUrl;
   if (url) {
     var parts = url.split('#');
     var hereparts = top.location.href.match('[&?]locale=([a-zA-Z-]*)');

@@ -90,8 +90,6 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
         this.latestClick = point;
         return func.call(this, e);
       } finally {
-        // focus the workspace's parent typeblocking and other keystrokes
-        this.getTopWorkspace().getParentSvg().parentNode.focus();
         //if drawer exists and supposed to close
         if (this.drawer_ && this.drawer_.flyout_.autoClose) {
           this.drawer_.hide();
