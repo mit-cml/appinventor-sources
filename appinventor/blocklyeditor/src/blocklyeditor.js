@@ -1119,94 +1119,22 @@ AI.inject = function(container, workspace) {
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();
   // Note that in current code, workspace.injected is always true.  Before the 2023 Blockly update
   // it was possible for workspace.injected to be false, but that is no longer the case.
-  if (workspace.injected) {
-    workspace.setGridSettings(gridEnabled, gridSnap);
-    // Update the workspace size in case the window was resized while we were hidden
-    setTimeout(function() {
-      goog.array.forEach(workspace.blocksNeedingRendering, function(block) {
-        workspace.getWarningHandler().checkErrors(block);
-        block.render();
-      });
-      workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
-      workspace.resizeContents();
-      Blockly.svgResize(workspace);
-      if (workspace.notYetRendered) {
-        workspace.notYetRendered = false;
-        workspace.scrollCenter();
-      }
-      //AI.Blockly.navigationController.enable(workspace);
+  workspace.setGridSettings(gridEnabled, gridSnap);
+  // Update the workspace size in case the window was resized while we were hidden
+  setTimeout(function() {
+    goog.array.forEach(workspace.blocksNeedingRendering, function(block) {
+      workspace.getWarningHandler().checkErrors(block);
+      block.render();
     });
-    return;
-  }
-  // The following code used to be reachable, but currently is not, because workspace.injected is
-  // now (since the 2023 Blockly update) always true.  We are leaving it here, but commented, in case
-  // it turns out that we have to revert to the old behavior.
-  //
-  // var options = workspace.options;
-  // var svg = container.querySelector('svg.blocklySvg');
-  // svg.cachedWidth_ = svg.clientWidth;
-  // svg.cachedHeight_ = svg.clientHeight;
-  // // svg.appendChild(workspace.createDom('blocklyMainBackground'));
-  // workspace.setGridSettings(gridEnabled, gridSnap);
-  // workspace.translate(0, 0);
-  // // The SVG is now fully assembled.
-  // Blockly.WidgetDiv.createDom();
-  // Blockly.Tooltip.createDom();
-  // workspace.addWarningIndicator();
-  // workspace.addBackpack();
-  // // Blockly.init_(workspace);
-  // workspace.markFocused();
-  // Blockly.browserEvents.bind(svg, 'focus', workspace, workspace.markFocused);
-  // workspace.resize();
-  // workspace.rendered = true;
-  // var blocks = workspace.getAllBlocks();
-  //
-  // /**
-  //  * Creates a new helper function to render a comment set to visible but deferred during workspace
-  //  * generation.
-  //  * @param {!Blockly.icons.CommentIcon} comment The Blockly Comment object to be made visible.
-  //  * @returns {Function}
-  //  */
-  // function commentRenderer(comment) {
-  //   return function() {
-  //     comment.setVisible(comment.visible);
-  //   }
-  // }
-  //
-  // for (var i = blocks.length - 1; i >= 0; i--) {
-  //   var block = blocks[i];
-  //   block.initSvg();
-  //   block.rendered = true;
-  //   if (block.disabled && block.updateDisabled) {
-  //     block.updateDisabled();
-  //   }
-  //   if (!isNaN(block.x) && !isNaN(block.y)) {
-  //     var xy = block.getRelativeToSurfaceXY();
-  //     block.getSvgRoot().setAttribute('transform',
-  //       'translate(' + block.x + ',' + block.y + ')');
-  //     block.moveConnections_(block.x - xy.x, block.y - xy.y);
-  //   }
-  //   if (block.comment && block.comment.visible && block.comment.setVisible) {
-  //     setTimeout(commentRenderer(block.comment), 1);
-  //   }
-  // }
-  // workspace.render();
-  // // blocks = workspace.getTopBlocks();
-  // // for (var i = blocks.length - 1; i >= 0; i--) {
-  // //   var block = blocks[i];
-  // //   block.render(false);
-  // // }
-  // workspace.getWarningHandler().determineDuplicateComponentEventHandlers();
-  // workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
-  // // center on blocks
-  // workspace.setScale(1);
-  // workspace.scrollCenter();
-  // // done injection
-  // workspace.injecting = false;
-  // workspace.injected = true;
-  // // Add pending resize event to fix positioning issue in Firefox.
-  // setTimeout(function() { workspace.resizeContents(); Blockly.svgResize(workspace); });
-  // return workspace;
+    workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
+    workspace.resizeContents();
+    Blockly.common.svgResize(workspace);
+    if (workspace.notYetRendered) {
+      workspace.notYetRendered = false;
+      workspace.scrollCenter();
+    }
+    //AI.Blockly.navigationController.enable(workspace);
+  });
 };
 
 // Preserve Blockly during Closure and GWT optimizations
