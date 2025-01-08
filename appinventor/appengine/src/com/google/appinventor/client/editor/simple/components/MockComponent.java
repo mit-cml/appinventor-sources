@@ -9,7 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.SourceStructureBox;
@@ -483,7 +483,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns a unique default component name.
    */
   private String componentName() {
-    String compType = ComponentsTranslation.getComponentName(getType());
+    String compType = ComponentTranslationTable.getComponentName(getType());
     compType = compType.replace(" ", "_").replace("'", "_"); // Make sure it doesn't have any spaces in it
     return compType + getNextComponentIndex();
   }
@@ -506,7 +506,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = ComponentsTranslation.getComponentName(getType())
+      final String typeName = ComponentTranslationTable.getComponentName(getType())
         .toLowerCase()
         .replace(" ", "_")
         .replace("'", "_");
@@ -562,10 +562,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public final void addProperty(String name, String defaultValue, String caption, String category,
                                 String editorType, String[] editorArgs, PropertyEditor editor) {
 
-    String propertyDesc = ComponentsTranslation.getPropertyDescription(name
+    String propertyDesc = ComponentTranslationTable.getPropertyDescription(name
       + "PropertyDescriptions");
     if (propertyDesc.equals(name + "PropertyDescriptions")) {
-      propertyDesc = ComponentsTranslation.getPropertyDescription((type.equals("Form")
+      propertyDesc = ComponentTranslationTable.getPropertyDescription((type.equals("Form")
           ? "Screen" : type) + "." + propertyDesc);
     }
 
@@ -579,8 +579,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (isPropertyforYail(name)) {
       propertyType |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, ComponentsTranslation.getPropertyName(caption),
-        ComponentsTranslation.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
+        ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
   }
 
   protected final void addProperty(String name) {

@@ -9,29 +9,35 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <wiz:Dialog ui:field="UIDialog" caption="{messages.uiSettings}"
-              styleName="ode-DialogBox" width="340px" height="40px">
+              styleName="ode-DialogBox ode-UserSettingsDialog">
     <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectStyle}" />
       </g:FlowPanel>
       <g:FlowPanel styleName="ode-DialogRow">
-        <g:HTML>
-          <img srcset="" class="contentImage" src="/static/images/ai2-classic-style.png" width="360px" />
-        </g:HTML>
+        <g:Label ui:field="introText" text='{messages.selectUIStyle}' styleName="ExtendedText" visible="false" />
       </g:FlowPanel>
-      <g:FlowPanel styleName="ode-DialogRow">
-        <g:RadioButton ui:field='classicRadioButton' name='UI' text='{messages.disableNewLayout}'/>
-      </g:FlowPanel>
-      <g:FlowPanel styleName="ode-DialogRow"> </g:FlowPanel>
-      <g:FlowPanel styleName="ode-DialogRow">
-        <g:HTML>
-          <img srcset="" class="contentImage" src="/static/images/ai2-neo-style.png" width="360px" />
-        </g:HTML>
-      </g:FlowPanel>
-      <g:FlowPanel styleName="ode-DialogRow" >
-        <g:RadioButton ui:field='modernRadioButton' name='UI' text='{messages.enableNewLayout}' />
-      </g:FlowPanel>
+      <g:HTMLPanel styleName="image-radio-group">
+        <div class="image-radio">
+          <label class="image-label">
+            <input type="radio" class="hidden-radio" name="UI" value="classic"
+                   ui:field="classicRadioButton" />
+            <img src="/static/images/ai2-classic-style.png" />
+            <br/>
+            <g:Label text="{messages.disableNewLayout}" />
+          </label>
+        </div>
+        <div class="image-radio">
+          <label class="image-label">
+            <input type="radio" class="hidden-radio" name="UI" value="modern"
+                   ui:field="modernRadioButton" />
+            <img src="/static/images/ai2-neo-style.png" />
+            <br/>
+            <g:Label text="{messages.enableNewLayout}" />
+          </label>
+        </div>
+      </g:HTMLPanel>
       <!--
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectMode}" width="30%" />

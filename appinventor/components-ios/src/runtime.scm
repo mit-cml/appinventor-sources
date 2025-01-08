@@ -403,6 +403,8 @@
              (yail:isa arg NSDictionary))
          (yail:invoke arg 'toString))
         ((yail:isa arg NSDate) (yail:format-date arg))
+        ((yail:isa arg AIComponentKit.OptionList)
+         (coerce-to-string (yail:invoke arg 'toUnderlyingValue)))
         ((list? arg)
          (if (use-json-format)
              (let ((pieces (map get-json-display-representation arg)))
@@ -492,11 +494,14 @@
   (cond
    ((yail-dictionary? arg) arg)
    ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+   ((string? arg) (invoke AIComponentKit.Web 'decodeJson: arg))
    (else
-    (let ((result (invoke arg 'toYailDictionary)))
-      (if result
-          result
-          *non-coercible-value*)))))
+    (try-catch
+      (let ((result (invoke arg 'toYailDictionary)))
+        (if result
+            result
+            *non-coercible-value*))
+      (exception java.lang.Exception *non-coercible-value*)))))
 
 (define (coerce-to-boolean arg)
   (cond
@@ -1591,7 +1596,7 @@ Dictionary implementation.
 
 (define (yail-dictionary-lookup key yail-dictionary default)
   (let ((result
-    (cond ((instance? yail-dictionary YailList)
+    (cond ((or (yail-list? yail-dictionary) (instance? yail-dictionary YailList))
            (yail-alist-lookup key yail-dictionary default))
           ((instance? yail-dictionary YailDictionary)
             (yail:invoke yail-dictionary 'objectForKey: key))

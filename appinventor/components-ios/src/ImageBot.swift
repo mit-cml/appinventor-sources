@@ -5,17 +5,17 @@
 
 import Foundation
 
-fileprivate let kImageBotURL: URL! = URL(string: "https://chatbot.appinventor.mit.edu/image/v1")
 let kSaveFileError: Int32 = -2
 let kUnableToLoadSourceError: Int32 = -3
 let kNoResponseError: Int32 = -4
 
 open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot_response> {
+  private static let SERVICE_URL = CHATBOT_HOST.appendingPathComponent("image/v1")
   public static let sRGB: CGColorSpace! = CGColorSpace(name: CGColorSpace.sRGB)
   public static let context = CIContext(options: [CIContextOption.outputColorSpace : NSNull()])
 
   @objc public init(_ parent: ComponentContainer) {
-    super.init(parent, kImageBotURL)
+    super.init(parent, ImageBot.SERVICE_URL)
   }
 
   // MARK: Properties

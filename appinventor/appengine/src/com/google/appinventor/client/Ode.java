@@ -54,6 +54,7 @@ import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.GetMotdService;
@@ -1427,6 +1428,12 @@ public class Ode implements EntryPoint {
                     "" + newLayout);
   }
 
+  public static void setShowUIPicker(boolean value) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .changePropertyValue(SettingsConstants.SHOW_UIPICKER,
+            "" + value);
+  }
+
   public static void saveUserDesignSettings() {
     userSettings.saveSettings(new Command() {
       @Override
@@ -1808,7 +1815,11 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
+    String showUIPicker = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+                              getPropertyValue(SettingsConstants.SHOW_UIPICKER);
+    if(showUIPicker.equalsIgnoreCase("True")) {
+      new UISettingsWizard(true).show();
+    } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       maybeShowNoProjectsDialog();

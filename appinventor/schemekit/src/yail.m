@@ -1107,7 +1107,7 @@ yail_isa(pic_state *pic) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.common." withString:@"AIComponentKit."];
-    } else if ([name hasPrefix:@"edu.mit.appinventor."]) {
+    } else if ([name hasPrefix:@"edu.mit.appinventor."] || [name hasPrefix:@"com.bbc.microbit."]) {
       NSArray *parts = [name componentsSeparatedByString:@"."];
       name = [NSString stringWithFormat:@"AIComponentKit.%@", parts.lastObject];
     }
@@ -1400,7 +1400,8 @@ pic_value yail_get_simple_name(pic_state *pic) {
   pic_get_args(pic, "o", &native_class);
 
   if (yail_native_class_p(pic, native_class)) {
-    const char *name = yail_native_class_name(pic, yail_native_class_ptr(pic, native_class));
+    const NSString *className = NSStringFromClass(yail_native_class_ptr(pic, native_class)->class_);
+    const char *name = [className UTF8String];
     size_t lastDot = 0;
     for (size_t i = 0; name[i] != 0; i++) {
       if (name[i] == '.') {

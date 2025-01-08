@@ -137,18 +137,18 @@ doctor() {
     ((pass++))
     echo [PASS] Java is installed.
     # Check Java version
-    if java -version 2>&1 | grep -q "version \"1.8" &> /dev/null; then
+    if java -version 2>&1 | grep -q "version \"11." &> /dev/null; then
       ((pass++))
       echo [PASS] Required version of Java is installed.
     else
       ((fail++))
       echo [FAIL] Required version of Java is not installed or not found on PATH.
-      echo _______Please install Java 8 and try again.
+      echo _______Please install Java 11 and try again.
     fi
   else
     ((fail++))
     echo [FAIL] Java is not installed or not found on PATH.
-    echo _______Please install Java 8 and try again.
+    echo _______Please install Java 11 and try again.
   fi
   # Check if git is installed
   if command -v git &> /dev/null; then

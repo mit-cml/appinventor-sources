@@ -709,6 +709,11 @@ div.StatusPanel {
   flex-flow: column;
 }
 
+.ode-SourceScrollPanel {
+  width: 200px;
+  height: 480px;
+}
+
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;
@@ -1535,13 +1540,13 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ComponentHelpPopup-Body {
-  padding: 10px;
   color: #555;
   font-size: 12px;
+  width: 250px;
 }
 
 .ode-ComponentHelpPopup-Link {
-  padding: 0 10px 10px 10px;
+  padding: 0 10px 10px 0;
   font-size: 12px;
 
 }
@@ -1887,10 +1892,6 @@ path.ode-SimpleMockMapFeature-selected {
   min-height: 40px;
 }
 
-.ode-DialogBox, .ode-DialogBox .dialogContent {
-  min-width: 340px;
-}
-
 .DialogBox-message {}
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1938,6 +1939,15 @@ path.ode-SimpleMockMapFeature-selected {
    text-shadow: none;
  }
 
+ .ode-DialogBox .ExtendedText {
+   padding-left: 10px;
+   font-weight: normal;
+   font-size: 14px;
+   color: #555;
+   padding-bottom: 20px;
+   padding-top: 10px;
+ }
+
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
 }
@@ -1962,7 +1972,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogContent td {
-  padding: 2px 10px;
+  padding: 2px 2px;
   font-size: 12px;
   color: #555;
 }
@@ -1973,6 +1983,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
+  padding: 5px 10px;
 }
 
 .ode-DialogBox .buttonRow {
@@ -3339,4 +3350,70 @@ div.dropdiv p {
   margin-top: 1px;
   margin-left: 1px;
   font-size: 11px;
+}
+
+.ode-UserSettingsDialog .dialogContent {
+  width: 768px;
+}
+
+.image-radio-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.image-radio {
+  position: relative;
+  text-align: center;
+}
+
+.hidden-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.image-label {
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  height: 100%;
+}
+
+.image-label img {
+  box-sizing: border-box;
+  width: 360px;
+  object-fit: cover;
+  border: 3px solid transparent;
+  border-radius: 5px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.hidden-radio:checked + img {
+  border-color: #7D9D36;
+}
+
+.image-label:hover img {
+  border-color: #b3c833;
+}
+
+.hidden-radio:focus + img {
+  box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
+}
+
+.image-label > .gwt-Label {
+  flex-grow: 1;
+  align-content: flex-end;
+}
+
+@media(max-width: 768px) {
+  .ode-UserSettingsDialog .dialogContent {
+    width: 100%;
+    max-width: 360px;
+    flex-direction: column;
+  }
+  .image-radio-group {
+    flex-direction: column;
+  }
 }

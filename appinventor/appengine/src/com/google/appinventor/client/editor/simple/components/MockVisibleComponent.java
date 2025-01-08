@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
@@ -49,7 +48,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
-  protected static final String PROPERTY_NAME_HINT = "Hint";
+  protected static final String PROPERTY_NAME_HINT = "HintText";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";

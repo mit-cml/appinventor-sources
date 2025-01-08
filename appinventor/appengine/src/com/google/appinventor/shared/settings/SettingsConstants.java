@@ -32,6 +32,7 @@ public class SettingsConstants {
   public static final String USER_NEW_LAYOUT = "NewLayout";
   public static final String DARK_THEME_ENABLED = "DarkThemeEnabled";
   public static final String FOLDERS = "Folders";
+  public static final String SHOW_UIPICKER = "ShowUIPicker";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 

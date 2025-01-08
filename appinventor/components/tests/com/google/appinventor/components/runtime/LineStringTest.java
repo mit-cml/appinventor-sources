@@ -9,6 +9,7 @@ import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
 
