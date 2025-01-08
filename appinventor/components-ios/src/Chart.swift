@@ -52,11 +52,14 @@ import DGCharts
   var _gridEnabled = true
   var _labels = [String]()
   var _dataComponents: Array<ChartDataBase> = []
+  
+  var _axesTextColor: UIColor
 
   @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
     YFromZero = false
-    _backgroundColor = parent.form?.isDarkTheme == true ? UIColor.black : UIColor.white
+    _backgroundColor = parent.form?.isDarkTheme == true ? UIColor.white : UIColor.black
+    _axesTextColor = parent.form?.isDarkTheme == true ? UIColor.white : UIColor.black
     super.init(parent)
     setDelegate(self)
     parent.add(self)
@@ -110,6 +113,21 @@ import DGCharts
     set {
       _backgroundColor = argbToColor(newValue)
       _chartView?.backgroundColor = _backgroundColor
+    }
+  }
+  
+  @objc open var AxesTextColor: Int32 {
+    get {
+      return colorToArgb(_axesTextColor)
+    }
+    set {
+      _axesTextColor = argbToColor(newValue)
+      print("changing label color to")
+      print(_axesTextColor)
+      if let chartView = _chartView?.chart as? BarLineChartViewBase {
+        chartView.xAxisRenderer.axis.labelTextColor = _axesTextColor
+        chartView.leftYAxisRenderer.axis.labelTextColor = _axesTextColor
+      }
     }
   }
 
@@ -287,6 +305,8 @@ import DGCharts
     Labels = _labels
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
+    
+    AxesTextColor = colorToArgb(_axesTextColor)
   }
 
   func addDataComponent(_ dataComponent: ChartDataBase) {

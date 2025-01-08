@@ -11,8 +11,8 @@ open class TinyDB: NonvisibleComponent {
 
   fileprivate var _database: Connection!
   fileprivate var _table = Table("TinyDB1")
-  fileprivate let _key = Expression<String>("_key")
-  fileprivate let _value = Expression<String>("_value")
+  fileprivate let _key = SQLite.Expression<String>("_key")
+  fileprivate let _value = SQLite.Expression<String>("_value")
   private var _namespace = "TinyDB1"
 
   public override init(_ parent: ComponentContainer) {
