@@ -532,10 +532,12 @@ Blockly.Blocks.component_event = {
   },
 
   withLexicalVarsAndPrefix: function(_, proc) {
-    const params = this.declaredNames();
+    const params = this.getParameters().map(function(param) {
+      return param.name;
+    });
     // not arguments_ instance var
     for (let i = 0; i < params.length; i++) {
-      proc(params[i], this.lexicalVarPrefix);
+      proc(params[i], this.lexicalVarPrefix, this.workspace.getComponentDatabase().getInternationalizedParameterName(params[i]));
     }
   },
 

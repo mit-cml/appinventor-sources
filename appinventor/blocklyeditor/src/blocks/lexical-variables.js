@@ -137,6 +137,12 @@ Blockly.Blocks['lexical_variable_get'] = {
   },
   domToMutation: function(xmlElement) { // Handler getters for event parameters specially (to support i8n)
     Blockly.LexicalVariable.eventParamDomToMutation(this, xmlElement);
+    if (this.eventparam) {  // also capture untranslated param names
+      this.fieldVar_.varname = this.eventparam;
+      this.fieldVar_.translatedName = this.workspace.getComponentDatabase().getInternationalizedParameterName(this.eventparam);
+      this.fieldVar_.getOptions(false);
+      this.setFieldValue(this.eventparam, 'VAR');
+    }
   },
   referenceResults: function(name, prefix, env) {
     const childrensReferenceResults = this.getChildren().map(function(blk) {
@@ -254,6 +260,12 @@ Blockly.Blocks['lexical_variable_set'] = {
   },
   domToMutation: function(xmlElement) { // Handler setters for event parameters specially (to support i8n)
     Blockly.LexicalVariable.eventParamDomToMutation(this, xmlElement);
+    if (this.eventparam) {  // also capture untranslated param names
+      this.fieldVar_.varname = this.eventparam;
+      this.fieldVar_.translatedName = this.workspace.getComponentDatabase().getInternationalizedParameterName(this.eventparam);
+      this.fieldVar_.getOptions(false);
+      this.setFieldValue(this.eventparam, 'VAR');
+    }
   },
   referenceResults: Blockly.Blocks.lexical_variable_get.referenceResults,
   getVars: function() {

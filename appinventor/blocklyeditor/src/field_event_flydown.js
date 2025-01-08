@@ -20,6 +20,8 @@ goog.require('AI.Blockly.FieldParameterFlydown');
  * Flydown field representing a component event parameter.
  */
 Blockly.FieldEventFlydown = class extends Blockly.FieldParameterFlydown {
+  SERIALIZABLE = true;
+
   /**
    * Create a new FieldEventFlydown.
    * @param {!ParameterDescriptor} param The parameter this flydown is representing.
@@ -37,10 +39,6 @@ Blockly.FieldEventFlydown = class extends Blockly.FieldParameterFlydown {
 }
 
 Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
-  // TODO: Refactor this to use getValue() instead of getText(). getText()
-  //   refers to the view, while getValue refers to the model (in MVC terms).
-
-  var name = this.getText();
   var mutation =
       '<mutation>' +
         '<eventparam name="' + this.param.name + '" />' +

@@ -423,7 +423,7 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
         textInDropDown = true;
         // A mismatch in the untranslated value and translated text can be corrected.
         if (dropDownList[k][0] != text) {
-          // dropDown.setText(dropDownList[k][0]);
+          dropDown.setValue(dropDownList[k][1]);
         }
         break;
       }
