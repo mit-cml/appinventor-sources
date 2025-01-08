@@ -20,9 +20,7 @@ Blockly.Blocks['text'] = {
   category: 'Text',
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init: function () {
-    var textInput = new Blockly.FieldTextInput('');
-    textInput.onFinishEditing_ = Blockly.Blocks.text
-        .setOutputOnFinishEdit.bind(this);
+    var textInput = new Blockly.FieldTextInput('', this.inputValidator);
 
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput()
@@ -32,14 +30,19 @@ Blockly.Blocks['text'] = {
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
-  mutationToDom: function () {
-    const container = document.createElement('mutation');
-    container.setAttribute('output', JSON.stringify(this.outputConnection.getCheck()));
-    return container;
+  inputValidator: function (newVal) {
+    var block = this.getSourceBlock();
+    if (block.workspace.isLoading) {
+      Blockly.Blocks.text.setOutputOnFinishEdit.bind(block)(newVal);
+    }
   },
-  domToMutation: function (xmlElement) {
-    const output = JSON.parse(xmlElement.getAttribute('output'));
-    this.outputConnection.setCheck(output);
+  onchange: function(event) {
+    if (event.blockId === this.id &&
+        ((event.type === Blockly.Events.BLOCK_CHANGE) ||
+        event.type === Blockly.Events.BLOCK_CREATE)) {
+      var text = this.getFieldValue('TEXT');
+      Blockly.Blocks.text.setOutputOnFinishEdit.bind(this)(text);
+    }
   },
   errors: [{name:"checkInvalidNumber"}],
   typeblock: [{translatedName: Blockly.Msg.LANG_CATEGORY_TEXT}]
@@ -55,8 +58,8 @@ Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
     this.outputConnection.setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
   } else {
     // Remove the Number type from the output connection check if it exists.
-    const check = Array.from(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
-    const numberIndex = check.indexOf('Number');
+    var check = Array.from(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    var numberIndex = check.indexOf('Number');
     if (numberIndex !== -1) {
       check.splice(numberIndex, 1);
     }
@@ -70,8 +73,8 @@ Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
  * @block Blockly.Block
  */
 function maybeBumpBlockOnFinishEdit(block) {
-  const outputConnection = block.outputConnection;
-  const targetConnection = outputConnection.targetConnection;
+  var outputConnection = block.outputConnection;
+  var targetConnection = outputConnection.targetConnection;
   if (!targetConnection) {
     return;
   }
@@ -609,7 +612,7 @@ Blockly.Blocks['obfuscated_text'] = {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
         Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
-    var textInput = new Blockly.FieldTextInput('');
+    var textInput = new Blockly.FieldTextInput('', Blockly.Blocks['text'].inputValidator);
     textInput.onFinishEditing_ = Blockly.Blocks.text
         .setOutputOnFinishEdit.bind(this);
     this.appendDummyInput()
@@ -621,15 +624,15 @@ Blockly.Blocks['obfuscated_text'] = {
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
   },
   domToMutation: function(xmlElement) {
-    Blockly.Blocks['text'].domToMutation.call(this, xmlElement);
     var confounder = xmlElement.getAttribute('confounder');
     this.confounder = confounder;
   },
   mutationToDom: function() {
-    var container = Blockly.Blocks['text'].mutationToDom.call(this);
+    var container = document.createElement('mutation');
     container.setAttribute('confounder', this.confounder);
     return container;
   },
+  onchange: Blockly.Blocks['text'].onchange,
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE}]
 };
 
