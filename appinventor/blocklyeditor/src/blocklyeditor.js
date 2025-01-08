@@ -1087,6 +1087,21 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     };
     workspace.addChangeListener(workspaceChanged);
   }
+  workspace.addChangeListener(function(e) {
+    if (e.type == Blockly.Events.BLOCK_MOVE && e.newParentId !== e.oldParentId) {
+      const block = workspace.getBlockById(e.blockId);
+      block.getDescendants().forEach(function(block) {
+        if (block.type === 'lexical_variable_get' || block.type === 'lexical_variable_set') {
+          // If the block is a lexical variable, then we need to rebuild the options for the field
+          // given the change in scope.
+          const field = block.getField('VAR');
+          field.getOptions(false);  // rebuild option cache
+          field.setValue(field.getValue());
+          block.queueRender();
+        }
+      });
+    }
+  });
   workspace.drawer_ = new Blockly.Drawer(workspace, { scrollbars: true });
   workspace.flyout_ = workspace.getFlyout();
   workspace.addWarningIndicator();

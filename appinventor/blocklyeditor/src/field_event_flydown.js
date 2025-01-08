@@ -20,8 +20,6 @@ goog.require('AI.Blockly.FieldParameterFlydown');
  * Flydown field representing a component event parameter.
  */
 Blockly.FieldEventFlydown = class extends Blockly.FieldParameterFlydown {
-  SERIALIZABLE = true;
-
   /**
    * Create a new FieldEventFlydown.
    * @param {!ParameterDescriptor} param The parameter this flydown is representing.
@@ -35,6 +33,10 @@ Blockly.FieldEventFlydown = class extends Blockly.FieldParameterFlydown {
     super(componentDb.getInternationalizedParameterName(param.name), false, opt_displayLocation);
     this.componentDb = componentDb;
     this.param = param;
+  }
+
+  isSerializable() {
+    return false;
   }
 }
 
