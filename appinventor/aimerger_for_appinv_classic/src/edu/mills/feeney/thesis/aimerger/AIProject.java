@@ -21,11 +21,20 @@ import javax.swing.JOptionPane;
  */
 public class AIProject {
 
-  private final String projectPath; // Path to the project file
-  private final List<AIScreen> screensList; // List of screens in the project
-  private final List<AIAsset> assetsList; // List of assets in the project
-  private String propertiesFilePath; // Path to the project's properties file
-  private boolean valid; // Indicates whether the project is valid
+  /** Path to the project file. */
+  private final String projectPath;
+
+  /** List of screens in the project. */
+  private final List<AIScreen> screensList;
+
+  /** List of assets in the project. */
+  private final List<AIAsset> assetsList;
+
+  /** Path to the project's properties file. */
+  private String propertiesFilePath;
+
+  /** Indicates whether the project is valid. */
+  private boolean valid;
 
   /**
    * Creates a new AIProject.
