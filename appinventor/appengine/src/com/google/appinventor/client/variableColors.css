@@ -302,6 +302,10 @@ body {
   background-color: bar-color;
 }
 
+.gwt-Tree-focused {
+  outline: solid 2px border-color;
+}
+
 /* Young Android Toolbar */
 
 .ya-Toolbar {
@@ -841,7 +845,7 @@ select:focus,
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
-  outline: thin dotted panel-shadow;
+  outline: 2px solid panel-shadow;
 
 }
 

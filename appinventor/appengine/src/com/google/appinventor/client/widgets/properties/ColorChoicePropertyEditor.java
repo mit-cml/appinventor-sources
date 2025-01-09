@@ -189,6 +189,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
                 color.alphaString + color.rgbString;
             selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(customColor), showCustomPicker));
           }
+          selectedColorMenu.setFocus(true);
         }
       }));
     }

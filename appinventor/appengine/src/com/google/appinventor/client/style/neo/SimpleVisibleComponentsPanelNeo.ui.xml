@@ -41,7 +41,7 @@
           </g:item>
         </g:ListBox>
         <ai:Icon icon="visibility_off" tooltip="{messages.showInvisiblePropertyComponents}"/>
-        <ed:HiddenComponentsCheckbox />
+        <ed:HiddenComponentsCheckbox ui:field="HiddenComponentsCheckbox"/>
       </g:FlowPanel>
     </g:VerticalPanel>
   </g:VerticalPanel>

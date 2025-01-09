@@ -14,6 +14,7 @@
 
   <wiz:Dialog ui:field="projectProperties" styleName="ode-DialogBox">
     <g:VerticalPanel>
+    <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:HorizontalPanel styleName='ode-propertyDialogContainer'>
         <g:ListBox ui:field="categoryList" styleName='ode-projectPropertyCategoryTitlePanel'></g:ListBox>
         <g:ScrollPanel styleName='ode-propertyDialogPropertiesScrollPanel'>
@@ -27,6 +28,7 @@
           >Close</ui:msg>
         </g:Button>
       </g:FlowPanel>
+    <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
     </g:VerticalPanel>
   </wiz:Dialog>
 </ui:UiBinder>

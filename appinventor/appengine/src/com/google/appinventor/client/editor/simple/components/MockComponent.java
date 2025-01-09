@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -39,10 +40,12 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.TouchCancelHandler;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
@@ -110,11 +113,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private final LabeledTextBox newNameTextBox;
 
     RenameDialog(String oldName) {
-      super(false, true);
-
+      super(false, false);
+      setGlassEnabled(true);
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.renameTitle());
       VerticalPanel contentPanel = new VerticalPanel();
+
+      Button topInvisible = new Button();
+      contentPanel.add(topInvisible);
 
       LabeledTextBox oldNameTextBox = new LabeledTextBox(MESSAGES.oldNameLabel());
       oldNameTextBox.setText(getName());
@@ -123,9 +129,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       newNameTextBox = new LabeledTextBox(MESSAGES.newNameLabel());
       newNameTextBox.setText(oldName);
-      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      newNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
         @Override
-        public void onKeyUp(KeyUpEvent event) {
+        public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
           if (keyCode == KeyCodes.KEY_ENTER) {
             handleOkClick();
@@ -150,9 +156,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           handleOkClick();
         }
       });
+
+      Button bottomInvisible = new Button();
+      bottomInvisible.setStyleName("FocusTrap");
+      topInvisible.setStyleName("FocusTrap");
+      topInvisible.addFocusHandler(new FocusHandler() {
+        @Override
+        public void onFocus(FocusEvent event) {
+          okButton.setFocus(true); 
+        }
+      });
+      bottomInvisible.addFocusHandler(new FocusHandler() {
+        public void onFocus(FocusEvent event) {
+          newNameTextBox.setFocus(true); 
+        }
+      });
+
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
+      buttonPanel.add(bottomInvisible);
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
@@ -227,8 +250,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * This class defines the dialog box for deleting a component.
    */
   private class DeleteDialog extends DialogBox {
+    private final Button deleteButton;
     DeleteDialog() {
-      super(false, true);
+      super(false, false);
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.deleteComponentButton());
@@ -242,13 +266,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           hide();
         }
       });
-      Button deleteButton = new Button(MESSAGES.deleteButton());
+      deleteButton = new Button(MESSAGES.deleteButton());
       deleteButton.addStyleName("destructive-action");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           hide();
           MockComponent.this.delete();
+          SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         }
       });
       HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -263,16 +288,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     @Override
     protected void onPreviewNativeEvent(NativePreviewEvent event) {
       super.onPreviewNativeEvent(event);
-      switch (event.getTypeInt()) {
-        case Event.ONKEYDOWN:
-          if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
-            hide();
-          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
-            hide();
-            MockComponent.this.delete();
-          }
-          break;
+      if (event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+        hide();
       }
+    }
+
+    public void center() {
+      super.center();
+      deleteButton.setFocus(true);
     }
   }
 

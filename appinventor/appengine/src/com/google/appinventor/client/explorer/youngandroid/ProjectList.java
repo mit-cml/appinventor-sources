@@ -15,13 +15,15 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.Collections;
@@ -70,6 +72,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   @UiField protected InlineLabel createDateSortAsc;
   @UiField protected InlineLabel modDateSortDec;
   @UiField protected InlineLabel modDateSortAsc;
+  @UiField protected FocusPanel nameFocusPanel;
+  @UiField protected FocusPanel createdateFocusPanel;
+  @UiField protected FocusPanel modDateFocusPanel;
 
   /**
    * Creates a new ProjectList
@@ -98,19 +103,41 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   @SuppressWarnings("unused")
-  @UiHandler("projectName")
+  @UiHandler("nameFocusPanel")
   public void sortByNameField(ClickEvent e) {
     changeSortOrder(SortField.NAME);
   }
 
-  @UiHandler("createDate")
+  @SuppressWarnings("unused")
+  @UiHandler("nameFocusPanel")
+  public void sortByNameField(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.NAME);
+    }
+  }
+
+  @UiHandler("createdateFocusPanel")
   public void sortByCreateDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_CREATED);
   }
 
-  @UiHandler("modDate")
+  @UiHandler("createdateFocusPanel")
+  public void sortByCreateDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_CREATED);
+    }
+  }
+
+  @UiHandler("modDateFocusPanel")
   public void sortByModDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_MODIFIED);
+  }
+
+  @UiHandler("modDateFocusPanel")
+  public void sortByModDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_MODIFIED);
+    }
   }
 
   private void changeSortOrder(SortField clickedSortField) {

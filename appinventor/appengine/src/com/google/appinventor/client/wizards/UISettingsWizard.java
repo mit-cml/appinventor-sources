@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -32,6 +33,8 @@ public class UISettingsWizard {
 //  @UiField protected Button darkModeButton;
 //  @UiField protected RadioButton lightModeRadioButton;
 //  @UiField protected RadioButton darkModeRadioButton;
+  @UiField protected Button topInvisible;
+  @UiField protected Button bottomInvisible;
   @UiField protected InputElement classicRadioButton;
   @UiField protected InputElement modernRadioButton;
   Boolean userThemePreference;
@@ -71,6 +74,7 @@ public class UISettingsWizard {
 
   public void show() {
     UIDialog.center();
+    classicRadioButton.focus();
   }
 
   // @UiHandler("darkModeButton")
@@ -118,5 +122,15 @@ public class UISettingsWizard {
     Ode.setUserNewLayout(modernRadioButton.isChecked());
     Ode.saveUserDesignSettings();
     UIDialog.hide();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     applyButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     classicRadioButton.focus();
   }
 }

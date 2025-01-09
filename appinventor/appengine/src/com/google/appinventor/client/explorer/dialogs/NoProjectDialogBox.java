@@ -12,6 +12,7 @@ import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -54,6 +55,10 @@ public class NoProjectDialogBox extends DialogBox {
   Button goToYR;
   @UiField
   Button noDialogNewProject;
+  @UiField
+  Button topInvisible;
+  @UiField
+  Button bottomInvisible;
 
   /**
    * Creates a new dialog box when the user has no current projects in their
@@ -66,6 +71,8 @@ public class NoProjectDialogBox extends DialogBox {
     this.center();
     this.setAnimationEnabled(true);
     this.setAutoHideEnabled(true);
+    this.setModal(false);
+    noDialogNewProject.setFocus(true);
     lastDialog = this;
   }
 
@@ -108,5 +115,15 @@ public class NoProjectDialogBox extends DialogBox {
       lastDialog.removeFromParent();;
       lastDialog = null;
     }
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     closeDialogBox.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     goToPurr.setFocus(true);
   }
 }

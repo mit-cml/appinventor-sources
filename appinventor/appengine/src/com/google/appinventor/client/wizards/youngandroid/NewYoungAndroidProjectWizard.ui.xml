@@ -16,6 +16,7 @@
   <wiz:Dialog ui:field="addDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
               styleName="ode-DialogBox" width="340px" height="40px">
     <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <!--ProjectName-->
       <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
                         stylePrimaryName="ode-LabeledTextBox"/>
@@ -33,6 +34,7 @@
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}'/>
         <g:Button ui:field='addButton' text='{messages.okButton}'/>
       </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
     </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>
