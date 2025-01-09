@@ -20,8 +20,7 @@ Blockly.Blocks['text'] = {
   category: 'Text',
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init: function () {
-    var textInput = new Blockly.FieldTextInput('', this.inputValidator);
-
+    const textInput = new Blockly.FieldTextInput('', this.inputValidator);
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE)
@@ -31,17 +30,31 @@ Blockly.Blocks['text'] = {
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
   inputValidator: function (newVal) {
-    var block = this.getSourceBlock();
+    /*
+     * Note that it would be nice to be able to just use this input validator to alwaysset the output type
+     * but the problem is that the validator is called during the editing of the input field.
+     * So if the text block is in the input of another block's numeric input, and the user
+     * just happens to mistype a number, the block will be bumped out of the connection. Therefore
+     * we only set the output stye in the case that the workspace is loading, in which case we know
+     * the validator is only called once, with the entire value of the test input field.
+     */
+    const block = this.getSourceBlock();
     if (block.workspace.isLoading) {
-      Blockly.Blocks.text.setOutputOnFinishEdit.bind(block)(newVal);
+      Blockly.Blocks.text.setOutputOnFinishEdit.call(block,newVal);
     }
   },
   onchange: function(event) {
+    /*
+     * Note that it would be nice to be able to just use this onchange event to always set the output
+     * type, but the neither the BLOCK_CHANGE nor BLOCK_CREATE events are fired when the block is loaded.
+     * Nor is any other block related event. Therefore we use the text input field validator to set the
+     * output type during loading.
+     */
     if (event.blockId === this.id &&
         ((event.type === Blockly.Events.BLOCK_CHANGE) ||
         event.type === Blockly.Events.BLOCK_CREATE)) {
-      var text = this.getFieldValue('TEXT');
-      Blockly.Blocks.text.setOutputOnFinishEdit.bind(this)(text);
+      const text = this.getFieldValue('TEXT');
+      Blockly.Blocks.text.setOutputOnFinishEdit.call(this, text);
     }
   },
   errors: [{name:"checkInvalidNumber"}],
@@ -58,8 +71,8 @@ Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
     this.outputConnection.setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
   } else {
     // Remove the Number type from the output connection check if it exists.
-    var check = Array.from(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
-    var numberIndex = check.indexOf('Number');
+    const check = Array.from(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    const numberIndex = check.indexOf('Number');
     if (numberIndex !== -1) {
       check.splice(numberIndex, 1);
     }
@@ -73,8 +86,8 @@ Blockly.Blocks.text.setOutputOnFinishEdit = function(newValue) {
  * @block Blockly.Block
  */
 function maybeBumpBlockOnFinishEdit(block) {
-  var outputConnection = block.outputConnection;
-  var targetConnection = outputConnection.targetConnection;
+  const outputConnection = block.outputConnection;
+  const targetConnection = outputConnection.targetConnection;
   if (!targetConnection) {
     return;
   }
@@ -613,8 +626,6 @@ Blockly.Blocks['obfuscated_text'] = {
     var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
         Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
     var textInput = new Blockly.FieldTextInput('', Blockly.Blocks['text'].inputValidator);
-    textInput.onFinishEditing_ = Blockly.Blocks.text
-        .setOutputOnFinishEdit.bind(this);
     this.appendDummyInput()
         .appendField(label)
         .appendField(textInput,'TEXT')
