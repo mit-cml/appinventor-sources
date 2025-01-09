@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -69,7 +69,8 @@ public class LoadComponentInfo implements CommonTask {
         || !this.generateNativeLibNames()
         || !this.generatePermissions()
         || !this.generateQueries()
-        || !this.generateServices()) {
+        || !this.generateServices()
+        || !this.generateXmls()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
 
@@ -250,6 +251,28 @@ public class LoadComponentInfo implements CommonTask {
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET),
             context.getComponentInfo().getContentProvidersNeeded());
 
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included xml files needed by this project.
+   */
+  private boolean generateXmls() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getXmlsNeeded(),
+          ComponentDescriptorConstants.XMLS_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Xmls stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getXmlsNeeded().keySet()) {
+      n += context.getComponentInfo().getXmlsNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component xmls needed, n = " + n);
     return true;
   }
 
