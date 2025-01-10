@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.components.MockChartData2D;
 import com.google.appinventor.client.editor.simple.components.MockChatBot;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
+import com.google.appinventor.client.editor.simple.components.MockCircularProgress;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
@@ -29,6 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockLineString;
+import com.google.appinventor.client.editor.simple.components.MockLinearProgress;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
@@ -49,6 +51,7 @@ import com.google.appinventor.client.editor.simple.components.MockTableArrangeme
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockTranslator;
+import com.google.appinventor.client.editor.simple.components.MockTrendline;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
@@ -195,6 +198,12 @@ public class BaseComponentFactory implements ComponentFactory {
       return new MockChart(editor);
     } else if (name.equals(MockChartData2D.TYPE)) {
       return new MockChartData2D(editor);
+    } else if (name.equals(MockCircularProgress.TYPE)) {
+      return new MockCircularProgress(editor);
+    } else if (name.equals(MockLinearProgress.TYPE)) {
+      return new MockLinearProgress(editor);
+    } else if (name.equals(MockTrendline.TYPE)) {
+      return new MockTrendline(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);
