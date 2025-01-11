@@ -41,8 +41,6 @@ import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
 
-import com.google.appinventor.components.runtime.repackaged.org.json.XML;
-
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
@@ -54,6 +52,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
+import com.google.appinventor.components.runtime.util.XmlUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -1130,7 +1129,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   // HTML for the component documentation on the Web.  It's too long for a tooltip, anyway.
   public Object XMLTextDecode(String XmlText) {
     try {
-      return JsonTextDecode(XML.toJSONObject(XmlText).toString());
+      return JsonTextDecode(XmlUtil.xmlToJson(XmlText));
     } catch (com.google.appinventor.components.runtime.repackaged.org.json.JSONException e) {
       // We could be more precise and signal different errors for the conversion to JSON
       // versus the decoding of that JSON, but showing the actual error message should
