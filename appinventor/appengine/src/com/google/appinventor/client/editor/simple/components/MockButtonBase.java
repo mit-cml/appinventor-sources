@@ -233,7 +233,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    */
   private void setImageProperty(String text) {
     imagePropValue = text;
-    String url = convertImagePropertyValueToUrl(text);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, text);
     if (url == null) {
       hasImage = false;
       url = "";

@@ -85,7 +85,7 @@ public final class MockCanvas extends MockContainer {
    * Sets the canvas's BackgroundImage property to a new value.
    */
   private void setBackgroundImageProperty(String text) {
-    String url = convertImagePropertyValueToUrl(text);
+    String url = MockComponentsUtil.convertAssetValueToUrl(editor, text);
 
     // We tell the layout (which is a MockCanvasLayout) that there is (or is not) a background
     // image so it can adjust the "layout width/height". The "layout width/height" is used when the
