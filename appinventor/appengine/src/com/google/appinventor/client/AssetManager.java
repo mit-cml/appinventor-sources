@@ -351,7 +351,7 @@ public final class AssetManager implements ProjectChangeListener {
   }-*/;
 
   private static native boolean doPutAsset(String projectId, String filename, byte[] content) /*-{
-    return Blockly.ReplMgr.putAsset(projectId, filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
+    return $wnd.Blockly.ReplMgr.putAsset(projectId, filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
   }-*/;
 
   private static native void doCallBack(JavaScriptObject callback) /*-{

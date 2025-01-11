@@ -189,15 +189,15 @@ function uploadKeystore(droppedItem) {
 }
 
 function isProject(item) {
-  return goog.string.endsWith(item.name, '.aia');
+  return top.goog.string.endsWith(item.name, '.aia');
 }
 
 function isExtension(item) {
-  return goog.string.endsWith(item.name, '.aix');
+  return top.goog.string.endsWith(item.name, '.aix');
 }
 
 function isKeystore(item) {
-  return goog.string.endsWith(item.name, 'android.keystore');
+  return top.goog.string.endsWith(item.name, 'android.keystore');
 }
 
 function checkValidDrag(e) {
@@ -229,7 +229,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk') || goog.string.endsWith(item.name, '.aab')) {
+    } else if (top.goog.string.endsWith(item.name, '.apk') || top.goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);

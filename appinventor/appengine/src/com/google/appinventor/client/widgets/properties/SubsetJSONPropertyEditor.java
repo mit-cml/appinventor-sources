@@ -728,23 +728,22 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
   private native JavaScriptObject getBlockDict()/*-{
     var blockCatDict = {};
-    for (var blockName in Blockly.Blocks) {
-      if (!Blockly.Blocks.hasOwnProperty(blockName)) continue;
-      var block = Blockly.Blocks[blockName];
+    for (var blockName in $wnd.Blockly.Blocks) {
+      var block = $wnd.Blockly.Blocks[blockName];
       // Component blocks are handled in the component tree and don't behave the same as the others
       if (block.category && (block.category !== "Component") && (typeof block.typeblock !== 'undefined')) {
         if (!blockCatDict[block.category]) {
           blockCatDict[block.category] = {};
         }
         var arrTranslatedNames = new Array();
-        for (i = 0; i < block.typeblock.length; ++i) {
+        for (var i = 0; i < block.typeblock.length; ++i) {
           arrTranslatedNames[i] = block.typeblock[i].translatedName;
           // Have not found a way to genericize code where multiple blocks have the exact same translated name.
           // If there's a better way, please fix.
           if (blockName == 'controls_forRange') {
-            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX;
+            arrTranslatedNames[i] += $wnd.Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX;
           } else if (blockName == 'controls_forEach') {
-            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
+            arrTranslatedNames[i] += $wnd.Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
           }
         }
         // List all variations on a block, separated by commas
