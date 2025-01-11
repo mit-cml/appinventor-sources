@@ -1,7 +1,7 @@
 /* -*- mode: css; css-indent-offset: 2; -*- */
 /*
  * Copyright 2007-2011 Google Inc. All Rights Reserved.
- * Copyright 2011-2017 MIT, All Rights Reserved.
+ * Copyright 2011-2024 MIT, All Rights Reserved.
  * Released under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -1474,18 +1474,52 @@ path.ode-SimpleMockMapFeature-selected {
 /* class for the ListView Mock component */
 .listViewComponentStyle {
   width: 315px;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.listViewComponentStyle .listViewFilterStyle {
+  flex: 0 0 30px;
+  width: calc(100% - 6px);
+  border-radius: 0px;
+  margin-bottom: 0px;
+  padding: 0px 2px;
+}
+
+.listViewComponentStyle .listViewScrollableStyle {
+  flex: 1 1 auto;
   overflow: auto;
+  scrollbar-width: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.listViewHorizontalScrollableStyle {
+  white-space: nowrap;
 }
 
 .listViewItemStyle {
-  border-bottom: 1px solid gray;
-  min-height: 40px;
-  display: table-cell;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.listViewHorizontalItemStyle {  
+  display: inline-block;
+  vertical-align: top;
+}
+
+.listViewImageStyle {  
+  display: inline;
+  padding-right: 5px;
   vertical-align: middle;
 }
 
-/* class for the ListView Mock component */
+/* class for the Spinner Mock component */
 .spinnerComponentStyle {
   outline: 1px solid lightgray;
 }
