@@ -77,14 +77,12 @@ public class BaseComponentFactory implements ComponentFactory {
   protected final DesignerEditor<?, ?, ?, ?, ?> editor;
   private final Map<String, ImageResource> bundledImages;
   private final ComponentDatabaseInterface componentDatabase;
-  private final Map<String, MockComponent> cachedComponents;
 
   public BaseComponentFactory(DesignerEditor<?, ?, ?, ?, ?> editor,
                               Map<String, ImageResource> bundledImages) {
     this.editor = editor;
     this.bundledImages = bundledImages;
     componentDatabase = editor.getComponentDatabase();
-    cachedComponents = Maps.newHashMap();
   }
 
   @Override
@@ -211,11 +209,7 @@ public class BaseComponentFactory implements ComponentFactory {
   }
 
   public Image getImage(String name, String type) {
-    if (componentDatabase.getNonVisible(name)) {
       return getImageFromPath(componentDatabase.getIconName(name), type);
-    } else {
-      return getCachedMockComponent(name, type).getIconImage();
-    }
   }
 
   public Image getImage(String name) {
@@ -265,13 +259,4 @@ public class BaseComponentFactory implements ComponentFactory {
   /**
    * Gets cached mock component; creates if necessary.
    */
-  private MockComponent getCachedMockComponent(String name, String type) {
-    MockComponent cached = cachedComponents.get(name);
-    if (cached != null) {
-      return cached;
-    }
-    cached = createMockComponent(name, type);
-    cachedComponents.put(name, cached);
-    return cached;
-  }
 }

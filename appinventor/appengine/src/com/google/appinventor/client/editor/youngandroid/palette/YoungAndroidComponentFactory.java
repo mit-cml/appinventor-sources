@@ -41,6 +41,7 @@ class YoungAndroidComponentFactory extends BaseComponentFactory {
     bundledImages.put("images/canvas.png", images.canvas());
     bundledImages.put("images/checkbox.png", images.checkbox());
     bundledImages.put("images/chatbot.png", images.chatbot());
+    bundledImages.put("images/circularProgress.png", images.circularProgress());
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/contactpicker.png", images.contactpicker());
     bundledImages.put("images/datepicker.png", images.datePickerComponent());
@@ -58,6 +59,7 @@ class YoungAndroidComponentFactory extends BaseComponentFactory {
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
     bundledImages.put("images/legoMindstormsEv3.png", images.legoMindstormsEv3());
+    bundledImages.put("images/linearProgress.png", images.linearProgress());
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
     bundledImages.put("images/passwordTextBox.png", images.passwordtextbox());
     bundledImages.put("images/paintpalette.png", images.paintPalette());
