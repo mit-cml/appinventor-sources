@@ -152,9 +152,10 @@ public class BlocklyTranslationGenerator {
   private static void writeFile(String dir, String lang, String contents) throws IOException {
     String suffix;
     if (release) {
-      suffix = "_" + hash64(contents);
+      suffix = "_" + hash64(contents) + ".cache";
     } else {
       suffix = "en".equals(lang) ? "" : "_" + lang;
+      suffix += ".nocache";
     }
     File file = new File(dir, "messages" + suffix + ".js");
     FileUtils.writeStringToFile(file, contents);

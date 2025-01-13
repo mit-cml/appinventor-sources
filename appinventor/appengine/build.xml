@@ -48,7 +48,7 @@
   </condition>
 
   <target name="all"
-          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
+          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,CopyToBuildWarPost,Keystore,WarLibs,InstallAuthKey">
   </target>
 
   <target name="tests"
@@ -159,37 +159,6 @@
         <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <checksum property="blocklyeditor_BlocklyChecksum" algorithm="SHA-256" if:true="${release}">
-      <fileset dir="${build.dir}">
-        <include name="blocklyeditor/blockly-all.js"/>
-      </fileset>
-    </checksum>
-    <property name="blocklyeditor_BlocklyChecksum" value="0"/>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/static/js/aiblockly-${blocklyeditor_BlocklyChecksum}.js" />
-    <copy todir="${build.war.dir}/static/js">
-      <fileset dir="${build.dir}/blocklyeditor">
-        <include name="*.js.map"/>
-      </fileset>
-    </copy>
-    <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}" />
-    <copy todir="${build.war.dir}" filtering="true">
-      <fileset dir="war">
-        <include name="index.jsp"/>
-      </fileset>
-    </copy>
-
-    <!-- Move Blockly translations into place -->
-    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
-    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
-      <fileset dir="${build.dir}/blocklyeditor/msg">
-        <include name="*.json"/>
-      </fileset>
-    </copy>
-    <copy todir="${build.war.dir}/static/js/">
-      <fileset dir="${build.dir}/blocklyeditor/msg">
-        <include name="*.js"/>
-      </fileset>
-    </copy>
 
     <copy todir="${build.static.dir}">
       <fileset dir="src/${appinventor.pkg}">
@@ -216,6 +185,46 @@
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="CopyToBuildWarPost">
+    <mkdir dir="${build.war.dir}/ode" />
+    <checksum property="blocklyeditor_BlocklyChecksum" algorithm="SHA-256" if:true="${release}">
+      <fileset dir="${build.dir}">
+        <include name="blocklyeditor/blockly-all.js"/>
+      </fileset>
+    </checksum>
+    <property name="blocklyeditor_BlocklyChecksum" value="0"/>
+    <condition property="blocklyeditor_postfix" value="cache" else="nocache">
+      <equals arg1="${release}" arg2="true" />
+    </condition>
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/ode/aiblockly-${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}.js" />
+    <copy todir="${build.war.dir}/ode">
+      <fileset dir="${build.dir}/blocklyeditor">
+        <include name="*.js.map"/>
+      </fileset>
+    </copy>
+    <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}" />
+    <filter token="blocklyeditor_isRelease" value="${release}" />
+    <copy todir="${build.war.dir}" filtering="true">
+      <fileset dir="war">
+        <include name="index.jsp"/>
+      </fileset>
+    </copy>
+
+    <!-- Move Blockly translations into place -->
+    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.json"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.war.dir}/ode/">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.js"/>
+      </fileset>
+    </copy>
+
     <!-- Compile the Blockly translations map -->
     <javac destdir="${build.war.dir}/WEB-INF/classes" srcdir="${public.build.dir}/../blocklyeditor" source="1.8" target="1.8">
       <include name="msg/i18n.java"/>
