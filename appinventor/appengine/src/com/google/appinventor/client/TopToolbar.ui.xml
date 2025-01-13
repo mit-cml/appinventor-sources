@@ -174,6 +174,9 @@
       <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}">
         <actions:ShowSplashAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="ShowShortcuts" caption="{messages.showShortcuts}">
+        <actions:ShowShortcutsAction/>
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Admin Menu -->

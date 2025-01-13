@@ -8,10 +8,15 @@ package com.google.appinventor.client.widgets;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
@@ -111,7 +116,39 @@ public class DropDownButton extends TextButton {
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
+        if (menu.isShowing()) {
+          menu.hide();
+        } else {
+          menu.resetSelection();
+          menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
+        }
+      }
+    });
+
+    addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN && menu.isShowing()) {
+          event.preventDefault();
+          menu.moveSelectionDown();
+          menu.focus();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_UP && menu.isShowing()) {
+          event.preventDefault();
+          menu.moveSelectionUp();
+          menu.focus();
+        }
+      }
+    });
+
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && menu.isShowing()) {
+          nativeEvent.preventDefault();
+          menu.hide();
+          setFocus(true);
+        }
       }
     });
   }

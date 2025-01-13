@@ -9,11 +9,13 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 public class ProjectListItemNeo extends ProjectListItem {
@@ -28,6 +30,7 @@ public class ProjectListItemNeo extends ProjectListItem {
   @UiField Label dateModifiedLabel;
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;
+  @UiField FocusPanel projectnameFocusPanel;
 
   public ProjectListItemNeo(Project project) {
     super(project);
@@ -41,6 +44,7 @@ public class ProjectListItemNeo extends ProjectListItem {
     super.dateCreatedLabel = dateCreatedLabel;
     super.dateModifiedLabel = dateModifiedLabel;
     super.nameLabel = nameLabel;
+    super.projectnameFocusPanel = projectnameFocusPanel;
   }
 
   @UiHandler("checkBox")
@@ -48,7 +52,14 @@ public class ProjectListItemNeo extends ProjectListItem {
     super.toggleItemSelection(e);
   }
 
-  @UiHandler("nameLabel")
+  @UiHandler("projectnameFocusPanel")
+  @Override
+  protected void openProject(KeyDownEvent e) {
+    super.openProject(e);
+  }
+
+  @UiHandler("projectnameFocusPanel")
+  @Override
   protected void itemClicked(ClickEvent e) {
     super.itemClicked(e);
   }
