@@ -46,11 +46,14 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     }
   }
 
-  @objc open var ReceivingEnabled: Bool {
+  @objc open var ReceivingEnabled: Int32 {
     get {
-      return false  // Receiving messages not supported on iOS
+      return ReceivingState.Off.value  // Receiving messages not supported on iOS
     }
     set(enabled) {
+      if enabled == ReceivingState.Off.value {
+        return  // No state change since Off is the only valid value on iOS.
+      }
       if _form?.isRepl ?? false {
         // Receiving messages not supported on iOS
         _form?.dispatchErrorOccurredEvent(self, "ReceivingEnabled",

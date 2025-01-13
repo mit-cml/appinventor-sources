@@ -377,6 +377,8 @@
    ((number? arg) arg)
    ((string? arg)
     (or (padded-string->number arg) *non-coercible-value*))
+   ((yail:isa arg AIComponentKit.OptionList)
+    (coerce-to-number (yail:invoke arg 'toUnderlyingValue)))
    (else *non-coercible-value*)))
 
 (define (coerce-to-key arg)
