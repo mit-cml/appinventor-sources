@@ -15,6 +15,7 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class DeleteAction implements Command {
             List<Project> projectsToDelete = selectedProjects;
             for (ProjectFolder f : selectedFolders) {
               projectsToDelete.addAll(f.getNestedProjects());
+              deleteFolder(f); // Call deleteFolder for each selected folder
             }
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(projectsToDelete)) {
@@ -57,6 +59,21 @@ public class DeleteAction implements Command {
           }
         }
         Ode.getInstance().switchToProjectsView();
+      }
+    });
+  }
+
+  private void deleteFolder(ProjectFolder folder) {
+    long projectId = folder.getProject();
+    Ode.getInstance().getProjectService().deleteFolder(Ode.getInstance().getSessionId(), projectId, folder.getName(), new AsyncCallback<Long>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        ErrorReporter.reportError("Failed to delete folder: " + folder.getName());
+      }
+
+      @Override
+      public void onSuccess(Long result) {
+        // Folder deleted successfully
       }
     });
   }
