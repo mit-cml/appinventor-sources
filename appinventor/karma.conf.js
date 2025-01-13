@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
         'blocklyeditor/tests/index.js',
-      'build/blocklyeditor/msg/messages.js',
+      'build/blocklyeditor/msg/messages.nocache.js',
       'lib/closure-library/closure/goog/base.js',
       'build/blocklyeditor/blockly-all.js',
       'build/blocklyeditor/component-types.js',
