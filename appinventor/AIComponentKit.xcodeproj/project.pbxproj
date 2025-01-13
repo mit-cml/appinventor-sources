@@ -26,6 +26,7 @@
 		0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147B1DE61B530049B7AB /* SQLite.framework */; };
 		0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147C1DE61B530049B7AB /* Toast_Swift.framework */; };
 		060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */; };
+		060F4AEE2D35B597005D01BA /* ReceivingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060F4AED2D35B583005D01BA /* ReceivingState.swift */; };
 		06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */; };
 		06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
@@ -410,6 +411,7 @@
 		0609147B1DE61B530049B7AB /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = "build/Debug-iphoneos/SQLite.swift/SQLite.framework"; sourceTree = "<group>"; };
 		0609147C1DE61B530049B7AB /* Toast_Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Toast_Swift.framework; path = "build/Debug-iphoneos/Toast-Swift/Toast_Swift.framework"; sourceTree = "<group>"; };
 		060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonUtil.swift; sourceTree = "<group>"; };
+		060F4AED2D35B583005D01BA /* ReceivingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceivingState.swift; sourceTree = "<group>"; };
 		06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextBoxBase.swift; sourceTree = "<group>"; };
 		06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordTextBox.swift; sourceTree = "<group>"; };
 		0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKit-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1450,6 +1452,7 @@
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
 				06E91E112D2B236800377845 /* LOBFValues.swift */,
 				681D59062A84139E007B5DB5 /* OptionList.swift */,
+				060F4AED2D35B583005D01BA /* ReceivingState.swift */,
 				06208B512BD9D7380097EF43 /* ScreenOrientation.swift */,
 			);
 			name = common;
@@ -1991,6 +1994,7 @@
 				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
+				060F4AEE2D35B597005D01BA /* ReceivingState.swift in Sources */,
 				080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */,
 				064884D621E682EA0086411C /* iOS9Util.swift in Sources */,
 				B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */,
