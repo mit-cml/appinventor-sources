@@ -200,7 +200,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       @Override
       public void onKeyDown(KeyDownEvent event) {
         DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
-        if (designToolbar.currentView == DesignToolbar.View.FORM && event.getNativeKeyCode() == 191 && !isTextboxFocused()) {
+        if (designToolbar.currentView == DesignToolbar.View.FORM && event.getNativeKeyCode() == 191
+                && !isTextboxFocused() && !event.isAltKeyDown()) {
           {
             event.preventDefault();
             searchText.setFocus(true);

@@ -9,7 +9,10 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -28,7 +31,7 @@ public class ShowShortcutsAction implements Command {
         db.setGlassEnabled(true);
         db.setAnimationEnabled(true);
 
-        shortcutKeyHandler(this);
+        shortcutKeyHandler();
     }
 
     @Override
@@ -45,16 +48,22 @@ public class ShowShortcutsAction implements Command {
         button.setFocus(true);
     }
 
-    private native void shortcutKeyHandler(ShowShortcutsAction action) /*-{
-      $wnd.document.addEventListener("keydown", function (event) {
-          if (event.altKey && event.key === "?") {
-              event.preventDefault();
-              action.@com.google.appinventor.client.actions.ShowShortcutsAction::shortcutPressed()();
-          } else if (event.key === "Escape"){
-              action.@com.google.appinventor.client.actions.ShowShortcutsAction::escPressed()();
-          }
-      });
-    }-*/;
+    private void shortcutKeyHandler() {
+        Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+            @Override
+            public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+                NativeEvent nativeEvent = event.getNativeEvent();
+                if (event.getTypeInt() == Event.ONKEYDOWN) {
+                    if (nativeEvent.getKeyCode() == 191 && nativeEvent.getAltKey()) {
+                        shortcutPressed();
+                    }
+                    if (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE) {
+                        escPressed();
+                    }
+                }
+            }
+        });
+    }
 
     private void shortcutPressed() {
       if (!db.isShowing()) {
