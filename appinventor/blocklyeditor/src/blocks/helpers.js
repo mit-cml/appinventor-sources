@@ -333,7 +333,7 @@ Blockly.Blocks['helpers_assets'] = {
 
 Blockly.Blocks['helpers_providermodel'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 
@@ -439,8 +439,8 @@ Blockly.Blocks['helpers_providermodel'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var modelproviders = Blockly.getMainWorkspace().getProviderModelList();
+    var tb = [];
+    var modelproviders = Blockly.common.getMainWorkspace().getProviderModelList();
     for (var i = 0, providermodel; (providermodel = modelproviders[i]); i++) {
       tb.push({
         translatedName: providermodel,
@@ -455,7 +455,7 @@ Blockly.Blocks['helpers_providermodel'] = {
 
 Blockly.Blocks['helpers_provider'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 
@@ -561,8 +561,8 @@ Blockly.Blocks['helpers_provider'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var providers = Blockly.getMainWorkspace().getProviderList();
+    var tb = [];
+    var providers = Blockly.common.getMainWorkspace().getProviderList();
     for (var i = 0, provider; (provider = providers[i]); i++) {
       tb.push({
         translatedName: provider,
