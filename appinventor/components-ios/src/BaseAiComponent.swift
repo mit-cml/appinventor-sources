@@ -16,6 +16,8 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
  */
 @objc open class BaseAiComponent: NonvisibleComponent,  WKScriptMessageHandler, WKURLSchemeHandler{
   public static let ERROR_WEBVEWER_REQUIRED = -7
+  public static let ERROR_WEBVIEWER_NOT_SET =
+      "You must specify a WebViewer using the WebViewer designer property before you can call"
   public static let ERROR_CLASSIFICATION_FAILED = -2;
   public static let ERROR_INVALID_MODEL_FILE = -8;
 
@@ -26,6 +28,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   private var transferModelPrefix: String? = nil
   private var personalModelPrefix: String? = nil
   private var callbacks: [String:(String)->Void] = [:]
+  private var _initialized = false
 
   /**
    * Constructs a new `BaseAiComponent` that loads the file named by `basePath` into the WebViewer
@@ -75,6 +78,13 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   }
 
   /**
+   * Returns whether the component has been successfully initialized or not.
+   */
+  @objc public var isInitialized: Bool {
+    _initialized
+  }
+
+  /**
    * The WebViewer to use for loading the model JavaScript and other logic.
    */
   @objc open var WebViewer: WebViewer {
@@ -82,16 +92,9 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
       return _webviewer!
     }
     set {
+      _webviewer = newValue
       newValue.aiSchemeHandler = self
       configureWebView(newValue.view as! WKWebView)
-      if let url = Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") {
-        let readAccessURL = Bundle(for: BaseAiComponent.self).bundleURL
-        let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath).html")!)
-        _webview?.load(request)
-        print("request loaded")
-      } else {
-        print("request not loaded")
-      }
     }
   }
 
@@ -101,10 +104,31 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
    * Initialize the component. This is called by the App Inventor runtime.
    */
   @objc public func Initialize() {
-    if _webview == nil {
+    guard let webview = _webview else {
       _form?.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEBVIEW_AI, BaseAiComponent.ERROR_WEBVEWER_REQUIRED)
       return
     }
+    if let view = _form?.view, !webview.isDescendant(of: view), let viewer = _webviewer {
+      // NB: For iOS, the WKWebView must be attached to the view hierarchy to run Javascript.
+      // To accomodate this, we set the width/height to be zero and then set the view to be visible
+      viewer.Height = 0
+      viewer.Width = 0
+      viewer._container?.setVisible(component: viewer, to: true)
+      // Wait for the view to get attached to the UI and then try again...
+      DispatchQueue.main.async {
+        self.Initialize()
+      }
+      return
+    }
+    _initialized = true
+    if Bundle(for: BaseAiComponent.self).url(forResource: assetPath, withExtension: "html") != nil {
+      let request = URLRequest(url: URL(string: "appinventor://localhost/\(assetPath).html")!)
+      webview.load(request)
+      print("request loaded")
+    } else {
+      print("Starting resource \(assetPath) not loaded")
+    }
+
   }
 
   // MARK: Events

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Look</title>
+    <style>
+        .recording {
+            box-shadow:inset 0px 1px 0px 0px #cf866c;
+        	background-color:#d0451b;
+        	border-radius:3px;
+        	border:1px solid #942911;
+        	display:inline-block;
+        	cursor:pointer;
+        	color:#ffffff;
+        	font-family:Arial;
+        	font-size:13px;
+        	padding:6px 24px;
+        	text-decoration:none;
+        	text-shadow:0px 1px 0px #854629;
+        }
+
+        .not_recording {
+            box-shadow:inset 0px 1px 0px 0px #1d2029;
+        	background-color:#272c33;
+        	border-radius:3px;
+        	border:1px solid #181a1f;
+        	display:inline-block;
+        	cursor:pointer;
+        	color:#ffffff;
+        	font-family:Arial;
+        	font-size:13px;
+        	padding:6px 24px;
+        	text-decoration:none;
+        	text-shadow:0px 1px 0px #283966;
+        }
+    </style>
+  </head>
+  <body style="margin-top: 10px;">
+    <!-- <div style="display: flex; justify-content: center;">
+        <p style="text-align: center; font-size: 10px;"><strong>Authenticate by recording a 1 second voice clip!</strong></p>
+    </div> -->
+
+
+  	<div id="controls" style="display: flex; justify-content: center;">
+  	 <button id="recordButton" class="not_recording">Record</button>
+  	 <!-- <button id="pauseButton" disabled>Pause</button> -->
+     <!-- <button id="stopButton" disabled>Stop</button> -->
+    </div>
+  	<p><strong>Recording:</strong></p>
+  	<div id="recordingsList"></div>
+
+    <script src="tfjs-1.5.2.js"></script>
+    <script src="personal_audio_classifier1.js"></script>
+    <script src="spectrogram.js"></script>
+    <script src="chroma.js"></script>
+	<script src="recorder1.js"></script>
+  </body>
+</html>

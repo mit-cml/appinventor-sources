@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 public class ProjectListNeo extends ProjectList {
@@ -29,6 +30,9 @@ public class ProjectListNeo extends ProjectList {
   @UiField InlineLabel createDateSortAsc;
   @UiField InlineLabel modDateSortDec;
   @UiField InlineLabel modDateSortAsc;
+  @UiField FocusPanel nameFocusPanel;
+  @UiField FocusPanel createdateFocusPanel;
+  @UiField FocusPanel modDateFocusPanel;
 
   @Override
   public void bindIU() {
@@ -42,6 +46,9 @@ public class ProjectListNeo extends ProjectList {
     super.createDateSortDec = createDateSortDec;
     super.modDateSortAsc = modDateSortAsc;
     super.modDateSortDec = modDateSortDec;
+    super.nameFocusPanel = nameFocusPanel;
+    super.createdateFocusPanel = createdateFocusPanel;
+    super.modDateFocusPanel = modDateFocusPanel;
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
 
     // It is important to listen to project manager events as soon as possible.

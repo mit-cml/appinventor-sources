@@ -6,5 +6,5 @@
 import Foundation
 
 @objc protocol DataSource {
-  func getDataValue(_ key: AnyObject) -> AnyObject
+  func getDataValue(_ key: AnyObject?) -> [Any]
 }
