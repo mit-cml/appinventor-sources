@@ -554,8 +554,17 @@ public class Ode implements EntryPoint {
       return;
     }
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-        .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
-    openProject(value);
+            .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    if (value.isEmpty()) {
+      switchToProjectsView();
+      return;
+    }
+    long projectId = Long.parseLong(value);
+    if (projectManager.isProjectInTrash(projectId)) {
+      switchToProjectsView();
+    } else {
+      openProject(value);
+    }
   }
 
   private void openProject(String projectIdString) {
