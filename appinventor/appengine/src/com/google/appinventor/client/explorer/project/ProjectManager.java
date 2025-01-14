@@ -239,4 +239,9 @@ public final class ProjectManager {
       listener.onProjectDeleted(project);
     }
   }
+
+  public boolean isProjectInTrash(long projectId) {
+    Project project = projectsMap.get(projectId);
+    return project != null && project.isInTrash();
+  }
 }
