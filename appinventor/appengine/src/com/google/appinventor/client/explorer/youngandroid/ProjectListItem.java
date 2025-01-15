@@ -17,6 +17,8 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -25,6 +27,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Date;
@@ -37,6 +40,7 @@ public class ProjectListItem extends Composite {
   @UiField protected Label dateModifiedLabel;
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
+  @UiField protected FocusPanel projectnameFocusPanel;
 
   private final Project project;
   private ProjectSelectionChangeHandler changeHandler;
@@ -74,9 +78,9 @@ public class ProjectListItem extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleName("ode-ProjectRowHighlighted");
+      container.addStyleName("ode-ProjectRow-Highlighted");
     } else {
-      container.removeStyleName("ode-ProjectRowHighlighted");
+      container.removeStyleName("ode-ProjectRow-Highlighted");
     }
   }
 
@@ -96,9 +100,15 @@ public class ProjectListItem extends Composite {
     changeHandler.onSelectionChange(checkBox.getValue());
   }
 
+  @UiHandler("projectnameFocusPanel")
+  protected void openProject(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    }
+  }
 
   @SuppressWarnings("unused")
-  @UiHandler("nameLabel")
+  @UiHandler("projectnameFocusPanel")
   protected void itemClicked(ClickEvent e) {
     Ode.getInstance().openYoungAndroidProjectInDesigner(project);
   }

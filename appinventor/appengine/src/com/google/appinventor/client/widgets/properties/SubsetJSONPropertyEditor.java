@@ -120,6 +120,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       public void execute() {
         property.setValue(BeginnerToolkit.INSTANCE.getToolkit().getText());
         updateValue();
+        dropDownButton.setFocus(true);
       }}));
 
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.intermediateToolkitButton(), new Command() {
@@ -127,6 +128,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       public void execute() {
         property.setValue(IntermediateToolkit.INSTANCE.getToolkit().getText());
         updateValue();
+        dropDownButton.setFocus(true);
       }}));
 
     items.add(new DropDownItem("Subset Property Editor", MESSAGES.defaultText(), new Command() {
@@ -134,6 +136,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       public void execute() {
         property.setValue("");
         updateValue();
+        dropDownButton.setFocus(true);
       }}));
     if (!newProject) {
       items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
@@ -142,6 +145,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           matchProject();
           property.setValue(createJSONString());
           updateValue();
+          dropDownButton.setFocus(true);
         }
       }));
     }
@@ -158,6 +162,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       @Override
       public void execute() {
         showCustomSubsetPanel();
+        dropDownButton.setFocus(true);
       }}));
     
     dropDownButton = new DropDownButton("Subset Property Editor", "", items, false);

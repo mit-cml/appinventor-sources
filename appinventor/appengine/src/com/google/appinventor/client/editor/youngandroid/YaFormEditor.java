@@ -15,6 +15,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -56,12 +57,17 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -199,6 +205,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     initWidget(componentsPanel);
     setSize("100%", "100%");
     registerNativeListeners();
+    registerKeyDownListeners();
   }
 
   public boolean shouldDisplayHiddenComponents() {
@@ -937,6 +944,90 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onResetDatabase();
     }
+  }
+
+
+  private void registerKeyDownListeners () {
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        if (event.isAltKeyDown() && isActiveEditor()) {
+          List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
+          MockComponent selectedComponent = form.getLastSelectedComponent();
+          int index = form.getChildren().indexOf(selectedComponent);
+
+          if (selectedComponent.isVisibleComponent()) {
+            switch (event.getNativeKeyCode()) {
+              case KeyCodes.KEY_DOWN:
+                if (index < 0) {
+                  MockContainer container = selectedComponent.getContainer();
+                  List<MockComponent> containerComponents = container.getChildren();
+                  int indexC = containerComponents.indexOf(selectedComponent);
+                  int indexOfContainer = allComponents.indexOf(container);
+                  selectedComponent.getContainer().removeComponent(selectedComponent, false);
+
+                  if (indexC == containerComponents.size() && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
+                    container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer);
+                  } else {
+                    container.addVisibleComponent(selectedComponent, indexC + 1);
+                  }
+                } else {
+                  index++;
+                  form.removeComponent(selectedComponent, false);
+                  MockComponent nextComponent = allComponents.get(index + 1); 
+                  int nextComponentindex = form.getChildren().indexOf(nextComponent);
+                  if(nextComponent instanceof MockContainer && ((MockContainer) nextComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer)nextComponent).addVisibleComponent(selectedComponent, 0);
+                  } else if (nextComponentindex < 0 && ((MockContainer) nextComponent.getContainer()).willAcceptComponentType(selectedComponent.getType())) {
+                    nextComponent.getContainer().addVisibleComponent(selectedComponent, 0);
+                  } else {
+                    form.addVisibleComponent(selectedComponent, index);
+                  }
+                }
+                break;
+
+              case KeyCodes.KEY_UP:
+                if (index < 0) {
+                  MockContainer container = selectedComponent.getContainer();
+                  List<MockComponent> containerComponents = container.getChildren();
+                  int indexC = containerComponents.indexOf(selectedComponent);
+                  int indexOfContainer = allComponents.indexOf(container);
+                  selectedComponent.getContainer().removeComponent(selectedComponent, false);
+                  if (indexC == 0 && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
+                    container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer - 1);
+                  } else {
+                    container.addVisibleComponent(selectedComponent, indexC - 1);
+                  }
+                } else {
+                  index++;
+                  form.removeComponent(selectedComponent, false);
+                  MockComponent prevComponent = allComponents.get(index - 1); 
+                  int prevComponentIndex = form.getChildren().indexOf(prevComponent);
+                  if(prevComponent instanceof MockContainer && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer)prevComponent).addVisibleComponent(selectedComponent, -1);
+                  } else if (prevComponentIndex < 0 && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    prevComponent.getContainer().addVisibleComponent(selectedComponent, -1);
+                  } else {                  
+                    form.addVisibleComponent(selectedComponent, index - 2);
+                  }
+                }
+                break;
+
+              default:
+                break;
+            }
+          }
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+          SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+          getVisibleComponentsPanel().focusCheckbox();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+          PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+          AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
+        }
+      }
+    }, KeyDownEvent.getType());
   }
 
   @SuppressWarnings("checkstyle:LineLength")

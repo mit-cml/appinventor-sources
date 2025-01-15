@@ -397,7 +397,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {
-    self.didWifiCheck = true
+    guard !didWifiCheck else {
+      return
+    }
+    didWifiCheck = true
     if PhoneStatus.GetWifiIpAddress().hasPrefix("Error") {
       notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
                                  "No WiFi", "Continue without WiFi", "Exit", false)

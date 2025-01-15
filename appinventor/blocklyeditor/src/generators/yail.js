@@ -155,7 +155,7 @@ AI.Yail.getFormYail_ = function(formJson, packageName, forRepl, workspace) {
 
   if (!forRepl) {
     code.push(AI.Yail.getYailPrelude(packageName, formName,
-      !jsonObject.Properties['Theme'] || jsonObject.Properties['Theme'] === 'Classic'));
+      jsonObject.Properties['Theme'] === 'Classic'));
   }
 
   var componentMap = workspace.buildComponentMap([], [], false, false);
