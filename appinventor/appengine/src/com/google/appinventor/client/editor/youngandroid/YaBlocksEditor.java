@@ -241,6 +241,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
     loadBlocksEditor();
+    blocksArea.setBlocklyVisible(true);
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_BLOCKS);
     sendComponentData();  // Send Blockly the component information for generating Yail
   }
@@ -288,6 +289,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onHide() for " + getFileId());
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       super.onHide();
+      blocksArea.setBlocklyVisible(false);
       unloadBlocksEditor();
     } else {
       LOG.warning("YaBlocksEditor.onHide: Not doing anything since we're not the "
@@ -811,11 +813,11 @@ public final class YaBlocksEditor extends FileEditor
 
   public native void pasteFromJSNI(JavaScriptObject componentSubstitutionMap, JsArrayString blocks)/*-{
     var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
-    if (Blockly.Events.isEnabled()) {
-      Blockly.Events.setGroup(true);
+    if ($wnd.Blockly.Events.isEnabled()) {
+      $wnd.Blockly.Events.setGroup(true);
     }
     blocks.forEach(function(blockXml) {
-      var dom = Blockly.Xml.textToDom(blockXml);
+      var dom = $wnd.Blockly.Xml.textToDom(blockXml);
       var mutations = dom.getElementsByTagName('mutation');
       for (var i = 0; i < mutations.length; i++) {
         var mutation = mutations[i];
@@ -834,7 +836,7 @@ public final class YaBlocksEditor extends FileEditor
         }
       }
       try {
-        var block = Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
+        var block = $wnd.Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
         var blockX = parseInt(dom.firstElementChild.getAttribute('x'), 10);
         var blockY = parseInt(dom.firstElementChild.getAttribute('y'), 10);
         if (!isNaN(blockX) && !isNaN(blockY)) {
@@ -858,8 +860,8 @@ public final class YaBlocksEditor extends FileEditor
               // Check for blocks in snap range to any of its connections.
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
-                var neighbour = connection.closest(Blockly.SNAP_RADIUS,
-                  new goog.math.Coordinate(blockX, blockY));
+                var neighbour = connection.closest($wnd.Blockly.SNAP_RADIUS,
+                  new $wnd.goog.math.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;
@@ -868,11 +870,11 @@ public final class YaBlocksEditor extends FileEditor
             }
             if (collide) {
               if (workspace.RTL) {
-                blockX -= Blockly.SNAP_RADIUS;
+                blockX -= $wnd.Blockly.SNAP_RADIUS;
               } else {
-                blockX += Blockly.SNAP_RADIUS;
+                blockX += $wnd.Blockly.SNAP_RADIUS;
               }
-              blockY += Blockly.SNAP_RADIUS * 2;
+              blockY += $wnd.Blockly.SNAP_RADIUS * 2;
             }
           } while (collide);
           block.moveBy(blockX, blockY);
@@ -885,8 +887,8 @@ public final class YaBlocksEditor extends FileEditor
         console.log(e);
       }
     });
-    if (Blockly.Events.isEnabled()) {
-      Blockly.Events.setGroup(false);
+    if ($wnd.Blockly.Events.isEnabled()) {
+      $wnd.Blockly.Events.setGroup(false);
     }
   }-*/;
 
@@ -896,23 +898,23 @@ public final class YaBlocksEditor extends FileEditor
     var result = [];
     for (var i = 0, block; block = topBlocks[i]; i++) {
       if (block.instanceName === name) {
-        result.push('<xml>' + Blockly.Xml.domToText(Blockly.Xml.blockToDomWithXY(block)) + '</xml>');
+        result.push('<xml>' + $wnd.Blockly.Xml.domToText($wnd.Blockly.Xml.blockToDomWithXY(block)) + '</xml>');
       }
     }
     return result;
   }-*/;
 
   public static native void resendAssetsAndExtensions()/*-{
-    if (top.ReplState && (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
-      Blockly.ReplMgr.resendAssetsAndExtensions();
+    if (top.ReplState && (top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.ASSET)) {
+      $wnd.Blockly.ReplMgr.resendAssetsAndExtensions();
     }
   }-*/;
 
   public static native void resendExtensionsList()/*-{
-    if (top.ReplState && top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
-      Blockly.ReplMgr.loadExtensions();
+    if (top.ReplState && top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED) {
+      $wnd.Blockly.ReplMgr.loadExtensions();
     }
   }-*/;
 
