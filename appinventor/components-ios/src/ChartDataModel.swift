@@ -46,6 +46,10 @@ open class ChartDataModel {
     print("got in here")
     dataset?.label = text
   }
+  
+  func setDataLabelColor(_ argb: UIColor) {
+    dataset?.valueTextColor = argb
+  }
 
   func setElements(_ elements: String) {
     let tupleSize = 2

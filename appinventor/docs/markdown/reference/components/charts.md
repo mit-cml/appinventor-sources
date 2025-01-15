@@ -164,6 +164,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  for the y values. If a value here is not specified, default values for the
  y values will be generated instead.
 
+{:id="ChartData2D.DataLabelColor" .color} *DataLabelColor*
+: Specifies the data points label color as an alpha-red-green-blue integer.
+
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.

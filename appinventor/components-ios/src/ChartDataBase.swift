@@ -12,6 +12,8 @@ import DGCharts
   var _color: Int32 = AIComponentKit.Color.black.int32
   var _colors: [UIColor] = []
   var _label: String?
+  
+  var _dataLabelColor: Int32 = AIComponentKit.Color.black.int32
 
   var dataFileColumns: Array<String> = []
   var _lineType = AIComponentKit.LineType.Linear
@@ -54,6 +56,7 @@ import DGCharts
       ElementsFromPairs = elements
     }
     _chartDataModel?.setColor(argbToColor(_color))
+    _chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
     if !_colors.isEmpty {
       _chartDataModel?.setColors(_colors)
     }
@@ -94,6 +97,18 @@ import DGCharts
      onDataChange()
     }
   }
+  
+  @objc open var DataLabelColor: Int32 {
+    get {
+      return _dataLabelColor
+    }
+    set {
+      _dataLabelColor = newValue
+      _chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
+      print("changing data text color", _dataLabelColor)
+      refreshChart()
+    }
+  }
 
   func initChartData() {
     print("in initChartData")
@@ -102,6 +117,7 @@ import DGCharts
     // set default values
     _chartDataModel?.setColor(argbToColor(_color))
     _chartDataModel?.setLabel(_label ?? "")
+    _chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
   }
 
   @objc open var LineType: LineType {

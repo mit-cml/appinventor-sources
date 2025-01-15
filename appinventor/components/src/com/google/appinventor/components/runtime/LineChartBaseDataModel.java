@@ -99,6 +99,7 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase<V>>
     }
   }
 
+
   @Override
   public void setColors(List<Integer> colors) {
     super.setColors(colors);
