@@ -87,6 +87,7 @@ public final class HTML5DragDrop {
     initJsni();
   }
 
+
   private static native void initJsni()/*-{
     top.HTML5DragDrop_isProjectEditorOpen =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::isProjectEditorOpen());
@@ -108,6 +109,13 @@ public final class HTML5DragDrop {
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::checkProjectNameForCollision(*));
     top.HTML5DragDrop_shouldShowDropTarget =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::shouldShowDropTarget(*));
+    top.importProjectFromUrl =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::importProjectFromUrl(*));
+  }-*/;
+
+
+  public static native void importProjectFromUrl(String url)  /*-{
+    $wnd.HTML5DragDrop_importProject(url);
   }-*/;
 
   public static boolean isProjectEditorOpen() {
