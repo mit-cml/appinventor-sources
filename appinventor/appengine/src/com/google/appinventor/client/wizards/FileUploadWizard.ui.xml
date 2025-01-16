@@ -12,11 +12,13 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <wiz:Dialog ui:field="uploadDialog" caption="{messages.fileUploadWizardCaption}" styleName="ode-DialogBox">
     <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:FileUpload ui:field="upload" name="uploadFile" />
       <g:FlowPanel styleName="buttonRow" >
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}' />
         <g:Button ui:field='okButton' text='{messages.okButton}' />
       </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
     </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>

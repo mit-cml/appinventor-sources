@@ -660,7 +660,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message providing details about starting a USB connection.")
   String usbMenuItem();
 
-  @DefaultMessage("Reset Connection")
+  @DefaultMessage("Reset Connection (Alt + Shift + R)")
   @Description("Reset all connections.")
   String resetConnectionsMenuItem();
 
@@ -668,7 +668,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Hard Reset the Emulator.")
   String hardResetConnectionsMenuItem();
 
-  @DefaultMessage("Refresh Companion Screen")
+  @DefaultMessage("Refresh Companion Screen (Alt + R)")
   @Description("Refresh the companion screen.")
   String refreshCompanionMenuItem();
 
@@ -729,6 +729,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Show Splash Screen")
   @Description("Redisplay the Splash Screen")
   String showSplashMenuItem();
+
+  @DefaultMessage("Show Keyboard Shortcuts (Alt + ?)")
+  @Description("Display the Shortcuts dialog")
+  String showShortcuts();
 
   @DefaultMessage("Library")
   @Description("Name of Library link")
@@ -1279,7 +1283,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String blocksLoadFailure(String formName);
 
   // Used in editor/youngandroid/palette/YoungAndroidPalettePanel.java
-  @DefaultMessage("Search Components...")
+  @DefaultMessage("Type / to search components")
   @Description("Text shown in the component palette search box")
   String searchComponents();
 
@@ -5143,6 +5147,32 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("MaximumRangeMethods")
   @Description("")
   String MaximumRangeMethods();
+
+  @DefaultMessage(
+    "<table border='1' cellpadding='8' cellspacing='0'>" +
+    "<thead>" +
+    "<tr>" +
+    "<th>Action</th>" +
+    "<th>Key Combination</th>" +
+    "</tr>" +
+    "</thead>" +
+    "<tbody>" +
+    "<tr><td>Focus Component search box</td><td>/</td></tr>" +
+    "<tr><td>Focus Components tree</td><td>T</td></tr>" +
+    "<tr><td>Focus Viewer</td><td>V</td></tr>" +
+    "<tr><td>Focus Properties Panel</td><td>P</td></tr>" +
+    "<tr><td>Focus Media Panel</td><td>M</td></tr>" +
+    "<tr><td>Switch between Designer and Block editor</td><td>Ctrl + Alt</td></tr>" +
+    "<tr><td>Rename Component</td><td>Alt + N</td></tr>" +
+    "<tr><td>Delete Component</td><td>Delete/Backspace</td></tr>" +
+    "<tr><td>Reset Connection</td><td>Alt + Shift + R</td></tr>" +
+    "<tr><td>Refresh Companion Screen</td><td>Alt + R</td></tr>" +
+    "<tr><td>Navigate Components in components tree</td><td>↑/↓</td></tr>" +
+    "<tr><td>Open this dialog</td><td>Alt + ?</td></tr>" +
+    "</tbody>" +
+    "</table>")
+  @Description("")
+  String KeyBoardShortcuts();
 
   // =========== ListPicker
   @DefaultMessage("ItemTextColor")

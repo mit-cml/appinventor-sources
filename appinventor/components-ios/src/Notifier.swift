@@ -501,9 +501,6 @@ open class Notifier: NonvisibleComponent {
 
   @objc fileprivate func afterChoosing(sender: UIButton) {
     _activeAlert?.dismiss(animated: true)
-    if let activeAlert = _activeAlert, let index = _activeAlerts.firstIndex(of: activeAlert) {
-      _activeAlerts.remove(at: index) // Remove the dismissed alert from the array
-    }
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
