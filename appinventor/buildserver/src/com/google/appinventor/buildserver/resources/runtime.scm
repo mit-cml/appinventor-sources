@@ -1490,10 +1490,28 @@
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'matrix) (coerce-to-matrix arg))
+     ((equal? type 'double-array) (coerce-to-double-array arg))
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
 
+(define (coerce-to-double-array arg)
+  (cond
+    ((instance? arg double[]) arg)
+
+    ((yail-list? arg)
+     (let ((coerced (map coerce-to-number (yail-list-contents arg))))
+       (if (all-coercible? coerced)
+           (Arrays:toPrimitiveArray 'D coerced)
+           *non-coercible-value*)))
+
+    ((list? arg)
+     (let ((coerced (map coerce-to-number arg)))
+       (if (all-coercible? coerced)
+           (Arrays:toPrimitiveArray 'D coerced)
+           *non-coercible-value*)))
+
+    (else *non-coercible-value*)))
 
 (define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
   (cond
@@ -3254,14 +3272,14 @@ Matrix implementation.
 
 |#
 
-(define (make-yail-matrix rows cols data)
-  (YailMatrix:makeMatrix rows cols data))
+(define (make-yail-matrix . dataValues)
+  (YailMatrix:makeMatrix dataValues))
 
 (define (yail-matrix-get-row matrix row)
-  (*:getRow (as YailMatrix matrix) row))
+  (as list (*:getRow (as YailMatrix matrix) row)))
 
 (define (yail-matrix-get-column matrix col)
-  (*:getColumn (as YailMatrix matrix) col))
+  (as list (*:getColumn (as YailMatrix matrix) col)))
 
 (define (yail-matrix-get-cell matrix row col)
   (*:getCell (as YailMatrix matrix) row col))
