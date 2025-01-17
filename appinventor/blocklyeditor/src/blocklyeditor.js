@@ -1009,6 +1009,15 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   lexicalVariablesPlugin.init(workspace);
   var searchPlugin = new WorkspaceSearch(workspace);
   searchPlugin.init();
+  const scrollOptions = new ScrollOptions(workspace);
+  // Make autoscrolling be based purely on the mouse position ands slow it down a bit.
+  scrollOptions.init({
+    edgeScrollOptions: {
+      oversizeBlockMargin: 0,
+      oversizeBlockThreshold: 0,
+      slowBlockSpeed: .15
+    }
+  });
   /*
     Keyboard navigation -- needs to be fixed with multiselect
   if (!AI.Blockly.navigationController) {
