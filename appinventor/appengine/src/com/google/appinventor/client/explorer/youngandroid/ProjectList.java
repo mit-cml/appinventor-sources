@@ -87,10 +87,10 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     bindIU();
     setIsTrash(false);
     refreshSortIndicators();
-    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
+//    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
 
     // It is important to listen to project manager events as soon as possible.
-    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+//    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
   }
 
   public void bindIU() {
@@ -386,29 +386,16 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   @Override
   public void onTrashProjectRestored(Project project) {
-    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
-  }
 
-  public void onProjectMoved(Project project) {
-    refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
+
   }
 
   @Override

@@ -25,22 +25,19 @@ public class DeleteAction implements Command {
       @Override
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
-          List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
+              .getSelectedProjects();
           List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
-          if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
-            List<Project> projectsToDelete = selectedProjects;
+          if (!selectedProjects.isEmpty() || !selectedFolders.isEmpty()) {
+            List<Project> projectsToDelete = new ArrayList<>(selectedProjects);
             for (ProjectFolder f : selectedFolders) {
               projectsToDelete.addAll(f.getNestedProjects());
             }
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(projectsToDelete)) {
-              for (Project project : projectsToDelete) {
-                project.moveToTrash();
-              }
-              for (ProjectFolder f : selectedFolders) {
-                f.getParentFolder().removeChildFolder(f);
-              }
+              Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
+                  Ode.getInstance().getFolderManager().getTrashFolder());
+              Ode.getInstance().getFolderManager().saveAllFolders();
             }
           } else {
             // The user can select a project to resolve the

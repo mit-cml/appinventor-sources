@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -25,13 +26,19 @@ public class DeleteForeverProjectAction implements Command {
         if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
           List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList()
                                               .getSelectedProjects();
-          if (deletedProjects.size() > 0) {
+          List<ProjectFolder> deletedFolders = ProjectListBox.getProjectListBox().getProjectList()
+                                                    .getSelectedFolders();
+          if (!deletedProjects.isEmpty() || !deletedFolders.isEmpty()) {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(deletedProjects)) {
               for (Project project : deletedProjects) {
                 project.deleteFromTrash();
               }
+              for (ProjectFolder folder : deletedFolders) {
+                folder.deleteFromTrash();
+              }
             }
+            Ode.getInstance().getFolderManager().saveAllFolders();
             Ode.getInstance().switchToTrash();
           } else {
             // The user can select a project to resolve the

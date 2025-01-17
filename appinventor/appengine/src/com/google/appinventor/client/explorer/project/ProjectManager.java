@@ -168,17 +168,6 @@ public final class ProjectManager {
     fireProjectDeleted(project);
   }
 
-  /**
-   * Restores the project from trash back to my projects.
-   *
-   * @param projectId project ID
-   */
-
-  public void restoreTrashProject(long projectId) {
-    Project project = projectsMap.get(projectId);
-    fireTrashProjectRestored(project);
-  }
-
   public void trashProject(long projectId) {
     Project project = projectsMap.get(projectId);
     fireProjectTrashed(project);

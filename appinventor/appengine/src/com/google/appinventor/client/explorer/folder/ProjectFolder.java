@@ -282,7 +282,7 @@ public class ProjectFolder extends Composite {
   }
 
   public boolean containsAnyProjects() {
-    if (projectListItems.size() > 0) {
+    if (!projectListItems.isEmpty()) {
       return true;
     } else if (hasChildFolders()) {
       for (ProjectFolder f : folders.values()) {
@@ -292,6 +292,26 @@ public class ProjectFolder extends Composite {
       }
     }
     return false;
+  }
+
+  public boolean isInTrash() {
+    if (parent == null || parent == Ode.getInstance().getFolderManager().getGlobalFolder()) {
+      return false;
+    } else if (parent == Ode.getInstance().getFolderManager().getTrashFolder()) {
+      return true;
+    } else {
+      return parent.isInTrash();
+    }
+  }
+
+  public void deleteFromTrash() {
+    for (Project p : projects) {
+      p.deleteFromTrash();
+    }
+    for (ProjectFolder f : getChildFolders()) {
+      f.deleteFromTrash();
+    }
+    parent.removeChildFolder(this);
   }
 
   public List<ProjectFolder> getSelectedFolders() {
