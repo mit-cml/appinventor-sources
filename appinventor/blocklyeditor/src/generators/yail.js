@@ -299,10 +299,10 @@ AI.Yail.getComponentLines = function(formName, componentJson, parentName, compon
   var code = [], i, block, child;
   var componentName = componentJson.$Name;
   if (componentJson.$Type == 'Form') {
-    code = AI.Yail.getFormPropertiesLines(formName, componentJson, !forRepl, componentDb);
+    code = AI.Yail.getFormPropertiesLines(formName, componentJson, !forRepl, componentDb, forRepl);
   } else {
     code = AI.Yail.getComponentPropertiesLines(formName, componentJson, parentName, !forRepl,
-      nameConverter, componentDb);
+      nameConverter, componentDb, forRepl);
   }
 
   if (!forRepl) {
@@ -339,11 +339,12 @@ AI.Yail.getComponentLines = function(formName, componentJson, parentName, compon
  * @param {function(string): string} nameConverter function that converts a fully-qualified
  *    property name into a YAIL-compatible name.
  * @param {Blockly.ComponentDatabase} componentDb Component database, for type information
+ * @param {boolean} forRepl true iff we're generating code for the REPL rather than an app
  * @returns {Array} code strings
  * @private
  */
 AI.Yail.getComponentPropertiesLines = function(formName, componentJson, parentName,
-  includeComments, nameConverter, componentDb) {
+    includeComments, nameConverter, componentDb, forRepl) {
   var code = [];
   var componentName = componentJson.$Name;
   var componentType = componentJson.$Type;
@@ -358,7 +359,7 @@ AI.Yail.getComponentPropertiesLines = function(formName, componentJson, parentNa
   code.push(AI.Yail.YAIL_ADD_COMPONENT + parentName + AI.Yail.YAIL_SPACER +
     nameConverter(componentDb.getType(componentType).type) +
     AI.Yail.YAIL_SPACER + componentName + AI.Yail.YAIL_SPACER);
-  code = code.concat(AI.Yail.getPropertySettersLines(componentJson, componentName, componentDb));
+  code = code.concat(AI.Yail.getPropertySettersLines(componentJson, componentName, componentDb, forRepl));
   code.push(AI.Yail.YAIL_CLOSE_BLOCK);
   return code;
 };
@@ -369,15 +370,17 @@ AI.Yail.getComponentPropertiesLines = function(formName, componentJson, parentNa
  * @param {String} formName
  * @param {String} componentJson JSON string describing the component
  * @param {Boolean} includeComments whether to include comments in the generated code
+ * @param {Blockly.ComponentDatabase} componentDb Component database, for type information
+ * @param {boolean} forRepl true iff we're generating code for the REPL rather than an app
  * @returns {Array} code strings
  * @private
  */
-AI.Yail.getFormPropertiesLines = function(formName, componentJson, includeComments, componentDb) {
+AI.Yail.getFormPropertiesLines = function(formName, componentJson, includeComments, componentDb, forRepl) {
   var code = [];
   if (includeComments) {
     code.push(AI.Yail.YAIL_COMMENT_MAJOR + formName + AI.Yail.YAIL_LINE_FEED);
   }
-  var yailForComponentProperties = AI.Yail.getPropertySettersLines(componentJson, formName, componentDb);
+  var yailForComponentProperties = AI.Yail.getPropertySettersLines(componentJson, formName, componentDb, forRepl);
   if (yailForComponentProperties.length > 0) {
     // getPropertySettersLine returns an array of lines.  So we need to
     // concatenate them (using join) before pushing them onto the Yail expression.
@@ -397,6 +400,7 @@ AI.Yail.getFormPropertiesLines = function(formName, componentJson, includeCommen
  * @param {String} componentName the name of the component (also present in the $Name field in
  *    componentJson)
  * @param {Blockly.ComponentDatabase} componentDb The workspace's database of components and types.
+ * @param {boolean} forRepl true iff we're generating code for the REPL rather than an app
  * @returns {Array} code strings
  * @private
  *
@@ -406,7 +410,7 @@ AI.Yail.getFormPropertiesLines = function(formName, componentJson, includeCommen
  * companion (version > 2.41). Once such a Companion is deployed, the exception
  * for TutorialURL below (and this comment) can be removed.
  */
-AI.Yail.getPropertySettersLines = function(componentJson, componentName, componentDb) {
+AI.Yail.getPropertySettersLines = function(componentJson, componentName, componentDb, forRepl) {
   var code = [];
   var type = componentDb.getType(componentJson['$Type']);
   function shouldSendProperty(prop, info) {
@@ -433,7 +437,7 @@ AI.Yail.getPropertySettersLines = function(componentJson, componentName, compone
         value = info['defaultValue'];
       }
       code.push(AI.Yail.getPropertySetterString(componentName, componentJson['$Type'], prop,
-        value, componentDb));
+        value, componentDb, forRepl));
     }
   });
   return code;
@@ -447,11 +451,12 @@ AI.Yail.getPropertySettersLines = function(componentJson, componentName, compone
  * @param {String} propertyName
  * @param {String} propertyValue
  * @param {!Blockly.ComponentDatabase} componentDb Component database, for type information
+ * @param {boolean} forRepl true iff we're generating code for the REPL rather than an app
  * @returns code string
  * @private
  */
 AI.Yail.getPropertySetterString = function(componentName, componentType, propertyName,
-    propertyValue, componentDb) {
+    propertyValue, componentDb, forRepl) {
   var code = AI.Yail.YAIL_SET_AND_COERCE_PROPERTY + AI.Yail.YAIL_QUOTE +
     componentName + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + propertyName +
     AI.Yail.YAIL_SPACER;
@@ -462,7 +467,8 @@ AI.Yail.getPropertySetterString = function(componentName, componentType, propert
   // and block definition.
   var propType = AI.Yail.YAIL_QUOTE + (propDef ? propDef.type : "any");
   var value;
-  if (propertyName === 'ApiKey') {
+  if (propertyName === 'ApiKey' && !forRepl) {
+    // Obfuscate API keys in compiled apps
     value = AI.Yail.obfuscateProperty(propertyValue);
   } else {
     value = AI.Yail.getPropertyValueString(propertyValue, propType);

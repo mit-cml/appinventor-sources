@@ -338,8 +338,7 @@ public final class YaBlocksEditor extends FileEditor
   public void onWorkspaceChange(BlocklyPanel panel, JavaScriptObject event) {
     if (!EventHelper.isTransient(event)) {
       Ode.getInstance().getEditorManager().scheduleAutoSave(this);
-    }
-    if (!EventHelper.isUi(event)) {
+    } else if (!EventHelper.isUi(event)) {
       sendComponentData();
     }
   }
