@@ -829,7 +829,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     container.setAttribute('name', this.getFieldValue('PROCNAME'));
     for (var x = 0; this.getInput("ARG" + x); x++) {
       var parameter = document.createElement('arg');
-      parameter.setAttribute('name', this.getInput("ARG" + x).fieldRow[0].text_);
+      parameter.setAttribute('name', this.getInput("ARG" + x).fieldRow[0].getText());
       container.appendChild(parameter);
     }
     return container;
