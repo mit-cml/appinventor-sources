@@ -305,11 +305,11 @@ public class ProjectFolder extends Composite {
   }
 
   public void deleteFromTrash() {
-    for (Project p : projects) {
-      p.deleteFromTrash();
+    for (Project project : projects) {
+      project.deleteFromTrash();
     }
-    for (ProjectFolder f : getChildFolders()) {
-      f.deleteFromTrash();
+    for (ProjectFolder folder : getChildFolders()) {
+      folder.deleteFromTrash();
     }
     parent.removeChildFolder(this);
   }
@@ -374,6 +374,15 @@ public class ProjectFolder extends Composite {
 
   public List<ProjectFolder> getChildFolders() {
     return Arrays.asList(folders.values().toArray(new ProjectFolder[0]));
+  }
+
+  public List<ProjectFolder> getNestedFolders() {
+    List<ProjectFolder> flist = new ArrayList<>();
+    flist.addAll(getChildFolders());
+    for (ProjectFolder child : getChildFolders()) {
+      flist.addAll(child.getNestedFolders());
+    }
+    return flist;
   }
 
   public boolean hasChildFolders() {

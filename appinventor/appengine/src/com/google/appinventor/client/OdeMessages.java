@@ -1820,13 +1820,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move these projects to trash: {0}?")
+  @DefaultMessage("Are you sure you want to move these items to trash? {0}")
   @Description("Confirmation message for selecting multiple projects and clicking trash")
   String confirmMoveToTrash(String projectNames);
+  @DefaultMessage("Are you sure you want to delete these items permanently? {0}")
+  @Description("Confirmation message for selecting multiple projects in trash and clicking delete")
+  String confirmDeleteForever(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move {0} projects to trash?")
-  @Description("Confirmation message deleting large number of selected projects")
-  String confirmMoveToTrashCount(String projectNames);
+  @DefaultMessage("Projects: {0}")
+  @Description("Information on selected projects for delete/trash confirmation")
+  String confirmTrashDeleteProjects(String projectNames);
+
+  @DefaultMessage("Folders: {0}")
+  @Description("Information on selected folders for delete/trash confirmation")
+  String confirmTrashDeleteFolders(String folderNames);
 
   @DefaultMessage("Server error: could not delete project. Please try again later!")
   @Description("Error message reported when deleting a project failed on the server.")

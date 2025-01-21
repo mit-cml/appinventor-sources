@@ -15,6 +15,8 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteForeverProjectAction implements Command {
@@ -24,17 +26,23 @@ public class DeleteForeverProjectAction implements Command {
       @Override
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
-          List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList()
+          List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
                                               .getSelectedProjects();
-          List<ProjectFolder> deletedFolders = ProjectListBox.getProjectListBox().getProjectList()
+          List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()
                                                     .getSelectedFolders();
-          if (!deletedProjects.isEmpty() || !deletedFolders.isEmpty()) {
+          if (!selectedProjects.isEmpty() || !selectedFolders.isEmpty()) {
+            List<Project> projectsToDelete = new ArrayList<>(selectedProjects);
+            List<ProjectFolder> foldersToDelete = new ArrayList<>(selectedFolders);
+            for (ProjectFolder f : selectedFolders) {
+              projectsToDelete.addAll(f.getNestedProjects());
+              foldersToDelete.addAll(f.getNestedFolders());
+            }
             // Show one confirmation window for selected projects.
-            if (deleteConfirmation(deletedProjects)) {
-              for (Project project : deletedProjects) {
+            if (DeleteAction.deleteConfirmation(false, projectsToDelete, foldersToDelete)) {
+              for (Project project : selectedProjects) {
                 project.deleteFromTrash();
               }
-              for (ProjectFolder folder : deletedFolders) {
+              for (ProjectFolder folder : selectedFolders) {
                 folder.deleteFromTrash();
               }
             }

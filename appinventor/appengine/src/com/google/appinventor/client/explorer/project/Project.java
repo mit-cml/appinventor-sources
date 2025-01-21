@@ -242,7 +242,6 @@ public final class Project {
           public void onSuccess(UserProject project) {
             if (project.getProjectId() == projectInfo.getProjectId()) {
               projectInfo.moveToTrash();
-              Ode.getInstance().getProjectManager().trashProject(getProjectId());
             }
           }
         });
