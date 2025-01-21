@@ -206,7 +206,7 @@
     </copy>
     <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}" />
     <filter token="blocklyeditor_isRelease" value="${release}" />
-    <copy todir="${build.war.dir}" filtering="true">
+    <copy todir="${build.war.dir}" filtering="true" overwrite="true">
       <fileset dir="war">
         <include name="index.jsp"/>
       </fileset>
@@ -604,7 +604,10 @@
          Otherwise, set YaClientApp.uptodate to false -->
     <uptodate property="YaClientApp.uptodate"
               targetfile="${build.war.dir}/ode/ode.nocache.js">
-      <srcfiles dir="${build.war.dir}/WEB-INF/classes"/>
+      <srcfiles dir="${build.war.dir}/WEB-INF/classes">
+        <!-- This is compiled after YaClientApp in CopyToBuildWarPost -->
+        <exclude name="msg/i18n.class"/>
+      </srcfiles>
       <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
       <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonVersion-gwt.jar" />
