@@ -59,7 +59,7 @@ public final class MoveProjectsWizard {
     tree.addFocusHandler(new FocusHandler() {
       @Override
       public void onFocus(FocusEvent event) {
-        tree.getParent().setStyleName("gwt-Tree-focused");
+        tree.getParent().addStyleName("gwt-Tree-focused");
       }
     });
     

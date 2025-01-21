@@ -145,7 +145,7 @@ public class SourceStructureExplorer extends Composite {
     tree.addFocusHandler(new FocusHandler() {
       @Override
       public void onFocus(FocusEvent event) {
-        tree.getParent().setStyleName("gwt-Tree-focused");
+        tree.getParent().addStyleName("gwt-Tree-focused");
       }
     });
     tree.addBlurHandler(new BlurHandler() {
