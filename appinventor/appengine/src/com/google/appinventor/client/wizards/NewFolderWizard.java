@@ -100,7 +100,7 @@ public final class NewFolderWizard {
     tree.addFocusHandler(new FocusHandler() {
       @Override
       public void onFocus(FocusEvent event) {
-        tree.getParent().setStyleName("gwt-Tree-focused");
+        tree.getParent().addStyleName("gwt-Tree-focused");
       }
     });
 
