@@ -920,7 +920,7 @@ AI.Blockly.ContextMenuItems.registerClearUnusedBlocksOption = function() {
       }
       try {
         Blockly.Events.setGroup(true);
-        scope.workspace.playAudio('delete');
+        scope.workspace.getAudioManager().play('delete');
         removeList.forEach(block => {
           block.dispose(false);
         })
