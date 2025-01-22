@@ -339,8 +339,11 @@ Blockly.Blocks['logic_operation'] = {
         var binput = this.getInput('B');
         this.makeDropdown(binput);
       }
+      var text = this.opField.getValue() === 'AND' ?
+        Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        var field = new Blockly.FieldLabel(this.opField.getValue());
+        var field = new Blockly.FieldLabel(text);
         input.appendField(field);
         field.init();
       }
@@ -352,7 +355,9 @@ Blockly.Blocks['logic_operation'] = {
         this.makeDropdown(ainput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        input.fieldRow[0].dispose();
+        if (input.fieldRow[0]) {
+          input.fieldRow[0].dispose();
+        }
         input.fieldRow.splice(0, 1);
       }
     }
