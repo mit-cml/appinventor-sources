@@ -58,6 +58,8 @@ public final class NewFolderWizard {
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
     tree.addItem(root);
     tree.setSelectedItem(root);
+    addDialog.setWidth("400px");
+    addDialog.setAutoWidth(false); 
     addDialog.center();
     input.setFocus(true);
     input.setValidator(new Validator() {
