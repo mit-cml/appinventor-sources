@@ -95,7 +95,7 @@ Blockly.confirmDeletion = function(callback) {
       var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
         dialog.hide();
         if (button == deleteButton) {
-          Blockly.common.getMainWorkspace().playAudio('delete');
+          Blockly.common.getMainWorkspace().getAudioManager().play('delete');
           callback(true);
         } else {
           callback(false);
@@ -104,13 +104,13 @@ Blockly.confirmDeletion = function(callback) {
     } else {
       var response = confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)));
       if (response) {
-        Blockly.common.getMainWorkspace().playAudio('delete');
+        Blockly.common.getMainWorkspace().getAudioManager().play('delete');
       }
       callback(response);
     }
   }
   else {
-    Blockly.common.getMainWorkspace().playAudio('delete');
+    Blockly.common.getMainWorkspace().getAudioManager().play('delete');
     callback(true);
   }
 };
