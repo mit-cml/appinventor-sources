@@ -1430,12 +1430,25 @@ yail_dictionary_alist_to_dict(pic_state *pic) {
 
   pic_get_args(pic, "o", &entries);
 
-  if (!yail_list_p(pic, entries)) {
+  YailDictionary *dict = nil;
+  if (yail_list_p(pic, entries)) {
+    YailList *listOfEntries = yail_list_objc(pic, entries);
+    dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, listOfEntries.value)];
+  } else if (pic_pair_p(pic, entries)) {
+    pic_value car = pic_car(pic, entries);
+    if (pic_eq_p(pic, pic_intern(pic, pic_str_value(pic, "*list*", 6)), car)) {
+      dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, entries)];
+    } else {
+      pic_error(pic, "YailDictionary:alistToDict: Received malformed list", 1, entries);
+    }
+  } else {
     pic_error(pic, "YailDictionary:alistToDict: YailList required", 1, entries);
   }
-  YailList *listOfEntries = yail_list_objc(pic, entries);
-  YailDictionary *dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, listOfEntries.value)];
-  return yail_make_native_yaildictionary(pic, dict);
+  if (dict != nil) {
+    return yail_make_native_yaildictionary(pic, dict);
+  } else {
+    return pic_nil_value(pic);
+  }
 }
 
 static pic_value
