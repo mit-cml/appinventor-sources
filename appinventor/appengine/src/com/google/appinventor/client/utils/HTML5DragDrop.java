@@ -109,8 +109,6 @@ public final class HTML5DragDrop {
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::checkProjectNameForCollision(*));
     top.HTML5DragDrop_shouldShowDropTarget =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::shouldShowDropTarget(*));
-    top.importProjectFromUrl =
-      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::importProjectFromUrl(*));
   }-*/;
 
 

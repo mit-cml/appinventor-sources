@@ -522,7 +522,7 @@ public class Ode implements EntryPoint {
                                 // of the last project
 
       //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
-      if (templatePath.endsWith("aia")){
+      if (templatePath.endsWith(".aia")){
         HTML5DragDrop.importProjectFromUrl(templatePath);
         return true;
       }
@@ -674,7 +674,6 @@ public class Ode implements EntryPoint {
     // Let's see if we were started with a repo= parameter which points to a template
     templatePath = Window.Location.getParameter("repo");
     if (templatePath != null) {
-
       LOG.warning("Got a template or project path of " + templatePath);
       templateLoadingFlag = true;
     }
