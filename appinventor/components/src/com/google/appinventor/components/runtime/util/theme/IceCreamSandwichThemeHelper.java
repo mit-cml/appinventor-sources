@@ -52,7 +52,7 @@ public class IceCreamSandwichThemeHelper implements ThemeHelper {
   public void setTitle(String title) {
     ActionBar actionBar = activity.getSupportActionBar();
     if (actionBar != null) {
-      actionBar.setTitle(title);
+      actionBar.setTitle((CharSequence) title);
     }
   }
 

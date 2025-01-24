@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import jsinterop.annotations.JsProperty;
 
 /**
  * Labels are components used to show text.
@@ -365,6 +366,7 @@ private void setLabelMargins(boolean hasMargins) {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Text")
   public String Text() {
     return TextViewUtil.getText(view);
   }
@@ -377,6 +379,7 @@ private void setLabelMargins(boolean hasMargins) {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Text")
   public void Text(String text) {
     if (htmlFormat) {
       TextViewUtil.setTextHTML(view, text);

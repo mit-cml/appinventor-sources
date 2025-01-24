@@ -17,7 +17,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -65,9 +64,6 @@ import com.google.appinventor.components.common.ScreenAnimation;
 import com.google.appinventor.components.common.ScreenOrientation;
 import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.collect.Lists;
-import com.google.appinventor.components.runtime.collect.Maps;
-import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
@@ -75,12 +71,16 @@ import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.FormUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PermissionUtil;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.SystemUtil;
+import com.google.appinventor.components.runtime.util.TimeUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.FileNotFoundException;
@@ -222,35 +222,31 @@ public class Form extends AppInventorCompatActivity
   private FileScope defaultFileScope = FileScope.App;
 
   // Application lifecycle related fields
-  private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
-  private final Map<Integer, Set<ActivityResultListener>> activityResultMultiMap = Maps.newHashMap();
-  private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
-  private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
-  private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
-  private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
-  private final Set<OnOrientationChangeListener> onOrientationChangeListeners = Sets.newHashSet();
-  private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
-  private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+  private final HashMap<Integer, ActivityResultListener> activityResultMap = new HashMap<>();
+  private final Map<Integer, Set<ActivityResultListener>> activityResultMultiMap = new HashMap<>();
+  private final Set<OnStopListener> onStopListeners = new HashSet<>();
+  private final Set<OnClearListener> onClearListeners = new HashSet<>();
+  private final Set<OnNewIntentListener> onNewIntentListeners = new HashSet<>();
+  private final Set<OnResumeListener> onResumeListeners = new HashSet<>();
+  private final Set<OnOrientationChangeListener> onOrientationChangeListeners = new HashSet<>();
+  private final Set<OnPauseListener> onPauseListeners = new HashSet<>();
+  private final Set<OnDestroyListener> onDestroyListeners = new HashSet<>();
 
   // AppInventor lifecycle: listeners for the Initialize Event
-  private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
+  private final Set<OnInitializeListener> onInitializeListeners = new HashSet<>();
 
   // Listeners for options menu.
-  private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
-  private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+  private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = new HashSet<>();
+  private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = new HashSet<>();
 
   // Listeners for permission results
-  private final HashMap<Integer, PermissionResultHandler> permissionHandlers = Maps.newHashMap();
+  private final HashMap<Integer, PermissionResultHandler> permissionHandlers = new HashMap<>();
 
   private final Random permissionRandom = new Random(); // Used for generating nonces
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
   protected String startupValue = "";
-
-  // To control volume of error complaints
-  private static long minimumToastWait = 10000000000L; // 10 seconds
-  private long lastToastTime = System.nanoTime() - minimumToastWait;
 
   // In a multiple screen application, when a secondary screen is opened, nextFormName is set to
   // the name of the secondary screen. It is saved so that it can be passed to the OtherScreenClosed
@@ -316,7 +312,7 @@ public class Form extends AppInventorCompatActivity
     // which overrides this method.
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
-      public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+      public void uncaughtException(@NonNull Thread t, @NonNull final Throwable e) {
         Log.e(LOG_TAG, "Uncaught Exception", e);
         runOnUiThread(new Runnable() {
           @Override
@@ -423,13 +419,7 @@ public class Form extends AppInventorCompatActivity
    * Builds a set of permissions requested by the app from the package manifest.
    */
   private void populatePermissions() {
-    try {
-      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(),
-          PackageManager.GET_PERMISSIONS);
-      Collections.addAll(permissions, packageInfo.requestedPermissions);
-    } catch (Exception e) {
-      Log.e(LOG_TAG, "Exception while attempting to learn permissions.", e);
-    }
+    Collections.addAll(permissions, PermissionUtil.getPackagePermission(this));
   }
 
   protected void defaultPropertyValues() {
@@ -647,14 +637,14 @@ public class Form extends AppInventorCompatActivity
   public void registerForActivityResult(ActivityResultListener listener, int requestCode) {
     Set<ActivityResultListener> listeners = activityResultMultiMap.get(requestCode);
     if (listeners == null) {
-      listeners = Sets.newHashSet();
+      listeners = new HashSet<>();
       activityResultMultiMap.put(requestCode, listeners);
     }
     listeners.add(listener);
   }
 
   public void unregisterForActivityResult(ActivityResultListener listener) {
-    List<Integer> keysToDelete = Lists.newArrayList();
+    List<Integer> keysToDelete = new ArrayList<>();
     for (Map.Entry<Integer, ActivityResultListener> mapEntry : activityResultMap.entrySet()) {
       if (listener.equals(mapEntry.getValue())) {
         keysToDelete.add(mapEntry.getKey());
@@ -2487,7 +2477,7 @@ public class Form extends AppInventorCompatActivity
       // forms in the app (when we support them), non-UI threads, etc.  We might need to be
       // careful about this is we ever support services that start up on boot (since it might
       // mean that the only way to restart that service) is to reboot but that's a long way off.
-      System.exit(0);
+      SystemUtil.exit(0);
     }
   }
 
@@ -2656,34 +2646,14 @@ public class Form extends AppInventorCompatActivity
 
   // This is used by Repl to throttle error messages which can get out of
   // hand, e.g. if triggered by Accelerometer.
+  @SuppressWarnings("unused")  // Called from runtime.scm
   protected boolean toastAllowed() {
-    long now = System.nanoTime();
-    if (now > lastToastTime + minimumToastWait) {
-      lastToastTime = now;
-      return true;
-    }
-    return false;
+    return TimeUtil.toastAllowed();
   }
 
   // This is used by runtime.scm to call the Initialize of a component.
   public void callInitialize(Object component) throws Throwable {
-    Method method;
-    try {
-      method = component.getClass().getMethod("Initialize", (Class<?>[]) null);
-    } catch (SecurityException e) {
-      Log.i(LOG_TAG, "Security exception " + e.getMessage());
-      return;
-    } catch (NoSuchMethodException e) {
-      //This is OK.
-      return;
-    }
-    try {
-      Log.i(LOG_TAG, "calling Initialize method for Object " + component.toString());
-      method.invoke(component, (Object[]) null);
-    } catch (InvocationTargetException e){
-      Log.i(LOG_TAG, "invoke exception: " + e.getMessage());
-      throw e.getTargetException();
-    }
+    FormUtil.callInitialize(component);
   }
 
   /**
@@ -2968,7 +2938,7 @@ public class Form extends AppInventorCompatActivity
    * @throws FileNotFoundException if the asset cannot be located
    */
   public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
-    String extPkgName = component.getClass().getPackage().getName();
+    String extPkgName = FormUtil.getPackageName(component);
     return ASSETS_PREFIX + extPkgName + "/" + asset;
   }
 

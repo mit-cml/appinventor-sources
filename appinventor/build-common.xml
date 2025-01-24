@@ -360,4 +360,9 @@
          target="CommonConstants"/>
   </target>
 
+  <target name="components_AiComponentsGwt">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}/components"
+         target="AiComponentsGwt"/>
+  </target>
+
 </project>

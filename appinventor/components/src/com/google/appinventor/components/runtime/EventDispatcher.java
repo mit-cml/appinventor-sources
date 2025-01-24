@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import jsinterop.annotations.JsType;
 
 /**
  * Dispatches events to component event handlers.
@@ -19,6 +20,7 @@ import java.util.Set;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
+@JsType(namespace = "appinventor")
 public class EventDispatcher {
   private static final class EventClosure {
     private final String componentId;

@@ -1,0 +1,10 @@
+<module>
+  <inherits name="androidemu"/>
+  <source path="annotations"/>
+  <source path="annotations/androidmanifest"/>
+  <source path="common"/>
+  <source path="runtime"/>
+  <source path="runtime/error"/>
+  <source path="runtime/util"/>
+  <source path="runtime/util/theme"/>
+</module>

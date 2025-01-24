@@ -47,6 +47,8 @@ import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 
 import java.io.IOException;
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
 
 /**
  * Underlying base class for click-based components, not directly accessible to Simple programmers.
@@ -778,6 +780,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Text to display on %type%.")
+  @JsProperty(name = "Text")
   public String Text() {
     return TextViewUtil.getText(view);
   }
@@ -790,6 +793,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Text")
   public void Text(String text) {
     TextViewUtil.setText(view, text);
   }

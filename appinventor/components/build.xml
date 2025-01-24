@@ -237,6 +237,7 @@
         <path refid="AndroidRuntime.path" />
         <pathelement location="${local.build.dir}/AnnotationProcessors.jar" />
         <pathelement location="${public.deps.dir}/android.jar" />
+        <pathelement location="${lib.dir}/gwt/2.8.1-patched/gwt-user.jar" />
       </classpath>
     </ai.javac>
 
@@ -587,5 +588,61 @@
     <delete file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
     <move file="${ExternalComponent-class.dir}/${extensionClassFolder}_p.jar"
           tofile="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
+  </target>
+
+  <target name="AiComponentsGwt" depends="CommonConstants,AndroidRuntime">
+    <mkdir dir="build/AiComponents" />
+    <copy todir="build/AiComponents">
+      <fileset dir="${src.dir}">
+        <include name="${components.pkg}/**/*.gwt.xml" />
+        <include name="${components.pkg}/annotations/**/*.java" />
+        <include name="${components.pkg}/common/*.java" />
+        <include name="${components.pkg}/runtime/AndroidViewComponent.java" />
+        <include name="${components.pkg}/runtime/VisibleComponent.java" />
+        <include name="${components.pkg}/runtime/Component.java" />
+        <include name="${components.pkg}/runtime/ComponentContainer.java" />
+        <include name="${components.pkg}/runtime/EventDispatcher.java" />
+        <include name="${components.pkg}/runtime/HandlesEventDispatching.java" />
+        <include name="${components.pkg}/runtime/Form.java" />
+        <include name="${components.pkg}/runtime/AppInventorCompatActivity.java" />
+        <include name="${components.pkg}/runtime/ActivityResultListener.java" />
+        <include name="${components.pkg}/runtime/AccessibleComponent.java" />
+        <include name="${components.pkg}/runtime/AlarmHandler.java" />
+        <include name="${components.pkg}/runtime/AndroidNonvisibleComponent.java" />
+        <include name="${components.pkg}/runtime/Button.java" />
+        <include name="${components.pkg}/runtime/ButtonBase.java" />
+        <include name="${components.pkg}/runtime/Clock.java" />
+        <include name="${components.pkg}/runtime/Deleteable.java" />
+        <include name="${components.pkg}/runtime/Label.java" />
+        <include name="${components.pkg}/runtime/Layout.java" />
+        <include name="${components.pkg}/runtime/LinearLayout.java" />
+        <include name="${components.pkg}/runtime/ListPicker.java" />
+        <include name="${components.pkg}/runtime/ListPickerActivity.java" />
+        <include name="${components.pkg}/runtime/ListView.java" />
+        <include name="${components.pkg}/runtime/On*Listener.java" />
+        <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
+        <include name="${components.pkg}/runtime/Picker.java" />
+        <include name="${components.pkg}/runtime/errors/PermissionException.java" />
+        <include name="${components.pkg}/runtime/errors/RuntimeError.java" />
+        <include name="${components.pkg}/runtime/errors/StopBlocksExecution.java" />
+        <include name="${components.pkg}/runtime/errors/YailRuntimeError.java" />
+        <include name="${components.pkg}/runtime/util/AlignmentUtil.java" />
+        <include name="${components.pkg}/runtime/util/BulkPermissionRequest.java" />
+        <include name="${components.pkg}/runtime/util/Dates.java" />
+        <include name="${components.pkg}/runtime/util/ElementsUtil.java" />
+        <include name="${components.pkg}/runtime/util/ErrorMessages.java" />
+        <include name="${components.pkg}/runtime/util/FileUtil.java" />
+        <include name="${components.pkg}/runtime/util/ImageViewUtil.java" />
+        <include name="${components.pkg}/runtime/util/MediaUtil.java" />
+        <include name="${components.pkg}/runtime/util/OnInitializeListener.java" />
+        <include name="${components.pkg}/runtime/util/SdkLevel.java" />
+        <include name="${components.pkg}/runtime/util/TimerInternal.java" />
+        <include name="${components.pkg}/runtime/util/theme/ThemeHelper.java" />
+        <include name="${components.pkg}/runtime/util/theme/IceCreamSandwichThemeHelper.java" />
+      </fileset>
+    </copy>
+    <jar destfile="${public.build.dir}/AiComponents-gwt.jar">
+      <fileset dir="build/AiComponents"/>
+    </jar>
   </target>
 </project>

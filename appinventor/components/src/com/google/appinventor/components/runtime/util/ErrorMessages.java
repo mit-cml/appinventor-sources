@@ -773,6 +773,6 @@ public final class ErrorMessages {
 
   public static String formatMessage(int errorNumber, Object[] messageArgs) {
     String format = errorMessages.get(errorNumber);
-    return String.format(format, messageArgs);
+    return StringUtil.formatString(format, messageArgs);
   }
 }

@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Copyright 2012-2024 Massachusetts Institute of Technology, All rights reserved.
+
+     App Inventor component libraries
+     ====================================================================== -->
+
+<project name="components" default="all">
+  <description>
+    App Inventor component libraries
+  </description>
+
+  <property name="gwt.loglevel" value="INFO" />
+
+  <target name="all" depends="webruntime,webemu" />
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+
+  <property name="release" value="false" />
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.10.1" />
+  <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
+    <os family="mac"/>
+  </condition>
+  <condition property="XstartOnFirstThread" value="">
+    <not><os family="mac"/></not>
+  </condition>
+  <condition property="client.flags"
+             value="-optimize 9 -localWorkers 8"
+             else="-style pretty">
+    <equals arg1="${release}" arg2="true" />
+  </condition>
+
+  <target name="webruntime">
+    <exec executable="gsc">
+      <arg line="-warnings -target js -o build/runtime.js -exe -nopreload" />
+      <arg line="~~lib/srfi/13/13.scm ~~lib/srfi/14/14.scm ~~lib/srfi/28/28.scm" />
+      <arg line="runtime.scm" />
+    </exec>
+  </target>
+
+  <target name="webemu" depends="components_AiComponentsGwt,common_CommonUtils,common_CommonVersion">
+    <mkdir dir="${local.build.dir}/classes" />
+    <!--
+    <javac destdir="${local.build.dir}/classes" debug="on" includeantruntime="false">
+      <classpath>
+        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
+        <pathelement location="${gwt.sdk}/gwt-user.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+        <pathelement location="${lib.dir}/gwt-android/gwt-android-emu-0.6.0.jar" />
+        <pathelement location="${lib.dir}/gwt-android/androidemu-0.6.0-sources.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+      </classpath>
+      <src path="src" />
+      <src path="${appinventor.dir}/components/build/AiComponents" />
+    </javac>
+    -->
+    <property name="build.web.dir" location="${local.build.dir}/web" />
+    <mkdir dir="${build.web.dir}" />
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+        <pathelement location="src" />
+        <pathelement location="../components/build/AnnotationProcessors.jar" />
+        <pathelement location="${lib.dir}/gwt-android/gwt-android-emu-0.6.0.jar" />
+        <pathelement location="${lib.dir}/gwt-android/androidemu-0.6.0-sources.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar"/>
+        <pathelement location="${build.dir}/components/AiComponents-gwt.jar"/>
+        <!-- external libs -->
+        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
+        <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
+        <pathelement location="${lib.dir}/android/support/annotation-1.0.0.jar" />
+        <pathelement location="${lib.dir}/android/android-34/android.jar" />
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
+        <pathelement location="${gwt.sdk}/gwt-user.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
+      <jvmarg value="-Xmx4G"/>
+      <jvmarg line="${XstartOnFirstThread}"/>
+      <jvmarg value="-Dfile.encoding=UTF-8" />
+      <arg value="-generateJsInteropExports" />
+      <arg value="-logLevel" />
+      <arg value="${gwt.loglevel}" />
+      <arg value="-war" />
+      <arg value="${build.web.dir}" />
+      <arg line="${client.flags}" />
+      <arg value="AppInventorEmu" />
+    </java>
+  </target>
+</project>

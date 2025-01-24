@@ -1,0 +1,35 @@
+package edu.mit.appinventor.webemu;
+
+import com.google.appinventor.components.runtime.Button;
+import com.google.appinventor.components.runtime.Clock;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.ComponentContainer;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.Label;
+import com.google.appinventor.components.runtime.ListPicker;
+import java.util.HashMap;
+import java.util.Map;
+import jsinterop.annotations.JsType;
+
+@JsType(namespace = "appinventor")
+public class ComponentFactory {
+  @FunctionalInterface
+  interface ComponentConstructor<T> {
+    T create(ComponentContainer parent);
+  }
+  private static final Map<String, ComponentConstructor<? extends Component>> LOOKUP = new HashMap<>();
+
+  static {
+    LOOKUP.put("Button", Button::new);
+//    LOOKUP.put("Clock", Clock::new);
+    LOOKUP.put("Label", Label::new);
+    LOOKUP.put("ListPicker", ListPicker::new);
+  }
+  public static Component create(ComponentContainer parent, String type) {
+    ComponentConstructor<? extends Component> constructor = LOOKUP.get(type);
+    if (constructor == null) {
+      throw new IllegalArgumentException("Unsupported component type: " + type);
+    }
+    return constructor.create(parent);
+  }
+}
