@@ -735,6 +735,9 @@ public final class YaBlocksEditor extends FileEditor
   public void onComponentTypeRemoved(Map<String, String> componentTypes) {
     blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());
     blocksArea.verifyAllBlocks();
+    // Blockly won't fire the events that would mark the workspace as dirty until later, so
+    // we do this here to immediately allow a save due to the removal of an extension.
+    Ode.getInstance().getEditorManager().scheduleAutoSave(this);
   }
 
   @Override
