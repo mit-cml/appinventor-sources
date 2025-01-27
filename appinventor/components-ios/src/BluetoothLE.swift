@@ -1198,5 +1198,23 @@ extension BluetoothLE {
       EventDispatcher.dispatchEvent(of: self, called: "BytesWritten", arguments: serviceUuid as AnyObject, characteristicUuid as AnyObject, values as NSArray)
     }
   }
+}
 
+extension BluetoothLE: LifecycleDelegate {
+  @objc public func onDelete() {
+    onDestroy()
+  }
+
+  @objc public func onDestroy() {
+    if Scanning {
+      StopScanning()
+    }
+    if let peripheral = peripheral {
+      peripheral.delegate = nil
+      manager.delegate = nil
+      manager.cancelPeripheralConnection(peripheral)
+      self.peripheral = nil
+      manager = nil
+    }
+  }
 }
