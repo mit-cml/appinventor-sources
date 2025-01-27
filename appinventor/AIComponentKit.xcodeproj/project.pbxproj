@@ -199,6 +199,9 @@
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
 		06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BA52A2203E845A00879F00 /* CsvUtilTests.swift */; };
+		06C43B352D44699100BEF000 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B342D44699100BEF000 /* FileType.swift */; };
+		06C43B362D44699100BEF000 /* FileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B332D44699100BEF000 /* FileAction.swift */; };
+		06C43B382D4469A900BEF000 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B372D4469A900BEF000 /* FilePicker.swift */; };
 		06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA42A8BB72800C6C78D /* ASN1.swift */; };
 		06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA52A8BB72800C6C78D /* ServiceAccountTokenProvider.swift */; };
 		06C70BAA2A8BB72800C6C78D /* RSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C70BA62A8BB72800C6C78D /* RSA.swift */; };
@@ -598,6 +601,9 @@
 		06B3747E1DC06F6B003888CB /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "Pods/../build/Release-iphoneos/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
 		06B5872B1DC02B190092C9DD /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetManager.swift; sourceTree = "<group>"; };
 		06BA52A2203E845A00879F00 /* CsvUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtilTests.swift; sourceTree = "<group>"; };
+		06C43B332D44699100BEF000 /* FileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAction.swift; sourceTree = "<group>"; };
+		06C43B342D44699100BEF000 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
+		06C43B372D4469A900BEF000 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		06C70BA42A8BB72800C6C78D /* ASN1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASN1.swift; sourceTree = "<group>"; };
 		06C70BA52A8BB72800C6C78D /* ServiceAccountTokenProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAccountTokenProvider.swift; sourceTree = "<group>"; };
 		06C70BA62A8BB72800C6C78D /* RSA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSA.swift; sourceTree = "<group>"; };
@@ -1189,6 +1195,7 @@
 		06D151981DC4651D00FC981E /* storage */ = {
 			isa = PBXGroup;
 			children = (
+				06C43B372D4469A900BEF000 /* FilePicker.swift */,
 				DE97528C2034808A008CEBB9 /* FusiontablesControl.swift */,
 			);
 			name = storage;
@@ -1452,7 +1459,9 @@
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				06C43B332D44699100BEF000 /* FileAction.swift */,
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
+				06C43B342D44699100BEF000 /* FileType.swift */,
 				06E91E112D2B236800377845 /* LOBFValues.swift */,
 				681D59062A84139E007B5DB5 /* OptionList.swift */,
 				060F4AED2D35B583005D01BA /* ReceivingState.swift */,
@@ -1889,6 +1898,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06C43B352D44699100BEF000 /* FileType.swift in Sources */,
+				06C43B362D44699100BEF000 /* FileAction.swift in Sources */,
 				06C70BA92A8BB72800C6C78D /* ServiceAccountTokenProvider.swift in Sources */,
 				06C70BA82A8BB72800C6C78D /* ASN1.swift in Sources */,
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
@@ -1962,6 +1973,7 @@
 				DEB9C5502101199E0069BAD7 /* PolygonBaseWithPoints.swift in Sources */,
 				06E79ACD2D1601BD007BFAC0 /* PersonalAudioClassifier.swift in Sources */,
 				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
+				06C43B382D4469A900BEF000 /* FilePicker.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
 				068F9858289A2FD600E2883F /* Chart.swift in Sources */,
 				B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */,
