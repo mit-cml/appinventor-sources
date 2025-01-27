@@ -255,6 +255,7 @@
 		06E79ADA2D1601EF007BFAC0 /* personal_audio_classifier.html in Resources */ = {isa = PBXBuildFile; fileRef = 06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */; };
 		06E79ADC2D16718B007BFAC0 /* tfjs-1.5.2.js in Resources */ = {isa = PBXBuildFile; fileRef = 06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */; };
 		06E91E122D2B236800377845 /* LOBFValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E91E112D2B236800377845 /* LOBFValues.swift */; };
+		06E91E142D2B736800377845 /* MicroBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E91E132D2B736800377845 /* MicroBlocks.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EF26592998A94600D6093C /* ComponentUtil.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
@@ -646,6 +647,7 @@
 		06E79AD82D1601EF007BFAC0 /* personal_audio_classifier.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = personal_audio_classifier.html; path = "components-common/src/PersonalAudioClassifier/personal_audio_classifier.html"; sourceTree = SOURCE_ROOT; };
 		06E79ADB2D16718B007BFAC0 /* tfjs-1.5.2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "tfjs-1.5.2.js"; path = "assets/tfjs-1.5.2.js"; sourceTree = "<group>"; };
 		06E91E112D2B236800377845 /* LOBFValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LOBFValues.swift; sourceTree = "<group>"; };
+		06E91E132D2B736800377845 /* MicroBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicroBlocks.swift; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06EF26592998A94600D6093C /* ComponentUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentUtil.swift; sourceTree = "<group>"; };
@@ -942,6 +944,7 @@
 				069D1CE62C9DA49A00C0CA96 /* BaseClassifier.swift */,
 				069EDEC528EC96670020B1B1 /* BluetoothLE.swift */,
 				5F7ED10C2C35C987004418C5 /* FaceExtension.swift */,
+				06E91E132D2B736800377845 /* MicroBlocks.swift */,
 				069EDEC728EC9E850020B1B1 /* Microbit_Uart_Simple.swift */,
 				06E79ACC2D1601BD007BFAC0 /* PersonalAudioClassifier.swift */,
 				067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */,
@@ -1968,6 +1971,7 @@
 				06F91464252CE50B00AF8F88 /* BundledApp.swift in Sources */,
 				1556D4E82C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift in Sources */,
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
+				06E91E142D2B736800377845 /* MicroBlocks.swift in Sources */,
 				CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */,
 				06208B522BD9D7380097EF43 /* ScreenOrientation.swift in Sources */,
 				DE97528D2034808A008CEBB9 /* FusiontablesControl.swift in Sources */,

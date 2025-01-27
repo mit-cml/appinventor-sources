@@ -1107,7 +1107,7 @@ yail_isa(pic_state *pic) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.common." withString:@"AIComponentKit."];
-    } else if ([name hasPrefix:@"edu.mit.appinventor."] || [name hasPrefix:@"com.bbc.microbit."]) {
+    } else if ([name hasPrefix:@"edu.mit.appinventor."] || [name hasPrefix:@"com.bbc.microbit."] || [name hasPrefix:@"fun.microblocks.microblocks."]) {
       NSArray *parts = [name componentsSeparatedByString:@"."];
       name = [NSString stringWithFormat:@"AIComponentKit.%@", parts.lastObject];
     }
