@@ -584,6 +584,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 : Indicates that the status of the location provider service has changed, such as when a
  provider is lost or a new provider starts being used.
 
+{:id="LocationSensor.gotAddress"} gotAddress(*address*{:.text})
+: Location has been returned
+
+{:id="LocationSensor.gotLocation"} gotLocation(*latitude*{:.number},*longitude*{:.number})
+: Location has been returned
+
 ### Methods  {#LocationSensor-Methods}
 
 {:.methods}
@@ -593,6 +599,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:id="LocationSensor.LongitudeFromAddress" class="method returns number"} <i/> LongitudeFromAddress(*locationName*{:.text})
 : Derives longitude from the given `locationName`.
+
+{:id="LocationSensor.geoCode" class="method"} <i/> geoCode(*address*{:.text})
+: Takes address and returns latitude and longitude
+
+{:id="LocationSensor.reverseGeoCode" class="method"} <i/> reverseGeoCode(*lat*{:.number},*lon*{:.number})
+: Takes latitude and longitutde and returns address
 
 ## MagneticFieldSensor  {#MagneticFieldSensor}
 

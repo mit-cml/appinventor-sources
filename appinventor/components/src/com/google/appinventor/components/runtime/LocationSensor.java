@@ -585,19 +585,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
         latitude <= 90 && latitude >= -90 &&
         longitude <= 180 || longitude >= -180) {
       try {
-        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        if (addresses != null && addresses.size() == 1) {
-          Address address = addresses.get(0);
-          if (address != null) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-              sb.append(address.getAddressLine(i));
-              sb.append("\n");
-            }
-            return sb.toString();
-          }
-        }
-
+        return addressFromLatLong(latitude, longitude);
       } catch (Exception e) {
         // getFromLocation can throw an IOException or an IllegalArgumentException
         // a bad result can give an indexOutOfBoundsException
@@ -617,6 +605,46 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * Derives address from the given `latitutde` and `longitude`.
+   *
+   * @param latitude (double): given latitude
+   * @param longitude (double): given longitude
+   *
+   * @return Address (String): return the Address, if found
+   */
+  public String addressFromLatLong(double latitude, double longitude) throws IOException {
+    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+    if (addresses != null && addresses.size() == 1) {
+      Address address = addresses.get(0);
+      if (address != null) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+          sb.append(address.getAddressLine(i));
+          sb.append("\n");
+        }
+        return sb.toString();
+      }
+    }
+    return "Address with latitude " + Double.toString(latitude) + " and longitutde " + Double.toString(longitude) + " not found";
+  }
+
+  /**
+   * Derives an address from the given `locationName`.
+   *
+   * @param locationName  human-readable address
+   *
+   * @return first Address object that is found
+   */
+  public Address getAddress(String locationName) throws IOException {
+    List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
+    Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+    if ( (addressObjs == null) || (addressObjs.size() == 0) ){
+      throw new IOException("");
+    }
+    return addressObjs.get(0);
+  }
+
+  /**
    * Derives latitude from the given `locationName`.
    *
    * @param locationName  human-readable address
@@ -626,12 +654,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives latitude of given address")
   public double LatitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLatitude();
+      Address address = getAddress(locationName);
+      return address.getLatitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LatitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, locationName);
@@ -649,17 +673,58 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives longitude of given address")
   public double LongitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLongitude();
+      Address address = getAddress(locationName);
+      return address.getLongitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LongitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND, locationName);
       return 0;
     }
+  }
+
+  /**
+   * @param address human-readable address
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Takes address and returns latitude and longitude")
+  public void geoCode(String address){
+    final double latitude = LatitudeFromAddress(address);
+    final double longitude = LongitudeFromAddress(address);
+    System.out.println(latitude + " " + longitude);
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        gotLocation(latitude, longitude);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Location has been returned")
+  public void gotLocation(double latitude, double longitude){
+    EventDispatcher.dispatchEvent(this, "gotLocation", latitude, longitude);
+  }
+
+  /**
+   * @param lat given latitude
+   * @param lon given longitude
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Takes latitude and longitutde and returns address")
+  public void reverseGeoCode(double lat, double lon){
+    this.latitude = lat;
+    this.longitude = lon;
+    String address = CurrentAddress();
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        gotAddress(address);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Location has been returned")
+  public void gotAddress(String address){
+    EventDispatcher.dispatchEvent(this, "gotAddress", address);
   }
 
   /**
