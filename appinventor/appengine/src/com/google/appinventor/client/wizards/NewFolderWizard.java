@@ -147,4 +147,4 @@ public final class NewFolderWizard {
   protected void FocusFirst(FocusEvent event) {
    input.setFocus(true);
   }
-}
+}   
