@@ -373,7 +373,11 @@ div.StatusPanel {
   vertical-align: center;
 }
 
-.ode-ProjectRow-Highlighted {
+.ode-ProjectRow.ode-ProjectRowHighlighted {
+  background-color: #fff6c3;
+}
+
+.ode-ProjectRow.ode-ProjectRow-Highlighted {
   background-color: #fff6c3;
 }
 
