@@ -147,6 +147,4 @@ public final class NewFolderWizard {
   protected void FocusFirst(FocusEvent event) {
    input.setFocus(true);
   }
-}
-
-above is a this code which i will filled github msg above if yes provide the correct solution
+}   
