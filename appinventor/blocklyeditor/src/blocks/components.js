@@ -459,7 +459,7 @@ Blockly.Blocks.component_event = {
           {name:'notAlreadyHandled', type: 'boolean'}
         ].concat((eventType && eventType.parameters) || []);
     }
-    return eventType && eventType.parameters;
+    return (eventType && eventType.parameters) || [];
   },
   getExplicitParameterNames_: function () {
     return this.parameterNames;
@@ -1188,7 +1188,7 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
-        if (thisBlock.propertyName) {
+        if (thisBlock.propertyName && thisBlock.propertyObject) {
           thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTypeName(),
               thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
