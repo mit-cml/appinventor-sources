@@ -525,7 +525,7 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag) {  // We are loading a template, open it instead
+    if (templateLoadingFlag && !getShowUIPicker()) {  // We are loading a template, open it instead unless UI needs to be picked
                                 // of the last project
 
       //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
@@ -1440,6 +1440,11 @@ public class Ode implements EntryPoint {
             "" + value);
   }
 
+  public static boolean getShowUIPicker() {
+    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+  }
+
   public static void saveUserDesignSettings() {
     userSettings.saveSettings(new Command() {
       @Override
@@ -1820,9 +1825,8 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-    String showUIPicker = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-                              getPropertyValue(SettingsConstants.SHOW_UIPICKER);
-    if(showUIPicker.equalsIgnoreCase("True")) {
+
+    if (getShowUIPicker()) {
       new UISettingsWizard(true).show();
     } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
