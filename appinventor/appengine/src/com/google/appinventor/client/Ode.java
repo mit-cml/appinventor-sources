@@ -1821,7 +1821,7 @@ public class Ode implements EntryPoint {
 
   private void maybeShowSplash() {
 
-    if(getShowUIPicker()) {
+    if (getShowUIPicker()) {
       new UISettingsWizard(true).show();
     } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
