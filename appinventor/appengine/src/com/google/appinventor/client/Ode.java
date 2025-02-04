@@ -527,6 +527,13 @@ public class Ode implements EntryPoint {
 
     if (templateLoadingFlag) {  // We are loading a template, open it instead
                                 // of the last project
+
+      //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
+      if (templatePath.endsWith(".aia")){
+        HTML5DragDrop.importProjectFromUrl(templatePath);
+        return true;
+      }
+
       NewProjectCommand callbackCommand = new NewProjectCommand() {
         @Override
         public void execute(Project project) {
@@ -683,15 +690,13 @@ public class Ode implements EntryPoint {
     // Let's see if we were started with a repo= parameter which points to a template
     templatePath = Window.Location.getParameter("repo");
     if (templatePath != null) {
-      LOG.warning("Got a template path of " + templatePath);
+      LOG.warning("Got a template or project path of " + templatePath);
       templateLoadingFlag = true;
     }
-
     // OK, let's see if we are loading from the new gallery Note: If
     // we are loading from a template (see above) then we ignore the
     // "ng" parameter. It doesn't make sense to have both, but if we
     // do, template loading wins.
-
     if (!templateLoadingFlag) {
       newGalleryId = Window.Location.getParameter("ng");
       if (newGalleryId != null) {
