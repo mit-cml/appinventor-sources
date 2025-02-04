@@ -89,6 +89,7 @@ public class TopPanel extends Composite {
 
   private static final Dictionary LANGUAGES;
   private static final Logger LOG = Logger.getLogger(TopPanel.class.getName());
+
   /**
    * Initializes and assembles all UI elements shown in the top panel.
    */
