@@ -87,7 +87,6 @@ function importProject(droppedItem) {
   if (typeof droppedItem == "string") {
     droppedItem = {"name": droppedItem} // stop gap for handling different sources
   }
-  console.log(droppedItem);
   var filename = droppedItem.name;
   filename = filename.substring(filename.lastIndexOf('/') + 1);
   var projectName = filename.substring(0, filename.length - 4);
