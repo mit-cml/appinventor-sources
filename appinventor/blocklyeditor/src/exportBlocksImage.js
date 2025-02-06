@@ -524,16 +524,15 @@ Blockly.exportBlockAsPng = function(block) {
  */
 function extractBlockTypes(xml) {
   var blockTypes = [];
-  var blocks = xml.getElementsByTagName('block');
-  for (var i = 0; i < blocks.length; i++) {
-    var mutation = blocks[i].getElementsByTagName('mutation')[0];
-    if (mutation) {
-      var componentType = mutation.getAttribute('component_type');
-      if (componentType) {
-        blockTypes.push(componentType);
-      }
+  var mutations = xml.getElementsByTagName('mutation');
+
+  for (var i = 0; i < mutations.length; i++) {
+    var componentType = mutations[i].getAttribute('component_type');
+    if (componentType) {
+      blockTypes.push(componentType);
     }
   }
+
   return blockTypes;
 }
 
@@ -545,19 +544,13 @@ function extractBlockTypes(xml) {
  */
 function validateBlockTypes(blockTypes, workspace) {
   if (!blockTypes || blockTypes.length === 0) {
-    console.warn('No block types provided for validation.');
     return [];
   }
 
   var componentDb = workspace.getComponentDatabase();
-  if (!componentDb) {
-    console.error('Component database is not available.');
-    return [];
-  }
-
   var missingExtensions = [];
   for (var i = 0; i < blockTypes.length; i++) {
-    var typeDescriptor = componentDb.getType(blockTypes[i]);
+    const typeDescriptor = componentDb.getType(blockTypes[i]);
     if (!typeDescriptor || !typeDescriptor.componentInfo || typeDescriptor.componentInfo.name !== blockTypes[i]) {
       missingExtensions.push(blockTypes[i]);
     }
@@ -580,7 +573,7 @@ function showMissingExtensionDialog(missingExtensions) {
   });
 
   if (missingExtensions.length > 0) {
-    var message = 'This image references the following blocks which require extensions that are not present in the project:\n\n';
+    var message = Blockly.Msg['REQUIRED_EXTENSIONS_MISSING'];
     message += missingExtensions.join('\n');
     alert(message);
   }
@@ -599,6 +592,8 @@ Blockly.importPngAsBlock = function(workspace, xy, png) {
       var xmlText = new TextDecoder().decode(xmlChunk.data);
       var xml = /** @type {!Element} */ (Blockly.utils.xml.textToDom(xmlText));
       if (!xml) {
+        var message = Blockly.Msg['ERROR_PARSING_XML'];
+        alert(message);
         console.error('Failed to parse XML from PNG.');
         return;
       }
