@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -83,6 +84,9 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
   //Whether or not the text should be big
   private boolean isBigText = false;
 
+  // Whether the label is clickable and long clickable or not
+  private boolean isClickable = false;
+
   /**
    * Creates a new Label component.
    *
@@ -133,6 +137,42 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
   @Override
   public View getView() {
     return view;
+  }
+
+  @SimpleEvent(description = "An event that occurs when an label is clicked.")
+  public void Click() {
+    EventDispatcher.dispatchEvent(this, "Click");
+  }
+
+  @SimpleEvent(description = "An event that occurs when an label is long clicked.")
+  public void LongClick() {
+    EventDispatcher.dispatchEvent(this, "LongClick");
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty(description = "Specifies whether the label should be clickable or not.")
+  public void Clickable(boolean clickable) {
+    this.isClickable = clickable;
+    view.setClickable(this.isClickable);
+    if (this.isClickable) {
+      view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Click();
+        }
+      });
+      view.setOnLongClickListener(new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+          LongClick();
+          return false;
+        }
+      });
+    } else {
+      view.setOnClickListener(null);
+      view.setOnLongClickListener(null);
+    }
   }
 
   /**

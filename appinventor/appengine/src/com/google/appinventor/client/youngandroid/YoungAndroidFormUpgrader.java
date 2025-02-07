@@ -1442,6 +1442,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 5) {
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The Click & LongClick events are added.
+      componentProperties.put("Clickable", new ClientJsonString("False"));
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
