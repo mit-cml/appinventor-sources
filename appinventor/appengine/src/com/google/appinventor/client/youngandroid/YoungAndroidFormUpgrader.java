@@ -865,6 +865,10 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The axesTextColor and dataLabelColor properties were added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

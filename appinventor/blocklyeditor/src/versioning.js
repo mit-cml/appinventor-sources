@@ -1853,12 +1853,15 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The SetDomain and SetRange methods were added.
     2: "noUpgrade",
     // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2: The property axesTextColor and method setAxesTextColor were added.
+    4: "noUpgrade"
 
   }, // End Chart upgraders
 
   "ChartData2D": {
-
+    // - The property dataLabelColor and method setDataLabelColor were added.
+    2: "noUpgrade"
   }, // End ChartData2D upgraders
 
   "ChatBot" : {
