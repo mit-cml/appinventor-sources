@@ -1019,7 +1019,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           }
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused() && isActiveEditor() && !event.isControlKeyDown()) {
           getVisibleComponentsPanel().focusCheckbox();
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
