@@ -577,7 +577,7 @@ public final class MockForm extends MockContainer {
     }
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
     // This margin is to ensure the mockform aligns to the left when there is space for a scrollbar
-    rootPanel.getElement().getStyle().setProperty("margin-right", scrollbarWidth + "px");
+    rootPanel.getElement().getStyle().setProperty("marginRight", scrollbarWidth + "px");
     scrollPanel.setPixelSize(usableScreenWidth + scrollbarWidth, usableScreenHeight);
     formWidget.setPixelSize(screenWidth + scrollbarWidth, screenHeight);
     // Added width to phoneWidget to prevent it from expanding wider than intended

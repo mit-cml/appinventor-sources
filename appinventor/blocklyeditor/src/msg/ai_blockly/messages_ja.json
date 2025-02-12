@@ -16,6 +16,8 @@
     "Blockly.Msg.LANG_CONTROLS_IF_MSG_IF": "もし",
     "Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4": "最初の値が真ならば文の最初のブロックを実行します。\nそうでない時に２番目の値が真ならば文の２番目のブロックを実行します。\nいずれの値も真でなければ文の最後のブロックを実行します。",
     "Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3": "最初の値が真ならば文の最初のブロックを実行します。\nそうでない時に２番目の値が真ならば文の２番目のブロックを実行します。",
+    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "この画像は、プロジェクトに存在しない拡張機能を必要とする以下のブロックを参照しています:\n\n",
+    "Blockly.Msg.ERROR_PARSING_XML": "エラー: PNGファイルからXMLを解析できませんでした。もう一度お試しください。",
     "Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2": "値が真ならば文の最初のブロックを実行します。\nそうでなければ文の２番目のブロックを実行します。",
     "Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1": "値が真ならば文を実行します。",
     "Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP": "RGBでカスタム色作成。",
