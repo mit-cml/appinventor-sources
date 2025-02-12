@@ -3298,7 +3298,7 @@ div.dropdiv p {
 }
 
 .ya-Toolbar .right {
-  min-width: 410px;
+  flex-shrink: 0;
   text-align: right;
 }
 
