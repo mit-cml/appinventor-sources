@@ -285,6 +285,26 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
   
+  @objc func showTroubleshootingInfo(_ sender: UIButton?) {
+      NSLog("showTroubleshootingInfo called")
+      
+      guard let notifier = notifier1 else {
+          NSLog("notifier1 is nil")
+          return
+      }
+      
+      NSLog("About to show alert")
+      notifier.ShowAlert("Troubleshooting Tips:\n\n" +
+                        "1. Have you opened code.appinventor.mit.edu on your desktop or laptop and clicked Connect-> Ai Companion?\n" +
+                        "2. Verify both devices are on the same network\n" +
+                        "3. Go to iOS App Inventor App Settings and make sure Camera and Wifi are enabled for App Inventor\n" +
+                        "4. Try disabling/enabling WiFi\n" +
+                        "5. Restart the app")
+      versionNumber?.isHidden = false
+      ipAddrLabel?.isHidden = false
+      NSLog("troubleshooting complete")
+  }
+  
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
