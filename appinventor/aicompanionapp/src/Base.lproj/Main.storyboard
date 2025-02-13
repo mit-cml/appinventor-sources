@@ -187,6 +187,7 @@
     <resources>
         <image name="Instructions.png" width="800" height="200"/>
 <<<<<<< HEAD
+        <image name="Mooning" width="400" height="400"/>
 =======
         <image name="Mooning" width="400" height="400"/>
 >>>>>>> dca91af888 (this commit contains minimal changes for the Need Help/Troubleshoot #3374)
