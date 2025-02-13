@@ -74,7 +74,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" tag="18" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N8z-gK-HfL">
+                            <button opaque="NO" tag="10" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N8z-gK-HfL">
                                 <rect key="frame" x="114" y="555" width="193" height="58"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="RVf-63-XDD"/>
@@ -186,9 +186,8 @@
     </scenes>
     <resources>
         <image name="Instructions.png" width="800" height="200"/>
-        <image name="Mooning" width="400" height="400"/>
         <image name="connectwCode.png" width="300" height="100"/>
-        <image name="connectwQR.png" width="300" height="100"/>
+        <image name="connectwQR.png" width="300" height="49"/>
         <image name="troubleshooting.png" width="300" height="100"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

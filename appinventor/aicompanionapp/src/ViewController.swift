@@ -58,6 +58,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var versionNumber: UILabel?
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
+  @IBOutlet weak var troubleShootingButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
@@ -167,6 +168,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode = form.view.viewWithTag(3) as! UITextField?
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
+      troubleShootingButton = form.view.viewWithTag(10) as! UIButton?
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
@@ -177,6 +179,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
+      troubleShootingButton?.addTarget(self, action: #selector(showTroubleshootingInfo(_:)), for: UIControl.Event.primaryActionTriggered)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -292,8 +295,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           NSLog("notifier1 is nil")
           return
       }
-      
-      NSLog("About to show alert")
       notifier.ShowAlert("Troubleshooting Tips:\n\n" +
                         "1. Have you opened code.appinventor.mit.edu on your desktop or laptop and clicked Connect-> Ai Companion?\n" +
                         "2. Verify both devices are on the same network\n" +
