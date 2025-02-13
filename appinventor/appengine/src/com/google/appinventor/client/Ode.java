@@ -734,6 +734,12 @@ public class Ode implements EntryPoint {
         c -> userInfoService.getSystemConfig(sessionId, c))
         .then(result -> {
           config = result;
+          // Before we get too far into it, let's see if we have to do a survey!
+          String surveyUrl = config.getSurveyUrl();
+          if (surveyUrl != null && !surveyUrl.isEmpty()) {
+            Window.Location.replace(Urls.makeUri(surveyUrl, true));
+            // off we go, no returning
+          }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
           registerIosExtensions(config.getIosExtensions());

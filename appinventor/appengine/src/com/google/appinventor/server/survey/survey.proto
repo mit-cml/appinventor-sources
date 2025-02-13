@@ -1,0 +1,14 @@
+package survey;
+
+option java_package = "com.google.appinventor.server.survey";
+option java_outer_classname = "SurveyProto";
+
+message surveytoken {
+   enum CommandType {
+      DOSURVEY = 1;
+  }
+
+  required CommandType command = 1;
+  optional string loginname = 2; // username or email of user
+  optional string returnurl = 3; // Where to send the user after the survey is complete
+}
