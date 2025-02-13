@@ -292,8 +292,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           NSLog("notifier1 is nil")
           return
       }
-      
-      NSLog("About to show alert")
       notifier.ShowAlert("Troubleshooting Tips:\n\n" +
                         "1. Have you opened code.appinventor.mit.edu on your desktop or laptop and clicked Connect-> Ai Companion?\n" +
                         "2. Verify both devices are on the same network\n" +
