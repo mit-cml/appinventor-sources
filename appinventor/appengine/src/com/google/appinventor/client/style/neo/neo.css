@@ -324,7 +324,7 @@ they get cut off in Windows.
     border-radius: 4px;
   }
 
-  .ode-ProjectRowUnHighlighted.ode-ProjectRow-Highlighted {
+  .ode-ProjectRowUnHighlighted.ode-ProjectRowHighlighted {
     background-color: rgba(167, 36, 122, 0.21) !important;
   }
   

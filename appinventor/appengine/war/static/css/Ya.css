@@ -377,10 +377,6 @@ div.StatusPanel {
   background-color: #fff6c3;
 }
 
-.ode-ProjectRow.ode-ProjectRow-Highlighted {
-  background-color: #fff6c3;
-}
-
 .ode-ProjectRowHidden {
   display:none;
 }
