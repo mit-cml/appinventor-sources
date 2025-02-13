@@ -928,14 +928,16 @@ import GoogleAPIClientForREST
     
     for elem in data {
       // if elem is not a YailList, then skip
-      if elem is YailList<AnyObject> == false {
+      guard let row = elem as? YailList<AnyObject> else {
         continue
       }
-      var row: YailList<AnyObject> = elem as! YailList<AnyObject>
       // construct the row that we will add to the list of rows
       var r: Array<AnyObject> = []
       for o in row {
-        r.append(o as! AnyObject)
+        if o is SCMSymbol {  // skip *list*
+          continue
+        }
+        r.append(o as AnyObject)
       }
       values.append(r)
       // catch rows of unequal length
@@ -961,7 +963,7 @@ import GoogleAPIClientForREST
     // wrap the API call in an Async Utility
     _workQueue.async {
       // create and execute query to write values
-      let query = GTLRSheetsQuery_SpreadsheetsValuesAppend.query(withObject: body, spreadsheetId:  self.SpreadsheetID, range: rangeRef)
+      let query = GTLRSheetsQuery_SpreadsheetsValuesUpdate.query(withObject: body, spreadsheetId: self.SpreadsheetID, range: rangeRef)
       query.valueInputOption = "USER_ENTERED"
       self._service.executeQuery(query) { ticket, result, error in
         if let error = error {
@@ -1325,9 +1327,10 @@ import GoogleAPIClientForREST
         self.ErrorOccurred("\(error)")
       } else {
         let readResult = result as? GTLRSheets_ValueRange
-        var values: Array<Array<String>> = readResult?.values as! Array<Array<String>>
+        let values: Array<Array<String>> = readResult?.values as! Array<Array<String>>
 
-        self.updateColumns(values as! YailList<YailList<AnyObject>>)
+        let yailValues = YailList<YailList<AnyObject>>(array: values.map { YailList<AnyObject>(array: $0.map { $0 as NSString }) })
+        self.updateColumns(yailValues)
         self.notifyDataObservers(nil, nil)
 
         // no Data found
@@ -1491,12 +1494,12 @@ extension Spreadsheet: ObservableDataSource {
     _observers.remove(listener)
   }
 
-  func getDataValue(_ key: AnyObject) -> AnyObject {
-    return getDataValue(key, false)
+  func getDataValue(_ key: AnyObject?) -> [Any] {
+    return getDataValue(key ?? "" as NSString, false)
   }
 
-  func getDataValue(_ key: AnyObject, _ useHeaders: Bool) -> AnyObject {
-    return getColumns(key, useHeaders)
+  func getDataValue(_ key: AnyObject, _ useHeaders: Bool) -> [Any] {
+    return getColumns(key, useHeaders) as! [Any]
   }
 
   func updateColumns(_ parsedCsv: YailList<YailList<AnyObject>>) {

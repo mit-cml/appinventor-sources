@@ -141,6 +141,12 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
   }
 
   @Override
+  protected void openAdditionalChoiceDialog() {
+    super.openAdditionalChoiceDialog();
+    automaticRadioButton.setFocus(true);
+  }
+
+  @Override
   protected void updateValue() {
     super.updateValue();
 

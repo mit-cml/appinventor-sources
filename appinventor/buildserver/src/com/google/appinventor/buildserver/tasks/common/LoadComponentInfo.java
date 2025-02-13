@@ -229,12 +229,9 @@ public class LoadComponentInfo implements CommonTask {
       return false;
     }
 
-    int n = 0;
-    for (String type : context.getComponentInfo().getServicesNeeded().keySet()) {
-      n += context.getComponentInfo().getServicesNeeded().get(type).size();
-    }
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.SERVICES_TARGET),
+            context.getComponentInfo().getServicesNeeded());
 
-    context.getReporter().log("Component services needed, n = " + n);
     return true;
   }
 
@@ -244,19 +241,16 @@ public class LoadComponentInfo implements CommonTask {
   private boolean generateContentProviders() {
     try {
       loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(),
-          ComponentDescriptorConstants.SERVICES_TARGET);
+          ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Content Providers stage", true);
       return false;
     }
 
-    int n = 0;
-    for (String type : context.getComponentInfo().getContentProvidersNeeded().keySet()) {
-      n += context.getComponentInfo().getContentProvidersNeeded().get(type).size();
-    }
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET),
+            context.getComponentInfo().getContentProvidersNeeded());
 
-    context.getReporter().log("Component content providers needed, n = " + n);
     return true;
   }
 

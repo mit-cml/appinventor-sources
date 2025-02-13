@@ -34,10 +34,16 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     let config = WKWebViewConfiguration()
     config.preferences.javaScriptEnabled = true
     config.allowsInlineMediaPlayback = true
+    config.mediaTypesRequiringUserActionForPlayback =  []
     config.userContentController = controller
     super.init(parent)
     config.setURLSchemeHandler(self, forURLScheme: "appinventor")
     _view = WKWebView(frame: CGRect.zero, configuration: config)
+#if DEBUG
+    if #available(iOS 16.4, *) {
+      _view.isInspectable = true
+    }
+#endif
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.allowsBackForwardNavigationGestures = true
     let swipeRecog = UISwipeGestureRecognizer(target: self, action: #selector(navigation))
@@ -46,8 +52,17 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     _view.uiDelegate = self
     controller.add(self, name: "webString")
     parent.add(self)
-    Width = kLengthFillParent
-    Height = kLengthFillParent
+    Width = kLengthPreferred
+    Height = kLengthPreferred
+  }
+
+  @objc open func Initialize() {
+    if _lastSetWidth == kLengthPreferred {
+      Width = kLengthFillParent
+    }
+    if _lastSetHeight == kLengthPreferred {
+      Height = kLengthFillParent
+    }
   }
 
   @objc open func CurrentPageTitle() -> String {
@@ -310,7 +325,12 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
     if let url = navigationAction.request.url?.absoluteString {
       _temporaryLink = url
     }
-    decisionHandler((_followLinks || _wantLoad) ? .allow: .cancel)
+    // We want to load the page if any of the following is true:
+    // 1. FollowLinks is turned on
+    // 2. The blocks have explicitly requested a URL be loaded
+    // 3. We are a WebView running AI extensions
+    // Otherwise, do not load the page
+    decisionHandler((_followLinks || _wantLoad || aiSchemeHandler != nil) ? .allow: .cancel)
   }
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
