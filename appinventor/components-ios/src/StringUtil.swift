@@ -63,7 +63,7 @@ public func toString(_ object: Any?) -> String {
     }
     return buffer.copy() as! String
   }
-
+  
   /**
    * Reverses a `String`. Called from runtime.scm to reverse a UTF-8 string in a Unicode-aware way.
    *
@@ -74,4 +74,122 @@ public func toString(_ object: Any?) -> String {
   @objc static func reverseString(_ string: String) -> String {
     return String(string.reversed())
   }
+    
+    /// Splits text into parts based on a separator
+    public static func split(_ text: String, at: String) -> [String] {
+        var parts = text.components(separatedBy: at)
+        if at.isEmpty && parts.first == "" {
+            parts.removeFirst()
+        }
+        return parts
+    }
+
+    
+    // MARK: - Mapping Methods
+    
+    /// Replaces text using dictionary order
+    @objc public static func replaceAllMappingsDictionary(
+        _ text: String,
+        _ mappings: YailDictionary
+    ) -> String {
+        return replaceAllMappings(text, mappings: mappings, order: mappingOrderDictionary)
+    }
+    
+    /// Replaces text using longest string first order
+    @objc public static func replaceAllMappingsLongestString(
+        _ text: String,
+        _ mappings: YailDictionary
+    ) -> String {
+        return replaceAllMappings(text, mappings: mappings, order: mappingOrderLongestStringFirst)
+    }
+    
+    /// Replaces text using earliest occurrence order
+    @objc public static func replaceAllMappingsEarliestOccurrence(
+        _ text: String,
+        _ mappings: YailDictionary
+    ) -> String {
+        return replaceAllMappings(text, mappings: mappings, order: mappingOrderEarliestOccurrence)
+    }
+    
+    /// Main replacement method with custom ordering
+    public static func replaceAllMappings(
+        _ text: String,
+        mappings: YailDictionary,
+        order: MappingOrder
+    ) -> String {
+        if DEBUG {
+            print("\(LOG_TAG_JOIN_STRINGS): inside replace mappings")
+        }
+        
+        var stringMappings: [String: String] = [:]
+        var keys: [String] = []
+        
+        // Convert all mappings to strings
+        for (key, value) in mappings {
+            let keyString = String(describing: key)
+            let valueString = String(describing: value)
+            
+            if !stringMappings.keys.contains(keyString) {
+                keys.append(keyString)
+            }
+            
+            stringMappings[keyString] = valueString
+        }
+        
+        // Apply ordering
+        order.changeOrder(&keys, text: text)
+        
+        // Apply mappings
+        return applyMappings(text, mappings: stringMappings, keys: keys)
+    }
+    
+    /// Applies the mappings to the text using the specified key order
+    private static func applyMappings(
+        _ text: String,
+        mappings: [String: String],
+        keys: [String]
+    ) -> String {
+        var ranges: [Range] = []
+        
+        // Find all ranges that need to be replaced
+        for key in keys {
+            let pattern = NSRegularExpression.escapedPattern(for: key)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }
+            
+            let nsRange = NSRange(text.startIndex..<text.endIndex, in: text)
+            let matches = regex.matches(in: text, range: nsRange)
+            
+            let replacement = mappings[key] ?? ""
+            
+            for match in matches {
+                let range = Range(
+                    start: match.range.location,
+                    end: match.range.location + match.range.length,
+                    text: replacement
+                )
+                
+                // Only add non-overlapping ranges
+                if !ranges.contains(where: { existing in
+                    compareRanges(existing, range) == 0
+                }) {
+                    ranges.append(range)
+                }
+            }
+        }
+        
+        // Sort ranges by end index (descending)
+        ranges.sort { r1, r2 in
+            compareRanges(r1, r2) < 0
+        }
+        
+        // Apply replacements
+        var result = text
+        for range in ranges {
+            let startIndex = result.index(result.startIndex, offsetBy: range.start)
+            let endIndex = result.index(result.startIndex, offsetBy: range.end)
+            result.replaceSubrange(startIndex..<endIndex, with: range.text)
+        }
+        
+        return result
+    }
 }
