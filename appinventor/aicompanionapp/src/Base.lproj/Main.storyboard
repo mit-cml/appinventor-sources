@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,7 +20,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instructions.png" translatesAutoresizingMaskIntoConstraints="NO" id="fs4-4D-vvR">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instructions.png" translatesAutoresizingMaskIntoConstraints="NO" id="fs4-4D-vvR">
                                 <rect key="frame" x="28" y="8" width="358" height="89.333333333333329"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="89.333333333333329" id="Dyw-RY-P6M"/>
@@ -129,7 +129,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fAb-e3-7Fr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="543.47826086956525" y="689.0625"/>
+            <point key="canvasLocation" x="544.79999999999995" y="689.5052473763119"/>
         </scene>
         <!--Onboard View Controller-->
         <scene sceneID="0zS-WV-goK">
@@ -186,7 +186,10 @@
     </scenes>
     <resources>
         <image name="Instructions.png" width="800" height="200"/>
+<<<<<<< HEAD
+=======
         <image name="Mooning" width="400" height="400"/>
+>>>>>>> dca91af888 (this commit contains minimal changes for the Need Help/Troubleshoot #3374)
         <image name="connectwCode.png" width="300" height="100"/>
         <image name="connectwQR.png" width="300" height="100"/>
         <image name="troubleshooting.png" width="300" height="100"/>
