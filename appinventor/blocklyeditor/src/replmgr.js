@@ -39,6 +39,7 @@ goog.require('AI.Yail.helpers');
 goog.require('AI.Yail.lists');
 goog.require('AI.Yail.logic');
 goog.require('AI.Yail.math');
+goog.require('AI.Yail.matrices');
 goog.require('AI.Yail.procedures');
 goog.require('AI.Yail.text');
 goog.require('AI.Yail.variables');

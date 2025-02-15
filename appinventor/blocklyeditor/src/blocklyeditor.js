@@ -44,6 +44,7 @@ goog.require('AI.Blocks.lexicalvariables');
 goog.require('AI.Blocks.lists');
 goog.require('AI.Blocks.logic');
 goog.require('AI.Blocks.math');
+goog.require('AI.Blocks.matrices');
 goog.require('AI.Blocks.procedures');
 goog.require('AI.Blocks.text');
 

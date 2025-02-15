@@ -3264,11 +3264,18 @@ Dictionary implementation.
 #|
 Matrix implementation.
 
-- make matrix           (make-yail-matrix rows cols data)
+- make matrix           (make-yail-matrix . dataValues)
 - get matrix row        (yail-matrix-get-row yail-matrix row)
 - get matrix column     (yail-matrix-get-column yail-matrix col)
 - get matrix cell       (yail-matrix-get-cell yail-matrix row col)
-- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
+- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)\
+- is YailMatrix?        (yail-matrix? x)
+- get matrix inverse    (yail-matrix-inverse matrix)
+- get matrix transpose  (yail-matrix-transpose matrix)
+- matrix add            (yail-matrix-add matrix1 matrix2)
+- matrix subtract       (yail-matrix-subtract matrix1 matrix2)
+- matrix multiply       (yail-matrix-multiply matrix1 matrix2-or-scalar)
+- matrix power          (yail-matrix-power matrix exponent)
 
 |#
 
@@ -3289,6 +3296,26 @@ Matrix implementation.
 
 (define (yail-matrix? x)
   (instance? x YailMatrix))
+
+(define (yail-matrix-inverse matrix)
+  (YailMatrix:inverse (as YailMatrix matrix)))
+
+(define (yail-matrix-transpose matrix)
+  (YailMatrix:transpose (as YailMatrix matrix)))
+
+(define (yail-matrix-add matrix1 matrix2)
+  (YailMatrix:add (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-subtract matrix1 matrix2)
+  (YailMatrix:subtract (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-multiply matrix1 matrix2-or-scalar)
+  (if (number? matrix2-or-scalar)
+      (YailMatrix:scalarMultiply (as YailMatrix matrix1) matrix2-or-scalar)
+      (YailMatrix:multiply (as YailMatrix matrix1) (as YailMatrix matrix2-or-scalar))))
+
+(define (yail-matrix-power matrix exponent)
+  (YailMatrix:power (as YailMatrix matrix) exponent))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Matrix implementation
