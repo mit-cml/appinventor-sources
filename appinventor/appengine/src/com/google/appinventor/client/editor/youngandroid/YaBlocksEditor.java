@@ -820,7 +820,7 @@ public final class YaBlocksEditor extends FileEditor
       $wnd.Blockly.Events.setGroup(true);
     }
     blocks.forEach(function(blockXml) {
-      var dom = $wnd.Blockly.Xml.textToDom(blockXml);
+      var dom = $wnd.Blockly.utils.xml.textToDom(blockXml);
       var mutations = dom.getElementsByTagName('mutation');
       for (var i = 0; i < mutations.length; i++) {
         var mutation = mutations[i];
@@ -863,7 +863,7 @@ public final class YaBlocksEditor extends FileEditor
               // Check for blocks in snap range to any of its connections.
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
-                var neighbour = connection.closest($wnd.Blockly.SNAP_RADIUS,
+                var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
                   new $wnd.goog.math.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
@@ -873,21 +873,21 @@ public final class YaBlocksEditor extends FileEditor
             }
             if (collide) {
               if (workspace.RTL) {
-                blockX -= $wnd.Blockly.SNAP_RADIUS;
+                blockX -= $wnd.Blockly.config.snapRadius;
               } else {
-                blockX += $wnd.Blockly.SNAP_RADIUS;
+                blockX += $wnd.Blockly.config.snapRadius;
               }
-              blockY += $wnd.Blockly.SNAP_RADIUS * 2;
+              blockY += $wnd.Blockly.config.snapRadius * 2;
             }
           } while (collide);
           block.moveBy(blockX, blockY);
         }
         if (workspace.rendered) {
           block.initSvg();
-          workspace.requestRender(block);
+          block.queueRender();
         }
       } catch(e) {
-        console.log(e);
+        console.error(e);
       }
     });
     if ($wnd.Blockly.Events.isEnabled()) {

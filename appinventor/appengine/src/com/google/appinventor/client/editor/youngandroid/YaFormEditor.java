@@ -951,7 +951,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     RootPanel.get().addDomHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        if (event.isAltKeyDown() && isActiveEditor()) {
+        if (!isActiveEditor()) {
+          return;  // Not the active editor
+        }
+        if (event.isAltKeyDown()) {
           List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
           MockComponent selectedComponent = form.getLastSelectedComponent();
           int index = form.getChildren().indexOf(selectedComponent);
@@ -1017,13 +1020,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
                 break;
             }
           }
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused() && isActiveEditor() && !event.isControlKeyDown()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
+            && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
           getVisibleComponentsPanel().focusCheckbox();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused() && isActiveEditor()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
           AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
         }
       }
