@@ -9,10 +9,12 @@ package com.google.appinventor.client.explorer.youngandroid;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Label;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -20,10 +22,8 @@ import com.google.gwt.uibinder.client.UiField;
  *
  */
 public class ProjectToolbar extends Toolbar {
+  private static final Logger LOG = Logger.getLogger(ProjectToolbar.class.getName());
   interface ProjectToolbarUiBinder extends UiBinder<Toolbar, ProjectToolbar> {}
-
-  private static final ProjectToolbar.ProjectToolbarUiBinder UI_BINDER =
-      GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
 
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_MOVE = "Move";
@@ -36,9 +36,12 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
   private final boolean isReadOnly;
+  private final boolean isGalleryReadyOnly;
+  private final boolean galleryEnabled;
+  @UiField protected Label projectLabel;
+  @UiField protected Label trashLabel;
 
-  @UiField ToolbarItem newProjectItem;
-  @UiField ToolbarItem newFolderItem;
+  private static volatile boolean lockPublishButton = false; // To prevent double clicking
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -46,24 +49,32 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
+    isGalleryReadyOnly = Ode.getInstance().getGalleryReadOnly();
     // Is the new gallery enabled
-    boolean galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
-    populateToolbar(UI_BINDER.createAndBindUi(this));
-
+    galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
+    bindProjectToolbar();
     if (galleryEnabled) {
       setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, true);
-      if (!Ode.getInstance().getGalleryReadOnly()) {
+      if (!isGalleryReadyOnly) {
         setButtonVisible(WIDGET_NAME_SENDTONG, true);
       }
     }
-
     setTrashTabButtonsVisible(false);
   }
 
+  protected void bindProjectToolbar() {
+    ProjectToolbar.ProjectToolbarUiBinder uibinder =
+        GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
+    populateToolbar(uibinder.createAndBindUi(this));
+  }
+
   public void setTrashTabButtonsVisible(boolean visible) {
+    LOG.info("setTrashTabButtonsVisible");
     setButtonVisible(WIDGET_NAME_PROJECT, visible);
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
     setButtonVisible(WIDGET_NAME_DELETE_FROM_TRASH, visible);
+    //TODO: This needs to be refactored to be configurable
+    trashLabel.setVisible(visible);
     updateButtons();
   }
 
@@ -71,6 +82,15 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_NEW, visible);
     setButtonVisible(WIDGET_NAME_TRASH,visible);
     setButtonVisible(WIDGET_NAME_DELETE,visible);
+    //TODO: This needs to be refactored to be configurable
+    setButtonVisible("Folder", visible);
+    setButtonVisible("ImportProject", visible);
+    setButtonVisible("ImportTemplate", visible);
+    setButtonVisible("Move", visible);
+    setButtonVisible(WIDGET_NAME_SENDTONG, visible && galleryEnabled && !isGalleryReadyOnly);
+    setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, visible && galleryEnabled);
+    setDropDownButtonVisible("Export", visible);
+    projectLabel.setVisible(visible);
   }
 
   /**
@@ -79,9 +99,11 @@ public class ProjectToolbar extends Toolbar {
    * of "Delete" and "Download Source").
    */
   public void updateButtons() {
+    LOG.info("updateButtons");
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
     int numAllItems = projectList.getMyProjectsCount();  // Get number of valid projects not in trash
     int numSelectedProjects = projectList.getSelectedProjectsCount();
+    LOG.info("Set Project List variables");
     if (isReadOnly) {           // If we are read-only, we disable all buttons
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
@@ -93,6 +115,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
+    LOG.info("Before updateMenuState");
     Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numAllItems);
   }
 

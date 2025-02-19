@@ -780,6 +780,19 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <dl class="properties">
   <dt id="ListView.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> background.</dd>
+  <dt id="ListView.BounceEdgeEffect" class="boolean"><em>BounceEdgeEffect</em></dt>
+  <dd>Sets the bounce effect function. <code class="logic block highlighter-rouge">true</code> will enable the function,
+ <code class="logic block highlighter-rouge">false</code> will disable.</dd>
+  <dt id="ListView.DividerColor" class="color"><em>DividerColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> divider.</dd>
+  <dt id="ListView.DividerThickness" class="number"><em>DividerThickness</em></dt>
+  <dd>Specifies the divider thickness of list view</dd>
+  <dt id="ListView.ElementColor" class="color"><em>ElementColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> element.</dd>
+  <dt id="ListView.ElementCornerRadius" class="number"><em>ElementCornerRadius</em></dt>
+  <dd>Specifies the corner radius of the list view element.</dd>
+  <dt id="ListView.ElementMarginsWidth" class="number"><em>ElementMarginsWidth</em></dt>
+  <dd>Specifies the width of the margins of a list view element</dd>
   <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
@@ -798,6 +811,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListView.HintText" class="text"><em>HintText</em></dt>
+  <dd>Sets hint on the filter bar.</dd>
   <dt id="ListView.ImageHeight" class="number"><em>ImageHeight</em></dt>
   <dd>Specifies the image height of ListView layouts containing images</dd>
   <dt id="ListView.ImageWidth" class="number"><em>ImageWidth</em></dt>
@@ -811,8 +826,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  layout is <code class="highlighter-rouge">Image,MainText</code> this property will allow any number of elements to be
  defined, each containing a filename for Image and a string for MainText.
  Designer only property.</dd>
-  <dt id="ListView.ListViewLayout" class="number do"><em>ListViewLayout</em></dt>
-  <dd>Specifies type of layout for ListView row. Designer only property.</dd>
+  <dt id="ListView.ListViewLayout" class="number"><em>ListViewLayout</em></dt>
+  <dd>Specifies type of layout for ListView row.</dd>
   <dt id="ListView.Orientation" class="number"><em>Orientation</em></dt>
   <dd>Specifies the layout’s orientation. This may be: <code class="highlighter-rouge">Vertical</code>, which displays elements
  in rows one after the other; or <code class="highlighter-rouge">Horizontal</code>, which displays one element at a time and
@@ -861,6 +876,14 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="ListView-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="ListView.AddItem" class="method"><i></i> AddItem(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list</dd>
+  <dt id="ListView.AddItemAtIndex" class="method"><i></i> AddItemAtIndex(<em class="number">index</em>,<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list at a given index</dd>
+  <dt id="ListView.AddItems" class="method"><i></i> AddItems(<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list</dd>
+  <dt id="ListView.AddItemsAtIndex" class="method"><i></i> AddItemsAtIndex(<em class="number">index</em>,<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list at specific index</dd>
   <dt id="ListView.CreateElement" class="method returns dictionary"><i></i> CreateElement(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
   <dd>Creates a</dd>
   <dt id="ListView.GetDetailText" class="method returns text"><i></i> GetDetailText(<em class="dictionary">listElement</em>)</dt>
@@ -869,8 +892,6 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>Get the filename of the image of a ListView element that has been uploaded to Media.</dd>
   <dt id="ListView.GetMainText" class="method returns text"><i></i> GetMainText(<em class="dictionary">listElement</em>)</dt>
   <dd>Get the Main Text of a ListView element.</dd>
-  <dt id="ListView.Refresh" class="method"><i></i> Refresh()</dt>
-  <dd>Reload the ListView to reflect any changes in the data.</dd>
   <dt id="ListView.RemoveItemAtIndex" class="method"><i></i> RemoveItemAtIndex(<em class="number">index</em>)</dt>
   <dd>Removes Item from list at a given index</dd>
 </dl>

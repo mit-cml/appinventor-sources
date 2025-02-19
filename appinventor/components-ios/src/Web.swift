@@ -145,7 +145,7 @@ open class Web: NonvisibleComponent {
     guard let webProps = capturePropertyValues("Delete") else {
       return
     }
-    performRequest(webProps, nil, nil, "Delete")
+    performRequest(webProps, nil, nil, "DELETE")
   }
 
   fileprivate func requestTextImpl(text: String, encoding: String?, functionName: String, httpVerb: String) {
@@ -391,6 +391,10 @@ open class Web: NonvisibleComponent {
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText)
       return "" as NSString
     }
+  }
+
+  @objc public static func decodeJson(_ jsonText: String) -> AnyObject? {
+    return try? getYailObjectFromJson(jsonText, true)
   }
 
   @objc open func UriDecode(_ text: String) -> String {

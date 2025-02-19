@@ -78,12 +78,14 @@ public class TopToolbar extends Composite {
 
   private static final Logger LOG = Logger.getLogger(TopToolbar.class.getName());
 
-  @UiField DropDownButton fileDropDown;
-  @UiField DropDownButton connectDropDown;
-  @UiField DropDownButton buildDropDown;
-  @UiField DropDownButton settingsDropDown;
-  @UiField DropDownButton adminDropDown;
-  @UiField (provided = true) final Boolean hasWriteAccess;
+  @UiField protected DropDownButton fileDropDown;
+  @UiField protected DropDownButton connectDropDown;
+  @UiField protected DropDownButton buildDropDown;
+  @UiField protected DropDownButton settingsDropDown;
+  @UiField protected DropDownButton adminDropDown;
+  @UiField (provided = true) Boolean hasWriteAccess;
+
+  protected boolean readOnly;
 
   /**
    * This flag is set to true when a check for the android.keystore file is in progress.
@@ -103,19 +105,16 @@ public class TopToolbar extends Composite {
 
   interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
 
-  private static final TopToolbarUiBinder UI_BINDER = GWT.create(TopToolbarUiBinder.class);
-
   public TopToolbar() {
     // The boolean needs to be reversed here so it is true when items need to be visible.
     // UIBinder can't negate the boolean itself.
-    hasWriteAccess = !Ode.getInstance().isReadOnly();
+    readOnly = Ode.getInstance().isReadOnly();
+    hasWriteAccess = !readOnly;
 
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     if (iamChromebook) {
       RootPanel.getBodyElement().addClassName("onChromebook");
     }
-
-    fileDropDown.removeUnneededSeparators();
 
     // Second Buildserver Menu Items
     //
@@ -157,6 +156,11 @@ public class TopToolbar extends Composite {
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
+  }
+
+  public void bindUI() {
+    TopToolbarUiBinder uibinder = GWT.create(TopToolbarUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   public void updateMoveToTrash(boolean moveToTrash) {
@@ -287,7 +291,7 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
-    if (!hasWriteAccess) {
+    if (readOnly) {
       // This may be too simple
       return;
     }
@@ -296,8 +300,11 @@ public class TopToolbar extends Composite {
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == 0) {  // We are in the Projects view
+      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
+        fileDropDown.setVisible(false);
+      }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
@@ -312,6 +319,9 @@ public class TopToolbar extends Composite {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
       }
     } else { // We have to be in the Designer/Blocks view
+      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
+        fileDropDown.setVisible(true);
+      }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
