@@ -1,5 +1,7 @@
 {
   "LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX": " ברשימה",
+  "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "תמונה זו מתייחסת לחסימות הבאות שדורשות הרחבות שאינן קיימות בפרויקט:\n\n",
+  "Blockly.Msg.ERROR_PARSING_XML": "שגיאה: לא ניתן לנתח את ה-XML מקובץ ה-PNG. אנא נסה שוב.",
   "COLLAPSE_ALL": "כווץ את כל הבלוקים",
   "TEXT_CHANGECASE_OPERATOR_UPPERCASE": "לאותיות גדולות (עבור טקסט באנגלית)",
   "LANG_CONTROLS_CLOSE_APPLICATION_TITLE": "סגור יישום",

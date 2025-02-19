@@ -17,43 +17,58 @@ import Foundation
 /// Support parsing float/double values from UTF-8
 internal class DoubleParser {
     // Temporary buffer so we can null-terminate the UTF-8 string
-    // before calling the C standard libray to parse it.
+    // before calling the C standard library to parse it.
+    //
     // In theory, JSON writers should be able to represent any IEEE Double
     // in at most 25 bytes, but many writers will emit more digits than
-    // necessary, so we size this generously.
-    private var work = 
-      UnsafeMutableBufferPointer<Int8>.allocate(capacity: 128)
+    // necessary, so we size this generously; but we could still fail to
+    // parse if someone crafts something really long (especially for
+    // TextFormat due to overflows (see below)).
+    private var work =
+        UnsafeMutableBufferPointer<Int8>.allocate(capacity: 128)
 
     deinit {
         work.deallocate()
     }
 
-    func utf8ToDouble(bytes: UnsafeRawBufferPointer,
-                      start: UnsafeRawBufferPointer.Index,
-                      end: UnsafeRawBufferPointer.Index) -> Double? {
-        return utf8ToDouble(bytes: UnsafeRawBufferPointer(rebasing: bytes[start..<end]))
+    func utf8ToDouble(
+        bytes: UnsafeRawBufferPointer,
+        start: UnsafeRawBufferPointer.Index,
+        end: UnsafeRawBufferPointer.Index
+    ) -> Double? {
+        utf8ToDouble(bytes: UnsafeRawBufferPointer(rebasing: bytes[start..<end]))
     }
 
-    func utf8ToDouble(bytes: UnsafeRawBufferPointer) -> Double? {
+    func utf8ToDouble(bytes: UnsafeRawBufferPointer, finiteOnly: Bool = true) -> Double? {
         // Reject unreasonably long or short UTF8 number
         if work.count <= bytes.count || bytes.count < 1 {
             return nil
         }
 
-        #if swift(>=4.1)
-          UnsafeMutableRawBufferPointer(work).copyMemory(from: bytes)
-        #else
-          UnsafeMutableRawBufferPointer(work).copyBytes(from: bytes)
-        #endif
+        UnsafeMutableRawBufferPointer(work).copyMemory(from: bytes)
         work[bytes.count] = 0
 
         // Use C library strtod() to parse it
         var e: UnsafeMutablePointer<Int8>? = work.baseAddress
         let d = strtod(work.baseAddress!, &e)
 
-        // Fail if strtod() did not consume everything we expected
-        // or if strtod() thought the number was out of range.
-        if e != work.baseAddress! + bytes.count || !d.isFinite {
+        // Fail if strtod() did not consume everything we expected.
+        guard e == work.baseAddress! + bytes.count else {
+            return nil
+        }
+
+        // If strtod() thought the number was out of range, it will return
+        // a non-finite number...
+        //
+        // TextFormat specifically calls out handling for overflows for
+        // float/double fields:
+        // https://protobuf.dev/reference/protobuf/textformat-spec/#value
+        //
+        // > Overflows are treated as infinity or -infinity.
+        //
+        // But the JSON protobuf spec doesn't mention anything:
+        // https://protobuf.dev/programming-guides/proto3/#json
+        if finiteOnly && !d.isFinite {
             return nil
         }
         return d

@@ -118,8 +118,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsResponseDateTimeRenderOptionSerial
 // responseValueRenderOption
 
 /**
- *  Values will be calculated & formatted in the reply according to the cell's
- *  formatting. Formatting is based on the spreadsheet's locale, not the
+ *  Values will be calculated & formatted in the response according to the
+ *  cell's formatting. Formatting is based on the spreadsheet's locale, not the
  *  requesting user's locale. For example, if `A1` is `1.23` and `A2` is `=A1`
  *  and formatted as currency, then `A2` would return `"$1.23"`.
  *
@@ -129,7 +129,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsResponseValueRenderOptionFormatted
 /**
  *  Values will not be calculated. The reply will include the formulas. For
  *  example, if `A1` is `1.23` and `A2` is `=A1` and formatted as currency, then
- *  A2 would return `"=A1"`.
+ *  A2 would return `"=A1"`. Sheets treats date and time values as decimal
+ *  values. This lets you perform arithmetic on them in formulas. For more
+ *  information on interpreting date and time values, see [About date & time
+ *  values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
  *
  *  Value: "FORMULA"
  */
@@ -172,8 +175,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueInputOptionUserEntered;
 // valueRenderOption
 
 /**
- *  Values will be calculated & formatted in the reply according to the cell's
- *  formatting. Formatting is based on the spreadsheet's locale, not the
+ *  Values will be calculated & formatted in the response according to the
+ *  cell's formatting. Formatting is based on the spreadsheet's locale, not the
  *  requesting user's locale. For example, if `A1` is `1.23` and `A2` is `=A1`
  *  and formatted as currency, then `A2` would return `"$1.23"`.
  *
@@ -183,7 +186,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionFormattedValue;
 /**
  *  Values will not be calculated. The reply will include the formulas. For
  *  example, if `A1` is `1.23` and `A2` is `=A1` and formatted as currency, then
- *  A2 would return `"=A1"`.
+ *  A2 would return `"=A1"`. Sheets treats date and time values as decimal
+ *  values. This lets you perform arithmetic on them in formulas. For more
+ *  information on interpreting date and time values, see [About date & time
+ *  values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
  *
  *  Value: "FORMULA"
  */
@@ -366,8 +372,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
 /**
  *  Returns the spreadsheet at the given ID. The caller must specify the
  *  spreadsheet ID. By default, data within grids is not returned. You can
- *  include grid data in one of 2 ways: * Specify a field mask listing your
- *  desired fields using the `fields` URL parameter in HTTP * Set the
+ *  include grid data in one of 2 ways: * Specify a [field
+ *  mask](https://developers.google.com/sheets/api/guides/field-masks) listing
+ *  your desired fields using the `fields` URL parameter in HTTP * Set the
  *  includeGridData URL parameter to true. If a field mask is set, the
  *  `includeGridData` parameter is ignored For large spreadsheets, as a best
  *  practice, retrieve only the specific spreadsheet fields that you want. To
@@ -408,8 +415,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *
  *  Returns the spreadsheet at the given ID. The caller must specify the
  *  spreadsheet ID. By default, data within grids is not returned. You can
- *  include grid data in one of 2 ways: * Specify a field mask listing your
- *  desired fields using the `fields` URL parameter in HTTP * Set the
+ *  include grid data in one of 2 ways: * Specify a [field
+ *  mask](https://developers.google.com/sheets/api/guides/field-masks) listing
+ *  your desired fields using the `fields` URL parameter in HTTP * Set the
  *  includeGridData URL parameter to true. If a field mask is set, the
  *  `includeGridData` parameter is ignored For large spreadsheets, as a best
  *  practice, retrieve only the specific spreadsheet fields that you want. To
@@ -437,9 +445,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *  dataFilters parameter. Multiple DataFilters can be specified. Specifying one
  *  or more data filters returns the portions of the spreadsheet that intersect
  *  ranges matched by any of the filters. By default, data within grids is not
- *  returned. You can include grid data one of 2 ways: * Specify a field mask
- *  listing your desired fields using the `fields` URL parameter in HTTP * Set
- *  the includeGridData parameter to true. If a field mask is set, the
+ *  returned. You can include grid data one of 2 ways: * Specify a [field
+ *  mask](https://developers.google.com/sheets/api/guides/field-masks) listing
+ *  your desired fields using the `fields` URL parameter in HTTP * Set the
+ *  includeGridData parameter to true. If a field mask is set, the
  *  `includeGridData` parameter is ignored For large spreadsheets, as a best
  *  practice, retrieve only the specific spreadsheet fields that you want.
  *
@@ -464,9 +473,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *  dataFilters parameter. Multiple DataFilters can be specified. Specifying one
  *  or more data filters returns the portions of the spreadsheet that intersect
  *  ranges matched by any of the filters. By default, data within grids is not
- *  returned. You can include grid data one of 2 ways: * Specify a field mask
- *  listing your desired fields using the `fields` URL parameter in HTTP * Set
- *  the includeGridData parameter to true. If a field mask is set, the
+ *  returned. You can include grid data one of 2 ways: * Specify a [field
+ *  mask](https://developers.google.com/sheets/api/guides/field-masks) listing
+ *  your desired fields using the `fields` URL parameter in HTTP * Set the
+ *  includeGridData parameter to true. If a field mask is set, the
  *  `includeGridData` parameter is ignored For large spreadsheets, as a best
  *  practice, retrieve only the specific spreadsheet fields that you want.
  *
@@ -594,7 +604,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *
  *  Likely values:
  *    @arg @c kGTLRSheetsResponseValueRenderOptionFormattedValue Values will be
- *        calculated & formatted in the reply according to the cell's
+ *        calculated & formatted in the response according to the cell's
  *        formatting. Formatting is based on the spreadsheet's locale, not the
  *        requesting user's locale. For example, if `A1` is `1.23` and `A2` is
  *        `=A1` and formatted as currency, then `A2` would return `"$1.23"`.
@@ -606,7 +616,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *    @arg @c kGTLRSheetsResponseValueRenderOptionFormula Values will not be
  *        calculated. The reply will include the formulas. For example, if `A1`
  *        is `1.23` and `A2` is `=A1` and formatted as currency, then A2 would
- *        return `"=A1"`. (Value: "FORMULA")
+ *        return `"=A1"`. Sheets treats date and time values as decimal values.
+ *        This lets you perform arithmetic on them in formulas. For more
+ *        information on interpreting date and time values, see [About date &
+ *        time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  */
 @property(nonatomic, copy, nullable) NSString *responseValueRenderOption;
 
@@ -803,7 +818,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *
  *  Likely values:
  *    @arg @c kGTLRSheetsValueRenderOptionFormattedValue Values will be
- *        calculated & formatted in the reply according to the cell's
+ *        calculated & formatted in the response according to the cell's
  *        formatting. Formatting is based on the spreadsheet's locale, not the
  *        requesting user's locale. For example, if `A1` is `1.23` and `A2` is
  *        `=A1` and formatted as currency, then `A2` would return `"$1.23"`.
@@ -815,7 +830,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *    @arg @c kGTLRSheetsValueRenderOptionFormula Values will not be calculated.
  *        The reply will include the formulas. For example, if `A1` is `1.23`
  *        and `A2` is `=A1` and formatted as currency, then A2 would return
- *        `"=A1"`. (Value: "FORMULA")
+ *        `"=A1"`. Sheets treats date and time values as decimal values. This
+ *        lets you perform arithmetic on them in formulas. For more information
+ *        on interpreting date and time values, see [About date & time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  */
 @property(nonatomic, copy, nullable) NSString *valueRenderOption;
 
@@ -1019,9 +1038,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
 
 /**
  *  The major dimension that results should use. For example, if the spreadsheet
- *  data is: `A1=1,B1=2,A2=3,B2=4`, then requesting
- *  `range=A1:B2,majorDimension=ROWS` returns `[[1,2],[3,4]]`, whereas
- *  requesting `range=A1:B2,majorDimension=COLUMNS` returns `[[1,3],[2,4]]`.
+ *  data in Sheet1 is: `A1=1,B1=2,A2=3,B2=4`, then requesting
+ *  `range=Sheet1!A1:B2?majorDimension=ROWS` returns `[[1,2],[3,4]]`, whereas
+ *  requesting `range=Sheet1!A1:B2?majorDimension=COLUMNS` returns
+ *  `[[1,3],[2,4]]`.
  *
  *  Likely values:
  *    @arg @c kGTLRSheetsMajorDimensionDimensionUnspecified The default value,
@@ -1048,7 +1068,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *
  *  Likely values:
  *    @arg @c kGTLRSheetsValueRenderOptionFormattedValue Values will be
- *        calculated & formatted in the reply according to the cell's
+ *        calculated & formatted in the response according to the cell's
  *        formatting. Formatting is based on the spreadsheet's locale, not the
  *        requesting user's locale. For example, if `A1` is `1.23` and `A2` is
  *        `=A1` and formatted as currency, then `A2` would return `"$1.23"`.
@@ -1060,7 +1080,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *    @arg @c kGTLRSheetsValueRenderOptionFormula Values will not be calculated.
  *        The reply will include the formulas. For example, if `A1` is `1.23`
  *        and `A2` is `=A1` and formatted as currency, then A2 would return
- *        `"=A1"`. (Value: "FORMULA")
+ *        `"=A1"`. Sheets treats date and time values as decimal values. This
+ *        lets you perform arithmetic on them in formulas. For more information
+ *        on interpreting date and time values, see [About date & time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  */
 @property(nonatomic, copy, nullable) NSString *valueRenderOption;
 
@@ -1138,7 +1162,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *
  *  Likely values:
  *    @arg @c kGTLRSheetsResponseValueRenderOptionFormattedValue Values will be
- *        calculated & formatted in the reply according to the cell's
+ *        calculated & formatted in the response according to the cell's
  *        formatting. Formatting is based on the spreadsheet's locale, not the
  *        requesting user's locale. For example, if `A1` is `1.23` and `A2` is
  *        `=A1` and formatted as currency, then `A2` would return `"$1.23"`.
@@ -1150,7 +1174,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheetsValueRenderOptionUnformattedValue;
  *    @arg @c kGTLRSheetsResponseValueRenderOptionFormula Values will not be
  *        calculated. The reply will include the formulas. For example, if `A1`
  *        is `1.23` and `A2` is `=A1` and formatted as currency, then A2 would
- *        return `"=A1"`. (Value: "FORMULA")
+ *        return `"=A1"`. Sheets treats date and time values as decimal values.
+ *        This lets you perform arithmetic on them in formulas. For more
+ *        information on interpreting date and time values, see [About date &
+ *        time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  */
 @property(nonatomic, copy, nullable) NSString *responseValueRenderOption;
 

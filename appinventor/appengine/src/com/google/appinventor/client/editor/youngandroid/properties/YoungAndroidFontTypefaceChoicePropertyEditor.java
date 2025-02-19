@@ -122,7 +122,7 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
             closeAdditionalChoiceDialog(true);
           }
         };
-        new FileUploadWizard(assetsFolder, callback);
+        new FileUploadWizard(assetsFolder, callback).show();
       }
     });
     selectorPanel.add(addButton);

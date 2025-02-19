@@ -12,7 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ProcedureDatabase');
-goog.require('Blockly');
 goog.require('goog.object');
 
 /**
@@ -32,7 +31,7 @@ Blockly.ProcedureDatabase = function(workspace) {
 
   /**
    * Procedure definition map from block ID to block. This is a subset of
-   * {@link Blockly.Workspace.blockDB_}.
+   * {@link Blockly.Workspace.blockDB}.
    * @type {{string: !Blockly.BlockSvg}}
    * @private
    */
@@ -82,7 +81,7 @@ Blockly.ProcedureDatabase.defaultValue = ['', 'none'];
  * @returns {!string[]}
  */
 Blockly.ProcedureDatabase.prototype.getNames = function(returnValue) {
-  return Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_).map(function(v) { return v[0]; });
+  return AI.Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_).map(function(v) { return v[0]; });
 };
 
 /**
@@ -91,7 +90,7 @@ Blockly.ProcedureDatabase.prototype.getNames = function(returnValue) {
  * @returns {!Array.<Array.<string>>}
  */
 Blockly.ProcedureDatabase.prototype.getMenuItems = function(returnValue) {
-  return Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_);
+  return AI.Blockly.AIProcedure.getProcedureNames(returnValue, this.workspace_);
 };
 
 /**

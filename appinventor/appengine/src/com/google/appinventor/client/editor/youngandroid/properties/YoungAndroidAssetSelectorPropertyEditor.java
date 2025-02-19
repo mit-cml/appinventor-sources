@@ -111,7 +111,7 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
             closeAdditionalChoiceDialog(true);
           }
         };
-        new FileUploadWizard(assetsFolder, callback);
+        new FileUploadWizard(assetsFolder, callback).show();
       }
     });
     selectorPanel.add(addButton);

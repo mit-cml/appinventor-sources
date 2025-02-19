@@ -25,16 +25,15 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class StatusPanel extends Composite {
 
   interface StatusPanelUiBinder extends UiBinder<FlowPanel, StatusPanel> {}
-  private static final StatusPanelUiBinder UI_BINDER = GWT.create(StatusPanelUiBinder.class);
 
-  @UiField(provided = true) FlowPanel footer = new FlowPanel("footer");
-  @UiField Anchor tosLink;
+  @UiField(provided = true) protected FlowPanel footer;
+  @UiField protected Anchor tosLink;
 
   /**
    * Initializes and assembles all UI elements shown in the status panel.
    */
   public StatusPanel() {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
 
     String tosUrl = Ode.getSystemConfig().getTosUrl();
     if (!Strings.isNullOrEmpty(tosUrl)) {
@@ -42,6 +41,12 @@ public class StatusPanel extends Composite {
     } else {
       tosLink.removeFromParent();
     }
+  }
+
+  protected void bindUI() {
+    footer = new FlowPanel("footer");
+    StatusPanelUiBinder uibinder = GWT.create(StatusPanelUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   @UiFactory

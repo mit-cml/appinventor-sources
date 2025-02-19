@@ -498,14 +498,22 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
   private void setPhoneStyle() {
     if (landscape) {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
-      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
+      }
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarLandscape");
     } else {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
-      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      }
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarPortrait");
     }
     if (idxPhonePreviewStyle == 2) {
@@ -543,6 +551,11 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private void resizePanel(int newWidth, int newHeight){
     screenWidth = newWidth;
     screenHeight = newHeight;
+    int scrollbarWidth = 0;
+    if (Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE))) {
+      // only display space for a scrollbar if the form is scrollable
+      scrollbarWidth = getVerticalScrollbarWidth();
+    }
 
     if (landscape) {
       String val = editor.getProjectEditor().getProjectSettingsProperty(
@@ -559,8 +572,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
     }
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
-    scrollPanel.setPixelSize(usableScreenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
-    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    // This margin is to ensure the mockform aligns to the left when there is space for a scrollbar
+    rootPanel.getElement().getStyle().setProperty("marginRight", scrollbarWidth + "px");
+    scrollPanel.setPixelSize(usableScreenWidth + scrollbarWidth, usableScreenHeight);
+    formWidget.setPixelSize(screenWidth + scrollbarWidth, screenHeight);
+    // Added width to phoneWidget to prevent it from expanding wider than intended
+    // if the SimpleComponentsPanel menu is wider than the phonebar.
+    phoneWidget.setWidth(usableScreenWidth + scrollbarWidth + "px");
     // Store properties
     changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
     boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
@@ -627,6 +645,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     }
     changePreviewFlag = false;
   }
+
   /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
@@ -844,6 +863,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       int heightHint = scrollable ? LENGTH_PREFERRED : usableScreenHeight;
       changeProperty(PROPERTY_NAME_HEIGHT, "" + heightHint);
     }
+    resizePanel(screenWidth, screenHeight);
   }
 
   private void setIconProperty(String icon) {

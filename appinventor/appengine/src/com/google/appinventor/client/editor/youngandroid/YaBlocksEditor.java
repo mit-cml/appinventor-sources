@@ -15,9 +15,11 @@ import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.client.editor.blocks.BlocksLanguage;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -67,12 +69,23 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     super(projectEditor, blocksNode, YaVersion.YOUNG_ANDROID_VERSION, YAIL,
         BlocksCodeGenerationTarget.YAIL,
         SimpleComponentDatabase.getInstance(blocksNode.getProjectId()));
+
     project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
     project.addProjectChangeListener(this);
     onProjectLoaded(project);
   }
 
   // FileEditor methods
+  @Override
+  public DropTargetProvider getDropTargetProvider() {
+    return new DropTargetProvider() {
+      // TODO(sharon): make the tree in the BlockSelectorBox a drop target
+      @Override
+      public DropTarget[] getDropTargets() {
+        return new DropTarget[0];
+      }
+    };
+  }
 
   @Override
   public void onShow() {
@@ -272,16 +285,16 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
   }
 
   public static native void resendAssetsAndExtensions()/*-{
-    if (top.ReplState && (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
-      Blockly.ReplMgr.resendAssetsAndExtensions();
+    if (top.ReplState && (top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.ASSET)) {
+      $wnd.Blockly.ReplMgr.resendAssetsAndExtensions();
     }
   }-*/;
 
   public static native void resendExtensionsList()/*-{
-    if (top.ReplState && top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
-      Blockly.ReplMgr.loadExtensions();
+    if (top.ReplState && top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED) {
+      $wnd.Blockly.ReplMgr.loadExtensions();
     }
   }-*/;
 

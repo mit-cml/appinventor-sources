@@ -28,6 +28,8 @@ top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {}
 top.HTML5DragDrop_checkProjectNameForCollision = function(name) {};
 top.HTML5DragDrop_shouldShowDropTarget = function(target) {};
 
+top.HTML5DragDrop_importProject = importProject;
+
 var dropdiv = document.createElement('div');
 dropdiv.className = 'dropdiv';
 dropdiv.innerHTML = '<div><p>Drop files here</p></div>';
@@ -82,6 +84,9 @@ function handleDroppedItem(item, cb) {
 }
 
 function importProject(droppedItem) {
+  if (typeof droppedItem == "string") {
+    droppedItem = {"name": droppedItem} // stop gap for handling different sources
+  }
   var filename = droppedItem.name;
   filename = filename.substring(filename.lastIndexOf('/') + 1);
   var projectName = filename.substring(0, filename.length - 4);
@@ -189,15 +194,15 @@ function uploadKeystore(droppedItem) {
 }
 
 function isProject(item) {
-  return goog.string.endsWith(item.name, '.aia');
+  return top.goog.string.endsWith(item.name, '.aia');
 }
 
 function isExtension(item) {
-  return goog.string.endsWith(item.name, '.aix');
+  return top.goog.string.endsWith(item.name, '.aix');
 }
 
 function isKeystore(item) {
-  return goog.string.endsWith(item.name, 'android.keystore');
+  return top.goog.string.endsWith(item.name, 'android.keystore');
 }
 
 function checkValidDrag(e) {
@@ -229,7 +234,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk') || goog.string.endsWith(item.name, '.aab')) {
+    } else if (top.goog.string.endsWith(item.name, '.apk') || top.goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);

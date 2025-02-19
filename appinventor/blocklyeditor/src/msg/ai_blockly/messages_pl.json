@@ -14,6 +14,8 @@
 	"Blockly.Msg.REMOVE_COMMENT": "Usuń komentarz",
 	"Blockly.Msg.ADD_COMMENT": "Dodaj komentarz",
 	"Blockly.Msg.EXTERNAL_INPUTS": "Wejścia zewnętrzne",
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Ten obrazek odnosi się do następujących bloków, które wymagają rozszerzeń, które nie są obecne w projekcie:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "Błąd: Nie udało się sparsować XML z pliku PNG. Proszę spróbować ponownie.",
 	"Blockly.Msg.INLINE_INPUTS": "Wejścia liniowe",
 	"Blockly.Msg.HORIZONTAL_PARAMETERS": "Rozmieść parametry w poziomie",
 	"Blockly.Msg.VERTICAL_PARAMETERS": "Rozmieść parametry w pionie",

@@ -14,6 +14,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import android.app.Activity;
 import android.util.Log;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
@@ -354,10 +355,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        if (!EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage)) {
-          // Dispatch to screen if the event handler does not exist.
-          form.dispatchErrorOccurredEvent(Spreadsheet.this, "ErrorOccurred",
-              ErrorMessages.ERROR_SPREADSHEET_ERROR,  errorMessage);
+        try {
+          if (!EventDispatcher.dispatchEvent(thisInstance, "ErrorOccurred", errorMessage)) {
+            // Dispatch to screen if the event handler does not exist.
+            form.dispatchErrorOccurredEvent(Spreadsheet.this, "ErrorOccurred",
+                ErrorMessages.ERROR_SPREADSHEET_ERROR,  errorMessage);
+          }
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error in ErrorOccurred event dispatch", e);
         }
       }
     });
@@ -586,7 +591,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
         }
         // Handle Errors which may have occured while sending the Read Request!
         catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "ReadRow Error", e);
           ErrorOccurred("ReadRow: " + e.getMessage());
         }
       }
@@ -657,7 +662,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
         }
         catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "WriteRow Error", e);
           ErrorOccurred("WriteRow: " + e.getMessage());
         }
       }
@@ -861,7 +866,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             RetrieveSheet(sheetName, -1, null, false, false);
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "AddRow Error", e);
           ErrorOccurred("AddRow: " + e.getMessage());
         }
       }
@@ -927,7 +932,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
         }
         catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "RemoveRow Error", e);
           ErrorOccurred("RemoveRow: " + e.getMessage());
         }
       }
@@ -1052,7 +1057,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
         } catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "ReadColumn Error", e);
           ErrorOccurred("ReadColumn: " + e.getMessage());
         }
       }
@@ -1126,10 +1131,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
         } catch (IOException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "WriteColumn IO Error", e);
           ErrorOccurred("WriteColumn IOException: " + e.getMessage());
         } catch (GeneralSecurityException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "WriteColumn Security Error", e);
           ErrorOccurred("WriteColumn GeneralSecurityException: " + e.getMessage());
         }
       }
@@ -1217,10 +1222,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
         } catch (IOException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "AddColumn IO Error", e);
           ErrorOccurred("AddColumn IOException: " + e.getMessage());
         } catch (GeneralSecurityException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "AddColumn Security Error", e);
           ErrorOccurred("AddColumn GeneralSecurityException: " + e.getMessage());
         }
       }
@@ -1290,7 +1295,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
         }
         catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "RemoveColumn Error", e);
           ErrorOccurred("RemoveColumn: " + e.getMessage());
         }
       }
@@ -1420,9 +1425,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
         }
         // Handle Errors which may have occured while sending the Read Request
-        catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("ReadCell: " + e.getMessage());
+        catch (GoogleJsonResponseException e) {
+          Log.e(LOG_TAG, "Error in ReadCell: API Error", e);
+          ErrorOccurred("ReadCell: API Error: " + e.getMessage());
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "Error in ReadCell: IO Error", e);
+          ErrorOccurred("ReadCell: IO Error: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+          Log.e(LOG_TAG, "Error in ReadCell: Security Error", e);
+          ErrorOccurred("ReadCell: Security Error: " + e.getMessage());
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error in ReadCell: Unknown Error", e);
+          ErrorOccurred("ReadCell: Unknown Error: " + e.getMessage());
         }
       }
     });
@@ -1491,9 +1505,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
         }
-        catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("WriteCell: " + e.getMessage());
+        catch (GoogleJsonResponseException e) {
+          Log.e(LOG_TAG, "WriteCell: API Error", e);
+          ErrorOccurred("WriteCell: API Error: " + e.getMessage());
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "WriteCell: IO Error", e);
+          ErrorOccurred("WriteCell: IO Error: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+          Log.e(LOG_TAG, "WriteCell: Security Error", e);
+          ErrorOccurred("WriteCell: Security Error: " + e.getMessage());
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "WriteCell: Unknown Error", e);
+          ErrorOccurred("WriteCell: Unknown Error: " + e.getMessage());
         }
       }
     });
@@ -1611,7 +1634,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
         }
         // Handle Errors which may have occured while sending the Read Request!
         catch (Exception e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "ReadRange Error", e);
           ErrorOccurred("ReadRange: " + e.getMessage());
         }
       }
@@ -1699,9 +1722,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
           });
         }
-        catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("WriteRange: " + e.getMessage());
+        catch (GoogleJsonResponseException e) {
+          Log.e(LOG_TAG, "Error in WriteRange: API Error", e);
+          ErrorOccurred("WriteRange: API Error: " + e.getMessage());
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "Error in WriteRange: IO Error", e);
+          ErrorOccurred("WriteRange: IO Error: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+          Log.e(LOG_TAG, "Error in WriteRange: Security Error", e);
+          ErrorOccurred("WriteRange: Security Error: " + e.getMessage());
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error in WriteRange: Unknown Error", e);
+          ErrorOccurred("WriteRange: Unknown Error: " + e.getMessage());
         }
       }
     });
@@ -1752,9 +1784,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               FinishedClearRange();
             }
           });
+        } catch (GoogleJsonResponseException e) {
+          Log.e(LOG_TAG, "Error in ClearRange: API Error", e);
+          ErrorOccurred("ClearRange: API Error: " + e.getMessage());
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "Error in ClearRange: IO Error", e);
+          ErrorOccurred("ClearRange: IO Error: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+          Log.e(LOG_TAG, "Error in ClearRange: Security Error", e);
+          ErrorOccurred("ClearRange: Security Error: " + e.getMessage());
         } catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("ClearRange: " + e.getMessage());
+          Log.e(LOG_TAG, "Error in ClearRange: Unknown Error", e);
+          ErrorOccurred("ClearRange: Unknown Error: " + e.getMessage());
         }
       }
     });
@@ -1943,9 +1984,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           });
         }
         // Handle Errors which may have occured while sending the Read Request!
-        catch (Exception e) {
-          e.printStackTrace();
-          ErrorOccurred("RetrieveSheet Error: " + e.getMessage());
+        catch (GoogleJsonResponseException e) {
+          Log.e(LOG_TAG, "Error in RetrieveSheet: API Error", e);
+          ErrorOccurred("RetrieveSheet: API Error: " + e.getMessage());
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "Error in RetrieveSheet: IO Error", e);
+          ErrorOccurred("RetrieveSheet: IO Error: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
+          Log.e(LOG_TAG, "Error in RetrieveSheet: Security Error", e);
+          ErrorOccurred("RetrieveSheet: Security Error: " + e.getMessage());
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error in RetrieveSheet: Unknown Error", e);
+          ErrorOccurred("RetrieveSheet: Unknown Error: " + e.getMessage());
         }
       }
     };
@@ -1981,7 +2031,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               try {
                 currentTask.get();
               } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(LOG_TAG, "Error in RetrieveSheet", e);
               }
             }
 

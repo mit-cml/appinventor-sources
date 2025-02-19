@@ -8,15 +8,14 @@ import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPan
 import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * An implementation of SimpleVisibleComponentsPanel for the MockForm designer.
@@ -24,15 +23,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockForm> {
+  interface YaVisibleComponentsPanelUiBinder extends UiBinder<VerticalPanel,
+       YaVisibleComponentsPanel> {}
   // UI elements
-  private final VerticalPanel phoneScreen;
-  private final CheckBox checkboxShowHiddenComponents;
-  private final ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
-  private final ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
-  private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
-  private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
-  private final ProjectEditor projectEditor;
-
+  @UiField protected VerticalPanel phoneScreen;
+  @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
+  @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
+  protected final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
+  protected final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
+  protected final ProjectEditor projectEditor;
+  @UiField protected CheckBox HiddenComponentsCheckbox;
   /**
    * Creates new component design panel for visible components.
    *
@@ -40,47 +40,45 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
    * @param nonVisibleComponentsPanel corresponding panel for non-visible
    */
   public YaVisibleComponentsPanel(final ProjectEditor projectEditor,
-                                  SimpleNonVisibleComponentsPanel<MockForm> nonVisibleComponentsPanel) {
+      SimpleNonVisibleComponentsPanel<MockForm> nonVisibleComponentsPanel) {
     super(nonVisibleComponentsPanel);
 
     this.projectEditor = projectEditor;
+    initializeListboxes();
 
+    bindUI();
     // Initialize UI
-    phoneScreen = new VerticalPanel();
     phoneScreen.setStylePrimaryName("ode-SimpleFormDesigner");
 
-    checkboxShowHiddenComponents = new CheckBox(MESSAGES.showHiddenComponentsCheckbox()) {
+    listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
       @Override
-      protected void onLoad() {
-        // Get project settings
-        String screenCheckboxMap = projectEditor.getProjectSettingsProperty(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, 
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
-        );
-        if (screenCheckboxMap != null && !screenCheckboxMap.equals("")) {
-          projectEditor.buildScreenHashMap(screenCheckboxMap);
-          Boolean isChecked = projectEditor.getScreenCheckboxState(root.getTitle());
-          checkboxShowHiddenComponents.setValue(isChecked);
-        }
-      }
-    };
-    checkboxShowHiddenComponents.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-      @Override
-      public void onValueChange(ValueChangeEvent<Boolean> event) {
-        boolean isChecked = event.getValue();
-        projectEditor.setScreenCheckboxState(root.getTitle(), isChecked);
-        projectEditor.changeProjectSettingsProperty(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, 
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP, 
-          projectEditor.getScreenCheckboxMapString()
-        );
-        if (root != null) {
-          root.refresh();
-        }
+      public void onChange(ChangeEvent event) {
+        int idx = Integer.parseInt(listboxPhoneTablet.getSelectedValue());
+        int width = drop_lst[idx][0];
+        int height = drop_lst[idx][1];
+        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
+        // here, we can change settings by putting val into it
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
+        changeFormPreviewSize(idx, width, height);
       }
     });
-    phoneScreen.add(checkboxShowHiddenComponents);
+    listboxPhonePreview.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        int idx = Integer.parseInt(listboxPhonePreview.getSelectedValue());
+        String val = drop_lst_phone_preview[idx];
+        // here, we can change settings by putting chosenStyle value into it
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
+        changeFormPhonePreview(idx, val);
+      }
+    });
+    initWidget(phoneScreen);
+  }
 
+  protected void initializeListboxes() {
+    // Initialize UI
     listboxPhoneTablet = new ListBox() {
       @Override
       protected void onLoad() {
@@ -96,31 +94,13 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
         }
       }
     };
-    listboxPhoneTablet.addItem("Phone size");
-    listboxPhoneTablet.addItem("Tablet size");
-    listboxPhoneTablet.addItem("Monitor size");
-    listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        int idx = listboxPhoneTablet.getSelectedIndex();
-        int width = drop_lst[idx][0];
-        int height = drop_lst[idx][1];
-        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
-        // here, we can change settings by putting val into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
-        changeFormPreviewSize(idx, width, height);
-      }
-    });
-
-    phoneScreen.add(listboxPhoneTablet);
 
     listboxPhonePreview = new ListBox() {
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.
         String previewStyle = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
         boolean classic = (previewStyle.equals("Classic"));
         listboxPhonePreview.setVisible(!classic);
         if (classic) {
@@ -130,24 +110,6 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
         }
       }
     };
-    listboxPhonePreview.addItem("Android 5+ Devices");
-    listboxPhonePreview.addItem("Android 3.0-4.4.2 Devices");
-    listboxPhonePreview.addItem("iOS 13 Devices");
-    listboxPhonePreview.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        int idx = listboxPhonePreview.getSelectedIndex();
-        String val = drop_lst_phone_preview[idx];
-        // here, we can change settings by putting chosenStyle value into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
-        changeFormPhonePreview(idx, val);
-      }
-    });
-
-    phoneScreen.add(listboxPhonePreview);
-
-    initWidget(phoneScreen);
   }
 
   /**
@@ -161,12 +123,8 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
     phoneScreen.add(form);
   }
 
-  public boolean isHiddenComponentsCheckboxChecked() {
-    return checkboxShowHiddenComponents.getValue();
-  }
-
   // get width and height stored in user settings, and change the preview size.
-  private void getUserSettingChangeSize() {
+  protected void getUserSettingChangeSize() {
     String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
     int idx = 0;
@@ -190,7 +148,7 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
   }
 
   // get Phone Preview stored in user settings, and change the preview style.
-  private void getUserSettingChangePreview() {
+  protected void getUserSettingChangePreview() {
     String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
     int idx = 0;
@@ -208,51 +166,19 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
     changeFormPhonePreview(idx, val);
   }
 
-  private void changeFormPreviewSize(int idx, int width, int height) {
-    if (root == null) {
+  protected void changeFormPreviewSize(int idx, int width, int height) {
+    if (root == null)
       return;
-    }
 
     root.changePreviewSize(width, height, idx);
-    String info = " (" + height + "," + width + ")";
-    if (idx == 0) {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
-      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-    } else if (idx == 1) {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
-      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-    } else {
-      listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
-      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-    }
-    // change settings
   }
 
-  private void changeFormPhonePreview(int idx, String chosenVal) {
-    if (root == null) {
+  protected void changeFormPhonePreview(int idx, String chosenVal) {
+
+    if (root == null)
       return;
-    }
 
     root.changePhonePreview(idx, chosenVal);
-
-    String info = " (" + chosenVal + ")";
-    if (idx == 0) {
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewAndroidMaterial() + info);
-      listboxPhonePreview.setItemText(1, MESSAGES.previewAndroidHolo());
-      listboxPhonePreview.setItemText(2, MESSAGES.previewIOS());
-    } else if (idx == 1) {
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewAndroidHolo() + info);
-      listboxPhonePreview.setItemText(0, MESSAGES.previewAndroidMaterial());
-      listboxPhonePreview.setItemText(2, MESSAGES.previewIOS());
-    } else if (idx == 2){
-      listboxPhonePreview.setItemText(idx, MESSAGES.previewIOS() + info);
-      listboxPhonePreview.setItemText(0, MESSAGES.previewAndroidMaterial());
-      listboxPhonePreview.setItemText(1, MESSAGES.previewAndroidHolo());
-    }
-    // change settings
   }
 
   public void enableTabletPreviewCheckBox(boolean enable){
@@ -279,5 +205,11 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
       }
     }
     listboxPhonePreview.setEnabled(enable);
+  }
+
+  protected void bindUI() {
+    YaVisibleComponentsPanel.YaVisibleComponentsPanelUiBinder uibinder =
+        GWT.create(YaVisibleComponentsPanel.YaVisibleComponentsPanelUiBinder.class);
+    uibinder.createAndBindUi(this);
   }
 }

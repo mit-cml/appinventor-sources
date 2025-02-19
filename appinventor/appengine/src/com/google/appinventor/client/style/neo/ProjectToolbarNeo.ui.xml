@@ -1,0 +1,78 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <!-- Projects Menu -->
+  <ai:Toolbar styleName="ya-ProjectToolbar">
+    <g:Label text="{messages.projectsTabName}" styleName="ya-ProjectName"
+             ui:field="projectLabel" visible="false"/>
+    <g:Label text="{messages.trashButton}" styleName="ya-ProjectName" visible="false"
+             ui:field="trashLabel"/>
+    <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" icon='add' ui:field="newProjectItem"
+                    align="left" styleName="ode-ProjectListButton bleft">
+      <actions:NewProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="ImportProject" icon="file_open" align="left"
+                    styleName="ode-ProjectListButton bcenter" tooltip="{messages.importProjectMenuItem}">
+      <actions:ImportProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="ImportTemplate" icon="cloud_download" align="left"
+                    styleName="ode-ProjectListButton bcenter" tooltip="{messages.importTemplateButton}">
+      <actions:ImportTemplateAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Folder" icon="create_new_folder" ui:field="newFolderItem" align="left"
+                    styleName="ode-ProjectListButton bright" tooltip="{messages.newProjectFolderMenuItem}">
+      <actions:NewFolderAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Move" caption='{messages.moveProjectButton}' icon='drive_file_move' align="center"
+                    styleName="ode-ProjectListButton inline bleft" tooltip="{messages.moveProjectMenuItem}">
+      <actions:MoveProjectsAction/>
+    </ai:ToolbarItem>
+    <ai:DropDownButton name="Export" caption="{messages.exportButton}" icon="file_download" align="center"
+                       styleName="ode-ProjectListButton inline bcenter">
+      <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
+        <actions:ExportProjectAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}">
+        <actions:ExportAllProjectsAction/>
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+    <ai:ToolbarItem name="Login to Gallery" caption="{messages.galleryTabName}" icon='key' align="center"
+        styleName="ode-ProjectListButton inline bright" tooltip="{messages.loginToGallery}" visible="false">
+      <actions:LoginToGalleryAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishButton}" icon='public' align="center"
+        styleName="ode-ProjectListButton inline bright" tooltip="{messages.publishToGalleryButton}" visible="false">
+      <actions:SendToGalleryAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Restore" icon="restore" tooltip="{messages.restoreProjectButton}" align="right"
+                    styleName="ode-ProjectListButton inline bleft">
+      <actions:RestoreProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Projects" icon="inventory" align="right" styleName="ode-ProjectListButton inline bcenter"
+                    tooltip="{messages.projectMenuItem}">
+      <actions:SwitchToProjectAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Trash" icon='folder_delete' tooltip="{messages.viewTrashButton}"
+                    align="right" styleName="ode-ProjectListButton inline bleft">
+      <actions:TrashAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Delete" icon='delete' align="right" styleName="ode-ProjectListButton danger bright"
+                    tooltip="{messages.deleteProjectButton}">
+      <actions:DeleteAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Delete From Trash" icon='delete_forever'
+                    align="right" styleName="ode-ProjectListButton danger bright"
+                    tooltip="{messages.deleteFromTrashButton}">
+      <actions:DeleteForeverProjectAction/>
+    </ai:ToolbarItem>
+
+  </ai:Toolbar>
+</ui:UiBinder>

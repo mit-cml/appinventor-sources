@@ -6,16 +6,14 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -52,8 +50,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import com.google.gwt.user.client.ui.FlowPanel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -63,6 +61,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -136,22 +136,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     propertyDialogBox.showDialog(curScreen);
   }
 
-  /**
-   * Returns a project editor factory for {@code YaProjectEditor}s.
-   *
-   * @return a project editor factory for {@code YaProjectEditor}s.
-   */
-  public static ProjectEditorFactory getFactory() {
-    return new ProjectEditorFactory() {
-      @Override
-      public ProjectEditor createProjectEditor(ProjectRootNode projectRootNode) {
-        return new YaProjectEditor(projectRootNode);
-      }
-    };
-  }
-
-  public YaProjectEditor(ProjectRootNode projectRootNode) {
-    super(projectRootNode);
+  public YaProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory styleFactory) {
+    super(projectRootNode, styleFactory);
     project.addProjectChangeListener(this);
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
     Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {

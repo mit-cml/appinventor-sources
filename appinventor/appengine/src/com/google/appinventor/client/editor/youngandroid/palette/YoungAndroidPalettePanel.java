@@ -34,9 +34,9 @@ public class YoungAndroidPalettePanel extends AbstractPalettePanel<SimpleCompone
    * @param editor parent editor of this panel
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
-    super(editor, new YoungAndroidComponentFactory(editor), ComponentCategory.USERINTERFACE, ComponentCategory.LAYOUT, ComponentCategory.MEDIA, 
-          ComponentCategory.ANIMATION, ComponentCategory.MAPS, ComponentCategory.SENSORS, ComponentCategory.SOCIAL, ComponentCategory.STORAGE, 
-          ComponentCategory.CONNECTIVITY, ComponentCategory.LEGOMINDSTORMS, ComponentCategory.EXPERIMENTAL, ComponentCategory.EXTENSION, ComponentCategory.INTERNAL);
+    super(editor, new YoungAndroidComponentFactory(editor), ComponentCategory.USERINTERFACE, ComponentCategory.LAYOUT, ComponentCategory.MEDIA,
+        ComponentCategory.ANIMATION, ComponentCategory.MAPS, ComponentCategory.SENSORS, ComponentCategory.SOCIAL, ComponentCategory.STORAGE,
+        ComponentCategory.CONNECTIVITY, ComponentCategory.LEGOMINDSTORMS, ComponentCategory.EXPERIMENTAL, ComponentCategory.EXTENSION, ComponentCategory.INTERNAL);
 
     // If a category has a palette helper, add it to the paletteHelpers map here.
     paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new LegoPaletteHelper());

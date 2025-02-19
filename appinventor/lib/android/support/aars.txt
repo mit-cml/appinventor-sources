@@ -1,3 +1,4 @@
+annotation-experimental.aar
 appcompat.aar
 asynclayoutinflater.aar
 constraintlayout.aar

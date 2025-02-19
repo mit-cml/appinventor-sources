@@ -209,7 +209,8 @@ typedef void (^GTLRServiceTestBlock)(GTLRServiceTicket *testTicket,
  *  A query may only be executed a single time. To reuse a query, make a copy before executing
  *  it.
  *
- *  To get a NSURLRequest that represents the query, use @c -[GTLRService requestForQuery:]
+ *  To get a NSURLRequest that represents the query, use
+ *  @c -[GTLRService requestForQuery:completion:].
  *
  *  @param query   The API query, either a subclass of GTLRQuery, or a GTLRBatchQuery.
  *  @param handler The execution callback block.
@@ -295,12 +296,18 @@ typedef void (^GTLRServiceTestBlock)(GTLRServiceTicket *testTicket,
  */
 - (void)setMainBundleIDRestrictionWithAPIKey:(NSString *)apiKey;
 
+// Avoid the warnings for GTMFetcherAuthorizationProtocol in newer
+// GTMSessionFetcher headers. Updating requires a new minimum, and
+// holding of on raising it that current for the moment.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 /**
  *  An authorizer adds user authentication headers to the request as needed.
  *
  *  This may be overridden on individual queries with the @c shouldSkipAuthorization property.
  */
 @property(nonatomic, retain, nullable) id <GTMFetcherAuthorizationProtocol> authorizer;
+#pragma clang diagnostic pop
 
 /**
  *  Enable fetcher retry support.  See the explanation of retry support in @c GTMSessionFetcher.h
@@ -372,13 +379,35 @@ typedef void (^GTLRServiceTestBlock)(GTLRServiceTicket *testTicket,
  *
  *  This works only for GET queries, and only for an individual query, not a batch query.
  *
- *  @note @c Unlike executeQuery:, requestForQuery: does not release the query's callback blocks.
+ *  @note This method blocks the calling thread to calculate the User-Agent string if not
+ *    otherwise specified, so do not invoke this on the UI thread / main queue.
+ *    Use @c -requestForQuery:completion: unless calling this on a background queue which
+ *    is OK to block.
  *
  *  @param query The query used to create the request.
  *
  *  @return A request suitable for use with @c GTMSessionFetcher or @c NSURLSession
  */
 - (NSMutableURLRequest *)requestForQuery:(GTLRQuery *)query;
+
+/**
+ *  Creates a NSURLRequest from the query object and from properties on this service
+ *  (additionalHTTPHeaders, additionalURLQueryParameters, APIKey) without executing
+ *  it. This can be useful for using @c GTMSessionFetcher or @c NSURLSession to
+ *  perform the fetch.
+ *
+ *  For requests to non-public resources, the request will not yet be authorized;
+ *  that can be done using the GTLR service's authorizer. Creating a @c GTMSessionFetcher
+ *  from the GTLRService's @c fetcherService will take care of authorization as well.
+ *
+ *  This works only for GET queries, and only for an individual query, not a batch query.
+ *
+ *  @param query The query used to create the request.
+ *  @param completion Completion asynchronously invoked on the service's
+ *    @c callbackQueue with the URL request, suitable for use with with @c GTMSessionFetcher or
+ *    @c NSURLSession.
+ */
+- (void)requestForQuery:(GTLRQuery *)query completion:(void (^)(NSMutableURLRequest *))completion;
 
 #pragma mark User Properties
 
@@ -763,11 +792,17 @@ typedef void (^GTLRServiceTestBlock)(GTLRServiceTicket *testTicket,
 
 /**
  *  The request being fetched for the query.
+ *
+ *  This is not set until the `completionHandler` or delegate `didFinishSelector`
+ *  passed to the service's `-executeQuery:...` method is invoked.
  */
 @property(nonatomic, readonly, nullable) NSURLRequest *fetchRequest;
 
 /**
  *  The fetcher being used for the query request.
+ *
+ *  This is not set until the `completionHandler` or delegate `didFinishSelector`
+ *  passed to the service's `-executeQuery:...` method is invoked.
  */
 @property(atomic, readonly, nullable) GTMSessionFetcher *objectFetcher;
 

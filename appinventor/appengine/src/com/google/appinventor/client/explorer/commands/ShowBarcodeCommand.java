@@ -77,12 +77,15 @@ public class ShowBarcodeCommand extends ChainableCommand {
 
       // Main layout panel
       VerticalPanel contentPanel = new VerticalPanel();
+      contentPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
 
       // Container
       HorizontalPanel container = new HorizontalPanel();
+      container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
 
       // Container > Left
       VerticalPanel left = new VerticalPanel();
+      left.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
 
       // Container > Left > Download Button
       ClickHandler downloadHandler = new ClickHandler() {

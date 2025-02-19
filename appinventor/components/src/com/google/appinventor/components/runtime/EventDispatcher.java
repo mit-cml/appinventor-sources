@@ -184,19 +184,36 @@ public class EventDispatcher {
    * @param args  arguments to the event handler
    */
   public static synchronized boolean dispatchEvent(Component component, String eventName, Object...args) {
+    return Boolean.TRUE == dispatchFallibleEvent(component, eventName, args);
+  }
+
+  /**
+   * Dispatches an event based on its name to any registered handlers.
+   *
+   * @param component  the component raising the event
+   * @param eventName  name of event being raised
+   * @param args  arguments to the event handler
+   * @return `Boolean.TRUE` if the event was dispatched, `Boolean.FALSE` if no event handler was
+   * found, or an Exception if the event handler threw an Exception
+   */
+  public static synchronized Object dispatchFallibleEvent(Component component, String eventName, Object... args) {
     if (DEBUG) {
       Log.i("EventDispatcher", "Trying to dispatch event " + eventName);
     }
-    args = OptionHelper.optionListsFromValues(component, eventName, args);
     boolean dispatched = false;
-    HandlesEventDispatching dispatchDelegate = component.getDispatchDelegate();
-    if (dispatchDelegate.canDispatchEvent(component, eventName)) {
-      EventRegistry er = getEventRegistry(dispatchDelegate);
-      Set<EventClosure> eventClosures = er.eventClosuresMap.get(eventName);
-      if (eventClosures != null && eventClosures.size() > 0) {
-        dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
+    try {
+      args = OptionHelper.optionListsFromValues(component, eventName, args);
+      HandlesEventDispatching dispatchDelegate = component.getDispatchDelegate();
+      if (dispatchDelegate.canDispatchEvent(component, eventName)) {
+        EventRegistry er = getEventRegistry(dispatchDelegate);
+        Set<EventClosure> eventClosures = er.eventClosuresMap.get(eventName);
+        if (eventClosures != null && eventClosures.size() > 0) {
+          dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
+        }
+        dispatchDelegate.dispatchGenericEvent(component, eventName, !dispatched, args);
       }
-      dispatchDelegate.dispatchGenericEvent(component, eventName, !dispatched, args);
+    } catch (Exception e) {
+      return e;
     }
     return dispatched;
   }

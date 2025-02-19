@@ -3,7 +3,7 @@
 
 package com.google.appinventor.client.boxes;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.blocks.BlockDrawerSelectionListener;
@@ -202,7 +202,7 @@ public final class BlockSelectorBox extends Box {
     for (final String typeName : typeList) {
       TreeItem itemNode = new TreeItem(new HTML("<span>" + typesAndIcons.get(typeName)
           + MESSAGES.textAnyComponentLabel()
-          + ComponentsTranslation.getComponentName(typeName) + "</span>"));
+          + ComponentTranslationTable.getComponentName(typeName) + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected(NativeEvent source) {

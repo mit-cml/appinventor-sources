@@ -145,6 +145,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     if (component.external && component.assets.size() > 0) {
       outputAssets(component, json);
     }
+    outputProviderModels(component, json);
+    outputProvider(component, json);
     parent.put(json);
   }
 
@@ -199,6 +201,14 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
 
   private void outputAssets(ComponentInfo component, JSONObject parent) {
     parent.put("assets", new JSONArray(component.assets));
+  }
+
+  private void outputProviderModels(ComponentInfo component, JSONObject parent) {
+    parent.put("providermodel", new JSONArray());
+  }
+
+  private void outputProvider(ComponentInfo component, JSONObject parent) {
+    parent.put("provider", new JSONArray());
   }
 
   /**
@@ -348,6 +358,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       case ASSET:
         json.put("data", outputAsset((Integer) helper.getKey()));
         break;
+      case PROVIDER_MODEL:
+        json.put("data", outputProviderModel((Integer) helper.getKey()));
+        break;
+      case PROVIDER:
+        json.put("data", outputProvider((Integer) helper.getKey()));
+        break;
       default:
         throw new UnsupportedOperationException();
     }
@@ -379,6 +395,24 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
   }
 
   private JSONObject outputAsset(int key) {
+    JSONObject json = new JSONObject();
+    List<String> filter = filters.get(key);
+    if (filter != null && filter.size() != 0) {
+      json.put("filter", new JSONArray(filter));
+    }
+    return json;
+  }
+
+  private JSONObject outputProviderModel(int key) {
+    JSONObject json = new JSONObject();
+    List<String> filter = filters.get(key);
+    if (filter != null && filter.size() != 0) {
+      json.put("filter", new JSONArray(filter));
+    }
+    return json;
+  }
+
+  private JSONObject outputProvider(int key) {
     JSONObject json = new JSONObject();
     List<String> filter = filters.get(key);
     if (filter != null && filter.size() != 0) {

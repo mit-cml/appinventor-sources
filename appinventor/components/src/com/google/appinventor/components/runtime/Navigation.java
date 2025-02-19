@@ -335,7 +335,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   private void performRequest(GeoPoint start, GeoPoint end, TransportMethod method)
       throws IOException, JSONException {
-    final String finalUrl = serviceUrl + method.toUnderlyingValue() + "/geojson/";
+    final String finalUrl = serviceUrl + method.toUnderlyingValue() + "/geojson";
     URL url = new URL(finalUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setDoInput(true);

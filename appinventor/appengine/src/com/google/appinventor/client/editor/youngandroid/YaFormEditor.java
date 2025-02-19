@@ -6,13 +6,10 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
@@ -53,6 +50,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Editor for Young Android Form (.scm) files.
  *
@@ -86,14 +85,14 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   /**
    * A mapping of component UUIDs to mock components in the designer view.
    */
-  private final Map<String, MockComponent> componentsDb = new HashMap<String, MockComponent>();
+  private final Map<String, MockComponent> componentsDb = new HashMap<>();
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
   /**
    * Creates a new YaFormEditor.
    *
-   * @param projectEditor  the project editor that contains this file editor
+   * @param projectEditor the project editor that contains this file editor
    * @param formNode the YoungAndroidFormNode associated with this YaFormEditor
    */
   YaFormEditor(ProjectEditor projectEditor, YoungAndroidFormNode formNode) {
@@ -117,17 +116,29 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     palettePanel.setSize("100%", "100%");
     componentDatabaseChangeListeners.add(palettePanel);
     registerNativeListeners();
+//    registerKeyDownListeners();
   }
 
   public boolean shouldDisplayHiddenComponents() {
-    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
+    return projectEditor.getScreenCheckboxState(root.getTitle()) != null
+               && projectEditor.getScreenCheckboxState(root.getTitle());
   }
 
   // FileEditor methods
 
-  @Override
-  public String getTabText() {
-    return sourceNode.getFormName();
+  public DropTargetProvider getDropTargetProvider() {
+    return new DropTargetProvider() {
+      @Override
+      public DropTarget[] getDropTargets() {
+        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+        // getDropTargets() doesn't get called for each component.
+        // NOTE: These targets must be specified in depth-first order.
+        List<DropTarget> dropTargets = root.getDropTargetsWithin();
+        dropTargets.add(visibleComponentsPanel);
+        dropTargets.add(nonVisibleComponentsPanel);
+        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
+      }
+    };
   }
 
   @Override
@@ -272,7 +283,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
 
     // END OF PROJECT TAGGING CODE
 
-    preUpgradeJsonString =  propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
+    preUpgradeJsonString = propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
     if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
@@ -283,16 +294,16 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         }
       } else {
         Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
-          getProjectId(), getFileId(), upgradedContent,
-          new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
-            @Override
-            public void onSuccess(Long result) {
-              // Execute the afterUpgradeComplete command if one was given.
-              if (afterUpgradeComplete != null) {
-                afterUpgradeComplete.execute();
+            getProjectId(), getFileId(), upgradedContent,
+            new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
+              @Override
+              public void onSuccess(Long result) {
+                // Execute the afterUpgradeComplete command if one was given.
+                if (afterUpgradeComplete != null) {
+                  afterUpgradeComplete.execute();
+                }
               }
-            }
-          });
+            });
       }
     } else {
       // No upgrade was necessary.
@@ -323,9 +334,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     root.select(null);
 
     String subsetjson = root.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
-    if (subsetjson.length() > 0) {
-      reloadComponentPalette(subsetjson);
-    }
+    reloadComponentPalette(subsetjson);
     super.onFileLoaded(content);
 
     // Originally this was done in loadDesigner. However, this resulted in
@@ -343,7 +352,6 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   }
 
   public void reloadComponentPalette(String subsetjson) {
-    LOG.info(subsetjson);
     Set<String> shownComponents = new HashSet<String>();
     if (subsetjson.length() > 0) {
       try {
@@ -351,11 +359,10 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         if (shownComponentsStr.length() > 0) {
           shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
         }
+        palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "invalid subset string", e);
       }
-      // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
-      palettePanel.clearComponentsExceptExtension();
     } else {
       shownComponents = componentDatabase.getComponentNames();
       palettePanel.clearComponents();
@@ -363,6 +370,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     for (String component : shownComponents) {
       palettePanel.addComponent(component);
     }
+    palettePanel.resetOpenCategories();
   }
 
   private native String getShownComponents(String subsetString)/*-{
@@ -485,6 +493,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
 
   /**
    * Runs through all the Mock Components and upgrades if its corresponding Component was Upgraded
+   *
    * @param componentTypes the Component Types that got upgraded
    */
   private void updateMockComponents(List<String> componentTypes) {
@@ -577,13 +586,13 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
       copy(e);
     });
 
-    $wnd.addEventListener('keydown', function(e) {
+    $wnd.addEventListener('keydown', function (e) {
       if (e.keyCode === 16) {
         editor.shiftDown = true;
       }
     });
 
-    $wnd.addEventListener('keyup', function(e) {
+    $wnd.addEventListener('keyup', function (e) {
       if (e.keyCode === 16) {
         editor.shiftDown = false;
       }
@@ -605,7 +614,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
       try {
         JSON.parse(data);
         e.preventDefault();
-      } catch(e) {
+      } catch (e) {
         return;  // not valid JSON to paste, abort!
       }
       editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJsni(*)(data, editor.shiftDown);
@@ -658,7 +667,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     String sep = "";
     sb.append("[");
     if (form.getSelectedComponents().size() == 1
-        && form.getSelectedComponents().get(0) instanceof MockForm) {
+            && form.getSelectedComponents().get(0) instanceof MockForm) {
       encodeComponentProperties(form, sb, false);
     } else {
       for (MockComponent component : form.getSelectedComponents()) {
@@ -718,7 +727,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     // Copy the properties
     for (Map.Entry<String, JSONValue> property : prototype.getProperties().entrySet()) {
       if (property.getKey().startsWith("$")
-          || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {
+              || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {
         continue;
       }
       form.getProperties().getExistingProperty(property.getKey())

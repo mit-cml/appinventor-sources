@@ -3,9 +3,9 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.json.JsArray;
 import com.google.appinventor.common.version.AppInventorFeatures;
@@ -26,19 +26,16 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import jsinterop.annotations.JsOverlay;
-import jsinterop.annotations.JsType;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -56,7 +53,7 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
 
   protected final Map<ComponentCategory, PaletteHelper> paletteHelpers;
 
-  private final StackPanel stackPalette;
+  private final CollapsablePanel stackPalette;
   protected final Map<ComponentCategory, VerticalPanel> categoryPanels;
   // store Component Type along with SimplePaleteItem to enable removal of components
   private final Map<String, SimplePaletteItem> simplePaletteItems;
@@ -114,12 +111,13 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
   }
 
   protected AbstractPalettePanel(U editor, ComponentFactory componentFactory,
-                                 ComponentCategory... categories) {
+      ComponentCategory... categories) {
     this.editor = editor;
     componentDatabase = editor.getComponentDatabase();
     factory = componentFactory;
 
-    stackPalette = new StackPanel();
+    stackPalette = new CollapsablePanel();
+    stackPalette.setStylePrimaryName("ode-CollapsablePanel");
 
     paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
 
@@ -133,7 +131,7 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
 
 
     for (String component : componentDatabase.getComponentNames()) {
-      String translationName = ComponentsTranslation.getComponentName(component).toLowerCase();
+      String translationName = ComponentTranslationTable.getComponentName(component).toLowerCase();
       arrayString.push(translationName);
       translationMap.put(translationName, component);
     }
@@ -280,13 +278,13 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
   public void loadComponents(DropTargetProvider dropTargetProvider) {
     this.dropTargetProvider = dropTargetProvider;
     for (String component : componentDatabase.getComponentNames()) {
-      this.addComponent(component);
+      addComponent(component);
     }
   }
 
   private void loadComponents() {
     for (String component : componentDatabase.getComponentNames()) {
-      this.addComponent(component);
+      addComponent(component);
     }
   }
 
@@ -342,6 +340,13 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
     }
   }
 
+  public void resetOpenCategories() {
+    for(int i = 1; i < stackPalette.getCategories().size(); i++) {
+      stackPalette.close(i);
+    }
+    stackPalette.show(0);
+  }
+
   public void removeComponent(String componentTypeName) {
     String categoryString = componentDatabase.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
@@ -381,26 +386,23 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
     // Extension title for the palette.
     int insert_index = Collections.binarySearch(categoryOrder, category.ordinal());
     insert_index = - insert_index - 1;
-    stackPalette.insert(panel, insert_index);
     String title = "";
     if (ComponentCategory.EXTENSION.equals(category)) {
       title = MESSAGES.extensionComponentPallette();
     } else {
-      title = ComponentsTranslation.getCategoryName(category.getName());
+      title = ComponentTranslationTable.getCategoryName(category.getName());
     }
-    stackPalette.setStackText(insert_index, title);
-    categoryOrder.add(insert_index, category.ordinal());
+    stackPalette.insert(panel, category, title, insert_index);
     // When the categories are loaded, we want the first one open, which will almost always be User Interface
-    stackPalette.showStack(0);
+    categoryOrder.add(insert_index, category.ordinal());
     return panel;
   }
 
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
-    VerticalPanel panel = categoryPanels.get(category);
+    VerticalPanel panel = stackPalette.getCategoryPanel(category);
     panel.remove(component);
     if (panel.getWidgetCount() < 1) {
-      stackPalette.remove(panel);
-      categoryPanels.remove(category);
+      stackPalette.remove(panel, category);
     }
   }
 
@@ -432,11 +434,7 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
 
   @Override
   public void clearComponents() {
-    for (ComponentCategory category : categoryPanels.keySet()) {
-      VerticalPanel panel = categoryPanels.get(category);
-      panel.clear();
-      stackPalette.remove(panel);
-    }
+    stackPalette.clear();
     for (PaletteHelper pal : paletteHelpers.values()) {
       pal.clear();
     }
@@ -453,7 +451,7 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
       if (!ComponentCategory.EXTENSION.equals(category)) {
         VerticalPanel panel = categoryPanels.get(category);
         panel.clear();
-        stackPalette.remove(panel);
+        stackPalette.remove(panel, category);
       }
     }
     for (PaletteHelper pal : paletteHelpers.values()) {
@@ -469,6 +467,15 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
   public void reloadComponents() {
     clearComponents();
     loadComponents();
+    stackPalette.show(0);
+  }
+
+  public void reloadComponentsFromSet(Set<String> set) {
+    clearComponents();
+    for (String component : set) {
+      addComponent(component);
+    }
+    stackPalette.show(0);
   }
 
   @Override

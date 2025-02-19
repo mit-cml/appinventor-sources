@@ -69,13 +69,15 @@ internal struct JSONEncoder {
 
     internal init() {}
 
-    internal var dataResult: Data { return Data(data) }
+    internal var dataResult: [UInt8] { data }
 
     internal var stringResult: String {
         get {
-            return String(bytes: data, encoding: String.Encoding.utf8)!
+            String(bytes: data, encoding: String.Encoding.utf8)!
         }
     }
+
+    internal var bytesResult: [UInt8] { data }
 
     /// Append a `StaticString` to the JSON text.  Because
     /// `StaticString` is already UTF8 internally, this is faster
@@ -105,7 +107,12 @@ internal struct JSONEncoder {
         data.append(contentsOf: utf8Data)
     }
 
-    /// Begin a new field whose name is given as a `_NameMap.Name`
+    /// Append a raw utf8 in a `[UInt8]` to the JSON text.
+    internal mutating func append(utf8Bytes: [UInt8]) {
+        data.append(contentsOf: utf8Bytes)
+    }
+
+    /// Begin a new field whose name is given as a `_NameMap.Name`.
     internal mutating func startField(name: _NameMap.Name) {
         if let s = separator {
             data.append(s)
@@ -128,7 +135,7 @@ internal struct JSONEncoder {
         separator = asciiComma
     }
 
-    /// Begin a new extension field
+    /// Begin a new extension field.
     internal mutating func startExtensionField(name: String) {
         if let s = separator {
             data.append(s)
@@ -238,16 +245,20 @@ internal struct JSONEncoder {
         }
     }
 
-    /// Write an Enum as an int.
+    /// Write an Enum as an Int.
     internal mutating func putEnumInt(value: Int) {
         appendInt(value: Int64(value))
     }
 
     /// Write an `Int64` using protobuf JSON quoting conventions.
-    internal mutating func putInt64(value: Int64) {
+    internal mutating func putQuotedInt64(value: Int64) {
         data.append(asciiDoubleQuote)
         appendInt(value: value)
         data.append(asciiDoubleQuote)
+    }
+
+    internal mutating func putNonQuotedInt64(value: Int64) {
+        appendInt(value: value)
     }
 
     /// Write an `Int32` with quoting suitable for
@@ -259,15 +270,19 @@ internal struct JSONEncoder {
     }
 
     /// Write an `Int32` in the default format.
-    internal mutating func putInt32(value: Int32) {
+    internal mutating func putNonQuotedInt32(value: Int32) {
         appendInt(value: Int64(value))
     }
 
     /// Write a `UInt64` using protobuf JSON quoting conventions.
-    internal mutating func putUInt64(value: UInt64) {
+    internal mutating func putQuotedUInt64(value: UInt64) {
         data.append(asciiDoubleQuote)
         appendUInt(value: value)
         data.append(asciiDoubleQuote)
+    }
+
+    internal mutating func putNonQuotedUInt64(value: UInt64) {
+        appendUInt(value: value)
     }
 
     /// Write a `UInt32` with quoting suitable for
@@ -279,7 +294,7 @@ internal struct JSONEncoder {
     }
 
     /// Write a `UInt32` in the default format.
-    internal mutating func putUInt32(value: UInt32) {
+    internal mutating func putNonQuotedUInt32(value: UInt32) {
         appendUInt(value: UInt64(value))
     }
 
@@ -287,12 +302,12 @@ internal struct JSONEncoder {
     /// using the value as a map key.
     internal mutating func putQuotedBoolValue(value: Bool) {
         data.append(asciiDoubleQuote)
-        putBoolValue(value: value)
+        putNonQuotedBoolValue(value: value)
         data.append(asciiDoubleQuote)
     }
 
     /// Write a `Bool` in the default format.
-    internal mutating func putBoolValue(value: Bool) {
+    internal mutating func putNonQuotedBoolValue(value: Bool) {
         if value {
             append(staticText: "true")
         } else {
@@ -313,7 +328,7 @@ internal struct JSONEncoder {
             case 13: append(staticText: "\\r")
             case 34: append(staticText: "\\\"")
             case 92: append(staticText: "\\\\")
-            case 0...31, 127...159: // Hex form for C0 control chars
+            case 0...31, 127...159:  // Hex form for C0 control chars
                 append(staticText: "\\u00")
                 data.append(hexDigits[Int(c.value / 16)])
                 data.append(hexDigits[Int(c.value & 15)])
@@ -337,50 +352,49 @@ internal struct JSONEncoder {
     }
 
     /// Append a bytes value using protobuf JSON Base-64 encoding.
-    internal mutating func putBytesValue(value: Data) {
+    internal mutating func putBytesValue<Bytes: SwiftProtobufContiguousBytes>(value: Bytes) {
         data.append(asciiDoubleQuote)
         if value.count > 0 {
             value.withUnsafeBytes { (body: UnsafeRawBufferPointer) in
-              if let p = body.baseAddress, body.count > 0 {
-                var t: Int = 0
-                var bytesInGroup: Int = 0
-                for i in 0..<body.count {
-                    if bytesInGroup == 3 {
+                if let p = body.baseAddress, body.count > 0 {
+                    var t: Int = 0
+                    var bytesInGroup: Int = 0
+                    for i in 0..<body.count {
+                        if bytesInGroup == 3 {
+                            data.append(base64Digits[(t >> 18) & 63])
+                            data.append(base64Digits[(t >> 12) & 63])
+                            data.append(base64Digits[(t >> 6) & 63])
+                            data.append(base64Digits[t & 63])
+                            t = 0
+                            bytesInGroup = 0
+                        }
+                        t = (t << 8) + Int(p[i])
+                        bytesInGroup += 1
+                    }
+                    switch bytesInGroup {
+                    case 3:
                         data.append(base64Digits[(t >> 18) & 63])
                         data.append(base64Digits[(t >> 12) & 63])
                         data.append(base64Digits[(t >> 6) & 63])
                         data.append(base64Digits[t & 63])
-                        t = 0
-                        bytesInGroup = 0
+                    case 2:
+                        t <<= 8
+                        data.append(base64Digits[(t >> 18) & 63])
+                        data.append(base64Digits[(t >> 12) & 63])
+                        data.append(base64Digits[(t >> 6) & 63])
+                        data.append(asciiEquals)
+                    case 1:
+                        t <<= 16
+                        data.append(base64Digits[(t >> 18) & 63])
+                        data.append(base64Digits[(t >> 12) & 63])
+                        data.append(asciiEquals)
+                        data.append(asciiEquals)
+                    default:
+                        break
                     }
-                    t = (t << 8) + Int(p[i])
-                    bytesInGroup += 1
                 }
-                switch bytesInGroup {
-                case 3:
-                    data.append(base64Digits[(t >> 18) & 63])
-                    data.append(base64Digits[(t >> 12) & 63])
-                    data.append(base64Digits[(t >> 6) & 63])
-                    data.append(base64Digits[t & 63])
-                case 2:
-                    t <<= 8
-                    data.append(base64Digits[(t >> 18) & 63])
-                    data.append(base64Digits[(t >> 12) & 63])
-                    data.append(base64Digits[(t >> 6) & 63])
-                    data.append(asciiEquals)
-                case 1:
-                    t <<= 16
-                    data.append(base64Digits[(t >> 18) & 63])
-                    data.append(base64Digits[(t >> 12) & 63])
-                    data.append(asciiEquals)
-                    data.append(asciiEquals)
-                default:
-                    break
-                }
-              }
             }
         }
         data.append(asciiDoubleQuote)
     }
 }
-
