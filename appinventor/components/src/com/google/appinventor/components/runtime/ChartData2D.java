@@ -68,16 +68,30 @@ public final class ChartData2D extends ChartDataBase {
       threadRunner.execute(new Runnable() {
         @Override
         public void run() {
+          YailList pair = YailList.makeList(Arrays.asList(x, y));
+          YailList labelList = container.Labels();
+          int index = labelList.indexOf(x);
+
           try {
             // Create a 2-tuple, and add the tuple to the Data Series
-            YailList pair = YailList.makeList(Arrays.asList(x, y));
             dataModel.addEntryFromTuple(pair);
+          } catch (NumberFormatException e){
+            // likely that the x value is a string/label, get the corresponding index and use that as x
+            YailList pairLabelAsIndex = YailList.makeList(Arrays.asList(index, y));
+            dataModel.addEntryFromTuple(pairLabelAsIndex);
+            // should we do another catch here?
 
-            // Refresh Chart with new data
-            onDataChange();
+            /*catch( NumberFormatException nfe)
+              this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+            "GetEntryFromTuple",
+            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+            rawX, rawY);
+
+             */
           } finally {
             synchronized (ChartData2D.this) {
               isDone.set(true);
+              onDataChange();
               ChartData2D.this.notifyAll();
             }
           }
@@ -111,25 +125,30 @@ public final class ChartData2D extends ChartDataBase {
       threadRunner.execute(new Runnable() {
         @Override
         public void run() {
+
           try {
-            // Create a 2-tuple, and remove the tuple from the Data Series
+            // Create a 2-tuple (in which x may be a label or numerical value), and remove the tuple from the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
-
-
-            //get index of x and remove the color highlight at that index
-            float xValue = Float.parseFloat(x);
-            float yValue = Float.parseFloat(y);
-
-            Entry currEntry = new Entry(xValue, yValue);
+            Entry currEntry = dataModel.getEntryFromTuple(pair);
             int index = dataModel.findEntryIndex(currEntry);
+            if (index >= 0){
+              dataModel.removeEntry(index);
+            }
 
-            dataModel.removeEntryFromTuple(pair);
-            // Refresh Chart with new data
-            resetHighlightAtIndex(index);
-            onDataChange();
+          } catch (NumberFormatException e){
+            // likely that the x value is a string/label, get the corresponding index and use that as x
+
+            YailList labelList = container.Labels();
+            int indexList = labelList.indexOf(x);
+            YailList pairFromLabel = YailList.makeList(Arrays.asList(indexList, y));
+            Entry currEntry = dataModel.getEntryFromTuple(pairFromLabel);
+            int indexFromFind = dataModel.findEntryIndex(currEntry);
+            dataModel.removeEntry(indexFromFind);
           } finally {
             synchronized (ChartData2D.this) {
+
               isDone.set(true);
+              onDataChange();
               ChartData2D.this.notifyAll();
             }
           }
