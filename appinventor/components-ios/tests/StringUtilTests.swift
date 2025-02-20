@@ -8,6 +8,7 @@ import XCTest
 @testable import AIComponentKit
 
 class StringUtilTests: XCTestCase {
+
   func testJoinStrings() throws {
     XCTAssertEqual("a:b:c",
                    StringUtil.joinStrings(["a", "b", "c"], NSString(string: ":").description as NSString))

@@ -1660,6 +1660,20 @@ Dictionary implementation.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;Mappings implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Mappings so we can replace substrings within strings
+(define (string-replace-mappings-dictionary text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsDictionary text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsLongestString text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsEarliestOccurrence text mappings))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
