@@ -26,6 +26,14 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
     _delegate = delegate
     _isDatePicker = isDatePicker
     super.init()
+    if #available(iOS 14.0, *) {
+      _pickerView.preferredDatePickerStyle = .inline
+      if UITraitCollection.current.userInterfaceStyle == .dark {
+        _pickerView.backgroundColor = .black
+      } else {
+        _pickerView.backgroundColor = .white
+      }
+    }
     _pickerView.datePickerMode = isDatePicker ? .date: .time
   }
 
@@ -35,7 +43,15 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
   }
 
   override func setupViews() {
-    _setDateTimeButton.backgroundColor = .clear
+    if #available(iOS 13.0, *){
+      if UITraitCollection.current.userInterfaceStyle == .dark {
+        _setDateTimeButton.backgroundColor = .black
+      } else {
+        _setDateTimeButton.backgroundColor = .white
+      }
+    } else {
+      _setDateTimeButton.backgroundColor = .clear
+    }
     _setDateTimeButton.setTitle("Set \(_isDatePicker ? "Date": "Time")", for: .normal)
     _setDateTimeButton.setTitleColor(view.tintColor, for: .normal)
     _setDateTimeButton.addTarget(self, action: #selector(dateTimeSet), for: .touchUpInside)
@@ -56,6 +72,7 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
     _setDateTimeButton.topAnchor.constraint(equalTo: _pickerView.bottomAnchor, constant: 0).isActive = true
 
     view.bottomAnchor.constraint(equalTo: _setDateTimeButton.bottomAnchor, constant: 20).isActive = true
+    view.backgroundColor = _setDateTimeButton.backgroundColor
     self.preferredContentSize = CGSize(width: _pickerView.frame.width, height: 300)
   }
 
@@ -93,6 +110,9 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
   public init(_ delegate: DateTimePickerDelegate, screen form: Form, isDatePicker: Bool) {
     _delegate = delegate
     super.init(contentView: _pickerView, screen: form)
+    if #available(iOS 14.0, *) {
+      _pickerView.preferredDatePickerStyle = .inline
+    }
     _pickerView.datePickerMode = isDatePicker ? .date: .time
   }
 
@@ -127,9 +147,14 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
 }
 
 func getDateTimePickerController(_ delegate: DateTimePickerDelegate, screen form: Form, isDatePicker: Bool, isPhone: Bool) -> DateTimePickerController {
-  if isPhone {
-    return DateTimePickerPhoneController(delegate, screen: form, isDatePicker: isDatePicker)
-  } else {
+  if #available(iOS 13.4, *){
     return DateTimePickerPadController(delegate, isDatePicker: isDatePicker)
+  } else {
+    if isPhone {
+      return DateTimePickerPhoneController(delegate, screen: form, isDatePicker: isDatePicker)
+    } else {
+      return DateTimePickerPadController(delegate, isDatePicker: isDatePicker)
+    }
   }
+  
 }
