@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -32,6 +32,7 @@ public final class ComponentDescriptorConstants {
   public static final String CONTENT_PROVIDERS_TARGET = "contentProviders";
   public static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   public static final String CONDITIONALS_TARGET = "conditionals";
+  public static final String XMLS_TARGET = "xmls";
 
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
