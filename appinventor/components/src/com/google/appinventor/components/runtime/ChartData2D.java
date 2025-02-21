@@ -57,6 +57,15 @@ public final class ChartData2D extends ChartDataBase {
    * @param x - x value of entry
    * @param y - y value of entry
    */
+  /**
+   * Adds an entry with the specified x and y value. Values can be specified as text,
+   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+   * For Bar charts, the x value is rounded to the nearest integer.
+   * For Pie Charts, the x value is a text value.
+   *
+   * @param x - x value of entry
+   * @param y - y value of entry
+   */
   @SimpleFunction()
   public void AddEntry(final String x, final String y) {
     // Entry should be added via the Thread Runner asynchronously
@@ -68,30 +77,25 @@ public final class ChartData2D extends ChartDataBase {
       threadRunner.execute(new Runnable() {
         @Override
         public void run() {
-          YailList pair = YailList.makeList(Arrays.asList(x, y));
-          YailList labelList = container.Labels();
-          int index = labelList.indexOf(x);
-
           try {
             // Create a 2-tuple, and add the tuple to the Data Series
+            YailList pair = YailList.makeList(Arrays.asList(x, y));
+
+            YailList labelList = container.Labels();
+            int indexList = labelList.indexOf(x);
+            Log.i(this.getClass().getName(), "labelList is " + indexList + " x " + x);
+            if (indexList > -1){
+              pair = YailList.makeList(Arrays.asList(indexList, y));
+              Log.i(this.getClass().getName(),  " pair is " + pair);
+            }
+
             dataModel.addEntryFromTuple(pair);
-          } catch (NumberFormatException e){
-            // likely that the x value is a string/label, get the corresponding index and use that as x
-            YailList pairLabelAsIndex = YailList.makeList(Arrays.asList(index, y));
-            dataModel.addEntryFromTuple(pairLabelAsIndex);
-            // should we do another catch here?
 
-            /*catch( NumberFormatException nfe)
-              this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-            "GetEntryFromTuple",
-            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
-            rawX, rawY);
-
-             */
+            // Refresh Chart with new data
+            onDataChange();
           } finally {
             synchronized (ChartData2D.this) {
               isDone.set(true);
-              onDataChange();
               ChartData2D.this.notifyAll();
             }
           }
@@ -125,30 +129,28 @@ public final class ChartData2D extends ChartDataBase {
       threadRunner.execute(new Runnable() {
         @Override
         public void run() {
-
           try {
-            // Create a 2-tuple (in which x may be a label or numerical value), and remove the tuple from the Data Series
+            // Create a 2-tuple, and remove the tuple from the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
-            Entry currEntry = dataModel.getEntryFromTuple(pair);
-            int index = dataModel.findEntryIndex(currEntry);
-            if (index >= 0){
-              dataModel.removeEntry(index);
-            }
-
-          } catch (NumberFormatException e){
-            // likely that the x value is a string/label, get the corresponding index and use that as x
 
             YailList labelList = container.Labels();
             int indexList = labelList.indexOf(x);
-            YailList pairFromLabel = YailList.makeList(Arrays.asList(indexList, y));
-            Entry currEntry = dataModel.getEntryFromTuple(pairFromLabel);
-            int indexFromFind = dataModel.findEntryIndex(currEntry);
-            dataModel.removeEntry(indexFromFind);
+            Entry currEntry = null;
+            if (indexList > -1){ // do we have labels in the x value?
+              pair = YailList.makeList(Arrays.asList(indexList, y));
+
+             // currEntry = dataModel.getEntryFromTuple(pair);
+            }
+            currEntry = dataModel.getEntryFromTuple(pair);
+            int index = dataModel.findEntryIndex(currEntry);
+
+            dataModel.removeEntryFromTuple(pair);
+            // Refresh Chart with new data
+            resetHighlightAtIndex(index);
+            onDataChange();
           } finally {
             synchronized (ChartData2D.this) {
-
               isDone.set(true);
-              onDataChange();
               ChartData2D.this.notifyAll();
             }
           }

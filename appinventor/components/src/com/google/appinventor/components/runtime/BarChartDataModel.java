@@ -52,49 +52,40 @@ public class BarChartDataModel
     if (entry != null) {
       // Since Bar Chart entries use x values as indexes (which
       // are integers), we need to cast the entry's x value to an integer.
+      int x = (int)entry.getX();
 
-      try {
-        int x = (int)entry.getX();
+      // To ensure the two properties of the Bar Chart entries
+      // (one of which is the property where entries are sorted
+      // in ascending order by x values, where the difference between
+      // subsequent x values is always 1, and the other which is
+      // that x values correspond to an index), we need additional
+      // logic for entry insertion.
 
-
-        // To ensure the two properties of the Bar Chart entries
-        // (one of which is the property where entries are sorted
-        // in ascending order by x values, where the difference between
-        // subsequent x values is always 1, and the other which is
-        // that x values correspond to an index), we need additional
-        // logic for entry insertion.
-
-        // Negative x value is an invalid input (negative index);
-        // Skip entry adding.
-        if (x < 0) {
-          return;
-        }
-
-        // X Value is less than the entry count of the Data Series;
-        // This means that the value already exists
-        if (x < entries.size()) {
-          // Use x value as index and update the entry in that position
-          entries.set(x, entry);
-        } else {
-          // To ensure that the x value would correspond to
-          // the index, missing values up until the x value
-          // need to be filled (with 0 values)
-          while (entries.size() < x) {
-            entries.add(new BarEntry(entries.size(), 0));
-          }
-        }
-      } catch (NumberFormatException e) {
-        // continue as x is a label
-        Log.e(this.getClass().getName(), "handling NFE in ChartData2D");
-        throw e;
+      // Negative x value is an invalid input (negative index);
+      // Skip entry adding.
+      if (x < 0) {
+        return;
       }
 
+      // X Value is less than the entry count of the Data Series;
+      // This means that the value already exists
+      if (x < entries.size()) {
+        // Use x value as index and update the entry in that position
+        entries.set(x, entry);
+      } else {
+        // To ensure that the x value would correspond to
+        // the index, missing values up until the x value
+        // need to be filled (with 0 values)
+        while (entries.size() < x) {
+          entries.add(new BarEntry(entries.size(), 0));
+        }
 
-      // Add the entry to the Data Series; Since we
-      // took care of missing values, this will now guarantee
-      // that the x value corresponds to the last index of
-      // the Data Series (equal to entryCount - 1)
-      entries.add(entry);
+        // Add the entry to the Data Series; Since we
+        // took care of missing values, this will now guarantee
+        // that the x value corresponds to the last index of
+        // the Data Series (equal to entryCount - 1)
+        entries.add(entry);
+      }
     }
   }
 
@@ -117,18 +108,21 @@ public class BarChartDataModel
 
         return new BarEntry(x, y);
       } catch (NumberFormatException e) {
-        Log.e(this.getClass().getName(), "handling NFE in ChartData2D");
-        throw e; // catch in ChartData2D and handle labels in the x slot
+        // Nothing happens: Do not add entry on NumberFormatException
+        this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+                "GetEntryFromTuple",
+                ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+                rawX, rawY);
       }
     } catch (NullPointerException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-          "GetEntryFromTuple",
-          ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
+              "GetEntryFromTuple",
+              ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
     } catch (IndexOutOfBoundsException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-          "GetEntryFromTuple",
-          ErrorMessages.ERROR_INSUFFICIENT_CHART_ENTRY_VALUES,
-          getTupleSize(), tuple.size());
+              "GetEntryFromTuple",
+              ErrorMessages.ERROR_INSUFFICIENT_CHART_ENTRY_VALUES,
+              getTupleSize(), tuple.size());
     }
 
     return null;
@@ -151,6 +145,7 @@ public class BarChartDataModel
       }
     }
   }
+
 
   @Override
   public void addTimeEntry(YailList tuple) {
