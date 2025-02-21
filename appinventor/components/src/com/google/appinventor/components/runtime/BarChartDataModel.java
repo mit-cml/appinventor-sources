@@ -117,11 +117,13 @@ public class BarChartDataModel
 
         return new BarEntry(x, y);
       } catch (NumberFormatException e) {
+        Log.e(this.getClass().getName(), "handling NFE in ChartData2D");
         throw e; // catch in ChartData2D and handle labels in the x slot
       }
     } catch (NullPointerException e) {
-      Log.e(this.getClass().getName(), "handling NFE in ChartData2D");
-      throw e;
+      this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+          "GetEntryFromTuple",
+          ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
     } catch (IndexOutOfBoundsException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
           "GetEntryFromTuple",
