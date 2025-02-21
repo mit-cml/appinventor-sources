@@ -279,8 +279,8 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     var typeName = instanceRecord.typeName;
     var instanceName = instanceRecord.name;
     var xmlUtils = Blockly.Util.xml;
-    var parent = Blockly.mainWorkspace.getComponentDatabase().getContainer(
-      Blockly.mainWorkspace.formName, instanceName);
+    var parent = Blockly.common.getMainWorkspace().getComponentDatabase().getContainer(
+      Blockly.common.getMainWorkspace().formName, instanceName);
     var freePosition = parent && parent.typeName == 'AbsoluteArrangement';
 
     /**
