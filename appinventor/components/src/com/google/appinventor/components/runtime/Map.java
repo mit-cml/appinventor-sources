@@ -62,7 +62,7 @@ import org.osmdroid.util.BoundingBox;
 /**
  * A two-dimensional container that renders map tiles in the background and allows for multiple
  * {@link Marker} elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- * contributors and the the United States Geological Survey.
+ * contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
  *
  * The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  * First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -80,7 +80,7 @@ import org.osmdroid.util.BoundingBox;
   androidMinSdk = 8,
   description = "<p>A two-dimensional container that renders map tiles in the background and " +
     "allows for multiple Marker elements to identify points on the map. Map tiles are supplied " +
-    "by OpenStreetMap contributors and the United States Geological Survey.</p>" +
+    "by OpenStreetMap contributors and the United States Geological Survey, or a custom basemap URL can be provided.</p>" +
     "<p>The Map component provides three utilities for manipulating its boundaries within App " +
     "Inventor. First, a locking mechanism is provided to allow the map to be moved relative to " +
     "other components on the Screen. Second, when unlocked, the user can pan the Map to any " +
@@ -123,6 +123,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     EnableZoom(true);
     EnablePan(true);
     MapTypeAbstract(MapType.Road);
+    CustomUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
     ShowCompass(false);
     LocationSensor(new LocationSensor(container.$form(), false));
     ShowUser(false);
@@ -301,6 +302,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    *   1. Roads
    *   2. Aerial
    *   3. Terrain
+   *   4. Custom
    *
    * @param type Integer identifying the tile set to use for the map's base layer.
    */
@@ -321,6 +323,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    *   1. Roads
    *   2. Aerial
    *   3. Terrain
+   *   4. Custom
    *
    *   **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
    * provided by the U.S. Geological Survey.
@@ -329,7 +332,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The type of tile layer to use as the base of the map. Valid values " +
-          "are: 1 (Roads), 2 (Aerial), 3 (Terrain)")
+          "are: 1 (Roads), 2 (Aerial), 3 (Terrain), 4 (Custom)")
   public @Options(MapType.class) int MapType() {
     return MapTypeAbstract().toUnderlyingValue();
   }
@@ -348,6 +351,30 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @SuppressWarnings("RegularMethodName")
   public void MapTypeAbstract(MapType type) {
     mapController.setMapTypeAbstract(type);
+  }
+
+  /**
+   * @return Returns the custom URL of the base tile layer in use by the map.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_CUSTOMURL,
+      defaultValue = "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The URL of the custom tile layer to use as the base of the map. Valid URLs " +
+          "should include &#123;z}, &#123;x} and &#123;y} placeholders and any authentication required. </p></p>" + 
+          "e.g. https://tile.openstreetmap.org/&#123;z}/&#123;x}/&#123;y}.png </p>" +
+          "or https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername&#64;EPSG:3857&#64;jpeg/&#123;z}/&#123;x}/&#123;y}.jpeg&#63;flipY=true&authkey=123")
+  public String CustomUrl() {
+    return mapController.getCustomUrl();
+  }
+
+  /**
+   * Update the custom URL of the base tile layer in use by the map.
+   * e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+   * e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername@EPSG:3857@jpeg/{z}/{x}/{y}.jpeg?flipY=true&authkey=123
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void CustomUrl(String url) {
+    mapController.setCustomUrl(url);
   }
 
   /**
