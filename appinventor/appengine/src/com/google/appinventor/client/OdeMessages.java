@@ -98,6 +98,11 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Error given when sending fails")
   String GallerySendingError();
 
+  @DefaultMessage("This project contains extensions and cannot be published to gallery.")
+  @Description("Error Message for displaying error when user tries to publish the project" + 
+    "containing extensions")
+  String ProjectContainsExtensions();
+
   @DefaultMessage("Error Logging Into the Gallery")
   @Description("Error given if login fails for some reason")
   String GalleryLoginError();
