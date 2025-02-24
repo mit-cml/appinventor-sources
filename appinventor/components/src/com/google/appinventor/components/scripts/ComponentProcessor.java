@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -27,6 +27,8 @@ import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesContentProviders;
 import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.UsesServices;
+import com.google.appinventor.components.annotations.UsesXmls;
+import com.google.appinventor.components.annotations.XmlElement;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
@@ -167,7 +169,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.UsesPermissions",
       "com.google.appinventor.components.annotations.UsesQueries",
       "com.google.appinventor.components.annotations.UsesServices",
-      "com.google.appinventor.components.annotations.UsesContentProviders");
+      "com.google.appinventor.components.annotations.UsesContentProviders",
+      "com.google.appinventor.components.annotations.UsesXmls");
 
   // Returned by getRwString()
   private static final String READ_WRITE = "read-write";
@@ -1181,6 +1184,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> contentProviders;
 
     /**
+     * Xml files required by this component.
+     */
+    protected final Set<String> xmls;
+
+    /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
      *             annotation is removed. It should should remain for the time being
      *             because otherwise we'll break extensions currently using it.
@@ -1272,6 +1280,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       permissions = Sets.newHashSet();
       queries = Sets.newHashSet();
       services = Sets.newHashSet();
+      xmls = Sets.newHashSet();
 
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -1638,6 +1647,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.queries.addAll(parentComponent.queries);
         componentInfo.services.addAll(parentComponent.services);
         componentInfo.contentProviders.addAll(parentComponent.contentProviders);
+        componentInfo.xmls.addAll(parentComponent.xmls);
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
         //             should remain for the time being because otherwise we'll break
@@ -1840,6 +1850,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
             "provider attributes and subelements for component " + componentInfo.name);
         throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required xml files and build their element strings.
+    UsesXmls usesXmls = element.getAnnotation(UsesXmls.class);
+    if (usesXmls != null) {
+      for (XmlElement xe : usesXmls.xmls()) {
+        updateWithNonEmptyValue(componentInfo.xmls, xmlElementToString(xe));
       }
     }
 
@@ -2385,6 +2403,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     // Finally, we close the <service> element and create its String.
     return elementString.append("    </service>\n").toString();
+  }
+
+  // Transform a @XmlElement into an String for use later
+  // in creating xml files.
+  private static String xmlElementToString(XmlElement element) {
+    // create string: "dir/name:<?xml version=\"1.0\" encoding=\"utf-8\"?>\n + content
+    StringBuilder elementString = new StringBuilder(element.dir());
+    elementString.append("/");
+    elementString.append(element.name());
+    elementString.append(":");
+
+    return elementString.append(element.content()).toString();
   }
 
   // Transform a @ProviderElement into an XML element String for use later

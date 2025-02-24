@@ -9,6 +9,9 @@ package com.google.appinventor.client.widgets.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -43,6 +46,14 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
       @Override
       public void onClick(ClickEvent event) {
         openAdditionalChoiceDialog();
+      }
+    });
+    summary.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+          openAdditionalChoiceDialog();
+        } 
       }
     });
 
@@ -154,6 +165,7 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
       updateValue(); // Restore previous property value
     }
     popup.hide();
+    summary.setFocus(true);
   }
 
   /**
