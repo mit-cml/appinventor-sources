@@ -78,7 +78,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   private var _boundsChangeReady: Bool = false
   private var _terrainOverlay: MKTileOverlay?
   private var _customUrlOverlay: MKTileOverlay?
-
+  private var _customURL = ""
   private var _activeOverlay: MapOverlayShape? = nil
   private var _lastPoint: CLLocationCoordinate2D? = nil
   private var _activeMarker: Marker? = nil
@@ -160,7 +160,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EnableZoom = true
     EnablePan = true
     MapType = 1
-    CustomUrl = ""
+    CustomUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
     Rotation = 0.0
     ScaleUnits = 1
     ShowZoom = false
@@ -380,15 +380,15 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   
   @objc open var CustomUrl: String? {
       get {
-          return CustomUrl
+        return _customURL
       }
       set(newUrl) {
-          guard let newUrl = newUrl, newUrl != CustomUrl else {
-              return
-          }
-          CustomUrl = newUrl
-          removeCustomUrlTileRenderer()
-          setupCustomUrlTileRenderer()
+        guard let newUrl = newUrl, newUrl != CustomUrl else {
+            return
+        }
+        _customURL = newUrl
+        removeCustomUrlTileRenderer()
+        setupCustomUrlTileRenderer()
       }
   }
 
