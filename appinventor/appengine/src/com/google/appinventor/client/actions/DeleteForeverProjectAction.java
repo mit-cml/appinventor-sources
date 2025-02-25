@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.actions;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -19,6 +17,8 @@ import com.google.gwt.user.client.Window;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 public class DeleteForeverProjectAction implements Command {
   @Override
   public void execute() {
@@ -27,9 +27,9 @@ public class DeleteForeverProjectAction implements Command {
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
           List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
-                                              .getSelectedProjects();
+              .getSelectedProjects();
           List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()
-                                                    .getSelectedFolders();
+              .getSelectedFolders();
           if (!selectedProjects.isEmpty() || !selectedFolders.isEmpty()) {
             List<Project> projectsToDelete = new ArrayList<>(selectedProjects);
             List<ProjectFolder> foldersToDelete = new ArrayList<>(selectedFolders);

@@ -20,15 +20,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class RestoreProjectAction implements Command {
   @Override
   public void execute() {
-    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
+    Ode odeInstance = Ode.getInstance();
+    if (odeInstance.getCurrentView() == Ode.TRASHCAN) {
       List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
-                                           .getSelectedProjects();
+          .getSelectedProjects();
       List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()
-                                                .getSelectedFolders();
+          .getSelectedFolders();
       if (!selectedProjects.isEmpty() || !selectedFolders.isEmpty()) {
-        Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
-            Ode.getInstance().getFolderManager().getGlobalFolder());
-        Ode.getInstance().switchToTrash();
+        odeInstance.getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
+            odeInstance.getFolderManager().getGlobalFolder());
+        odeInstance.switchToTrash();
       } else {
         // The user can select a project to resolve the
         // error.

@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.actions;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -15,8 +13,12 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class DeleteAction implements Command {
   @Override
@@ -50,7 +52,7 @@ public class DeleteAction implements Command {
           List<Project> selectedProjects = new ArrayList<>();
           Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
           selectedProjects.add(currentProject);
-          if (deleteConfirmation(true, selectedProjects, new ArrayList<>())) {
+          if (deleteConfirmation(true, selectedProjects, Collections.emptyList())) {
             currentProject.moveToTrash();
             //Add the command to stop this current project from saving
           }
@@ -59,7 +61,6 @@ public class DeleteAction implements Command {
       }
     });
   }
-
 
   public static boolean deleteConfirmation(boolean toTrash, List<Project> projects, List<ProjectFolder> folders) {
     String message = "";

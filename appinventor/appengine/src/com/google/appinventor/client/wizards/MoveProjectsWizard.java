@@ -80,13 +80,13 @@ public final class MoveProjectsWizard {
 
   FolderTreeItem renderFolder(ProjectFolder folder) {
     FolderTreeItem treeItem = new FolderTreeItem(folder);
-      for (ProjectFolder child : folder.getChildFolders()) {
-        if (!"*trash*".equals(child.getName()) && !selectedFolders.contains(child)) {
-          FolderTreeItem childItem = renderFolder(child);
-          childItem.setState(true);
-          treeItem.addItem(childItem);
-        }
+    for (ProjectFolder child : folder.getChildFolders()) {
+      if (!"*trash*".equals(child.getName()) && !selectedFolders.contains(child)) {
+        FolderTreeItem childItem = renderFolder(child);
+        childItem.setState(true);
+        treeItem.addItem(childItem);
       }
+    }
     return treeItem;
   }
 

@@ -87,10 +87,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     bindIU();
     setIsTrash(false);
     refreshSortIndicators();
-//    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
-
-    // It is important to listen to project manager events as soon as possible.
-//    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
   }
 
   public void bindIU() {
