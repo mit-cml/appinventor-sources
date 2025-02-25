@@ -24,18 +24,11 @@ public final class RuntimeErrorAlert {
   private static final String TAG = "RuntimeErrorAlert";
 
 
-  public static void alert(final Object context,
-                           final String message,
-                           final String title,
-                           final String buttonText) {
+  public static void alert(final Object context, final String message, final String title, final String buttonText) {
     alert(context, /* only alert dialog */ false, message, title, buttonText);
   }
 
-  public static void alert(final Object context,
-                           boolean toast,
-                           String message,
-                           String title,
-                           String buttonText) {
+  public static void alert(final Object context, boolean toast, String message, String title, String buttonText) {
     Log.e(TAG, "alert(" + message + ", " + title + ", " + buttonText);
     if (message == null) {
       // do not pass null, or it will result in a crash
@@ -43,7 +36,7 @@ public final class RuntimeErrorAlert {
     }
 
     if (toast) {
-      Toast.makeText((Context) context, message, Toast.LENGTH_SHORT).show();
+      Toast.makeText((Context) context, message, Toast.LENGTH_LONG).show();
       RetValManager.sendError(message);
     } else {
       AlertDialog alertDialog = new AlertDialog.Builder((Context) context).create();
@@ -52,7 +45,8 @@ public final class RuntimeErrorAlert {
       alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, buttonText, new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
           ((Activity) context).finish();
-        }});
+        }
+      });
       alertDialog.show();
     }
 

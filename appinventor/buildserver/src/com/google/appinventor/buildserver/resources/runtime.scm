@@ -415,12 +415,12 @@
 
             ;; only take action if we are non-REPL (compiled app) or
             ;; when toastAllowed (and REPL)
-            (if ((not isrepl) or ((this):toastAllowed))
+            (if (or (not isrepl) ((this):toastAllowed))
               ((com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)                                        ;; context
               ;; dialog is shown for compiled apps
               ;; or toast if condition (REPL and toastAllowed)
-              (isrepl and (this):toastAllowed)              ;; toast
+              (and isrepl (this):toastAllowed)              ;; toast
               (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))     ;; message
               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")   ;; title
               "End Application"))))    ;; buttonText
