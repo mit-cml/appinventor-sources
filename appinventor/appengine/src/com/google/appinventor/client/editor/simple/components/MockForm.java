@@ -1128,19 +1128,27 @@ public final class MockForm extends MockContainer {
    */
 
   public final void doRefresh() {
-    Map<MockComponent, LayoutInfo> layoutInfoMap = new HashMap<MockComponent, LayoutInfo>();
+    LOG.info("🔄 Running doRefresh() for: " + getTitle());
 
+    Map<MockComponent, LayoutInfo> layoutInfoMap = new HashMap<>();
     collectLayoutInfos(layoutInfoMap, this);
 
     LayoutInfo formLayoutInfo = layoutInfoMap.get(this);
+    if (formLayoutInfo == null) {
+      LOG.warning("❌ doRefresh() failed: layoutInfo is null for " + getTitle());
+      return;
+    }
+
     layout.layoutChildren(formLayoutInfo);
     rootPanel.setPixelSize(formLayoutInfo.width,
-        Math.max(formLayoutInfo.height, usableScreenHeight));
+            Math.max(formLayoutInfo.height, usableScreenHeight));
 
     for (LayoutInfo layoutInfo : layoutInfoMap.values()) {
       layoutInfo.cleanUp();
     }
     layoutInfoMap.clear();
+
+    LOG.info("✅ Finished doRefresh() for: " + getTitle());
   }
 
   /*

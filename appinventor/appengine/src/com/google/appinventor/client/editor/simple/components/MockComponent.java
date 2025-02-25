@@ -15,6 +15,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
@@ -64,19 +65,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
-import com.google.gwt.user.client.ui.SourcesMouseEvents;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ComponentDefinition;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 
@@ -680,6 +669,33 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return showingVisibleChildren;
   }
 
+
+  public void updateVisibility() {
+    boolean showHidden = HiddenComponentsCheckbox.getCheckboxStateForScreen(getForm().getTitle());
+
+    LOG.info("🔄 [updateVisibility] Component: " + getName() + " | Show Hidden: " + showHidden);
+
+    if (!showHidden && !showComponentInDesigner()) {
+      LOG.info("❌ Hiding component: " + getName());
+      setVisible(false);
+    } else {
+      LOG.info("✅ Showing component: " + getName());
+      setVisible(true);
+
+      // ✅ Ensure the component is removed and re-added properly
+      if (getParent() instanceof ComplexPanel) {  // ✅ Check if parent is ComplexPanel
+        ComplexPanel parent = (ComplexPanel) getParent();
+        parent.remove(this);  // ✅ Now remove() is valid
+      }
+
+      getForm().rootPanel.add(this);  // ✅ Re-add the component
+      getForm().doRefresh();  // ✅ Force full refresh
+    }
+  }
+
+
+
+
   /**
    * Returns the visible children of this component that should be hidden.
    * <p>
@@ -687,16 +703,36 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final List<MockComponent> getHiddenVisibleChildren() {
     List<MockComponent> allChildren = getChildren();
-    if (allChildren.size() == 0) {
+    if (allChildren.isEmpty()) {
+      LOG.warning("❌ No children found for form: " + getForm().getTitle());
       return NO_CHILDREN;
     }
 
-    List<MockComponent> hiddenVisibleChildren = new ArrayList<MockComponent>();
+    List<MockComponent> hiddenVisibleChildren = new ArrayList<>();
+    boolean showHidden = HiddenComponentsCheckbox.getCheckboxStateForScreen(getForm().getTitle());
+
+    LOG.info("🔍 Checking hidden components for form: " + getForm().getTitle() + " | Show Hidden: " + showHidden);
+
     for (MockComponent child : allChildren) {
-      if (child.isVisibleComponent() && !child.showComponentInDesigner()) {
+      boolean isHidden = !child.showComponentInDesigner();
+      boolean isVisible = child.isVisibleComponent();
+
+      LOG.info("🔄 Processing component: " + child.getName() + " | Hidden: " + isHidden + " | Visible: " + isVisible);
+
+      // ✅ Fix: Ensure we process hidden components correctly
+      if (isHidden) {
         hiddenVisibleChildren.add(child);
+        if (showHidden) {
+          LOG.info("✅ Showing hidden component: " + child.getName());
+          child.setVisible(true);
+        } else {
+          LOG.info("❌ Hiding component: " + child.getName());
+          child.setVisible(false);
+        }
       }
     }
+
+    LOG.info("✅ Final hiddenVisibleChildren list size: " + hiddenVisibleChildren.size());
     return hiddenVisibleChildren;
   }
 
@@ -1089,19 +1125,22 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   /*
    * Returns true if this component should be shown in the designer.
    */
-  private boolean showComponentInDesigner() {
+  public boolean showComponentInDesigner() {
     if (hasProperty(MockVisibleComponent.PROPERTY_NAME_VISIBLE)) {
-      boolean visible = Boolean.parseBoolean(getPropertyValue(
-          MockVisibleComponent.PROPERTY_NAME_VISIBLE));
-      // If this component's visible property is false, we need to check whether to show hidden
-      // components.
+      boolean visible = Boolean.parseBoolean(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_VISIBLE));
+
+      // ✅ Ensure we correctly check the checkbox state
+      boolean showHidden = HiddenComponentsCheckbox.getCheckboxStateForScreen(getForm().getTitle());
+      LOG.info("🔍 showComponentInDesigner() for " + getName() + " | Visible Property: " + visible + " | Show Hidden: " + showHidden);
+
       if (!visible) {
-        YaFormEditor formEditor = (YaFormEditor) editor;
-        return formEditor.shouldDisplayHiddenComponents();
+        return showHidden;
       }
     }
     return true;
   }
+
+
 
   int getWidthHint() {
     return Integer.parseInt(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_WIDTH));
