@@ -372,7 +372,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    * e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
    * e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername@EPSG:3857@jpeg/{z}/{x}/{y}.jpeg?flipY=true&authkey=123
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void CustomUrl(String url) {
     mapController.setCustomUrl(url);
   }
