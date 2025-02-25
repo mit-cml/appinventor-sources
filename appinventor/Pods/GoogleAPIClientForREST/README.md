@@ -17,7 +17,7 @@ macOS, tvOS, and watchOS applications.
 read [USING.md](USING.md) for detailed information. The
 [example applications](https://github.com/google/google-api-objectivec-client-for-rest/tree/main/Examples)
 can also help answer some questions, but there isn't an example for every
-service as there are just to many services.
+service as there are just too many services.
 
 Generated interfaces for Google APIs are in the
 [GeneratedServices folder](https://github.com/google/google-api-objectivec-client-for-rest/tree/main/Sources/GeneratedServices).

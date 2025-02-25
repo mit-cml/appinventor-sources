@@ -158,130 +158,6 @@ public class SpriteTest {
   }
 
   @Test
-  public void testCollidingFalse() {
-    // Declare sprite1 at (50, 75)
-    final int SPRITE1_HEIGHT = 10;
-    final int SPRITE1_WIDTH = 15;
-    TestSprite sprite1 = TestSprite.createTestSprite(
-        canvasMock, handlerMock,
-        SPRITE1_HEIGHT, SPRITE1_WIDTH);
-    final int SPRITE1_X = 50;
-    final int SPRITE1_Y = 75;
-    sprite1.MoveTo(SPRITE1_X, SPRITE1_Y);
-
-    // Declare sprite2
-    final int SPRITE2_HEIGHT = 20;
-    final int SPRITE2_WIDTH = 25;
-    TestSprite sprite2 = TestSprite.createTestSprite(
-        canvasMock, handlerMock,
-        SPRITE2_HEIGHT, SPRITE2_WIDTH);
-
-    // Sprite2 entirely E of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH, SPRITE1_Y);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely SE of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH, SPRITE1_Y + SPRITE1_HEIGHT);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely S of Sprite1
-    sprite2.MoveTo(SPRITE1_X, SPRITE1_Y + SPRITE1_HEIGHT);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely SW of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH, SPRITE1_Y + SPRITE1_HEIGHT);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely W of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH, SPRITE1_Y);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely NW of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH, SPRITE1_Y - SPRITE2_HEIGHT);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely N of Sprite1
-    sprite2.MoveTo(SPRITE1_X, SPRITE1_Y - SPRITE2_HEIGHT - 5);  // fudge factor
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 entirely NE of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH, SPRITE1_Y - SPRITE2_HEIGHT);
-    assertFalse(Sprite.colliding(sprite1, sprite2));
-  }
-
-  @Test
-  public void testCollidingTrue() {
-    // Declare sprite1 at (50, 75)
-    final int SPRITE1_HEIGHT = 10;
-    final int SPRITE1_WIDTH = 15;
-    TestSprite sprite1 = TestSprite.createTestSprite(
-        canvasMock, handlerMock,
-        SPRITE1_HEIGHT, SPRITE1_WIDTH);
-    final int SPRITE1_X = 50;
-    final int SPRITE1_Y = 75;
-    sprite1.MoveTo(SPRITE1_X, SPRITE1_Y);
-
-    // Declare sprite2
-    final int SPRITE2_HEIGHT = 20;
-    final int SPRITE2_WIDTH = 25;
-    TestSprite sprite2 = TestSprite.createTestSprite(
-        canvasMock, handlerMock,
-        SPRITE2_HEIGHT, SPRITE2_WIDTH);
-
-    // Sprite2 almost entirely E of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH - 1, SPRITE1_Y);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely SE of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH - 1, SPRITE1_Y + SPRITE1_HEIGHT - 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely S of Sprite1
-    sprite2.MoveTo(SPRITE1_X, SPRITE1_Y + SPRITE1_HEIGHT - 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely SW of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH + 1, SPRITE1_Y + SPRITE1_HEIGHT - 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely W of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH + 1, SPRITE1_Y);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely NW of Sprite1
-    sprite2.MoveTo(SPRITE1_X - SPRITE2_WIDTH + 1, SPRITE1_Y - SPRITE2_HEIGHT + 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely N of Sprite1
-    sprite2.MoveTo(SPRITE1_X, SPRITE1_Y - SPRITE2_HEIGHT + 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-
-    // Sprite2 almost entirely NE of Sprite1
-    sprite2.MoveTo(SPRITE1_X + SPRITE1_WIDTH - 1, SPRITE1_Y - SPRITE2_HEIGHT + 1);
-    assertTrue(Sprite.colliding(sprite1, sprite2));
-  }
-
-  @Test
-  public void testCollidingCatMouse() {
-    // Declare cat
-    final int CAT_HEIGHT = 49;
-    final int CAT_WIDTH = 43;
-    TestSprite cat = TestSprite.createTestSprite(
-        canvasMock, handlerMock, CAT_HEIGHT, CAT_WIDTH);
-    cat.MoveTo(95, 83);
-
-    // Declare mouse
-    final int MOUSE_HEIGHT = 31;
-    final int MOUSE_WIDTH = 64;
-    TestSprite mouse = TestSprite.createTestSprite(
-        canvasMock, handlerMock, MOUSE_HEIGHT, MOUSE_WIDTH);
-    mouse.MoveTo(98, 86);
-
-    assertTrue(Sprite.colliding(cat, mouse));
-    assertTrue(Sprite.colliding(mouse, cat));
-  }
-
-  @Test
   public void testSpriteBiggerThanCanvas() throws Exception {
     // Declare cat
     final int BIG_CAT_WIDTH = 150;
@@ -294,5 +170,151 @@ public class SpriteTest {
     // The sprite should be moved to the upper left corner of the canvas - x and y should both be 0.
     assertEquals(0.0, bigCat.X(), DELTA);
     assertEquals(0.0, bigCat.Y(), DELTA);
+  }
+
+  @Test
+  public void testMoveTo() {
+    // Declare sprite
+    final int SPRITE_HEIGHT = 20;
+    final int SPRITE_WIDTH = 30;
+    TestSprite sprite = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE_HEIGHT, SPRITE_WIDTH);
+
+    // Origin at top - left corner
+    sprite.MoveTo(50, 50);
+    assertEquals(50, sprite.xOrigin, DELTA);
+    assertEquals(50, sprite.yOrigin, DELTA);
+    assertEquals(50, sprite.xLeft, DELTA);
+    assertEquals(50, sprite.yTop, DELTA);
+
+    // Origin at top - right corner
+    sprite.U(1.0);
+    sprite.V(0.0);
+    sprite.MoveTo(40, 40);
+    assertEquals(40, sprite.xOrigin, DELTA);
+    assertEquals(40, sprite.yOrigin, DELTA);
+    assertEquals(10, sprite.xLeft, DELTA);
+    assertEquals(40, sprite.yTop, DELTA);
+
+    // Origin at bottom - right corner
+    sprite.U(1.0);
+    sprite.V(1.0);
+    sprite.MoveTo(50, 50);
+    assertEquals(50, sprite.xOrigin, DELTA);
+    assertEquals(50, sprite.yOrigin, DELTA);
+    assertEquals(20, sprite.xLeft, DELTA);
+    assertEquals(30, sprite.yTop, DELTA);
+
+    // Origin at bottom - left corner
+    sprite.U(0.0);
+    sprite.V(1.0);
+    sprite.MoveTo(40, 40);
+    assertEquals(40, sprite.xOrigin, DELTA);
+    assertEquals(40, sprite.yOrigin, DELTA);
+    assertEquals(40, sprite.xLeft, DELTA);
+    assertEquals(20, sprite.yTop, DELTA);
+
+    // Origin at center
+    sprite.U(0.5);
+    sprite.V(0.5);
+    sprite.MoveTo(50, 50);
+    assertEquals(50, sprite.xOrigin, DELTA);
+    assertEquals(50, sprite.yOrigin, DELTA);
+    assertEquals(35, sprite.xLeft, DELTA);
+    assertEquals(40, sprite.yTop, DELTA);
+  }
+
+  @Test
+  public void testPointTowards() {
+    // Declare Sprite1 at (30, 30) with origin at (0.3, 0.7)
+    final int SPRITE1_HEIGHT = 40;
+    final int SPRITE1_WIDTH = 30;
+    TestSprite sprite1 = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE1_HEIGHT, SPRITE1_WIDTH);
+    final int SPRITE1_X = 30;
+    final int SPRITE1_Y = 30;
+    sprite1.MoveTo(SPRITE1_X, SPRITE1_Y);
+    sprite1.U(0.3);
+    sprite1.V(0.7);
+
+    // Declare Sprite2 at (60, 60) with origin at (0.6, 0.6)
+    final int SPRITE2_HEIGHT = 50;
+    final int SPRITE2_WIDTH = 60;
+    TestSprite sprite2 = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE2_HEIGHT, SPRITE2_WIDTH);
+    final int SPRITE2_X = 60;
+    final int SPRITE2_Y = 60;
+    sprite2.U(0.6);
+    sprite2.V(0.6);
+    sprite2.MoveTo(SPRITE2_X, SPRITE2_Y);
+
+    // Make sprite1 to point towards sprite2
+    sprite1.PointTowards(sprite2);
+    assertEquals(45, sprite1.heading, DELTA);
+  }
+
+  @Test
+  public void testPointInDirection() {
+    // Declare Sprite at (45, 45) with origin at (0.5, 0.75)
+    final int SPRITE_HEIGHT = 40;
+    final int SPRITE_WIDTH = 60;
+    TestSprite sprite = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE_HEIGHT, SPRITE_WIDTH);
+    final int SPRITE_X = 45;
+    final int SPRITE_Y = 45;
+    sprite.MoveTo(SPRITE_X, SPRITE_Y);
+    sprite.U(0.5);
+    sprite.V(0.75);
+
+    sprite.PointInDirection(65, 65);
+    assertEquals(45, sprite.heading, DELTA);
+  }
+
+  @Test
+  public void testOriginAtCenterTrue() {
+    // Declare sprite at (40, 40) with default origin position
+    // Sprite represents a ball of radius 25
+    final int SPRITE_HEIGHT = 50;
+    final int SPRITE_WIDTH = 50;
+    TestSprite sprite = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE_HEIGHT, SPRITE_WIDTH);
+    final int SPRITE_X = 40;
+    final int SPRITE_Y = 40;
+    sprite.MoveTo(SPRITE_X, SPRITE_Y);
+
+    // Check originAtCenter
+    sprite.OriginAtCenter(true);
+    // Assert u, v, xLeft, yTop, xOrigin and yOrigin values
+    assertEquals(0.5, sprite.u, DELTA);
+    assertEquals(0.5, sprite.v, DELTA);
+    assertEquals(15, sprite.xLeft, DELTA);
+    assertEquals(15, sprite.yTop, DELTA);
+    assertEquals(40, sprite.xOrigin, DELTA);
+    assertEquals(40, sprite.yOrigin, DELTA);
+  }
+
+  @Test
+  public void testOriginAtCenterFalse() {
+    // Declare sprite at (40, 40) with origin at center
+    // Sprite represents a ball of radius 25
+    final int SPRITE_HEIGHT = 50;
+    final int SPRITE_WIDTH = 50;
+    TestSprite sprite = TestSprite.createTestSprite(
+            canvasMock, handlerMock, SPRITE_HEIGHT, SPRITE_WIDTH);
+    final int SPRITE_X = 40;
+    final int SPRITE_Y = 40;
+    sprite.MoveTo(SPRITE_X, SPRITE_Y);
+    sprite.U(0.5);
+    sprite.V(0.5);
+
+    // Uncheck originAtCenter
+    sprite.OriginAtCenter(false);
+    // Assert u, v, xLeft, yTop, xOrigin and yOrigin values
+    assertEquals(0.0, sprite.u, DELTA);
+    assertEquals(0.0, sprite.v, DELTA);
+    assertEquals(40, sprite.xLeft, DELTA);
+    assertEquals(40, sprite.yTop, DELTA);
+    assertEquals(40, sprite.xOrigin, DELTA);
+    assertEquals(40, sprite.yOrigin, DELTA);
   }
 }

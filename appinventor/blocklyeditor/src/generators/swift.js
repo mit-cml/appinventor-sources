@@ -5,13 +5,11 @@
  * @fileoverview Helper functions for generating Swift for blocks.
  * @author Evan W. Patton <ewpatton@mit.edu>
  */
-goog.provide('Blockly.Swift')
+goog.provide('AI.Swift')
 
-goog.require('Blockly.Generator')
-
-Blockly.Swift.SWIFT_DEFFORM_PRELUDE = "// $Source $Yail\n// automatically generated source file\n// any edits will be overwritten\n\nimport Foundation\nimport AIComponentKit\n\nclass ";
-Blockly.Swift.SWIFT_DEFFORM_POSTLUDE = ": Form {\n";
-Blockly.Swift.SWIFT_INIT = [
+AI.Swift.SWIFT_DEFFORM_PRELUDE = "// $Source $Yail\n// automatically generated source file\n// any edits will be overwritten\n\nimport Foundation\nimport AIComponentKit\n\nclass ";
+AI.Swift.SWIFT_DEFFORM_POSTLUDE = ": Form {\n";
+AI.Swift.SWIFT_INIT = [
   "\n",
   "init?(_ coder: NSCoder? = nil) {\n",
   "  if let coder = coder {\n",
@@ -25,22 +23,22 @@ Blockly.Swift.SWIFT_INIT = [
   "  self.init(aCoder)\n",
   "}\n\n",
 ];
-Blockly.Swift.SWIFT_FORM_POSTLUDE = "}\n";
+AI.Swift.SWIFT_FORM_POSTLUDE = "}\n";
 
-Blockly.Swift.SwiftWriter = function() {
-  Blockly.Swift.SwiftWriter.superClass_.constructor.call(this, 'Swift');
+AI.Swift.SwiftWriter = function() {
+  AI.Swift.SwiftWriter.superClass_.constructor.call(this, 'Swift');
   this.indent_ = 0;
   this.pretty = true;
   this.code = [];
 };
-goog.inherits(Blockly.Swift.SwiftWriter, Blockly.Generator);
+goog.inherits(AI.Swift.SwiftWriter, Blockly.Generator);
 
-Blockly.Swift.SwiftWriter.prototype.indent = function() {
+AI.Swift.SwiftWriter.prototype.indent = function() {
   this.indent_ += 2;
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.unindent = function() {
+AI.Swift.SwiftWriter.prototype.unindent = function() {
   this.indent_ -= 2;
   return this;
 };
@@ -48,9 +46,9 @@ Blockly.Swift.SwiftWriter.prototype.unindent = function() {
 /**
  *
  * @param {string|string[]} code
- * @returns {Blockly.Swift.SwiftWriter}
+ * @returns {AI.Swift.SwiftWriter}
  */
-Blockly.Swift.SwiftWriter.prototype.push = function(code) {
+AI.Swift.SwiftWriter.prototype.push = function(code) {
   if (typeof code === 'string') {
     code = [code];
   }
@@ -65,7 +63,7 @@ Blockly.Swift.SwiftWriter.prototype.push = function(code) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeProgram = function(form, blocks) {
+AI.Swift.SwiftWriter.prototype.writeProgram = function(form, blocks) {
   // reset
   this.indent_ = 0;
   this.code = [];
@@ -110,12 +108,12 @@ Blockly.Swift.SwiftWriter.prototype.writeProgram = function(form, blocks) {
     .toString();
 };
 
-Blockly.Swift.SwiftWriter.prototype.writePrelude = function(formName) {
-  this.push(Blockly.Swift.SWIFT_DEFFORM_PRELUDE + formName + Blockly.Swift.SWIFT_DEFFORM_POSTLUDE);
+AI.Swift.SwiftWriter.prototype.writePrelude = function(formName) {
+  this.push(AI.Swift.SWIFT_DEFFORM_PRELUDE + formName + AI.Swift.SWIFT_DEFFORM_POSTLUDE);
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeGlobalDecls = function(global_blocks) {
+AI.Swift.SwiftWriter.prototype.writeGlobalDecls = function(global_blocks) {
   for (var i = 0; i < global_blocks.length; i++) {
     var block = global_blocks[i];
     var name = 'g$' + block.getFieldValue('NAME');
@@ -125,7 +123,7 @@ Blockly.Swift.SwiftWriter.prototype.writeGlobalDecls = function(global_blocks) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeComponentDecls = function(component) {
+AI.Swift.SwiftWriter.prototype.writeComponentDecls = function(component) {
   var name = component.$Name, type = component.$Type;
   if (type != 'Form') {
     this.push('var ' + name + ': ' + type + '!\n');
@@ -138,13 +136,13 @@ Blockly.Swift.SwiftWriter.prototype.writeComponentDecls = function(component) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeSwiftInit = function() {
+AI.Swift.SwiftWriter.prototype.writeSwiftInit = function() {
   this.push('\n');
-  this.push(Blockly.Swift.SWIFT_INIT);
+  this.push(AI.Swift.SWIFT_INIT);
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeViewDidLoad = function(formJson) {
+AI.Swift.SwiftWriter.prototype.writeViewDidLoad = function(formJson) {
   function valueToSwift(value) {
     if (value == 'True') return true;
     else if (value == 'False') return false;
@@ -199,7 +197,7 @@ Blockly.Swift.SwiftWriter.prototype.writeViewDidLoad = function(formJson) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeInitialize = function(initBlock) {
+AI.Swift.SwiftWriter.prototype.writeInitialize = function(initBlock) {
   if (!initBlock) {
     return this;  // no custom Initialize() needed
   }
@@ -212,7 +210,7 @@ Blockly.Swift.SwiftWriter.prototype.writeInitialize = function(initBlock) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeProcedures = function(blocks) {
+AI.Swift.SwiftWriter.prototype.writeProcedures = function(blocks) {
   for (var i = 0; i < blocks.length; i++) {
     var block = blocks[i];
     this[block.type].call(this, block);
@@ -220,7 +218,7 @@ Blockly.Swift.SwiftWriter.prototype.writeProcedures = function(blocks) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeEventHandlers = function(blocks) {
+AI.Swift.SwiftWriter.prototype.writeEventHandlers = function(blocks) {
   for (var i = 0; i < blocks.length; i++) {
     var block = blocks[i];
     this['component_event'].call(this, block);
@@ -228,7 +226,7 @@ Blockly.Swift.SwiftWriter.prototype.writeEventHandlers = function(blocks) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writeDispatchEvent = function(blocks) {
+AI.Swift.SwiftWriter.prototype.writeDispatchEvent = function(blocks) {
   this.push('override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool{\n');
   this.indent();
   if (blocks.length > 0) {
@@ -287,16 +285,16 @@ Blockly.Swift.SwiftWriter.prototype.writeDispatchEvent = function(blocks) {
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.writePostlude = function() {
-  this.push(Blockly.Swift.SWIFT_FORM_POSTLUDE);
+AI.Swift.SwiftWriter.prototype.writePostlude = function() {
+  this.push(AI.Swift.SWIFT_FORM_POSTLUDE);
   return this;
 };
 
-Blockly.Swift.SwiftWriter.prototype.toString = function() {
+AI.Swift.SwiftWriter.prototype.toString = function() {
   return this.code.join('');
 };
 
-Blockly.Swift.SwiftWriter.prototype.buildComponentMap = function(blocks, warnings, errors, forRepl, compileUnattachedBlocks) {
+AI.Swift.SwiftWriter.prototype.buildComponentMap = function(blocks, warnings, errors, forRepl, compileUnattachedBlocks) {
   var map = {};
   map.components = {};
   map.globals = [];
@@ -330,13 +328,13 @@ Blockly.Swift.SwiftWriter.prototype.buildComponentMap = function(blocks, warning
   return map;
 };
 
-Blockly.Swift.getFormSwift = function(formJson, packageName) {
+AI.Swift.getFormSwift = function(formJson, packageName) {
   var jsonObject = JSON.parse(formJson),
       componentNames = [],
       formProperties,
       formName,
       propertyNameConverter = function(input) { return input; },
-      writer = new Blockly.Swift.SwiftWriter();
+      writer = new AI.Swift.SwiftWriter();
   if (jsonObject.Properties) {
     formProperties = jsonObject.Properties;
     formName = formProperties.$Name;
@@ -346,7 +344,7 @@ Blockly.Swift.getFormSwift = function(formJson, packageName) {
   if (!formName) {
     throw 'Unable to determine form name';
   }
-  writer.push(Blockly.Swift.getSwiftPrelude(packageName, formName));
+  writer.push(AI.Swift.getSwiftPrelude(packageName, formName));
 
   var componentMap = Blockly.Component.buildComponentMap([], [], false, false);
 
@@ -357,44 +355,44 @@ Blockly.Swift.getFormSwift = function(formJson, packageName) {
   if (formProperties) {
     var sourceType = jsonObject.Source;
     if (sourceType == 'Form') {
-      Array.prototype.push.apply(code, Blockly.Swift.getComponentLines(formName, formProperties, null /*parent*/, componentMap, false /*forRepl*/, propertyNameConverter));
+      Array.prototype.push.apply(code, AI.Swift.getComponentLines(formName, formProperties, null /*parent*/, componentMap, false /*forRepl*/, propertyNameConverter));
     } else {
       throw 'Source type ' + sourceType + ' is invalid.';
     }
   }
 
-  writer.push(Blockly.Swift.SWIFT_FORM_POSTLUDE);
+  writer.push(AI.Swift.SWIFT_FORM_POSTLUDE);
   return writer.toString();
 };
 
-Blockly.Swift.getSwiftPrelude = function(packageName, formName) {
+AI.Swift.getSwiftPrelude = function(packageName, formName) {
   return "/*\n$Source $Swift\n*/\n\n" +
-    Blockly.Swift.SWIFT_DEFFORM_PRELUDE +
+    AI.Swift.SWIFT_DEFFORM_PRELUDE +
     formName +
-    Blockly.Swift.SWIFT_DEFFORM_POSTLUDE;
+    AI.Swift.SWIFT_DEFFORM_POSTLUDE;
 };
 
-Blockly.Swift.SwiftWriter.prototype['color'] = function(block) {
+AI.Swift.SwiftWriter.prototype['color'] = function(block) {
   var code = -1 * (window.Math.pow(16,6) - window.parseInt('0x' + this.getFieldValue('COLOR').substr(1)));
   return [code, 0];
 };
 
-Blockly.Swift.SwiftWriter.prototype['color_light_gray'] = function(block) {
+AI.Swift.SwiftWriter.prototype['color_light_gray'] = function(block) {
   return this['color'].call(this, block);
 };
 
-Blockly.Swift.SwiftWriter.prototype['color_make_color'] = function(block) {
+AI.Swift.SwiftWriter.prototype['color_make_color'] = function(block) {
   var blackList = "[0, 0, 0]";
   var arg0 = this.valueToCode(block, 'COLORLIST', 99) || blackList;
   var code = 'rgbArrayToInt32(' + arg0 + ')'
   return [code, 99];
 };
 
-Blockly.Swift.SwiftWriter.prototype['component_component_block'] = function(block) {
+AI.Swift.SwiftWriter.prototype['component_component_block'] = function(block) {
   return [block.getFieldValue('COMPONENT_SELECTOR'), 0];
 };
 
-Blockly.Swift.SwiftWriter.prototype['component_event'] = function(block, isInit) {
+AI.Swift.SwiftWriter.prototype['component_event'] = function(block, isInit) {
   var componentName = block.getFieldValue('COMPONENT_SELECTOR');
   var eventName = block.eventName;
   var argList = [];
@@ -417,7 +415,7 @@ Blockly.Swift.SwiftWriter.prototype['component_event'] = function(block, isInit)
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['component_method'] = function(block) {
+AI.Swift.SwiftWriter.prototype['component_method'] = function(block) {
   var code = null;
   if (block.isGeneric) {
     code = '((' + block.typeName + ') ' +
@@ -439,7 +437,7 @@ Blockly.Swift.SwiftWriter.prototype['component_method'] = function(block) {
   }
 };
 
-Blockly.Swift.SwiftWriter.prototype['component_set_get'] = function(block) {
+AI.Swift.SwiftWriter.prototype['component_set_get'] = function(block) {
   var code = null;
   if (block.isGeneric) {
     code = '((' + block.typeName + ') ' + this.valueToCode(block, 'COMPONENT', 99) + ')';
@@ -455,7 +453,7 @@ Blockly.Swift.SwiftWriter.prototype['component_set_get'] = function(block) {
   }
 };
 
-Blockly.Swift.SwiftWriter.prototype['controls_choose'] = function(block) {
+AI.Swift.SwiftWriter.prototype['controls_choose'] = function(block) {
   var test = this.valueToCode(block, 'TEST', 99) || 'false';
   this.push('if (' + test + ') {\n');
   this.indent();
@@ -475,12 +473,12 @@ Blockly.Swift.SwiftWriter.prototype['controls_choose'] = function(block) {
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['controls_closeScreen'] = function(block) {
+AI.Swift.SwiftWriter.prototype['controls_closeScreen'] = function(block) {
   this.push('closeScreen()\n');
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['controls_forEach'] = function(block) {
+AI.Swift.SwiftWriter.prototype['controls_forEach'] = function(block) {
   this.push('for ' + block.getFieldValue('VAR') + ' in ' +
             this.valueToCode(block, 'LIST', 99) + '{\n');
   this.indent();
@@ -493,7 +491,7 @@ Blockly.Swift.SwiftWriter.prototype['controls_forEach'] = function(block) {
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['controls_if'] = function(block) {
+AI.Swift.SwiftWriter.prototype['controls_if'] = function(block) {
   var argument = this.valueToCode(block, 'IF0', 99) || 'false';
   this.push('if (' + argument + ') {\n');
   this.indent();
@@ -516,20 +514,20 @@ Blockly.Swift.SwiftWriter.prototype['controls_if'] = function(block) {
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['controls_openAnotherScreen'] = function(block) {
+AI.Swift.SwiftWriter.prototype['controls_openAnotherScreen'] = function(block) {
   var screen = this.valueToCode(block, 'SCREEN', 99) || '\"\"';
   this.push('openAnotherScreen(named: ' + screen + ')\n');
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['global_declaration'] = function(block) {
+AI.Swift.SwiftWriter.prototype['global_declaration'] = function(block) {
   var name = block.getFieldValue('NAME');
   var argument0 = this.valueToCode(block, 'VALUE', 99) || '0';
   this.push('var ' + name + ' = ' + argument0 + '\n');
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['lexical_variable_get'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lexical_variable_get'] = function(block) {
   var pair = Blockly.unprefixName(block.getFieldValue('VAR'));
   if (pair[0] == Blockly.globalNamePrefix) {
     return ['g$' + pair[1], 0];
@@ -538,7 +536,7 @@ Blockly.Swift.SwiftWriter.prototype['lexical_variable_get'] = function(block) {
   }
 };
 
-Blockly.Swift.SwiftWriter.prototype['lexical_variable_set'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lexical_variable_set'] = function(block) {
   var argument0 = this.valueToCode(block, 'VALUE', 99) || '0';
   var name = block.getFieldValue('VAR');
   if (block.eventparam) {
@@ -559,7 +557,7 @@ Blockly.Swift.SwiftWriter.prototype['lexical_variable_set'] = function(block) {
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_add_items'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_add_items'] = function(block) {
   var code = this.valueToCode(block, 'LIST', 19) || '[]';
   if (block.itemCount_ == 1) {
     code += '.append(' + this.valueToCode(block, 'ITEM0', 18) + ')\n'
@@ -574,7 +572,7 @@ Blockly.Swift.SwiftWriter.prototype['lists_add_items'] = function(block) {
   return code;
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_create_with'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_create_with'] = function(block) {
   var code = ['[']
   if (block.itemCount_ > 0) {
     code.push(this.valueToCode(block, 'ADD0', 19) || 'nil');
@@ -587,41 +585,41 @@ Blockly.Swift.SwiftWriter.prototype['lists_create_with'] = function(block) {
   return [code.join(''), 19];
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_length'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_length'] = function(block) {
   var code = this.valueToCode(block, 'LIST', 19) + '.count';
   return [code, 19];
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_pick_random_item'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_pick_random_item'] = function(block) {
   var list = this.valueToCode(block, 'LIST', 19);
   var code = list + '[Int(arc4random_uniform(UInt32(' + list + '.count)))]'
   return [code, 19];
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_position_in'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_position_in'] = function(block) {
   var list = this.valueToCode(block, 'LIST', 18);
   var code = list + '.index(of: ' + this.valueToCode(block, 'ITEM', 18) + ')'
   return [code, 18];
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_remove_item'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_remove_item'] = function(block) {
   var list = this.valueToCode(block, 'LIST', 18);
   var code = list + '.remove(at: Int(' + this.valueToCode(block, 'INDEX', 18) + '))';
   return [code, 18];
 };
 
-Blockly.Swift.SwiftWriter.prototype['lists_select_item'] = function(block) {
+AI.Swift.SwiftWriter.prototype['lists_select_item'] = function(block) {
   var list = this.valueToCode(block, 'LIST', 19);
   var code = list + '[Int(' + this.valueToCode(block, 'INDEX', 19) + ')]';
   return [code, 19];
 };
 
-Blockly.Swift.SwiftWriter.prototype['logic_boolean'] = function(block) {
+AI.Swift.SwiftWriter.prototype['logic_boolean'] = function(block) {
   var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
   return [code, 0];
 };
 
-Blockly.Swift.SwiftWriter.prototype['logic_operation'] = function(block) {
+AI.Swift.SwiftWriter.prototype['logic_operation'] = function(block) {
   // 10
   var mode = block.getFieldValue('OP');
   var op = mode == 'AND' ? ' && ' : ' || ';
@@ -632,7 +630,7 @@ Blockly.Swift.SwiftWriter.prototype['logic_operation'] = function(block) {
   return [code, order];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_add'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_add'] = function(block) {
   var operands = new Array(block.itemCount_);
   for (var i = 0; i < block.itemCount_; i++) {
     operands[i] = this.valueToCode(block, 'ARG' + i, 13);
@@ -640,7 +638,7 @@ Blockly.Swift.SwiftWriter.prototype['math_add'] = function(block) {
   return [operands.join(' + '), 13];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_compare'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_compare'] = function(block) {
   var ops = {
     'EQ': [' == ', 10],
     'NEQ': [' != ', 10],
@@ -658,19 +656,19 @@ Blockly.Swift.SwiftWriter.prototype['math_compare'] = function(block) {
   return [code, order];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_division'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_division'] = function(block) {
   var arg0 = this.valueToCode(block, 'A', 14) || '0',
       arg1 = this.valueToCode(block, 'B', 14) || '1';
   return [arg0 + ' / ' + arg1, 14];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_format_as_decimal'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_format_as_decimal'] = function(block) {
   var code = 'formatAsDecimal(' + this.valueToCode(block, 'NUM', 19) + ', ' +
       this.valueToCode(block, 'PLACES', 19) + ')';
   return [code, 19];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_multiply'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_multiply'] = function(block) {
   var operands = new Array(block.itemCount_);
   for (var i = 0; i < block.itemCount_; i++) {
     operands[i] = this.valueToCode(block, 'ARG' + i, 14);
@@ -678,12 +676,12 @@ Blockly.Swift.SwiftWriter.prototype['math_multiply'] = function(block) {
   return [operands.join(' * '), 14];
 };
 
-Blockly.Swift.SwiftWriter.prototype['math_number'] = function(block) {
+AI.Swift.SwiftWriter.prototype['math_number'] = function(block) {
   var code = window.parseFloat(block.getFieldValue('NUM'));
   return [code, 0];
 };
 
-Blockly.Swift.SwiftWriter.prototype['procedures_callnoreturn'] = function(block) {
+AI.Swift.SwiftWriter.prototype['procedures_callnoreturn'] = function(block) {
   var procName = 'p$' + block.getFieldValue('PROCNAME');
   var argCode = [];
   for (var i = 0; block.getInput('ARG' + i); i++) {
@@ -693,7 +691,7 @@ Blockly.Swift.SwiftWriter.prototype['procedures_callnoreturn'] = function(block)
   return code;
 };
 
-Blockly.Swift.SwiftWriter.prototype['procedures_callreturn'] = function(block) {
+AI.Swift.SwiftWriter.prototype['procedures_callreturn'] = function(block) {
   var procName = 'p$' + block.getFieldValue('PROCNAME');
   var argCode = [];
   for (var i = 0; block.getInput('ARG' + i); i++) {
@@ -703,7 +701,7 @@ Blockly.Swift.SwiftWriter.prototype['procedures_callreturn'] = function(block) {
   return [code, 0];  
 };
 
-Blockly.Swift.SwiftWriter.prototype['procedures_defnoreturn'] = function(block) {
+AI.Swift.SwiftWriter.prototype['procedures_defnoreturn'] = function(block) {
   var defun = 'func p$' + block.getFieldValue('NAME') + '(';
   var args = new Array(block.arguments_.length);
   for (var i = 0; i < block.arguments_.length; i++) {
@@ -722,7 +720,7 @@ Blockly.Swift.SwiftWriter.prototype['procedures_defnoreturn'] = function(block) 
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['procedures_defreturn'] = function(block) {
+AI.Swift.SwiftWriter.prototype['procedures_defreturn'] = function(block) {
   // TODO(ewpatton): Statically analyze call graph to determine type
   // For now, we [incorrectly] assume a Double return value
   var defun = 'func p$' + block.getFieldValue('NAME') + '(';
@@ -743,12 +741,12 @@ Blockly.Swift.SwiftWriter.prototype['procedures_defreturn'] = function(block) {
   return null;
 };
 
-Blockly.Swift.SwiftWriter.prototype['text'] = function(block) {
+AI.Swift.SwiftWriter.prototype['text'] = function(block) {
   var code = this.quote_(block.getFieldValue('TEXT'));
   return [code, 0];
 };
 
-Blockly.Swift.SwiftWriter.prototype['text_join'] = function(block) {
+AI.Swift.SwiftWriter.prototype['text_join'] = function(block) {
   var code = '';
   if (block.itemCount_ > 0) {
     var code = new Array(block.itemCount_);
@@ -761,7 +759,7 @@ Blockly.Swift.SwiftWriter.prototype['text_join'] = function(block) {
   }
 };
 
-Blockly.Swift.SwiftWriter.prototype.blockToCode = function(block) {
+AI.Swift.SwiftWriter.prototype.blockToCode = function(block) {
   if (!block) {
     return '';
   }
@@ -797,7 +795,7 @@ Blockly.Swift.SwiftWriter.prototype.blockToCode = function(block) {
   }
 };
 
-Blockly.Swift.SwiftWriter.prototype.scrub_ = function(block, code, thisOnly) {
+AI.Swift.SwiftWriter.prototype.scrub_ = function(block, code, thisOnly) {
   if (code === null) {
     return '';
   }
@@ -807,7 +805,7 @@ Blockly.Swift.SwiftWriter.prototype.scrub_ = function(block, code, thisOnly) {
   return commentCode + code + nextCode;
 };
 
-Blockly.Swift.SwiftWriter.prototype.quote_ = function(string) {
+AI.Swift.SwiftWriter.prototype.quote_ = function(string) {
   string = this.quotifyForREPL(string);
   if (!string) {
     string = '""';
@@ -815,7 +813,7 @@ Blockly.Swift.SwiftWriter.prototype.quote_ = function(string) {
   return string;
 };
 
-Blockly.Swift.SwiftWriter.prototype.quotifyForREPL = function(s) {
+AI.Swift.SwiftWriter.prototype.quotifyForREPL = function(s) {
   if (!s) {
     return null;
   }

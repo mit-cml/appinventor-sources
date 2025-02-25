@@ -207,4 +207,8 @@ public final class EditableProperty extends Property {
   public String getDescription() {
     return description;
   }
+
+  public EditableProperties getEditableProperties() {
+    return properties;
+  }
 }

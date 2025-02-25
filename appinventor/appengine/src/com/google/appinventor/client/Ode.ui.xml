@@ -12,12 +12,13 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
+  <ui:with field="style" />
   <g:FlowPanel styleName="ode-Root">
     <ode:TopPanel ui:field="topPanel" />
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
       <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
       <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
-        <g:FlowPanel styleName="ode-ProjectListView" width="100%" >
+        <g:FlowPanel width="100%" >
           <ex:ProjectToolbar width="100%" ui:field="projectToolbar" />
           <box:ProjectListBox width="100%" ui:field="projectListbox" />
         </g:FlowPanel>

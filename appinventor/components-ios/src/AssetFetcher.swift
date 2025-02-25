@@ -19,12 +19,14 @@ class AssetLoadError: Error {
         if success {
           RetValManager.shared().assetTransferred(asset)
         } else if let error = error {
-          guard let window = UIApplication.shared.keyWindow else {
-            return
+          DispatchQueue.main.async {
+            guard let window = UIApplication.shared.keyWindow else {
+              return
+            }
+            let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+            window.makeToast("Unable to load \(asset) with error \(error)", point: center,
+                             title: nil, image: nil, completion: nil)
           }
-          let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
-          window.makeToast("Unable to load \(asset) with error \(error)", point: center,
-                           title: nil, image: nil, completion: nil)
         }
       }
     }

@@ -125,6 +125,8 @@
     "Blockly.Msg.COLLAPSE_ALL": "Խմբավորել Բլոկները",
     "Blockly.Msg.EXPORT_IMAGE": "Ներբեռնել Բլոկները որպես նկար",
     "Blockly.Msg.HELP": "Օգնություն",
+    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Այս նկարը վերաբերում է հետևյալ բլոկներին, որոնք պահանջում են երկարություններ, որոնք չկան նախագծում:\n\n",
+    "Blockly.Msg.ERROR_PARSING_XML": "Սխալ: Չհաջողվեց վերլուծել XML-ը PNG ֆայլից։ Խնդրում ենք փորձել կրկին։",
     "Blockly.Msg.ENABLE_BLOCK": "Ակտիվացնել Բլոկը",
     "Blockly.Msg.DISABLE_BLOCK": "Ապաակտիվացնել Բլոկը",
     "Blockly.Msg.EXPAND_BLOCK": "Ընդարձակել Բլոկը",

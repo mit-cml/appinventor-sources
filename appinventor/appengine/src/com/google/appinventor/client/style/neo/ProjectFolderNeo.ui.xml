@@ -1,0 +1,26 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <g:FlowPanel styleName="ode-ProjectRowList">
+    <g:FlowPanel ui:field="container" styleName="ode-ProjectRowUnHighlighted">
+      <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox ode-ProjectCheckBox'/>
+      <g:FocusPanel ui:field='expandbuttonFocusPanel' styleName='ode-ExpandButtonFocusPanel' >
+        <g:FlowPanel addStyleNames="ode-ProjectFieldSpan">
+          <ai:Icon icon="folder"/>
+          <ai:Icon ui:field='expandButton' icon='chevron_right'/>
+          <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+      <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel '/>
+      <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel '/>
+    </g:FlowPanel>
+    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectFolderList ode-ProjectRowHidden'/>
+  </g:FlowPanel>
+</ui:UiBinder>

@@ -101,7 +101,7 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
           }
         };
         new FileUploadWizard(assetsFolder,
-            Collections.singleton(".geojson"), callback);
+            Collections.singleton(".geojson"), callback).show();
       }
     });
     Button urlButton = new Button(MESSAGES.fromUrlButton());

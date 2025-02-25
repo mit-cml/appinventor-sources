@@ -5,6 +5,8 @@
 		"locale": "fr",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Cette image fait référence aux blocs suivants qui nécessitent des extensions qui ne sont pas présentes dans le projet:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "Erreur : Échec de l'analyse du XML à partir du fichier PNG. Veuillez réessayer.",
 	"Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION": "Ce bloc ne peut pas être dans une définition",
 	"Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER": "Ceci est un gestionnaire d'évènement dupliqué pour ce composant.",
 	"Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Sélectionner un élément valide dans le menu déroulant.",

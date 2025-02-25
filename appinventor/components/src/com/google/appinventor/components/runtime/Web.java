@@ -1003,7 +1003,8 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @throws IllegalArgumentException if the JSON text can't be decoded
    */
   @VisibleForTesting
-  static Object decodeJsonText(String jsonText, boolean useDicts) throws IllegalArgumentException {
+  public static Object decodeJsonText(String jsonText, boolean useDicts)
+      throws IllegalArgumentException {
     try {
       return JsonUtil.getObjectFromJson(jsonText, useDicts);
     } catch (JSONException e) {

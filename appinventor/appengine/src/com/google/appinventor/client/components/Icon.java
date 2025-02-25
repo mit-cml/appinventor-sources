@@ -25,6 +25,10 @@ public class Icon extends InlineLabel {
     setText(iconName);
   }
 
+  public void setTooltip(String tooltip) {
+    setTitle(tooltip);
+  }
+
   @Override
   public void setStyleName(String styleName) {
     addStyleName(styleName);

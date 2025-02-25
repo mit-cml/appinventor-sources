@@ -17,6 +17,8 @@
 	"Blockly.Msg.COLLAPSE_BLOCK": "Riduci Blocco",
 	"Blockly.Msg.EXPAND_BLOCK": "Espandi Blocco",
 	"Blockly.Msg.DISABLE_BLOCK": "Disabilita Blocco",
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Questa immagine fa riferimento ai seguenti blocchi che richiedono estensioni che non sono presenti nel progetto:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "Errore: Impossibile analizzare l'XML dal file PNG. Riprova.",
 	"Blockly.Msg.ENABLE_BLOCK": "Abilita Blocco",
 	"Blockly.Msg.HELP": "Aiuto",
 	"Blockly.Msg.COLLAPSE_ALL": "Riduci blocchi",

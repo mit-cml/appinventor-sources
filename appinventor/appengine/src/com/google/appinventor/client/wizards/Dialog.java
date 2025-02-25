@@ -19,6 +19,7 @@ public class Dialog extends DialogBox {
     super(false, true, new CaptionImpl());
     caption = getCaption();
     setGlassEnabled(true);
+    setModal(false);
   }
 
   public void setCaption(String text) {

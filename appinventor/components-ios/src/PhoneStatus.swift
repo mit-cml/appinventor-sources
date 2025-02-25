@@ -34,7 +34,7 @@ open class PhoneStatus : NonvisibleComponent {
     return false
   }
 
-  @objc open func startWebRTC(_ rendezvousServer: String, _ iceServers: String) {
+  @objc open func startWebRTC(_ rendezvousServer: String, _ iceServers: String, _ delegate: WebRTCConnectionDelegate) {
     guard WebRTC else {
       return
     }
@@ -42,6 +42,7 @@ open class PhoneStatus : NonvisibleComponent {
       return
     }
     let manager = WebRTCNativeManager(rendezvousServer, iceServers)
+    manager.delegate = delegate
     manager.initiate(_form as! ReplForm, firstSeed)
   }
 

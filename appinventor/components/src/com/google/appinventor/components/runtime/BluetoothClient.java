@@ -32,6 +32,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SUtil;
 
@@ -216,7 +218,14 @@ public final class BluetoothClient extends BluetoothConnectionBase
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       for (String permission : RUNTIME_PERMISSIONS) {
         if (form.isDeniedPermission(permission)) {
-          throw new PermissionException(permission);
+          form.askPermission(new BulkPermissionRequest(this, "AddressesAndNames",
+              RUNTIME_PERMISSIONS) {
+            @Override
+            public void onGranted() {
+              // Possibly, if we had call/cc
+            }
+          });
+          throw new StopBlocksExecution();
         }
       }
     }
