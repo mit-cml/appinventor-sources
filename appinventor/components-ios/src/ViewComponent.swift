@@ -48,7 +48,7 @@ import Foundation
           if _left != newValue {
               _left = newValue
               // Notify container to update position
-            _container?.setChildNeedsLayout!(component:self)
+            _container?.setChildNeedsLayout?(component:self)
           }
       }
   }
@@ -61,7 +61,7 @@ import Foundation
           if _top != newValue {
               _top = newValue
               // Notify container to update position
-              _container?.setChildNeedsLayout!(component:self)
+              _container?.setChildNeedsLayout?(component:self)
           }
       }
   }
