@@ -957,6 +957,8 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
 
 AI.Blockly.ContextMenuItems.registerAll();
 
+Blockly.BlocklyEditor['cssRegistered'] = false;
+
 /**
  * Create a new Blockly workspace but without initializing its DOM.
  * @param container The container that will host the Blockly workspace
@@ -966,6 +968,18 @@ AI.Blockly.ContextMenuItems.registerAll();
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
 Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
+  if (!Blockly.BlocklyEditor['cssRegistered']) {
+    Blockly.BlocklyEditor['cssRegistered'] = true;
+    try {
+      Blockly.Css.register(`
+.blocklyZoom:hover, .blocklyTrash:hover, .blocklyMultiselect:hover { cursor: pointer; }
+.blocklyZoom>image, .blocklyZoom>image:hover { opacity: 1.0; }
+.blocklyMultiselect>image, .blocklyMultiselect>image:hover { opacity: 1.0; }
+`);
+    } catch (e) {
+      // Thrown if we've already registered the CSS. This should only happen in unit tests.
+    }
+  }
   var options = {
     'toolbox': {
       'kind': 'flyoutToolbox',

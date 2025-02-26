@@ -148,4 +148,8 @@ public final class AppInventorFeatures {
     return "https://chatbot.appinventor.mit.edu/";
   }
 
+  public static boolean doingSurvey() {
+    return false;
+  }
+
 }

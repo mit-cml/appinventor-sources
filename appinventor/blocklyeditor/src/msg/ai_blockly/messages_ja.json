@@ -720,7 +720,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT": "ディクショナリ %2 のキー・パス %1 の値を %3 に設定します",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "ディクショナリ%2 のキー・パス %1 で値を取得するか、または %3 が見つからなければ取得します",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "ディクショナリ%2でキー%1の値を取得する、もしくは、%3が見つかなければ",
-    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "ディクショナリ%からキー%2のエントリを削除します",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "ディクショナリ%1からキー%2のエントリを削除します",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT": "ディクショナリ%2のキー%1の値を%3に設定する",
     "Blockly.Msg.LANG_DICTIONARIES_PAIR_INPUT": "キー%1値%2",
     "Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY": "リスト'at'に含まれているどれかのアイテムを分割点として、与えられたテキストをリストに分割し、その結果のリストを返す。\n'appleberry,banana,cherry,dogfood'を、最初の項目がカンマ、2番目の項目が'ry'の2要素リストとして、'at'で分割すると、4つの項目のリストが返される: '(applebe banana che dogfood)'。",
