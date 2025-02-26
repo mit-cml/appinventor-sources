@@ -5,11 +5,12 @@
 
 package com.google.appinventor.client.explorer.dialogs;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
@@ -19,6 +20,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent; 
 import com.google.gwt.event.dom.client.ChangeHandler; 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -28,21 +30,19 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A dialog for updating project properties that can be open from any screen
  */
 public class ProjectPropertiesDialogBox { 
-
-  private static final ProjectPropertiesDialogBoxUiBinder UI_BINDER = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
 
   interface ProjectPropertiesDialogBoxUiBinder extends UiBinder<Widget, ProjectPropertiesDialogBox> {
   }
@@ -59,17 +59,23 @@ public class ProjectPropertiesDialogBox {
   @UiField
   Button closeDialogBox;
 
+  @UiField
+  Button topInvisible;
+
+  @UiField
+  Button bottomInvisible;
+
   /**
    * List Of project properties category, which will be used to group properties in the dialog 
    * properties category are : General, Theming, Publishing
    */
-  private static final List<String> projectPropertyCategoryTitle = Arrays.asList(
-    new String[] {
-      Ode.MESSAGES.projectPropertyGeneralCategoryTitle(),
-      Ode.MESSAGES.projectPropertyThemingCategoryTitle(),
-      Ode.MESSAGES.projectPropertyPublishingCategoryTitle()
-    }
-  );
+  private static final Map<String, String> projectCategories = new LinkedHashMap<>();
+
+  static {
+    projectCategories.put("General", MESSAGES.projectPropertyGeneralCategoryTitle());
+    projectCategories.put("Theming", MESSAGES.projectPropertyThemingCategoryTitle());
+    projectCategories.put("Publishing", MESSAGES.projectPropertyPublishingCategoryTitle());
+  }
 
   /**
    * Maps the project property category to List of EditableProperty which
@@ -94,15 +100,17 @@ public class ProjectPropertiesDialogBox {
       @Override
       public void execute() {
           projectProperties.center();
+          categoryList.setFocus(true);
       }
     });   
   }
 
   public ProjectPropertiesDialogBox(YaProjectEditor projectEditor) {
-    UI_BINDER.createAndBindUi(this);
+    ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
+    uibinder.createAndBindUi(this);
     projectProperties.setAutoHideEnabled(false);
-    projectProperties.setModal(true);
-    projectProperties.setCaption(Ode.MESSAGES.projectPropertiesText());
+    projectProperties.setModal(false);
+    projectProperties.setCaption(MESSAGES.projectPropertiesText());
 
     categoryList.getElement().getStyle().setProperty("height", "400px");
 
@@ -127,9 +135,9 @@ public class ProjectPropertiesDialogBox {
     }
 
     // Add the Categories to ListBox - categoryList
-    for (String categoryTitle : projectPropertyCategoryTitle) {
-      categoryList.addItem(categoryTitle);
-      propertiesDeckPanel.add(getPanel(categoryTitle));
+    for (Map.Entry<String, String> categoryTitle : projectCategories.entrySet()) {
+      categoryList.addItem(categoryTitle.getValue());
+      propertiesDeckPanel.add(getPanel(categoryTitle.getKey()));
     }
 
     // When category is changed by the user, display related properties
@@ -140,7 +148,7 @@ public class ProjectPropertiesDialogBox {
       }
     });
 
-    categoryList.setVisibleItemCount(projectPropertyCategoryTitle.size());
+    categoryList.setVisibleItemCount(projectCategories.size());
       
     // When dialog is opened, properties related to the General category is shown
     propertiesDeckPanel.showWidget(0);
@@ -165,11 +173,11 @@ public class ProjectPropertiesDialogBox {
       propertyContainer.setStyleName("ode-propertyDialogPropertyContainer");
 
       // name of the EditableProperty
-      Label name = new Label(ComponentsTranslation.getPropertyName(property.getName()));
+      Label name = new Label(ComponentTranslationTable.getPropertyName(property.getName()));
       name.setStyleName("ode-propertyDialogPropertyTitle");
 
       // Description of the property
-      HTML description = new HTML(ComponentsTranslation.getPropertyDescription(property.getDescription()));
+      HTML description = new HTML(ComponentTranslationTable.getPropertyDescription(property.getDescription()));
       description.setStyleName("ode-propertyDialogPropertyDescription");
 
       // editor of the editor
@@ -201,5 +209,15 @@ public class ProjectPropertiesDialogBox {
   void handleClose(ClickEvent e) {
     projectProperties.hide();
     applyPropertyChanges();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     closeDialogBox.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     categoryList.setFocus(true);
   }
 }

@@ -15,6 +15,8 @@ import android.net.Uri;
 
 import android.util.Log;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -220,8 +222,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
   private String token;         // MIT Generated access token
   private SSLSocketFactory sslSockFactory;  // Socket Factory for using SSL
 
-  private static final String IMAGEBOT_SERVICE_URL =
-      "https://chatbot.appinventor.mit.edu/image/v1";
+  private static final String IMAGEBOT_SERVICE_URL = AppInventorFeatures.chatBotHost() + "image/v1";
 
   public ImageBot(ComponentContainer container) {
     super(container.$form());
@@ -312,6 +313,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    * @param description the description of how to edit the image
    */
   @SimpleFunction
+  @Deprecated
   public void EditImage(Object source, final String description) {
     try {
       // Load the image on the main thread. This isn't ideal but prevents the image from being

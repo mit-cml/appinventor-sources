@@ -90,7 +90,7 @@ public class ComponentImportWizard extends Wizard {
           project.addNode(componentsFolder, node);
           if ((node.getName().equals("component.json") || node.getName().equals("components.json"))
               && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-            projectEditor.addComponent(node, null);
+            projectEditor.importExtension(node);
           }
         }
       }
@@ -152,7 +152,7 @@ public class ComponentImportWizard extends Wizard {
             return;
           }
 
-          String url = GWT.getModuleBaseURL() +
+          String url = ServerLayout.getModuleBaseURL() +
             ServerLayout.UPLOAD_SERVLET + "/" +
             ServerLayout.UPLOAD_COMPONENT + "/" +
             trimLeadingPath(fileUpload.getFilename());

@@ -58,11 +58,11 @@ public class AnomalyDetectionTest extends RobolectricTestBase {
     List<?> cleanData = anomalyDetection.CleanData(
         YailList.makeList(Arrays.asList(6, 88.0)), xList, yList);
     List<?> expectedList = Arrays.asList(
-        Arrays.asList(1.0, 1.0),
-        Arrays.asList(2.0, 2.0),
-        Arrays.asList(3.0, 3.0),
-        Arrays.asList(4.0, 2.0),
-        Arrays.asList(5.0, 2.0)
+        YailList.makeList(Arrays.asList(1.0, 1.0)),
+        YailList.makeList(Arrays.asList(2.0, 2.0)),
+        YailList.makeList(Arrays.asList(3.0, 3.0)),
+        YailList.makeList(Arrays.asList(4.0, 2.0)),
+        YailList.makeList(Arrays.asList(5.0, 2.0))
     );
     assertEquals(expectedList.size(), cleanData.size());
     assertEquals(expectedList, cleanData);

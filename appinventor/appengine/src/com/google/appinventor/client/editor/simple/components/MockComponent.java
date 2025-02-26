@@ -9,9 +9,10 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -39,10 +40,12 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.TouchCancelHandler;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
@@ -101,7 +104,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
-  public String currentPreview;
 
   /**
    * This class defines the dialog box for renaming a component.
@@ -111,11 +113,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private final LabeledTextBox newNameTextBox;
 
     RenameDialog(String oldName) {
-      super(false, true);
-
+      super(false, false);
+      setGlassEnabled(true);
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.renameTitle());
       VerticalPanel contentPanel = new VerticalPanel();
+
+      Button topInvisible = new Button();
+      contentPanel.add(topInvisible);
 
       LabeledTextBox oldNameTextBox = new LabeledTextBox(MESSAGES.oldNameLabel());
       oldNameTextBox.setText(getName());
@@ -124,9 +129,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       newNameTextBox = new LabeledTextBox(MESSAGES.newNameLabel());
       newNameTextBox.setText(oldName);
-      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      newNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
         @Override
-        public void onKeyUp(KeyUpEvent event) {
+        public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
           if (keyCode == KeyCodes.KEY_ENTER) {
             handleOkClick();
@@ -151,9 +156,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           handleOkClick();
         }
       });
+
+      Button bottomInvisible = new Button();
+      bottomInvisible.setStyleName("FocusTrap");
+      topInvisible.setStyleName("FocusTrap");
+      topInvisible.addFocusHandler(new FocusHandler() {
+        @Override
+        public void onFocus(FocusEvent event) {
+          okButton.setFocus(true); 
+        }
+      });
+      bottomInvisible.addFocusHandler(new FocusHandler() {
+        public void onFocus(FocusEvent event) {
+          newNameTextBox.setFocus(true); 
+        }
+      });
+
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
+      buttonPanel.add(bottomInvisible);
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
@@ -228,8 +250,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * This class defines the dialog box for deleting a component.
    */
   private class DeleteDialog extends DialogBox {
+    private final Button deleteButton;
     DeleteDialog() {
-      super(false, true);
+      super(false, false);
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.deleteComponentButton());
@@ -243,13 +266,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           hide();
         }
       });
-      Button deleteButton = new Button(MESSAGES.deleteButton());
+      deleteButton = new Button(MESSAGES.deleteButton());
       deleteButton.addStyleName("destructive-action");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           hide();
           MockComponent.this.delete();
+          SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         }
       });
       HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -264,16 +288,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     @Override
     protected void onPreviewNativeEvent(NativePreviewEvent event) {
       super.onPreviewNativeEvent(event);
-      switch (event.getTypeInt()) {
-        case Event.ONKEYDOWN:
-          if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
-            hide();
-          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
-            hide();
-            MockComponent.this.delete();
-          }
-          break;
+      if (event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+        hide();
       }
+    }
+
+    public void center() {
+      super.center();
+      deleteButton.setFocus(true);
     }
   }
 
@@ -461,7 +483,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns a unique default component name.
    */
   private String componentName() {
-    String compType = ComponentsTranslation.getComponentName(getType());
+    String compType = ComponentTranslationTable.getComponentName(getType());
     compType = compType.replace(" ", "_").replace("'", "_"); // Make sure it doesn't have any spaces in it
     return compType + getNextComponentIndex();
   }
@@ -484,7 +506,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = ComponentsTranslation.getComponentName(getType())
+      final String typeName = ComponentTranslationTable.getComponentName(getType())
         .toLowerCase()
         .replace(" ", "_")
         .replace("'", "_");
@@ -538,19 +560,27 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editor  property editor
    */
   public final void addProperty(String name, String defaultValue, String caption, String category,
-      String description, String editorType, String[] editorArgs, PropertyEditor editor) {
+                                String editorType, String[] editorArgs, PropertyEditor editor) {
 
-    int type = EditableProperty.TYPE_NORMAL;
+    String propertyDesc = ComponentTranslationTable.getPropertyDescription(name
+      + "PropertyDescriptions");
+    if (propertyDesc.equals(name + "PropertyDescriptions")) {
+      propertyDesc = ComponentTranslationTable.getPropertyDescription((type.equals("Form")
+          ? "Screen" : type) + "." + propertyDesc);
+    }
+
+    int propertyType = EditableProperty.TYPE_NORMAL;
     if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
+      propertyType |= EditableProperty.TYPE_NONPERSISTED;
     }
     if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
+      propertyType |= EditableProperty.TYPE_INVISIBLE;
     }
     if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
+      propertyType |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, category, description, editor, type, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
+        ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
   }
 
   protected final void addProperty(String name) {
@@ -1142,11 +1172,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   public void delete() {
     this.editor.getProjectEditor().clearLocation(getName());
-    getForm().select(null);
     // Pass true to indicate that the component is being permanently deleted.
     getContainer().removeComponent(this, true);
     // tell the component its been removed, so it can remove children's blocks
     onRemoved();
+    getForm().select(null);
     properties.removePropertyChangeListener(this);
     properties.clear();
   }
@@ -1233,7 +1263,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
             property.getEditorType(), property.getDefaultValue(),
             (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(),
-            property.getCategory(), property.getDescription(), property.getEditorType(),
+            property.getCategory(), property.getEditorType(),
             property.getEditorArgs(), propertyEditor);
       }
     }

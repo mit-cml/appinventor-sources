@@ -74,6 +74,12 @@
   <property name="src.dir" location="${basedir}/src" />
   <property name="tests.dir" location="${basedir}/tests" />
 
+  <!-- Determine the source/target Java version -->
+  <condition property="lang.version" value="8" else="${java.specification.version}">
+    <matches pattern="1.\d+" string="${java.specification.version}" />
+  </condition>
+
+
   <!-- ====================================================================
        Pull in definition of propertyregex task from Ant Contrib jar
        ===================================================================== -->
@@ -101,8 +107,8 @@
     <attribute name="destdir"/>
     <attribute name="encoding" default="utf-8"/>
     <attribute name="nowarn" default="off"/>
-    <attribute name="source" default="7"/>
-    <attribute name="target" default="7"/>
+    <attribute name="source" default="${lang.version}"/>
+    <attribute name="target" default="${lang.version}"/>
     <attribute name="deprecation" default="off"/>
     <attribute name="debug" default="${debug.compile}"/>
     <attribute name="debuglevel" default="lines,vars,source"/>
@@ -188,8 +194,7 @@
         select="\2" />
 
       <ai.javactests destdir="${classdir}" >
-        <include name="@{aij-dir}/**/${test_name.class}.java" if="test_name" />
-        <include name="@{aij-dir}/**/*.java" unless="test_name" />
+        <include name="@{aij-dir}/**/*.java" />
         <aij-supplemental-includes />
         <classpath refid="libsFor@{aij-testingtarget}.path"/>
       </ai.javactests>
@@ -212,10 +217,11 @@
              haltonfailure="no"
              maxmemory="2000m"
              showoutput="no">
-        <jvmarg value="-XX:MaxPermSize=128m"/>
         <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
         <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war ${local.build.dir}/build/war" unless:true="@{aij-prod}"/>
         <sysproperty key="java.awt.headless" value="true"/>
+        <sysproperty key="robolectric.offline" value="true"/>
+        <sysproperty key="robolectric.dependency.dir" value="${lib.dir}/robolectric" />
         <classpath refid="@{aij-testingtarget}.path"/>
         <formatter type="xml"/>
         <!-- If the ant command line sets the test_name property (see above)

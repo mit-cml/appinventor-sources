@@ -6,6 +6,11 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.utils.Promise.reject;
+import static com.google.appinventor.client.utils.Promise.rejectWithReason;
+import static com.google.appinventor.client.utils.Promise.resolve;
+import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
+
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -15,12 +20,14 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -29,34 +36,42 @@ import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Promise.RejectCallback;
+import com.google.appinventor.client.utils.Promise.ResolveCallback;
+import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
+
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
-import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
-import com.google.appinventor.shared.rpc.component.ComponentService;
-import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
@@ -67,21 +82,29 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -100,6 +123,7 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -116,13 +140,12 @@ public class Ode implements EntryPoint {
 
   private static final Logger LOG = Logger.getLogger(Ode.class.getName());
 
-  interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
-
   // Global instance of the Ode object
   private static Ode instance;
 
   // Application level image bundle
-  private static final Images IMAGES = GWT.create(Images.class);
+  private static Images IMAGES;
+  private static boolean useNeoStyle = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -200,25 +223,28 @@ public class Ode implements EntryPoint {
    *  |+-------------------------------------------+|
    *  +---------------------------------------------+
    */
-  @UiField(provided = true) DeckPanel deckPanel;
-  @UiField(provided = true) FlowPanel overDeckPanel;
-  @UiField TutorialPanel tutorialPanel;
+  @UiField(provided = true) protected DeckPanel deckPanel;
+  @UiField(provided = true) protected FlowPanel overDeckPanel;
+  @UiField protected TutorialPanel tutorialPanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
-  @UiField TopPanel topPanel;
-  @UiField StatusPanel statusPanel;
-  @UiField FlowPanel workColumns;
-  @UiField FlowPanel structureAndAssets;
-  @UiField ProjectToolbar projectToolbar;
-  @UiField (provided = true) ProjectListBox projectListbox;
-  @UiField DesignToolbar designToolbar;
-  @UiField (provided = true) PaletteBox paletteBox = PaletteBox.getPaletteBox();
-  @UiField (provided = true) ViewerBox viewerBox = ViewerBox.getViewerBox();
-  @UiField (provided = true) AssetListBox assetListBox = AssetListBox.getAssetListBox();
-  @UiField (provided = true) SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-  @UiField (provided = true) PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+  @UiField protected TopPanel topPanel;
+  @UiField protected StatusPanel statusPanel;
+  @UiField protected FlowPanel workColumns;
+  @UiField protected FlowPanel structureAndAssets;
+  @UiField protected ProjectToolbar projectToolbar;
+  @UiField (provided = true) protected ProjectListBox projectListbox;
+  @UiField protected DesignToolbar designToolbar;
+  @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
+  @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
+  @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
+  @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+
+  // mode
+  @UiField(provided = true) static Resources.Style style;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -250,6 +276,7 @@ public class Ode implements EntryPoint {
   // Licensing related variables
   private String licenseCode;
   private String systemId;
+  private static UiStyleFactory uiFactory = null;
 
   /**
    * Flag set if we may need to show the splash screen based on
@@ -300,7 +327,7 @@ public class Ode implements EntryPoint {
     return instance.getCurrentYoungAndroidProjectId();
   }
 
-  public static ProjectEditor getCurretProjectEditor() {
+  public static ProjectEditor getCurrentProjectEditor() {
     return instance.editorManager.getOpenProjectEditor(getCurrentProjectID());
   }
 
@@ -443,12 +470,14 @@ public class Ode implements EntryPoint {
     paletteBox.setVisible(false);
     sourceStructureBox.setVisible(false);
     propertiesBox.setVisible(false);
+    HiddenComponentsCheckbox.setVisibility(false);
   }
 
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
+    HiddenComponentsCheckbox.setVisibility(true);
   }
 
   /**
@@ -496,8 +525,15 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag) {  // We are loading a template, open it instead
+    if (templateLoadingFlag && !getShowUIPicker()) {  // We are loading a template, open it instead unless UI needs to be picked
                                 // of the last project
+
+      //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
+      if (templatePath.endsWith(".aia")){
+        HTML5DragDrop.importProjectFromUrl(templatePath);
+        return true;
+      }
+
       NewProjectCommand callbackCommand = new NewProjectCommand() {
         @Override
         public void execute(Project project) {
@@ -532,8 +568,17 @@ public class Ode implements EntryPoint {
       return;
     }
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-        .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
-    openProject(value);
+            .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    if (value.isEmpty()) {
+      switchToProjectsView();
+      return;
+    }
+    long projectId = Long.parseLong(value);
+    if (projectManager.isProjectInTrash(projectId)) {
+      switchToProjectsView();
+    } else {
+      openProject(value);
+    }
   }
 
   private void openProject(String projectIdString) {
@@ -550,21 +595,15 @@ public class Ode implements EntryPoint {
         // Alternatively, it is an invalid projectId. In which case,
         // nothing happens since if the listener eventually fires
         // it will not match the projectId.
-        projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-          @Override
-          public void onProjectAdded(Project project) {
-            if (project.getProjectId() == projectId) {
-              projectManager.removeProjectManagerEventListener(this);
-              openYoungAndroidProjectInDesigner(project);
-            }
-          }
-          @Override
-          public void onProjectsLoaded() {
-            // we only get here iff onProjectAdded is never called with the target project id
-            projectManager.removeProjectManagerEventListener(this);
+        projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+          Project loadedProject = projectManager.getProject(projectId);
+          if (loadedProject != null) {
+            openYoungAndroidProjectInDesigner(loadedProject);
+          } else {
             switchToProjectsView();  // the user will need to select a project...
             ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
+          return null;
         });
       }
     }
@@ -599,6 +638,7 @@ public class Ode implements EntryPoint {
         History.newItem(projectIdString, false);
       }
       assetManager.loadAssets(project.getProjectId());
+      assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
   }
@@ -650,15 +690,13 @@ public class Ode implements EntryPoint {
     // Let's see if we were started with a repo= parameter which points to a template
     templatePath = Window.Location.getParameter("repo");
     if (templatePath != null) {
-      LOG.warning("Got a template path of " + templatePath);
+      LOG.warning("Got a template or project path of " + templatePath);
       templateLoadingFlag = true;
     }
-
     // OK, let's see if we are loading from the new gallery Note: If
     // we are loading from a template (see above) then we ignore the
     // "ng" parameter. It doesn't make sense to have both, but if we
     // do, template loading wins.
-
     if (!templateLoadingFlag) {
       newGalleryId = Window.Location.getParameter("ng");
       if (newGalleryId != null) {
@@ -669,186 +707,6 @@ public class Ode implements EntryPoint {
 
     // We call this below to initialize the ConnectProgressBar
     ConnectProgressBar.getInstance();
-
-    // Get user information.
-    OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-
-      @Override
-      public void onSuccess(Config result) {
-        config = result;
-        user = result.getUser();
-        isReadOnly = user.isReadOnly();
-
-        // Arrange to redirect to the new gallery, which is run as a
-        // separate server when we are started with a galleryId flag
-        // We process this as soon as we have the system config
-        // because we need the system config to tell us where the
-        // gallery is located!
-
-        String galleryId = Window.Location.getParameter("galleryId");
-        if (galleryId != null) {
-          // This will replace us with the gallery server, displaying the app in question
-          Window.open(config.getGalleryLocation() + "?galleryid=" + galleryId, "_self", null);
-          // Never get here...(?)
-          return;
-        }
-
-        // load the user's backpack if we are not using a shared
-        // backpack
-
-        final String backPackId = user.getBackpackId();
-        if (backPackId == null || backPackId.isEmpty()) {
-          loadBackpack();
-          LOG.info("backpack: No shared backpack");
-        } else {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setSharedBackpackId(backPackId);
-            }
-          });
-          LOG.info("Have a shared backpack backPackId = " + backPackId);
-        }
-
-        // Setup noop timer (if enabled)
-        int noop = config.getNoop();
-        if (noop > 0) {
-          // If we have a noop time, setup a timer to do the noop
-          Timer t = new Timer() {
-              @Override
-              public void run() {
-                userInfoService.noop(new AsyncCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void e) {
-                    }
-                    @Override
-                    public void onFailure(Throwable e) {
-                    }
-                  });
-              }
-            };
-            t.scheduleRepeating(1000*60*noop);
-        }
-
-        // If user hasn't accepted terms of service, ask them to.
-        if (!user.getUserTosAccepted() && !isReadOnly) {
-          // We expect that the redirect to the TOS page should be handled
-          // by the onFailure method below. The server should return a
-          // "forbidden" error if the TOS wasn't accepted.
-          ErrorReporter.reportError(MESSAGES.serverUnavailable());
-          return;
-        }
-
-        splashConfig = result.getSplashConfig();
-        secondBuildserver = result.getSecondBuildserver();
-        // The code below is invoked if we do not have a second buildserver
-        // configured. It sets the warnedBuild1 flag to true which inhibits
-        // the display of the dialog box used when building. This means that
-        // if no second buildserver is configured, there is no dialog box
-        // displayed when the build menu items are invoked.
-        if (!secondBuildserver) {
-          warnedBuild1 = true;
-        }
-
-        if (result.getRendezvousServer() != null) {
-          setRendezvousServer(result.getRendezvousServer(), true);
-        } else {
-          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);
-        }
-
-        userSettings = new UserSettings(user);
-        userSettings.loadSettings(new Command() {
-          @Override
-          public void execute() {
-
-            // Initialize project and editor managers
-            // The project manager loads the user's projects asynchronously
-            folderManager = new FolderManager();
-            projectManager = new ProjectManager();
-            projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-              @Override
-              public void onProjectsLoaded() {
-                projectManager.removeProjectManagerEventListener(this);
-                // Set up the folder manager after all projects are loaded
-                folderManager.loadFolders();
-                // This handles any built-in templates stored in /war
-                // Retrieve template data stored in war/templates folder and
-                // and save it for later use in TemplateUploadWizard
-                OdeAsyncCallback<String> templateCallback =
-                    new OdeAsyncCallback<String>(
-                        // failure message
-                        MESSAGES.createProjectError()) {
-                      @Override
-                      public void onSuccess(String json) {
-                        // Save the templateData
-                        TemplateUploadWizard.initializeBuiltInTemplates(json);
-
-                        if (!handleQueryString() && shouldAutoloadLastProject()) {
-                          openPreviousProject();
-                        }
-                      }
-                    };
-                Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
-              }
-            });
-            editorManager = new EditorManager();
-            projectListbox = ProjectListBox.getProjectListBox();
-
-            // Initialize UI
-            initializeUi();
-            topPanel.showUserEmail(user.getUserEmail());
-
-          }
-        });
-      }
-
-      private boolean isSet(String str) {
-        return str != null && !str.equals("");
-      }
-
-      private String makeUri(String base) {
-        String[] params = new String[] { "locale", "repo", "galleryId", "autoload", "ng" };
-        String separator = "?";
-        StringBuilder sb = new StringBuilder(base);
-        for (String param : params) {
-          String value = Window.Location.getParameter(param);
-          if (isSet(value)) {
-            sb.append(separator);
-            sb.append(param);
-            sb.append("=");
-            sb.append(value);
-            separator = "&";
-          }
-        }
-        return sb.toString();
-      }
-
-      @Override
-      public void onFailure(Throwable caught) {
-        if (caught instanceof StatusCodeException) {
-          StatusCodeException e = (StatusCodeException) caught;
-          int statusCode = e.getStatusCode();
-          switch (statusCode) {
-            case Response.SC_UNAUTHORIZED:
-              // unauthorized => not on whitelist
-              // getEncodedResponse() gives us the message that we wrote in
-              // OdeAuthFilter.writeWhitelistErrorMessage().
-              Window.alert(e.getEncodedResponse());
-              return;
-            case Response.SC_FORBIDDEN:
-              // forbidden => need tos accept
-              Window.open(makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
-              return;
-            case Response.SC_PRECONDITION_FAILED:
-              Window.Location.replace(makeUri("/login/"));
-              return;           // likely not reached
-          }
-        }
-        super.onFailure(caught);
-      }
-    };
 
     // The call below begins an asynchronous read of the user's settings
     // When the settings are finished reading, various settings parsers
@@ -865,14 +723,74 @@ public class Ode implements EntryPoint {
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
 
-    userInfoService.getSystemConfig(sessionId, callback);
+    setupOrigin(projectService);
+    setupOrigin(userInfoService);
+    setupOrigin(getMotdService);
+    setupOrigin(componentService);
+    setupOrigin(adminInfoService);
+    setupOrigin(tokenAuthService);
 
-    History.addValueChangeHandler(new ValueChangeHandler<String>() {
-      @Override
-      public void onValueChange(ValueChangeEvent<String> event) {
-        openProject(event.getValue());
-      }
-    });
+    Promise.<Config>call(MESSAGES.serverUnavailable(),
+        c -> userInfoService.getSystemConfig(sessionId, c))
+        .then(result -> {
+          config = result;
+          // Before we get too far into it, let's see if we have to do a survey!
+          String surveyUrl = config.getSurveyUrl();
+          if (surveyUrl != null && !surveyUrl.isEmpty()) {
+            Window.Location.replace(Urls.makeUri(surveyUrl, true));
+            // off we go, no returning
+          }
+          user = result.getUser();
+          isReadOnly = user.isReadOnly();
+          registerIosExtensions(config.getIosExtensions());
+          return resolve(null);
+        })
+        .then0(this::handleGalleryId)
+        .then0(this::checkTos)
+        .then0(this::loadUserSettings)
+        .then0(() -> Promise.allOf(
+            Promise.wrap(this::processSettings),
+            Promise.wrap(this::loadUserBackpack)
+        ))
+        .then0(this::handleUiPreference)
+        .then(this::initializeUi)
+        .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
+        .then(projects -> {
+          folderManager.loadFolders();
+          ProjectListBox.getProjectListBox().getProjectList().onProjectsLoaded();
+          return resolve(projects);
+        })
+        .then0(this::retrieveTemplateData)
+        .then0(this::maybeOpenLastProject)
+        .error(caught -> {
+          if (caught == null) {
+            // previous step rejected without an actual error
+            return null;
+          }
+          Throwable original = caught.getOriginal();
+          if (original instanceof StatusCodeException) {
+            StatusCodeException e = (StatusCodeException) original;
+            int statusCode = e.getStatusCode();
+            switch (statusCode) {
+              case Response.SC_UNAUTHORIZED:
+                // unauthorized => not on whitelist
+                // getEncodedResponse() gives us the message that we wrote in
+                // OdeAuthFilter.writeWhitelistErrorMessage().
+                Window.alert(e.getEncodedResponse());
+                break;
+              case Response.SC_FORBIDDEN:
+                // forbidden => need tos accept
+                Window.open(Urls.makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
+                break;
+              case Response.SC_PRECONDITION_FAILED:
+                Window.Location.replace(Urls.makeUri("/login/"));
+                break;           // likely not reached
+              default:
+                break;
+            }
+          }
+          return null;
+        });
 
     // load project based on current url
     // TODO(sharon): Seems like a possible race condition here if the onValueChange
@@ -883,10 +801,164 @@ public class Ode implements EntryPoint {
     //History.fireCurrentHistoryState();
   }
 
+  private Promise<Object> handleGalleryId() {
+    // Arrange to redirect to the new gallery, which is run as a
+    // separate server when we are started with a galleryId flag
+    // We process this as soon as we have the system config
+    // because we need the system config to tell us where the
+    // gallery is located!
+
+    String galleryId = Window.Location.getParameter("galleryId");
+    if (galleryId != null) {
+      // This will replace us with the gallery server, displaying the app in question
+      Window.open(config.getGalleryLocation() + "?galleryid=" + galleryId, "_self", null);
+      // Never get here...(?)
+      return reject(null);
+    }
+    return resolve(null);
+  }
+
+  private Promise<Object> checkTos() {
+    // If user hasn't accepted terms of service, ask them to.
+    if (!user.getUserTosAccepted() && !isReadOnly) {
+      // We expect that the redirect to the TOS page should be handled
+      // by the onFailure method below. The server should return a
+      // "forbidden" error if the TOS wasn't accepted.
+      ErrorReporter.reportError(MESSAGES.serverUnavailable());
+      return rejectWithReason(MESSAGES.serverUnavailable());
+    }
+
+    return resolve(null);
+  }
+
+  private Promise<UserSettings> loadUserSettings() {
+    // This is called before processSettings so the work can be interleaved.
+    userSettings = new UserSettings(user);
+    return userSettings.loadSettings()
+        .then(Ode::handleUserLocale)
+        .then(result -> resolve(userSettings));
+  }
+
+  private Promise<Object> retrieveTemplateData() {
+    return Promise.<String>call(MESSAGES.createProjectError(),
+        c -> projectService.retrieveTemplateData(TEMPLATES_ROOT_DIRECTORY, c))
+        .then(json -> {
+          TemplateUploadWizard.initializeBuiltInTemplates(json);
+          return resolve(null);
+        });
+  }
+
+  private Promise<Object> maybeOpenLastProject() {
+    if (!handleQueryString() && shouldAutoloadLastProject()) {
+      openPreviousProject();
+    }
+
+    return null;
+  }
+
+  private Promise<String> loadUserBackpack() {
+    String backPackId = user.getBackpackId();
+    if (backPackId == null || backPackId.isEmpty()) {
+      LOG.info("backpack: No shared backpack");
+      return this.loadBackpack();
+    } else {
+      LOG.info("Have a shared backpack backPackId = " + backPackId);
+      BlocklyPanel.setSharedBackpackId(backPackId);
+      return resolve("");
+    }
+  }
+
+  private Promise<Boolean> processSettings() {
+    // load the user's backpack if we are not using a shared
+    // backpack
+
+    // Setup noop timer (if enabled)
+    int noop = config.getNoop();
+    if (noop > 0) {
+      // If we have a noop time, setup a timer to do the noop
+      Timer t = new Timer() {
+        @Override
+        public void run() {
+          userInfoService.noop(new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void e) {
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+            }
+          });
+        }
+      };
+      t.scheduleRepeating(1000 * 60 * noop);
+    }
+
+    splashConfig = config.getSplashConfig();
+    secondBuildserver = config.getSecondBuildserver();
+    // The code below is invoked if we do not have a second buildserver
+    // configured. It sets the warnedBuild1 flag to true which inhibits
+    // the display of the dialog box used when building. This means that
+    // if no second buildserver is configured, there is no dialog box
+    // displayed when the build menu items are invoked.
+    if (!secondBuildserver) {
+      warnedBuild1 = true;
+    }
+
+    if (config.getRendezvousServer() != null) {
+      setRendezvousServer(config.getRendezvousServer(), true);
+    } else {
+      setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);
+    }
+    return resolve(true);
+  }
+
+  private Promise<Void> handleUiPreference() {
+    return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
+      useNeoStyle = Ode.getUserNewLayout();
+      if (useNeoStyle) {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(ImagesNeo.class);
+            RootPanel.get().addStyleName("neo");
+            uiFactory = new UiFactoryNeo();
+            res.apply(null);
+          }
+        });
+      } else {
+        GWT.runAsync(new RunAsyncCallback() {
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(Images.class);
+            RootPanel.get().addStyleName("classic");
+            uiFactory = new UiStyleFactory();
+            res.apply(null);
+          }
+        });
+      }
+    });
+  }
+
   /*
    * Initializes all UI elements.
    */
-  private void initializeUi() {
+  private Promise<Object> initializeUi(Object result) {
+    EDITORS.register(YoungAndroidProjectNode.class, node -> new YaProjectEditor(node, uiFactory));
+    sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    folderManager = new FolderManager(uiFactory);
+    projectManager = new ProjectManager();
+    editorManager = new EditorManager();
+
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
@@ -901,6 +973,8 @@ public class Ode implements EntryPoint {
     if (config.getServerExpired()) {
       RootPanel.get().add(new ExpiredServiceOverlay());
     }
+    LOG.info("Declare DeckPanel");
+
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
       @Override
@@ -914,8 +988,27 @@ public class Ode implements EntryPoint {
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
 
-    OdeUiBinder uiBinder = GWT.create(OdeUiBinder.class);
-    FlowPanel mainPanel = uiBinder.createAndBindUi(this);
+    // TODO: Tidy up user preference variable
+    projectListbox = ProjectListBox.create(uiFactory);
+    String layout;
+    if (Ode.getUserNewLayout()) {
+      layout = "modern";
+      if (Ode.getUserDarkThemeEnabled()) {
+        style = Resources.INSTANCE.stylemodernDark();
+      } else {
+        style = Resources.INSTANCE.stylemodernLight();
+      }
+    } else {
+      layout = "classic";
+      if (Ode.getUserDarkThemeEnabled()) {
+        style = Resources.INSTANCE.styleclassicDark();
+      } else {
+        style = Resources.INSTANCE.styleclassicLight();
+      }
+    }
+
+    style.ensureInjected();
+    FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -957,6 +1050,13 @@ public class Ode implements EntryPoint {
       RootPanel.get().addStyleName("dyslexic");
     }
 
+    History.addValueChangeHandler(new ValueChangeHandler<String>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<String> event) {
+        openProject(event.getValue());
+      }
+    });
+
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
     // not lose any work because of this. We hook into the window closing  event to detect the
@@ -970,6 +1070,8 @@ public class Ode implements EntryPoint {
 
     setupMotd();
     HTML5DragDrop.init();
+    topPanel.showUserEmail(user.getUserEmail());
+    return resolve(result);
   }
 
   private void setupMotd() {
@@ -1280,6 +1382,90 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the dark theme setting.
+   *
+   * @return true if the user has opted to use a dark theme, false otherwise
+   */
+  public static boolean getUserDarkThemeEnabled() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    if (value == null) {
+      return false;
+    }
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user dark theme setting.
+   *
+   * @param enabled new value for the user's UI preference
+   */
+  public static void setUserDarkThemeEnabled(boolean enabled) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+                    "" + enabled);
+    // userSettings.saveSettings(new Command() {
+    //     @Override
+    //     public void execute() {
+    //       // Reload for the UI preferences to take effect. We
+    //       // do this here because we need to make sure that
+    //       // the user settings were saved before we terminate
+    //       // this browsing session. This is particularly important
+    //       // for Firefox
+    //       Window.Location.reload();
+    //     }
+    //   });
+  }
+
+  /**
+   * Returns user new layout usage setting.
+   *
+   * @return true if the user has opted to use the new UI, false otherwise
+   */
+  public static boolean getUserNewLayout() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    return Boolean.parseBoolean(value);
+    // return true;
+  }
+
+  /**
+   * Set user new layout usage setting.
+   *
+   * @param newLayout new value for the user's UI preference
+   */
+  public static void setUserNewLayout(boolean newLayout) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+                    "" + newLayout);
+  }
+
+  public static void setShowUIPicker(boolean value) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .changePropertyValue(SettingsConstants.SHOW_UIPICKER,
+            "" + value);
+  }
+
+  public static boolean getShowUIPicker() {
+    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+  }
+
+  public static void saveUserDesignSettings() {
+    userSettings.saveSettings(new Command() {
+      @Override
+      public void execute() {
+        // Reload for the UI preferences to take effect. We
+        // do this here because we need to make sure that
+        // the user settings were saved before we terminate
+        // this browsing session. This is particularly important
+        // for Firefox
+        Window.Location.reload();
+      }
+    });
+  }
+
+  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.
@@ -1289,12 +1475,6 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
     return Boolean.parseBoolean(value);
   }
-
-  /**
-   * Sets whether to use autoloading for the current user.
-   *
-   * @param enable true if autoloading should be enabled or false if it should be disabled.
-   */
 
   /**
    * Helper method to create push buttons.
@@ -1339,20 +1519,19 @@ public class Ode implements EntryPoint {
    * specified and the locales don't match, then we set the user's last locale
    * to the current locale.
    */
-  public static boolean handleUserLocale() {
+  public static Promise<Boolean> handleUserLocale(UserSettings userSettings) {
     String locale = Window.Location.getParameter("locale");
     String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
     if (!compareLocales(locale, lastUserLocale, "en")) {
       if (locale == null) {
         Window.Location.assign(Window.Location.createUrlBuilder().setParameter("locale", lastUserLocale).buildString());
-        return false;
+        return rejectWithReason("Reloading to apply user locale");
       } else {
         userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);
         userSettings.saveSettings(null);
       }
     }
-    BlocklyMsg.Loader.ensureTranslationsLoaded();
-    return true;
+    return resolve(true);
   }
 
   private void resizeWorkArea(WorkAreaPanel workArea) {
@@ -1461,6 +1640,15 @@ public class Ode implements EntryPoint {
       dialogBox.show();
     }
 
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if (event.getTypeInt() == Event.ONKEYDOWN && dialogBox.isShowing()) {
+          dialogBox.hide();
+        }
+      }
+    });
+
     return dialogBox;
   }
 
@@ -1487,7 +1675,7 @@ public class Ode implements EntryPoint {
       return;
     }
     // Create the UI elements of the DialogBox
-    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    final DialogBox dialogBox = new DialogBox(false, false); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createWelcomeDialogText());
     dialogBox.setHeight(splashConfig.height + "px");
@@ -1518,7 +1706,16 @@ public class Ode implements EntryPoint {
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
+    ok.setFocus(true);
     dialogBox.show();
+
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      public void onPreviewNativeEvent(NativePreviewEvent event) {
+        if (event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE && dialogBox.isShowing()) {
+          dialogBox.hide();
+        }
+      }
+    });
   }
 
   /**
@@ -1526,15 +1723,17 @@ public class Ode implements EntryPoint {
    * are present.
    */
   private void maybeShowNoProjectsDialog() {
-    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-      @Override
-      public void onProjectsLoaded() {
-        if (!ProjectListBox.getProjectListBox().getProjectList().listContainsProjects() && !templateLoadingFlag &&
-          !newGalleryLoadingFlag) {
-          ErrorReporter.hide();  // hide the "Please choose a project" message
-          createNoProjectsDialog(true);
+    projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
+      for (Project p : projectManager.getProjects()) {
+        if (!p.isInTrash()) {
+          return null;  // We have at least one valid project so exit early
         }
       }
+      if (!templateLoadingFlag && !newGalleryLoadingFlag) {
+        ErrorReporter.hide();  // hide the "Please choose a project" message
+        createNoProjectsDialog(true);
+      }
+      return null;
     });
   }
 
@@ -1632,7 +1831,10 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
+
+    if (getShowUIPicker()) {
+      new UISettingsWizard(true).show();
+    } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       maybeShowNoProjectsDialog();
@@ -1640,15 +1842,13 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash2() {
-    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
-      @Override
-      public void onProjectsLoaded() {
-        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag
-          && !newGalleryLoadingFlag) {
-          ErrorReporter.hide();  // hide the "Please choose a project" message
-          showSplashScreens();
-        }
+    projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
+      if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
+          && !templateLoadingFlag && !newGalleryLoadingFlag) {
+        ErrorReporter.hide();  // hide the "Please choose a project" message
+        showSplashScreens();
       }
+      return null;
     });
   }
 
@@ -2313,22 +2513,13 @@ public class Ode implements EntryPoint {
 
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
-  private void loadBackpack() {
-    userInfoService.getUserBackpack(new AsyncCallback<String>() {
-        @Override
-        public void onSuccess(final String backpack) {
-          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
-            @Override
-            public void call() {
-              BlocklyPanel.setInitialBackpack(backpack);
-            }
-          });
-        }
-        @Override
-        public void onFailure(Throwable caught) {
-          LOG.log(Level.SEVERE, "Fetching backpack failed", caught);
-        }
-      });
+  private Promise<String> loadBackpack() {
+    return Promise.call("Fetching backpack failed",
+        userInfoService::getUserBackpack
+    ).then(result -> {
+      BlocklyPanel.setInitialBackpack(result);
+      return resolve(result);
+    });
   }
 
   public boolean hasSecondBuildserver() {
@@ -2353,6 +2544,17 @@ public class Ode implements EntryPoint {
 
   public boolean getDeleteAccountAllowed() {
     return config.getDeleteAccountAllowed();
+  }
+
+  public static void setupOrigin(Object service) {
+    if (service instanceof ServiceDefTarget) {
+      String host = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+      String oldUrl = ((ServiceDefTarget)service).getServiceEntryPoint();
+      if (oldUrl.startsWith(GWT.getModuleBaseURL())) {
+        String newUrl = host + "/" + GWT.getModuleName() + "/" + oldUrl.substring(GWT.getModuleBaseURL().length());
+        ((ServiceDefTarget)service).setServiceEntryPoint(newUrl);
+      }
+    }
   }
 
   /**
@@ -2422,10 +2624,52 @@ public class Ode implements EntryPoint {
     console.log(message);
   }-*/;
 
+  public static native boolean isMobile() /*-{
+    var check = false;
+    (function (a) {
+        if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+    })($wnd.navigator.userAgent || $wnd.navigator.vendor || $wnd.opera);
+    return check;
+  }-*/;
+
   private static native void doCloseProxy() /*-{
     if (top.proxy) {
       top.proxy.close();
     }
+  }-*/;
+
+  public interface Resources extends ClientBundle {
+
+    public static final Resources INSTANCE =  GWT.create(Resources.class);
+    
+    @Source({
+      "com/google/appinventor/client/light.css"
+    })
+    Style styleclassicLight();
+
+    @Source({
+      "com/google/appinventor/client/dark.css"
+    })
+    Style styleclassicDark();
+
+    @Source({
+      "com/google/appinventor/client/style/neo/lightNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
+    })
+    Style stylemodernLight();
+
+    @Source({
+      "com/google/appinventor/client/style/neo/darkNeo.css",
+      "com/google/appinventor/client/style/neo/neo.css"
+    })
+    Style stylemodernDark();
+
+    public interface Style extends CssResource {
+    }
+  }
+
+  private static native void registerIosExtensions(String extensionJson)/*-{
+    $wnd.ALLOWED_IOS_EXTENSIONS = JSON.parse(extensionJson);
   }-*/;
 
 }

@@ -121,17 +121,7 @@ public class CreateManifest implements AndroidTask {
         out.write("  </queries>\n");
       }
 
-      int minSdk = Integer.parseInt(context.getProject().getMinSdk());
-      if (!context.isForCompanion()) {
-        for (Set<String> minSdks : context.getComponentInfo().getMinSdksNeeded().values()) {
-          for (String sdk : minSdks) {
-            int sdkInt = Integer.parseInt(sdk);
-            if (sdkInt > minSdk) {
-              minSdk = sdkInt;
-            }
-          }
-        }
-      }
+      int minSdk = AndroidBuildUtils.computeMinSdk(context);
       context.getReporter().log("Min SDK " + minSdk);
 
       // make permissions unique by putting them in one set
@@ -309,7 +299,6 @@ public class CreateManifest implements AndroidTask {
           out.write("        <data android:mimeType=\"text/plain\" />\n");
           out.write("      </intent-filter>\n");
         }
-        out.write("    </activity>\n");
 
         Set<Map.Entry<String, Set<String>>> metadataElements =
             context.getComponentInfo().getActivityMetadataNeeded().entrySet();
@@ -328,6 +317,8 @@ public class CreateManifest implements AndroidTask {
             }
           }
         }
+
+        out.write("    </activity>\n");
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {

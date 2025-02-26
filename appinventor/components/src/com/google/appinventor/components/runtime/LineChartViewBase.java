@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,8 +9,8 @@ import com.github.mikephil.charting.charts.LineChart;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.appinventor.components.runtime.util.LineWithTrendlineRenderer;
 
 /**
  * Base class for handling the UI (view) of the Line-based Charts
@@ -30,6 +30,8 @@ public abstract class LineChartViewBase<V extends LineChartViewBase<V>> extends 
     super(chartComponent);
 
     chart = new LineChart(this.form);
+    chart.setRenderer(new LineWithTrendlineRenderer(chart, chart.getAnimator(),
+        chart.getViewPortHandler()));
 
     data = new LineData();
     chart.setData(data);

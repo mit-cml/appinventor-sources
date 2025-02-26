@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -39,7 +39,7 @@ import java.util.List;
 @SuppressWarnings({"checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel<?, ?, ?, ?, ?>>
-    implements OnChartGestureListener, OnChartValueSelectedListener {
+    implements ChartComponent, OnChartGestureListener, OnChartValueSelectedListener {
 
   private String label;
   private int color;
@@ -54,8 +54,9 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
 
     // Set default properties and instantiate Chart Data Model
     initChartData();
+    Color(Component.COLOR_BLACK);
     DataSourceKey("");
-
+    Label("");
   }
 
   /**
@@ -67,10 +68,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     // Creates a ChartDataModel based on the current
     // Chart type being used.
     dataModel = container.createChartModel();
-
-    // Set default values
-    Color(Component.COLOR_BLACK);
-    Label("");
     dataModel.view.chart.setOnChartGestureListener(this);
     dataModel.view.chart.setOnChartValueSelectedListener(this);
   }
@@ -241,6 +238,9 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
     container.getChartView().refresh((ChartDataModel) dataModel);
+    for (DataSourceChangeListener listener : listeners) {
+      listener.onDataSourceValueChange(this, null, null);
+    }
   }
 
   @Override

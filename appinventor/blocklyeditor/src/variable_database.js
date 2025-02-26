@@ -10,7 +10,6 @@
  */
 
 goog.provide('AI.Blockly.VariableDatabase');
-goog.require('Blockly');
 
 Blockly.VariableDatabase = function() {
   this.globals_ = {};

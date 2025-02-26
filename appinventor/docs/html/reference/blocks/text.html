@@ -279,6 +279,14 @@
 
 <p>Replace all with <em>She loves eating. She loves writing. She loves coding</em> as the text, <em>She</em> as the segment, and <em>Hannah</em> as the replacement would result in <em>Hannah loves eating. Hannah loves writing. Hannah loves coding</em>.</p>
 
+<p>Note:
+Regular expressions (regex) are patterns used for matching character combinations in strings. When using the “replace all” block, it’s essential to be aware of special characters in regular expressions.Special characters like $, *, ., etc., have special meanings in regular expressions.
+If you want to use these characters as literal characters in your pattern, you need to escape them with a backslash (\).</p>
+
+<p>Example:
+replace all with <em>Price: $50.00</em> as the text,  <em>$</em> as the segment, <em>€</em> as the replacement
+this would result in <em>Price: €50.00</em></p>
+
 <h3 id="obfuscatetext">obfuscated text</h3>
 
 <p><img src="images/text/obfuscatetext.png" alt="" /></p>
@@ -394,7 +402,7 @@ is the one which is longer.</p>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -413,15 +421,16 @@ is the one which is longer.</p>
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

@@ -17,7 +17,6 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   private var _numbersOnly = false
 
   private var _multiLine = false
-  private var _empty = true
   private var _readOnly = false
   private weak var _base: TextBoxBase? = nil
   private var _placeholderColor: Int32 = Color.default.int32
@@ -54,6 +53,10 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _field.inputAccessoryView = getAccesoryView(selector)
   }
 
+  var isEmpty: Bool {
+    _field.text?.isEmpty ?? true
+  }
+
   open var view: UIView {
     get {
       return _wrapper
@@ -86,7 +89,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
     set(color) {
       _field.textColor = color
-      _view.textColor = _empty ? kDefaultPlaceholderColor : color
+      _view.textColor = isEmpty ? kDefaultPlaceholderColor : color
     }
   }
 
@@ -111,11 +114,11 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   open func updatePlaceholder() {
-    var newPlaceholder = NSAttributedString(string: placeholderText ?? "",
+    let newPlaceholder = NSAttributedString(string: placeholderText ?? "",
         attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor),
-                     NSAttributedString.Key.font: _field.font])
+                     NSAttributedString.Key.font: _field.font as Any])
     _field.attributedPlaceholder = newPlaceholder
-    if _empty {
+    if isEmpty {
       _view.attributedText = newPlaceholder
     }
   }
@@ -126,7 +129,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
     set(text) {
       _field.placeholder = text
-      if _empty {
+      if isEmpty {
         _view.text = text
       }
       updatePlaceholder()
@@ -147,9 +150,11 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     get {
       return _multiLine ? _view.text: _field.text
     }
-    set(text) {
+    set {
+      let text = newValue ?? ""
       _field.text = text
-      _view.text = text
+      _view.text = isEmpty ? _field.placeholder : text
+      _view.textColor = isEmpty ? kDefaultPlaceholderColor : _field.textColor
     }
   }
 
@@ -186,9 +191,8 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   fileprivate func setEmpty(_ shouldEmpty: Bool) {
-    _empty = shouldEmpty
-    _view.text = _empty ? _field.placeholder: nil
-    _view.textColor = _empty ? kDefaultPlaceholderColor : _field.textColor
+    _view.text = shouldEmpty ? _field.placeholder : nil
+    _view.textColor = shouldEmpty ? kDefaultPlaceholderColor : _field.textColor
   }
 
   private func makeMultiLine() {
@@ -212,7 +216,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   func textViewDidBeginEditing(_ textView: UITextView) {
-    if _empty {
+    if isEmpty {
       setEmpty(false)
     }
   }
@@ -226,7 +230,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   func textFieldDidBeginEditing(_ textField: UITextField) {
-    if _empty {
+    if isEmpty {
       setEmpty(false)
     }
     _base?.GotFocus()
@@ -274,6 +278,16 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   
   func setTextbase(_ base: TextBoxBase) {
     _base = base
+    _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
+  }
+
+  func setCursor(at position: Int32) {
+    if let offset = _view.position(from: _view.beginningOfDocument, offset: Int(position)) {
+      _view.selectedTextRange = _view.textRange(from: offset, to: offset)
+    }
+    if let offset = _field.position(from: _field.beginningOfDocument, offset: Int(position)) {
+      _field.selectedTextRange = _field.textRange(from: offset, to: offset)
+    }
   }
 }
 

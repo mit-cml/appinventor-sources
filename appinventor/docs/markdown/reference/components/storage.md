@@ -108,7 +108,10 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 
 ## DataFile  {#DataFile}
 
-Component for DataFile
+Component that allows reading CSV and JSON data. The DataFile contains functionality relevant to accessing CSV or
+ JSON parsed data in the form of rows or columns. Can be used together with the ChartData2D component to import data
+ directly from a file to the Chart. The component may also be dragged and dropped on a Chart after a file has been
+ selected and parsed successfully to create ChartData components automatically from the file onto the Chart.
 
 
 

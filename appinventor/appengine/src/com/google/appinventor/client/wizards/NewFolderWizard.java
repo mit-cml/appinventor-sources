@@ -8,7 +8,11 @@ package com.google.appinventor.client.wizards;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -32,7 +36,6 @@ import java.util.logging.Logger;
  */
 public final class NewFolderWizard {
   interface NewFolderWizardUiBinder extends UiBinder<Dialog, NewFolderWizard> {}
-  private static final NewFolderWizardUiBinder UI_BINDER = GWT.create(NewFolderWizardUiBinder.class);
   private static final Logger LOG = Logger.getLogger(NewFolderWizard.class.getName());
 
   private FolderManager manager;
@@ -42,12 +45,15 @@ public final class NewFolderWizard {
   @UiField Button cancelButton;
   @UiField LabeledTextBox input;
   @UiField Tree tree;
+  @UiField Button topInvisible;
+  @UiField Button bottomInvisible;
 
   /**
    * Creates a new command for renaming projects
    */
   public NewFolderWizard() {
-    UI_BINDER.createAndBindUi(this);
+    NewFolderWizardUiBinder uibinder = GWT.create(NewFolderWizardUiBinder.class);
+    uibinder.createAndBindUi(this);
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
     tree.addItem(root);
@@ -90,6 +96,20 @@ public final class NewFolderWizard {
         input.validate();
       }
     });
+
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().addStyleName("gwt-Tree-focused");
+      }
+    });
+
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   private FolderTreeItem renderFolder(ProjectFolder folder) {
@@ -116,5 +136,15 @@ public final class NewFolderWizard {
       manager.createFolder(input.getText(), treeItem.getFolder());
     }
     addDialog.hide();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+   addButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+   input.setFocus(true);
   }
 }

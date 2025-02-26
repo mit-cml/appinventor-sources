@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -27,6 +27,8 @@ import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesContentProviders;
 import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.UsesServices;
+import com.google.appinventor.components.annotations.UsesXmls;
+import com.google.appinventor.components.annotations.XmlElement;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
@@ -167,7 +169,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.UsesPermissions",
       "com.google.appinventor.components.annotations.UsesQueries",
       "com.google.appinventor.components.annotations.UsesServices",
-      "com.google.appinventor.components.annotations.UsesContentProviders");
+      "com.google.appinventor.components.annotations.UsesContentProviders",
+      "com.google.appinventor.components.annotations.UsesXmls");
 
   // Returned by getRwString()
   private static final String READ_WRITE = "read-write";
@@ -845,7 +848,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * blocks editor. This is associated with the OptionList data type, ie OptionList data always has
    * an OPTION_LIST style UI in the blocks editor (as of now).
    */
-  protected enum HelperType { OPTION_LIST, ASSET }
+  protected enum HelperType { OPTION_LIST, ASSET, PROVIDER_MODEL, PROVIDER }
 
   /**
    * A key that allows you to access info about a helper block.
@@ -1181,6 +1184,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> contentProviders;
 
     /**
+     * Xml files required by this component.
+     */
+    protected final Set<String> xmls;
+
+    /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
      *             annotation is removed. It should should remain for the time being
      *             because otherwise we'll break extensions currently using it.
@@ -1272,6 +1280,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       permissions = Sets.newHashSet();
       queries = Sets.newHashSet();
       services = Sets.newHashSet();
+      xmls = Sets.newHashSet();
 
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -1498,7 +1507,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.RELEASE_7;
+    try {
+      return (SourceVersion) SourceVersion.class.getDeclaredField("RELEASE_11").get(null);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      return SourceVersion.RELEASE_8;
+    }
   }
 
   @Override
@@ -1634,6 +1647,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.queries.addAll(parentComponent.queries);
         componentInfo.services.addAll(parentComponent.services);
         componentInfo.contentProviders.addAll(parentComponent.contentProviders);
+        componentInfo.xmls.addAll(parentComponent.xmls);
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
         //             should remain for the time being because otherwise we'll break
@@ -1839,6 +1853,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
     }
 
+    // Gather the required xml files and build their element strings.
+    UsesXmls usesXmls = element.getAnnotation(UsesXmls.class);
+    if (usesXmls != null) {
+      for (XmlElement xe : usesXmls.xmls()) {
+        updateWithNonEmptyValue(componentInfo.xmls, xmlElementToString(xe));
+      }
+    }
+
     // TODO(Will): Remove the following legacy code once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
@@ -1988,6 +2010,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return key;
     }
     key = hasAssetsHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
+    key = hasProviderModelHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
+    key = hasProviderHelper(elem, type);
     if (key != null) {
       return key;
     }
@@ -2233,6 +2263,74 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
+   * Returns the associated helper key if the element has an @ProviderModel annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @ProviderModel annotation.
+   */
+  private HelperKey hasProviderModelHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("ProviderModel")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.PROVIDER_MODEL, index);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the associated helper key if the element has an @Provider annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @Provider annotation.
+   */
+  private HelperKey hasProviderHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Provider")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.PROVIDER, index);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Converts a VariableElement into a Parameter definition.
    * @param varElem the element to convert.
    * @return the parameter constructed from the variable element.
@@ -2305,6 +2403,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     // Finally, we close the <service> element and create its String.
     return elementString.append("    </service>\n").toString();
+  }
+
+  // Transform a @XmlElement into an String for use later
+  // in creating xml files.
+  private static String xmlElementToString(XmlElement element) {
+    // create string: "dir/name:<?xml version=\"1.0\" encoding=\"utf-8\"?>\n + content
+    StringBuilder elementString = new StringBuilder(element.dir());
+    elementString.append("/");
+    elementString.append(element.name());
+    elementString.append(":");
+
+    return elementString.append(element.content()).toString();
   }
 
   // Transform a @ProviderElement into an XML element String for use later
@@ -2889,6 +2999,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     String typeString = type.toString();
+    if (!type.getAnnotationMirrors().isEmpty()) {
+      // Java 11 now includes parameter level annotations in the type string
+      if (type instanceof DeclaredType) {
+        typeString = ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString();
+      } else if (type instanceof PrimitiveType) {
+        typeString = type.getKind().toString().toLowerCase();
+      }
+    }
     // boolean -> boolean
     if (typeString.equals("boolean")) {
       return typeString;
@@ -2944,7 +3062,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
-    throw new IllegalArgumentException("Cannot convert Java type '" + typeString
+    throw new IllegalArgumentException("Cannot convert Java type '" + type.toString()
         + "' to Yail type");
   }
 

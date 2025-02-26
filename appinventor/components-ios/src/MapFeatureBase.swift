@@ -16,7 +16,7 @@ import GEOSwift
   /**
    * The location of the feature on the map. The annotation view will be positioned at this point.
    */
-  public var coordinate = CLLocationCoordinate2D()
+  @objc dynamic public var coordinate = CLLocationCoordinate2D()
 
   /**
    * The title shown in the annotation's detail view.

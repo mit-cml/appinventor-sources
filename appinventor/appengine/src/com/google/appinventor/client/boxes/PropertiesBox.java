@@ -8,6 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -39,7 +40,7 @@ public final class PropertiesBox extends Box {
   /**
    * Return the properties box.
    *
-   * @return  properties box
+   * @return properties box
    */
   public static PropertiesBox getPropertiesBox() {
     return INSTANCE;
@@ -104,10 +105,10 @@ public final class PropertiesBox extends Box {
             name,
             property.getDefaultValue(),
             property.getCaption(),
-            property.getCategory(), 
+            property.getCategory(),
             property.getDescription(),
             PropertiesUtil.createPropertyEditor(property.getEditorType(),
-                property.getDefaultValue(), formEditor , property.getEditorArgs()),
+                property.getDefaultValue(), formEditor, property.getEditorArgs()),
             property.getType(),
             property.getEditorType(),
             property.getEditorArgs()
@@ -136,13 +137,14 @@ public final class PropertiesBox extends Box {
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       // TODO: Localize
-      designProperties.setPropertiesCaption(components.size() + " components selected");
+      designProperties.setPropertiesCaption(MESSAGES.componentsSelected(components.size()));
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
+      String componentType = components.get(0).getType();
       designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
-          components.get(0).getType() + ")");
-
+          ComponentTranslationTable.getComponentName(componentType.equals("Form")
+              ? "Screen" : componentType) + ")");
     }
   }
 }

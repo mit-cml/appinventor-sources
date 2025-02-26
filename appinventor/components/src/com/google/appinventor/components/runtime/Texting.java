@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -34,7 +35,9 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.DataElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -376,6 +379,13 @@ public class Texting extends AndroidNonvisibleComponent
    * Launch the phone's default text messaging app with the message and phone number prepopulated.
    */
   @SimpleFunction
+  @UsesQueries(intents = {
+      @IntentFilterElement(actionElements = {
+          @ActionElement(name = "android.intent.action.SENDTO")
+      }, dataElements = {
+          @DataElement(scheme = "smsto")
+      })
+  })
   public void SendMessage() {
     String phoneNumber = this.phoneNumber;
     String message = this.message;
@@ -1115,7 +1125,8 @@ public class Texting extends AndroidNonvisibleComponent
       }
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
-    activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
+    ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
+        Context.RECEIVER_EXPORTED);
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 

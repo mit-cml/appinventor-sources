@@ -105,6 +105,9 @@ import Foundation
   // Form errors that are signalled in runtime.scm
   case ERROR_DIVISION_BY_ZERO = 3200
 
+  // Extension errors
+  case ERROR_EXTENSION_ERROR = 3300
+
   // Map Errors
   case ERROR_LINESTRING_TOO_FEW_POINTS = 3401
   case ERROR_LINESTRING_PARSE_ERROR = 3402
@@ -122,6 +125,12 @@ import Foundation
   case ERROR_ROUTING_SERVICE_ERROR = 4003
   case ERROR_NO_ROUTE_FOUND = 4004
 
+  // ChartData Errors
+  case ERROR_INVALID_CHART_ENTRY_VALUES = 4101
+  case ERROR_NULL_CHART_ENTRY_VALUES = 4102
+  case ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103
+  case ERROR_INVALID_CHART_DATA_COLOR = 4104
+
   // ChatBot Errors
   case ERROR_CHATBOT_ERROR = 4200
 
@@ -130,6 +139,10 @@ import Foundation
 
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
+
+  //BaseAiComponent error
+  case ERROR_MODEL_AI = 4701
+  case ERROR_WEBVIEW_AI = 4801
 
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
@@ -143,13 +156,21 @@ import Foundation
   case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100100
   case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100101
   case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100102
+  case ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR = 100103
 
   // iOS Specific GyroscopeSensor Errors
   case ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR = 100200
 
   // iOS Specific OrientationSensor Errors
   case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
-  
+
+  // iOS Specific Texting Errors
+  case ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED = 101701
+  case ERROR_IOS_RECEIVING_NOT_SUPPORTED = 101702
+
+  //PIC Errors
+  case ERROR_INPUT_MODE = 100401
+
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -278,6 +299,9 @@ import Foundation
     case .ERROR_ILLEGAL_DATE:
       return "The date you entered is invalid."
 
+    case .ERROR_EXTENSION_ERROR:
+      return "Error %d in extension %s: %s"
+
     // Map Errors
     case .ERROR_LINESTRING_TOO_FEW_POINTS:
       return "Need at least 2 points for a LineString. Got only %d."
@@ -348,6 +372,16 @@ import Foundation
     case .ERROR_NO_ROUTE_FOUND:
       return "No route returned by the routing service."
 
+    // ChartData Errors
+    case .ERROR_INVALID_CHART_ENTRY_VALUES:
+      return "Invalid chart entry value(s): %s, %s"
+    case .ERROR_NULL_CHART_ENTRY_VALUES:
+      return "Undefined value was present in Chart entry"
+    case .ERROR_INSUFFICIENT_CHART_ENTRY_VALUES:
+      return "Chart entry did not contain enough values; Expected %d but was %d"
+    case .ERROR_INVALID_CHART_DATA_COLOR:
+      return "Invalid chart data color parameter specified: %s"
+
     // ChatBot Errors
     case .ERROR_CHATBOT_ERROR:
       return "Error from the ChatBot code: %d %@"
@@ -371,12 +405,29 @@ import Foundation
       return "Speech recognition encountered an error and is currently unavailable"
     case .ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR:
       return "An error occured when attempting to process audio"
+    case .ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR:
+      return "An error occurred when setting up audio for speech recognition: %s"
 
     case .ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR:
       return "The gyroscope is no longer recording data due to the following error %s"
 
     case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
       return "The orientation sensor is no longer recording data due to the following error %s"
+
+    case .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED:
+      return "Google Voice integration is unavailable."
+    case .ERROR_IOS_RECEIVING_NOT_SUPPORTED:
+      return "Receiving text messages is unavailable."
+
+    //BaseAiComponent errors
+    case .ERROR_INPUT_MODE:
+      return "Invalid input mode"
+
+    case .ERROR_MODEL_AI:
+      return "Invalid model file"
+
+    case .ERROR_WEBVIEW_AI:
+      return "Invalid webview"
     }
   }
 }

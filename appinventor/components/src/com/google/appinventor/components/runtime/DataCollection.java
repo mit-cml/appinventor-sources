@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2022-2023 MIT, All rights reserved
+// Copyright 2022-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,8 +20,10 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +37,8 @@ import java.util.concurrent.Future;
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class DataCollection<C extends ComponentContainer, M extends DataModel<?>>
-    implements Component, DataSourceChangeListener {
+    implements Component, DataSource<Object, List<?>>, DataSourceChangeListener {
+  protected final Set<DataSourceChangeListener> listeners = new HashSet<>();
   protected final C container;
   protected M dataModel;
 
@@ -114,6 +117,23 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    */
   public void setExecutorService(ExecutorService service) {
     threadRunner = service;
+  }
+
+  public void addDataSourceChangeListener(DataSourceChangeListener listener) {
+    listeners.add(listener);
+    // Trigger the listener's event
+    listener.onDataSourceValueChange(this, null, null);
+  }
+
+  public void removeDataSourceChangeListener(DataSourceChangeListener listener) {
+    listeners.remove(listener);
+  }
+
+  /* DataSource implementation */
+
+  @Override
+  public List<?> getDataValue(Object key) {
+    return dataModel.entries;
   }
 
   /**
@@ -788,7 +808,7 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
    * for the x values, and the specified y column for the y values. The DataFile's source file
    * is expected to be either a CSV or a JSON file.
    *
-   *   Passing in empty test for any of the column parameters will result in the usage of
+   *   Passing in empty text for any of the column parameters will result in the usage of
    * default values which are the indices of the entries. For the first entry, the default
    * value would be the 1, for the second it would be 2, and so on.
    *

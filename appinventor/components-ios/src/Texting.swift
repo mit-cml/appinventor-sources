@@ -38,18 +38,27 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
       return false  // Google Voice not supported on iOS
     }
     set(enabled) {
-      // Google Voice not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      if _form?.isRepl ?? false {
+        // Google Voice not supported on iOS
+        _form?.dispatchErrorOccurredEvent(self, "GoogleVoiceEnabled",
+                                          .ERROR_IOS_GOOGLEVOICE_NOT_SUPPORTED)
+      }
     }
   }
 
-  @objc open var ReceivingEnabled: Bool {
+  @objc open var ReceivingEnabled: Int32 {
     get {
-      return false  // Receiving messages not supported on iOS
+      return ReceivingState.Off.value  // Receiving messages not supported on iOS
     }
     set(enabled) {
-      // Receiving messages not supported on iOS
-      _form?.view.makeToast("Sorry, your phone's system does not support this option.")
+      if enabled == ReceivingState.Off.value {
+        return  // No state change since Off is the only valid value on iOS.
+      }
+      if _form?.isRepl ?? false {
+        // Receiving messages not supported on iOS
+        _form?.dispatchErrorOccurredEvent(self, "ReceivingEnabled",
+                                          .ERROR_IOS_RECEIVING_NOT_SUPPORTED)
+      }
     }
   }
 

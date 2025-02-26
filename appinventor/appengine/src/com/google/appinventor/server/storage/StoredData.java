@@ -318,6 +318,16 @@ public class StoredData {
 
   }
 
+  @Cached(expirationSeconds = 120)
+  @Unindexed
+  public static final class AllowedIosExtensions {
+    // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
+    @Id Long id;
+
+    // list of allowed extension packages as JSON
+    String allowedExtensions;
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);

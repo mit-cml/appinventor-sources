@@ -20,6 +20,8 @@ import android.util.Log;
 
 import com.google.appinventor.components.runtime.NearField;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
@@ -34,6 +36,8 @@ import java.util.Locale;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class GingerbreadUtil {
+  private static final String LOG_TAG = GingerbreadUtil.class.getSimpleName();
+
   private GingerbreadUtil() {
   }
 
@@ -70,14 +74,34 @@ public class GingerbreadUtil {
     return NfcAdapter.getDefaultAdapter(context);
   }
 
-  public static void enableNFCWriteMode(Activity activity, NfcAdapter nfcAdapter, String textToWrite){
-    NdefRecord textRecord = createTextRecord(textToWrite,true);
-    NdefMessage msg = new NdefMessage(new NdefRecord[] { textRecord });
-    nfcAdapter.enableForegroundNdefPush(activity, msg);
+  public static void enableNFCWriteMode(Activity activity, NfcAdapter nfcAdapter,
+      String textToWrite) {
+    NdefRecord textRecord = createTextRecord(textToWrite, true);
+    NdefMessage msg = new NdefMessage(new NdefRecord[]{textRecord});
+    try {
+      Method m = nfcAdapter.getClass().getMethod("enableForegroundNdefPush", Activity.class,
+          NdefMessage.class);
+      m.invoke(nfcAdapter, activity, msg);
+    } catch (NoSuchMethodException e) {
+      throw new UnsupportedOperationException("This device does not support NFC");
+    } catch (InvocationTargetException e) {
+      Log.e(LOG_TAG, "Unable to write NDEF tag", e);
+    } catch (IllegalAccessException e) {
+      Log.e(LOG_TAG, "Unable to write NDEF tag", e);
+    }
   }
 
-  public static void disableNFCAdapter(Activity activity, NfcAdapter nfcAdapter){
-    nfcAdapter.disableForegroundNdefPush(activity);
+  public static void disableNFCAdapter(Activity activity, NfcAdapter nfcAdapter) {
+    try {
+      Method m = nfcAdapter.getClass().getMethod("disableForegroundNdefPush", Activity.class);
+      m.invoke(nfcAdapter, activity);
+    } catch (NoSuchMethodException e) {
+      throw new UnsupportedOperationException("This device does not support NFC");
+    } catch (InvocationTargetException e) {
+      Log.e(LOG_TAG, "Unable to write NDEF tag", e);
+    } catch (IllegalAccessException e) {
+      Log.e(LOG_TAG, "Unable to write NDEF tag", e);
+    }
   }
 
   public static NdefRecord createTextRecord(String payload, boolean encodeInUtf8) {
@@ -95,7 +119,7 @@ public class GingerbreadUtil {
     return record;
   }
 
-  public static void resolveNFCIntent(Intent intent, NearField nfc){
+  public static void resolveNFCIntent(Intent intent, NearField nfc) {
     String action = intent.getAction();
     //activity.setIntent(new Intent()); // Consume this intent.  Is this the right thing?
     if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
@@ -119,10 +143,10 @@ public class GingerbreadUtil {
           // Unknown tag type
           // For now, just ignore it. Later we might want to signal an error to the
           // app user.
-          byte[] empty = new byte[] {};
+          byte[] empty = new byte[]{};
           NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
-          NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
-          msgs = new NdefMessage[] {msg};
+          NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
+          msgs = new NdefMessage[]{msg};
         }
         byte[] payload = msgs[0].getRecords()[0].getPayload();
         //the substring chops off the two language encoding bits at the beginning
@@ -131,52 +155,52 @@ public class GingerbreadUtil {
       } else {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         NdefMessage msg = null;
-        if(nfc.WriteType() == 1) {
-          NdefRecord textRecord = createTextRecord(nfc.TextToWrite(),true);
-          msg = new NdefMessage(new NdefRecord[] { textRecord });
+        if (nfc.WriteType() == 1) {
+          NdefRecord textRecord = createTextRecord(nfc.TextToWrite(), true);
+          msg = new NdefMessage(new NdefRecord[]{textRecord});
         }
         if (writeNFCTag(msg, detectedTag)) {
-          nfc.TagWritten();       
+          nfc.TagWritten();
         }
-      }  
+      }
     } else {
       Log.e("nearfield", "Unknown intent " + intent);
     }
   }
 
   /*
-  * Writes an NdefMessage to a NFC tag
-  */
+   * Writes an NdefMessage to a NFC tag
+   */
   public static boolean writeNFCTag(NdefMessage message, Tag tag) {
     int size = message.toByteArray().length;
     try {
-        Ndef ndef = Ndef.get(tag);
-        if (ndef != null) {
-            ndef.connect();
-            if (!ndef.isWritable()) {
-                return false;
-            }
-            if (ndef.getMaxSize() < size) {
-                return false;
-            }
-            ndef.writeNdefMessage(message);
-            return true;
-        } else {
-            NdefFormatable format = NdefFormatable.get(tag);
-            if (format != null) {
-                try {
-                    format.connect();
-                    format.format(message);
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+      Ndef ndef = Ndef.get(tag);
+      if (ndef != null) {
+        ndef.connect();
+        if (!ndef.isWritable()) {
+          return false;
         }
+        if (ndef.getMaxSize() < size) {
+          return false;
+        }
+        ndef.writeNdefMessage(message);
+        return true;
+      } else {
+        NdefFormatable format = NdefFormatable.get(tag);
+        if (format != null) {
+          try {
+            format.connect();
+            format.format(message);
+            return true;
+          } catch (IOException e) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
     } catch (Exception e) {
-        return false;
+      return false;
     }
   }
 }

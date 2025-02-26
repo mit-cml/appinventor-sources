@@ -55,6 +55,9 @@
 @class GTLRSheets_Border;
 @class GTLRSheets_Borders;
 @class GTLRSheets_BubbleChartSpec;
+@class GTLRSheets_CancelDataSourceRefreshRequest;
+@class GTLRSheets_CancelDataSourceRefreshResponse;
+@class GTLRSheets_CancelDataSourceRefreshStatus;
 @class GTLRSheets_CandlestickChartSpec;
 @class GTLRSheets_CandlestickData;
 @class GTLRSheets_CandlestickDomain;
@@ -155,6 +158,7 @@
 @class GTLRSheets_KeyValueFormat;
 @class GTLRSheets_LineStyle;
 @class GTLRSheets_Link;
+@class GTLRSheets_LookerDataSourceSpec;
 @class GTLRSheets_ManualRule;
 @class GTLRSheets_ManualRuleGroup;
 @class GTLRSheets_MatchedDeveloperMetadata;
@@ -181,6 +185,7 @@
 @class GTLRSheets_PointStyle;
 @class GTLRSheets_ProtectedRange;
 @class GTLRSheets_RandomizeRangeRequest;
+@class GTLRSheets_RefreshCancellationStatus;
 @class GTLRSheets_RefreshDataSourceObjectExecutionStatus;
 @class GTLRSheets_RefreshDataSourceRequest;
 @class GTLRSheets_RefreshDataSourceResponse;
@@ -247,6 +252,7 @@
 // causing warnings since clang's checks are some what arbitrary.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -606,8 +612,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchGetValuesByDataFilterRequest
 // GTLRSheets_BatchGetValuesByDataFilterRequest.valueRenderOption
 
 /**
- *  Values will be calculated & formatted in the reply according to the cell's
- *  formatting. Formatting is based on the spreadsheet's locale, not the
+ *  Values will be calculated & formatted in the response according to the
+ *  cell's formatting. Formatting is based on the spreadsheet's locale, not the
  *  requesting user's locale. For example, if `A1` is `1.23` and `A2` is `=A1`
  *  and formatted as currency, then `A2` would return `"$1.23"`.
  *
@@ -617,7 +623,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchGetValuesByDataFilterRequest
 /**
  *  Values will not be calculated. The reply will include the formulas. For
  *  example, if `A1` is `1.23` and `A2` is `=A1` and formatted as currency, then
- *  A2 would return `"=A1"`.
+ *  A2 would return `"=A1"`. Sheets treats date and time values as decimal
+ *  values. This lets you perform arithmetic on them in formulas. For more
+ *  information on interpreting date and time values, see [About date & time
+ *  values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
  *
  *  Value: "FORMULA"
  */
@@ -659,8 +668,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchUpdateValuesByDataFilterRequ
 // GTLRSheets_BatchUpdateValuesByDataFilterRequest.responseValueRenderOption
 
 /**
- *  Values will be calculated & formatted in the reply according to the cell's
- *  formatting. Formatting is based on the spreadsheet's locale, not the
+ *  Values will be calculated & formatted in the response according to the
+ *  cell's formatting. Formatting is based on the spreadsheet's locale, not the
  *  requesting user's locale. For example, if `A1` is `1.23` and `A2` is `=A1`
  *  and formatted as currency, then `A2` would return `"$1.23"`.
  *
@@ -670,7 +679,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchUpdateValuesByDataFilterRequ
 /**
  *  Values will not be calculated. The reply will include the formulas. For
  *  example, if `A1` is `1.23` and `A2` is `=A1` and formatted as currency, then
- *  A2 would return `"=A1"`.
+ *  A2 would return `"=A1"`. Sheets treats date and time values as decimal
+ *  values. This lets you perform arithmetic on them in formulas. For more
+ *  information on interpreting date and time values, see [About date & time
+ *  values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
  *
  *  Value: "FORMULA"
  */
@@ -737,8 +749,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchUpdateValuesRequest_Response
 // GTLRSheets_BatchUpdateValuesRequest.responseValueRenderOption
 
 /**
- *  Values will be calculated & formatted in the reply according to the cell's
- *  formatting. Formatting is based on the spreadsheet's locale, not the
+ *  Values will be calculated & formatted in the response according to the
+ *  cell's formatting. Formatting is based on the spreadsheet's locale, not the
  *  requesting user's locale. For example, if `A1` is `1.23` and `A2` is `=A1`
  *  and formatted as currency, then `A2` would return `"$1.23"`.
  *
@@ -748,7 +760,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BatchUpdateValuesRequest_Response
 /**
  *  Values will not be calculated. The reply will include the formulas. For
  *  example, if `A1` is `1.23` and `A2` is `=A1` and formatted as currency, then
- *  A2 would return `"=A1"`.
+ *  A2 would return `"=A1"`. Sheets treats date and time values as decimal
+ *  values. This lets you perform arithmetic on them in formulas. For more
+ *  information on interpreting date and time values, see [About date & time
+ *  values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
  *
  *  Value: "FORMULA"
  */
@@ -896,6 +911,13 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_BooleanCondition_Type_DateOnOrAft
  *  Value: "DATE_ON_OR_BEFORE"
  */
 FOUNDATION_EXTERN NSString * const kGTLRSheets_BooleanCondition_Type_DateOnOrBefore;
+/**
+ *  The cell's value must follow the pattern specified. Requires a single
+ *  ConditionValue.
+ *
+ *  Value: "FILTER_EXPRESSION"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_BooleanCondition_Type_FilterExpression;
 /**
  *  The cell's value must not be empty. Supported by conditional formatting and
  *  filters. Requires no ConditionValues.
@@ -1741,6 +1763,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_CutPasteRequest_PasteType_PasteVa
  */
 FOUNDATION_EXTERN NSString * const kGTLRSheets_DataExecutionStatus_ErrorCode_ConcurrentQuery;
 /**
+ *  The data execution has been cancelled.
+ *
+ *  Value: "DATA_EXECUTION_CANCELLED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_DataExecutionStatus_ErrorCode_DataExecutionCancelled;
+/**
  *  Default value, do not use.
  *
  *  Value: "DATA_EXECUTION_ERROR_CODE_UNSPECIFIED"
@@ -1855,6 +1883,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_DataExecutionStatus_ErrorCode_Uns
 // ----------------------------------------------------------------------------
 // GTLRSheets_DataExecutionStatus.state
 
+/**
+ *  The data execution is currently being cancelled.
+ *
+ *  Value: "CANCELLING"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_DataExecutionStatus_State_Cancelling;
 /**
  *  Default value, do not use.
  *
@@ -2945,6 +2979,14 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_PivotValue_SummarizeFunction_Medi
  */
 FOUNDATION_EXTERN NSString * const kGTLRSheets_PivotValue_SummarizeFunction_Min;
 /**
+ *  Indicates that the value is already summarized, and the summarization
+ *  function is not explicitly specified. Used for Looker data source pivot
+ *  tables where the value is already summarized.
+ *
+ *  Value: "NONE"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_PivotValue_SummarizeFunction_None;
+/**
  *  The default, do not use.
  *
  *  Value: "PIVOT_STANDARD_VALUE_FUNCTION_UNSPECIFIED"
@@ -3044,6 +3086,70 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_PointStyle_Shape_Triangle;
  *  Value: "X_MARK"
  */
 FOUNDATION_EXTERN NSString * const kGTLRSheets_PointStyle_Shape_XMark;
+
+// ----------------------------------------------------------------------------
+// GTLRSheets_RefreshCancellationStatus.errorCode
+
+/**
+ *  All other errors.
+ *
+ *  Value: "CANCEL_OTHER_ERROR"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_CancelOtherError;
+/**
+ *  The user does not have permission to cancel the query.
+ *
+ *  Value: "CANCEL_PERMISSION_DENIED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_CancelPermissionDenied;
+/**
+ *  There is already another cancellation in process.
+ *
+ *  Value: "CONCURRENT_CANCELLATION"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_ConcurrentCancellation;
+/**
+ *  Execution to be cancelled not found in the query engine or in Sheets.
+ *
+ *  Value: "EXECUTION_NOT_FOUND"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_ExecutionNotFound;
+/**
+ *  The query execution has already completed and thus could not be cancelled.
+ *
+ *  Value: "QUERY_EXECUTION_COMPLETED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_QueryExecutionCompleted;
+/**
+ *  Default value, do not use.
+ *
+ *  Value: "REFRESH_CANCELLATION_ERROR_CODE_UNSPECIFIED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_ErrorCode_RefreshCancellationErrorCodeUnspecified;
+
+// ----------------------------------------------------------------------------
+// GTLRSheets_RefreshCancellationStatus.state
+
+/**
+ *  The API call to Sheets to cancel a refresh has failed.
+ *
+ *  Value: "CANCEL_FAILED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_State_CancelFailed;
+/**
+ *  The API call to Sheets to cancel a refresh has succeeded. This does not mean
+ *  that the cancel happened successfully, but that the call has been made
+ *  successfully.
+ *
+ *  Value: "CANCEL_SUCCEEDED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_State_CancelSucceeded;
+/**
+ *  Default value, do not use.
+ *
+ *  Value: "REFRESH_CANCELLATION_STATE_UNSPECIFIED"
+ */
+FOUNDATION_EXTERN NSString * const kGTLRSheets_RefreshCancellationStatus_State_RefreshCancellationStateUnspecified;
 
 // ----------------------------------------------------------------------------
 // GTLRSheets_ScorecardChartSpec.aggregateType
@@ -3501,7 +3607,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  Adds a data source. After the data source is added successfully, an
  *  associated DATA_SOURCE sheet is created and an execution is triggered to
  *  refresh the sheet to read data from the data source. The request requires an
- *  additional `bigquery.readonly` OAuth scope.
+ *  additional `bigquery.readonly` OAuth scope if you are adding a BigQuery data
+ *  source.
  */
 @interface GTLRSheets_AddDataSourceRequest : GTLRObject
 
@@ -3826,7 +3933,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @interface GTLRSheets_BandedRange : GTLRObject
 
 /**
- *  The id of the banded range.
+ *  The ID of the banded range.
  *
  *  Uses NSNumber of intValue.
  */
@@ -3866,8 +3973,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_BandingProperties : GTLRObject
 
-/** The first color that is alternating. (Required) */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *firstBandColor;
+/**
+ *  The first color that is alternating. (Required) Deprecated: Use
+ *  first_band_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *firstBandColor GTLR_DEPRECATED;
 
 /**
  *  The first color that is alternating. (Required) If first_band_color is also
@@ -3878,9 +3988,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 /**
  *  The color of the last row or column. If this field is not set, the last row
  *  or column is filled with either first_band_color or second_band_color,
- *  depending on the color of the previous row or column.
+ *  depending on the color of the previous row or column. Deprecated: Use
+ *  footer_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *footerColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *footerColor GTLR_DEPRECATED;
 
 /**
  *  The color of the last row or column. If this field is not set, the last row
@@ -3895,9 +4006,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  column is filled with this color and the colors alternate between
  *  first_band_color and second_band_color starting from the second row or
  *  column. Otherwise, the first row or column is filled with first_band_color
- *  and the colors proceed to alternate as they normally would.
+ *  and the colors proceed to alternate as they normally would. Deprecated: Use
+ *  header_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *headerColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *headerColor GTLR_DEPRECATED;
 
 /**
  *  The color of the first row or column. If this field is set, the first row or
@@ -3909,8 +4021,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) GTLRSheets_ColorStyle *headerColorStyle;
 
-/** The second color that is alternating. (Required) */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *secondBandColor;
+/**
+ *  The second color that is alternating. (Required) Deprecated: Use
+ *  second_band_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *secondBandColor GTLR_DEPRECATED;
 
 /**
  *  The second color that is alternating. (Required) If second_band_color is
@@ -3951,9 +4066,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  Color to be used, in case baseline value represents a negative change for
- *  key value. This field is optional.
+ *  key value. This field is optional. Deprecated: Use negative_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *negativeColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *negativeColor GTLR_DEPRECATED;
 
 /**
  *  Color to be used, in case baseline value represents a negative change for
@@ -3970,9 +4085,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  Color to be used, in case baseline value represents a positive change for
- *  key value. This field is optional.
+ *  key value. This field is optional. Deprecated: Use positive_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *positiveColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *positiveColor GTLR_DEPRECATED;
 
 /**
  *  Color to be used, in case baseline value represents a positive change for
@@ -4066,9 +4181,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The color for elements (such as bars, lines, and points) associated with
- *  this series. If empty, a default color is used.
+ *  this series. If empty, a default color is used. Deprecated: Use color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  The color for elements (such as bars, lines, and points) associated with
@@ -4308,7 +4423,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  column index, and the value is the criteria for that column. This field is
  *  deprecated in favor of filter_specs.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_BasicFilter_Criteria *criteria;
+@property(nonatomic, strong, nullable) GTLRSheets_BasicFilter_Criteria *criteria GTLR_DEPRECATED;
 
 /**
  *  The filter criteria per column. Both criteria and filter_specs are populated
@@ -4339,6 +4454,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *        -additionalPropertyForName: to get the list of properties and then
  *        fetch them; or @c -additionalProperties to fetch them all at once.
  */
+GTLR_DEPRECATED
 @interface GTLRSheets_BasicFilter_Criteria : GTLRObject
 @end
 
@@ -4348,8 +4464,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_BasicSeriesDataPointStyleOverride : GTLRObject
 
-/** Color of the series data point. If empty, the series default is used. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+/**
+ *  Color of the series data point. If empty, the series default is used.
+ *  Deprecated: Use color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  Color of the series data point. If empty, the series default is used. If
@@ -4358,7 +4477,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, strong, nullable) GTLRSheets_ColorStyle *colorStyle;
 
 /**
- *  Zero based index of the series data point.
+ *  The zero-based index of the series data point.
  *
  *  Uses NSNumber of intValue.
  */
@@ -4495,7 +4614,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *
  *  Likely values:
  *    @arg @c kGTLRSheets_BatchGetValuesByDataFilterRequest_ValueRenderOption_FormattedValue
- *        Values will be calculated & formatted in the reply according to the
+ *        Values will be calculated & formatted in the response according to the
  *        cell's formatting. Formatting is based on the spreadsheet's locale,
  *        not the requesting user's locale. For example, if `A1` is `1.23` and
  *        `A2` is `=A1` and formatted as currency, then `A2` would return
@@ -4503,7 +4622,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *    @arg @c kGTLRSheets_BatchGetValuesByDataFilterRequest_ValueRenderOption_Formula
  *        Values will not be calculated. The reply will include the formulas.
  *        For example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
- *        currency, then A2 would return `"=A1"`. (Value: "FORMULA")
+ *        currency, then A2 would return `"=A1"`. Sheets treats date and time
+ *        values as decimal values. This lets you perform arithmetic on them in
+ *        formulas. For more information on interpreting date and time values,
+ *        see [About date & time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  *    @arg @c kGTLRSheets_BatchGetValuesByDataFilterRequest_ValueRenderOption_UnformattedValue
  *        Values will be calculated, but not formatted in the reply. For
  *        example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
@@ -4661,7 +4785,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *
  *  Likely values:
  *    @arg @c kGTLRSheets_BatchUpdateValuesByDataFilterRequest_ResponseValueRenderOption_FormattedValue
- *        Values will be calculated & formatted in the reply according to the
+ *        Values will be calculated & formatted in the response according to the
  *        cell's formatting. Formatting is based on the spreadsheet's locale,
  *        not the requesting user's locale. For example, if `A1` is `1.23` and
  *        `A2` is `=A1` and formatted as currency, then `A2` would return
@@ -4669,7 +4793,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *    @arg @c kGTLRSheets_BatchUpdateValuesByDataFilterRequest_ResponseValueRenderOption_Formula
  *        Values will not be calculated. The reply will include the formulas.
  *        For example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
- *        currency, then A2 would return `"=A1"`. (Value: "FORMULA")
+ *        currency, then A2 would return `"=A1"`. Sheets treats date and time
+ *        values as decimal values. This lets you perform arithmetic on them in
+ *        formulas. For more information on interpreting date and time values,
+ *        see [About date & time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  *    @arg @c kGTLRSheets_BatchUpdateValuesByDataFilterRequest_ResponseValueRenderOption_UnformattedValue
  *        Values will be calculated, but not formatted in the reply. For
  *        example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
@@ -4792,7 +4921,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *
  *  Likely values:
  *    @arg @c kGTLRSheets_BatchUpdateValuesRequest_ResponseValueRenderOption_FormattedValue
- *        Values will be calculated & formatted in the reply according to the
+ *        Values will be calculated & formatted in the response according to the
  *        cell's formatting. Formatting is based on the spreadsheet's locale,
  *        not the requesting user's locale. For example, if `A1` is `1.23` and
  *        `A2` is `=A1` and formatted as currency, then `A2` would return
@@ -4800,7 +4929,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *    @arg @c kGTLRSheets_BatchUpdateValuesRequest_ResponseValueRenderOption_Formula
  *        Values will not be calculated. The reply will include the formulas.
  *        For example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
- *        currency, then A2 would return `"=A1"`. (Value: "FORMULA")
+ *        currency, then A2 would return `"=A1"`. Sheets treats date and time
+ *        values as decimal values. This lets you perform arithmetic on them in
+ *        formulas. For more information on interpreting date and time values,
+ *        see [About date & time
+ *        values](https://developers.google.com/sheets/api/guides/formats#about_date_time_values).
+ *        (Value: "FORMULA")
  *    @arg @c kGTLRSheets_BatchUpdateValuesRequest_ResponseValueRenderOption_UnformattedValue
  *        Values will be calculated, but not formatted in the reply. For
  *        example, if `A1` is `1.23` and `A2` is `=A1` and formatted as
@@ -4882,8 +5016,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @interface GTLRSheets_BigQueryDataSourceSpec : GTLRObject
 
 /**
- *  The ID of a BigQuery enabled GCP project with a billing account attached.
- *  For any queries executed against the data source, the project is charged.
+ *  The ID of a BigQuery enabled Google Cloud project with a billing account
+ *  attached. For any queries executed against the data source, the project is
+ *  charged.
  */
 @property(nonatomic, copy, nullable) NSString *projectId;
 
@@ -4909,7 +5044,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  Specifies a BigQuery table definition. Only [native
- *  tables](https://cloud.google.com/bigquery/docs/tables-intro) is allowed.
+ *  tables](https://cloud.google.com/bigquery/docs/tables-intro) are allowed.
  */
 @interface GTLRSheets_BigQueryTableSpec : GTLRObject
 
@@ -4996,6 +5131,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *        must be on or before the date of the condition's value. Supported by
  *        data validation. Requires a single ConditionValue that may be a
  *        relative date. (Value: "DATE_ON_OR_BEFORE")
+ *    @arg @c kGTLRSheets_BooleanCondition_Type_FilterExpression The cell's
+ *        value must follow the pattern specified. Requires a single
+ *        ConditionValue. (Value: "FILTER_EXPRESSION")
  *    @arg @c kGTLRSheets_BooleanCondition_Type_NotBlank The cell's value must
  *        not be empty. Supported by conditional formatting and filters.
  *        Requires no ConditionValues. (Value: "NOT_BLANK")
@@ -5101,7 +5239,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The format to apply. Conditional formatting can only apply a subset of
- *  formatting: bold, italic, strikethrough, foreground color & background
+ *  formatting: bold, italic, strikethrough, foreground color and, background
  *  color.
  */
 @property(nonatomic, strong, nullable) GTLRSheets_CellFormat *format;
@@ -5114,8 +5252,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_Border : GTLRObject
 
-/** The color of the border. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+/** The color of the border. Deprecated: Use color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  The color of the border. If color is also set, this field takes precedence.
@@ -5151,7 +5289,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *
  *  Uses NSNumber of intValue.
  */
-@property(nonatomic, strong, nullable) NSNumber *width;
+@property(nonatomic, strong, nullable) NSNumber *width GTLR_DEPRECATED;
 
 @end
 
@@ -5181,8 +5319,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_BubbleChartSpec : GTLRObject
 
-/** The bubble border color. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *bubbleBorderColor;
+/** The bubble border color. Deprecated: Use bubble_border_color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *bubbleBorderColor GTLR_DEPRECATED;
 
 /**
  *  The bubble border color. If bubble_border_color is also set, this field
@@ -5270,6 +5408,64 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  the chart vertically.
  */
 @property(nonatomic, strong, nullable) GTLRSheets_ChartData *series;
+
+@end
+
+
+/**
+ *  Cancels one or multiple refreshes of data source objects in the spreadsheet
+ *  by the specified references. The request requires an additional
+ *  `bigquery.readonly` OAuth scope if you are cancelling a refresh on a
+ *  BigQuery data source.
+ */
+@interface GTLRSheets_CancelDataSourceRefreshRequest : GTLRObject
+
+/**
+ *  Reference to a DataSource. If specified, cancels all associated data source
+ *  object refreshes for this data source.
+ */
+@property(nonatomic, copy, nullable) NSString *dataSourceId;
+
+/**
+ *  Cancels all existing data source object refreshes for all data sources in
+ *  the spreadsheet.
+ *
+ *  Uses NSNumber of boolValue.
+ */
+@property(nonatomic, strong, nullable) NSNumber *isAll;
+
+/** References to data source objects whose refreshes are to be cancelled. */
+@property(nonatomic, strong, nullable) GTLRSheets_DataSourceObjectReferences *references;
+
+@end
+
+
+/**
+ *  The response from cancelling one or multiple data source object refreshes.
+ */
+@interface GTLRSheets_CancelDataSourceRefreshResponse : GTLRObject
+
+/**
+ *  The cancellation statuses of refreshes of all data source objects specified
+ *  in the request. If is_all is specified, the field contains only those in
+ *  failure status. Refreshing and canceling refresh the same data source object
+ *  is also not allowed in the same `batchUpdate`.
+ */
+@property(nonatomic, strong, nullable) NSArray<GTLRSheets_CancelDataSourceRefreshStatus *> *statuses;
+
+@end
+
+
+/**
+ *  The status of cancelling a single data source object refresh.
+ */
+@interface GTLRSheets_CancelDataSourceRefreshStatus : GTLRObject
+
+/** Reference to the data source object whose refresh is being cancelled. */
+@property(nonatomic, strong, nullable) GTLRSheets_DataSourceObjectReference *reference;
+
+/** The cancellation status. */
+@property(nonatomic, strong, nullable) GTLRSheets_RefreshCancellationStatus *refreshCancellationStatus;
 
 @end
 
@@ -5443,7 +5639,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, strong, nullable) GTLRSheets_CellFormat *userEnteredFormat;
 
 /**
- *  The value the user entered in the cell. e.g, `1234`, `'Hello'`, or `=NOW()`
+ *  The value the user entered in the cell. e.g., `1234`, `'Hello'`, or `=NOW()`
  *  Note: Dates, Times and DateTimes are represented as doubles in serial number
  *  format.
  */
@@ -5457,8 +5653,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_CellFormat : GTLRObject
 
-/** The background color of the cell. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor;
+/**
+ *  The background color of the cell. Deprecated: Use background_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor GTLR_DEPRECATED;
 
 /**
  *  The background color of the cell. If background_color is also set, this
@@ -5486,7 +5684,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, copy, nullable) NSString *horizontalAlignment;
 
 /**
- *  How a hyperlink, if it exists, should be displayed in the cell.
+ *  If one exists, how a hyperlink should be displayed in the cell.
  *
  *  Likely values:
  *    @arg @c kGTLRSheets_CellFormat_HyperlinkDisplayType_HyperlinkDisplayTypeUnspecified
@@ -5525,13 +5723,12 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The format of the text in the cell (unless overridden by a format run).
- *  Setting a cell-level link here will clear the cell's existing links. Setting
- *  the link field in a TextFormatRun will take precedence over the cell-level
- *  link.
+ *  Setting a cell-level link here clears the cell's existing links. Setting the
+ *  link field in a TextFormatRun takes precedence over the cell-level link.
  */
 @property(nonatomic, strong, nullable) GTLRSheets_TextFormat *textFormat;
 
-/** The rotation applied to text in a cell */
+/** The rotation applied to text in the cell. */
 @property(nonatomic, strong, nullable) GTLRSheets_TextRotation *textRotation;
 
 /**
@@ -5833,8 +6030,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, copy, nullable) NSString *altText;
 
-/** The background color of the entire chart. Not applicable to Org charts. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor;
+/**
+ *  The background color of the entire chart. Not applicable to Org charts.
+ *  Deprecated: Use background_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor GTLR_DEPRECATED;
 
 /**
  *  The background color of the entire chart. Not applicable to Org charts. If
@@ -5990,19 +6190,19 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  Represents a color in the RGBA color space. This representation is designed
- *  for simplicity of conversion to/from color representations in various
+ *  for simplicity of conversion to and from color representations in various
  *  languages over compactness. For example, the fields of this representation
  *  can be trivially provided to the constructor of `java.awt.Color` in Java; it
  *  can also be trivially provided to UIColor's `+colorWithRed:green:blue:alpha`
  *  method in iOS; and, with just a little work, it can be easily formatted into
- *  a CSS `rgba()` string in JavaScript. This reference page doesn't carry
+ *  a CSS `rgba()` string in JavaScript. This reference page doesn't have
  *  information about the absolute color space that should be used to interpret
- *  the RGB value (e.g. sRGB, Adobe RGB, DCI-P3, BT.2020, etc.). By default,
+ *  the RGB value—for example, sRGB, Adobe RGB, DCI-P3, and BT.2020. By default,
  *  applications should assume the sRGB color space. When color equality needs
  *  to be decided, implementations, unless documented otherwise, treat two
  *  colors as equal if all their red, green, blue, and alpha values each differ
- *  by at most 1e-5. Example (Java): import com.google.type.Color; // ... public
- *  static java.awt.Color fromProto(Color protocolor) { float alpha =
+ *  by at most `1e-5`. Example (Java): import com.google.type.Color; // ...
+ *  public static java.awt.Color fromProto(Color protocolor) { float alpha =
  *  protocolor.hasAlpha() ? protocolor.getAlpha().getValue() : 1.0; return new
  *  java.awt.Color( protocolor.getRed(), protocolor.getGreen(),
  *  protocolor.getBlue(), alpha); } public static Color toProto(java.awt.Color
@@ -6083,7 +6283,13 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_ColorStyle : GTLRObject
 
-/** RGB color. */
+/**
+ *  RGB color. The
+ *  [`alpha`](/sheets/api/reference/rest/v4/spreadsheets/other#Color.FIELDS.alpha)
+ *  value in the
+ *  [`Color`](/sheets/api/reference/rest/v4/spreadsheets/other#color) object
+ *  isn't generally supported.
+ */
 @property(nonatomic, strong, nullable) GTLRSheets_Color *rgbColor;
 
 /**
@@ -6318,6 +6524,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *    @arg @c kGTLRSheets_DataExecutionStatus_ErrorCode_ConcurrentQuery The data
  *        execution is currently in progress, can not be refreshed until it
  *        completes. (Value: "CONCURRENT_QUERY")
+ *    @arg @c kGTLRSheets_DataExecutionStatus_ErrorCode_DataExecutionCancelled
+ *        The data execution has been cancelled. (Value:
+ *        "DATA_EXECUTION_CANCELLED")
  *    @arg @c kGTLRSheets_DataExecutionStatus_ErrorCode_DataExecutionErrorCodeUnspecified
  *        Default value, do not use. (Value:
  *        "DATA_EXECUTION_ERROR_CODE_UNSPECIFIED")
@@ -6379,6 +6588,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  The state of the data execution.
  *
  *  Likely values:
+ *    @arg @c kGTLRSheets_DataExecutionStatus_State_Cancelling The data
+ *        execution is currently being cancelled. (Value: "CANCELLING")
  *    @arg @c kGTLRSheets_DataExecutionStatus_State_DataExecutionStateUnspecified
  *        Default value, do not use. (Value: "DATA_EXECUTION_STATE_UNSPECIFIED")
  *    @arg @c kGTLRSheets_DataExecutionStatus_State_Failed The data execution
@@ -6691,7 +6902,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  Days of the month to refresh. Only 1-28 are supported, mapping to the 1st to
- *  the 28th day. At lesat one day must be specified.
+ *  the 28th day. At least one day must be specified.
  *
  *  Uses NSNumber of intValue.
  */
@@ -6711,8 +6922,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  Schedule for refreshing the data source. Data sources in the spreadsheet are
  *  refreshed within a time interval. You can specify the start time by clicking
  *  the Scheduled Refresh button in the Sheets editor, but the interval is fixed
- *  at 4 hours. For example, if you specify a start time of 8am , the refresh
- *  will take place between 8am and 12pm every day.
+ *  at 4 hours. For example, if you specify a start time of 8 AM , the refresh
+ *  will take place between 8 AM and 12 PM every day.
  */
 @interface GTLRSheets_DataSourceRefreshSchedule : GTLRObject
 
@@ -6815,6 +7026,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /** A BigQueryDataSourceSpec. */
 @property(nonatomic, strong, nullable) GTLRSheets_BigQueryDataSourceSpec *bigQuery;
+
+/** A LookerDatasourceSpec. */
+@property(nonatomic, strong, nullable) GTLRSheets_LookerDataSourceSpec *looker;
 
 /** The parameters of the data source, used when querying the data source. */
 @property(nonatomic, strong, nullable) NSArray<GTLRSheets_DataSourceParameter *> *parameters;
@@ -7685,8 +7899,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_EmbeddedObjectBorder : GTLRObject
 
-/** The color of the border. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+/** The color of the border. Deprecated: Use color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  The color of the border. If color is also set, this field takes precedence.
@@ -7817,9 +8031,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background fill color to filter by; only cells with this fill color are
- *  shown. Mutually exclusive with visible_foreground_color.
+ *  shown. Mutually exclusive with visible_foreground_color. Deprecated: Use
+ *  visible_background_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *visibleBackgroundColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *visibleBackgroundColor GTLR_DEPRECATED;
 
 /**
  *  The background fill color to filter by; only cells with this fill color are
@@ -7831,9 +8046,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The foreground color to filter by; only cells with this foreground color are
- *  shown. Mutually exclusive with visible_background_color.
+ *  shown. Mutually exclusive with visible_background_color. Deprecated: Use
+ *  visible_foreground_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *visibleForegroundColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *visibleForegroundColor GTLR_DEPRECATED;
 
 /**
  *  The foreground color to filter by; only cells with this foreground color are
@@ -7852,7 +8068,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @interface GTLRSheets_FilterSpec : GTLRObject
 
 /**
- *  The column index.
+ *  The zero-based column index.
  *
  *  Uses NSNumber of intValue.
  */
@@ -7877,7 +8093,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  column index, and the value is the criteria for that column. This field is
  *  deprecated in favor of filter_specs.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_FilterView_Criteria *criteria;
+@property(nonatomic, strong, nullable) GTLRSheets_FilterView_Criteria *criteria GTLR_DEPRECATED;
 
 /**
  *  The filter criteria for showing/hiding values per column. Both criteria and
@@ -7927,6 +8143,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *        -additionalPropertyForName: to get the list of properties and then
  *        fetch them; or @c -additionalProperties to fetch them all at once.
  */
+GTLR_DEPRECATED
 @interface GTLRSheets_FilterView_Criteria : GTLRObject
 @end
 
@@ -8392,9 +8609,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The color of the column representing this series in each bucket. This field
- *  is optional.
+ *  is optional. Deprecated: Use bar_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *barColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *barColor GTLR_DEPRECATED;
 
 /**
  *  The color of the column representing this series in each bucket. This field
@@ -8469,8 +8686,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_InterpolationPoint : GTLRObject
 
-/** The color this interpolation point should use. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+/**
+ *  The color this interpolation point should use. Deprecated: Use color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  The color this interpolation point should use. If color is also set, this
@@ -8628,6 +8847,23 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /** The link identifier. */
 @property(nonatomic, copy, nullable) NSString *uri;
+
+@end
+
+
+/**
+ *  The specification of a Looker data source.
+ */
+@interface GTLRSheets_LookerDataSourceSpec : GTLRObject
+
+/** Name of a Looker model explore. */
+@property(nonatomic, copy, nullable) NSString *explore;
+
+/** A Looker instance URL. */
+@property(nonatomic, copy, nullable) NSString *instanceUri;
+
+/** Name of a Looker model. */
+@property(nonatomic, copy, nullable) NSString *model;
 
 @end
 
@@ -8843,8 +9079,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) GTLRSheets_ChartData *labels;
 
-/** The color of the org chart nodes. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *nodeColor;
+/** The color of the org chart nodes. Deprecated: Use node_color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *nodeColor GTLR_DEPRECATED;
 
 /**
  *  The color of the org chart nodes. If node_color is also set, this field
@@ -8874,8 +9110,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) GTLRSheets_ChartData *parentLabels;
 
-/** The color of the selected org chart nodes. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *selectedNodeColor;
+/**
+ *  The color of the selected org chart nodes. Deprecated: Use
+ *  selected_node_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *selectedNodeColor GTLR_DEPRECATED;
 
 /**
  *  The color of the selected org chart nodes. If selected_node_color is also
@@ -9108,7 +9347,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @interface GTLRSheets_PivotFilterSpec : GTLRObject
 
 /**
- *  The column offset of the source range.
+ *  The zero-based column offset of the source range.
  *
  *  Uses NSNumber of intValue.
  */
@@ -9321,7 +9560,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  key of `0` will have the filter for column `C`, whereas the key `1` is for
  *  column `D`. This field is deprecated in favor of filter_specs.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_PivotTable_Criteria *criteria;
+@property(nonatomic, strong, nullable) GTLRSheets_PivotTable_Criteria *criteria GTLR_DEPRECATED;
 
 /** Output only. The data execution status for data source pivot tables. */
 @property(nonatomic, strong, nullable) GTLRSheets_DataExecutionStatus *dataExecutionStatus;
@@ -9373,6 +9612,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *        -additionalPropertyForName: to get the list of properties and then
  *        fetch them; or @c -additionalProperties to fetch them all at once.
  */
+GTLR_DEPRECATED
 @interface GTLRSheets_PivotTable_Criteria : GTLRObject
 @end
 
@@ -9451,6 +9691,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *        `MEDIAN` function. (Value: "MEDIAN")
  *    @arg @c kGTLRSheets_PivotValue_SummarizeFunction_Min Corresponds to the
  *        `MIN` function. (Value: "MIN")
+ *    @arg @c kGTLRSheets_PivotValue_SummarizeFunction_None Indicates that the
+ *        value is already summarized, and the summarization function is not
+ *        explicitly specified. Used for Looker data source pivot tables where
+ *        the value is already summarized. (Value: "NONE")
  *    @arg @c kGTLRSheets_PivotValue_SummarizeFunction_PivotStandardValueFunctionUnspecified
  *        The default, do not use. (Value:
  *        "PIVOT_STANDARD_VALUE_FUNCTION_UNSPECIFIED")
@@ -9568,7 +9812,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  True if this protected range will show a warning when editing. Warning-based
  *  protection means that every user can edit data in the protected range,
  *  except editing will prompt a warning asking the user to confirm the edit.
- *  When writing: if this field is true, then editors is ignored. Additionally,
+ *  When writing: if this field is true, then editors are ignored. Additionally,
  *  if this field is changed from true to false and the `editors` field is not
  *  set (nor included in the field mask), then the editors will be set to all
  *  the editors in the document.
@@ -9592,6 +9836,56 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 
 /**
+ *  The status of a refresh cancellation. You can send a cancel request to
+ *  explicitly cancel one or multiple data source object refreshes.
+ */
+@interface GTLRSheets_RefreshCancellationStatus : GTLRObject
+
+/**
+ *  The error code.
+ *
+ *  Likely values:
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_CancelOtherError
+ *        All other errors. (Value: "CANCEL_OTHER_ERROR")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_CancelPermissionDenied
+ *        The user does not have permission to cancel the query. (Value:
+ *        "CANCEL_PERMISSION_DENIED")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_ConcurrentCancellation
+ *        There is already another cancellation in process. (Value:
+ *        "CONCURRENT_CANCELLATION")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_ExecutionNotFound
+ *        Execution to be cancelled not found in the query engine or in Sheets.
+ *        (Value: "EXECUTION_NOT_FOUND")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_QueryExecutionCompleted
+ *        The query execution has already completed and thus could not be
+ *        cancelled. (Value: "QUERY_EXECUTION_COMPLETED")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_ErrorCode_RefreshCancellationErrorCodeUnspecified
+ *        Default value, do not use. (Value:
+ *        "REFRESH_CANCELLATION_ERROR_CODE_UNSPECIFIED")
+ */
+@property(nonatomic, copy, nullable) NSString *errorCode;
+
+/**
+ *  The state of a call to cancel a refresh in Sheets.
+ *
+ *  Likely values:
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_State_CancelFailed The API
+ *        call to Sheets to cancel a refresh has failed. (Value:
+ *        "CANCEL_FAILED")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_State_CancelSucceeded The
+ *        API call to Sheets to cancel a refresh has succeeded. This does not
+ *        mean that the cancel happened successfully, but that the call has been
+ *        made successfully. (Value: "CANCEL_SUCCEEDED")
+ *    @arg @c kGTLRSheets_RefreshCancellationStatus_State_RefreshCancellationStateUnspecified
+ *        Default value, do not use. (Value:
+ *        "REFRESH_CANCELLATION_STATE_UNSPECIFIED")
+ */
+@property(nonatomic, copy, nullable) NSString *state;
+
+@end
+
+
+/**
  *  The execution status of refreshing one data source object.
  */
 @interface GTLRSheets_RefreshDataSourceObjectExecutionStatus : GTLRObject
@@ -9608,9 +9902,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 /**
  *  Refreshes one or multiple data source objects in the spreadsheet by the
  *  specified references. The request requires an additional `bigquery.readonly`
- *  OAuth scope. If there are multiple refresh requests referencing the same
- *  data source objects in one batch, only the last refresh request is
- *  processed, and all those requests will have the same response accordingly.
+ *  OAuth scope if you are refreshing a BigQuery data source. If there are
+ *  multiple refresh requests referencing the same data source objects in one
+ *  batch, only the last refresh request is processed, and all those requests
+ *  will have the same response accordingly.
  */
 @interface GTLRSheets_RefreshDataSourceRequest : GTLRObject
 
@@ -9738,6 +10033,11 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) GTLRSheets_AutoResizeDimensionsRequest *autoResizeDimensions;
 
+/**
+ *  Cancels refreshes of one or multiple data sources and associated dbobjects.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_CancelDataSourceRefreshRequest *cancelDataSourceRefresh;
+
 /** Clears the basic filter on a sheet. */
 @property(nonatomic, strong, nullable) GTLRSheets_ClearBasicFilterRequest *clearBasicFilter;
 
@@ -9819,7 +10119,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 /** Randomizes the order of the rows in a range. */
 @property(nonatomic, strong, nullable) GTLRSheets_RandomizeRangeRequest *randomizeRange;
 
-/** Refreshs one or multiple data sources and associated dbobjects. */
+/** Refreshes one or multiple data sources and associated dbobjects. */
 @property(nonatomic, strong, nullable) GTLRSheets_RefreshDataSourceRequest *refreshDataSource;
 
 /** Repeats a single cell across a range. */
@@ -9928,6 +10228,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /** A reply from adding a slicer. */
 @property(nonatomic, strong, nullable) GTLRSheets_AddSlicerResponse *addSlicer;
+
+/** A reply from cancelling data source object refreshes. */
+@property(nonatomic, strong, nullable) GTLRSheets_CancelDataSourceRefreshResponse *cancelDataSourceRefresh;
 
 /** A reply from creating a developer metadata entry. */
 @property(nonatomic, strong, nullable) GTLRSheets_CreateDeveloperMetadataResponse *createDeveloperMetadata;
@@ -10219,8 +10522,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  properties, if this field is excluded then the sheet is added or moved to
  *  the end of the sheet list. When updating sheet indices or inserting sheets,
  *  movement is considered in "before the move" indexes. For example, if there
- *  were 3 sheets (S1, S2, S3) in order to move S1 ahead of S2 the index would
- *  have to be set to 2. A sheet index update request is ignored if the
+ *  were three sheets (S1, S2, S3) in order to move S1 ahead of S2 the index
+ *  would have to be set to 2. A sheet index update request is ignored if the
  *  requested index is identical to the sheets current index or if the requested
  *  new index is equal to the current sheet index + 1.
  *
@@ -10259,8 +10562,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, copy, nullable) NSString *sheetType;
 
-/** The color of the tab in the UI. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *tabColor;
+/** The color of the tab in the UI. Deprecated: Use tab_color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *tabColor GTLR_DEPRECATED;
 
 /**
  *  The color of the tab in the UI. If tab_color is also set, this field takes
@@ -10312,8 +10615,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) NSNumber *applyToPivotTables;
 
-/** The background color of the slicer. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor;
+/**
+ *  The background color of the slicer. Deprecated: Use background_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor GTLR_DEPRECATED;
 
 /**
  *  The background color of the slicer. If background_color is also set, this
@@ -10322,7 +10627,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, strong, nullable) GTLRSheets_ColorStyle *backgroundColorStyle;
 
 /**
- *  The column index in the data table on which the filter is applied to.
+ *  The zero-based column index in the data table on which the filter is applied
+ *  to.
  *
  *  Uses NSNumber of intValue.
  */
@@ -10386,9 +10692,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background fill color to sort by; cells with this fill color are sorted
- *  to the top. Mutually exclusive with foreground_color.
+ *  to the top. Mutually exclusive with foreground_color. Deprecated: Use
+ *  background_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *backgroundColor GTLR_DEPRECATED;
 
 /**
  *  The background fill color to sort by; cells with this fill color are sorted
@@ -10410,9 +10717,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The foreground color to sort by; cells with this foreground color are sorted
- *  to the top. Mutually exclusive with background_color.
+ *  to the top. Mutually exclusive with background_color. Deprecated: Use
+ *  foreground_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *foregroundColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *foregroundColor GTLR_DEPRECATED;
 
 /**
  *  The foreground color to sort by; cells with this foreground color are sorted
@@ -10533,6 +10841,16 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, strong, nullable) GTLRSheets_CellFormat *defaultFormat;
 
 /**
+ *  Whether to allow external URL access for image and import functions. Read
+ *  only when true. When false, you can set to true. This value will be bypassed
+ *  and always return true if the admin has enabled the [allowlisting
+ *  feature](https://support.google.com/a?p=url_allowlist).
+ *
+ *  Uses NSNumber of boolValue.
+ */
+@property(nonatomic, strong, nullable) NSNumber *importFunctionsExternalUrlAccessAllowed;
+
+/**
  *  Determines whether and how circular references are resolved with iterative
  *  calculation. Absence of this field means that circular references result in
  *  calculation errors.
@@ -10604,8 +10922,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) NSNumber *fontSize;
 
-/** The foreground color of the text. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *foregroundColor;
+/**
+ *  The foreground color of the text. Deprecated: Use foreground_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *foregroundColor GTLR_DEPRECATED;
 
 /**
  *  The foreground color of the text. If foreground_color is also set, this
@@ -10657,7 +10977,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, strong, nullable) GTLRSheets_TextFormat *format;
 
 /**
- *  The character index where this run starts.
+ *  The zero-based character index where this run starts, in UTF-16 code units.
  *
  *  Uses NSNumber of intValue.
  */
@@ -10841,9 +11161,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background color for cells with a color value greater than or equal to
- *  maxValue. Defaults to #109618 if not specified.
+ *  maxValue. Defaults to #109618 if not specified. Deprecated: Use
+ *  max_value_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *maxValueColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *maxValueColor GTLR_DEPRECATED;
 
 /**
  *  The background color for cells with a color value greater than or equal to
@@ -10854,9 +11175,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background color for cells with a color value at the midpoint between
- *  minValue and maxValue. Defaults to #efe6dc if not specified.
+ *  minValue and maxValue. Defaults to #efe6dc if not specified. Deprecated: Use
+ *  mid_value_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *midValueColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *midValueColor GTLR_DEPRECATED;
 
 /**
  *  The background color for cells with a color value at the midpoint between
@@ -10867,9 +11189,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background color for cells with a color value less than or equal to
- *  minValue. Defaults to #dc3912 if not specified.
+ *  minValue. Defaults to #dc3912 if not specified. Deprecated: Use
+ *  min_value_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *minValueColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *minValueColor GTLR_DEPRECATED;
 
 /**
  *  The background color for cells with a color value less than or equal to
@@ -10880,9 +11203,9 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 
 /**
  *  The background color for cells that have no color data associated with them.
- *  Defaults to #000000 if not specified.
+ *  Defaults to #000000 if not specified. Deprecated: Use no_data_color_style.
  */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *noDataColor;
+@property(nonatomic, strong, nullable) GTLRSheets_Color *noDataColor GTLR_DEPRECATED;
 
 /**
  *  The background color for cells that have no color data associated with them.
@@ -10922,8 +11245,10 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @property(nonatomic, strong, nullable) GTLRSheets_TreemapChartColorScale *colorScale;
 
-/** The background color for header cells. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *headerColor;
+/**
+ *  The background color for header cells. Deprecated: Use header_color_style.
+ */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *headerColor GTLR_DEPRECATED;
 
 /**
  *  The background color for header cells. If header_color is also set, this
@@ -11222,7 +11547,7 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  *  Updates a data source. After the data source is updated successfully, an
  *  execution is triggered to refresh the associated DATA_SOURCE sheet to read
  *  data from the updated data source. The request requires an additional
- *  `bigquery.readonly` OAuth scope.
+ *  `bigquery.readonly` OAuth scope if you are updating a BigQuery data source.
  */
 @interface GTLRSheets_UpdateDataSourceRequest : GTLRObject
 
@@ -11687,8 +12012,8 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
  */
 @interface GTLRSheets_WaterfallChartColumnStyle : GTLRObject
 
-/** The color of the column. */
-@property(nonatomic, strong, nullable) GTLRSheets_Color *color;
+/** The color of the column. Deprecated: Use color_style. */
+@property(nonatomic, strong, nullable) GTLRSheets_Color *color GTLR_DEPRECATED;
 
 /**
  *  The color of the column. If color is also set, this field takes precedence.
@@ -11718,13 +12043,13 @@ FOUNDATION_EXTERN NSString * const kGTLRSheets_WaterfallChartSpec_StackedType_Wa
 @property(nonatomic, copy, nullable) NSString *label;
 
 /**
- *  The 0-based index of a data point within the series. If data_is_subtotal is
- *  true, the data point at this index is the subtotal. Otherwise, the subtotal
- *  appears after the data point with this index. A series can have multiple
- *  subtotals at arbitrary indices, but subtotals do not affect the indices of
- *  the data points. For example, if a series has three data points, their
- *  indices will always be 0, 1, and 2, regardless of how many subtotals exist
- *  on the series or what data points they are associated with.
+ *  The zero-based index of a data point within the series. If data_is_subtotal
+ *  is true, the data point at this index is the subtotal. Otherwise, the
+ *  subtotal appears after the data point with this index. A series can have
+ *  multiple subtotals at arbitrary indices, but subtotals do not affect the
+ *  indices of the data points. For example, if a series has three data points,
+ *  their indices will always be 0, 1, and 2, regardless of how many subtotals
+ *  exist on the series or what data points they are associated with.
  *
  *  Uses NSNumber of intValue.
  */

@@ -161,6 +161,11 @@
   <extend-property name="locale" values="ca"/>
   <!-- Ukrainian -->
   <extend-property name="locale" values="uk"/>
+  <!-- Japanese -->
+  <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
+
+  <set-configuration-property name="includeSourceMapUrl" value="/ode/__HASH___sourceMap__FRAGMENT__.json"/>
+  <set-property name="compiler.useSourceMaps" value="true"/>
 </module>

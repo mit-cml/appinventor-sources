@@ -145,7 +145,7 @@ open class Web: NonvisibleComponent {
     guard let webProps = capturePropertyValues("Delete") else {
       return
     }
-    performRequest(webProps, nil, nil, "Delete")
+    performRequest(webProps, nil, nil, "DELETE")
   }
 
   fileprivate func requestTextImpl(text: String, encoding: String?, functionName: String, httpVerb: String) {
@@ -196,7 +196,10 @@ open class Web: NonvisibleComponent {
           }
         } else {
           if let data = data {
-            let encodingName = response.textEncodingName ?? "utf8"
+            var encodingName = response.textEncodingName ?? "utf-8"
+            if encodingName.hasPrefix("\"") && encodingName.hasSuffix("\"") {
+              encodingName = encodingName.chopPrefix(count: 1).chopSuffix(count: 1)
+            }
             guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
               self._form?.dispatchErrorOccurredEvent(self, "performRequest",
                   ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encodingName)
@@ -388,6 +391,10 @@ open class Web: NonvisibleComponent {
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText)
       return "" as NSString
     }
+  }
+
+  @objc public static func decodeJson(_ jsonText: String) -> AnyObject? {
+    return try? getYailObjectFromJson(jsonText, true)
   }
 
   @objc open func UriDecode(_ text: String) -> String {
