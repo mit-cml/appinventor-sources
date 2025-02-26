@@ -576,6 +576,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:.events}
 
+{:id="LocationSensor.GotAddress"} GotAddress(*address*{:.text})
+: Reports the address in response to a ReverseGeocode request.
+
+{:id="LocationSensor.GotLocation"} GotLocation(*latitude*{:.number},*longitude*{:.number})
+: Reports the latitude and longitude in response to a Geocode request.
+
 {:id="LocationSensor.LocationChanged"} LocationChanged(*latitude*{:.number},*longitude*{:.number},*altitude*{:.number},*speed*{:.number})
 : Indicates that a new location has been detected. Speed is reported in meters/second
  Other values match their properties.
@@ -584,15 +590,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 : Indicates that the status of the location provider service has changed, such as when a
  provider is lost or a new provider starts being used.
 
-{:id="LocationSensor.gotAddress"} gotAddress(*address*{:.text})
-: Location has been returned
-
-{:id="LocationSensor.gotLocation"} gotLocation(*latitude*{:.number},*longitude*{:.number})
-: Location has been returned
-
 ### Methods  {#LocationSensor-Methods}
 
 {:.methods}
+
+{:id="LocationSensor.Geocode" class="method"} <i/> Geocode(*address*{:.text})
+: Converts an address into a latitude and longitude through the GotLocation event.
 
 {:id="LocationSensor.LatitudeFromAddress" class="method returns number"} <i/> LatitudeFromAddress(*locationName*{:.text})
 : Derives latitude from the given `locationName`.
@@ -600,11 +603,8 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 {:id="LocationSensor.LongitudeFromAddress" class="method returns number"} <i/> LongitudeFromAddress(*locationName*{:.text})
 : Derives longitude from the given `locationName`.
 
-{:id="LocationSensor.geoCode" class="method"} <i/> geoCode(*address*{:.text})
-: Takes address and returns latitude and longitude
-
-{:id="LocationSensor.reverseGeoCode" class="method"} <i/> reverseGeoCode(*lat*{:.number},*lon*{:.number})
-: Takes latitude and longitutde and returns address
+{:id="LocationSensor.ReverseGeocode" class="method"} <i/> ReverseGeocode(*latitude*{:.number},*longitude*{:.number})
+: Determines the address associated with the given latitude and  and reports it through the GotAddress event.
 
 ## MagneticFieldSensor  {#MagneticFieldSensor}
 

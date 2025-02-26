@@ -29,9 +29,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -687,44 +684,45 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * 
    * @return void
    */
-  @SimpleFunction(description = "Takes address and returns latitude and longitude")
-  public void geoCode(String address){
+  @SimpleFunction(description = "Converts an address into a latitude and longitude through the "
+      + "GotLocation event.")
+  public void Geocode(String address) {
     final double latitude = LatitudeFromAddress(address);
     final double longitude = LongitudeFromAddress(address);
-    System.out.println(latitude + " " + longitude);
     form.runOnUiThread(new Runnable() {
       public void run(){
-        gotLocation(latitude, longitude);
+        GotLocation(latitude, longitude);
       }
     });
   }
 
-  @SimpleEvent(description = "Location has been returned")
-  public void gotLocation(double latitude, double longitude){
-    EventDispatcher.dispatchEvent(this, "gotLocation", latitude, longitude);
+  @SimpleEvent(description = "Reports the latitude and longitude in response to a Geocode request.")
+  public void GotLocation(double latitude, double longitude) {
+    EventDispatcher.dispatchEvent(this, "GotLocation", latitude, longitude);
   }
 
   /**
-   * @param lat given latitude
-   * @param lon given longitude
+   * @param latitude given latitude
+   * @param longitude given longitude
    * 
    * @return void
    */
-  @SimpleFunction(description = "Takes latitude and longitutde and returns address")
-  public void reverseGeoCode(double lat, double lon){
-    this.latitude = lat;
-    this.longitude = lon;
-    String address = CurrentAddress();
+  @SimpleFunction(description = "Determines the address associated with the given latitude and "
+      + " and reports it through the GotAddress event.")
+  public void ReverseGeocode(double latitude, double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    final String address = CurrentAddress();
     form.runOnUiThread(new Runnable() {
       public void run(){
-        gotAddress(address);
+        GotAddress(address);
       }
     });
   }
 
-  @SimpleEvent(description = "Location has been returned")
-  public void gotAddress(String address){
-    EventDispatcher.dispatchEvent(this, "gotAddress", address);
+  @SimpleEvent(description = "Reports the address in response to a ReverseGeocode request.")
+  public void GotAddress(String address) {
+    EventDispatcher.dispatchEvent(this, "GotAddress", address);
   }
 
   /**
