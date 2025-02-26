@@ -164,24 +164,7 @@ public final class ProjectManager {
    */
 
   public void removeDeletedProject(long projectId) {
-    Project project = projectsMap.remove(projectId);
-    fireProjectDeleted(project);
-  }
-
-  /**
-   * Restores the project from trash back to my projects.
-   *
-   * @param projectId project ID
-   */
-
-  public void restoreTrashProject(long projectId) {
-    Project project = projectsMap.get(projectId);
-    fireTrashProjectRestored(project);
-  }
-
-  public void trashProject(long projectId) {
-    Project project = projectsMap.get(projectId);
-    fireProjectTrashed(project);
+    projectsMap.remove(projectId);
   }
 
   /**
@@ -216,27 +199,6 @@ public final class ProjectManager {
   private void fireProjectAdded(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectAdded(project);
-    }
-  }
-
-  /*
-   * Triggers a 'project removed' event to be sent to the listener on the listener list.
-   */
-  private void fireTrashProjectRestored(Project project) {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onTrashProjectRestored(project);
-    }
-  }
-
-  private void fireProjectTrashed(Project project) {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectTrashed(project);
-    }
-  }
-
-  private void fireProjectDeleted(Project project) {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectDeleted(project);
     }
   }
 
