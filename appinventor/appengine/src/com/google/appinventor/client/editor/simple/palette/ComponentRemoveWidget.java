@@ -5,13 +5,14 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Defines a widget that has the appearance of a red close button.
@@ -35,7 +36,9 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
       YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
       SimpleComponentDatabase componentDatabase = SimpleComponentDatabase.getInstance();
       componentDatabase.addComponentDatabaseListener(projectEditor);
-      componentDatabase.removeComponent(name);
+      if (componentDatabase.removeComponent(name)) {
+        Scheduler.get().scheduleDeferred(() -> ode.getEditorManager().saveDirtyEditors(null));
+      }
     }
   }
 }

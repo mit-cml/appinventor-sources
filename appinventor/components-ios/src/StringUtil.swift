@@ -24,6 +24,16 @@ public func toString(_ object: Any?) -> String {
     } else {
       return String(describing: num)
     }
+  } else if let object = object as? YailList<SCMValueProtocol> {
+    if ReplForm.activeForm?.ShowListsAsJson ?? true {
+      if let json = try? JSONSerialization.data(withJSONObject: object) {
+        return String(data: json, encoding: .utf8) ?? "[]"
+      } else {
+        return "[]"
+      }
+    } else {
+      return "(" + StringUtil.joinStrings(object, " ") + ")"
+    }
   } else if let object = object as? String {
     return object
   } else {

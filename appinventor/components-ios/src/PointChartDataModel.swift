@@ -27,21 +27,29 @@ open class PointChartDataModel: Chart2DDataModel {
     //
     //    }
     guard tuple.count >= 2,
-          let rawX = tuple[0+1] as? String,
-          let rawY = tuple[1+1] as? String else {
+          let x = PointChartDataModel.asDouble(tuple[0+1]),
+          let y = PointChartDataModel.asDouble(tuple[1+1]) else {
       // Handle error for insufficient chart entry values or type mismatch
       print("Error: Insufficient chart entry values")
       return nil
     }
 
-    if let x = Double(rawX), let y = Double(rawY) {
-      // Successfully parsed x and y values
-      return ChartDataEntry(x: x, y: y)
+    return ChartDataEntry(x: x, y: y)
+  }
+
+  /**
+   * Converts the argument into a Double if possible, otherwise returns nil.
+   *
+   * - Parameter o: Any item, possibly nil
+   * - Returns: The Double representation of o if o can be represented as a valid Double.
+   */
+  public static func asDouble(_ o: Any?) -> Double? {
+    if let value = o as? Double {
+      return value
+    } else if let value = o as? String {
+      return Double(value)
     } else {
-      // Dispatch an error event similar to the Java version or handle it accordingly.
-      // Error for invalid chart entry values.
       return nil
     }
   }
-
 }

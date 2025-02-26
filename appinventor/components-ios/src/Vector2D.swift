@@ -35,7 +35,7 @@ public struct Vector2D: Comparable, AdditiveArithmetic {
   }
 
   public func closestVector(in vectors: [Vector2D]) -> Vector2D? {
-    var result: (vector: Vector2D?, d: Double) = (nil, 0.0)
+    var result: (vector: Vector2D?, d: Double) = (nil, Double.infinity)
     result = vectors.reduce(result) { partialResult, v in
       let d = (self - v).magnitudeSquared
       if d < partialResult.d {

@@ -89,12 +89,16 @@ fileprivate func convertJsonItem(_ item: AnyObject?, _ useDicts: Bool) -> AnyObj
     }
   } else if let jsonArray = item as? NSArray {
     return getListFromJsonArray(jsonArray, useDicts) as AnyObject
-  } else if let bool = item as? Bool {
-    return bool as AnyObject
+  } else if let number = item as? NSNumber {
+    if number.isEqual(to: true as NSValue) {
+      return true as AnyObject
+    } else if number.isEqual(to: false as NSValue) {
+      return false as AnyObject
+    } else {
+      return number as AnyObject
+    }
   } else if let string = item as? String {
     return string as AnyObject
-  } else if let number = item as? NSNumber {
-    return number as AnyObject
   }
   return item.debugDescription as AnyObject
 }
