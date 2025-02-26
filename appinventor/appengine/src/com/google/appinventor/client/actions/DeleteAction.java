@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.actions;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -17,8 +19,6 @@ import com.google.gwt.user.client.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class DeleteAction implements Command {
   @Override
