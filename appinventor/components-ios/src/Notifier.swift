@@ -5,6 +5,7 @@
 
 import Foundation
 import Toast_Swift
+import RetValManager
 
 class SyncArray<T> {
   private var array = [T]()
@@ -350,16 +351,23 @@ open class Notifier: NonvisibleComponent {
     alert.show(animated: true)
   }
   
+// Ask about form isrepl?
+// Ask about testing
+// Need to retry apple thing, invite expired
+
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
+    RetValManager.appendLogValue(message, withLevel: "Error")
   }
 
   @objc open func LogInfo(_ message: String) {
     NSLog("Info: \(message)")
+    RetValManager.appendLogValue(message, withLevel: "Info")
   }
 
   @objc open func LogWarning(_ message: String) {
     NSLog("Warning: \(message)")
+    RetValManager.appendLogValue(message, withLevel: "Warning")
   }
 
   @objc open func ShowAlert(_ notice: String) {

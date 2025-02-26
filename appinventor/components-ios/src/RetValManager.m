@@ -69,6 +69,14 @@ static RetValManager *_manager = nil;
   [self addResult:output];
 }
 
+- (void)appendLogValue:(NSString *)item forBlock:(NSString *)blockId {
+  withStatus:(NSString *)status{
+    if (!item) item = @"";
+    NSDictionary *output = @{@"status": status, @"level": @"info", @"warning", @"error", @"type": @"log", @"item": item, @"blockid": blockId}; // @item or @contents?
+    [self addResult:output];
+  }
+}
+
 - (void)sendError:(NSString *)error {
   NSDictionary *output = @{@"status": @"OK", @"type": @"error", @"value": error};
   [self addResult:output];
