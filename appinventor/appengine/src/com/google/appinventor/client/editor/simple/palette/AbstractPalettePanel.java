@@ -381,7 +381,7 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
     categoryPanels.put(category, panel);
-    // The production version will not include a mapping for Extension because
+    // The production version will not include a translation mapping for Extension because
     // only compile-time categories are included. This allows us to i18n the
     // Extension title for the palette.
     int insert_index = Collections.binarySearch(categoryOrder, category.ordinal());
@@ -467,14 +467,6 @@ public abstract class AbstractPalettePanel<T extends ComponentDatabaseInterface,
   public void reloadComponents() {
     clearComponents();
     loadComponents();
-    stackPalette.show(0);
-  }
-
-  public void reloadComponentsFromSet(Set<String> set) {
-    clearComponents();
-    for (String component : set) {
-      addComponent(component);
-    }
     stackPalette.show(0);
   }
 

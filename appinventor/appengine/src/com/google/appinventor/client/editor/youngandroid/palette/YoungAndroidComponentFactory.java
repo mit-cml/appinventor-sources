@@ -104,6 +104,7 @@ class YoungAndroidComponentFactory extends BaseComponentFactory {
     bundledImages.put("images/marker.png", images.marker());
     bundledImages.put("images/circle.png", images.circle());
     bundledImages.put("images/linestring.png", images.linestring());
+    bundledImages.put("images/rectangle.png", images.rectangle());
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
     bundledImages.put("images/recyclerView.png", images.recyclerview());

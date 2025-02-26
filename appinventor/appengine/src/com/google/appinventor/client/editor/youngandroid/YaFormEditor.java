@@ -359,16 +359,20 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         if (shownComponentsStr.length() > 0) {
           shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
         }
-        palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "invalid subset string", e);
+        shownComponents = componentDatabase.getComponentNames();
       }
     } else {
       shownComponents = componentDatabase.getComponentNames();
-      palettePanel.clearComponents();
     }
-    for (String component : shownComponents) {
-      palettePanel.addComponent(component);
+    palettePanel.clearComponentsExceptExtension();
+    if (!shownComponents.isEmpty()) {
+      for (String component : shownComponents) {
+        palettePanel.addComponent(component);
+      }
+    } else {
+      LOG.log(Level.SEVERE, "no components on palette panel");
     }
     palettePanel.resetOpenCategories();
   }
