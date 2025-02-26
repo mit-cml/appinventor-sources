@@ -24,6 +24,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
+import javafx.scene.layout.FlowPane;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,6 +212,7 @@ public final class MockListView extends MockVisibleComponent {
 
   private void createTwoTextVerticalLayout(JSONObject object) {
     verticalItemPanel = new FlowPanel();
+    FlowPanel container = new FlowPanel();
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
     String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
     InlineLabel main = createInlineLabel(text1, textColor);
@@ -220,12 +224,13 @@ public final class MockListView extends MockVisibleComponent {
     MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
     detail.setWidth("100%");
-    detail.getElement().getStyle().setDisplay(Display.BLOCK);    
-    verticalItemPanel.add(main);
-    verticalItemPanel.add(detail);
+    detail.getElement().getStyle().setDisplay(Display.BLOCK);
+    container.add(main);
+    container.add(detail);
     setItemHeight(true, false);
     decorateWidget(verticalItemPanel);
-    verticalItemPanel.getElement().getStyle().setProperty("flex-direction", "column");    
+    container.getElement().getStyle().setProperty("flex-direction", "column");
+    verticalItemPanel.add(container);
     listPanel.add(verticalItemPanel);
   }
 
@@ -328,19 +333,24 @@ public final class MockListView extends MockVisibleComponent {
    * @param widthValue width of the image
    * @param heightValue height of the image
    */
-  private Image createImage(String imageName, String widthValue, String heightValue) {
+  private FlowPanel createImage(String imageName, String widthValue, String heightValue) {
     Image image = new Image();
-    image.setStylePrimaryName("listViewImageStyle");
+    FlowPanel container = new FlowPanel();    
+    container.setStylePrimaryName("listViewImageStyle");
     String url = convertImagePropertyValueToUrl(imageName);
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
       image.setUrl(getIconImage().getUrl());
     } else {
       image.setUrl(url);
-    }
-    image.setSize(widthValue, heightValue);
-    return image;
-  }
+    }    
+    container.setSize(widthValue, heightValue);
+    image.setSize("100%", "100%");
+    image.getElement().getStyle().setProperty("objectFit", "contain");
+    image.getElement().getStyle().setProperty("objectPosition", "center");    
+    container.add(image);
+    return container;
+}
 
   /**
    * creates label for a text element of a row in designer

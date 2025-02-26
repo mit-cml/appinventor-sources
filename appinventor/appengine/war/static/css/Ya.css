@@ -1513,14 +1513,14 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .listViewHorizontalItemStyle {  
-  display: inline-block;
+  display: inline-flex;
   vertical-align: top;
 }
 
 .listViewImageStyle {  
-  display: inline;
+  display: inline-block;
   padding-right: 5px;
-  vertical-align: middle;
+  vertical-align: middle; 
 }
 
 /* class for the Spinner Mock component */
