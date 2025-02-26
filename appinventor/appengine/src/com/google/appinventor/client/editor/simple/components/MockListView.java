@@ -25,8 +25,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import javafx.scene.layout.FlowPane;
-
 import java.util.ArrayList;
 import java.util.List;
 
