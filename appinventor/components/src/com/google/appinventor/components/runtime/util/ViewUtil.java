@@ -1,19 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
-
-import com.google.appinventor.components.runtime.Component;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
+
+import com.google.appinventor.components.runtime.Component;
 
 /**
  * Helper methods for manipulating {@link View} objects.
@@ -32,7 +33,7 @@ public final class ViewUtil {
    * @param sizeInDP the size (in DP) specified in the designer
    * @return size in Pixels for the particular device running the app.
    */
-  private static int calculatePixels(View view, int sizeInDP) {
+  public static int calculatePixels(View view, int sizeInDP) {
     return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
   }
 
@@ -175,6 +176,62 @@ public final class ViewUtil {
       view.requestLayout();
     } else {
       Log.e("ViewUtil", "The view does not have table layout parameters");
+    }
+  }
+
+  /**
+   * Sets the width of the child within a RelativeLayout group.
+   * @param view the child view
+   * @param width the desired width
+   */
+  public static void setChildWidthForRelativeLayout(View view, int width) {
+    // In a relative layout, if a child's width is set to fill parent, we must set the
+    // RelativeParams width to MATCH_PARENT
+    Object layoutParams = view.getLayoutParams();
+    if (layoutParams instanceof RelativeLayout.LayoutParams) {
+      RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layoutParams;
+      switch (width) {
+        case Component.LENGTH_PREFERRED:
+          relativeLayoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          relativeLayoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+          break;
+        default:
+          relativeLayoutParams.width = calculatePixels(view, width);
+          break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have relative layout parameters");
+    }
+  }
+
+  /**
+   * Sets the height of the child within a RelativeLayout group.
+   * @param view the child view
+   * @param height the desired height
+   */
+  public static void setChildHeightForRelativeLayout(View view, int height) {
+    // In a relative layout, if a child's height is set to fill parent, we must set the
+    // RelativeParams width to MATCH_PARENT
+    Object layoutParams = view.getLayoutParams();
+    if (layoutParams instanceof RelativeLayout.LayoutParams) {
+      RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layoutParams;
+      switch (height) {
+        case Component.LENGTH_PREFERRED:
+          relativeLayoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          relativeLayoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
+          break;
+        default:
+          relativeLayoutParams.height = calculatePixels(view, height);
+          break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have relative layout parameters");
     }
   }
 

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -894,6 +894,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     throw new UnsupportedOperationException("Canvas.setChildHeight() called");
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Canvas.setChildNeedsLayout() called");
   }
 
   // Methods executed when a child sprite has changed its location or appearance

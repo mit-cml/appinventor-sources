@@ -1,7 +1,7 @@
 /* -*- mode: javascript; js-indent-level 2; -*- */
 /**
  * @license
- * Copyright © 2016 Massachusetts Institute of Technology. All rights reserved.
+ * Copyright © 2016-2021 Massachusetts Institute of Technology. All rights reserved.
  */
 
 /**
@@ -204,7 +204,7 @@ Blockly.ComponentDatabase.prototype.addInstance = function(uid, name, typeName) 
   if (this.hasInstance(uid)) {
     return false;
   }
-  this.instances_[uid] = {name: name, typeName: typeName};
+  this.instances_[uid] = {uid: uid, name: name, typeName: typeName};
   this.instanceNameUid_[name] = uid;
   return true;
 };
@@ -222,12 +222,25 @@ Blockly.ComponentDatabase.prototype.hasInstance = function(uid) {
  * Get a component instance for the given UUID or Name.
  * @param {!string} uidOrName UUID for the component. This method also takes a Name for backwards
  * compatibility with methods that do not yet refer to a component by UUID.
- * @returns {{typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
+ * @returns {{uid: string, typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
  * of a component, otherwise undefined.
  */
 Blockly.ComponentDatabase.prototype.getInstance = function(uidOrName) {
   return this.instances_[uidOrName] || this.instances_[this.instanceNameUid_[uidOrName]];
 };
+
+/**
+ * Get the container record for the instance by UUID or Name.
+ *
+ * @param {!string} formName
+ * @param {!string} uidOrName
+ * @returns {?{uid: string, typeName: !string, name: !string}}
+ */
+Blockly.ComponentDatabase.prototype.getContainer = function(formName, uidOrName) {
+  var component = this.getInstance(uidOrName);
+  var containerUuid = top.BlocklyPanel_getComponentContainerUuid(formName, component.name);
+  return this.getInstance(containerUuid);
+}
 
 /**
  * Rename a component instance in the ComponentDatabase.
