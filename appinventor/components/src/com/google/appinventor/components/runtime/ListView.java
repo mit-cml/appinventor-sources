@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -76,7 +77,7 @@ import android.graphics.Rect;
 @UsesLibraries({"recyclerview.jar", "recyclerview.aar", "cardview.jar", "cardview.aar", "dynamicanimation.jar"})
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
-public final class ListView extends AndroidViewComponent {
+public final class ListView extends AndroidViewComponent implements OnOrientationChangeListener {
 
   private static final String LOG_TAG = "ListView";
 
@@ -124,12 +125,10 @@ public final class ListView extends AndroidViewComponent {
   private String propertyValue;  // JSON string representing data entered through the Designer
 
   private boolean multiSelect;
-  private boolean divider;
   private Paint dividerPaint;
   private int dividerColor;
   private int dividerSize;
   private static final int DEFAULT_DIVIDER_SIZE = 0;
-  private boolean first = true; //flag for first element margins
   private int margins;
   private static final int DEFAULT_RADIUS = 0;
   private int radius;
@@ -148,6 +147,7 @@ public final class ListView extends AndroidViewComponent {
 
     super(container);
     this.container = container;
+    container.$form().registerForOnOrientationChange(this);
     items = new ArrayList<>();
 
     linearLayout = new LinearLayout(container.$context());
@@ -217,7 +217,7 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    BackgroundColor(Component.COLOR_BLACK);
+    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
     TextColorDetail(Component.COLOR_WHITE);
@@ -252,6 +252,11 @@ public final class ListView extends AndroidViewComponent {
   @Override
   public View getView() {
     return linearLayout;
+  }
+
+  @Override
+  public void onOrientationChange() {
+    setDivider();
   }
 
   /**
@@ -937,6 +942,7 @@ public final class ListView extends AndroidViewComponent {
       layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     }
     recyclerView.requestLayout();
+    setDivider();
   }
 
   /**
@@ -1318,10 +1324,14 @@ public final class ListView extends AndroidViewComponent {
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
       //If margins are set, dividers will not be created.
       if (margins == 0) {
+        ViewGroup.LayoutParams layoutParams;
         int childCount = parent.getChildCount();
         if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
+            layoutParams = child.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int left = child.getRight();
@@ -1335,6 +1345,9 @@ public final class ListView extends AndroidViewComponent {
           int width = parent.getWidth();
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
+            layoutParams = child.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int top = child.getBottom();
@@ -1342,14 +1355,14 @@ public final class ListView extends AndroidViewComponent {
               canvas.drawRect(0, top, width, bottom, dividerPaint);
             }
           }
-        }
+        }        
       }
     }
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+      ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
       int position = parent.getChildAdapterPosition(view);
-      int spanCount = 1; //No GridLayout support, so spanCount set to 1.
       if (margins == 0) {
         if (position != RecyclerView.NO_POSITION && position < parent.getAdapter().getItemCount() - 1) {
           if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
@@ -1361,14 +1374,22 @@ public final class ListView extends AndroidViewComponent {
           outRect.setEmpty();
         }
       } else {
-        int column = position % spanCount;
-        outRect.left = margins - column * margins / spanCount;
-        outRect.right = (column + 1) * margins / spanCount;
-        if (position < spanCount || first) {
-          first = false;
-          outRect.top = margins;
+        if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+          layoutParams.width = parent.getWidth() - 2 * margins;
+          if (position == 0) {
+            outRect.set(margins, margins, margins, margins);
+          } else {
+            outRect.set(0, margins, margins, margins);
+          }
+        } else {
+          layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+          if (position == 0) {
+            outRect.set(margins, margins, margins, margins);
+          } else {
+            outRect.set(margins, 0, margins, margins);
+          }
         }
-        outRect.bottom = margins;
+        view.setLayoutParams(layoutParams);
       }
     }
   }
