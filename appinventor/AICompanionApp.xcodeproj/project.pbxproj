@@ -37,6 +37,11 @@
 		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
 		5DE6C44E2D5E8FC8006CFBDB /* troubleshooting.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DE6C44D2D5E8FC8006CFBDB /* troubleshooting.png */; };
+		5DF96AE72D720D03002BA0C8 /* open_library_outline.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DF96AE62D720D03002BA0C8 /* open_library_outline.png */; };
+		5DF96AEB2D720D90002BA0C8 /* open_library_outline 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DF96AE92D720D90002BA0C8 /* open_library_outline 2.png */; };
+		5DF96AEC2D720D90002BA0C8 /* get_help.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DF96AE82D720D90002BA0C8 /* get_help.png */; };
+		5DF96AF12D721700002BA0C8 /* use_code.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DF96AF02D721700002BA0C8 /* use_code.png */; };
+		5DF96AF32D721FD2002BA0C8 /* scan_qr_code 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DF96AF22D721FD2002BA0C8 /* scan_qr_code 2.png */; };
 		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
 		C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */; };
 /* End PBXBuildFile section */
@@ -118,6 +123,11 @@
 		508620DE32C8BAF851F5708A /* Pods-AICompanionApp-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		52712EFD54D64AB76B9ABB68 /* Pods-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		5DE6C44D2D5E8FC8006CFBDB /* troubleshooting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = troubleshooting.png; sourceTree = "<group>"; };
+		5DF96AE62D720D03002BA0C8 /* open_library_outline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = open_library_outline.png; sourceTree = "<group>"; };
+		5DF96AE82D720D90002BA0C8 /* get_help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = get_help.png; sourceTree = "<group>"; };
+		5DF96AE92D720D90002BA0C8 /* open_library_outline 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "open_library_outline 2.png"; sourceTree = "<group>"; };
+		5DF96AF02D721700002BA0C8 /* use_code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = use_code.png; sourceTree = "<group>"; };
+		5DF96AF22D721FD2002BA0C8 /* scan_qr_code 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scan_qr_code 2.png"; sourceTree = "<group>"; };
 		6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		79510811268599A5F3A2E75B /* Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		917EBEF8E1E3632C01B06EE1 /* Pods-AICompanionApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -233,6 +243,11 @@
 		06B2161D1DBC7B4C000B3366 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				5DF96AF22D721FD2002BA0C8 /* scan_qr_code 2.png */,
+				5DF96AF02D721700002BA0C8 /* use_code.png */,
+				5DF96AE82D720D90002BA0C8 /* get_help.png */,
+				5DF96AE92D720D90002BA0C8 /* open_library_outline 2.png */,
+				5DF96AE62D720D03002BA0C8 /* open_library_outline.png */,
 				5DE6C44D2D5E8FC8006CFBDB /* troubleshooting.png */,
 				0693A7BE2575527600256540 /* mooning-dark.png */,
 				06B216111DBC5F1B000B3366 /* connectwCode.png */,
@@ -402,14 +417,19 @@
 				06B216171DBC5F1B000B3366 /* connectwQR.png in Resources */,
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
 				062B743D2BC07549002E221F /* PrivacyInfo.xcprivacy in Resources */,
+				5DF96AE72D720D03002BA0C8 /* open_library_outline.png in Resources */,
 				5DE6C44E2D5E8FC8006CFBDB /* troubleshooting.png in Resources */,
 				06B216161DBC5F1B000B3366 /* connectwCode.png in Resources */,
 				06B2161A1DBC5F1B000B3366 /* Title.png in Resources */,
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
 				06463F031D95956800B23DCD /* Assets.xcassets in Resources */,
+				5DF96AF32D721FD2002BA0C8 /* scan_qr_code 2.png in Resources */,
 				06463F011D95956800B23DCD /* Main.storyboard in Resources */,
 				06647F4B29CA1EB90009F29C /* AICompanionApp.xcconfig in Resources */,
 				066FE95725AC9E7300C6193B /* Settings.bundle in Resources */,
+				5DF96AEB2D720D90002BA0C8 /* open_library_outline 2.png in Resources */,
+				5DF96AEC2D720D90002BA0C8 /* get_help.png in Resources */,
+				5DF96AF12D721700002BA0C8 /* use_code.png in Resources */,
 				0693A7BF2575527700256540 /* mooning-dark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

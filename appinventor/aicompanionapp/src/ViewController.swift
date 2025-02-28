@@ -59,6 +59,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var troubleShootingButton: UIButton?
+  @IBOutlet weak var getHelpButton: UIButton?
+  @IBOutlet weak var goBackButton: UIButton?
+  @IBOutlet weak var openLibraryButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
@@ -75,8 +78,66 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+
+    
+    // Set up keyboard notifications
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    
+    
+
+    // Add tap gesture to dismiss keyboard
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    view.addGestureRecognizer(tapGesture)
+
     self.delegate = self
   }
+  
+  @objc func keyboardWillShow(notification: NSNotification) {
+      guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+      
+      // Adjust content inset if using a scroll view
+      if let scrollView = view as? UIScrollView {
+          scrollView.contentInset.bottom = keyboardFrame.height
+          scrollView.scrollIndicatorInsets.bottom = keyboardFrame.height
+      } else {
+          // Or adjust specific control positions
+          // For example, move a button up to remain visible
+        let buttonBottomConstraint = connectButton?.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        buttonBottomConstraint?.constant = -keyboardFrame.height
+      }
+      
+      // Animate the changes
+      UIView.animate(withDuration: 0.3) {
+          self.view.layoutIfNeeded()
+      }
+  }
+
+  @objc func keyboardWillHide(notification: NSNotification) {
+      // Reset adjustments
+      if let scrollView = view as? UIScrollView {
+          scrollView.contentInset.bottom = 0
+          scrollView.scrollIndicatorInsets.bottom = 0
+      } else {
+          // Reset specific control positions
+        let buttonBottomConstraint = connectButton?.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        buttonBottomConstraint?.constant = 0
+      }
+      
+      UIView.animate(withDuration: 0.3) {
+          self.view.layoutIfNeeded()
+      }
+  }
+
+  @objc func dismissKeyboard() {
+      view.endEditing(true)
+  }
+
+  // Clean up observers
+  deinit {
+      NotificationCenter.default.removeObserver(self)
+  }
+  
 
   @objc func settingsChanged(_ sender: AnyObject?) {
     maybeShowOnboardingScreen()
@@ -144,9 +205,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       form.makeTopForm()
       interpreter.setCurrentForm(form!)
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
-      if let mooning = UIImage(named: "Mooning") {
-        form.view.backgroundColor = UIColor(patternImage: mooning)
-      }
+      
       form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
       form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
       form.title = "MIT App Inventor 2"
@@ -168,7 +227,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode = form.view.viewWithTag(3) as! UITextField?
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
-      troubleShootingButton = form.view.viewWithTag(10) as! UIButton?
+
+
+      getHelpButton = form.view.viewWithTag(10) as! UIButton?
+      openLibraryButton = form.view.viewWithTag(11) as! UIButton?
+      goBackButton = form.view.viewWithTag(12) as! UIButton?
+
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
@@ -179,7 +243,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
-      troubleShootingButton?.addTarget(self, action: #selector(showTroubleshootingInfo(_:)), for: UIControl.Event.primaryActionTriggered)
+      getHelpButton?.addTarget(self, action: #selector(showTroubleshootingInfo(_:)), for: UIControl.Event.primaryActionTriggered)
+      goBackButton?.addTarget(self, action: #selector(goBackToOnboarding(_:)), for: UIControl.Event.primaryActionTriggered)
+      
+      connectCode?.addTarget(self, action: #selector(enableConnectCodeButton(_:)), for: UIControl.Event.editingChanged)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -203,6 +270,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   @objc func add(_ component: ViewComponent) {
     
+  }
+  
+
+  @objc func enableConnectCodeButton(_ sender: UITextField?) {
+    connectButton?.isEnabled = (connectCode?.text ?? "").count == 6
   }
   
   @objc func connect(_ sender: UIButton?) {
@@ -375,6 +447,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   private func setPopup(popup: String) {
     phoneStatus.setPopup(popup)
   }
+  
+  @objc func goBackToOnboarding(_ sender: UIButton?) {
+    NSLog("goBackToOnboarding called")
+    let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+    vc.modalPresentationStyle = .fullScreen
+    present(vc, animated: true)
+    
+  }
 
   /**
    * Show the onboarding screen when certain conditions are met.
@@ -393,7 +473,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       if !SystemVariables.newUser {
         // Hide the welcome screen if visible
         onboardingScreen?.dismiss(animated: true, completion: {
-          self.onboardingScreen = nil
+          //self.onboardingScreen = nil
         })
       }
       if !self.didWifiCheck {
