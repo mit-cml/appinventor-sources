@@ -10,7 +10,7 @@ import static com.google.appinventor.components.common.ComponentDescriptorConsta
 import static com.google.appinventor.components.common.ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX;
 import static com.google.appinventor.components.common.ComponentDescriptorConstants.X86_64_SUFFIX;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;

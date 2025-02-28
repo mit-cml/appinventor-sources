@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.interfaces.Task;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,8 +58,7 @@ public class Compiler<P extends Paths, T extends CompilerContext<P>> implements 
      * Only accepts the one specified in BuildType annotation.
      */
     public Builder<P, T> withType(String ext) {
-      if (ext == null || !ext.equals(BuildType.APK_EXTENSION)
-          && !ext.equals(BuildType.AAB_EXTENSION)) {
+      if (ext == null || !BuildType.ALLOWED.contains(ext)) {
         System.out.println("[ERROR] BuildType '" + ext + "' is not supported!");
       } else {
         this.ext = ext;
@@ -139,6 +139,18 @@ public class Compiler<P extends Paths, T extends CompilerContext<P>> implements 
       if (task.isAnnotationPresent(BuildType.class)) {
         BuildType buildType = task.getAnnotation(BuildType.class);
         switch (ext) {
+          case BuildType.IPA_EXTENSION:
+            if (!buildType.ipa()) {
+              context.getReporter().error("Task " + taskName + " does not support builds on IPAs!");
+              return false;
+            }
+            break;
+          case BuildType.ASC_EXTENSION:
+            if (!buildType.asc()) {
+              context.getReporter().error("Task " + taskName + " does not support builds on ASCs!");
+              return false;
+            }
+            break;
           case BuildType.AAB_EXTENSION:
             if (!buildType.aab()) {
               context.getReporter().error("Task " + taskName + " does not support builds on AABs!");
