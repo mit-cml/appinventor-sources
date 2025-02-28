@@ -603,6 +603,8 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 232:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
   public static final int YOUNG_ANDROID_VERSION = 231;
 
   // ............................... Blocks Language Version Number ...............................
@@ -1188,7 +1190,9 @@ public class YaVersion {
   // - Added HintText property, performance optimization
   // For LISTVIEW_COMPONENT_VERSION 9:
   // - Changed the default ElementColor from Black to None
-  public static final int LISTVIEW_COMPONENT_VERSION = 9;
+  // For LISTVIEW_COMPONENT_VERSION 10:
+  // - Changed TextSize property to FontSize
+  public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
