@@ -206,7 +206,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard let text = connectCode?.text else {
       return
     }
-    if text.hasPrefix("https:") {
+    if (text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}")) || text.hasPrefix("https:") {
       ViewController.gotText(text)
       return
     }
@@ -253,7 +253,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
-    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+    let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
       if self.phoneStatus.WebRTC {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
@@ -275,7 +275,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         self.setPopup(popup: responseContent)
       }
     }
-    ).resume()
+    )
+    task.priority = 1.0
+    task.resume()
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
@@ -288,7 +290,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
-      ViewController.controller?.connect(nil)
+      if let first = text.first, Character("a") <= first && first <= Character("z") {
+        ViewController.controller?.connect(nil)
+      } else if text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}") {
+        let code = String(text[text.index(after: text.startIndex)..<text.index(before: text.endIndex)])
+        ViewController.controller?.openProject(named: code)
+      }
     }
   }
   
@@ -351,8 +358,49 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
 
+  private func openProject(named name: String) {
+    if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
+      let newapp = BundledApp(named: name, at: "samples/\(name)/")
+      newapp.makeCurrent()
+      newapp.loadScreen1(form)
+    } else {
+      openProjectFromWeb(named: name)
+    }
+  }
+
   private func setPopup(popup: String) {
     phoneStatus.setPopup(popup)
+  }
+
+  private var urlSession = URLSession(configuration: .ephemeral)
+
+  private func openProjectFromWeb(named name: String) {
+    DispatchQueue(label: "ProjectLoader").async {
+      guard let url = URL(string: "https://appserver.appinventor.mit.edu/serve/\(name).aia") else {
+        return
+      }
+      let task = self.urlSession.dataTask(with: url) { (data, response, error) in
+        do {
+          let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+          var destination = paths[0]
+          destination.appendPathComponent("\(name).aia")
+          if let data = data {
+            do {
+              try data.write(to: destination)
+              let app = BundledApp(aiaPath: destination)
+              DispatchQueue.main.async {
+                app.makeCurrent()
+                app.loadScreen1(self.form)
+              }
+            } catch {
+              print(error)
+            }
+          }
+        }
+      }
+      task.priority = 1.0
+      task.resume()
+    }
   }
 
   /**

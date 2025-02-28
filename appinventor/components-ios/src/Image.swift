@@ -117,7 +117,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       if let image = AssetManager.shared.imageFromPath(path: path) {
         updateImage(image)
       } else if (path.starts(with: "http://") || path.starts(with: "https://")), let url = URL(string: path) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
           DispatchQueue.main.async {
             guard let data = data, error == nil else {
               self.updateImage(nil)
@@ -126,7 +126,9 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
             self.updateImage(UIImage(data: data))
             self._container?.form?.view.setNeedsLayout()
           }
-        }.resume()
+        }
+        task.priority = 1.0
+        task.resume()
       } else {
         updateImage(nil)
       }
