@@ -57,6 +57,15 @@ public final class ChartData2D extends ChartDataBase {
    * @param x - x value of entry
    * @param y - y value of entry
    */
+  /**
+   * Adds an entry with the specified x and y value. Values can be specified as text,
+   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+   * For Bar charts, the x value is rounded to the nearest integer.
+   * For Pie Charts, the x value is a text value.
+   *
+   * @param x - x value of entry
+   * @param y - y value of entry
+   */
   @SimpleFunction()
   public void AddEntry(final String x, final String y) {
     // Entry should be added via the Thread Runner asynchronously
@@ -71,6 +80,15 @@ public final class ChartData2D extends ChartDataBase {
           try {
             // Create a 2-tuple, and add the tuple to the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
+
+            YailList labelList = container.Labels();
+            int indexList = labelList.indexOf(x);
+            Log.i(this.getClass().getName(), "labelList is " + indexList + " x " + x);
+            if (indexList > -1){
+              pair = YailList.makeList(Arrays.asList(indexList, y));
+              Log.i(this.getClass().getName(),  " pair is " + pair);
+            }
+
             dataModel.addEntryFromTuple(pair);
 
             // Refresh Chart with new data
@@ -115,12 +133,15 @@ public final class ChartData2D extends ChartDataBase {
             // Create a 2-tuple, and remove the tuple from the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
 
+            YailList labelList = container.Labels();
+            int indexList = labelList.indexOf(x);
+            Entry currEntry = null;
+            if (indexList > -1){ // do we have labels in the x value?
+              pair = YailList.makeList(Arrays.asList(indexList, y));
 
-            //get index of x and remove the color highlight at that index
-            float xValue = Float.parseFloat(x);
-            float yValue = Float.parseFloat(y);
-
-            Entry currEntry = new Entry(xValue, yValue);
+             // currEntry = dataModel.getEntryFromTuple(pair);
+            }
+            currEntry = dataModel.getEntryFromTuple(pair);
             int index = dataModel.findEntryIndex(currEntry);
 
             dataModel.removeEntryFromTuple(pair);
