@@ -102,7 +102,7 @@ public final class MockListView extends MockVisibleComponent {
     detailTextColor = DEFAULT_TEXT_COLOR;
     mainTypeface = "0";
     detailTypeface = "0";
-    mainFontSize = "22";
+    mainFontSize = "22.0";
     detailFontSize = "14.0";
     imageHeight = 200;
     imageWidth = 200;
@@ -293,7 +293,7 @@ public final class MockListView extends MockVisibleComponent {
   }
 
   private void setItemHeight(boolean detail, boolean image) {
-    int mainHeight = Integer.parseInt(mainFontSize);
+    int mainHeight = (int) Float.parseFloat(mainFontSize);
     int detailHeight = (int) Float.parseFloat(detailFontSize);
     int height = detail ? mainHeight + detailHeight : mainHeight;
     itemHeight = (image ? Math.max(imageHeight, height) : height) + 8;
@@ -448,7 +448,7 @@ public final class MockListView extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_ORIENTATION)) {
       horizontalOrientation = newValue.equals("1");
       refreshElements();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXTSIZE)) {
+    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
       mainFontSize = newValue;
       refreshElements();
     } else if (propertyName.equals(PROPERTY_NAME_FONTSIZEDETAIL)) {
