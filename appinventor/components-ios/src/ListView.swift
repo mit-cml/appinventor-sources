@@ -25,7 +25,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _textSize = Int32(22)
+  fileprivate var _fontSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
@@ -418,12 +418,12 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  @objc open var TextSize: Int32 {
+  @objc open var FontSize: Int32 {
     get {
-      return _textSize
+      return _fontSize
     }
-    set(textSize) {
-      _textSize = textSize < 0 ? Int32(7) : textSize
+    set(fontSize) {
+      _fontSize = fontSize < 0 ? Int32(7) : fontSize
       _view.reloadData()
     }
   }
