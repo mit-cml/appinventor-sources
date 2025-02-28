@@ -85,7 +85,7 @@ public class DownloadServletTest {
     PowerMock.expectLastCall().once();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234");
-    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null, false, false, false, false))
+    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null, false, false, false, false, false))
         .andReturn(dummyZip);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -103,7 +103,7 @@ public class DownloadServletTest {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234/My Project Title 123");
     expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false,
-        "MyProjectTitle123.aia", false, false, false, false))
+        "MyProjectTitle123.aia", false, false, false, false, false))
         .andReturn(dummyZipWithTitle);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();

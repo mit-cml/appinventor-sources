@@ -1112,11 +1112,11 @@ extension MKMapView {
   
   @objc open var zoomLevel: Int32 {
     get {
-      return Int32(min(round(calculateZoomLevel()), Double(MAX_ZOOM_LEVEL)))
+      return Int32(min(round(max(0.0, calculateZoomLevel())), Double(MAX_ZOOM_LEVEL)))
     }
   }
 
-  open func setZoom(_ zoom: Int32, _ rotation: Double, animated: Bool) {
+  public func setZoom(_ zoom: Int32, _ rotation: Double, animated: Bool) {
     guard zoom > 0 else {
       return
     }

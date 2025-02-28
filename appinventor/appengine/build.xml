@@ -4,7 +4,7 @@
      Copyright 2011-2012 Google Inc.  All Rights Reserved.
      Author: kerr@google.com (Debby Wallach)
      Author: lizlooney@google.com (Liz Looney)
-     Copyright © 2012-2017 Massachusetts Institute of Technology. All Rights Reserved.
+     Copyright © 2012-2025 Massachusetts Institute of Technology. All Rights Reserved.
      Author: jis@mit.edu (Jeffrey I. Schiller)
      Author: hal@mit.edu (Hal Abelson)
      Author: ram8647@gmail.com (Ralph Morelli)
@@ -279,6 +279,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/components/CommonConstants.jar"/>
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/findbugs/jsr305.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-20.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/firebase/firebase-token-generator-2.0.0.jar" />
@@ -289,6 +290,12 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-lang3/commons-lang3-3.10.jar" />
+    <!-- Bouncycastle for keystore generation -->
+    <copy todir="${build.war.dir}/WEB-INF/lib">
+      <fileset dir="${lib.dir}/bouncycastle">
+        <include name="*-166.jar"/>
+      </fileset>
+    </copy>
     <!-- GCS Libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
@@ -309,6 +316,8 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <!-- OWASP -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
+    <!-- ddlist for manipulating iOS provisioning profiles -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/dd-plist/dd-plist.jar" />
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
@@ -330,6 +339,9 @@
     <mkdir dir="${AiServerLib-class.dir}" />
     <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
       <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
+    </copy>
+    <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server/ios">
+      <fileset dir="src/${appinventor.pkg}/server/ios" includes="*.pub" />
     </copy>
     <ai.javac destdir="${AiServerLib-class.dir}">
       <include name="${appinventor.pkg}/server/**/*.java" />
@@ -650,8 +662,8 @@
       <classpath>
         <path refid="YaClientApp.classpath" />
       </classpath>
-      <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx4G"/>
+      <jvmarg value="-Xss4M"/>  <!-- increase if you see a StackOverflowError -->
+      <jvmarg value="-Xmx6G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg value="-war"/>
@@ -660,6 +672,7 @@
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
       <arg line="-setProperty locale=${locale}" if:set="locale"/>
+      <arg line="-draftCompile" if:blank="release"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
     <copy todir="${build.war.dir}/ode"

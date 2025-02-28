@@ -1989,7 +1989,7 @@ Blockly.ReplMgr.makeqrcode = function(instring) {
     try {
         q.make();
     } catch (e) {
-        q = this.qrcode(5, 'L'); // OK, that failed try type 5
+        q = this.qrcode(6, 'L'); // OK, that failed try type 6
         q.addData(instring);
         q.make();
     }

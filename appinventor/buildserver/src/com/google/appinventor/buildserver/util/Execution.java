@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver.util;
 
+import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 
@@ -16,8 +17,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Utility class for command execution and I/O redirection.
@@ -91,6 +94,33 @@ public final class Execution {
   }
 
   /**
+   *
+   * @param workingDir
+   * @param command
+   * @param env
+   * @param out
+   * @param err
+   * @return
+   */
+  public static boolean execute(File workingDir, String[] command, Map<String, String> env,
+      PrintStream out, PrintStream err) {
+    LOG.log(Level.INFO, "____Executing " + joiner.join(command));
+    ProcessBuilder pb = new ProcessBuilder(command).directory(workingDir);
+    pb.environment().putAll(env);
+    Process proc;
+    try {
+      proc = pb.start();
+      int result = proc.waitFor();
+      IOUtils.copy(proc.getInputStream(), out);
+      IOUtils.copy(proc.getErrorStream(), err);
+      return result == 0;
+    } catch (IOException | InterruptedException e) {
+      LOG.log(Level.WARNING, "____Execution failure: ", e);
+      return false;
+    }
+  }
+
+  /**
    * Executes a command in a command shell.
    *
    * @param workingDir  working directory for the command
@@ -142,5 +172,28 @@ public final class Execution {
       Thread.currentThread().interrupt();
     }
     return process.exitValue();
+  }
+
+  /**
+   *
+   * @param context
+   * @param command
+   * @return
+   */
+  public static boolean execute(CompilerContext<?> context, String[] command) {
+    return execute(context.getPaths().getTmpDir(), command, context.getReporter().getSystemOut(),
+        System.err);
+  }
+
+  /**
+   *
+   * @param context
+   * @param command
+   * @param env
+   * @return
+   */
+  public static boolean execute(CompilerContext<?> context, String[] command, Map<String, String> env) {
+    return execute(context.getPaths().getTmpDir(), command, env,
+        context.getReporter().getSystemOut(), System.err);
   }
 }

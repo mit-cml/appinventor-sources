@@ -92,4 +92,10 @@ public interface UserInfoService extends RemoteService {
 
   public String deleteAccount();
 
+  /**
+   * Stores the user's settings for communicating with App Store Connect.
+   *
+   * @param content the settings content
+   */
+  void storeAppStoreSettings(String content);
 }

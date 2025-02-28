@@ -19,7 +19,6 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -524,15 +523,16 @@ public interface StorageIo {
   Motd getCurrentMotd();
 
   /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
-   * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param fatalError set true to cause missing GCS file to throw exception
+   * Exports project files as a zip archive
    *
-   * @return  project with the content as requested by params.
+   * @param userId                 a user Id (the request is made on behalf of this user)
+   * @param projectId              project ID
+   * @param includeProjectHistory  whether or not to include the project history
+   * @param includeAndroidKeystore whether or not to include the Android keystore
+   * @param zipName                the name of the zip file, if a specific one is desired
+   * @param fatalError             set true to cause missing GCS file to throw exception
+   * @param forAppStore            true if the app is being built for the App Store
+   * @return project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
     boolean includeProjectHistory,
@@ -541,7 +541,7 @@ public interface StorageIo {
     final boolean includeYail,
     final boolean includeScreenShots,
     final boolean forGallery,
-    final boolean fatalError) throws IOException;
+    final boolean fatalError, boolean forAppStore) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
