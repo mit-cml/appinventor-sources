@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright 2017-2023 MIT, All rights reserved
+// Copyright 2017-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -36,6 +36,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _orientation = Int32(1)
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
+  fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _dividerThickness = Int32(0)
+  fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _elementCornerRadius = Int32(0)
+  fileprivate var _elementMarginsWidth = Int32(0)
 
 
   public override init(_ parent: ComponentContainer) {
@@ -105,6 +110,12 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         _view.reloadData()
         return
       }
+      addElements(elements)
+    }
+  }  
+
+  func addElements(_ elements: [AnyObject]) {
+    if !elements.isEmpty {
       if elements.first is YailDictionary {
         for item in elements {
           if let row = item as? YailDictionary {
@@ -118,17 +129,25 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
           }
         }
       } else {
-        _elements = elements.toStringArray()
+        if _elements.isEmpty {
+          _elements = elements.toStringArray()
+        } else {
+          _elements.append(contentsOf: elements.toStringArray())
+        }       
       }
-      let rows = max(_elements.count, _listData.count)
-      _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
-      if let searchBar = _view.tableHeaderView as? UISearchBar {
-        self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
-      } else {
-        _view.reloadData()
-      }
+      elementsCount()
     }
   }
+
+  func elementsCount() {
+    let rows = max(_elements.count, _listData.count)
+    _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
+    if let searchBar = _view.tableHeaderView as? UISearchBar {
+      self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
+    } else {
+      _view.reloadData()
+    }    
+  }  
 
   @objc open var FontTypeface: String {
     get {
@@ -156,6 +175,61 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return false;
     }
     set(addEffect) {
+    }
+  }
+
+  // This property is not fully implemented in iOS
+  @objc open var DividerColor: Int32 {
+    get {
+      return _dividerColor
+    }
+    set(dividerColor) {
+      _dividerColor = dividerColor
+      _view.reloadData()
+    }
+  }
+
+  // This property is not fully implemented in iOS
+  @objc open var DividerThickness: Int32 {
+    get {
+      return _dividerThickness
+    }
+    set(dividerThickness) {
+      _dividerThickness = dividerThickness
+      _view.reloadData()
+    }
+  }
+
+  // This property is not fully implemented in iOS
+  @objc open var ElementColor: Int32 {
+    get {
+      return _elementColor
+    }
+    set(elementColor) {
+      _elementColor = elementColor
+      _view.reloadData()
+    }
+  }
+
+  // This property is not fully implemented in iOS
+  @objc open var ElementCornerRadius: Int32 {
+    get {
+      return _elementCornerRadius
+    }
+    set(elementCornerRadius) {
+      _elementCornerRadius = elementCornerRadius
+      _view.reloadData()
+    }
+  }
+
+  // This property is not fully implemented in iOS
+  @objc open var ElementMarginsWidth: Int32 {
+    get {
+      return _elementMarginsWidth
+    }
+    set(elementMarginsWidth) {
+      _elementMarginsWidth = elementMarginsWidth
+      _view.reloadData()
     }
   }
 
@@ -214,6 +288,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
+  // This property is not fully implemented in iOS
   @objc open var Orientation: Int32 {
     get {
       return _orientation
@@ -323,7 +398,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-
   @objc open var TextColor: Int32 {
     get {
       return _textColor
@@ -373,6 +447,43 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
     _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
+  }
+
+  @objc open func AddItems(_ items: [AnyObject]) {
+    guard !elements.isEmpty else {
+        return
+    }
+    addElements(items)
+  }
+
+  @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
+    if elements.isEmpty {
+      return
+    }
+    if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
+      _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
+           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
+      return
+    }
+    let index = Int(addIndex - 1)
+    if elements.first is YailDictionary {
+      var newItems: [[String: String]] = []
+      for item in elements {
+        if let row = item as? YailDictionary {
+          if let rowDict = row as? [String:String] {
+            newItems.append(rowDict)
+          }
+        } else if let row = item as? String {
+          newItems.append(["Text1": row, "Text2": "", "Image": ""])
+        } else {
+          // Hmm...
+        }
+      }
+      _listData.insert(contentsOf: newItems, at: index)
+    } else {
+      _elements.insert(contentsOf: elements.toStringArray(), at: index)
+    }
+    elementsCount()
   }
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
