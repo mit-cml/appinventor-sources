@@ -1682,6 +1682,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The VibratePattern, SoundNormal, SoundSilent, and SoundVibrate methods were added.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 

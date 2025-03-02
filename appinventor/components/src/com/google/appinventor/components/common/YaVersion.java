@@ -1381,7 +1381,9 @@ public class YaVersion {
   // - The Sound.SoundError event was marked userVisible false and is no longer used.
   // For SOUND_COMPONENT_VERSION 4:
   // - Assets helper block was added.
-  public static final int SOUND_COMPONENT_VERSION = 4;
+  // For SOUND_COMPONENT_VERSION 5:
+  // - The VibratePattern, SoundNormal, SoundSilent, and SoundVibrate methods were added.
+  public static final int SOUND_COMPONENT_VERSION = 5;
 
   // For SOUND_RECORDER_COMPONENT_VERSION 2:
   // - The SavedRecording property was added.
