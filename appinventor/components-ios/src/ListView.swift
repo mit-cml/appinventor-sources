@@ -184,10 +184,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return _dividerColor
     }
     set(dividerColor) {
-      _dividerColor = dividerColor
-      _view.reloadData()
+      if (dividerColor == Int32(bitPattern: Color.default.rawValue)) {
+        _dividerColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
+      } else {
+        _dividerColor = dividerColor
+      }
     }
   }
+  
 
   // This property is not fully implemented in iOS
   @objc open var DividerThickness: Int32 {
@@ -200,14 +204,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  // This property is not fully implemented in iOS
   @objc open var ElementColor: Int32 {
     get {
       return _elementColor
     }
     set(elementColor) {
-      _elementColor = elementColor
-      _view.reloadData()
+      if (elementColor == Int32(bitPattern: Color.default.rawValue)) {
+        _elementColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
+      } else {
+        _elementColor = elementColor
+      }
     }
   }
 
@@ -537,6 +543,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
 
+
+    
     if indexPath.row < _elements.count {
       cell.textLabel?.text = _elements[indexPath.row]
       cell.textLabel?.numberOfLines = 0
@@ -668,6 +676,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.numberOfLines = 0
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
+    
+
 
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
@@ -676,10 +686,38 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return cell
     }
 
+    if _elementCornerRadius > 0 {
+      cell.layer.cornerRadius = CGFloat(_elementCornerRadius)
+      cell.layer.masksToBounds = true
+    }
+    
+    /*if _elementMarginsWidth > 0 {
+      tableView.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
+      cell.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
+      cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
+    }*/
+    
+    if _dividerThickness > 0 {
+      tableView.separatorStyle = .singleLine
+    }
+    if _dividerColor == Color.default.int32 {
+      tableView.separatorColor = preferredTextColor(form)
+    } else {
+      tableView.separatorColor =  argbToColor(_dividerColor)
+    }
+    
+    
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
+    }
+    
+    // elementColor at the table cell level wins over backgroundColor
+    if _elementColor == Color.default.int32 {
+      cell.backgroundColor = preferredTextColor(form)
+    } else {
+      cell.backgroundColor = argbToColor(_elementColor)
     }
 
     //maintext
