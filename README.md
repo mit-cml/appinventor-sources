@@ -32,7 +32,7 @@ This is a quick guide to get started with the sources. More detailed instruction
 
 You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
 
-You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. This SDK depends on Python 3.11 to run.
+You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. When setting up the gcloud cli you might be asked if you'd like to install Python 3.11, as the cli depends on it. In case of any issues with Python versions, check the value of the CLOUDSDK_PYTHON environment variable, which the cli can use to point to the right version.
 
 If you want to make changes to the sources, you will have to run an automated test suite, and for that you will also need
 a recent version of NodeJS (node 20+ works) and the Firefox browser installed on your machine. Have a look at the testing section for more information.
@@ -62,7 +62,7 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
 ### Checkout dependencies
 
-App Inventor uses the [Closure compiler](https://developers.google.com/closure/compiler) and the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to these dependencies, but if so, you can initialize and track these libraries as submodules. The first time after forking or cloning the repository, you can perform the following commands:
+App Inventor uses the [Closure library](https://github.com/google/closure-library) and the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to these dependencies, but if so, you can initialize and track these libraries as submodules. The first time after forking or cloning the repository, you can perform the following commands:
 
     $ git submodule update --init
 
@@ -71,6 +71,8 @@ If you need to switch back to a branch that does contains the dependencies in th
     $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
+
+[Blockly](https://github.com/google/blockly) is also a dependency, currently being used as a slightly modified version 10 that can be found at [mit-cml/blockly](https://github.com/mit-cml/blockly/tree/rc/10.5.0).
 
 ### Troubleshooting common installation issues
 
