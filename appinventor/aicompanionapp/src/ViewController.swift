@@ -199,6 +199,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
     }
+    
+    if let goBackButton = viewControllers.last?.navigationItem.leftBarButtonItem{
+      goBackButton.action = #selector(goBackToOnboarding(caller:))
+      goBackButton.target = self
+    }
     if (form == nil) {
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
@@ -244,7 +249,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
       getHelpButton?.addTarget(self, action: #selector(showTroubleshootingInfo(_:)), for: UIControl.Event.primaryActionTriggered)
-      goBackButton?.addTarget(self, action: #selector(goBackToOnboarding(_:)), for: UIControl.Event.primaryActionTriggered)
+
       
       connectCode?.addTarget(self, action: #selector(enableConnectCodeButton(_:)), for: UIControl.Event.editingChanged)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
@@ -448,7 +453,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     phoneStatus.setPopup(popup)
   }
   
-  @objc func goBackToOnboarding(_ sender: UIButton?) {
+  @objc func goBackToOnboarding(caller: UIBarButtonItem){
     NSLog("goBackToOnboarding called")
     let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
     vc.modalPresentationStyle = .fullScreen
