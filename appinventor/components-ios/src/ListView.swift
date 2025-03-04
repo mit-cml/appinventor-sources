@@ -558,7 +558,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
 
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
 
     guard let form = _container?.form else {
@@ -586,11 +586,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
 
     if _fontTypeface == "1" {
-      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
     } else if _fontTypeface == "2" {
-      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize))
     } else if _fontTypeface == "3" {
-      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSize))
     }
 
     if _fontTypefaceDetail == "1" {
