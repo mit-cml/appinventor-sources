@@ -271,6 +271,33 @@ public class YailMatrix {
     return new YailMatrix(size, size, identity);
   }
 
+  @SuppressWarnings({"unused", "WeakerAccess"})  // Called from runtime.scm
+  public static YailList matrixToAlist(YailMatrix matrix) {
+      List<YailList> rowList = new ArrayList<>();
+      for (int i = 0; i < matrix.rows; i++) {
+          List<Object> row = new ArrayList<>();
+          for (int j = 0; j < matrix.cols; j++) {
+              row.add(matrix.data[i][j]);
+          }
+          rowList.add(YailList.makeList(row));
+      }
+      return YailList.makeList(rowList);
+  }
+
+  public static boolean matrixEqual(YailMatrix m1, YailMatrix m2) {
+    if (m1.rows != m2.rows || m1.cols != m2.cols) {
+      return false;
+    }
+    for (int i = 0; i < m1.rows; i++) {
+      for (int j = 0; j < m1.cols; j++) {
+        if (m1.data[i][j] != m2.data[i][j]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   /**
    * Returns the string representation of the matrix in row-major order.
    *

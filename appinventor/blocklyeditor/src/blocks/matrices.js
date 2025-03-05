@@ -86,9 +86,7 @@ Blockly.Blocks['matrices_create'] = {
   onchange: function (event) {
     if (event.type === Blockly.Events.CHANGE && event.element === 'field') {
       if (event.name === 'ROWS' || event.name === 'COLS') {
-        var rows = Number(this.getFieldValue('ROWS')) || 2;
-        var cols = Number(this.getFieldValue('COLS')) || 2;
-        this.updateMatrixSize(rows, cols);
+        this.updateMatrixSize();
       } else if (event.name.startsWith('MATRIX_')) {
         var parts = event.name.split('_');
         var row = parseInt(parts[1], 10);
