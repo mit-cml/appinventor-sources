@@ -691,12 +691,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.layer.masksToBounds = true
     }
     
-    /*if _elementMarginsWidth > 0 {
-      tableView.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
-      cell.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
-      cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: 20, bottom: 0, right: 20)
-    }*/
-    
     if _dividerThickness > 0 {
       tableView.separatorStyle = .singleLine
     }
