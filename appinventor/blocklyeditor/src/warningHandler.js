@@ -689,19 +689,62 @@ Blockly.WarningHandler.prototype.setBlockError = function(block, message){
   block.setErrorIconText(message);
 };
 
-// Check a disposed block for any errors or warnings and update state accordingly.
-Blockly.WarningHandler.prototype.checkDisposedBlock = function(block){
-  if(block.warning) {
-    block.setWarningText(null);
+/**
+ * Recursively counts all child blocks of a given block.
+ * @param {Blockly.Block} block The parent block.
+ * @return {number} The total number of child blocks (including nested children).
+ */
+Blockly.WarningHandler.prototype.countChildBlocks = function(block) {
+  var count = 0;
+  var childBlocks = block.getChildren();
+
+  for (var i = 0; i < childBlocks.length; i++) {
+    var childBlock = childBlocks[i];
+    if (childBlock) {
+      console.log(`Found child block: ${childBlock.type} (ID: ${childBlock.id})`);
+      // Count the child block itself
+      count += 1;
+      // Recursively count the child block's children
+      var nestedChildCount = this.countChildBlocks(childBlock);
+      count += nestedChildCount;
+    }
   }
-  if(block.error) {
-    block.setErrorIconText(null);
+
+  return count;
+};
+
+/**
+ * Checks a disposed block for any errors or warnings and updates the state accordingly.
+ * This function now handles the case where a parent block is deleted, and it should
+ * decrement the warning count by the total number of blocks being deleted (parent + all child blocks).
+ * @param {Blockly.Block} block The block being disposed.
+ */
+Blockly.WarningHandler.prototype.checkDisposedBlock = function(block) {
+  console.log(`Checking disposed block: ${block.type} (ID: ${block.id})`);
+
+  var totalBlocksDeleted = 1; // Start with the parent block
+  var childBlocks = block.getChildren();
+
+  // Recursively count all child blocks
+  for (var i = 0; i < childBlocks.length; i++) {
+    var childBlock = childBlocks[i];
+    if (childBlock) {
+      var childCount = this.countChildBlocks(childBlock);
+      console.log(`Total child blocks for ${childBlock.type} (ID: ${childBlock.id}): ${childCount}`);
+      totalBlocksDeleted += childCount + 1; // Add 1 for the child block itself
+    }
   }
-  if(block.hasWarning) {
+
+  // Update warning count for the parent block and all child blocks
+  if (block.hasWarning) {
     block.hasWarning = false;
-    this.warningCount--;
+    this.warningCount -= totalBlocksDeleted;
     delete this.warningIdHash[block.id];
     this.updateWarningErrorCount();
+  }
+
+  if (block.error) {
+    block.setErrorIconText(null);
   }
   if(block.hasError) {
     block.hasError = false;
