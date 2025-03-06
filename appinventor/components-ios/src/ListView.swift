@@ -25,7 +25,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _textSize = Int32(22)
+  fileprivate var _fontSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
@@ -418,12 +418,12 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  @objc open var TextSize: Int32 {
+  @objc open var FontSize: Int32 {
     get {
-      return _textSize
+      return _fontSize
     }
-    set(textSize) {
-      _textSize = textSize < 0 ? Int32(7) : textSize
+    set(fontSize) {
+      _fontSize = fontSize < 0 ? Int32(7) : fontSize
       _view.reloadData()
     }
   }
@@ -669,7 +669,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
 
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
 
     guard let form = _container?.form else {
@@ -697,11 +697,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
 
     if _fontTypeface == "1" {
-      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
     } else if _fontTypeface == "2" {
-      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize))
     } else if _fontTypeface == "3" {
-      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSize))
     }
 
     if _fontTypefaceDetail == "1" {

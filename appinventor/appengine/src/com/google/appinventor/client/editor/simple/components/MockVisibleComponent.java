@@ -46,7 +46,6 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
   // to set color for secondary text of listview items
   protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
-  protected static final String PROPERTY_NAME_TEXTSIZE = "TextSize";
   protected static final String PROPERTY_NAME_FONTSIZEDETAIL = "FontSizeDetail";
   protected static final String PROPERTY_NAME_FONTTYPEFACEDETAIL = "FontTypefaceDetail";
   protected static final String PROPERTY_NAME_ELEMENTCOLOR = "ElementColor";

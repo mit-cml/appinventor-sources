@@ -2460,7 +2460,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Added HintText property, performance optimization
     8: "noUpgrade",
     // AI2: Fixed a designer property issue with ElementColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+    // AI2: 
+    // - Changed TextSize property to FontSize
+    10: [
+      Blockly.Versioning.changePropertyName("ListView", "TextSize", "FontSize")
+    ]
 
   }, // End ListView upgraders
 
