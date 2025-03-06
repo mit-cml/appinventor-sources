@@ -1,16 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 
 import java.util.ArrayList;
@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * Database holding information of Simple components and their properties.
  *
  */
-class ComponentDatabase implements ComponentDatabaseInterface {
+public class ComponentDatabase implements ComponentDatabaseInterface {
 
 
 
@@ -46,7 +44,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
    * @param array
    *          a JSONArray of components
    */
-  ComponentDatabase(JSONArray array) {
+  public ComponentDatabase(JSONArray array) {
     components = new HashMap<String, ComponentDefinition>();
     List<String> newComponents = new ArrayList<String>();
     for (JSONValue component : array.getElements()) {
@@ -386,10 +384,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     for (JSONValue block : blockPropertiesArray.getElements()) {
       Map<String, JSONValue> properties = block.asObject().getProperties();
       String name = properties.get("name").asString().getString();
-      JSONValue categoryValue = properties.get("category");
-      if (categoryValue != null) {
-        categoryMap.put(name, categoryValue.asString().getString());
-      }
+      // Extensions may not have a category set on the designer property, so we have to be
+      // conservative here.
+      categoryMap.put(name, optString(properties.get("category"), "Uncategorized"));
       descriptions.put(name, properties.get("description").asString().getString());
     }
     for (JSONValue propertyValue : propertiesArray.getElements()) {

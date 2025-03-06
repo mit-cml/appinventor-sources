@@ -1,18 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
-import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -22,18 +21,20 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Panel in the Simple design editor holding non-visible Simple components.
  *
  */
-public final class SimpleNonVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
+public class SimpleNonVisibleComponentsPanel<T extends DesignerRootComponent> extends Composite implements DropTarget, ComponentDatabaseChangeListener {
 
   // UI elements
-  private final Label heading;
-  private final FlowPanel componentsPanel;
+  protected final Label heading;
+  protected final FlowPanel componentsPanel;
 
-  // Backing mocked Simple form component
-  private MockForm form;
+  // Backing mocked root component
+  protected T root;
 
   /**
    * Creates new component design panel for non-visible components.
@@ -55,17 +56,17 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
   }
 
   /**
-   * Associates a Simple form component with this panel.
+   * Associates a root component with this panel.
    *
-   * @param form  backing mocked form component
+   * @param root  backing mocked root component
    */
-  public void setForm(MockForm form) {
-    this.form = form;
+  public void setRoot(T root) {
+    this.root = root;
   }
 
   /**
    * Adds a new non-visible component to this panel. Note that this method
-   * will not add the component to the form component! This needs to be done
+   * will not add the component to the root component! This needs to be done
    * separately.
    *
    * @param component  Simple mock component to be added
@@ -79,7 +80,7 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
 
   /**
    * Removes a new non-visible component from this panel. Note that this method
-   * will not remove the component from the form component! This needs to be
+   * will not remove the component from the root component! This needs to be
    * done separately.
    *
    * @param component  Simple mock component to be removed
@@ -121,8 +122,8 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
   public void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
     MockComponent sourceComponent = ((SimplePaletteItem) source).createMockComponent();
 
-    // Add component to the form
-    form.addComponent(sourceComponent);
+    // Add component to the root
+    root.addComponent(sourceComponent);
 
     // Add component to this panel
     addComponent(sourceComponent);
