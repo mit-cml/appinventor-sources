@@ -709,7 +709,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     
     // elementColor at the table cell level wins over backgroundColor
     if _elementColor == Color.default.int32 {
-      cell.backgroundColor = preferredTextColor(form)
+      cell.backgroundColor = preferredBackgroundColor(form)
     } else {
       cell.backgroundColor = argbToColor(_elementColor)
     }
