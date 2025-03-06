@@ -1070,7 +1070,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<xml>' +
         '<block type="component_method">' +
         //mutator generator
-        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
         '<value name="ARG2"><block type="math_number"><title name="NUM">100</title></block></value>' +
         '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
         '</block>' +
@@ -1083,7 +1083,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+           Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="math_number"><title name="NUM">100</title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -1095,7 +1095,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<xml>' +
         '<block type="component_method">' +
         //mutator generator
-        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
         '<value name="ARG2"><block type="math_number"><title name="NUM">100</title></block></value>' +
         '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
         '</block>' +
@@ -1108,7 +1108,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+           Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="math_number"><title name="NUM">100</title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -1120,7 +1120,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<xml>' +
         '<block type="component_method">' +
         //mutator generator
-        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
         '<value name="ARG1"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
         '</block>' +
         '</xml>';}},
@@ -1132,7 +1132,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
        '<xml>' +
        '<block type="component_method">' +
        //mutator generator
-       Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
        '<value name="ARG1"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
        '</block>' +
        '</xml>';}},
@@ -1144,7 +1144,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<xml>' +
       '<block type="component_method">' +
       //mutator generator
-      Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
       '<value name="ARG2"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
       '</block>' +
       '</xml>';}}
