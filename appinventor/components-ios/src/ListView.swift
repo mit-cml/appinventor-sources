@@ -707,13 +707,15 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
     
-    // elementColor at the table cell level wins over backgroundColor
-    if _elementColor == Color.default.int32 {
-      cell.backgroundColor = preferredBackgroundColor(form)
-    } else {
-      cell.backgroundColor = argbToColor(_elementColor)
+    if _elementColor != Color.none.int32 {
+      // if elementColor at the table cell level, laid over backgroundColor
+      if _elementColor == Color.default.int32 {
+        cell.backgroundColor = preferredTextColor(form)
+      } else {
+        cell.backgroundColor = argbToColor(_elementColor)
+      }
     }
-
+    
     //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
