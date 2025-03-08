@@ -353,8 +353,10 @@ static NSString *kValueKey = @"value";
 }
 
 - (pic_value)value {
-  if (self.isBool) {
-    return self.boolValue ? pic_true_value(nil) : pic_false_value(nil);
+  if ([self isEqualToValue:[NSNumber numberWithBool:YES]]) {
+    return pic_true_value(nil);
+  } else if ([self isEqualToValue:[NSNumber numberWithBool:NO]]) {
+    return pic_false_value(nil);
   } else if (self.objCType[0] == 'f' || self.objCType[0] == 'd') {
     return pic_float_value(nil, self.doubleValue);
   } else {

@@ -17,6 +17,8 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -25,30 +27,29 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
+
 import java.util.Date;
 
 public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
 
-  private static final ProjectListItemUiBinder UI_BINDER =
-      GWT.create(ProjectListItemUiBinder.class);
-
-  @UiField
-  FlowPanel container;
-  @UiField Label nameLabel;
-  @UiField Label dateModifiedLabel;
-  @UiField Label dateCreatedLabel;
-  @UiField CheckBox checkBox;
+  @UiField protected FlowPanel container;
+  @UiField protected Label nameLabel;
+  @UiField protected Label dateModifiedLabel;
+  @UiField protected Label dateCreatedLabel;
+  @UiField protected CheckBox checkBox;
+  @UiField protected FocusPanel projectnameFocusPanel;
 
   private final Project project;
   private ProjectSelectionChangeHandler changeHandler;
 
   public ProjectListItem(Project project) {
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindUI();
     this.getElement().setAttribute("data-exporturl",
         "application/octet-stream:" + project.getProjectName() + ".aia:"
-            + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
+            + ServerLayout.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
             + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
     configureDraggable(this.getElement());
     DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
@@ -59,6 +60,11 @@ public class ProjectListItem extends Composite {
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
+  }
+
+  public void bindUI() {
+    ProjectListItemUiBinder uibinder = GWT.create(ProjectListItemUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -72,9 +78,9 @@ public class ProjectListItem extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if (selected) {
-      container.addStyleDependentName("Highlighted");
+      container.addStyleName("ode-ProjectRow-Highlighted");
     } else {
-      container.removeStyleDependentName("Highlighted");
+      container.removeStyleName("ode-ProjectRow-Highlighted");
     }
   }
 
@@ -89,15 +95,21 @@ public class ProjectListItem extends Composite {
 
   @SuppressWarnings("unused")
   @UiHandler("checkBox")
-  void toggleItemSelection(ClickEvent e) {
+  protected void toggleItemSelection(ClickEvent e) {
     setSelected(checkBox.getValue());
     changeHandler.onSelectionChange(checkBox.getValue());
   }
 
+  @UiHandler("projectnameFocusPanel")
+  protected void openProject(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    }
+  }
 
   @SuppressWarnings("unused")
-  @UiHandler("nameLabel")
-  void itemClicked(ClickEvent e) {
+  @UiHandler("projectnameFocusPanel")
+  protected void itemClicked(ClickEvent e) {
     Ode.getInstance().openYoungAndroidProjectInDesigner(project);
   }
 

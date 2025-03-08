@@ -17,13 +17,8 @@ goog.provide('AI.Blockly.Component');
 goog.provide('AI.Blockly.ComponentTypes');
 goog.provide('AI.Blockly.ComponentInstances');
 
-goog.require('Blockly.TranslationProperties');
-goog.require('Blockly.TranslationEvents');
-goog.require('Blockly.TranslationMethods');
-goog.require('Blockly.TranslationParams');
-
 // App Inventor extensions to Blockly
-goog.require('Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlock');
 
 if (Blockly.Component === undefined) Blockly.Component = {};
 if (Blockly.ComponentTypes === undefined) Blockly.ComponentTypes = {};
@@ -33,7 +28,7 @@ Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
     return;
   }
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
   //get type name for instance
   var typeName = Blockly.Component.instanceNameToTypeName(name);
   Blockly.ComponentInstances.addInstance(name, uid, typeName);
@@ -55,7 +50,7 @@ Blockly.Component.add = function(name, uid) {
  */
 Blockly.Component.rename = function(oldname, newname, uid) {
   console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
   if (!Blockly.ComponentInstances.haveInstance(oldname, uid)) {
     console.log("Renaming, No such Component instance " + oldname + " aborting");
     return;
@@ -69,10 +64,10 @@ Blockly.Component.rename = function(oldname, newname, uid) {
   Blockly.ComponentInstances[oldname] = null;
   delete Blockly.ComponentInstances[oldname];
 
-  console.log("Revised Blockly.ComponentInstances, Blockly.Language, Blockly.Yail for " + newname);
+  console.log("Revised Blockly.ComponentInstances, Blockly.Language, AI.Yail for " + newname);
 
-  // Revise names, types, and block titles for all blocks containing newname in Blockly.mainWorkspace
-  var blocks = Blockly.mainWorkspace.getAllBlocks();
+  // Revise names, types, and block titles for all blocks containing newname in Blockly.common.getMainWorkspace()
+  var blocks = Blockly.common.getMainWorkspace().getAllBlocks();
   for (var x = 0, block; block = blocks[x]; x++) {
     if (!block.category) {
       continue;
@@ -81,7 +76,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
     }
   }
 
-  console.log("Revised Blockly.mainWorkspace for " + newname);
+  console.log("Revised Blockly.common.getMainWorkspace() for " + newname);
 };
 
 
@@ -92,7 +87,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
  * @param uid, Component's unique id -- not currently used
  *
  * The component should be listed in the ComponentInstances list.
- *   - For each instance of the component's block in the Blockly.mainWorkspace
+ *   - For each instance of the component's block in the Blockly.common.getMainWorkspace()
  *     -- Call its BlocklyBlock.destroy() method to remove the block
  *        from the workspace and adjust enclosed or enclosing blocks.
  * Remove the block's entry from ComponentInstances
@@ -100,10 +95,10 @@ Blockly.Component.rename = function(oldname, newname, uid) {
  */
 Blockly.Component.remove = function(type, name, uid) {
   console.log("Got call to Blockly.Component.remove(" + type + ", " + name + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
+  AI.Blockly.TypeBlock.needsReload.components = true;
 
   // Delete instances of this type of block from the workspace
-  var allblocks = Blockly.mainWorkspace.getAllBlocks();
+  var allblocks = Blockly.common.getMainWorkspace().getAllBlocks();
   for (var x = 0, block; block = allblocks[x]; x++) {
     if (!block.category) {
       continue;
@@ -138,7 +133,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
 
   // TODO: populate warnings, errors as we traverse the top-level blocks
 
-  var blocks = Blockly.mainWorkspace.getTopBlocks(true);
+  var blocks = Blockly.common.getMainWorkspace().getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
 
     // TODO: deal with unattached blocks that are not valid top-level definitions. Valid blocks
@@ -178,8 +173,8 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  */
 Blockly.Component.verifyAllBlocks = function () {
   // We can only verify blocks once the workspace has been injected...
-  if (Blockly.mainWorkspace != null) {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  if (Blockly.common.getMainWorkspace() != null) {
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     for (var x = 0, block; block = allBlocks[x]; ++x) {
       if (block.category != 'Component') {
         continue;

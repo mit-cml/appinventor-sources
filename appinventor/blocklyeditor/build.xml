@@ -12,7 +12,7 @@
      Blockly-based blocks editor
      ====================================================================== -->
 
-<project name="blocklyeditor" default="all">
+<project name="blocklyeditor" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
 	<description>
     In-browser blocks editor for App Inventor based on Blockly
   </description>
@@ -22,6 +22,10 @@
   <condition property="blockly.config"
              value="ploverConfig.js"
              else="ploverConfig-dev.js">
+    <equals arg1="${release}" arg2="true"/>
+  </condition>
+  <condition property="compilation_level"
+	     value="SIMPLE" else="BUNDLE">
     <equals arg1="${release}" arg2="true"/>
   </condition>
 
@@ -49,6 +53,7 @@
 	<property name="run.lib.dir" location="${run.dir}/lib" />
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
+	<property name="blockly.plugin.dir" location="${lib.dir}/blockly-plugins" />
 	<property name="i18n.src.dir" location="${src.dir}/msg" />
 	<property name="ai.i18n.src.dir" location="${i18n.src.dir}/ai_blockly" />
 	<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-classes" />
@@ -73,63 +78,78 @@
       </srcfiles>
       <firstmatchmapper>
 	<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
-	<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.json" />
-	<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.json" />
+	<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.js" />
+	<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.js" />
       </firstmatchmapper>
     </uptodate>
   </target>
 
-	<target name="BlocklyTranslationGenerator"
-			description="This is the script for creating combined i18n files from blockly and app inventor"
-			depends="CheckBlocklyTranslations,BlocklyCompile"
-			unless="Blocklyi18n.uptodate">
-		<mkdir dir="${BlocklyTranslator-class.dir}" />
-		<mkdir dir="${BlocklyTranslations.dir}" />
-		<ai.javac destdir="${BlocklyTranslator-class.dir}">
-			<include name="msg/BlocklyTranslationGenerator.java" />
-			<classpath>
-				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-				<pathelement location="${lib.dir}/json/json.jar" />
-			</classpath>
-		</ai.javac>
-		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
-                      <arg value="${ai.i18n.src.dir}"/>
-                      <arg value="${lib.dir}/blockly/msg/json"/>
-                      <arg value="${BlocklyTranslations.dir}"/>
-			<classpath>
-				<pathelement location="${BlocklyTranslator-class.dir}"/>
-				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-				<pathelement location="${lib.dir}/json/json.jar" />
-			</classpath>
-		</java>
-	</target>
+  <target name="BlocklyTranslationGenerator"
+	  description="This is the script for creating combined i18n files from blockly and app inventor"
+	  depends="CheckBlocklyTranslations,BlocklyCompile"
+	  unless="Blocklyi18n.uptodate">
+    <mkdir dir="${BlocklyTranslator-class.dir}" />
+    <mkdir dir="${BlocklyTranslations.dir}" />
+    <ai.javac destdir="${BlocklyTranslator-class.dir}">
+      <include name="msg/BlocklyTranslationGenerator.java" />
+      <classpath>
+	<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+	<pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </ai.javac>
+    <java failonerror="true" classname="msg.BlocklyTranslationGenerator" fork="true">
+      <jvmarg value="-Dfile.encoding=UTF-8"/>
+      <arg value="${ai.i18n.src.dir}"/>
+      <arg value="${lib.dir}/blockly/msg/json"/>
+      <arg value="${BlocklyTranslations.dir}"/>
+      <arg value="${release}" />
+      <classpath>
+	<pathelement location="${BlocklyTranslator-class.dir}"/>
+	<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+	<pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </java>
+  </target>
 
-        <target name="CheckBlocklyCompile">
-          <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
-            <srcfiles dir="src/" includes="**/*.js" />
-            <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
-            <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-            <srcfiles dir="${basedir}" includes="${blockly.config}" />
-          </uptodate>
-        </target>
+  <target name="CheckBlocklyCompile">
+    <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
+      <srcfiles dir="src/" includes="**/*.js" />
+      <srcfiles dir="${blockly.src.dir}/" includes="*.js" />
+      <srcfiles dir="${blockly.plugin.dir}/" includes="*.js" />
+      <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
+      <srcfiles dir="${basedir}" includes="${blockly.config}" />
+    </uptodate>
+  </target>
 
 	<target name="BlocklyCompile"
-		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
-		      depends="init,CheckBlocklyCompile"
-                      unless="BlocklyCompile.uptodate">
-		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
-			<arg line="build ${blockly.config}" />
+                description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
+                depends="init,CheckBlocklyCompile"
+                unless="BlocklyCompile.uptodate">
+		<java failonerror="true" fork="true" jar="${lib.dir}/closure-compiler/closure-compiler-v20211201.jar" dir="${appinventor.dir}">
+			<arg line="--compilation_level ${compilation_level}"/>
+			<arg line="--language_in ECMASCRIPT_NEXT"/>
+			<arg line="--language_out ECMASCRIPT_NEXT"/>
+			<arg line="--js_output_file"/>
+			<arg file="${public.build.dir}/blockly-all.js"/>
+			<arg line="--entry_point=goog:AI.Blockly.BlocklyEditor"/>
+			<arg line="--charset UTF-8"/>
+			<arg line="--create_source_map"/>
+			<arg file="${public.build.dir}/blockly-all.js.map"/>
+			<arg line="--source_map_location_mapping src|/ode/static/js"/>
+			<arg line="--source_map_input"/>
+			<arg value="${blockly.src.dir}/blockly_compressed.js|${blockly.src.dir}/blockly_compressed.js.map"/>
+			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
+			<arg line="--dependency_mode=PRUNE_LEGACY"/>
+			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-2.0.6.min.js'"/>
+			<arg value="--js='blocklyeditor/src/**.js'"/>
+			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/testing/**.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**tests.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_perf.js'"/>
 		</java>
 	</target>
-
-	<!--  property name="js.tests.dir" location="./tests" /-->
-	<!-- Change as needed -->
-
-	<!--target name="tests">
-    <exec executable="phantomjs" failonerror="true">
-      <arg path="${js.tests.dir}/buttonClickTest.js"/>
-    </exec>
-  </target-->
 
 	<!-- =====================================================================
        BlocklyeditorTests: build and run the Blocklyeditor tests and
@@ -156,6 +176,7 @@
 		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
                 <pathelement location="${build.dir}/components/CommonConstants.jar" />
 		<pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
+		<pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
 	</path>
 
 	<path id="BlocklyeditorTests.path">
@@ -167,25 +188,30 @@
 		      description="Blocklyeditor: build and run the test suite"
 		      depends="BlocklyCompile, BlocklyTestbed" >
 		<sequential>
-			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
-			</ai.dojunit>
-			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
-				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
-				<arg value="tests/com/google/appinventor/mocha/index.html"/>
-				<arg value="xunit"/>
+			<mkdir dir="${class.dir}/BlocklyeditorTests" />
+			<ai.javac srcdir="${tests.dir}" destdir="${class.dir}/BlocklyeditorTests">
+				<classpath>
+					<path refid="BlocklyeditorTests.path" />
+				</classpath>
+				<include name="**/BlocklyEvalTestBuilder.java" />
+			</ai.javac>
+			<jar destfile="${run.lib.dir}/BlocklyeditorTests.jar">
+				<fileset dir="${class.dir}/BlocklyeditorTests">
+					<include name="**/*.class" />
+				</fileset>
+			</jar>
+			<mkdir dir="${local.build.dir}/javascript" />
+			<java classname="com.google.appinventor.blocklyeditor.BlocklyEvalTestBuilder" fork="true">
+				<classpath>
+					<path refid="BlocklyeditorTests.path" />
+				</classpath>
+				<jvmarg value="-Dfile.encoding=UTF-8"/>
+				<jvmarg value="-Djava.awt.headless=true"/>
+			</java>
+			<exec executable="node_modules/.bin/karma" dir="${appinventor.dir}" failonerror="true">
+				<arg value="start"/>
+				<arg value="--single-run"/>
 			</exec>
-			<!--Remove anything before the first < (start of xml)-->
-			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
-				match="^[^&lt;]*"
-				replace=""/>
-			<!--Add package name to file-->
-			<replace file="reports/raw/TEST-MochaTests.xml"
-					 token="name=&quot;Mocha Tests&quot;"
-					 value="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
-			<junitreport todir="${reports.dir}">
-				<fileset file="reports/raw/TEST-*.xml"/>
-				<report format="frames" todir="${reports.dir}/html"/>
-			</junitreport>
 		</sequential>
 	</target>
 </project>

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -69,7 +69,8 @@ public class LoadComponentInfo implements CommonTask {
         || !this.generateNativeLibNames()
         || !this.generatePermissions()
         || !this.generateQueries()
-        || !this.generateServices()) {
+        || !this.generateServices()
+        || !this.generateXmls()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
 
@@ -228,12 +229,9 @@ public class LoadComponentInfo implements CommonTask {
       return false;
     }
 
-    int n = 0;
-    for (String type : context.getComponentInfo().getServicesNeeded().keySet()) {
-      n += context.getComponentInfo().getServicesNeeded().get(type).size();
-    }
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.SERVICES_TARGET),
+            context.getComponentInfo().getServicesNeeded());
 
-    context.getReporter().log("Component services needed, n = " + n);
     return true;
   }
 
@@ -243,19 +241,38 @@ public class LoadComponentInfo implements CommonTask {
   private boolean generateContentProviders() {
     try {
       loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(),
-          ComponentDescriptorConstants.SERVICES_TARGET);
+          ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Content Providers stage", true);
       return false;
     }
 
-    int n = 0;
-    for (String type : context.getComponentInfo().getContentProvidersNeeded().keySet()) {
-      n += context.getComponentInfo().getContentProvidersNeeded().get(type).size();
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET),
+            context.getComponentInfo().getContentProvidersNeeded());
+
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included xml files needed by this project.
+   */
+  private boolean generateXmls() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getXmlsNeeded(),
+          ComponentDescriptorConstants.XMLS_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Xmls stage", true);
+      return false;
     }
 
-    context.getReporter().log("Component content providers needed, n = " + n);
+    int n = 0;
+    for (String type : context.getComponentInfo().getXmlsNeeded().keySet()) {
+      n += context.getComponentInfo().getXmlsNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component xmls needed, n = " + n);
     return true;
   }
 
@@ -505,15 +522,11 @@ public class LoadComponentInfo implements CommonTask {
 
       JSONObject infoObject = compJson.optJSONObject(
           ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
-      if (infoObject == null) {
-        context.getReporter().info("Component \"" + type + "\" does not specify "
-            + ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
-        continue;
+      if (infoObject != null) {
+        // Handle declared constraints
+        context.getComponentInfo().getPermissionConstraintsNeeded()
+            .put(type, processPermissionConstraints(infoObject));
       }
-
-      // Handle declared constraints
-      context.getComponentInfo().getPermissionConstraintsNeeded()
-          .put(type, processPermissionConstraints(infoObject));
 
       // Handle conditional constraints
       infoObject = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);

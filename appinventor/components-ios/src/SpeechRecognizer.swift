@@ -9,6 +9,7 @@ import Speech
 fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
 
 @objc open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelegate {
+  private static let DEBUG = false
   private var _result: String = ""
   private var _useLegacy = true
   private var audioEngine: AVAudioEngine? = nil
@@ -27,6 +28,8 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
   }
 
   // MARK: - SpeechRecognizer Properties
+
+  @objc open var Language = ""
 
   @objc open var UseLegacy: Bool {
     get {
@@ -121,10 +124,14 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
   @available(iOS 10.0, *)
   private func startSpeechRecognition() {
     // get speech recognizer
-    guard let recognizer = SFSpeechRecognizer(), recognizer.isAvailable else {
+    let locale = Language.isEmpty ? Locale.preferredLanguage : Locale(identifier: Language)
+    guard let recognizer = SFSpeechRecognizer(locale: locale), recognizer.isAvailable else {
       self._form?.dispatchErrorOccurredEvent(self, "GetText",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE.code)
       return
+    }
+    if SpeechRecognizer.DEBUG {
+      print("Speech recognition using locale: \(locale)")
     }
 
     // Ensure the audio session is set up to use the microphone
@@ -133,7 +140,10 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
       try audioSession.setCategory(.playAndRecord)
       try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
     } catch {
-      print("Error starting speech recognizer: ", error)
+      _form?.dispatchErrorOccurredEvent(self, "GetText",
+                                        ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR,
+                                        error.localizedDescription)
+      return
     }
     // prepare recording for speech recognition
     let audioEngine = AVAudioEngine()
@@ -216,3 +226,11 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
   }
 }
 
+extension Locale {
+  public static var preferredLanguage: Locale {
+    guard let preferredIdentifier = Locale.preferredLanguages.first else {
+      return Locale.current
+    }
+    return Locale(identifier: preferredIdentifier)
+  }
+}

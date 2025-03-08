@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 
 /**
@@ -86,6 +87,10 @@ public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
               };
           String imageUrl = convertImagePropertyValueToUrl(
                   property.getEditableProperties().getPropertyValue(PROPERTY_NAME_PICTURE));
+          if (imageUrl == null || imageUrl.isEmpty()) {
+            Window.alert(Ode.MESSAGES.provideImageFirst());
+            return;
+          }
           MarkOriginWizard dialog = new MarkOriginWizard(imageUrl, property.getValue(), callback);
           dialog.show();
         }

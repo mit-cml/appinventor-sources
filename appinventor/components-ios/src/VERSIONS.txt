@@ -1,0 +1,3 @@
+@tensorflow/tfjs-core=1.7.4
+@tensorflow/tfjs-converter=1.7.4
+@tensorflow-models/facemesh=0.0.3
