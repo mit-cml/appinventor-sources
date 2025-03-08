@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -118,7 +118,7 @@ public abstract class SimpleEditor extends FileEditor {
       return base + number;
     }
     int highIndex = 0;
-    final String typeName = ComponentsTranslation.getComponentName(type)
+    final String typeName = ComponentTranslationTable.getComponentName(type)
         .toLowerCase()
         .replace(" ", "_")
         .replace("'", "_");

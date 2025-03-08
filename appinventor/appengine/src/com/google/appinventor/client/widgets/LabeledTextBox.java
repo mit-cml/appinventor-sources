@@ -44,9 +44,8 @@ public class LabeledTextBox extends Composite {
     panel.setCellVerticalAlignment(captionLabel, HasVerticalAlignment.ALIGN_MIDDLE);
     textbox = new TextBox();
     textbox.setStylePrimaryName("ode-LabeledTextBox");
-    textbox.setWidth("100%");
     panel.add(textbox);
-    panel.setCellWidth(captionLabel, "40%");
+    panel.setCellWidth(captionLabel, "45%");
     panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
     VerticalPanel vp = new VerticalPanel();
     vp.add(panel);
@@ -90,8 +89,6 @@ public class LabeledTextBox extends Composite {
       errorPanel.add(errorLabel);
       VerticalPanel vp = (VerticalPanel) getWidget();
       vp.add(errorPanel);
-      vp.setHeight("85px");
-      vp.setWidth("100%");
     }
   }
   /**

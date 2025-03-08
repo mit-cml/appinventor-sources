@@ -38,6 +38,26 @@ open class File: NonvisibleComponent {
   @objc open func ReadFrom(_ fileName: String) {
     workQueue.async {
       do {
+        if fileName.hasPrefix("extfile://") {
+          // Selection from FilePicker needs special handling
+          guard let url = URL(string: fileName.replace(target: "extfile://", withString: "file://")) else {
+            return
+          }
+          var error: NSError? = nil
+          NSFileCoordinator().coordinate(readingItemAt: url, error: &error) { url in
+            guard let text = try? String(contentsOf: url, encoding: .utf8) else {
+              // TODO: Report an error
+              return
+            }
+            DispatchQueue.main.async {
+              self.GotText(text)
+            }
+          }
+          if let error = error {
+            // TODO: Report error
+          }
+          return  // At this point the file is read and the result dispatched
+        }
         let filePath: String = FileUtil.absoluteFileName(fileName, self._isRepl)
         if filePath.isEmpty || !FileManager().fileExists(atPath: filePath) {
           throw FileError(ErrorMessage.ERROR_CANNOT_FIND_FILE, fileName)

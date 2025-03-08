@@ -12,7 +12,7 @@
 ///
 // -----------------------------------------------------------------------------
 
-public enum JSONEncodingError: Error {
+public enum JSONEncodingError: Error, Hashable {
     /// Any fields that were decoded from binary format cannot be
     /// re-encoded into JSON unless the object they hold is a
     /// well-known type or a type registered with via
@@ -32,4 +32,7 @@ public enum JSONEncodingError: Error {
     /// valid `kind` (that is, they represent a null value, number, boolean,
     /// string, struct, or list).
     case missingValue
+    /// google.protobuf.Value cannot encode double values for infinity or nan,
+    /// because they would be parsed as a string.
+    case valueNumberNotFinite
 }

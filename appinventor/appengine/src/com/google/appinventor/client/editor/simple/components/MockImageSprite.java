@@ -102,9 +102,21 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
     return text.substring(text.indexOf(",") + 2, text.length() - 1);
   }
 
+  /**
+   * Converts a double in the range of [0.0, 1.0] to a string. If the double is an integer value,
+   * then the returned value will be specified to two significant figures. Otherwise, the double
+   * will be converted to a string using the default conversion.
+   *
+   * @param d the double to convert
+   * @return the string representation of the double
+   */
+  private static String doubleToString(double d) {
+    return d == 0 ? "0.0" : d == 1 ? "1.0" : Double.toString(d);
+  }
+
   private void setOriginProperty(double u, double v) {
     // format as string of type (u, v)
-    String s = "(" + Double.toString(u) + ", " + Double.toString(v) + ")";
+    String s = "(" + doubleToString(u) + ", " + doubleToString(v) + ")";
     changeProperty(PROPERTY_NAME_MARKORIGIN, s);
   }
 

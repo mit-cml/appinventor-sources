@@ -11,6 +11,8 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
+import com.google.appinventor.client.editor.youngandroid.actions.SwitchToBlocksEditorAction;
+import com.google.appinventor.client.editor.youngandroid.actions.SwitchToFormEditorAction;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
@@ -21,9 +23,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -134,23 +139,21 @@ public class DesignToolbar extends Toolbar {
   public static LinkedList<String> pushedScreens = Lists.newLinkedList();
 
   interface DesignToolbarUiBinder extends UiBinder<Toolbar, DesignToolbar> {}
-  private static final DesignToolbarUiBinder UI_BINDER = GWT.create(DesignToolbarUiBinder.class);
 
-  @UiField DropDownButton pickFormItem;
-  @UiField ToolbarItem addFormItem;
-  @UiField ToolbarItem removeFormItem;
-  @UiField ToolbarItem switchToDesign;
-  @UiField ToolbarItem switchToBlocks;
-  @UiField ToolbarItem sendToGalleryItem;
-  @UiField ToolbarItem projectPropertiesDialog;
+  @UiField protected DropDownButton pickFormItem;
+  @UiField protected ToolbarItem addFormItem;
+  @UiField protected ToolbarItem removeFormItem;
+  @UiField protected ToolbarItem switchToDesign;
+  @UiField protected ToolbarItem switchToBlocks;
+  @UiField protected ToolbarItem sendToGalleryItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
   public DesignToolbar() {
     super();
+    bindUI();
 
-    populateToolbar(UI_BINDER.createAndBindUi(this));
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
       setVisibleItem(removeFormItem, false);
@@ -162,6 +165,12 @@ public class DesignToolbar extends Toolbar {
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+    toggleView();
+  }
+
+  public void bindUI() {
+    DesignToolbarUiBinder uibinder = GWT.create(DesignToolbarUiBinder.class);
+    populateToolbar(uibinder.createAndBindUi(this));
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {
@@ -364,6 +373,22 @@ public class DesignToolbar extends Toolbar {
     boolean notOnScreen1 = getCurrentProject() != null
         && !"Screen1".equals(getCurrentProject().currentScreen);
     setButtonEnabled(WIDGET_NAME_REMOVEFORM, notOnScreen1);
+  }
+
+  public void toggleView() {
+    SwitchToBlocksEditorAction blockView = new SwitchToBlocksEditorAction();
+    SwitchToFormEditorAction designView = new SwitchToFormEditorAction();
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      public void onKeyDown(KeyDownEvent event) {
+        if (event.isControlKeyDown() && event.isAltKeyDown()) {
+          if (currentView == DesignToolbar.View.FORM) {
+            blockView.execute();
+          } else if (currentView == DesignToolbar.View.BLOCKS) {
+            designView.execute();
+          }
+        }
+      }
+    }, KeyDownEvent.getType());
   }
 
   public DesignProject getCurrentProject() {

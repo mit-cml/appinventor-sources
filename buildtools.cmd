@@ -151,19 +151,19 @@ if /i "%ERRORLEVEL%" equ "0" (
     set /a pass=pass+1
     echo [PASS] Java is installed.
     :: Check Java version
-    java -version 2>&1 | find "version ""1.8" > nul 2>&1
+    java -version 2>&1 | find "version ""11." > nul 2>&1
     if /i "%ERRORLEVEL%" equ "0" (
         set /a pass=pass+1
         echo [PASS] Required version of Java is installed.
     ) else (
         set /a fail=fail+1
         echo [FAIL] Required version of Java is not installed or not found on PATH.
-        echo _______Please install Java 8 and try again.
+        echo _______Please install Java 11 and try again.
     )
 ) else (
     set /a fail=fail+1
     echo [FAIL] Java is not installed or not found on PATH.
-    echo _______Please install Java 8 and try again.
+    echo _______Please install Java 11 and try again.
 )
 :: Check if git is installed
 where git > nul 2>&1

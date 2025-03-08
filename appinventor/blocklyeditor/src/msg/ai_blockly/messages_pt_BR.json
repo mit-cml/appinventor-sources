@@ -15,6 +15,7 @@
 	"Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP": "Retorna o valor que foi passado para esta tela quando ela foi aberta, tipicamente por outra tela em um app multi-tela. Se nenhum valor foi passado, retorna uma cadeia de texto vazia.",
 	"Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TITLE": "item",
 	"Blockly.Msg.DELETE_BLOCK": "Apagar Bloco",
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Esta imagem faz referência aos seguintes blocos que requerem extensões que não estão presentes no projeto:\n\n",
 	"Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP": "Retorna o número formatado como um decimal\ncom o número especificado de casas.",
 	"Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE": "enquanto",
 	"Blockly.Msg.LANG_COLOUR_PINK": "rosa",

@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client.wizards;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -15,6 +17,7 @@ import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -59,7 +62,7 @@ public class MarkOriginWizard extends Wizard {
    * @param callback the callback to execute after selecting origin
    */
   public MarkOriginWizard(String imageUrl, String origin, final OriginSelectedCallback callback) {
-    super(Ode.MESSAGES.markOriginWizardCaption(), true, false);
+    super(MESSAGES.markOriginWizardCaption(), true, false);
 
     u = Double.parseDouble(getUFromOrigin(origin));
     v = Double.parseDouble(getVFromOrigin(origin));
@@ -145,6 +148,12 @@ public class MarkOriginWizard extends Wizard {
 
     imageContainer.add(spriteImagePanel);
     imageContainer.add(marker);
+    Button reset = new Button(MESSAGES.resetButton());
+    reset.addClickHandler((event) -> {
+      finishApply(callback, "(0.0, 0.0)");
+      hide();
+    });
+    getButtonPanel().insert(reset, 1);
 
     addPage(imageContainer);
 

@@ -18,9 +18,11 @@ import Foundation
 /// Encoder for Binary Protocol Buffer format
 internal struct BinaryEncoder {
     private var pointer: UnsafeMutableRawPointer
+    private var buffer: UnsafeMutableRawBufferPointer
 
-    init(forWritingInto pointer: UnsafeMutableRawPointer) {
-        self.pointer = pointer
+    init(forWritingInto buffer: UnsafeMutableRawBufferPointer) {
+        self.buffer = buffer
+        self.pointer = buffer.baseAddress!
     }
 
     private mutating func append(_ byte: UInt8) {
@@ -28,27 +30,38 @@ internal struct BinaryEncoder {
         pointer = pointer.advanced(by: 1)
     }
 
-    private mutating func append(contentsOf data: Data) {
-        data.withUnsafeBytes { dataPointer in
+    private mutating func append<Bytes: SwiftProtobufContiguousBytes>(contentsOf bytes: Bytes) {
+        bytes.withUnsafeBytes { dataPointer in
             if let baseAddress = dataPointer.baseAddress, dataPointer.count > 0 {
                 pointer.copyMemory(from: baseAddress, byteCount: dataPointer.count)
-                pointer = pointer.advanced(by: dataPointer.count)
+                advance(dataPointer.count)
             }
         }
+    }
+
+    internal var used: Int {
+        buffer.baseAddress!.distance(to: pointer)
+    }
+
+    internal var remainder: UnsafeMutableRawBufferPointer {
+        UnsafeMutableRawBufferPointer(
+            start: pointer,
+            count: buffer.count - used
+        )
+    }
+
+    internal mutating func advance(_ bytes: Int) {
+        pointer = pointer.advanced(by: bytes)
     }
 
     @discardableResult
     private mutating func append(contentsOf bufferPointer: UnsafeRawBufferPointer) -> Int {
         let count = bufferPointer.count
         if let baseAddress = bufferPointer.baseAddress, count > 0 {
-            memcpy(pointer, baseAddress, count)
+            pointer.copyMemory(from: baseAddress, byteCount: count)
         }
         pointer = pointer.advanced(by: count)
         return count
-    }
-
-    func distance(pointer: UnsafeMutableRawPointer) -> Int {
-        return pointer.distance(to: self.pointer)
     }
 
     mutating func appendUnknown(data: Data) {
@@ -92,61 +105,51 @@ internal struct BinaryEncoder {
     mutating func putFixedUInt64(value: UInt64) {
         var v = value.littleEndian
         let n = MemoryLayout<UInt64>.size
-        memcpy(pointer, &v, n)
+        pointer.copyMemory(from: &v, byteCount: n)
         pointer = pointer.advanced(by: n)
     }
 
     mutating func putFixedUInt32(value: UInt32) {
         var v = value.littleEndian
         let n = MemoryLayout<UInt32>.size
-        memcpy(pointer, &v, n)
+        pointer.copyMemory(from: &v, byteCount: n)
         pointer = pointer.advanced(by: n)
     }
 
     mutating func putFloatValue(value: Float) {
         let n = MemoryLayout<Float>.size
-        var v = value
-        var nativeBytes: UInt32 = 0
-        memcpy(&nativeBytes, &v, n)
-        var littleEndianBytes = nativeBytes.littleEndian
-        memcpy(pointer, &littleEndianBytes, n)
+        var v = value.bitPattern.littleEndian
+        pointer.copyMemory(from: &v, byteCount: n)
         pointer = pointer.advanced(by: n)
     }
 
     mutating func putDoubleValue(value: Double) {
         let n = MemoryLayout<Double>.size
-        var v = value
-        var nativeBytes: UInt64 = 0
-        memcpy(&nativeBytes, &v, n)
-        var littleEndianBytes = nativeBytes.littleEndian
-        memcpy(pointer, &littleEndianBytes, n)
+        var v = value.bitPattern.littleEndian
+        pointer.copyMemory(from: &v, byteCount: n)
         pointer = pointer.advanced(by: n)
     }
 
     // Write a string field, including the leading index/tag value.
     mutating func putStringValue(value: String) {
         let utf8 = value.utf8
-        #if swift(>=5.0)
-            // If the String does not support an internal representation in a form
-            // of contiguous storage, body is not called and nil is returned.
-            let isAvailable = utf8.withContiguousStorageIfAvailable { (body: UnsafeBufferPointer<UInt8>) -> Int in
-                putVarInt(value: body.count)
-                return append(contentsOf: UnsafeRawBufferPointer(body))
+        // If the String does not support an internal representation in a form
+        // of contiguous storage, body is not called and nil is returned.
+        let isAvailable = utf8.withContiguousStorageIfAvailable { (body: UnsafeBufferPointer<UInt8>) -> Int in
+            putVarInt(value: body.count)
+            return append(contentsOf: UnsafeRawBufferPointer(body))
+        }
+        if isAvailable == nil {
+            let count = utf8.count
+            putVarInt(value: count)
+            for b in utf8 {
+                pointer.storeBytes(of: b, as: UInt8.self)
+                pointer = pointer.advanced(by: 1)
             }
-        #else
-            let isAvailable: Int? = nil
-        #endif
-            if isAvailable == nil {
-                let count = utf8.count
-                putVarInt(value: count)
-                for b in utf8 {
-                    pointer.storeBytes(of: b, as: UInt8.self)
-                    pointer = pointer.advanced(by: 1)
-                }
-            }
+        }
     }
 
-    mutating func putBytesValue(value: Data) {
+    mutating func putBytesValue<Bytes: SwiftProtobufContiguousBytes>(value: Bytes) {
         putVarInt(value: value.count)
         append(contentsOf: value)
     }

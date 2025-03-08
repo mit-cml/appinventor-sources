@@ -25,8 +25,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -109,9 +109,9 @@ public final class AddFormCommand extends ChainableCommand {
 
       newNameTextBox = new LabeledTextBox(MESSAGES.formNameLabel());
       newNameTextBox.setText(defaultFormName);
-      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      newNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
         @Override
-        public void onKeyUp(KeyUpEvent event) {
+        public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
           if (keyCode == KeyCodes.KEY_ENTER) {
             handleOkClick(projectRootNode);

@@ -244,7 +244,7 @@ public class LoginServlet extends HttpServlet {
       out.println("<h1>" + bundle.getString("setyourpassword") + "</h1>\n");
       out.println("<form method=POST action=\"" + req.getRequestURI() + "\">");
       out.println("<input type=password name=password value=\"\" size=\"35\"><br />\n");
-      out.println("<p></p>");
+      out.println("<p><input type=hidden name=locale value=\""+ sanitizer.sanitize(locale) + "\"></p>");
       out.println("<input type=Submit value=\"" + bundle.getString("setpassword") + "\" style=\"font-size: 300%;\">\n");
       out.println("</form>\n");
       storageIo.cleanuppwdata();
@@ -264,7 +264,7 @@ public class LoginServlet extends HttpServlet {
       out.println("<p>" + bundle.getString("requestinstructions") + "</p>\n");
       out.println("<form method=POST action=\"" + req.getRequestURI() + "\">\n");
       out.println(bundle.getString("enteremailaddress") + ":&nbsp;<input type=text name=email value=\"\" size=\"35\"><br />\n");
-      out.println("<input type=hidden name=locale value=\"" + locale + "\">");
+      out.println("<input type=hidden name=locale value=\"" + sanitizer.sanitize(locale) + "\">");
       out.println("<p></p>");
       out.println("<input type=submit value=\"" + bundle.getString("sendlink") + "\" style=\"font-size: 300%;\">\n");
       out.println("</form>\n");
@@ -423,7 +423,7 @@ public class LoginServlet extends HttpServlet {
       }
       String link = trimPage(req) + pwData.id + "/setpw";
       sendmail(email, link, locale);
-      resp.sendRedirect("/login/linksent/");
+      resp.sendRedirect("/login/linksent/?locale=" + locale);
       storageIo.cleanuppwdata();
       return;
     } else if (page.equals("setpw")) {

@@ -13,6 +13,7 @@ import Foundation
  */
 fileprivate func makeFormat(_ str: String) -> DateFormatter {
   let date = DateFormatter()
+  date.locale = Locale.preferredLanguage
   date.dateFormat = str
   return date
 }
@@ -242,8 +243,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func WeekdayName(_ instant: Date) -> String {
-    let dayName = DateFormatter()
-    dayName.dateFormat = "EEEE"
+    let dayName = makeFormat("EEEE")
     return dayName.string(from: instant)
   }
   
@@ -252,8 +252,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func MonthName(_ instant: Date) -> String {
-    let dayName = DateFormatter()
-    dayName.dateFormat = "LLLL"
+    let dayName = makeFormat("LLLL")
     return dayName.string(from: instant)
   }
   
@@ -262,20 +261,17 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func FormatDateTime(_ instant: Date, _ pattern: String) -> String {
-    let dateTimeFormatter = DateFormatter()
-    dateTimeFormatter.dateFormat = pattern
+    let dateTimeFormatter = makeFormat(pattern)
     return dateTimeFormatter.string(from: instant)
   }
   
   @objc open func FormatDate(_ instant: Date, _ pattern: String) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = pattern
+    let dateFormatter = makeFormat(pattern)
     return dateFormatter.string(from: instant)
   }
   
   @objc open func FormatTime(_ instant: Date) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "h:mm:ss a"
+    let dateFormatter = makeFormat("h:mm:ss a")
     return dateFormatter.string(from: instant)
   }
   

@@ -273,13 +273,20 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
-  @objc open func BackgroundImageinBase64(imageUrl: String) {
+  @objc open func setBackgroundImageinBase64(_ imageUrl: String) {
     if imageUrl.isEmpty {
       _imageSize = nil
       _backgroundImage = ""
       _backgroundImageView.image = nil
     } else {
-      let dataDecoded: NSData = NSData(base64Encoded: imageUrl, options: NSData.Base64DecodingOptions(rawValue: 0))!
+      let imageStr: String
+      if imageUrl.starts(with: "data:") {
+        let parts = imageUrl.split(";base64,")
+        imageStr = parts.last ?? ""
+      } else {
+        imageStr = imageUrl
+      }
+      let dataDecoded: NSData = NSData(base64Encoded: imageStr, options: NSData.Base64DecodingOptions(rawValue: 0))!
       guard let decodedImage: UIImage = UIImage(data: dataDecoded as Data) else {
         _imageSize = nil
         _backgroundImage = ""

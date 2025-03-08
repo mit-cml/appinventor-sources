@@ -120,7 +120,7 @@ public class RunBundletool implements AndroidTask {
     File[] dexFiles = context.getPaths().getTmpDir().listFiles();
     if (dexFiles != null) {
       for (File dex : dexFiles) {
-        if (dex.isFile()) {
+        if (dex.isFile() && dex.getName().endsWith(".dex")) {
           try {
             Files.move(dex, new File(aab.getDexDir(), dex.getName()));
           } catch (IOException e) {

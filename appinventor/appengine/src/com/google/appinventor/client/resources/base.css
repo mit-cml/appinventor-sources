@@ -1,0 +1,10 @@
+@def l-border-radius        4px;
+@def l-border-radius-md     6px;
+@def l-border-radius-lg     4px;
+@def l-button-padding       10px;
+
+
+@def f-h1                   'Roboto';
+@def f-h3                   'Poppins', 'Roboto', sans-serif;
+@def f-h4                   'Roboto', sans-serif;
+@def f-button               'Poppins', 'Roboto', sans-serif;

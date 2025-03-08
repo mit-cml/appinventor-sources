@@ -16,6 +16,8 @@
     "Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT": "Yap / Sonuç",
     "Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_PAIRS": "Çift",
     "Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT": "Listeye öğe ekle %1 öğe %2",
+    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Bu görsel, projede mevcut olmayan eklentiler gerektiren aşağıdaki bloklara atıfta bulunmaktadır:\n\n",
+    "Blockly.Msg.ERROR_PARSING_XML": "Hata: PNG dosyasından XML parse edilemedi. Lütfen tekrar deneyin.",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "çağır ",
     "Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_START": "Başla",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT": "-de",
