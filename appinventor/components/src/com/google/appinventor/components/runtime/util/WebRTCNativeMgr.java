@@ -10,6 +10,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 
@@ -35,10 +36,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
+import org.apache.http.conn.ClientConnectionManager;
+
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.StringEntity;
 
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+
+import org.apache.http.params.HttpParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,6 +92,10 @@ public class WebRTCNativeMgr {
   private String rendezvousServer = null; // Primary (first level) Rendezvous server
   private String rendezvousServer2 = null; // Second level (webrtc rendezvous) Rendezvous server
   private List<PeerConnection.IceServer> iceServers = new ArrayList();
+
+  private HttpClient client = new DefaultHttpClient();
+  private HttpClient sendClient = getThreadSafeClient(); // See comment on getThreadSafeClient
+  private HttpGet request = null;
 
   Timer timer = new Timer();
 
@@ -152,6 +163,30 @@ public class WebRTCNativeMgr {
         dataChannel.registerObserver(dataObserver);
         keepPolling = false;    // Turn off talking to the rendezvous server
         timer.cancel();
+        ClientConnectionManager manager = client.getConnectionManager();
+        if (manager != null) {
+          manager.shutdown();
+          client = null;        // So it cannot be used again
+          if (DEBUG) {
+            Log.d(LOG_TAG, "Shutdown ClientConnectionManager");
+          }
+        } else {
+          if (DEBUG) {
+            Log.d(LOG_TAG, "ClientConnectionManager is null");
+          }
+        }
+        manager = sendClient.getConnectionManager();
+        if (manager != null) {
+          manager.shutdown();
+          sendClient = null; // So it won't be used again
+          if (DEBUG) {
+            Log.d(LOG_TAG, "Shutdown ClientConnectionManager (send)");
+          }
+        } else {
+          if (DEBUG) {
+            Log.d(LOG_TAG, "ClientConnectionManager is null (send)");
+          }
+        }
         if (DEBUG) {
           Log.d(LOG_TAG, "Poller() Canceled");
         }
@@ -269,7 +304,6 @@ public class WebRTCNativeMgr {
   }
 
   public void initiate(ReplForm form, Context context, String code) {
-
     this.form = form;
     rCode = code;
     /* Initialize WebRTC globally */
@@ -283,6 +317,7 @@ public class WebRTCNativeMgr {
     rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_CONTINUALLY;
     peerConnection = factory.createPeerConnection(rtcConfig, new MediaConstraints(),
       observer);
+    request = new HttpGet("http://" + rendezvousServer2 + "/rendezvous2/" + rCode + "-s?http11=true");
     timer.schedule(new TimerTask() {
         @Override
         public void run() {
@@ -306,8 +341,6 @@ public class WebRTCNativeMgr {
         Log.d(LOG_TAG, "Poller() Called");
         Log.d(LOG_TAG, "Poller: rendezvousServer2 = " + rendezvousServer2);
       }
-      HttpClient client = new DefaultHttpClient();
-      HttpGet request = new HttpGet("http://" + rendezvousServer2 + "/rendezvous2/" + rCode + "-s");
       HttpResponse response = client.execute(request);
       StringBuilder sb = new StringBuilder();
 
@@ -441,18 +474,32 @@ public class WebRTCNativeMgr {
             data.put("first", first);
             data.put("webrtc", true);
             data.put("key", rCode + "-r");
+            data.put("http11", true);
             if (first) {
               first = false;
               data.put("apiversion", SdkLevel.getLevel());
             }
-            HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://" + rendezvousServer2 + "/rendezvous2/");
             try {
               if (DEBUG) {
                 Log.d(LOG_TAG, "About to send = " + data.toString());
               }
               post.setEntity(new StringEntity(data.toString()));
-              client.execute(post);
+              if (sendClient == null) {
+                // This happens due to a race. After the sendClient is
+                // shutdown (because we are finished negotiation) we can
+                // still get another ice Candidate to send, so we just
+                // ignore it. Not sure this is the correct thing to do,
+                // but we don't want to leave up long lived connections
+                // to the Rendezvou server. Not to mention that the Rendezvous
+                // server itself only maintains state for 2 minutes.
+                return;
+              }
+              HttpResponse response = sendClient.execute(post);
+              // We need to consume the result of the post (even though
+              // we do not care about it) so that the low level Http
+              // connection can be re-used.
+              response.getEntity().getContent().close();
             } catch (IOException e) {
               Log.e(LOG_TAG, "sendRedezvous IOException", e);
             }
@@ -475,6 +522,22 @@ public class WebRTCNativeMgr {
     } catch (UnsupportedEncodingException e) {
       Log.e(LOG_TAG, "While encoding data to send to companion", e);
     }
+  }
+
+  /*
+   * getThreadSafeClient -- As its name implies, gets an HttpClient that is thread safe.
+   *
+   * This is needed in sendRendezvous because it is called from multiple threads out of
+   * the low level WebRTC library
+   */
+
+  private static DefaultHttpClient getThreadSafeClient() {
+       DefaultHttpClient client = new DefaultHttpClient();
+       ClientConnectionManager mgr = client.getConnectionManager();
+       HttpParams params = client.getParams();
+       client = new DefaultHttpClient(new ThreadSafeClientConnManager(params,
+              mgr.getSchemeRegistry()), params);
+       return client;
   }
 
 }
