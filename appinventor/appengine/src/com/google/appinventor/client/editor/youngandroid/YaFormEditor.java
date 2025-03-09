@@ -281,7 +281,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
-    HiddenComponentsCheckbox.show(form);
+    // Replace the old singleton call with the new panel method
+    visibleComponentsPanel.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
