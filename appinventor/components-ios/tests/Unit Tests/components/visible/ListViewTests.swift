@@ -40,6 +40,7 @@ class ListViewTests: AppInventorTestCase {
 
   func testBackgroundColor() {
     testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.none.int32
     testList.Elements = ["Test"] as [AnyObject]
     let view = testList.view as! UITableView
     var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
@@ -49,6 +50,24 @@ class ListViewTests: AppInventorTestCase {
     // Change back to the default (black)
     testList.BackgroundColor = Color.default.int32
     XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
+
+    cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
+    XCTAssertNotNil(cell)
+    XCTAssertEqual(Color.black.uiColor, cell.backgroundColor)
+  }
+  
+  func testElementColor() {
+    testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.red.int32
+    testList.Elements = ["Test"] as [AnyObject]
+    let view = testList.view as! UITableView
+    var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
+    XCTAssertNotNil(cell)
+    XCTAssertEqual(Color.red.uiColor, cell.backgroundColor)
+
+    // Change back to the default (black)
+    testList.ElementColor = Color.default.int32
+    XCTAssertEqual(Color.black.int32, testList.ElementColor)
 
     cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
     XCTAssertNotNil(cell)
