@@ -28,6 +28,7 @@ enum AIMapType: Int32 {
   case roads = 1
   case aerial = 2
   case terrain = 3
+  case custom = 4
 }
 
 typealias CLLocationDirection = Double
@@ -76,6 +77,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   private var _featuresState = 0
   private var _boundsChangeReady: Bool = false
   private var _terrainOverlay: MKTileOverlay?
+  private var _customUrlOverlay: MKTileOverlay?
 
   private var _activeOverlay: MapOverlayShape? = nil
   private var _lastPoint: CLLocationCoordinate2D? = nil
@@ -158,6 +160,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EnableZoom = true
     EnablePan = true
     MapType = 1
+    CustomUrl = ""
     Rotation = 0.0
     ScaleUnits = 1
     ShowZoom = false
@@ -347,7 +350,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       return _mapType.rawValue
     }
     set(type) {
-      if !(1...3 ~= type) {
+      if !(1...4 ~= type) {
         form?.dispatchErrorOccurredEvent(self, "MapType", ErrorMessage.ERROR_INVALID_MAP_TYPE.code,
            ErrorMessage.ERROR_INVALID_MAP_TYPE.message)
         return
@@ -357,17 +360,38 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       switch _mapType {
       case .roads:
         removeTerrainTileRenderer()
+        removeCustomUrlTileRenderer()
         mapView.mapType = .standard
       case .aerial:
         removeTerrainTileRenderer()
+        removeCustomUrlTileRenderer()
         mapView.mapType = .satellite
       case .terrain:
+        removeCustomUrlTileRenderer()
         mapView.mapType = .standard // set that way zooming in too far displays a visible grid
         setupTerrainTileRenderer()
+      case .custom:
+        removeTerrainTileRenderer()
+        mapView.mapType = .standard
+        setupCustomUrlTileRenderer()
       }
     }
   }
   
+  @objc open var CustomUrl: String? {
+      get {
+          return CustomUrl
+      }
+      set(newUrl) {
+          guard let newUrl = newUrl, newUrl != CustomUrl else {
+              return
+          }
+          CustomUrl = newUrl
+          removeCustomUrlTileRenderer()
+          setupCustomUrlTileRenderer()
+      }
+  }
+
   @objc open var ScaleUnits: Int32 {
     get {
       return _scaleUnits
@@ -887,9 +911,24 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
 
+  /**
+   * Adds a custom tile overlay that matches the CustomUrl overlay on Android
+   */
+  private func setupCustomUrlTileRenderer() {
+    _customUrlOverlay = MKTileOverlay(urlTemplate: CustomUrl)
+    _customUrlOverlay!.canReplaceMapContent = true
+    mapView.insertOverlay(_customUrlOverlay!, at: 0, level: .aboveLabels)
+  }
+
+  private func removeCustomUrlTileRenderer() {
+    if let overlay = _customUrlOverlay {
+      mapView.removeOverlay(overlay)
+    }
+  }
+
   public func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     if let tileOverlay = overlay as? MKTileOverlay {
-      return _mapType == .terrain ? MKTileOverlayRenderer(tileOverlay: tileOverlay) : MKOverlayRenderer()
+      return (_mapType == .terrain || _mapType == .custom) ? MKTileOverlayRenderer(tileOverlay: tileOverlay) : MKOverlayRenderer()
     } else if let shape = overlay as? MapCircleOverlay {
       let renderer = MKCircleRenderer(circle: shape)
       shape.renderer = renderer
