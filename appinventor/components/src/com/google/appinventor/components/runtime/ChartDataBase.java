@@ -62,7 +62,7 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     DataSourceKey("");
     Label("");
 
-    DataLabelColor(Component.COLOR_BLACK);
+    DataLabelColor($form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE);
   }
 
   /**

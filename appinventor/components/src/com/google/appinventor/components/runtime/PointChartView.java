@@ -53,6 +53,7 @@ public abstract class PointChartView<
   public View getView() {
     return chart;
   }
+  
   /**
    * Sets the color of the axes text of the Point Chart.
    *

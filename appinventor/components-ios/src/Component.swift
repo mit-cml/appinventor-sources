@@ -37,7 +37,7 @@ public enum Color: UInt32 {
     case lightGray = 0xFFCCCCCC
     case magenta = 0xFFFF00FF
     case orange = 0xFFFFC800
-    case pink = 0xFFFFAFAF
+    case pink = 0xFFFFAFAFc
     case red = 0xFFFF0000
     case white = 0xFFFFFFFF
     case yellow = 0xFFFFFF00

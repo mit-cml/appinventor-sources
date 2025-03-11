@@ -32,6 +32,7 @@ import DGCharts
     self._container = chartContainer
     super.init()
     chartContainer.addDataComponent(self)
+    _dataLabelColor = chartContainer.form?.isDarkTheme ?? true ? AIComponentKit.Color.white.int32 : AIComponentKit.Color.black.int32
     initChartData()
     DataSourceKey("")
   }
@@ -105,7 +106,6 @@ import DGCharts
     set {
       _dataLabelColor = newValue
       _chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
-      print("changing data text color", _dataLabelColor)
       refreshChart()
     }
   }

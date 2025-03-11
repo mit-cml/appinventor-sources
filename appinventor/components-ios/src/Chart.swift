@@ -5,6 +5,7 @@
 
 import Foundation
 import DGCharts
+import Component
 
 @objc public class ChartType: NSObject, OptionList {
   @objc public static let Line = ChartType(0)
@@ -54,12 +55,14 @@ import DGCharts
   var _dataComponents: Array<ChartDataBase> = []
   
   var _axesTextColor: UIColor
+  private var darkMode = false
 
   @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
     YFromZero = false
-    _backgroundColor = parent.form?.isDarkTheme == true ? UIColor.white : UIColor.black
-    _axesTextColor = parent.form?.isDarkTheme == true ? UIColor.white : UIColor.black
+    darkMode = parent.form?.isDarkTheme ?? false
+    _backgroundColor = darkMode ? UIColor.white : UIColor.black
+    _axesTextColor = darkMode ? UIColor.white : UIColor.black
     super.init(parent)
     setDelegate(self)
     parent.add(self)
@@ -121,9 +124,10 @@ import DGCharts
       return colorToArgb(_axesTextColor)
     }
     set {
+      if newValue == Component.Color.default {
+        _axesTextColor = darkMode ? UIColor.white : UIColor.black
+      }
       _axesTextColor = argbToColor(newValue)
-      print("changing label color to")
-      print(_axesTextColor)
       if let chartView = _chartView?.chart as? BarLineChartViewBase {
         chartView.xAxisRenderer.axis.labelTextColor = _axesTextColor
         chartView.leftYAxisRenderer.axis.labelTextColor = _axesTextColor

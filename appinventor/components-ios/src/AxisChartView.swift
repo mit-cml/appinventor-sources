@@ -47,7 +47,6 @@ open class AxisChartView : ChartView {
       (chart as? BarLineChartViewBase)?.leftAxis.granularity = 1
     }
   }
-  
 
   // sets whether the X origin should be fixed to 0
   public func setXMinimum (zero: Bool) {
