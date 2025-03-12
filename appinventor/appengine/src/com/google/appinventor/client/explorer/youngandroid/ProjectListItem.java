@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
@@ -31,6 +28,9 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Date;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}

@@ -12,6 +12,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
@@ -49,6 +50,7 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColorDark = "0";
   private String accentColor = "0";
   private String defaultFileScope = "App";
+  private String lastOpened = "Screen1";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -89,6 +91,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
+    lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_LAST_OPENED));
   }
 
   /**
@@ -114,6 +118,7 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
+    lastOpened = properties.getProperty("lastopened", "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -223,6 +228,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
