@@ -322,7 +322,10 @@ they get cut off in Windows.
     height: 30px;
     grid-gap: 10px;
     border-radius: 4px;
-    background: background-color;
+  }
+
+  .ode-ProjectRowUnHighlighted.ode-ProjectRowHighlighted {
+    background-color: rgba(167, 36, 122, 0.21) !important;
   }
   
   .ode-ProjectFolderList {
