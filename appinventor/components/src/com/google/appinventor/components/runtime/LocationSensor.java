@@ -685,7 +685,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * @return void
    */
   @SimpleFunction(description = "Converts an address into a latitude and longitude through the "
-      + "GotLocation event.")
+      + "GotLocationFromAddress event.")
   public void Geocode(final String address) {
     final double latitude = LatitudeFromAddress(address);
     final double longitude = LongitudeFromAddress(address);

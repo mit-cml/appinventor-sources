@@ -595,7 +595,7 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 {:.methods}
 
 {:id="LocationSensor.Geocode" class="method"} <i/> Geocode(*address*{:.text})
-: Converts an address into a latitude and longitude through the GotLocation event.
+: Converts an address into a latitude and longitude through the GotLocationFromAddress event.
 
 {:id="LocationSensor.LatitudeFromAddress" class="method returns number"} <i/> LatitudeFromAddress(*locationName*{:.text})
 : Derives latitude from the given `locationName`.
