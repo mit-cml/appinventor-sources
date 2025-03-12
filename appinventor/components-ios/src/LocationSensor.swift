@@ -246,7 +246,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     if -90...90 ~= location.coordinate.latitude && -180...180 ~= location.coordinate.longitude {
       self.geocoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
         if let error = error {
-          self._form?.dispatchErrorOccurredEvent(self, "getAddressFromLocation",
+          self._form?.dispatchErrorOccurredEvent(self, "ReverseGeocode",
               Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
               error.localizedDescription)
           return
