@@ -9,6 +9,7 @@ package com.google.appinventor.client.actions;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.user.client.Command;
 
@@ -19,14 +20,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class RestoreProjectAction implements Command {
   @Override
   public void execute() {
-    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
+    Ode odeInstance = Ode.getInstance();
+    if (odeInstance.getCurrentView() == Ode.TRASHCAN) {
       List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
-                                           .getSelectedProjects();
-      if (selectedProjects.size() > 0) {
-        for (Project project : selectedProjects) {
-          project.restoreFromTrash();
-        }
-        Ode.getInstance().switchToTrash();
+          .getSelectedProjects();
+      List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()
+          .getSelectedFolders();
+      if (!selectedProjects.isEmpty() || !selectedFolders.isEmpty()) {
+        odeInstance.getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
+            odeInstance.getFolderManager().getGlobalFolder());
+        odeInstance.switchToTrash();
       } else {
         // The user can select a project to resolve the
         // error.

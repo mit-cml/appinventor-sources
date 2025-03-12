@@ -604,6 +604,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
   // For YOUNG_ANDROID_VERSION 232:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
   // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
   public static final int YOUNG_ANDROID_VERSION = 232;
 
@@ -1192,7 +1193,9 @@ public class YaVersion {
   // - Added HintText property, performance optimization
   // For LISTVIEW_COMPONENT_VERSION 9:
   // - Changed the default ElementColor from Black to None
-  public static final int LISTVIEW_COMPONENT_VERSION = 9;
+  // For LISTVIEW_COMPONENT_VERSION 10:
+  // - Changed TextSize property to FontSize
+  public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1216,7 +1219,9 @@ public class YaVersion {
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
   // - Adds ScaleUnits and MapType dropdowns.
-  public static final int MAP_COMPONENT_VERSION = 6;
+  // For MAP_COMPONENT_VERSION 7:
+  // - Adds CustomUrl (MapType 4).
+  public static final int MAP_COMPONENT_VERSION = 7;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap

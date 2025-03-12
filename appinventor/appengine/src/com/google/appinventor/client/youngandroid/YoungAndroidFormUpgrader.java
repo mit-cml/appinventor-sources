@@ -1533,6 +1533,12 @@ public final class YoungAndroidFormUpgrader {
         }
       }
     }
+    if (srcCompVersion < 10) {
+      // The TextSize property was renamed to FontSize.
+      handlePropertyRename(componentProperties, "TextSize", "FontSize");
+      // Properties related to this component have now been upgraded to version 10.
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 
@@ -2063,6 +2069,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // Adds ScaleUnits and MapType dropdowns.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Adds CustomUrl (MapType 4).
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

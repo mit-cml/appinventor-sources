@@ -2460,7 +2460,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Added HintText property, performance optimization
     8: "noUpgrade",
     // AI2: Fixed a designer property issue with ElementColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+    // AI2: 
+    // - Changed TextSize property to FontSize
+    10: [
+      Blockly.Versioning.changePropertyName("ListView", "TextSize", "FontSize")
+    ]
 
   }, // End ListView upgraders
 
@@ -2506,9 +2511,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Adds Units and MapType dropdowns.
     6: [Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'ScaleUnits', 'ScaleUnits'),
-        Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'MapType', 'MapType')]
+      'Map', 'ScaleUnits', 'ScaleUnits'),
+    Blockly.Versioning.makeSetterUseDropdown(
+      'Map', 'MapType', 'MapType')],
+
+    // AI2:
+    // - Adds CustomUrl (MapType 4).
+    7: "noUpgrade"
 
   }, // End Map upgraders
 
