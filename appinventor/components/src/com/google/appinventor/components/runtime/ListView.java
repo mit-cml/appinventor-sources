@@ -651,13 +651,33 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
+   * This property is deprecated, use FontSize instead.
+   */
+  @Deprecated
+  @SimpleProperty
+  public int TextSize() {
+    return Math.round(fontSizeMain);
+  }
+
+  /**
+   * This property is deprecated, use FontSize instead.
+   */
+  @Deprecated
+  @SimpleProperty
+  public void TextSize(int textSize) {
+    if (textSize > 1000) {
+      textSize = 999;
+    }
+    FontSize(Float.valueOf(textSize));
+  }
+
+  /**
    * Returns the font size of the main text.
    *
    * @return text size as an float
    */
   @SimpleProperty(description = "The font size of the main text.",
-      category = PropertyCategory.APPEARANCE,
-      userVisible = true)
+      category = PropertyCategory.APPEARANCE)
   public float FontSize() {
     return fontSizeMain;
   }
