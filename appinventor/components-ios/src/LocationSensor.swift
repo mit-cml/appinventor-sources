@@ -216,13 +216,13 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       if let error = error {
         print("Error geocoding address: \(error.localizedDescription)")
         // Trigger the GotLocation event with default/fallback values
-        self.GotLocation(LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
+        self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
         return
       }
 
       guard let location = placemarks?.first?.location else {
         // Trigger the GotLocation event with default/fallback values
-        self.GotLocation(LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
+        self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
         return
       }
 
@@ -231,12 +231,13 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       let longitude = location.coordinate.longitude
 
       // Trigger the GotLocation event with the obtained coordinates
-      self.GotLocation(latitude, longitude)
+      self.GotLocationFromAddress(address, latitude, longitude)
     }
   }
 
-  @objc open func GotLocation(_ latitude: Double, _ longitude: Double) {
-    EventDispatcher.dispatchEvent(of: self, called: "GotLocation", arguments: latitude as NSNumber, longitude as NSNumber)
+  @objc open func GotLocationFromAddress(_ address: String, _ latitude: Double, _ longitude: Double) {
+    EventDispatcher.dispatchEvent(of: self, called: "GotLocationFromAddress", arguments: address as NSString,
+                                  latitude as NSNumber, longitude as NSNumber)
   }
   
   @objc open func ReverseGeocode(_ latitude: Double, _ longitude: Double) {

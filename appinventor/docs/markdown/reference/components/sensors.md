@@ -579,7 +579,7 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 {:id="LocationSensor.GotAddress"} GotAddress(*address*{:.text})
 : Reports the address in response to a ReverseGeocode request.
 
-{:id="LocationSensor.GotLocation"} GotLocation(*latitude*{:.number},*longitude*{:.number})
+{:id="LocationSensor.GotLocationFromAddress"} GotLocationFromAddress(*address*{:.text},*latitude*{:.number},*longitude*{:.number})
 : Reports the latitude and longitude in response to a Geocode request.
 
 {:id="LocationSensor.LocationChanged"} LocationChanged(*latitude*{:.number},*longitude*{:.number},*altitude*{:.number},*speed*{:.number})
