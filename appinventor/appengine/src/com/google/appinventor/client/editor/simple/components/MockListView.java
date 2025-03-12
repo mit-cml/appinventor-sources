@@ -293,9 +293,9 @@ public final class MockListView extends MockVisibleComponent {
   }
 
   private void setItemHeight(boolean detail, boolean image) {
-    int mainHeight = (int) Float.parseFloat(mainFontSize);
-    int detailHeight = (int) Float.parseFloat(detailFontSize);
-    int height = detail ? mainHeight + detailHeight : mainHeight;
+    float mainHeight = Float.parseFloat(mainFontSize);
+    float detailHeight = Float.parseFloat(detailFontSize);
+    int height = Math.round(detail ? mainHeight + detailHeight : mainHeight);
     itemHeight = (image ? Math.max(imageHeight, height) : height) + 8;
   }
 
