@@ -214,13 +214,16 @@ public abstract class MockVisibleComponent extends MockComponent {
    * @param value true or false
    */
   public void setCoordPropertiesVisible(boolean value) {
-    this.coordPropertiesVisible = value;
-
-    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
-
     EditableProperty x = properties.getProperty(PROPERTY_NAME_LEFT);
     EditableProperty y = properties.getProperty(PROPERTY_NAME_TOP);
 
+    if (x == null || y == null) {
+      // The subclass hasn't yet been added to an arrangement so it doesn't have positioning
+      return;
+    }
+
+    this.coordPropertiesVisible = value;
+    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
     x.setType(type);
     y.setType(type);
   }
