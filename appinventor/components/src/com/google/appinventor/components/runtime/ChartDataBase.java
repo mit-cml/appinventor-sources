@@ -29,8 +29,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.mikephil.charting.data.ChartData;
-
 /**
  * Base class for Chart Data components. Contains functionality common
  * to any Chart Data component. The component corresponds to a single
