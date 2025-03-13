@@ -291,8 +291,10 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   private void resetHighlightAtIndex(int index) {
-    List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
-    defaultColors.remove(index);
+    if (dataModel.getDataset() instanceof LineDataSet) {
+      List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
+      defaultColors.remove(index);
+    }
   }
 }
 
