@@ -11,9 +11,11 @@ open class LineChartViewBase: PointChartView {
   override init(_ chartComponent: Chart) {
     super.init(chartComponent)
 
-    chart = DGCharts.LineChartView()
+    let chart = DGCharts.LineChartView()
+    self.chart = chart
+    chart.renderer = LineWithTrendlineRenderer(chart: chart, animator: chart.chartAnimator, viewPortHandler: chart.viewPortHandler)
     data = DGCharts.LineChartData()
-    chart?.data = data
+    chart.data = data
 
     initializeDefaultSettings()
   }

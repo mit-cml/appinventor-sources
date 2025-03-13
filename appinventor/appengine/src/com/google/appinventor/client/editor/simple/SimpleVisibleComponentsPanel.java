@@ -20,6 +20,7 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,6 +43,7 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
   private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
   private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
+  @UiField protected CheckBox HiddenComponentsCheckbox;
 
   // Corresponding panel for non-visible components (because we allow users to drop
   // non-visible components onto the form, but we show them in the non-visible
@@ -216,6 +218,10 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
       }
     }
     listboxPhonePreview.setEnabled(enable);
+  }
+
+  public void focusCheckbox() {
+    HiddenComponentsCheckbox.setFocus(true);
   }
 
   /**

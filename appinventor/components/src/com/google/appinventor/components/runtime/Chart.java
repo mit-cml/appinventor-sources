@@ -143,6 +143,11 @@ public class Chart extends AndroidViewComponent
   }
 
   @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for charts
+  }
+
+  @Override
   public List<Component> getChildren() {
     return new ArrayList<Component>(dataComponents);
   }

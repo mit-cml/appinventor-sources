@@ -377,6 +377,8 @@
    ((number? arg) arg)
    ((string? arg)
     (or (padded-string->number arg) *non-coercible-value*))
+   ((yail:isa arg AIComponentKit.OptionList)
+    (coerce-to-number (yail:invoke arg 'toUnderlyingValue)))
    (else *non-coercible-value*)))
 
 (define (coerce-to-key arg)
@@ -403,6 +405,8 @@
              (yail:isa arg NSDictionary))
          (yail:invoke arg 'toString))
         ((yail:isa arg NSDate) (yail:format-date arg))
+        ((yail:isa arg AIComponentKit.OptionList)
+         (coerce-to-string (yail:invoke arg 'toUnderlyingValue)))
         ((list? arg)
          (if (use-json-format)
              (let ((pieces (map get-json-display-representation arg)))
@@ -492,11 +496,14 @@
   (cond
    ((yail-dictionary? arg) arg)
    ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+   ((string? arg) (invoke AIComponentKit.Web 'decodeJson: arg))
    (else
-    (let ((result (invoke arg 'toYailDictionary)))
-      (if result
-          result
-          *non-coercible-value*)))))
+    (try-catch
+      (let ((result (invoke arg 'toYailDictionary)))
+        (if result
+            result
+            *non-coercible-value*))
+      (exception java.lang.Exception *non-coercible-value*)))))
 
 (define (coerce-to-boolean arg)
   (cond

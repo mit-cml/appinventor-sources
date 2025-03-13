@@ -52,7 +52,7 @@ import Component
   var _legendEnabled = true
   var _gridEnabled = true
   var _labels = [String]()
-  var _dataComponents: Array<ChartDataBase> = []
+  var _dataComponents: Array<ChartComponent> = []
   
   var _axesTextColor: UIColor
   private var darkMode = false
@@ -313,7 +313,7 @@ import Component
     AxesTextColor = colorToArgb(_axesTextColor)
   }
 
-  func addDataComponent(_ dataComponent: ChartDataBase) {
+  func addDataComponent(_ dataComponent: ChartComponent) {
     _dataComponents.append(dataComponent)
   }
 }

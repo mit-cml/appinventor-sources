@@ -194,6 +194,13 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_MAP_TYPE = "map_type";
 
+ /**
+   * Map custom URL template required by the Map component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapCustomUrlPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_MAP_CUSTOMURL = "map_customurl";
+
   /**
    * Integer values limited to the range of valid map zoom levels [1, 18].
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapZoomPropertyEditor

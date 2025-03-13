@@ -6,18 +6,16 @@
 import Foundation
 import DGCharts
 
-enum EntryCriterion {
+public enum EntryCriterion {
   case All
   case XValue
   case YValue
 }
 
-open class ChartDataModel {
+open class ChartDataModel: DataModel {
   let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?
   let view: ChartView
-  var _entries = [DGCharts.ChartDataEntry]()
-  var maximumTimeEntries: Int32 = 200
 
   init(data: DGCharts.ChartData, view: ChartView) {
     self.data = data
@@ -43,37 +41,11 @@ open class ChartDataModel {
   }
 
   func setLabel(_ text: String) {
-    print("got in here")
     dataset?.label = text
   }
   
   func setDataLabelColor(_ argb: UIColor) {
     dataset?.valueTextColor = argb
-  }
-
-  func setElements(_ elements: String) {
-    let tupleSize = 2
-
-    let entries = elements.split(",")
-
-    // entries.count - 1 because ranges are inclusive in Swift
-    for i in stride(from: tupleSize - 1, to: entries.count, by: tupleSize) {
-      var tupleEntries: Array<String> = []
-      // Iterate all over the tuple entries
-      for j in stride(from: tupleSize - 1, through: 0, by: -1) {
-        let index: Int = i - j
-        tupleEntries.append(entries[index])
-      }
-
-      // Add entry from the parsed tuple
-      let yailListEntries: YailList<AnyObject> = []
-      for tuple in tupleEntries {
-        yailListEntries.add(tuple)
-      }
-      // addEntryFromTuple(tupleEntries as! YailList<AnyObject>)
-      addEntryFromTuple(yailListEntries)
-
-    }
   }
 
   func importFromList(_ list: [AnyObject]) {
@@ -139,10 +111,6 @@ open class ChartDataModel {
     return tuples as NSArray
   }
 
-  func addEntryFromTuple(_ tuple: YailList<AnyObject>) {
-    // abstract
-  }
-
   func removeEntryFromTuple(_ tuple: YailList<AnyObject>) {
     guard let entry = getEntryFromTuple(tuple) else {
       // Not a valid entry
@@ -171,7 +139,7 @@ open class ChartDataModel {
   func findEntriesByCriterion(_ value: String, _ criterion: EntryCriterion) -> YailList<AnyObject> {
     var entries: Array<YailList<AnyObject>> = []
     let entriesYail: YailList<AnyObject> = []
-    for entry in _entries {
+    for entry in chartEntries {
       if isEntryCriterionSatisfied(entry, criterion, value: value) {
         entries.append(getTupleFromEntry(entry))
       }
@@ -240,10 +208,6 @@ open class ChartDataModel {
 
   }
 
-  func clearEntries() {
-    _entries.removeAll()
-  }
-
   func addTimeEntry(_ tuple: YailList<AnyObject>) {
     if _entries.count > maximumTimeEntries {
       _entries.remove(at: 0)
@@ -252,24 +216,14 @@ open class ChartDataModel {
     addEntryFromTuple(tuple)
   }
 
-  func setMaximumTimeEntries(_ count: Int32) {
-    maximumTimeEntries = count
-  }
-
-  func setDefaultStylingProperties() {
-    // this method is left empty
-  }
-
-  func getDefaultValue(_ index: Int) -> String {
-    // return value which directly corresponds to the index number
-    return "\(index)"
-  }
-
-  func areEntriesEqual(_ e1: DGCharts.ChartDataEntry, _ e2: DGCharts.ChartDataEntry) -> Bool {
+  override func areEntriesEqual(_ e1: AnyObject, _ e2: AnyObject) -> Bool {
+    guard let e1 = e1 as? DGCharts.ChartDataEntry, let e2 = e2 as? DGCharts.ChartDataEntry else {
+      return super.areEntriesEqual(e1, e2)
+    }
     return e1 == e2
   }
 
-  public var entries: [DGCharts.ChartDataEntry] {
-    return self._entries
+  public var chartEntries: [DGCharts.ChartDataEntry] {
+    return _entries as? [DGCharts.ChartDataEntry] ?? []
   }
 }

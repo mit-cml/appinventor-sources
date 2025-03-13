@@ -9,7 +9,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Yail.componentblock');
+goog.provide('AI.Yail.componentblock');
 
 /**
  * Lyn's History:
@@ -26,52 +26,52 @@ goog.provide('Blockly.Yail.componentblock');
  * @param {String} eventName  the type of event, e.g., Click
  * @returns {Function} event code generation function with instanceName and eventName bound in
  */
-Blockly.Yail.component_event = function() {
+AI.Yail.component_event = function() {
 
   var preamble;
   if (this.isGeneric) {
-    preamble = Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT
+    preamble = AI.Yail.YAIL_DEFINE_GENERIC_EVENT
       + this.typeName
-      + Blockly.Yail.YAIL_SPACER
+      + AI.Yail.YAIL_SPACER
       + this.eventName;
   } else {
-    preamble = Blockly.Yail.YAIL_DEFINE_EVENT
+    preamble = AI.Yail.YAIL_DEFINE_EVENT
       + this.getFieldValue("COMPONENT_SELECTOR")
-      + Blockly.Yail.YAIL_SPACER
+      + AI.Yail.YAIL_SPACER
       + this.eventName;
   }
 
-  var body = Blockly.Yail.statementToCode(this, 'DO');
+  var body = AI.Yail.statementToCode(this, 'DO');
   // TODO: handle deactivated block, null body
   if(body == ""){
-    body = Blockly.Yail.YAIL_NULL;
+    body = AI.Yail.YAIL_NULL;
   }
 
 
   var code = preamble
-    + Blockly.Yail.YAIL_OPEN_COMBINATION
+    + AI.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     // declaredNames gives us names in local language, but we want the default
     // + this.declaredNames()
-    //       .map(function (name) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+name;})
+    //       .map(function (name) {return AI.Yail.YAIL_LOCAL_VAR_TAG+name;})
     //       .join(' ')
     // So we do this instead:
     + this.getParameters()
-          .map(function (param) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+param.name;})
+          .map(function (param) {return AI.Yail.YAIL_LOCAL_VAR_TAG+param.name;})
           .join(' ')
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION
-    + Blockly.Yail.YAIL_SET_THIS_FORM
-    + Blockly.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_CLOSE_COMBINATION
+    + AI.Yail.YAIL_SET_THIS_FORM
+    + AI.Yail.YAIL_SPACER
     + body
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 }
 
-Blockly.Yail.component_method = function() {
-  var methodHelperYailString = Blockly.Yail.methodHelper(this, (this.isGeneric ? this.typeName : this.instanceName), this.methodName, this.isGeneric);
+AI.Yail.component_method = function() {
+  var methodHelperYailString = AI.Yail.methodHelper(this, (this.isGeneric ? this.typeName : this.instanceName), this.methodName, this.isGeneric);
   //if the method returns a value
   if(this.getMethodTypeObject() && this.getMethodTypeObject().returnType) {
-    return [methodHelperYailString, Blockly.Yail.ORDER_ATOMIC];
+    return [methodHelperYailString, AI.Yail.ORDER_ATOMIC];
   } else {
     return methodHelperYailString;
   }
@@ -80,16 +80,16 @@ Blockly.Yail.component_method = function() {
 /**
  * Returns a function that generates Yail to call to a method with a return value. The generated
  * function takes no arguments and returns a 2-element Array with the method call code string
- * and the operation order Blockly.Yail.ORDER_ATOMIC.
+ * and the operation order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
-Blockly.Yail.methodWithReturn = function(instanceName, methodName) {
+AI.Yail.methodWithReturn = function(instanceName, methodName) {
   return function() {
-    return [Blockly.Yail.methodHelper(this, instanceName, methodName, false),
-            Blockly.Yail.ORDER_ATOMIC];
+    return [AI.Yail.methodHelper(this, instanceName, methodName, false),
+            AI.Yail.ORDER_ATOMIC];
   }
 }
 
@@ -101,24 +101,24 @@ Blockly.Yail.methodWithReturn = function(instanceName, methodName) {
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
-Blockly.Yail.methodNoReturn = function(instanceName, methodName) {
+AI.Yail.methodNoReturn = function(instanceName, methodName) {
   return function() {
-    return Blockly.Yail.methodHelper(this, instanceName, methodName, false);
+    return AI.Yail.methodHelper(this, instanceName, methodName, false);
   }
 }
 
 /**
  * Returns a function that generates Yail to call to a generic method with a return value.
  * The generated function takes no arguments and returns a 2-element Array with the method call
- * code string and the operation order Blockly.Yail.ORDER_ATOMIC.
+ * code string and the operation order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
-Blockly.Yail.genericMethodWithReturn = function(typeName, methodName) {
+AI.Yail.genericMethodWithReturn = function(typeName, methodName) {
   return function() {
-    return [Blockly.Yail.methodHelper(this, typeName, methodName, true), Blockly.Yail.ORDER_ATOMIC];
+    return [AI.Yail.methodHelper(this, typeName, methodName, true), AI.Yail.ORDER_ATOMIC];
   }
 }
 
@@ -130,9 +130,9 @@ Blockly.Yail.genericMethodWithReturn = function(typeName, methodName) {
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
-Blockly.Yail.genericMethodNoReturn = function(typeName, methodName) {
+AI.Yail.genericMethodNoReturn = function(typeName, methodName) {
   return function() {
-    return Blockly.Yail.methodHelper(this, typeName, methodName, true);
+    return AI.Yail.methodHelper(this, typeName, methodName, true);
   }
 }
 
@@ -145,7 +145,7 @@ Blockly.Yail.genericMethodNoReturn = function(typeName, methodName) {
  * @param {String} generic true if this is for a generic method block, false if for an instance
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
-Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
+AI.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   var componentDb = methodBlock.workspace.getComponentDatabase();
 
 // TODO: the following line  may be a bit of a hack because it hard-codes "component" as the
@@ -159,21 +159,21 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   var numOfParams = paramObjects.length;
   var yailTypes = [];
   if(generic) {
-    yailTypes.push(Blockly.Yail.YAIL_COMPONENT_TYPE);
+    yailTypes.push(AI.Yail.YAIL_COMPONENT_TYPE);
   }
   for(var i=0;i<paramObjects.length;i++) {
     yailTypes.push(paramObjects[i].type);
   }
-  //var yailTypes = (generic ? [Blockly.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
+  //var yailTypes = (generic ? [AI.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
     name = componentDb.getType(name).type;
-    callPrefix = continuation ? Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD_BLOCKING : Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD
+    callPrefix = continuation ? AI.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD_BLOCKING : AI.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD
         // TODO(hal, andrew): check for empty socket and generate error if necessary
-        + Blockly.Yail.valueToCode(methodBlock, 'COMPONENT', Blockly.Yail.ORDER_NONE)
-        + Blockly.Yail.YAIL_SPACER;
+        + AI.Yail.valueToCode(methodBlock, 'COMPONENT', AI.Yail.ORDER_NONE)
+        + AI.Yail.YAIL_SPACER;
   } else {
-    callPrefix = continuation ? Blockly.Yail.YAIL_CALL_COMPONENT_METHOD_BLOCKING : Blockly.Yail.YAIL_CALL_COMPONENT_METHOD;
+    callPrefix = continuation ? AI.Yail.YAIL_CALL_COMPONENT_METHOD_BLOCKING : AI.Yail.YAIL_CALL_COMPONENT_METHOD;
     name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
     // special case for handling Clock.Add
     var timeUnit = methodBlock.getFieldValue("TIME_UNIT");
@@ -187,41 +187,41 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   var args = [];
   for (var x = 0; x < numOfParams; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    args.push(Blockly.Yail.YAIL_SPACER
-              + Blockly.Yail.valueToCode(methodBlock, 'ARG' + x, Blockly.Yail.ORDER_NONE));
+    args.push(AI.Yail.YAIL_SPACER
+              + AI.Yail.valueToCode(methodBlock, 'ARG' + x, AI.Yail.ORDER_NONE));
   }
 
   return callPrefix
-    + Blockly.Yail.YAIL_QUOTE
+    + AI.Yail.YAIL_QUOTE
     + name
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE
     + methodName
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_OPEN_COMBINATION
-    + Blockly.Yail.YAIL_LIST_CONSTRUCTOR
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_OPEN_COMBINATION
+    + AI.Yail.YAIL_LIST_CONSTRUCTOR
     + args.join(' ')
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE
-    + Blockly.Yail.YAIL_OPEN_COMBINATION
+    + AI.Yail.YAIL_CLOSE_COMBINATION
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE
+    + AI.Yail.YAIL_OPEN_COMBINATION
     + yailTypes.join(' ')
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    + AI.Yail.YAIL_CLOSE_COMBINATION
+    + AI.Yail.YAIL_CLOSE_COMBINATION;
 };
 
-Blockly.Yail.component_set_get = function() {
+AI.Yail.component_set_get = function() {
   if(this.setOrGet == "set") {
     if(this.isGeneric) {
-      return Blockly.Yail.genericSetproperty.call(this);
+      return AI.Yail.genericSetproperty.call(this);
     } else {
-      return Blockly.Yail.setproperty.call(this);
+      return AI.Yail.setproperty.call(this);
     }
   } else {
     if(this.isGeneric) {
-      return Blockly.Yail.genericGetproperty.call(this);
+      return AI.Yail.genericGetproperty.call(this);
     } else {
-      return Blockly.Yail.getproperty.call(this);
+      return AI.Yail.getproperty.call(this);
     }
   }
 };
@@ -233,16 +233,16 @@ Blockly.Yail.component_set_get = function() {
  * @param {String} instanceName
  * @returns {Function} property setter code generation function with instanceName bound in
  */
-Blockly.Yail.setproperty = function() {
+AI.Yail.setproperty = function() {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var assignLabel = Blockly.Yail.YAIL_QUOTE + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE + propertyName;
-  var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + Blockly.Yail.YAIL_SPACER;
+  var assignLabel = AI.Yail.YAIL_QUOTE + this.getFieldValue("COMPONENT_SELECTOR") + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE + propertyName;
+  var code = AI.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + AI.Yail.YAIL_SPACER;
   // TODO(hal, andrew): check for empty socket and generate error if necessary
-  code = code.concat(Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE /*TODO:?*/));
-  code = code.concat(Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-    + propType + Blockly.Yail.YAIL_CLOSE_COMBINATION);
+  code = code.concat(AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE /*TODO:?*/));
+  code = code.concat(AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+    + propType + AI.Yail.YAIL_CLOSE_COMBINATION);
   return code;
 };
 
@@ -254,22 +254,22 @@ Blockly.Yail.setproperty = function() {
  * @param {String} instanceName
  * @returns {string} property setter code generation function with instanceName bound in
  */
-Blockly.Yail.genericSetproperty = function() {
+AI.Yail.genericSetproperty = function() {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var assignLabel = Blockly.Yail.YAIL_QUOTE
-    + this.workspace.getComponentDatabase().getType(this.typeName).type + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE + propertyName;
-  var code = Blockly.Yail.YAIL_SET_AND_COERCE_COMPONENT_TYPE_PROPERTY
+  var assignLabel = AI.Yail.YAIL_QUOTE
+    + this.workspace.getComponentDatabase().getType(this.typeName).type + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE + propertyName;
+  var code = AI.Yail.YAIL_SET_AND_COERCE_COMPONENT_TYPE_PROPERTY
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
-    + Blockly.Yail.YAIL_SPACER
+    + AI.Yail.valueToCode(this, 'COMPONENT', AI.Yail.ORDER_NONE)
+    + AI.Yail.YAIL_SPACER
     + assignLabel
-    + Blockly.Yail.YAIL_SPACER;
+    + AI.Yail.YAIL_SPACER;
   // TODO(hal, andrew): check for empty socket and generate error if necessary
-  code = code.concat(Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE /*TODO:?*/));
-  code = code.concat(Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-    + propType + Blockly.Yail.YAIL_CLOSE_COMBINATION);
+  code = code.concat(AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE /*TODO:?*/));
+  code = code.concat(AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+    + propType + AI.Yail.YAIL_CLOSE_COMBINATION);
   return code;
 };
 
@@ -277,47 +277,47 @@ Blockly.Yail.genericSetproperty = function() {
 /**
  * Returns a function that takes no arguments, generates Yail code for getting a component's
  * property value and returns a 2-element array containing the property getter code string and the
- * operation order Blockly.Yail.ORDER_ATOMIC.
+ * operation order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @returns {Function} property getter code generation function with instanceName bound in
  */
-Blockly.Yail.getproperty = function(instanceName) {
+AI.Yail.getproperty = function(instanceName) {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var code = Blockly.Yail.YAIL_GET_PROPERTY
-    + Blockly.Yail.YAIL_QUOTE
+  var code = AI.Yail.YAIL_GET_PROPERTY
+    + AI.Yail.YAIL_QUOTE
     + this.getFieldValue("COMPONENT_SELECTOR")
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE
     + propertyName
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [code, Blockly.Yail.ORDER_ATOMIC];
+    + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 
 /**
  * Returns a function that takes no arguments, generates Yail code for getting a generic component's
  * property value and returns a 2-element array containing the property getter code string and the
- * operation order Blockly.Yail.ORDER_ATOMIC.
+ * operation order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @returns {Function} property getter code generation function with instanceName bound in
  */
-Blockly.Yail.genericGetproperty = function(typeName) {
+AI.Yail.genericGetproperty = function(typeName) {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var code = Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY
+  var code = AI.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE
+    + AI.Yail.valueToCode(this, 'COMPONENT', AI.Yail.ORDER_NONE)
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE
     + this.workspace.getComponentDatabase().getType(this.typeName).type
-    + Blockly.Yail.YAIL_SPACER
-    + Blockly.Yail.YAIL_QUOTE
+    + AI.Yail.YAIL_SPACER
+    + AI.Yail.YAIL_QUOTE
     + propertyName
-    + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [code, Blockly.Yail.ORDER_ATOMIC];
+    + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 
@@ -325,26 +325,26 @@ Blockly.Yail.genericGetproperty = function(typeName) {
 /**
  * Returns a function that takes no arguments, generates Yail to get the value of a component
  * object, and returns a 2-element array containing the component getter code and the operation
- * order Blockly.Yail.ORDER_ATOMIC.
+ * order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @returns {Function} component getter code generation function with instanceName bound in
  */
-Blockly.Yail.component_component_block = function() {
-  return [Blockly.Yail.YAIL_GET_COMPONENT + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_CLOSE_COMBINATION,
-          Blockly.Yail.ORDER_ATOMIC];
+AI.Yail.component_component_block = function() {
+  return [AI.Yail.YAIL_GET_COMPONENT + this.getFieldValue("COMPONENT_SELECTOR") + AI.Yail.YAIL_CLOSE_COMBINATION,
+          AI.Yail.ORDER_ATOMIC];
 };
 
 /**
  * Returns a function that takes no arguments, generates Yail to get a list of all
  * components of a type, and returns a 2-element array containing the component
- * getter code and the operation order Blockly.Yail.ORDER_ATOMIC.
+ * getter code and the operation order AI.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
  * @returns {Function} component getter code generation function with instanceName bound in
  */
-Blockly.Yail['component_all_component_block'] = function() {
+AI.Yail['component_all_component_block'] = function() {
   var fqcn = this.workspace.getComponentDatabase().getType(this.getFieldValue("COMPONENT_TYPE_SELECTOR")).componentInfo.type;
-  return [Blockly.Yail.YAIL_GET_ALL_COMPONENT + fqcn + Blockly.Yail.YAIL_CLOSE_COMBINATION,
-          Blockly.Yail.ORDER_ATOMIC];
+  return [AI.Yail.YAIL_GET_ALL_COMPONENT + fqcn + AI.Yail.YAIL_CLOSE_COMBINATION,
+          AI.Yail.ORDER_ATOMIC];
 };

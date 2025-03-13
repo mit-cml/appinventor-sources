@@ -22,7 +22,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -41,6 +44,7 @@ import com.google.gwt.user.client.ui.Label;
 
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.logging.Logger;
 
 /**
  * The top panel, which contains the main menu, various links plus ads.
@@ -84,6 +88,7 @@ public class TopPanel extends Composite {
   }-*/;
 
   private static final Dictionary LANGUAGES;
+  private static final Logger LOG = Logger.getLogger(TopPanel.class.getName());
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -101,8 +106,15 @@ public class TopPanel extends Composite {
     bindUI();
     Config config = getSystemConfig();
     String logoUrl = config.getLogoUrl();
+
+
     if (!Strings.isNullOrEmpty(logoUrl)) {
-      Image.wrap(logo).addClickHandler(new WindowOpenClickHandler(logoUrl));
+      try {
+        Image wpr = Image.wrap(logo);
+        wpr.addClickHandler(new WindowOpenClickHandler(logoUrl));
+      } catch (AssertionError e) {
+        LOG.warning("assertion error in getting Image from logo url");
+      }
     }
 
     if (Ode.getInstance().isReadOnly()) {

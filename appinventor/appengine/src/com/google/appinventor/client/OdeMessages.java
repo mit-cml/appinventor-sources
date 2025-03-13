@@ -98,6 +98,11 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Error given when sending fails")
   String GallerySendingError();
 
+  @DefaultMessage("This project contains extensions and cannot be published to gallery.")
+  @Description("Error Message for displaying error when user tries to publish the project" + 
+    "containing extensions")
+  String ProjectContainsExtensions();
+
   @DefaultMessage("Error Logging Into the Gallery")
   @Description("Error given if login fails for some reason")
   String GalleryLoginError();
@@ -660,7 +665,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message providing details about starting a USB connection.")
   String usbMenuItem();
 
-  @DefaultMessage("Reset Connection")
+  @DefaultMessage("Reset Connection (Alt + Shift + R)")
   @Description("Reset all connections.")
   String resetConnectionsMenuItem();
 
@@ -668,7 +673,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Hard Reset the Emulator.")
   String hardResetConnectionsMenuItem();
 
-  @DefaultMessage("Refresh Companion Screen")
+  @DefaultMessage("Refresh Companion Screen (Alt + R)")
   @Description("Refresh the companion screen.")
   String refreshCompanionMenuItem();
 
@@ -729,6 +734,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Show Splash Screen")
   @Description("Redisplay the Splash Screen")
   String showSplashMenuItem();
+
+  @DefaultMessage("Show Keyboard Shortcuts (Alt + ?)")
+  @Description("Display the Shortcuts dialog")
+  String showShortcuts();
 
   @DefaultMessage("Library")
   @Description("Name of Library link")
@@ -1275,7 +1284,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String blocksLoadFailure(String formName);
 
   // Used in editor/youngandroid/palette/YoungAndroidPalettePanel.java
-  @DefaultMessage("Search Components...")
+  @DefaultMessage("Type / to search components")
   @Description("Text shown in the component palette search box")
   String searchComponents();
 
@@ -1816,13 +1825,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move these projects to trash: {0}?")
+  @DefaultMessage("Are you sure you want to move these items to trash? {0}")
   @Description("Confirmation message for selecting multiple projects and clicking trash")
   String confirmMoveToTrash(String projectNames);
+  @DefaultMessage("Are you sure you want to delete these items permanently? {0}")
+  @Description("Confirmation message for selecting multiple projects in trash and clicking delete")
+  String confirmDeleteForever(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move {0} projects to trash?")
-  @Description("Confirmation message deleting large number of selected projects")
-  String confirmMoveToTrashCount(String projectNames);
+  @DefaultMessage("Projects: {0}")
+  @Description("Information on selected projects for delete/trash confirmation")
+  String confirmTrashDeleteProjects(String projectNames);
+
+  @DefaultMessage("Folders: {0}")
+  @Description("Information on selected folders for delete/trash confirmation")
+  String confirmTrashDeleteFolders(String folderNames);
 
   @DefaultMessage("Server error: could not delete project. Please try again later!")
   @Description("Error message reported when deleting a project failed on the server.")
@@ -5140,6 +5156,32 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String MaximumRangeMethods();
 
+  @DefaultMessage(
+    "<table border='1' cellpadding='8' cellspacing='0'>" +
+    "<thead>" +
+    "<tr>" +
+    "<th>Action</th>" +
+    "<th>Key Combination</th>" +
+    "</tr>" +
+    "</thead>" +
+    "<tbody>" +
+    "<tr><td>Focus Component search box</td><td>/</td></tr>" +
+    "<tr><td>Focus Components tree</td><td>T</td></tr>" +
+    "<tr><td>Focus Viewer</td><td>V</td></tr>" +
+    "<tr><td>Focus Properties Panel</td><td>P</td></tr>" +
+    "<tr><td>Focus Media Panel</td><td>M</td></tr>" +
+    "<tr><td>Switch between Designer and Block editor</td><td>Ctrl + Alt</td></tr>" +
+    "<tr><td>Rename Component</td><td>Alt + N</td></tr>" +
+    "<tr><td>Delete Component</td><td>Delete/Backspace</td></tr>" +
+    "<tr><td>Reset Connection</td><td>Alt + Shift + R</td></tr>" +
+    "<tr><td>Refresh Companion Screen</td><td>Alt + R</td></tr>" +
+    "<tr><td>Navigate Components in components tree</td><td>↑/↓</td></tr>" +
+    "<tr><td>Open this dialog</td><td>Alt + ?</td></tr>" +
+    "</tbody>" +
+    "</table>")
+  @Description("")
+  String KeyBoardShortcuts();
+
   // =========== ListPicker
   @DefaultMessage("ItemTextColor")
   @Description("")
@@ -5333,6 +5375,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Terrain map type")
   String mapTypeTerrain();
 
+  @DefaultMessage("Custom")
+  @Description("Custom map type")
+  String mapTypeCustom();
+
+  @DefaultMessage("CustomUrl")
+  @Description("The URL of the custom tile layer to use as the base of the map")
+  String mapCustomUrl();
+
   @DefaultMessage("Metric")
   @Description("Display name for the metric unit system")
   String mapScaleUnitsMetric();
@@ -5400,6 +5450,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("The value supplied for {0} was not a valid latitude, longitude pair.")
   @Description("")
   String expectedLatLongPair(String property);
+
+  @DefaultMessage("The provided URL {0} does not contain placeholders for {1}.") // Can't use {x} here, Java compiler tries to interpret the variable x
+  @Description("")
+  String customUrlNoPlaceholders(String property, String placeholders);
+
+  @DefaultMessage("The provided URL {0}, when tested, failed authentication (with HTTP status code {1}).")
+  @Description("")
+  String customUrlBadAuthentication(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned a bad HTTP status code ({1}).")
+  @Description("")
+  String customUrlBadStatusCode(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned an exception ({1}).")
+  @Description("")
+  String customUrlException(String property, String e);
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")

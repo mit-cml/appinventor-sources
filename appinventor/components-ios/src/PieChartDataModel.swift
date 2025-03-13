@@ -116,7 +116,7 @@ class PieChartDataModel: Chart2DDataModel {
     setColors([argb])
   }
 
-  override func areEntriesEqual(_ e1: ChartDataEntry, _ e2: ChartDataEntry) -> Bool {
+  override func areEntriesEqual(_ e1: AnyObject, _ e2: AnyObject) -> Bool {
     guard let p1 = e1 as? PieChartDataEntry, let p2 = e2 as? PieChartDataEntry else {
       return false
     }

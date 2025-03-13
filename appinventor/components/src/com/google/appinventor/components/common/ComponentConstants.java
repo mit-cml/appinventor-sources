@@ -32,6 +32,14 @@ public class ComponentConstants {
   public static final int EMPTY_HV_ARRANGEMENT_WIDTH = 100;
   public static final int EMPTY_HV_ARRANGEMENT_HEIGHT = 100;
 
+  public static final int EMPTY_A_ARRANGEMENT_WIDTH = 100;
+  public static final int EMPTY_A_ARRANGEMENT_HEIGHT = 100;
+
+  /**
+   * Default value for the top and left coordinates of view components.
+   */
+  public static final int DEFAULT_X_Y = Integer.MIN_VALUE;
+
   /**
    * Canvas component.
    */
