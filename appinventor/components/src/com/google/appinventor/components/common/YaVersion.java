@@ -605,7 +605,8 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
   // For YOUNG_ANDROID_VERSION 232:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
-  public static final int YOUNG_ANDROID_VERSION = 231;
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -741,7 +742,9 @@ public class YaVersion {
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
 
-
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
+  // - AbsoluteArrangement component was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
