@@ -5,7 +5,6 @@
 
 import Foundation
 import DGCharts
-import Component
 
 @objc public class ChartType: NSObject, OptionList {
   @objc public static let Line = ChartType(0)
@@ -124,7 +123,7 @@ import Component
       return colorToArgb(_axesTextColor)
     }
     set {
-      if newValue == Component.Color.default {
+      if newValue == Color.default.int32 {
         _axesTextColor = darkMode ? UIColor.white : UIColor.black
       }
       _axesTextColor = argbToColor(newValue)
