@@ -135,8 +135,8 @@ public class RelativeLayout implements Layout {
     }
     View view = component.getView();
     LayoutParams params = (LayoutParams) view.getLayoutParams();
-    params.leftMargin = x;
-    params.topMargin = y;
+    params.leftMargin = ViewUtil.calculatePixels(view, x);
+    params.topMargin = ViewUtil.calculatePixels(view, y);
     view.requestLayout();
   }
 

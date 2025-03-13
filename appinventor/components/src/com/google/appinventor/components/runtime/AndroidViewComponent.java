@@ -262,7 +262,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public int Left() {
-    return (int)(left / container.$form().deviceDensity());
+    return left;
   }
 
   /**
@@ -273,7 +273,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty
   public void Left(int x) {
-    this.left = Math.round(x * container.$form().deviceDensity());
+    this.left = x;
     container.setChildNeedsLayout(this);
   }
 
@@ -306,7 +306,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public int Top() {
-    return (int)(top / container.$form().deviceDensity());
+    return top;
   }
 
   /**
@@ -317,7 +317,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty
   public void Top(int y) {
-    this.top = Math.round(y * container.$form().deviceDensity());
+    this.top = y;
     container.setChildNeedsLayout(this);
   }
 
