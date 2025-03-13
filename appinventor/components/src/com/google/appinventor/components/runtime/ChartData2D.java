@@ -83,10 +83,8 @@ public final class ChartData2D extends ChartDataBase {
 
             YailList labelList = container.Labels();
             int indexList = labelList.indexOf(x);
-            Log.i(this.getClass().getName(), "labelList is " + indexList + " x " + x);
             if (indexList > -1){
               pair = YailList.makeList(Arrays.asList(indexList, y));
-              Log.i(this.getClass().getName(),  " pair is " + pair);
             }
 
             dataModel.addEntryFromTuple(pair);
