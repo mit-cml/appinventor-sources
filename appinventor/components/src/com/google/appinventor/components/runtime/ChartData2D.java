@@ -57,15 +57,6 @@ public final class ChartData2D extends ChartDataBase {
    * @param x - x value of entry
    * @param y - y value of entry
    */
-  /**
-   * Adds an entry with the specified x and y value. Values can be specified as text,
-   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
-   * For Bar charts, the x value is rounded to the nearest integer.
-   * For Pie Charts, the x value is a text value.
-   *
-   * @param x - x value of entry
-   * @param y - y value of entry
-   */
   @SimpleFunction()
   public void AddEntry(final String x, final String y) {
     // Entry should be added via the Thread Runner asynchronously
