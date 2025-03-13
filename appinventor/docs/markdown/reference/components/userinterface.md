@@ -863,8 +863,11 @@ This is a visible component that displays a list of text and image elements in y
 : Set the list of choices specified as a string with the elements separated by commas
  such as: Cheese,Fruit,Bacon,Radish.
 
+{:id="ListView.FontSize" .number} *FontSize*
+: Specifies the font size of the element's main text.
+
 {:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
-: Specifies the `ListView` item's text font size
+: Specifies the font size of the element's detail text.
 
 {:id="ListView.FontTypeface" .text .do} *FontTypeface*
 : Specifies the label's text's font face as default, serif, sans
@@ -933,9 +936,6 @@ This is a visible component that displays a list of text and image elements in y
 
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
-
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
 
 {:id="ListView.Top" .number} *Top*
 : Specifies the position of the Top edge of the component relative to an
