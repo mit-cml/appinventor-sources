@@ -277,6 +277,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Chart")) {
         srcCompVersion = upgradeChartProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ChartData2D")) {
+        srcCompVersion = upgradeChartData2DProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ChatBot")) {
         srcCompVersion = upgradeChatBotProperties(componentProperties, srcCompVersion);
 
@@ -870,6 +873,14 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     return srcCompVersion;
+  }
+
+  private static int upgradeChartData2DProperties(Map<String, JSONValue> componentProperties,
+                                            int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added a dataLabelColor feature.
+      srcCompVersion = 2;
+    }
   }
 
   private static int upgradeChatBotProperties(Map<String, JSONValue> componentProperties,
