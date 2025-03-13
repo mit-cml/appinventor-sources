@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.HiddenComponentsManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -18,6 +20,8 @@ import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -90,6 +94,12 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
         changeFormPhonePreview(idx, val);
+      }
+    });
+    HiddenComponentsCheckbox.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        HiddenComponentsManager.getInstance().toggle();
       }
     });
     initWidget(phoneScreen);
@@ -285,5 +295,15 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @Override
   public void onResetDatabase() {
 
+  }
+
+  public void show(MockForm form) {
+    this.form = form;
+    HiddenComponentsManager manager = HiddenComponentsManager.getInstance();
+    manager.setCurrentForm(form);
+    Boolean state = Ode.getCurrentProjectEditor().getScreenCheckboxState(form.getTitle());
+    boolean effectiveState = (state != null) ? state : false;
+    LOG.info("Setting checkbox state for " + form.getTitle() + " to " + effectiveState);
+    HiddenComponentsCheckbox.setValue(effectiveState);
   }
 }
