@@ -881,6 +881,7 @@ public final class YoungAndroidFormUpgrader {
       // Added a dataLabelColor feature.
       srcCompVersion = 2;
     }
+    return srcCompVersion;
   }
 
   private static int upgradeChatBotProperties(Map<String, JSONValue> componentProperties,
