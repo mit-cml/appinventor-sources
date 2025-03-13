@@ -1552,6 +1552,11 @@ public final class YoungAndroidFormUpgrader {
       // The speed parameter was added to the LocationChanged event
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      //Version 4:
+      //The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
