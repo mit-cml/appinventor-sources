@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.util.Log;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -110,19 +109,19 @@ public class BarChartDataModel
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
         this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-                "GetEntryFromTuple",
-                ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
-                rawX, rawY);
+            "GetEntryFromTuple",
+            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+            rawX, rawY);
       }
     } catch (NullPointerException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-              "GetEntryFromTuple",
-              ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
+          "GetEntryFromTuple",
+          ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
     } catch (IndexOutOfBoundsException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
-              "GetEntryFromTuple",
-              ErrorMessages.ERROR_INSUFFICIENT_CHART_ENTRY_VALUES,
-              getTupleSize(), tuple.size());
+          "GetEntryFromTuple",
+          ErrorMessages.ERROR_INSUFFICIENT_CHART_ENTRY_VALUES,
+          getTupleSize(), tuple.size());
     }
 
     return null;
@@ -145,7 +144,6 @@ public class BarChartDataModel
       }
     }
   }
-
 
   @Override
   public void addTimeEntry(YailList tuple) {
