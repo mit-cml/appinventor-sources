@@ -109,10 +109,12 @@ public class BundledApp : Application, UINavigationControllerDelegate {
     let interpreter = SCMInterpreter.shared
     interpreter.setCurrentForm(form)
     interpreter.evalForm(yail)
+    print(yail)
     if let exception = interpreter.exception {
       print("\(exception)")
     }
     theme = form.Theme
+    interpreter.evalForm("(ios$start-form)")
   }
 
   @objc open func loadScheme(for screenName: String) -> String? {

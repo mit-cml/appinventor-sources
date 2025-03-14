@@ -6,6 +6,7 @@
 import UIKit
 import AIComponentKit
 import AVKit
+import Zip
 
 /**
  * Menu for the iPad REPL.
@@ -59,6 +60,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
+  @IBOutlet weak var libraryButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
@@ -168,6 +170,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
+      libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
@@ -177,6 +180,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
+      libraryButton?.addTarget(self, action: #selector(saveApp), for: .touchUpInside)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -258,6 +262,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
         }
+        print("response content: \(responseContent)")
         DispatchQueue.main.async {
           self.connectProgressDialog?.message = "Waiting for remote..."
           self.connectProgressView?.progress = 0.15
@@ -287,6 +292,27 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
   
+  @objc func saveApp(){
+    let name = "HelloCodi"
+    let newapp = BundledApp(aiaPath: Bundle.main.url(forResource: "samples/\(name)", withExtension: "aia")!)
+    newapp.makeCurrent()
+    newapp.loadScreen1(self.form)
+  }
+  
+  @objc func openLibrary(){
+    let name = "HelloWorld"
+    if let directoryURL = Bundle.main.url(forResource: "samples/\(name)", withExtension: nil) {
+        let path = directoryURL.path
+        print("Directory Path: \(path)")
+        let newapp = BundledApp(named: name, at: path)
+        newapp.makeCurrent()
+        newapp.loadScreen1(self.form)
+    } else {
+        print("Directory not found in bundle.")
+    }
+    
+  }
+  
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
@@ -309,6 +335,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
         self?.reset()
         controller.dismiss(animated: false)
+      })
+      controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
+        controller.dismiss(animated:true)
       })
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
         controller.dismiss(animated: true)
@@ -360,6 +389,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   private func openProject(named name: String) {
     if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
+      print("----Creating new app-----")
       let newapp = BundledApp(named: name, at: "samples/\(name)/")
       newapp.makeCurrent()
       newapp.loadScreen1(form)
