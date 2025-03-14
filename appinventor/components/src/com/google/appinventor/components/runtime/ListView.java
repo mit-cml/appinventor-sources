@@ -114,7 +114,7 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
   private String hint;
 
   /* for backward compatibility */
-  private static final int DEFAULT_TEXT_SIZE = 22;
+  private static final float DEFAULT_TEXT_SIZE = 22;
 
   private int imageWidth;
   private int imageHeight;
@@ -224,7 +224,7 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
     DividerColor(Component.COLOR_WHITE);
     DividerThickness(DEFAULT_DIVIDER_SIZE);
     ElementMarginsWidth(DEFAULT_MARGINS_SIZE);
-    FontSize(22.0f);  // This was the original size of ListView text.
+    FontSize(DEFAULT_TEXT_SIZE);  // This was the original size of ListView text.
     FontSizeDetail(Component.FONT_DEFAULT_SIZE);
     FontTypeface(Component.TYPEFACE_DEFAULT);
     FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
@@ -656,27 +656,18 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
   }
 
   /**
-   * Returns the listview's text font Size
-   *
-   * This property is provided for backwards compatibility
-   * it takes and returns an integer, but in reality it just
-   * updates the FontSize property, which works with floats
-   *
-   * @return text size as an integer
+   * This property is deprecated, use FontSize instead.
    */
-  @SimpleProperty(description = "The text size of the listview items.",
-      category = PropertyCategory.APPEARANCE)
+  @Deprecated
+  @SimpleProperty
   public int TextSize() {
     return Math.round(fontSizeMain);
   }
 
   /**
-   * Specifies the `ListView` item's text font size
-   *
-   * @param textSize int value for font size
+   * This property is deprecated, use FontSize instead.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @Deprecated
   @SimpleProperty
   public void TextSize(int textSize) {
     if (textSize > 1000) {
@@ -686,26 +677,23 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
   }
 
   /**
-   * Returns the listview's text font Size
+   * Returns the font size of the main text.
    *
    * @return text size as an float
    */
-  @SimpleProperty(description = "The text size of the listview stringItems.",
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+  @SimpleProperty(description = "The font size of the main text.",
+      category = PropertyCategory.APPEARANCE)
   public float FontSize() {
     return fontSizeMain;
   }
 
   /**
-   * Specifies the `ListView` item's text font size
+   * Specifies the font size of the element's main text.
    *
-   * @param integer value for font size
+   * @param float value for font size
    */
-  @SuppressWarnings("JavadocReference")
-  // Temporarily removed until Companion with support is more prevalent
-  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-  //         defaultValue = "22.0")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+           defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
@@ -715,23 +703,22 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
     setAdapterData();
   }
 
-  /**
-   * Returns the listview's text font Size
+   /**
+   * Returns the font size of the detail text.
    *
    * @return text size as an float
    */
-  @SimpleProperty(description = "The text size of the listview stringItems.",
+  @SimpleProperty(description = "The font size of the detail text.",
       category = PropertyCategory.APPEARANCE)
   public float FontSizeDetail() {
     return fontSizeDetail;
   }
 
   /**
-   * Specifies the `ListView` item's text font size
+   * Specifies the font size of the element's detail text.
    *
-   * @param integer value for font size
-   */
-  @SuppressWarnings("JavadocReference")
+   * @param float value for font size
+   */  
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty

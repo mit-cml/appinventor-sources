@@ -15,13 +15,15 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.Collections;
@@ -70,6 +72,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   @UiField protected InlineLabel createDateSortAsc;
   @UiField protected InlineLabel modDateSortDec;
   @UiField protected InlineLabel modDateSortAsc;
+  @UiField protected FocusPanel nameFocusPanel;
+  @UiField protected FocusPanel createdateFocusPanel;
+  @UiField protected FocusPanel modDateFocusPanel;
 
   /**
    * Creates a new ProjectList
@@ -82,10 +87,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     bindIU();
     setIsTrash(false);
     refreshSortIndicators();
-    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
-
-    // It is important to listen to project manager events as soon as possible.
-    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
   }
 
   public void bindIU() {
@@ -98,19 +99,41 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   @SuppressWarnings("unused")
-  @UiHandler("projectName")
+  @UiHandler("nameFocusPanel")
   public void sortByNameField(ClickEvent e) {
     changeSortOrder(SortField.NAME);
   }
 
-  @UiHandler("createDate")
+  @SuppressWarnings("unused")
+  @UiHandler("nameFocusPanel")
+  public void sortByNameField(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.NAME);
+    }
+  }
+
+  @UiHandler("createdateFocusPanel")
   public void sortByCreateDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_CREATED);
   }
 
-  @UiHandler("modDate")
+  @UiHandler("createdateFocusPanel")
+  public void sortByCreateDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_CREATED);
+    }
+  }
+
+  @UiHandler("modDateFocusPanel")
   public void sortByModDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_MODIFIED);
+  }
+
+  @UiHandler("modDateFocusPanel")
+  public void sortByModDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_MODIFIED);
+    }
   }
 
   private void changeSortOrder(SortField clickedSortField) {
@@ -234,7 +257,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     selectAllCheckBox.setValue(false);
 
     Ode.getInstance().getProjectToolbar().updateButtons();
-    if (isTrash && folder.getProjects().isEmpty()) {
+    if (isTrash && folder.getProjects().isEmpty() && folder.getChildFolders().isEmpty()) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
   }
@@ -359,29 +382,16 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   @Override
   public void onTrashProjectRestored(Project project) {
-    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
-  }
 
-  public void onProjectMoved(Project project) {
-    refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
+
   }
 
   @Override

@@ -299,7 +299,6 @@ public class CreateManifest implements AndroidTask {
           out.write("        <data android:mimeType=\"text/plain\" />\n");
           out.write("      </intent-filter>\n");
         }
-        out.write("    </activity>\n");
 
         Set<Map.Entry<String, Set<String>>> metadataElements =
             context.getComponentInfo().getActivityMetadataNeeded().entrySet();
@@ -318,6 +317,8 @@ public class CreateManifest implements AndroidTask {
             }
           }
         }
+
+        out.write("    </activity>\n");
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {

@@ -62,12 +62,20 @@ The Chart component plots data originating from it's attached Data components. F
  values String (meaning each value is separated by a comma). See [`Labels`](#Chart.Labels)
  for more details on how the Labels are applied to the Chart.
 
+{:id="Chart.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Chart.LegendEnabled" .boolean} *LegendEnabled*
 : Changes the visibility of the Chart's Legend.
 
 {:id="Chart.PieRadius" .number .wo .do} *PieRadius*
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
+
+{:id="Chart.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.

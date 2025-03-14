@@ -8,6 +8,13 @@ import WebRTC
 
 public let kDefaultRendezvousServer = "rendezvous.appinventor.mit.edu"
 
+@objc public protocol WebRTCConnectionDelegate {
+  func webRTCDidGetLocalOffer()
+  func webRTCDidGetRemoteOffer()
+  func webRTCDidGenerateICECandidate()
+  func webRTCDataChannelOpened()
+}
+
 struct Offer: Codable {
   var sdp: String
   var type: String
@@ -98,6 +105,7 @@ struct WebRTCMessage: Codable {
   private var haveOffer = false
   private var haveLocalDescription = false
   private let constraints: RTCMediaConstraints
+  public weak var delegate: WebRTCConnectionDelegate? = nil
 
   public init(_ rendezvousServer: String, _ rendezvousResult: String) {
     RTCInitializeSSL()
@@ -190,7 +198,11 @@ struct WebRTCMessage: Codable {
       ] as [String: Any?]
     ] as [String : Any]
     print("Sending ice candidate = \(response)")
-    sendRendezvous(data: response)
+    sendRendezvous(data: response) {
+      DispatchQueue.main.async {
+        self.delegate?.webRTCDidGenerateICECandidate()
+      }
+    }
   }
 
   func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
@@ -201,6 +213,10 @@ struct WebRTCMessage: Codable {
     print("opened data channel")
     dataChannel.delegate = self
     self.dataChannel = dataChannel
+    DispatchQueue.main.async {
+      self.delegate?.webRTCDataChannelOpened()
+      self.delegate = nil
+    }
     keepPolling = false
     timer.invalidate()
     timer = nil
@@ -248,6 +264,7 @@ struct WebRTCMessage: Codable {
         }
         self.haveOffer = true
         DispatchQueue.main.async {
+          self.delegate?.webRTCDidGetRemoteOffer()
           print("Have remote offer: \(offer.sdp)")
           self.peerConnection.setRemoteDescription(offer.description) { error in
             if let error = error {
@@ -279,7 +296,11 @@ struct WebRTCMessage: Codable {
 
   private func sendAnswer(_ description: RTCSessionDescription) {
     haveLocalDescription = true
-    sendRendezvous(data: ["offer": ["type": "answer", "sdp": description.sdp]])
+    sendRendezvous(data: ["offer": ["type": "answer", "sdp": description.sdp]]) {
+      DispatchQueue.main.async {
+        self.delegate?.webRTCDidGetLocalOffer()
+      }
+    }
   }
 
   private func processCandidates(candidates: [WebRTCMessage]) {
@@ -315,7 +336,7 @@ struct WebRTCMessage: Codable {
     dataChannel.sendData(RTCDataBuffer(data: data, isBinary: isBinary))
   }
 
-  private func sendRendezvous(data: [String:Any]) {
+  private func sendRendezvous(data: [String:Any], completion: (() -> ())? = nil) {
     guard let rendezvousServer2 = rendezvousServer2 else {
       print("rendezvousServer2 is nil")
       return
@@ -336,6 +357,7 @@ struct WebRTCMessage: Codable {
           // pass
           if let data = data {
             print("sendRendezvous response: \(data)")
+            completion?()
           } else if let error = error {
             print("sendRendezvous error: \(error)")
           }

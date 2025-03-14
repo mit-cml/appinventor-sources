@@ -1107,7 +1107,7 @@ yail_isa(pic_state *pic) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.common." withString:@"AIComponentKit."];
-    } else if ([name hasPrefix:@"edu.mit.appinventor."]) {
+    } else if ([name hasPrefix:@"edu.mit.appinventor."] || [name hasPrefix:@"com.bbc.microbit."] || [name hasPrefix:@"fun.microblocks.microblocks."]) {
       NSArray *parts = [name componentsSeparatedByString:@"."];
       name = [NSString stringWithFormat:@"AIComponentKit.%@", parts.lastObject];
     }
@@ -1400,7 +1400,8 @@ pic_value yail_get_simple_name(pic_state *pic) {
   pic_get_args(pic, "o", &native_class);
 
   if (yail_native_class_p(pic, native_class)) {
-    const char *name = yail_native_class_name(pic, yail_native_class_ptr(pic, native_class));
+    const NSString *className = NSStringFromClass(yail_native_class_ptr(pic, native_class)->class_);
+    const char *name = [className UTF8String];
     size_t lastDot = 0;
     for (size_t i = 0; name[i] != 0; i++) {
       if (name[i] == '.') {
@@ -1429,12 +1430,25 @@ yail_dictionary_alist_to_dict(pic_state *pic) {
 
   pic_get_args(pic, "o", &entries);
 
-  if (!yail_list_p(pic, entries)) {
+  YailDictionary *dict = nil;
+  if (yail_list_p(pic, entries)) {
+    YailList *listOfEntries = yail_list_objc(pic, entries);
+    dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, listOfEntries.value)];
+  } else if (pic_pair_p(pic, entries)) {
+    pic_value car = pic_car(pic, entries);
+    if (pic_eq_p(pic, pic_intern(pic, pic_str_value(pic, "*list*", 6)), car)) {
+      dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, entries)];
+    } else {
+      pic_error(pic, "YailDictionary:alistToDict: Received malformed list", 1, entries);
+    }
+  } else {
     pic_error(pic, "YailDictionary:alistToDict: YailList required", 1, entries);
   }
-  YailList *listOfEntries = yail_list_objc(pic, entries);
-  YailDictionary *dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, listOfEntries.value)];
-  return yail_make_native_yaildictionary(pic, dict);
+  if (dict != nil) {
+    return yail_make_native_yaildictionary(pic, dict);
+  } else {
+    return pic_nil_value(pic);
+  }
 }
 
 static pic_value

@@ -16,6 +16,8 @@ import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHand
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -27,6 +29,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
@@ -64,6 +67,7 @@ public class ProjectFolder extends Composite {
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
   @UiField protected Icon expandButton;
+  @UiField protected FocusPanel expandbuttonFocusPanel;
 
   public ProjectFolder(String name, long dateCreated, long dateModified, ProjectFolder parent) {
     bindUI();
@@ -132,9 +136,19 @@ public class ProjectFolder extends Composite {
     fireSelectionChangeEvent();
   }
 
-  @SuppressWarnings("unused")
-  @UiHandler("expandButton")
+  @UiHandler("expandbuttonFocusPanel")
   protected void toggleExpandedState(ClickEvent e) {
+    toggleState();
+  }
+
+  @UiHandler("expandbuttonFocusPanel")
+  protected void toggleExpandedState(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      toggleState();
+    }
+  }
+
+  private void toggleState() {
     setSelected(false);
     isExpanded = !isExpanded;
     if (isExpanded) {
@@ -268,7 +282,7 @@ public class ProjectFolder extends Composite {
   }
 
   public boolean containsAnyProjects() {
-    if (projectListItems.size() > 0) {
+    if (!projectListItems.isEmpty()) {
       return true;
     } else if (hasChildFolders()) {
       for (ProjectFolder f : folders.values()) {
@@ -278,6 +292,26 @@ public class ProjectFolder extends Composite {
       }
     }
     return false;
+  }
+
+  public boolean isInTrash() {
+    if (parent == null || parent == Ode.getInstance().getFolderManager().getGlobalFolder()) {
+      return false;
+    } else if (parent == Ode.getInstance().getFolderManager().getTrashFolder()) {
+      return true;
+    } else {
+      return parent.isInTrash();
+    }
+  }
+
+  public void deleteFromTrash() {
+    for (Project project : projects) {
+      project.deleteFromTrash();
+    }
+    for (ProjectFolder folder : getChildFolders()) {
+      folder.deleteFromTrash();
+    }
+    parent.removeChildFolder(this);
   }
 
   public List<ProjectFolder> getSelectedFolders() {
@@ -340,6 +374,15 @@ public class ProjectFolder extends Composite {
 
   public List<ProjectFolder> getChildFolders() {
     return Arrays.asList(folders.values().toArray(new ProjectFolder[0]));
+  }
+
+  public List<ProjectFolder> getNestedFolders() {
+    List<ProjectFolder> flist = new ArrayList<>();
+    flist.addAll(getChildFolders());
+    for (ProjectFolder child : getChildFolders()) {
+      flist.addAll(child.getNestedFolders());
+    }
+    return flist;
   }
 
   public boolean hasChildFolders() {

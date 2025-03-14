@@ -105,6 +105,9 @@ import Foundation
   // Form errors that are signalled in runtime.scm
   case ERROR_DIVISION_BY_ZERO = 3200
 
+  // Extension errors
+  case ERROR_EXTENSION_ERROR = 3300
+
   // Map Errors
   case ERROR_LINESTRING_TOO_FEW_POINTS = 3401
   case ERROR_LINESTRING_PARSE_ERROR = 3402
@@ -296,6 +299,9 @@ import Foundation
     case .ERROR_ILLEGAL_DATE:
       return "The date you entered is invalid."
 
+    case .ERROR_EXTENSION_ERROR:
+      return "Error %d in extension %s: %s"
+
     // Map Errors
     case .ERROR_LINESTRING_TOO_FEW_POINTS:
       return "Need at least 2 points for a LineString. Got only %d."
@@ -314,7 +320,7 @@ import Foundation
     case .ERROR_INVALID_ANCHOR_HORIZONTAL:
       return "Invalid value %d given for AnchorHorizontal. Valid settings are 1, 2, or 3."
     case .ERROR_INVALID_MAP_TYPE:
-      return "The MapType must be 1, 2, or 3"
+      return "The MapType must be 1, 2, 3, or 4"
 
     // File Errors
     case .ERROR_CANNOT_FIND_FILE:

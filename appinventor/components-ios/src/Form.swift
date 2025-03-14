@@ -46,7 +46,7 @@ let kMinimumToastWait = 10.0
   // For screen switching
   var lastFormName = ""
   var formResult: AnyObject?
-  private var _orientation = "unspecified"
+  private var _orientation: AIComponentKit.ScreenOrientation = .Unspecified
   private var _titleVisible = true
   private var _constraints = [NSLayoutConstraint]()
   private var _keyboardVisible = false
@@ -621,20 +621,39 @@ let kMinimumToastWait = 10.0
 
   @objc open var ScreenOrientation: String {
     get {
-      return _orientation
+      return _orientation.toUnderlyingValue() as! String
     }
     set(orientation) {
+      guard let orientation = AIComponentKit.ScreenOrientation.fromUnderlyingValue(orientation) else {
+        return
+      }
       _orientation = orientation
-      if _orientation == "portrait" {
-        UIDevice.current.setValue(UIDeviceOrientation.portrait.rawValue, forKey: "orientation")
-      } else if _orientation == "landscape" {
+      if _orientation == .Portrait {
+        if #available(iOS 16, *) {
+          for scene in UIApplication.shared.connectedScenes {
+            if let windowScene = scene as? UIWindowScene {
+              windowScene.requestGeometryUpdate(UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: [.portrait, .portraitUpsideDown]))
+            }
+          }
+        } else {
+          UIDevice.current.setValue(UIDeviceOrientation.portrait.rawValue, forKey: "orientation")
+        }
+      } else if _orientation == .Landscape {
         if !_isPhone {
           let alert = UIAlertController(title: "Screen Orientation", message: "", preferredStyle: .alert)
           alert.message = "This app works best in landscape mode. Please rotate your device."
           alert.addAction(UIAlertAction(title: "OK", style: .default))
           present(alert, animated: true, completion: nil)
         }
-        UIDevice.current.setValue(UIDeviceOrientation.landscapeLeft.rawValue, forKey: "orientation")
+        if #available(iOS 16, *) {
+          for scene in UIApplication.shared.connectedScenes {
+            if let windowScene = scene as? UIWindowScene {
+              windowScene.requestGeometryUpdate(UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape))
+            }
+          }
+        } else {
+          UIDevice.current.setValue(UIDeviceOrientation.landscapeLeft.rawValue, forKey: "orientation")
+        }
       } else {
         UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
       }
