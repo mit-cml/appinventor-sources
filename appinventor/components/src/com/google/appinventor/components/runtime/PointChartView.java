@@ -60,8 +60,9 @@ public abstract class PointChartView<
    * @param color color to set text to.
    */
   public void setAxesTextColor(int color){
-    System.out.println("the color is" + color);
-    XAxisRenderer xAxisRenderer = chart.getRendererXAxis();
-    xAxisRenderer.getPaintAxisLabels().setColor(color);
+    System.out.println("the color is " + color);
+    chart.getXAxis().setTextColor(color);
+    chart.getAxisLeft().setTextColor(color);
+    chart.invalidate();
   }
 }

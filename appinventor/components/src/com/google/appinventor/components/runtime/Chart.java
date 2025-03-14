@@ -326,7 +326,7 @@ public class Chart extends AndroidViewComponent
       argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
     }
     axesTextColor = argb;
-    if (chartView instanceof PointChartView){
+    if (chartView instanceof PointChartView) {
       ((PointChartView) chartView).setAxesTextColor(argb);
     }
   }
