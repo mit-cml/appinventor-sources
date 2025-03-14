@@ -60,7 +60,7 @@ import DGCharts
     XFromZero = false
     YFromZero = false
     darkMode = parent.form?.isDarkTheme ?? false
-    _backgroundColor = darkMode ? UIColor.white : UIColor.black
+    _backgroundColor = darkMode ? UIColor.black : UIColor.white
     _axesTextColor = darkMode ? UIColor.white : UIColor.black
     super.init(parent)
     setDelegate(self)

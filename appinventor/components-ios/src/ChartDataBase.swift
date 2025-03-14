@@ -7,7 +7,6 @@ import Foundation
 import DGCharts
 
 @objc open class ChartDataBase: DataCollection, Component, DataSourceChangeListener, ChartViewDelegate, ChartComponent {
-  var _chartDataModel: ChartDataModel?
   var _container: Chart {
     return container as! Chart
   }
@@ -106,7 +105,7 @@ import DGCharts
     }
     set {
       _dataLabelColor = newValue
-      _chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
+      chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
       refreshChart()
     }
   }
