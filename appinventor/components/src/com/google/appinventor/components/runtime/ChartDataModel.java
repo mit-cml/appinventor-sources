@@ -18,7 +18,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -111,7 +110,7 @@ public abstract class ChartDataModel<
    *
    * @param valueType indicates the type of values Decimal, Integer, Date
    */
-  public void chartValueType(final int valueType) {
+  public void setChartValueType(final int valueType) {
     //for rendering point labels as integers
     dataset.setValueFormatter(new ValueFormatter() {
       @Override

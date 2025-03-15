@@ -84,6 +84,9 @@ The Chart component plots data originating from it's attached Data components. F
 {:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
 
+{:id="Chart.ValueFormat" .number .do} *ValueFormat*
+: Specifies the format for X axis labels and point values.
+
 {:id="Chart.Visible" .boolean} *Visible*
 : Specifies whether the `Chart` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `Chart` is showing and `false`{:.logic.block} if hidden.
@@ -145,9 +148,6 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 ### Properties  {#ChartData2D-Properties}
 
 {:.properties}
-
-{:id="ChartData2D.ChartValueType" .number .do} *ChartValueType*
-: If checked the x-axis labels and point labels are interpreted as integers
 
 {:id="ChartData2D.Color" .color} *Color*
 : Specifies the data series color as an alpha-red-green-blue integer.

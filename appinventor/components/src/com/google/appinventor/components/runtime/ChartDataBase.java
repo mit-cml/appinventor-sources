@@ -47,7 +47,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
 
   private int dataLabelColor;
 
-  private int valueType;
   /**
    * Creates a new Chart Data component.
    */
@@ -61,7 +60,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     DataSourceKey("");
     Label("");
     DataLabelColor(chartContainer.$form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE);
-    ChartValueType(0);
   }
 
   /**
@@ -75,6 +73,10 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     dataModel = container.createChartModel();
     dataModel.view.chart.setOnChartGestureListener(this);
     dataModel.view.chart.setOnChartValueSelectedListener(this);
+  }
+
+  public ChartDataModel<?, ?, ?, ?, ?> getDataModel() {
+    return dataModel;
   }
 
   /*
@@ -253,24 +255,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     if (dataModel instanceof LineChartBaseDataModel) {
       ((LineChartBaseDataModel<?>) dataModel).setLineType(type);
     }
-  }
-
-
-  @SimpleProperty
-  public int ChartValueType() {
-    return this.valueType;
-  }
-
-  /**
-   * If checked the x-axis labels and point labels are interpreted as integers
-   *
-   * @param valuetype set to true if the user desires to interpret data as integers
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
-  public void ChartValueType(int valuetype) {
-    this.valueType = valuetype;
-    dataModel.chartValueType(valuetype);
   }
 
   /*

@@ -92,25 +92,22 @@ public abstract class AxisChartView<
           return axisLabels.get(integerValue);
         } else {
           // Custom axis label not present; Use the usual value
-          if(valueType == CHART_VALUE_INTEGER) {
+          if (valueType == CHART_VALUE_INTEGER) {
             //labels are displayed as integer
             return "" + ((int) value);
-          }
-          else if(valueType == CHART_VALUE_DATE){
+          } else if (valueType == CHART_VALUE_DATE) {
             //display x-axis labels as Date
             Date mDate = new Date((long) value);
-            DateFormat dateFormat= new SimpleDateFormat("dd/MM/yyyy");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
-          }
-          else if(valueType==CHART_VALUE_TIME){
+          } else if (valueType==CHART_VALUE_TIME) {
             //display x-axis labels as Time
             Date mDate = new Date((long) value);
-            DateFormat dateFormat= new SimpleDateFormat("HH:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
-          }
-          else {
+          } else {
             return super.getFormattedValue(value);
           }
         }
