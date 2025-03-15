@@ -876,7 +876,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeChartData2DProperties(Map<String, JSONValue> componentProperties,
-                                            int srcCompVersion) {
+      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Added a dataLabelColor feature.
       srcCompVersion = 2;
