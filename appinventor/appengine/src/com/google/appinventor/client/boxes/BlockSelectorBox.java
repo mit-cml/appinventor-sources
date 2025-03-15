@@ -80,7 +80,7 @@ public final class BlockSelectorBox extends Box {
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
   private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
-      Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Dictionaries", "Colors",
+      Arrays.asList("Control", "Logic", "Math", "Matrices", "Text", "Lists", "Dictionaries", "Colors",
           "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
@@ -138,6 +138,7 @@ public final class BlockSelectorBox extends Box {
     bundledImages.put("Control", images.control());
     bundledImages.put("Logic", images.logic());
     bundledImages.put("Math", images.math());
+    bundledImages.put("Matrices", images.matrices());
     bundledImages.put("Text", images.text());
     bundledImages.put("Lists", images.lists());
     bundledImages.put("Colors", images.colors());
@@ -195,6 +196,8 @@ public final class BlockSelectorBox extends Box {
        name = MESSAGES.builtinLogicLabel();
     } else if (drawerName.equals("Math")) {
        name = MESSAGES.builtinMathLabel();
+    } else if (drawerName.equals("Matrices")) {
+       name = MESSAGES.builtinMatricesLabel();
     } else if (drawerName.equals("Text")) {
        name = MESSAGES.builtinTextLabel();
     } else if (drawerName.equals("Lists")) {

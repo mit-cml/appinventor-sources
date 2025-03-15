@@ -1039,6 +1039,7 @@
 (define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailDictionary <com.google.appinventor.components.runtime.util.YailDictionary>)
+(define-alias YailMatrix <com.google.appinventor.components.runtime.util.YailMatrix>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 
 (define-alias JavaCollection <java.util.Collection>)
@@ -1488,10 +1489,29 @@
      ((equal? type 'pair) (coerce-to-pair arg))
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
+     ((equal? type 'matrix) (coerce-to-matrix arg))
+     ((equal? type 'double-array) (coerce-to-double-array arg))
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
 
+(define (coerce-to-double-array arg)
+  (cond
+    ((instance? arg double[]) arg)
+
+    ((yail-list? arg)
+     (let ((coerced (map coerce-to-number (yail-list-contents arg))))
+       (if (all-coercible? coerced)
+           (Arrays:toPrimitiveArray 'D coerced)
+           *non-coercible-value*)))
+
+    ((list? arg)
+     (let ((coerced (map coerce-to-number arg)))
+       (if (all-coercible? coerced)
+           (Arrays:toPrimitiveArray 'D coerced)
+           *non-coercible-value*)))
+
+    (else *non-coercible-value*)))
 
 (define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
   (cond
@@ -1732,6 +1752,7 @@
   (cond
    ((yail-list? arg) arg)
    ((yail-dictionary? arg) (yail-dictionary-dict-to-alist arg))
+   ((yail-matrix? arg) (yail-matrix-to-alist arg))
    (else *non-coercible-value*)))
 
 (define (coerce-to-pair arg)
@@ -1746,6 +1767,21 @@
             (arg:toYailDictionary)
             (exception java.lang.Exception
               (*non-coercible-value*))))))
+
+(define (coerce-to-matrix arg)
+  (cond
+    ((yail-matrix? arg) arg)
+    ((yail-list? arg)
+      (let* ((rows (length arg))
+             (is-valid-matrix (and (> rows 0)
+                                   (every (lambda (row)
+                                            (and (yail-list? row)
+                                                 (= (length (car arg)) (length row))))
+                                          arg))))
+        (if is-valid-matrix
+            (make-yail-matrix rows (length (car arg)) arg)
+            *non-coercible-value*)))
+    (else *non-coercible-value*))) ; Cannot coerce
 
 (define (coerce-to-boolean arg)
   (cond
@@ -1815,6 +1851,8 @@
 (define (yail-equal? x1 x2)
   (cond ((and (null? x1) (null? x2)) #t)
         ((or (null? x1) (null? x2)) #f)
+        ((and (yail-matrix? x1) (yail-matrix? x2))
+          (yail-matrix-equal? x1 x2))
         ((and (not (pair? x1)) (not (pair? x2)))
          (yail-atomic-equal? x1 x2))
         ((or (not (pair? x1)) (not (pair? x2)))
@@ -2268,7 +2306,7 @@
 (define (minl l)
   (let ((l-content (yail-list-contents l)))
   (if (null? l-content) ; edge case: empty list
-      1/0             ; default is positive infinity   
+      1/0             ; default is positive infinity
       (apply min l-content))))
 
 (define (mean l-content)
@@ -2292,7 +2330,7 @@
                (get-display-representation lst))
        "List smaller than 2")
       (sqrt
-          (yail-divide  
+          (yail-divide
             (sum-mean-square-diff lst (mean lst))
             (length lst)))))
 )
@@ -2314,7 +2352,7 @@
                (get-display-representation lst))
        "List smaller than 2")
 
-      (yail-divide  
+      (yail-divide
           (sample-std-dev lst)
           (sqrt (length lst)))))
 )
@@ -3226,6 +3264,76 @@ Dictionary implementation.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Matrix implementation.
+
+- make matrix           (make-yail-matrix . dataValues)
+- get matrix row        (yail-matrix-get-row yail-matrix row)
+- get matrix column     (yail-matrix-get-column yail-matrix col)
+- get matrix cell       (yail-matrix-get-cell yail-matrix row col)
+- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
+- is YailMatrix?        (yail-matrix? x)
+- get matrix inverse    (yail-matrix-inverse matrix)
+- get matrix transpose  (yail-matrix-transpose matrix)
+- matrix add            (yail-matrix-add matrix1 matrix2)
+- matrix subtract       (yail-matrix-subtract matrix1 matrix2)
+- matrix multiply       (yail-matrix-multiply matrix1 matrix2-or-scalar)
+- matrix power          (yail-matrix-power matrix exponent)
+- turn matrix to alist  (yail-matrix-to-alist matrix)
+- matrix equal?         (yail-matrix-equal? m1 m2)
+
+|#
+
+(define (make-yail-matrix . dataValues)
+  (YailMatrix:makeMatrix dataValues))
+
+(define (yail-matrix-get-row matrix row)
+  (apply make-yail-list (*:getRow (as YailMatrix matrix) row)))
+
+(define (yail-matrix-get-column matrix col)
+  (apply make-yail-list (*:getColumn (as YailMatrix matrix) col)))
+
+(define (yail-matrix-get-cell matrix row col)
+  (*:getCell (as YailMatrix matrix) row col))
+
+(define (yail-matrix-set-cell! matrix row col value)
+  (*:setCell (as YailMatrix matrix) row col value))
+
+(define (yail-matrix? x)
+  (instance? x YailMatrix))
+
+(define (yail-matrix-inverse matrix)
+  (YailMatrix:inverse (as YailMatrix matrix)))
+
+(define (yail-matrix-transpose matrix)
+  (YailMatrix:transpose (as YailMatrix matrix)))
+
+(define (yail-matrix-add matrix1 matrix2)
+  (YailMatrix:add (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-subtract matrix1 matrix2)
+  (YailMatrix:subtract (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-multiply matrix1 matrix2-or-scalar)
+  (if (number? matrix2-or-scalar)
+      (YailMatrix:scalarMultiply (as YailMatrix matrix1) matrix2-or-scalar)
+      (YailMatrix:multiply (as YailMatrix matrix1) (as YailMatrix matrix2-or-scalar))))
+
+(define (yail-matrix-power matrix exponent)
+  (YailMatrix:power (as YailMatrix matrix) exponent))
+
+(define (yail-matrix-to-alist matrix)
+  (YailMatrix:matrixToAlist matrix))
+
+(define (yail-matrix-equal? matrix1 matrix2)
+  (YailMatrix:matrixEqual (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Matrix implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -3273,8 +3381,8 @@ Dictionary implementation.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at) 
-  (JavaStringUtils:split text (Pattern:quote at))) 
+(define (string-split text at)
+  (JavaStringUtils:split text (Pattern:quote at)))
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))

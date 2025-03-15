@@ -1015,6 +1015,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label on built-in-Logic-blocks branch of block selector tree")
   String builtinLogicLabel();
 
+  @DefaultMessage("Matrices")
+  @Description("Label on built-in-Matrices-blocks branch of block selector tree")
+  String builtinMatricesLabel();
+
   @DefaultMessage("Text")
   @Description("Label on built-in-Text-blocks branch of block selector tree")
   String builtinTextLabel();
