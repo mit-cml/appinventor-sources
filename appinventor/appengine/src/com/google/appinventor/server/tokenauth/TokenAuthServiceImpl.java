@@ -1,10 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2022 MIT, All rights reserved
+// Copyright 2017-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.tokenauth;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.OdeRemoteServiceServlet;
 import com.google.appinventor.server.flags.Flag;
 
@@ -17,11 +18,12 @@ import com.google.protobuf.ByteString;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * CloudDB and TranslateComponent Authentication Service implementation
+ * CloudDB, TranslateComponent and ChatBot Authentication Service implementation
  * @author joymitro1989@gmail.com(Joydeep Mitra).
  * @author jis@mit.edu (Jeffrey I. Schiller)
  *
@@ -58,11 +60,14 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class TokenAuthServiceImpl extends OdeRemoteServiceServlet
   implements TokenAuthService {
+  private static final Logger LOG = Logger.getLogger(TokenAuthServiceImpl.class.getName());
 
   private String SECRET_KEY_UUID = Flag.createFlag("clouddb.uuid.secret", "").get();
   private String SECRET_KEY_CLOUD_DB = Flag.createFlag("clouddb.secret", "").get();
   private String SECRET_KEY_TRANSLATE = Flag.createFlag("translator.secret", "").get();
   private int SECRET_KEY_TRANSLATE_KEYID = Flag.createFlag("translator.keyid", 1).get().intValue();
+  private String SECRET_KEY_CHATBOT = Flag.createFlag("chatbot.secret", "").get();
+  private int SECRET_KEY_CHATBOT_KEYID = Flag.createFlag("chatbot.keyid", 1).get().intValue();
   private static final String HMAC_ALGORITHM = "HmacSHA256";
 
   /*
@@ -132,6 +137,33 @@ public class TokenAuthServiceImpl extends OdeRemoteServiceServlet
     } catch (Exception e) {
       e.printStackTrace();
       return null;
+    }
+  }
+
+  /**
+   * Get the token for the chatbot service also used by the ImageBot
+   * service ImageBot may get its own tokens in the future, but for
+   * now we use the same tokens. Changing in the future will be easy,
+   * because it isn't a component update.
+   *
+   * @return base58 encoded token
+   */
+  @Override
+  public String getChatBotToken() {
+    try {
+      byte [] utoken =
+        ChatBotToken.unsigned.newBuilder().setHuuid(userInfoProvider.getUserId()).build().toByteArray();
+      SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY_CHATBOT.getBytes(), HMAC_ALGORITHM);
+      Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
+      hmac.init(secretKeySpec);
+      byte [] signature = hmac.doFinal(utoken);
+      byte [] token =
+        ChatBotToken.token.newBuilder().setUnsigned(ByteString.copyFrom(utoken))
+        .setKeyid(SECRET_KEY_CHATBOT_KEYID)
+        .setSignature(ByteString.copyFrom(signature)).build().toByteArray();
+      return (Base58Util.encode(token));
+    } catch (Exception e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 

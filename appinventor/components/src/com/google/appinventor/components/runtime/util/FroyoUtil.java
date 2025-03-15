@@ -16,6 +16,8 @@ import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Player;
 
+import java.io.IOException;
+
 /**
  * Helper methods for calling methods added in Froyo (2.2, API level 8).
  *
@@ -123,6 +125,18 @@ public class FroyoUtil {
   public static WebViewClient getWebViewClient(final boolean ignoreErrors,
       final boolean followLinks, final Form form, final Component component) {
     return new FroyoWebViewClient(followLinks, ignoreErrors, form, component);
+  }
+
+  /**
+   * Prior to SDK 9, java.io.IOException did not take a throwable as an argument.
+   * This function accepts a Throwable, calls toString and throws an IOException with
+   * just the string, which is supported.
+   *
+   * @param throwable the Throwable to re-throw (sort of)
+   */
+
+  public static void throwIOException(Throwable e) throws IOException {
+    throw new IOException(e.toString());
   }
 
 }

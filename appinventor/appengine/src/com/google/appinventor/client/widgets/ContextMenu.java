@@ -105,9 +105,14 @@ public final class ContextMenu {
   /**
    * Adds a separator to the context menu.
    */
-  public void addSeparator() {
+  public MenuItemSeparator addSeparator() {
     MenuItemSeparator menuItemSeparator = menuBar.addSeparator();
     menuItemSeparator.setStylePrimaryName("ode-ContextMenuItemSeparator");
+    return menuItemSeparator;
+  }
+
+  public void removeSeparator(MenuItemSeparator separator) {
+    menuBar.removeSeparator(separator);
   }
 
   /**
@@ -137,4 +142,27 @@ public final class ContextMenu {
   public void hide() {
     popupPanel.hide();
   }
+
+  /* Returns if the context menu is showing */
+  public boolean isShowing() {
+    return popupPanel.isShowing();
+  }
+
+  /* Gives the menubar focus */
+  public void focus() {
+    menuBar.focus();
+  }
+
+  public void moveSelectionDown() {
+    menuBar.moveSelectionDown();
+  }
+
+  public void moveSelectionUp() {
+    menuBar.moveSelectionUp();
+  }
+
+  public void resetSelection() {
+    menuBar.selectItem(null);
+  }
+
 }

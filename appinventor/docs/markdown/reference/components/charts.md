@@ -10,6 +10,7 @@ Table of Contents:
 
 * [Chart](#Chart)
 * [ChartData2D](#ChartData2D)
+* [Trendline](#Trendline)
 
 ## Chart  {#Chart}
 
@@ -24,6 +25,10 @@ The Chart component plots data originating from it's attached Data components. F
 ### Properties  {#Chart-Properties}
 
 {:.properties}
+
+{:id="Chart.AxesTextColor" .color} *AxesTextColor*
+: Specifies the chart's axes text color as an alpha-red-green-blue
+ integer.
 
 {:id="Chart.BackgroundColor" .color} *BackgroundColor*
 : Specifies the chart's background color as an alpha-red-green-blue
@@ -61,6 +66,10 @@ The Chart component plots data originating from it's attached Data components. F
  values String (meaning each value is separated by a comma). See [`Labels`](#Chart.Labels)
  for more details on how the Labels are applied to the Chart.
 
+{:id="Chart.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Chart.LegendEnabled" .boolean} *LegendEnabled*
 : Changes the visibility of the Chart's Legend.
 
@@ -68,7 +77,11 @@ The Chart component plots data originating from it's attached Data components. F
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
 
-{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .do} *Type*
+{:id="Chart.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
 
 {:id="Chart.Visible" .boolean} *Visible*
@@ -82,6 +95,14 @@ The Chart component plots data originating from it's attached Data components. F
 : Specifies the horizontal width of the `Chart` as a percentage
  of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
+{:id="Chart.XFromZero" .boolean} *XFromZero*
+: Determines whether the X axis origin is set at 0 or the minimum X value
+ across all data series.
+
+{:id="Chart.YFromZero" .boolean} *YFromZero*
+: Determines whether the Y axis origin is set at 0 or the minimum y value
+ across all data series.
+
 ### Events  {#Chart-Events}
 
 {:.events}
@@ -93,8 +114,23 @@ The Chart component plots data originating from it's attached Data components. F
 ### Methods  {#Chart-Methods}
 
 {:.methods}
-None
 
+{:id="Chart.ExtendDomainToInclude" class="method"} <i/> ExtendDomainToInclude(*x*{:.number})
+: Extends the domain of the chart to include the provided x value. If x is already within the
+ bounds of the domain, this method has no effect.
+
+{:id="Chart.ExtendRangeToInclude" class="method"} <i/> ExtendRangeToInclude(*y*{:.number})
+: Extends the range of the chart to include the provided y value. If y is already within the
+ bounds of the range, this method has no effect.
+
+{:id="Chart.ResetAxes" class="method"} <i/> ResetAxes()
+: Resets the axes of the chart to their original bounds.
+
+{:id="Chart.SetDomain" class="method"} <i/> SetDomain(*minimum*{:.number},*maximum*{:.number})
+: Sets the minimum and maximum for the domain of the X axis.
+
+{:id="Chart.SetRange" class="method"} <i/> SetRange(*minimum*{:.number},*maximum*{:.number})
+: Sets the minimum and maximum for the range of the Y axis.
 
 ## ChartData2D  {#ChartData2D}
 
@@ -109,6 +145,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 ### Properties  {#ChartData2D-Properties}
 
 {:.properties}
+
+{:id="ChartData2D.ChartValueType" .number .do} *ChartValueType*
+: If checked the x-axis labels and point labels are interpreted as integers
 
 {:id="ChartData2D.Color" .color} *Color*
 : Specifies the data series color as an alpha-red-green-blue integer.
@@ -135,6 +174,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  and a column value of "Temperature" is specified, that column will be used
  for the y values. If a value here is not specified, default values for the
  y values will be generated instead.
+
+{:id="ChartData2D.DataLabelColor" .color} *DataLabelColor*
+: Specifies the data points label color as an alpha-red-green-blue integer.
 
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
@@ -268,6 +310,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Returns all entries of the data series matching the specified y value.
  For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
 
+{:id="ChartData2D.HighlightDataPoints" class="method"} <i/> HighlightDataPoints(*dataPoints*{:.list},*color*{:.number})
+: Highlights all given data points on the Chart in the color of choice.
+
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
@@ -282,7 +327,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  for the x values, and the specified y column for the y values. The DataFile's source file
  is expected to be either a CSV or a JSON file.
 
-   Passing in empty test for any of the column parameters will result in the usage of
+   Passing in empty text for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
@@ -293,7 +338,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
 
-{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*spreadsheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
 : Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
@@ -329,3 +374,107 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.RemoveEntry" class="method"} <i/> RemoveEntry(*x*{:.text},*y*{:.text})
 : Removes an entry with the specified x and y value, provided it exists.
  See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry values.
+
+## Trendline  {#Trendline}
+
+The Trendline component can be used to visualize the trend of a data series represented by a
+ ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
+ instance, either set the ChartData property in the design view of the app or use the setter
+ block. The Trendline will update automatically if its associated ChartData2D is changed.
+
+ There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.
+
+   * Linear: y = m*x + b, where m is LinearCoefficient and b is YIntercept
+   * Quadratic: y = a\*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+     LinearCoefficient, and c is YIntercept
+   * Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient
+   * Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+     ExponentialBase
+
+ For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.
+
+
+
+### Properties  {#Trendline-Properties}
+
+{:.properties}
+
+{:id="Trendline.ChartData" .component .wo} *ChartData*
+: The data series for which to compute the line of best fit.
+
+{:id="Trendline.Color" .color} *Color*
+: The color of the line of best fit.
+
+{:id="Trendline.CorrelationCoefficient" .number .ro .bo} *CorrelationCoefficient*
+: The correlation coefficient of the trendline to the data.
+
+{:id="Trendline.ExponentialBase" .number .ro .bo} *ExponentialBase*
+: The base of the exponential term in the equation y = a*b^x.
+
+{:id="Trendline.ExponentialCoefficient" .number .ro .bo} *ExponentialCoefficient*
+: The coefficient of the exponential term in the equation y = a*b^x.
+
+{:id="Trendline.Extend" .boolean} *Extend*
+: Whether to extend the line of best fit beyond the data.
+
+{:id="Trendline.LinearCoefficient" .number .ro .bo} *LinearCoefficient*
+: The coefficient of the linear term in the trendline.
+
+{:id="Trendline.LogarithmCoefficient" .number .ro .bo} *LogarithmCoefficient*
+: The coefficient of the logarithmic term in the equation y = a + b*ln(x).
+
+{:id="Trendline.LogarithmConstant" .number .ro .bo} *LogarithmConstant*
+: The constant term in the logarithmic equation y = a + b*ln(x).
+
+{:id="Trendline.Model" .com.google.appinventor.components.common.BestFitModelEnum} *Model*
+: The model to use for the line of best fit.
+
+{:id="Trendline.Predictions" .list .ro .bo} *Predictions*
+: The predictions for the trendline.
+
+{:id="Trendline.QuadraticCoefficient" .number .ro .bo} *QuadraticCoefficient*
+: The coefficient of the quadratic term in the trendline, if any.
+
+{:id="Trendline.RSquared" .number .ro .bo} *RSquared*
+: The r-squared coefficient of determination for the trendline.
+
+{:id="Trendline.Results" .dictionary .ro .bo} *Results*
+: Obtain a copy of the most recent values computed by the line of best fit.
+
+{:id="Trendline.StrokeStyle" .com.google.appinventor.components.common.StrokeStyleEnum} *StrokeStyle*
+: The style of the best fit line.
+
+{:id="Trendline.StrokeWidth" .number} *StrokeWidth*
+: The width of the best fit line.
+
+{:id="Trendline.Visible" .boolean} *Visible*
+: Whether the line of best fit is visible.
+
+{:id="Trendline.XIntercepts" .any .ro .bo} *XIntercepts*
+: The X-intercepts of the trendline (where the line crosses the X-axis), if any. Possible
+ values are NaN (no intercept), a single value (one intercept), or a list of values.
+
+{:id="Trendline.YIntercept" .number .ro .bo} *YIntercept*
+: The Y-intercept of the trendline (constant term).
+
+### Events  {#Trendline-Events}
+
+{:.events}
+
+{:id="Trendline.Updated"} Updated(*results*{:.dictionary})
+: Event indicating that the line of best fit has been updated.
+
+### Methods  {#Trendline-Methods}
+
+{:.methods}
+
+{:id="Trendline.DisconnectFromChartData" class="method"} <i/> DisconnectFromChartData()
+: Disconnect the Trendline from a previously associated ChartData2D.
+
+{:id="Trendline.GetResultValue" class="method returns any"} <i/> GetResultValue(*value*{:.text})
+: Get the field of the most recent values computed by the line of best fit. The available
+ values vary based on the model used. For example, a linear model will have slope and
+ Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.

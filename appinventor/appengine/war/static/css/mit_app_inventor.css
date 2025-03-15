@@ -475,3 +475,8 @@ dt span.PointStyleEnum i:after,
 dt.PointStyleEnum em:after,
 em.PointStyleEnum:before
 { background-color: #BF4343; content: "PointStyle"; }
+dt.LOBFValuesEnum i:after,
+dt span.LOBFValuesEnum i:after,
+dt.LOBFValuesEnum em:after,
+em.LOBFValuesEnum:before
+{ background-color: #BF4343; content: "LOBFValues"; }

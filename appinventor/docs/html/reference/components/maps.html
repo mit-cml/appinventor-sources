@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -264,8 +264,14 @@
   <dt id="FeatureCollection.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">FeatureCollection</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="FeatureCollection.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="FeatureCollection.Source" class="text ro"><em>Source</em></dt>
   <dd>Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.</dd>
+  <dt id="FeatureCollection.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="FeatureCollection.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">FeatureCollection</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">FeatureCollection</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -432,7 +438,7 @@
 
 <p>A two-dimensional container that renders map tiles in the background and allows for multiple
  <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey.</p>
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.</p>
 
 <p>The <code class="highlighter-rouge">Map</code> component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -458,6 +464,10 @@
  <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> with numerical latitude and longitude rather than convert
  to the string representation for use with this property.</p>
   </dd>
+  <dt id="Map.CustomUrl" class="text"><em>CustomUrl</em></dt>
+  <dd>Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername</dd>
   <dt id="Map.EnablePan" class="boolean"><em>EnablePan</em></dt>
   <dd>Enables or disables the ability of the user to move the Map.</dd>
   <dt id="Map.EnableRotation" class="boolean"><em>EnableRotation</em></dt>
@@ -476,6 +486,9 @@
   <dt id="Map.Latitude" class="number ro bo"><em>Latitude</em></dt>
   <dd>Gets the latitude of the center of the Map. To change the latitude, use the
  <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> method.</dd>
+  <dt id="Map.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="Map.LocationSensor" class="component wo"><em>LocationSensor</em></dt>
   <dd>Uses the provided <a href="sensors.html#LocationSensor"><code class="highlighter-rouge">LocationSensor</code></a> for user location data
  rather than the built-in location provider.</dd>
@@ -490,6 +503,7 @@
       <li>Roads</li>
       <li>Aerial</li>
       <li>Terrain</li>
+      <li>Custom</li>
     </ol>
 
     <p><strong>Note:</strong> Road layers are provided by OpenStreetMap and aerial and terrain layers are
@@ -511,6 +525,9 @@
  services enabled and which location providers are available.</dd>
   <dt id="Map.ShowZoom" class="boolean"><em>ShowZoom</em></dt>
   <dd>Specifies whether to show zoom controls or not.</dd>
+  <dt id="Map.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="Map.UserLatitude" class="number ro bo"><em>UserLatitude</em></dt>
   <dd>Returns the user’s latitude if ShowUser is enabled.</dd>
   <dt id="Map.UserLongitude" class="number ro bo"><em>UserLongitude</em></dt>
@@ -568,7 +585,7 @@
  This event is run <em>after</em> the <code class="highlighter-rouge">StopDrag</code> event on the corresponding feature and after the
  <code class="highlighter-rouge">when any ... StopDrag</code> event if one is provided.</dd>
   <dt id="Map.GotFeatures">GotFeatures(<em class="text">url</em>,<em class="list">features</em>)</dt>
-  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when when a feature collection is successfully read from the
+  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when a feature collection is successfully read from the
  given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">features</code> parameter will be a list of
  feature descriptions that can be converted into components using the
  <a href="#Map.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a> method.</dd>
@@ -1089,7 +1106,7 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -1108,15 +1125,16 @@ be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineSt
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

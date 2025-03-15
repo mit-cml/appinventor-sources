@@ -6,22 +6,27 @@
 
 package com.google.appinventor.client.settings.project;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.utils.Promise.resolve;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.CommonSettings;
 import com.google.appinventor.client.settings.SettingsAccessProvider;
+import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.Command;
+import java.util.logging.Logger;
 
 /**
  * Collection of project settings.
  *
  */
 public final class ProjectSettings extends CommonSettings implements SettingsAccessProvider {
+
+  private static final Logger LOG = Logger.getLogger(ProjectSettings.class.getName());
 
   // Corresponding project
   private final Project project;
@@ -46,18 +51,14 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
   // SettingsAccessProvider implementation
 
   @Override
-  public void loadSettings() {
-    Ode.getInstance().getProjectService().loadProjectSettings(
-        project.getProjectId(),
-        new OdeAsyncCallback<String>(
-            // failure message
-            MESSAGES.settingsLoadError()) {
-          @Override
-          public void onSuccess(String result) {
-            OdeLog.log("Loaded project settings: " + result);
-            decodeSettings(result);
-            changed = false;
-          }
+  public Promise<ProjectSettings> loadSettings() {
+    return Promise.<String>call(MESSAGES.settingsLoadError(),
+        c -> Ode.getInstance().getProjectService().loadProjectSettings(project.getProjectId(), c))
+        .then(result -> {
+          LOG.info("Loaded project settings: " + result);
+          decodeSettings(result);
+          changed = false;
+          return resolve(ProjectSettings.this);
         });
   }
 
@@ -70,7 +71,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
       return;
     }
     String s = encodeSettings();
-    OdeLog.log("Saving project settings: " + s);
+    LOG.info("Saving project settings: " + s);
     Ode.getInstance().getProjectService().storeProjectSettings(
         Ode.getInstance().getSessionId(),
         project.getProjectId(), s,

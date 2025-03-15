@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -26,7 +26,7 @@ import java.util.Set;
  * to be a NonVisibleComponent so that it would appear in the Chart hierarchy
  * instead of the non-visible component bar.
  */
-public abstract class MockChartData extends MockVisibleComponent implements DataFileChangeListener {
+public abstract class MockChartData extends MockVisibleComponent implements DataFileChangeListener, MockChart.MockChartClient {
   private static final String PROPERTY_COLOR = "Color";
   private static final String PROPERTY_LABEL = "Label";
   private static final String PROPERTY_POINT_SHAPE = "PointShape";
@@ -303,7 +303,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     // Show Data Source Value only if the Data Source is non-null
     // and not of type MockDataFile or Web
     boolean showDataSourceValue = (dataSource != null
-        && !(dataSource instanceof MockDataFile || showWebColumns));
+        && !(dataSource instanceof MockDataFile || showWebColumns || showSheetsColumns));
 
     showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
   }

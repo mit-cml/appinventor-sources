@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -22,6 +24,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -29,9 +32,9 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentConstants;
 
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
@@ -41,10 +44,12 @@ import dalvik.system.DexClassLoader;
 
 import gnu.expr.Language;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -74,7 +79,10 @@ public class ReplForm extends Form {
   private boolean isDirect = false; // True for USB and emulator (AI2)
   private Object replResult = null; // Return result when closing screen in Repl
   private String replResultFormName = null;
-  private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
+  /**
+   * Keeps track of loaded dexs to prevent reloading and causing crash in older API levels.
+   */
+  private List<String> loadedExternalDexs;
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
   private WebRTCNativeMgr webRTCNativeMgr;
 
@@ -126,7 +134,25 @@ public class ReplForm extends Form {
     Log.d(LOG_TAG, "onCreate");
     replAssetDir = QUtil.getReplAssetPath(this, true);
     replCompDir = replAssetDir + "external_comps/";
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      // With Android 14, executable files (e.g., extensions) must be read-only.
+      // But on some devices external storage is mounted with sdcardfs, which does not support
+      // setting read-only permissions. So we need to use the internal storage for extensions.
+      replCompDir = getCacheDir().getAbsolutePath() + "/external_comps/";
+    }
     super.onCreate(icicle);
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+        Log.e(LOG_TAG, "Uncaught exception", e);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream temp = new PrintStream(baos);
+        e.printStackTrace(temp);
+        temp.flush();
+        RetValManager.sendError(baos.toString());
+        temp.close();
+      }
+    });
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
     processExtrasAndData(intent, false);
@@ -164,6 +190,16 @@ public class ReplForm extends Form {
           }
         });
     }
+  }
+
+  @Override
+  protected void defaultPropertyValues() {
+    super.defaultPropertyValues();
+    // Previously this was set in the {@link Form#defaultPropertyValues()}. However, in compiled
+    // apps we do not want to reset the theme since it is provided in the AndroidManifest.xml.
+    // In the companion though we do want to reset the theme in case we are switching from a project
+    // with a different theme than the default one to one that uses the default.
+    Theme(ComponentConstants.DEFAULT_THEME);
   }
 
   @Override
@@ -405,36 +441,54 @@ public class ReplForm extends Form {
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
   public void loadComponents(List<String> extensionNames) {
-    Set<String> extensions = new HashSet<String>(extensionNames);
-    // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir("componentDexs", Context.MODE_PRIVATE);
-    File componentFolder = new File(replCompDir);
-    if (!checkComponentDir()) {
-      Log.d(LOG_TAG, "Unable to create components directory");
-      dispatchErrorOccurredEventDialog(this, "loadComponents", ErrorMessages.ERROR_EXTENSION_ERROR,
-          1, "App Inventor", "Unable to create component directory.");
-      return;
+    if (extensionNames.isEmpty()) {
+      return;  // In theory, the client should only send a list with items
     }
-    // Current Thread Class Loader
-    ClassLoader parentClassLoader = ReplForm.class.getClassLoader();
+
     StringBuilder sb = new StringBuilder();
-    loadedExternalDexs.clear();
-    for (File compFolder : componentFolder.listFiles()) {
-      if (compFolder.isDirectory()) {
-        if (!extensions.contains(compFolder.getName())) continue;  // Skip extensions on the phone but not required by the project
-        File component = new File(compFolder.getPath() + File.separator + "classes.jar");
-        File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".jar");
-        component.renameTo(loadComponent);
-        if (loadComponent.exists() && !loadedExternalDexs.contains(loadComponent.getName())) {
-          Log.d(LOG_TAG, "Loading component dex " + loadComponent.getAbsolutePath());
-          loadedExternalDexs.add(loadComponent.getName());
-          sb.append(File.pathSeparatorChar);
-          sb.append(loadComponent.getAbsolutePath());
-        }
+    String separator = "";
+    for (String extension : extensionNames) {  // e.g., "edu.mit.appinventor.ble"
+      // Check that the extension's JAR file exists
+      File loadComponent = new File(replCompDir + extension,
+          VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE ? extension + ".jar" : "classes.jar");
+      Log.d(LOG_TAG, "Loading component dex " + loadComponent.getAbsolutePath());
+      if (!loadComponent.exists()) {
+        Log.d(LOG_TAG, "Extension " + extension + " does not exist");
+        throw new YailRuntimeError("Extension " + extension + " does not exist",
+            "Extension Error");
       }
+
+      // Have we already loaded the dex file into Dalvik? If so, skip it.
+      if (loadedExternalDexs.contains(loadComponent.getPath())) {
+        Log.d(LOG_TAG, "Skipping already loaded " + loadComponent.getAbsolutePath());
+        // Note that this is only an issue if the user has upgraded an extension. Generally, we
+        // advise people upgrading extensions to restart the companion anyway so in theory any
+        // discrepancies should be resolved via that route.
+        continue;
+      }
+
+      // For Android 14+ we need to have the file be read only, but for now we'll just do it
+      // for every Android version.
+      if (loadComponent.canWrite() && !loadComponent.setReadOnly()) {
+        throw new YailRuntimeError("Unable to set " + loadComponent.getName() + " to read only",
+            "Permission Error");
+      }
+
+      Log.d(LOG_TAG, "Queueing component dex " + loadComponent.getAbsolutePath());
+      loadedExternalDexs.add(loadComponent.getPath());
+      sb.append(separator);
+      sb.append(loadComponent.getAbsolutePath());
+      separator = File.pathSeparator;
     }
-    DexClassLoader dexCloader = new DexClassLoader(sb.substring(1), dexOutput.getAbsolutePath(),
-        null, parentClassLoader);
+
+    // Store the loaded dex files in the private storage of the App for stable optimization
+    File dexOutput = new File(activeForm.$context().getCacheDir(), "componentDexs");
+    if (!dexOutput.exists() && !dexOutput.mkdirs()) {
+      throw new YailRuntimeError("Unable to create componentDexs directory",
+          "Permission Error");
+    }
+    DexClassLoader dexCloader = new DexClassLoader(sb.toString(), dexOutput.getAbsolutePath(),
+        null, ReplForm.class.getClassLoader());
     Thread.currentThread().setContextClassLoader(dexCloader);
     Log.d(LOG_TAG, Thread.currentThread().toString());
     Log.d(LOG_TAG, Looper.getMainLooper().getThread().toString());

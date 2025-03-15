@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,28 +10,31 @@ import com.google.appinventor.buildserver.stats.SimpleStatReporter;
 import com.google.appinventor.buildserver.stats.StatCalculator;
 import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
 import com.google.appinventor.buildserver.stats.StatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
-
+import java.net.URI;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -73,8 +76,9 @@ import javax.ws.rs.core.Response;
 @Path("/buildserver")
 public class BuildServer {
   private ProjectBuilder projectBuilder = new ProjectBuilder(statReporter);
+  private String hostname = getEtcHostname();
 
-  static class ProgressReporter {
+  public static class ProgressReporter {
     // We create a ProgressReporter instance which is handed off to the
     // project builder and compiler. It is called to report the progress
     // of the build. The reporting is done by calling the callback URL
@@ -271,6 +275,7 @@ public class BuildServer {
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
     variables.put("hostname", InetAddress.getLocalHost().getHostName());
+    variables.put("etc-hostname", hostname);
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
@@ -463,10 +468,8 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
-    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
-
     try {
-      build(userName, zipFile, isAab, null);
+      build(userName, zipFile, ext, null);
       String attachedFilename = outputApk.getName();
       FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
       // Set the outputApk field to null so that it won't be deleted in cleanUp().
@@ -508,10 +511,8 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
-    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
-
     try {
-      buildAndCreateZip(userName, inputZipFile, isAab, null);
+      buildAndCreateZip(userName, inputZipFile, ext, null);
       String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
       // Set the outputZip field to null so that it won't be deleted in cleanUp().
@@ -565,8 +566,6 @@ public class BuildServer {
     inputZip = inputZipFile;
     inputZip.deleteOnExit(); // In case build server is killed before cleanUp executes.
     String requesting_host = (new URL(callbackUrlStr)).getHost();
-
-    final boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
 
     //for the request for update part, the file should be empty
     if (inputZip.length() == 0L) {
@@ -622,7 +621,7 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, isAab, new ProgressReporter(callbackUrlStr));
+              buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrlStr));
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
               URL callbackUrl = new URL(callbackUrlStr);
@@ -684,9 +683,9 @@ public class BuildServer {
       .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, boolean isAab, ProgressReporter reporter)
-    throws IOException, JSONException {
-    Result buildResult = build(userName, inputZipFile, isAab, reporter);
+  private void buildAndCreateZip(String userName, File inputZipFile, String ext,
+      ProgressReporter reporter) throws IOException, JSONException {
+    Result buildResult = build(userName, inputZipFile, ext, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -724,7 +723,8 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile, boolean isAab, ProgressReporter reporter) throws IOException {
+  private Result build(String userName, File zipFile, String ext, ProgressReporter reporter)
+      throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't
@@ -733,11 +733,7 @@ public class BuildServer {
     outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, null,
         false, false, false, null,
-        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, isAab);
-    String buildOutput = buildResult.getOutput();
-    LOG.info("Build output: " + buildOutput);
-    String buildError = buildResult.getError();
-    LOG.info("Build error output: " + buildError);
+        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, ext);
     outputApk = projectBuilder.getOutputApk();
     if (outputApk != null) {
       outputApk.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -790,6 +786,14 @@ public class BuildServer {
       System.exit(1);
     }
 
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
+    }
+
     // Add a Shutdown Hook. In a container swarm, the swarm orchestrator
     // may choose to shutdown a container (running a buildserver) as part
     // of load balancing and other maintenance tasks. It will send a
@@ -827,18 +831,21 @@ public class BuildServer {
       });
 
     // Now that the command line options have been processed, we can create the buildExecutor.
+    AndroidBuildFactory.install();
+    // TODO(ewpatton): Enable iOS build factory here when published
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
     int port = commandLineOptions.port;
-    SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
+    final ResourceConfig rc = new ResourceConfig(BuildServer.class);
+    GrizzlyHttpServerFactory.createHttpServer(URI.create("http://0.0.0.0:" + port + "/"), rc);
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
     LOG.info("App Inventor Build Server - Version: " + GitBuildId.getVersion());
     LOG.info("App Inventor Build Server - Git Fingerprint: " + GitBuildId.getFingerprint());
     LOG.info("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
-      LOG.info("Maximum simultanous builds = unlimited!");
+      LOG.info("Maximum simultaneous builds = unlimited!");
     } else {
-      LOG.info("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
+      LOG.info("Maximum simultaneous builds = " + commandLineOptions.maxSimultaneousBuilds);
     }
     LOG.info("Visit: http://" + hostAddress + ":" + port +
       "/buildserver/health for server health");
@@ -896,4 +903,16 @@ public class BuildServer {
       return ShutdownState.DOWN;
     }
   }
+
+  private String getEtcHostname() {
+    if (hostname == null) {
+      try (BufferedReader fi =  new BufferedReader(new FileReader("/etc/hostname"))) {
+        hostname = fi.readLine();
+      } catch (IOException e) {
+        hostname = "Unknown";
+      }
+    }
+    return hostname;
+  }
+
 }

@@ -13,6 +13,7 @@ Each component can have methods, events, and properties. Most properties can be 
 * [Drawing and Animation components](animation.html)
 * [Map components](maps.html)
 * [Chart components](charts.html)
+* [Data Science](datascience.html)
 * [Sensor components](sensors.html)
 * [Social components](social.html)
 * [Storage components](storage.html)

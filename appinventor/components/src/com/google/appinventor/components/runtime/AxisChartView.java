@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -116,6 +116,75 @@ public abstract class AxisChartView<
         }
       }
     });
+
+    if (chartComponent.XFromZero()) {
+      chart.getXAxis().setAxisMaximum(0);
+    }
+    if (chartComponent.YFromZero()) {
+      chart.getAxisLeft().setAxisMinimum(0);
+    }
+  }
+
+  /**
+   * Resets the X and Y axes to their default values.
+   */
+  public void resetAxes() {
+    chart.getXAxis().resetAxisMaximum();
+    chart.getXAxis().resetAxisMinimum();
+    chart.getAxisLeft().resetAxisMaximum();
+    chart.getAxisLeft().resetAxisMinimum();
+    chart.invalidate();
+  }
+
+  /**
+   * Sets whether the X origin should be fixed to zero.
+   *
+   * @param zero true if the X origin should be zero
+   */
+  public void setXMinimum(boolean zero) {
+    if (zero) {
+      chart.getXAxis().setAxisMinimum(0);
+    } else {
+      chart.getXAxis().resetAxisMinimum();
+    }
+    chart.invalidate();
+  }
+
+  /**
+   * Sets whether the Y origin should be fixed to zero.
+   *
+   * @param zero true if the Y origin should be zero
+   */
+  public void setYMinimum(boolean zero) {
+    if (zero) {
+      chart.getAxisLeft().setAxisMinimum(0);
+    } else {
+      chart.getAxisLeft().resetAxisMinimum();
+    }
+    chart.invalidate();
+  }
+
+  public double[] getXBounds() {
+    return new double[] {chart.getXAxis().getAxisMinimum(), chart.getXAxis().getAxisMaximum()};
+  }
+
+  public void setXBounds(double minimum, double maximum) {
+    chart.getXAxis().setAxisMinimum((float) minimum);
+    chart.getXAxis().setAxisMaximum((float) maximum);
+    chart.invalidate();
+  }
+
+  public double[] getYBounds() {
+    return new double[] {
+        chart.getAxisLeft().getAxisMinimum(),
+        chart.getAxisLeft().getAxisMaximum()
+    };
+  }
+
+  public void setYBounds(double minimum, double maximum) {
+    chart.getAxisLeft().setAxisMinimum((float) minimum);
+    chart.getAxisLeft().setAxisMaximum((float) maximum);
+    chart.invalidate();
   }
 
   /**
@@ -136,6 +205,7 @@ public abstract class AxisChartView<
     // axis grids to the specified value.
     chart.getXAxis().setDrawGridLines(enabled);
     chart.getAxisLeft().setDrawGridLines(enabled);
+    chart.invalidate();
   }
 
   /**

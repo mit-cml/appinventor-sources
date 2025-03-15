@@ -14,6 +14,8 @@
 	"Blockly.Msg.REMOVE_COMMENT": "Usuń komentarz",
 	"Blockly.Msg.ADD_COMMENT": "Dodaj komentarz",
 	"Blockly.Msg.EXTERNAL_INPUTS": "Wejścia zewnętrzne",
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Ten obrazek odnosi się do następujących bloków, które wymagają rozszerzeń, które nie są obecne w projekcie:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "Błąd: Nie udało się sparsować XML z pliku PNG. Proszę spróbować ponownie.",
 	"Blockly.Msg.INLINE_INPUTS": "Wejścia liniowe",
 	"Blockly.Msg.HORIZONTAL_PARAMETERS": "Rozmieść parametry w poziomie",
 	"Blockly.Msg.VERTICAL_PARAMETERS": "Rozmieść parametry w pionie",
@@ -547,5 +549,8 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO": "do",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET": "ustaw",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": "do",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "składnika"
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "składnika",
+	"Blockly.Msg.REPL_RESET": "Resetowanie",
+	"Blockly.Msg.REPL_FACTORY_RESET": "Spowoduje to próbę zresetowania emulatora do stanu fabrycznego. Jeśli wcześniej aktualizowałeś aplikację Companion zainstalowaną w emulatorze, prawdopodobnie będziesz musiał zrobić to ponownie.",
+	"Blockly.Msg.REPL_CANCEL": "Anulować"
 }

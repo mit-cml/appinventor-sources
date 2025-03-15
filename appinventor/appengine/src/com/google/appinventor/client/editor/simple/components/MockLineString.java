@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.core.client.JavaScriptObject;

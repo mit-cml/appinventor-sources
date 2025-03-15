@@ -62,7 +62,7 @@ public abstract class AbstractChartTest<
     Chart defaultChart = new Chart(getForm());
 
     assertEquals(ChartType.Line, defaultChart.Type());
-    assertEquals(Component.COLOR_DEFAULT, defaultChart.BackgroundColor());
+    assertEquals(Component.COLOR_WHITE, defaultChart.BackgroundColor());
     assertEquals("", defaultChart.Description());
     assertTrue(defaultChart.getView().isEnabled());
   }

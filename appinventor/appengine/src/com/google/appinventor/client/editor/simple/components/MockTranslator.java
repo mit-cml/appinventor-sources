@@ -5,10 +5,10 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
 import com.google.gwt.user.client.ui.Image;
@@ -97,17 +97,24 @@ public class MockTranslator extends MockNonVisibleComponent {
     Ode.getInstance().getTokenAuthService().getTranslateToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        EditableProperty tokenProperty = MockTranslator.this.properties.getProperty(PROPERTY_NAME_APIKEY);
-        if (tokenProperty != null) {
-          String existingToken = tokenProperty.getValue();
-          if (!existingToken.isEmpty()) {
-            return;             // If we have a value, don't over-write it
-          }
+        if (token == null) {
+          onFailure(new UnsupportedOperationException(
+              "Server is not configured to generate Translator tokens."));
+          return;
+        }
+        EditableProperty tokenProperty = properties.getProperty(PROPERTY_NAME_APIKEY);
+        if (tokenProperty == null) {
+          return;
+        }
+        String existingToken = tokenProperty.getValue();
+        if (!existingToken.isEmpty()) {
+          return;             // If we have a value, don't over-write it
         }
         changeProperty(PROPERTY_NAME_APIKEY, token);
       }
+
       @Override
-      public void onFailure(Throwable t){
+      public void onFailure(Throwable t) {
         changeProperty(PROPERTY_NAME_APIKEY, "ERROR : token not created");
         super.onFailure(t);
       }

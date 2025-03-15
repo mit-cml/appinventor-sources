@@ -50,7 +50,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     super.setUp();
     chartComponent = new Chart(getForm());
     data = new ChartData2D(chartComponent);
-    model = data.chartDataModel;
+    model = data.dataModel;
 
     // The ExecutorService used by the ChartData component has
     // to be changed to a RoboExecutorService in order to
@@ -113,6 +113,26 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     assertEquals(colors, data.Colors());
     assertEquals(3, model.getDataset().getColors().size());
+  }
+
+  /**
+   * Test case to ensure that setting the Colors List property
+   * of the Data component with multiple color values represented
+   * as Java longs results in the correct coercion to int.
+   */
+  @Test
+  public void testSetColorsMultipleColorsLongs() {
+    YailList colors = YailList.makeList(
+        Arrays.asList(0xFFAABBCCL, 0xFFBBCCDDL, 0xAABBCCDDL, 0xAABBCC)
+    );
+    YailList colorsExpected = YailList.makeList(
+        Arrays.asList(0xFFAABBCC, 0xFFBBCCDD, 0xAABBCCDD, 0xAABBCC)
+    );
+
+    data.Colors(colors);
+
+    assertEquals(colorsExpected, data.Colors());
+    assertEquals(4, model.getDataset().getColors().size());
   }
 
   /**
@@ -270,7 +290,7 @@ public class ChartData2DTest extends RobolectricTestBase {
   @Test
   public void testSetPointShape() {
     chartComponent.Type(ChartType.Scatter);
-    model = data.chartDataModel;
+    model = data.dataModel;
 
     IShapeRenderer renderer = ((ScatterDataSet)model.getDataset()).getShapeRenderer();
 

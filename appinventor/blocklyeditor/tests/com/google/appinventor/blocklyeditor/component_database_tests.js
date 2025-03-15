@@ -3,35 +3,13 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-var fs = require('fs'); //Always required to read from files
-var messages = fs.read('../build/blocklyeditor/msg/messages.json');
-
-// PhantomJS page object to open and load an URL
-var page = require('webpage').create();
-// Some debugging from PhantomJS
-page.onConsoleMessage = function (msg) { console.log(msg); };
-page.onError = function (msg, trace) {
-  console.log(msg);
-  trace.forEach(function(item) {
-    console.log('  ', item.file, ':', item.line);
+suite('Component Database Tests', function() {
+  setup(function() {
+    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
+    initComponentTypes();
   })
-};
-
-// Open the actual page and load all the JavaScript in it
-// If success is true, all went well
-page.open('src/demos/yail/yail_testing_index.html', function(status) {
-  if (status !== 'success') {
-    console.log('load unsuccessful');
-    return false;
-  }
-
-  // Evaluate the following:
-  var passed = page.evaluate(function() {
-
-    // Set the translation messages object
-    Blockly.Msg = JSON.parse(arguments[0]);
-
-    var db = Blockly.mainWorkspace.getComponentDatabase();
+  test('TranslationTests', function() {
+    let db = Blockly.common.getMainWorkspace().getComponentDatabase();
 
     // Register a fake component that we will use for testing.
     db.populateTypes(/** @type {ComponentInfo[]} */ [{
@@ -74,40 +52,33 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
     var block;
     block = blockFromMutation('component_event', '<mutation component_type="TestExtension" event_name="TranslatedEvent" is_generic="false" />');
     // Event name should be translated
-    assertEquals('SuccessfulEvent', getEventBlockPresentedName(block));
+    chai.assert.equal('SuccessfulEvent', getEventBlockPresentedName(block));
     // Event tooltip should be translated
-    assertEquals('Successfully translated event test.', block.tooltip);
+    chai.assert.equal('Successfully translated event test.', block.tooltip);
     block = blockFromMutation('component_event', '<mutation component_type="TestExtension" event_name="UntranslatedEvent" is_generic="false" />');
     // Event name should not be translated
-    assertEquals('UntranslatedEvent', getEventBlockPresentedName(block));
+    chai.assert.equal('UntranslatedEvent', getEventBlockPresentedName(block));
     // Event tooltip should not be translated
-    assertEquals('This is an untranslated test.', block.tooltip);
+    chai.assert.equal('This is an untranslated test.', block.tooltip);
     block = blockFromMutation('component_method', '<mutation component_type="TestExtension" method_name="TranslatedMethod" is_generic="false" />');
     // Method name should be translated
-    assertEquals('SuccessfulMethod', getMethodBlockPresentedName(block));
+    chai.assert.equal('SuccessfulMethod', getMethodBlockPresentedName(block));
     // Method tooltip should be translated
-    assertEquals('Successfully translated method test.', block.tooltip);
+    chai.assert.equal('Successfully translated method test.', block.tooltip);
     block = blockFromMutation('component_method', '<mutation component_type="TestExtension" method_name="UntranslatedMethod" is_generic="false" />');
     // Method name should not be translated
-    assertEquals('UntranslatedMethod', getMethodBlockPresentedName(block));
+    chai.assert.equal('UntranslatedMethod', getMethodBlockPresentedName(block));
     // Method tooltip should not be translated
-    assertEquals('This is an untranslated test.', block.tooltip);
+    chai.assert.equal('This is an untranslated test.', block.tooltip);
     block = blockFromMutation('component_set_get', '<mutation component_type="TestExtension" property_name="TranslatedProperty" set_or_get="get" is_generic="false" />');
     // Property name should be translated
-    assertEquals('SuccessfulProperty', getPropertyBlockPresentedName(block));
+    chai.assert.equal('SuccessfulProperty', getPropertyBlockPresentedName(block));
     // Property tooltip should be translated
-    assertEquals('Successfully translated property test.', block.tooltip);
+    chai.assert.equal('Successfully translated property test.', block.tooltip);
     block = blockFromMutation('component_set_get', '<mutation component_type="TestExtension" property_name="UntranslatedProperty" set_or_get="get" is_generic="false" />');
     // Property name should not be translated
-    assertEquals('UntranslatedProperty', getPropertyBlockPresentedName(block));
+    chai.assert.equal('UntranslatedProperty', getPropertyBlockPresentedName(block));
     // Property tooltip should not be translated
-    assertEquals('This is an untranslated test.', block.tooltip);
-
-    return true;
-  }, messages);
-
-  //This is the actual result of the test
-  console.log(passed);
-  //Exit the phantom process
-  phantom.exit();
-});
+    chai.assert.equal('This is an untranslated test.', block.tooltip);
+  })
+})

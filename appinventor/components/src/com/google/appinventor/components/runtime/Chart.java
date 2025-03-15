@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -63,7 +64,11 @@ public class Chart extends AndroidViewComponent
   private int pieRadius;
   private boolean legendEnabled;
   private boolean gridEnabled;
+  private boolean zeroX;
+  private boolean zeroY;
   private YailList labels;
+
+  private int axesTextColor;
 
   // Synced tick value across all Data Series (used for real-time entries)
   // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -71,7 +76,7 @@ public class Chart extends AndroidViewComponent
   private int tick = 1;
 
   // Attached Data components
-  private final ArrayList<ChartDataBase> dataComponents;
+  private final List<ChartComponent> dataComponents;
 
   /**
    * Creates a new Chart component.
@@ -98,6 +103,10 @@ public class Chart extends AndroidViewComponent
     LegendEnabled(true);
     GridEnabled(true);
     Labels(new YailList());
+    XFromZero(false);
+    YFromZero(false);
+
+    AxesTextColor(Component.COLOR_DEFAULT);
 
     // Register onInitialize event of the Chart
     $form().registerForOnInitialize(this);
@@ -134,18 +143,24 @@ public class Chart extends AndroidViewComponent
   }
 
   @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for charts
+  }
+
+  @Override
   public List<Component> getChildren() {
     return new ArrayList<Component>(dataComponents);
   }
 
   /**
-   * Returns the type of the Chart.
+   * Specifies the type of the Chart, which determines how to visualize the data.
    *
    * @return the current type of the chart
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      userVisible = false)
+      description = "Specifies the chart's type (area, bar, pie, scatter), "
+          + "which determines how to visualize the data.")
   public ChartType Type() {
     return type;
   }
@@ -158,9 +173,6 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
       defaultValue = "0")
-  @SimpleProperty(description = "Specifies the chart's type (area, bar, "
-      + "pie, scatter), which determines how to visualize the data.",
-      userVisible = false)
   public void Type(ChartType type) {
     // Keep track whether a ChartView already exists,
     // in which case it will have to be reinitialized.
@@ -222,7 +234,7 @@ public class Chart extends AndroidViewComponent
     // the Data components are attached to the Chart.
     // This has no effect when the Type property is default (0), since
     // the Data components are not attached yet, making the List empty.
-    for (ChartDataBase dataComponent : dataComponents) {
+    for (ChartComponent dataComponent : dataComponents) {
       dataComponent.initChartData();
     }
 
@@ -231,6 +243,8 @@ public class Chart extends AndroidViewComponent
     LegendEnabled(legendEnabled);
     GridEnabled(gridEnabled);
     Labels(labels);
+
+    AxesTextColor(axesTextColor);
   }
 
   /**
@@ -276,11 +290,45 @@ public class Chart extends AndroidViewComponent
    * @param argb background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void BackgroundColor(int argb) {
+    if (argb == Component.COLOR_DEFAULT) {
+      argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
+    }
     backgroundColor = argb;
     chartView.setBackgroundColor(argb);
+  }
+
+  /**
+   * Returns the chart's axes text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return axes text RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public int AxesTextColor() {
+    return axesTextColor;
+  }
+
+  /**
+   * Specifies the chart's axes text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty
+  public void AxesTextColor(int argb) {
+    if (argb == Component.COLOR_DEFAULT) {
+      argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
+    }
+    axesTextColor = argb;
+    if (chartView instanceof PointChartView) {
+      ((PointChartView) chartView).setAxesTextColor(argb);
+    }
   }
 
   /**
@@ -299,7 +347,9 @@ public class Chart extends AndroidViewComponent
       defaultValue = "100")
   @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the "
       + "percentage indicates the percentage of the hole fill. 100% means that a full Pie Chart "
-      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false)
+      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.",
+      userVisible = false,
+      category = PropertyCategory.APPEARANCE)
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -316,7 +366,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return True if legend is enabled, false otherwise
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public boolean LegendEnabled() {
     return this.legendEnabled;
   }
@@ -332,6 +382,8 @@ public class Chart extends AndroidViewComponent
   public void LegendEnabled(boolean enabled) {
     this.legendEnabled = enabled;
     chartView.setLegendEnabled(enabled);
+    view.invalidate();
+    chartView.refresh();
   }
 
   /**
@@ -340,7 +392,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return True if grid is enabled, false otherwise
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public boolean GridEnabled() {
     return this.gridEnabled;
   }
@@ -363,6 +415,8 @@ public class Chart extends AndroidViewComponent
     // grids.
     if (chartView instanceof AxisChartView) {
       ((AxisChartView<?, ?, ?, ?, ?>) chartView).setGridEnabled(enabled);
+      view.invalidate();
+      chartView.refresh();
     }
   }
 
@@ -422,11 +476,140 @@ public class Chart extends AndroidViewComponent
    * @see #Labels(YailList)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void LabelsFromString(String labels) {
     // Retrieve the elements from the CSV-formatted String
     YailList labelsList = ElementsUtil.elementsFromString(labels);
     Labels(labelsList); // Set the Labels from the retrieved elements List
+  }
+
+  /**
+   * Determines whether the X axis origin is set at 0 or the minimum X value
+   * across all data series.
+   *
+   * @param zero true if the X-axis origin should be fixed at zero
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void XFromZero(boolean zero) {
+    this.zeroX = zero;
+
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setXMinimum(zero);
+    }
+  }
+
+  @SimpleProperty
+  public boolean XFromZero() {
+    return zeroX;
+  }
+
+  /**
+   * Determines whether the Y axis origin is set at 0 or the minimum y value
+   * across all data series.
+   *
+   * @param zero true if the Y-axis origin should be fixed at zero
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void YFromZero(boolean zero) {
+    this.zeroY = zero;
+
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setYMinimum(zero);
+    }
+  }
+
+  @SimpleProperty
+  public boolean YFromZero() {
+    return this.zeroY;
+  }
+
+  /**
+   * Extends the domain of the chart to include the provided x value. If x is already within the
+   * bounds of the domain, this method has no effect.
+   *
+   * @param x the value to show
+   */
+  @SimpleFunction
+  public void ExtendDomainToInclude(double x) {
+    if (chartView instanceof AxisChartView) {
+      double[] bounds = ((AxisChartView<?, ?, ?, ?, ?>) chartView).getXBounds();
+      if (x < bounds[0]) {
+        ((AxisChartView<?, ?, ?, ?, ?>) chartView).setXBounds(x, bounds[1]);
+      } else if (x > bounds[1]) {
+        ((AxisChartView<?, ?, ?, ?, ?>) chartView).setXBounds(bounds[0], x);
+      } else {
+        return;
+      }
+      chartView.refresh();
+    }
+  }
+
+  /**
+   * Extends the range of the chart to include the provided y value. If y is already within the
+   * bounds of the range, this method has no effect.
+   *
+   * @param y the value to show
+   */
+  @SimpleFunction
+  public void ExtendRangeToInclude(double y) {
+    if (chartView instanceof AxisChartView) {
+      double[] bounds = ((AxisChartView<?, ?, ?, ?, ?>) chartView).getYBounds();
+      if (y < bounds[0]) {
+        ((AxisChartView<?, ?, ?, ?, ?>) chartView).setYBounds(y, bounds[1]);
+      } else if (y > bounds[1]) {
+        ((AxisChartView<?, ?, ?, ?, ?>) chartView).setYBounds(bounds[0], y);
+      } else {
+        return;
+      }
+      chartView.refresh();
+    }
+  }
+
+  /**
+   * Resets the axes of the chart to their original bounds.
+   */
+  @SimpleFunction
+  public void ResetAxes() {
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).resetAxes();
+      refresh();
+    }
+  }
+
+  /**
+   * Sets the minimum and maximum for the domain of the X axis.
+   *
+   * @param minimum the lower bound for the domain
+   * @param maximum the upper bound for the domain
+   */
+  @SimpleFunction
+  public void SetDomain(double minimum, double maximum) {
+    this.zeroX = minimum == 0.0;
+
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setXBounds(minimum, maximum);
+      refresh();
+    }
+  }
+
+  /**
+   * Sets the minimum and maximum for the range of the Y axis.
+   *
+   * @param minimum the lower bound for the range
+   * @param maximum the upper bound for the range
+   */
+  @SimpleFunction
+  public void SetRange(double minimum, double maximum) {
+    this.zeroY = minimum == 0.0;
+
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setYBounds(minimum, maximum);
+      refresh();
+    }
   }
 
   /**
@@ -473,7 +656,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param dataComponent Data component object instance to add
    */
-  public void addDataComponent(ChartDataBase dataComponent) {
+  public void addDataComponent(ChartComponent dataComponent) {
     dataComponents.add(dataComponent);
   }
 

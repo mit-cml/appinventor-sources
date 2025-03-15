@@ -46,7 +46,8 @@ import org.osmdroid.util.GeoPoint;
  */
 @DesignerComponent(version = YaVersion.LINESTRING_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "LineString")
+    description = "LineString is a component for drawing an open, continuous sequence of lines on a Map. To add new points to a LineString in the designer, drag the midpoint of any segment away from the line to introduce a new vertex. Move a vertex by clicking and dragging the vertex to a new location. Clicking on a vertex will delete the vertex, unless only two remain.",
+    iconName = "images/linestring.png")
 @SimpleObject
 public class LineString extends MapFeatureBase implements MapLineString {
   private static final String TAG = LineString.class.getSimpleName();
@@ -160,7 +161,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
    * @param points String containing a sequence of points for the LineString.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void PointsFromString(String points) {
     final String functionName = "PointsFromString";
     try {

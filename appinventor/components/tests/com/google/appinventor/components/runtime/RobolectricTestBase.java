@@ -5,8 +5,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import static org.robolectric.Shadows.shadowOf;
+
+import android.os.Looper;
 import android.view.View;
-import android.view.ViewGroup;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
@@ -18,7 +20,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.Scheduler.IdleState;
 
 import java.util.concurrent.TimeUnit;
@@ -71,27 +72,24 @@ public class RobolectricTestBase {
   }
 
   private <T extends Form> void setUpForm(Class<T> clazz) {
-    ShadowLooper.getShadowMainLooper().getScheduler().setIdleState(IdleState.PAUSED);
-    ActivityController<T> activityController = Robolectric.buildActivity(clazz)
-        .create().start().resume().visible();
+    shadowOf(Looper.getMainLooper()).getScheduler().setIdleState(IdleState.PAUSED);
+    ActivityController<T> activityController = Robolectric.buildActivity(clazz).setup();
     form = activityController.get();
     form.DefaultFileScope(FileScope.Legacy);
     // Unfortunately Robolectric won't handle laying out the view hierarchy and because of how
     // we use runOnUiThread in the Initialize() method, tests will enter an infinite loop. This
     // code simulates enough of the layout process so that we don't loop forever.
-    View v = ((ViewGroup) form.findViewById(android.R.id.content)).getChildAt(0);
-    v = ((ViewGroup) v).getChildAt(1);  // frameLayoutWithTitle in Form
-    v = ((ViewGroup) v).getChildAt(0);  // frameLayout in Form
+    View v = form.getFrameLayout();
     v.layout(0, 0, 240, 320);
     v.measure(240, 320);
     v.invalidate();
     v.requestLayout();
-    ShadowLooper.getShadowMainLooper().getScheduler().setIdleState(IdleState.UNPAUSED);
+    shadowOf(Looper.getMainLooper()).getScheduler().setIdleState(IdleState.UNPAUSED);
     ShadowEventDispatcher.clearEvents();  // start with a clean slate
   }
 
   protected void runAllEvents() {
-    ShadowLooper.getShadowMainLooper().getScheduler().advanceToLastPostedRunnable();
+    shadowOf(Looper.getMainLooper()).getScheduler().advanceToLastPostedRunnable();
   }
 
   protected void runAllAsynchronousCommandsAndEvents() {
@@ -100,6 +98,6 @@ public class RobolectricTestBase {
   }
 
   protected void advance(int millis) {
-    ShadowLooper.getShadowMainLooper().getScheduler().advanceBy(millis, TimeUnit.MILLISECONDS);
+    shadowOf(Looper.getMainLooper()).getScheduler().advanceBy(millis, TimeUnit.MILLISECONDS);
   }
 }

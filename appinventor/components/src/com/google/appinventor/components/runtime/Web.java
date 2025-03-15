@@ -241,6 +241,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
 
   // Set of observers
   private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
+  private String responseTextEncoding = "UTF-8";
 
   /**
    * Creates a new Web component.
@@ -284,6 +285,25 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty
   public void Url(String url) {
     urlString = url;
+  }
+
+  /**
+   * Returns the Response Text Encoding.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "User-specified character encoding for web response.")
+  public String ResponseTextEncoding() {
+    return responseTextEncoding;
+  }
+
+  /**
+   * Specifies the Response Text Encoding.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "UTF-8")
+  @SimpleProperty
+  public void ResponseTextEncoding(String encoding) {
+    responseTextEncoding = encoding;
   }
 
   /**
@@ -983,7 +1003,8 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @throws IllegalArgumentException if the JSON text can't be decoded
    */
   @VisibleForTesting
-  static Object decodeJsonText(String jsonText, boolean useDicts) throws IllegalArgumentException {
+  public static Object decodeJsonText(String jsonText, boolean useDicts)
+      throws IllegalArgumentException {
     try {
       return JsonUtil.getObjectFromJson(jsonText, useDicts);
     } catch (JSONException e) {
@@ -1174,7 +1195,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     final List<String> neededPermissions = new ArrayList<>();
 
     // Check if we need permission to read the postFile, if any
-    if (postFile != null && FileUtil.needsPermission(form, postFile) && !haveReadPermission) {
+    if (postFile != null && FileUtil.needsReadPermission(form, postFile) && !haveReadPermission) {
       neededPermissions.add(READ_EXTERNAL_STORAGE);
     }
 
@@ -1182,7 +1203,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     if (saveResponse) {
       String target = FileUtil.resolveFileName(form, webProps.responseFileName,
           form.DefaultFileScope());
-      if (FileUtil.needsPermission(form, target) && !haveWritePermission) {
+      if (FileUtil.needsWritePermission(form, target) && !haveWritePermission) {
         neededPermissions.add(WRITE_EXTERNAL_STORAGE);
       }
     }
@@ -1241,7 +1262,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
                 }
               });
           } else {
-            final String responseContent = getResponseContent(connection);
+            final String responseContent = getResponseContent(connection, responseTextEncoding);
 
             // Dispatch the event.
             activity.runOnUiThread(new Runnable() {
@@ -1431,11 +1452,15 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     }
   }
 
-  private static String getResponseContent(HttpURLConnection connection) throws IOException {
+  private static String getResponseContent(HttpURLConnection connection, String encodingProperty) throws IOException {
     // Use the content encoding to convert bytes to characters.
     String encoding = connection.getContentEncoding();
     if (encoding == null) {
-      encoding = "UTF-8";
+      if (encodingProperty == null || encodingProperty.isEmpty()) {
+        encoding = "UTF-8";
+      } else {
+        encoding = encodingProperty;
+      }
     }
     InputStreamReader reader = new InputStreamReader(getConnectionStream(connection), encoding);
     try {

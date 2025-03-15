@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2022 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -37,8 +37,12 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase<V>>
    * @param view Chart View to link model to
    */
   protected LineChartBaseDataModel(LineData data, V view) {
+    this(data, view, new LineDataSet(new ArrayList<Entry>(), ""));
+  }
+
+  protected LineChartBaseDataModel(LineData data, V view, ILineDataSet dataset) {
     super(data, view);
-    dataset = new LineDataSet(new ArrayList<Entry>(), "");
+    this.dataset = dataset;
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();
   }
@@ -80,6 +84,10 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase<V>>
       }
 
       entries.add(index, entry);
+
+      List<Integer> defaultColors = ((LineDataSet) dataset).getCircleColors();
+      defaultColors.add(index, dataset.getColor());
+      ((LineDataSet) dataset).setCircleColors(defaultColors);
     }
   }
 
