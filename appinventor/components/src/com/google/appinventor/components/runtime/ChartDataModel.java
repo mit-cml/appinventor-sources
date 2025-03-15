@@ -105,6 +105,15 @@ public abstract class ChartDataModel<
   }
 
   /**
+   * Changes the color of the labels of the data set.
+   *
+   * @param argb new color
+   */
+  public void setDataLabelColor(int argb) {
+    data.setValueTextColor(argb);
+  }
+
+  /**
    * Changes the label of the data set.
    *
    * @param text new label text

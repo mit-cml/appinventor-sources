@@ -26,6 +26,10 @@ The Chart component plots data originating from it's attached Data components. F
 
 {:.properties}
 
+{:id="Chart.AxesTextColor" .color} *AxesTextColor*
+: Specifies the chart's axes text color as an alpha-red-green-blue
+ integer.
+
 {:id="Chart.BackgroundColor" .color} *BackgroundColor*
 : Specifies the chart's background color as an alpha-red-green-blue
  integer.
@@ -167,6 +171,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  and a column value of "Temperature" is specified, that column will be used
  for the y values. If a value here is not specified, default values for the
  y values will be generated instead.
+
+{:id="ChartData2D.DataLabelColor" .color} *DataLabelColor*
+: Specifies the data points label color as an alpha-red-green-blue integer.
 
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the

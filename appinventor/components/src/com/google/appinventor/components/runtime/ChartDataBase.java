@@ -45,6 +45,8 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
   private int color;
   private YailList colors;
 
+  private int dataLabelColor;
+
   /**
    * Creates a new Chart Data component.
    */
@@ -57,6 +59,8 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     Color(Component.COLOR_BLACK);
     DataSourceKey("");
     Label("");
+
+    DataLabelColor(chartContainer.$form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE);
   }
 
   /**
@@ -157,6 +161,31 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     // Set the colors from the constructed List of colors
     // and refresh the Chart.
     dataModel.setColors(resultColors);
+    onDataChange();
+  }
+
+  /**
+   * Returns the data label color as an alpha-red-green-blue integer.
+   *
+   * @return background RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public int DataLabelColor() {
+    return dataLabelColor;
+  }
+
+  /**
+   * Specifies the data points label color as an alpha-red-green-blue integer.
+   *
+   * @param argb background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+  @SimpleProperty
+  public void DataLabelColor(int argb) {
+    dataLabelColor = argb;
+    dataModel.setDataLabelColor(argb);
     onDataChange();
   }
 

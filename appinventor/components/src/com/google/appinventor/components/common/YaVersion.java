@@ -892,9 +892,15 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
   // - The Type getter block was made visible
-  public static final int CHART_COMPONENT_VERSION = 3;
+  // For CHART_COMPONENT_VERSION 4:
+  // - The axesTextColor property was added
+  // - The setAxesTextColor method was added
+  public static final int CHART_COMPONENT_VERSION = 4;
 
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  // For CHART_DATA_2D_COMPONENT_VERSION 2:
+  // - The dataLabelColor property was added
+  // - The setDataLabelColor method was added
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
