@@ -14,9 +14,13 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Handles the data operations & model-specific styling for Bar
@@ -29,6 +33,10 @@ import java.util.List;
 // TODO: x value corresponds to the index in the Bar Chart Data Model.
 public class BarChartDataModel
     extends Chart2DDataModel<BarEntry, IBarDataSet, BarData, BarChart, BarChartView> {
+
+  private static final String DATE_PATTERN = "^[0-3]?[0-9]/[0-3]?[0-9]/(?:[0-9]{2})?[0-9]{2}$";
+
+  private static final String TIME_PATTERN = "([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-6][0-9]";
   /**
    * Initializes a new ChartDataModel object instance.
    *
@@ -98,11 +106,24 @@ public class BarChartDataModel
       String rawY = tuple.getString(1);
 
       try {
+        float x;
+        if(Pattern.compile(DATE_PATTERN).matcher(rawX).matches()){
+          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+          Date date = sdf.parse(rawX);
+          x = date.getTime();
+        }
+        else if(Pattern.compile(TIME_PATTERN).matcher(rawX).matches()){
+          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+          Date date = sdf.parse(rawX);
+          x = date.getTime();
+        }
+        else {
+          x = (float) Math.floor(Float.parseFloat(rawX));
+        }
         // Attempt to parse the x and y value String representations.
         // Since the Bar Chart uses x entries as an index (so an
         // x value of 3 would correspond to the 4th entry [3rd index],
         // the float value has to be floored.
-        int x = (int)Math.floor(Float.parseFloat(rawX));
         float y = Float.parseFloat(rawY);
 
         return new BarEntry(x, y);
@@ -112,6 +133,8 @@ public class BarChartDataModel
             "GetEntryFromTuple",
             ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
             rawX, rawY);
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
       }
     } catch (NullPointerException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,

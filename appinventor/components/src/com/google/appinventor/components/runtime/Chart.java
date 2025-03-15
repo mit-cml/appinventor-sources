@@ -69,6 +69,7 @@ public class Chart extends AndroidViewComponent
   private YailList labels;
 
   private int axesTextColor;
+  private int valueType;
 
   // Synced tick value across all Data Series (used for real-time entries)
   // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -105,6 +106,7 @@ public class Chart extends AndroidViewComponent
     Labels(new YailList());
     XFromZero(false);
     YFromZero(false);
+    ValueFormat(0);
 
     AxesTextColor(Component.COLOR_DEFAULT);
 
@@ -294,7 +296,7 @@ public class Chart extends AndroidViewComponent
   @SimpleProperty
   public void BackgroundColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
-      argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
+      argb = $form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK;
     }
     backgroundColor = argb;
     chartView.setBackgroundColor(argb);
@@ -328,6 +330,30 @@ public class Chart extends AndroidViewComponent
     axesTextColor = argb;
     if (chartView instanceof PointChartView) {
       ((PointChartView) chartView).setAxesTextColor(argb);
+    }
+  }
+
+  @SimpleProperty
+  public int ValueFormat() {
+    return valueType;
+  }
+
+  /**
+   * Specifies the format for X axis labels and point values.
+   *
+   * @param valueType set to true if the user desires to interpret data as integers
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public void ValueFormat(int valueType) {
+    this.valueType = valueType;
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setValueType(valueType);
+    }
+    for (ChartComponent dataComponent : dataComponents) {
+      if (dataComponent.getDataModel() != null) {
+        dataComponent.getDataModel().setChartValueType(valueType);
+      }
     }
   }
 
