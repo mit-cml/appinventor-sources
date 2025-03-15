@@ -77,7 +77,7 @@ import android.graphics.Rect;
 @UsesLibraries({"recyclerview.jar", "recyclerview.aar", "cardview.jar", "cardview.aar", "dynamicanimation.jar"})
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
-public final class ListView extends AndroidViewComponent implements OnOrientationChangeListener {
+public final class ListView extends AndroidViewComponent {
 
   private static final String LOG_TAG = "ListView";
 
@@ -147,7 +147,6 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
 
     super(container);
     this.container = container;
-    container.$form().registerForOnOrientationChange(this);
     items = new ArrayList<>();
 
     linearLayout = new LinearLayout(container.$context());
@@ -246,17 +245,11 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
-    setDivider();
   }
 
   @Override
   public View getView() {
     return linearLayout;
-  }
-
-  @Override
-  public void onOrientationChange() {
-    setDivider();
   }
 
   /**
@@ -1290,6 +1283,7 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
    */
   private void setDivider() {
     DividerItemDecoration dividerDecoration = new DividerItemDecoration();
+    dividerDecoration.removeLayoutChangeListener();
     for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
       RecyclerView.ItemDecoration decoration = recyclerView.getItemDecorationAt(i);
       if (decoration instanceof DividerItemDecoration) {
@@ -1304,12 +1298,15 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
    * A class that creates dividers between elements or margins, depending on the options selected.
    */
   private class DividerItemDecoration extends RecyclerView.ItemDecoration {
-    public DividerItemDecoration() {
-    }
+    private int recyclerViewWidth = 0;
+    private View.OnLayoutChangeListener layoutChangeListener;
+    private RecyclerView parent;
+
+    public DividerItemDecoration() {}
 
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-      //If margins are set, dividers will not be created.
+      // If margins are set, dividers will not be created.
       if (margins == 0) {
         ViewGroup.LayoutParams layoutParams;
         int childCount = parent.getChildCount();
@@ -1342,16 +1339,19 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
               canvas.drawRect(0, top, width, bottom, dividerPaint);
             }
           }
-        }        
+        }
       }
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(
+        Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+      this.parent = parent;
       ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
       int position = parent.getChildAdapterPosition(view);
       if (margins == 0) {
-        if (position != RecyclerView.NO_POSITION && position < parent.getAdapter().getItemCount() - 1) {
+        if (position != RecyclerView.NO_POSITION
+            && position < parent.getAdapter().getItemCount() - 1) {
           if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
             outRect.set(0, 0, dividerSize, 0);
           } else {
@@ -1362,7 +1362,37 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
         }
       } else {
         if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
-          layoutParams.width = parent.getWidth() - 2 * margins;
+          if (layoutChangeListener == null) {
+            layoutChangeListener =
+                new View.OnLayoutChangeListener() {
+                  @Override
+                  public void onLayoutChange(
+                      View v,
+                      int left,
+                      int top,
+                      int right,
+                      int bottom,
+                      int oldLeft,
+                      int oldTop,
+                      int oldRight,
+                      int oldBottom) {
+                    if (recyclerViewWidth != parent.getWidth()) {
+                      recyclerViewWidth = parent.getWidth();
+                      for (int i = 0; i < parent.getChildCount(); i++) {
+                        View child = parent.getChildAt(i);
+                        ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
+                        childLayoutParams.width = recyclerViewWidth - (2 * margins);
+                        child.setLayoutParams(childLayoutParams);
+                      }
+                      parent.invalidate();
+                    }
+                  }
+                };
+            parent.addOnLayoutChangeListener(layoutChangeListener);
+          }
+          recyclerViewWidth = parent.getWidth();
+          layoutParams.width = recyclerViewWidth - (2 * margins);
+          view.setLayoutParams(layoutParams);
           if (position == 0) {
             outRect.set(margins, margins, margins, margins);
           } else {
@@ -1377,6 +1407,12 @@ public final class ListView extends AndroidViewComponent implements OnOrientatio
           }
         }
         view.setLayoutParams(layoutParams);
+      }
+    }
+
+    public void removeLayoutChangeListener() {
+      if (layoutChangeListener != null) {
+        parent.removeOnLayoutChangeListener(layoutChangeListener);
       }
     }
   }
