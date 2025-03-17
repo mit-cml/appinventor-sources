@@ -103,7 +103,7 @@ public abstract class AxisChartView<
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
-          } else if (valueType==CHART_VALUE_TIME) {
+          } else if (valueType == CHART_VALUE_TIME) {
             //display x-axis labels as Time
             Date mDate = new Date((long) value);
             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
