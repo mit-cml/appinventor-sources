@@ -296,7 +296,7 @@ public class Chart extends AndroidViewComponent
   @SimpleProperty
   public void BackgroundColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
-      argb = $form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK;
+      argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
     }
     backgroundColor = argb;
     chartView.setBackgroundColor(argb);
@@ -325,7 +325,7 @@ public class Chart extends AndroidViewComponent
   @SimpleProperty
   public void AxesTextColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
-      argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
+      argb = $form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK;
     }
     axesTextColor = argb;
     if (chartView instanceof PointChartView) {
