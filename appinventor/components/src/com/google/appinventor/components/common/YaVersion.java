@@ -606,6 +606,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 232:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
   // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
+  // - CHART_COMPONENT_VERSION was incremented to 4
   public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
@@ -895,6 +897,7 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 4:
   // - The axesTextColor property was added
   // - The setAxesTextColor method was added
+  // - The ValueFormat property was added
   public static final int CHART_COMPONENT_VERSION = 4;
 
   // For CHART_DATA_2D_COMPONENT_VERSION 2:

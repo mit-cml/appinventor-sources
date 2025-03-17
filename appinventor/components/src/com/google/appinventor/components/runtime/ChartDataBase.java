@@ -59,7 +59,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     Color(Component.COLOR_BLACK);
     DataSourceKey("");
     Label("");
-
     DataLabelColor(chartContainer.$form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE);
   }
 
@@ -74,6 +73,10 @@ public abstract class ChartDataBase extends DataCollection<Chart, ChartDataModel
     dataModel = container.createChartModel();
     dataModel.view.chart.setOnChartGestureListener(this);
     dataModel.view.chart.setOnChartValueSelectedListener(this);
+  }
+
+  public ChartDataModel<?, ?, ?, ?, ?> getDataModel() {
+    return dataModel;
   }
 
   /*

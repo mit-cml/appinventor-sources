@@ -870,6 +870,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 4) {
       // The axesTextColor and dataLabelColor properties were added.
+      // The ValueFormat property was added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
