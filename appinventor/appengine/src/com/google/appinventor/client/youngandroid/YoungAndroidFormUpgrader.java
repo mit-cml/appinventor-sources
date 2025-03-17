@@ -870,6 +870,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 4) {
       // The axesTextColor and dataLabelColor properties were added.
+      // The ValueFormat property was added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -2278,16 +2279,5 @@ public final class YoungAndroidFormUpgrader {
     dialogBox.setWidget(vPanel);
     dialogBox.center();
     dialogBox.show();
-  }
-
-  private static int upgradeChart2DProperties(
-          Map<String, JSONValue> componentProperties,
-          int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // The ChartValueType property was added.
-      // No properties need to be modified to upgrade to version 2.
-      srcCompVersion = 2;
-    }
-    return srcCompVersion;
   }
 }

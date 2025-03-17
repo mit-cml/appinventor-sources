@@ -5,6 +5,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import static com.google.appinventor.components.runtime.Component.CHART_VALUE_DATE;
+import static com.google.appinventor.components.runtime.Component.CHART_VALUE_INTEGER;
+import static com.google.appinventor.components.runtime.Component.CHART_VALUE_TIME;
+
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
@@ -18,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.google.appinventor.components.runtime.Component.*;
 
 /**
  * Base class for Chart Views (Chart UI) for Charts types that
@@ -189,7 +191,7 @@ public abstract class AxisChartView<
    * @param valueType indicates whether the data should be interpreted as integers or not
    */
   public void setValueType(int valueType){
-    this.valueType=valueType;
+    this.valueType = valueType;
   }
 
   /**

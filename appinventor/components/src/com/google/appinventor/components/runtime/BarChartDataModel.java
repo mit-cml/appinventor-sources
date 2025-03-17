@@ -35,8 +35,11 @@ public class BarChartDataModel
     extends Chart2DDataModel<BarEntry, IBarDataSet, BarData, BarChart, BarChartView> {
 
   private static final String DATE_PATTERN = "^[0-3]?[0-9]/[0-3]?[0-9]/(?:[0-9]{2})?[0-9]{2}$";
+  private static final Pattern DATE_PATTERN_PATTERN = Pattern.compile(DATE_PATTERN);
 
   private static final String TIME_PATTERN = "([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-6][0-9]";
+  private static final Pattern TIME_PATTERN_PATTERN = Pattern.compile(TIME_PATTERN);
+
   /**
    * Initializes a new ChartDataModel object instance.
    *
@@ -106,19 +109,19 @@ public class BarChartDataModel
       String rawY = tuple.getString(1);
 
       try {
-        float x;
-        if(Pattern.compile(DATE_PATTERN).matcher(rawX).matches()){
-          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        float x = (float) Math.floor(Float.parseFloat(rawX));
+        if (DATE_PATTERN_PATTERN.matcher(rawX).matches()) {
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
           Date date = sdf.parse(rawX);
-          x = date.getTime();
-        }
-        else if(Pattern.compile(TIME_PATTERN).matcher(rawX).matches()){
+          if (date != null) {
+            x = date.getTime();
+          }
+        } else if (TIME_PATTERN_PATTERN.matcher(rawX).matches()) {
           SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
           Date date = sdf.parse(rawX);
-          x = date.getTime();
-        }
-        else {
-          x = (float) Math.floor(Float.parseFloat(rawX));
+          if (date != null) {
+            x = date.getTime();
+          }
         }
         // Attempt to parse the x and y value String representations.
         // Since the Bar Chart uses x entries as an index (so an
