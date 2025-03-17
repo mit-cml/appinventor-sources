@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -24,6 +25,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 //import com.google.appinventor.components.runtime.parameters.BooleanReferenceParameter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
@@ -37,7 +40,7 @@ import android.widget.EditText;
 
 @SimpleObject
 public abstract class TextBoxBase extends AndroidViewComponent
-    implements OnFocusChangeListener, AccessibleComponent {
+    implements OnFocusChangeListener, TextWatcher, AccessibleComponent {
 
   protected final EditText view;
 
@@ -48,7 +51,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -58,6 +61,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   // Backing for hint text
   private String hint;
+
+  // Backing for hint color
+  private int hintColor = Component.COLOR_DEFAULT;
 
   // Backing for text color
   private int textColor;
@@ -70,6 +76,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   //Whether or not the button is in big text mode
   private boolean isBigText = false;
+
+  // Keeps track of the previous text of the TextBox for the TextChanged event
+  private String lastText = "";
 
   //The default text color of the textbox hint, according to theme
   private int hintColorDefault;
@@ -118,7 +127,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
     // particular value.
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Hint("");
     if (isHighContrast || container.$form().HighContrast()) {
@@ -129,6 +138,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
 
     Text("");
+    // Listen to text changes
+    view.addTextChangedListener(this);
+
     TextColor(Component.COLOR_DEFAULT);
     BackgroundColor(Component.COLOR_DEFAULT);
   }
@@ -156,6 +168,11 @@ public abstract class TextBoxBase extends AndroidViewComponent
       + "as if the user touches a different text box.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
+  }
+
+  @SimpleEvent(description = "Event raised when the text of the %type% is changed, either by the user or the program.")
+  public void TextChanged() {
+    EventDispatcher.dispatchEvent(this, "TextChanged");
   }
 
   /**
@@ -303,7 +320,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       userVisible = false)
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -333,7 +350,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(userVisible = false)
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -379,7 +396,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The font for the text.  The value can be changed in " +
       "the Designer.",
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
@@ -396,9 +413,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -430,6 +447,28 @@ public abstract class TextBoxBase extends AndroidViewComponent
     this.hint = hint;
     view.setHint(hint);
     view.invalidate();
+  }
+
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Specifies the color of the hint of the %type%.")
+  public int HintColor() {
+    return hintColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
+  @SimpleProperty()
+  public void HintColor(int hintColor) {
+    this.hintColor = hintColor;
+    if (hintColor != Component.COLOR_DEFAULT) {
+      view.setHintTextColor(hintColor);
+    } else {
+      if (isHighContrast || container.$form().HighContrast()) {
+        view.setHintTextColor(COLOR_YELLOW);
+      } else {
+        view.setHintTextColor(hintColorDefault);
+      }
+    }
   }
 
   /**
@@ -499,6 +538,30 @@ public abstract class TextBoxBase extends AndroidViewComponent
     }
   }
 
+  @SimpleFunction(description = "Repositions the cursor of the %type% before the character at the given"
+      + " 1-indexed position. If the given position is larger than the length of the %type%, the cursor will be moved"
+      + " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.")
+  public void MoveCursorTo(int position) {
+    int len = view.getText().toString().length();
+    if (position > len) {
+      view.setSelection(len);
+    } else if (position <= 1) {
+      view.setSelection(0);
+    } else {
+      view.setSelection(position - 1);
+    }
+  }
+
+  @SimpleFunction(description = "Repositions the cursor to the end of the %type%'s text.")
+  public void MoveCursorToEnd() {
+    MoveCursorTo(view.getText().length() + 1);
+  }
+
+  @SimpleFunction(description = "Repositions the cursor to the start of the %type%'s text.")
+  public void MoveCursorToStart() {
+    MoveCursorTo(1);
+  }
+
   /**
    * Request focus to current `%type%`.
    */
@@ -508,8 +571,24 @@ public abstract class TextBoxBase extends AndroidViewComponent
     view.requestFocus();
   }
 
-  // OnFocusChangeListener implementation
+  // TextWatcher implementation
+  @Override
+  public void onTextChanged(CharSequence s, int start, int before, int count) {
+    if (!lastText.equals(view.getText().toString())) {
+      TextChanged();
+    }
+    lastText = s.toString();
+  }
 
+  @Override
+  public void afterTextChanged(Editable s) {
+  }
+
+  @Override
+  public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+  }
+
+  // OnFocusChangeListener implementation
   @Override
   public void onFocusChange(View previouslyFocused, boolean gainFocus) {
     if (gainFocus) {

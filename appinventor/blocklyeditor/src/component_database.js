@@ -1,7 +1,7 @@
 /* -*- mode: javascript; js-indent-level 2; -*- */
 /**
  * @license
- * Copyright © 2016 Massachusetts Institute of Technology. All rights reserved.
+ * Copyright © 2016-2021 Massachusetts Institute of Technology. All rights reserved.
  */
 
 /**
@@ -146,7 +146,7 @@ Blockly.ComponentDatabase = function() {
 
   /**
    * Maps names of option lists to OptionLists.
-   * 
+   *
    * This map is used to de-duplicate duplicated optionList info provided via
    * the simple_components.json file, so that every option is represented
    * exactly once in the component database. Everything that needs to reference
@@ -204,7 +204,7 @@ Blockly.ComponentDatabase.prototype.addInstance = function(uid, name, typeName) 
   if (this.hasInstance(uid)) {
     return false;
   }
-  this.instances_[uid] = {name: name, typeName: typeName};
+  this.instances_[uid] = {uid: uid, name: name, typeName: typeName};
   this.instanceNameUid_[name] = uid;
   return true;
 };
@@ -222,12 +222,25 @@ Blockly.ComponentDatabase.prototype.hasInstance = function(uid) {
  * Get a component instance for the given UUID or Name.
  * @param {!string} uidOrName UUID for the component. This method also takes a Name for backwards
  * compatibility with methods that do not yet refer to a component by UUID.
- * @returns {{typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
+ * @returns {{uid: string, typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
  * of a component, otherwise undefined.
  */
 Blockly.ComponentDatabase.prototype.getInstance = function(uidOrName) {
   return this.instances_[uidOrName] || this.instances_[this.instanceNameUid_[uidOrName]];
 };
+
+/**
+ * Get the container record for the instance by UUID or Name.
+ *
+ * @param {!string} formName
+ * @param {!string} uidOrName
+ * @returns {?{uid: string, typeName: !string, name: !string}}
+ */
+Blockly.ComponentDatabase.prototype.getContainer = function(formName, uidOrName) {
+  var component = this.getInstance(uidOrName);
+  var containerUuid = top.BlocklyPanel_getComponentContainerUuid(formName, component.name);
+  return this.getInstance(containerUuid);
+}
 
 /**
  * Rename a component instance in the ComponentDatabase.
@@ -375,6 +388,42 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
 };
 
 /**
+ * Obtain type names of added components for presentation in a drop-down field.
+ *
+ * @returns {Array.<Array.<string>>} An array of 2-tuples containing the type of each component.
+ *   If no components are declared, a single element list is returned with the pair
+ *   (' ', 'none').
+ */
+Blockly.ComponentDatabase.prototype.getComponentTypes = function() {
+  var componentTypeArray = [];
+  for (var uid in this.instances_) {
+    var typeName = this.instances_[uid].typeName;
+    if (typeName != "Form")
+      componentTypeArray.push([this.i18nComponentTypes_[typeName], typeName]);
+  }
+
+  goog.array.removeDuplicates(componentTypeArray, null, function(type) {
+    return type[1];
+  });
+
+  if (componentTypeArray.length == 0) {
+    return [[' ', 'none']]
+  } else {
+    // Sort the components by type
+    componentTypeArray.sort(function(a, b) {
+      if (a[0] < b[0]) {
+        return -1;
+      } else if (a[0] > b[0]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    return componentTypeArray;
+  }
+};
+
+/**
  * Populate the types database.
  *
  * @param {ComponentInfo[]} componentInfos
@@ -483,6 +532,10 @@ Blockly.ComponentDatabase.prototype.processHelper = function(helper) {
       return this.processOptionList(helper.data);
     case "ASSET":
       return this.processAssetHelper(helper.data);
+    case "PROVIDER_MODEL":
+      return this.processProviderModelHelper(helper.data);
+    case "PROVIDER":
+      return this.processProviderHelper(helper.data);
   }
   return null;
 }
@@ -490,7 +543,7 @@ Blockly.ComponentDatabase.prototype.processHelper = function(helper) {
 /**
  * Processes data defining an OptionList (from simple_components.json) and
  * returns a HelperKey associated with the OptionList.
- * 
+ *
  * This function is used in conjunction with the optionLists_ field to remove
  * duplicate optionList data provided via the simple_components.json file.
  * @param {!Object} data The data defining the OptionList.
@@ -567,6 +620,76 @@ Blockly.ComponentDatabase.prototype.processAssetHelper = function(data) {
   }
   return {
     type: "ASSET",
+    key: index
+  }
+}
+
+/**
+ * Processes data defining an provider model (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderModelHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER_MODEL",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+}
+
+/**
+ * Processes data defining an provider (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+
+  var index = this.filters_.reduce(findIndex, -1);
+  if (index == -1) {
+    // TODO: If filters_ was instead a sorted list we could optimize index
+    //   finding algorithm using a binary search.
+    this.filters_.push(filter);
+    index = this.filters_.length - 1;
+  }
+  return {
+    type: "PROVIDER",
     key: index
   }
 }
@@ -652,7 +775,8 @@ Blockly.ComponentDatabase.prototype.getEventForType = function(typeName, eventNa
  */
 Blockly.ComponentDatabase.prototype.forEventInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    goog.object.map(this.types_[typeName].eventDictionary, callback);
+    var filterDeprecated = goog.object.filter(this.types_[typeName].eventDictionary, function(event) { return !event.deprecated; });
+    goog.object.map(filterDeprecated, callback);
   }
 };
 
@@ -684,7 +808,8 @@ Blockly.ComponentDatabase.prototype.getMethodForType = function(typeName, method
  */
 Blockly.ComponentDatabase.prototype.forMethodInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    goog.object.map(this.types_[typeName].methodDictionary, callback);
+    var filterDeprecated = goog.object.filter(this.types_[typeName].methodDictionary, function(method) { return !method.deprecated; });
+    goog.object.map(filterDeprecated, callback);
   }
 };
 
@@ -786,7 +911,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(nam
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
 Blockly.ComponentDatabase.prototype.getInternationalizedEventDescription = function(component, name, opt_default) {
-  return this.i18nEventDescriptions_[component + '.' + name] || this.i18nEventDescriptions_[name] || opt_default || name;
+  return this.i18nEventDescriptions_[component + '.' + name + 'EventDescriptions'] || this.i18nEventDescriptions_[name + 'EventDescriptions'] || opt_default || name;
 };
 
 /**
@@ -806,7 +931,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(na
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
 Blockly.ComponentDatabase.prototype.getInternationalizedMethodDescription = function(component, name, opt_default) {
-  return this.i18nMethodDescriptions_[component + '.' + name] || this.i18nMethodDescriptions_[name] || opt_default || name;
+  return this.i18nMethodDescriptions_[component + '.' + name + 'MethodDescriptions'] || this.i18nMethodDescriptions_[name + 'MethodDescriptions'] || opt_default || name;
 };
 
 /**
@@ -836,7 +961,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
 Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(component, name, opt_default) {
-  return this.i18nPropertyDescriptions_[component + '.' + name] || this.i18nPropertyDescriptions_[name] || opt_default || name;
+  return this.i18nPropertyDescriptions_[component + '.' + name + 'PropertyDescriptions'] || this.i18nPropertyDescriptions_[name + 'PropertyDescriptions'] || opt_default || name;
 };
 
 /**

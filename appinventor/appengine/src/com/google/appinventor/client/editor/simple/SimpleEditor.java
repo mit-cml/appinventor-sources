@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -80,6 +80,11 @@ public abstract class SimpleEditor extends FileEditor {
   public abstract boolean isScreen1();
 
   /**
+   * Refresh the properties panel in the event the set of visible properties has changed.
+   */
+  public abstract void refreshPropertiesPanel();
+
+  /**
    * Returns a new, unique component name based on the set of names returned by
    * {@link #getComponentNames()}. If hint is given it will be used as the base
    * for the new name. Otherwise, the type will be used.
@@ -113,7 +118,7 @@ public abstract class SimpleEditor extends FileEditor {
       return base + number;
     }
     int highIndex = 0;
-    final String typeName = ComponentsTranslation.getComponentName(type)
+    final String typeName = ComponentTranslationTable.getComponentName(type)
         .toLowerCase()
         .replace(" ", "_")
         .replace("'", "_");

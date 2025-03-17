@@ -8,7 +8,7 @@ package com.google.appinventor.client.widgets.properties;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
@@ -189,6 +189,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
                 color.alphaString + color.rgbString;
             selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(customColor), showCustomPicker));
           }
+          selectedColorMenu.setFocus(true);
         }
       }));
     }
@@ -369,7 +370,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
   // JSNI Methods
   private native void prepareCustomColorPicker(Element parent)/*-{
-    var picker = new goog.ui.HsvaPalette(new goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
+    var picker = new $wnd.goog.ui.HsvaPalette(new $wnd.goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
     picker.render(parent);
     this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker = picker;
   }-*/;

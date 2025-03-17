@@ -1,0 +1,82 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '12.0'
+
+workspace 'AppInventor.xcworkspace'
+
+
+target 'SchemeKit' do
+  project 'SchemeKit.xcodeproj'
+
+  target 'SchemeKitTests' do
+    inherit! :search_paths
+  end
+
+  target 'AIComponentKit' do
+    project 'AIComponentKit.xcodeproj'
+
+    inherit! :search_paths
+
+    use_frameworks!
+
+    pod 'Base58Swift', '~> 2.1.0'
+    pod "GCDWebServer", "~> 3.4.1"
+    pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
+    pod "Toast-Swift", '~> 4.0.0'
+    pod 'SQLite.swift', '~> 0.11.5'
+    pod 'Alamofire', '~> 4.8'
+    pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
+    pod 'SwiftProtobuf', '~> 1.0'
+    pod 'SwiftSVG', '~> 2.0'
+    pod 'GEOSwift', '~> 3.1.0'
+    pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
+    pod 'Zip', '~> 2.1'
+    pod 'GoogleAPIClientForREST/Sheets'
+    pod 'CryptoSwift'
+    pod 'SwiftyBase64'
+    pod 'ZIPFoundation'
+    pod 'DGCharts', '~> 5.0.0'
+
+    target 'AIComponentKitTests' do
+    end
+
+    target 'AICompanionApp' do
+      project 'AICompanionApp.xcodeproj'
+
+      inherit! :search_paths
+
+      pod 'Base58Swift', '~> 2.1.0'
+      pod "GCDWebServer", "~> 3.4.1"
+      pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
+      pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
+      pod "Toast-Swift", '~> 4.0.0'
+      pod 'SQLite.swift', '~> 0.11.5'
+      pod 'Alamofire', '~> 4.8'
+      pod 'SwiftProtobuf', '~> 1.0'
+      pod 'SwiftSVG', '~> 2.0'
+      pod 'GEOSwift', '~> 3.1.0'
+      pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
+      pod 'Zip', '~> 2.1'
+      pod 'GoogleAPIClientForREST/Sheets'
+      pod 'CryptoSwift'
+      pod 'SwiftyBase64'
+      pod 'ZIPFoundation'
+      pod 'DGCharts', '~> 5.0.0'
+
+      target 'AICompanionAppTests' do
+        inherit! :search_paths
+      end
+
+      target 'AICompanionAppUITests' do
+      end
+
+      post_install do |installer|
+        installer.pods_project.targets.each do |target|
+          target.build_configurations.each do |config|
+            config.build_settings.delete 'ENABLE_BITCODE'
+            config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+          end
+        end
+      end
+    end
+  end
+end

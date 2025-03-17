@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021-2022 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime.util;
 
 import android.os.Build;
@@ -22,15 +27,15 @@ public class RUtil {
       if (!path.startsWith("/") && !path.startsWith("file:")) {
         return false;
       }
-      if (path.startsWith("file:")) {
-        path = path.substring(5);
-      }
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-        return path.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath());
+        String fpath = path;
+        if (path.startsWith("file:")) {
+          fpath = path.substring(5);
+        }
+        return fpath.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath());
       }
-      path = "file:" + path;
       return FileUtil.isExternalStorageUri(form, path)
-          && !FileUtil.isAppSpecificExternalUri(form, path);
+        && !FileUtil.isAppSpecificExternalUri(form, path);
     }
     switch (fileScope) {
       case App:

@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
+import androidx.core.content.ContextCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -26,6 +27,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.EndedStatus;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -33,6 +35,10 @@ import com.google.appinventor.components.common.StartedStatus;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
+
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
 
 /**
  * ![PhoneCall component icon](images/phonecall.png)
@@ -80,6 +86,11 @@ import com.google.appinventor.components.runtime.util.PhoneCallUtil;
     nonVisible = true,
     iconName = "images/phoneCall.png")
 @SimpleObject
+@UsesQueries(intents = {
+    @IntentFilterElement(
+      actionElements = {@ActionElement(name = Intent.ACTION_DIAL)}
+      )
+  })
 public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener,
     ActivityResultListener {
 
@@ -355,7 +366,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
     intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-    context.registerReceiver(callStateReceiver, intentFilter);
+    ContextCompat.registerReceiver(context, callStateReceiver, intentFilter, Context.RECEIVER_EXPORTED);
     didRegisterReceiver = true;
   }
 

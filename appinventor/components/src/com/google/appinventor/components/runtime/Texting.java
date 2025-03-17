@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -34,7 +35,9 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.DataElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -160,13 +163,13 @@ import org.json.JSONObject;
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
   "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
 @UsesLibraries(libraries =
-  "google-api-client-beta.jar," +
+  "google-api-client.jar," +
   "google-api-client-android2-beta.jar," +
-  "google-http-client-beta.jar," +
+  "google-http-client.jar," +
   "google-http-client-android2-beta.jar," +
   "google-http-client-android3-beta.jar," +
-  "google-oauth-client-beta.jar," +
-  "guava-14.0.1.jar")
+  "google-oauth-client.jar," +
+  "guava.jar")
 public class Texting extends AndroidNonvisibleComponent
   implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener,
     Deleteable, ActivityResultListener {
@@ -376,6 +379,13 @@ public class Texting extends AndroidNonvisibleComponent
    * Launch the phone's default text messaging app with the message and phone number prepopulated.
    */
   @SimpleFunction
+  @UsesQueries(intents = {
+      @IntentFilterElement(actionElements = {
+          @ActionElement(name = "android.intent.action.SENDTO")
+      }, dataElements = {
+          @DataElement(scheme = "smsto")
+      })
+  })
   public void SendMessage() {
     String phoneNumber = this.phoneNumber;
     String message = this.message;
@@ -1096,7 +1106,8 @@ public class Texting extends AndroidNonvisibleComponent
     int numParts = parts.size();
     ArrayList<PendingIntent> pendingIntents = new ArrayList<PendingIntent>();
     for (int i = 0; i < numParts; i++)
-      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT), 0));
+      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT),
+          PendingIntent.FLAG_IMMUTABLE));
 
     // Receiver for when the SMS is sent
     BroadcastReceiver sendReceiver = new BroadcastReceiver() {
@@ -1114,7 +1125,8 @@ public class Texting extends AndroidNonvisibleComponent
       }
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
-    activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
+    ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
+        Context.RECEIVER_EXPORTED);
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 

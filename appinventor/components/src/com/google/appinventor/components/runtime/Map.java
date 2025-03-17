@@ -5,7 +5,11 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 import android.util.Log;
+
 import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -28,8 +32,11 @@ import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
+
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.FileWriteOperation;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory;
@@ -41,9 +48,12 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.IOException;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +62,7 @@ import org.osmdroid.util.BoundingBox;
 /**
  * A two-dimensional container that renders map tiles in the background and allows for multiple
  * {@link Marker} elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- * contributors and the the United States Geological Survey.
+ * contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
  *
  * The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  * First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -70,20 +80,18 @@ import org.osmdroid.util.BoundingBox;
   androidMinSdk = 8,
   description = "<p>A two-dimensional container that renders map tiles in the background and " +
     "allows for multiple Marker elements to identify points on the map. Map tiles are supplied " +
-    "by OpenStreetMap contributors and the United States Geological Survey.</p>" +
+    "by OpenStreetMap contributors and the United States Geological Survey, or a custom basemap URL can be provided.</p>" +
     "<p>The Map component provides three utilities for manipulating its boundaries within App " +
     "Inventor. First, a locking mechanism is provided to allow the map to be moved relative to " +
     "other components on the Screen. Second, when unlocked, the user can pan the Map to any " +
     "location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed " +
     "to save the current Map coordinates to its properties. Lastly, if the Map is moved to a " +
     "different location, for example to add Markers off-screen, then the &quot;Reset Map to " +
-    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
+    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>",
+    iconName = "images/map.png")
 @SimpleObject
 @UsesAssets(fileNames = "location.png, marker.svg")
-@UsesPermissions(permissionNames = "android.permission.INTERNET, " + "android.permission.ACCESS_FINE_LOCATION, "
-  + "android.permission.ACCESS_COARSE_LOCATION, " + "android.permission.ACCESS_WIFI_STATE, "
-  + "android.permission.ACCESS_NETWORK_STATE, " + "android.permission.WRITE_EXTERNAL_STORAGE, "
-  + "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
 @UsesLibraries(libraries = "osmdroid.aar, osmdroid.jar, androidsvg.jar, jts.jar")
 public class Map extends MapFeatureContainerBase implements MapEventListener {
   private static final String TAG = Map.class.getSimpleName();
@@ -115,6 +123,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     EnableZoom(true);
     EnablePan(true);
     MapTypeAbstract(MapType.Road);
+    CustomUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
     ShowCompass(false);
     LocationSensor(new LocationSensor(container.$form(), false));
     ShowUser(false);
@@ -293,6 +302,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    *   1. Roads
    *   2. Aerial
    *   3. Terrain
+   *   4. Custom
    *
    * @param type Integer identifying the tile set to use for the map's base layer.
    */
@@ -313,6 +323,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    *   1. Roads
    *   2. Aerial
    *   3. Terrain
+   *   4. Custom
    *
    *   **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
    * provided by the U.S. Geological Survey.
@@ -321,7 +332,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The type of tile layer to use as the base of the map. Valid values " +
-          "are: 1 (Roads), 2 (Aerial), 3 (Terrain)")
+          "are: 1 (Roads), 2 (Aerial), 3 (Terrain), 4 (Custom)")
   public @Options(MapType.class) int MapType() {
     return MapTypeAbstract().toUnderlyingValue();
   }
@@ -340,6 +351,30 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @SuppressWarnings("RegularMethodName")
   public void MapTypeAbstract(MapType type) {
     mapController.setMapTypeAbstract(type);
+  }
+
+  /**
+   * @return Returns the custom URL of the base tile layer in use by the map.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_CUSTOMURL,
+      defaultValue = "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+  @SimpleProperty(category = PropertyCategory.ADVANCED,
+      description = "The URL of the custom tile layer to use as the base of the map. Valid URLs " +
+          "should include &#123;z}, &#123;x} and &#123;y} placeholders and any authentication required. </p></p>" + 
+          "e.g. https://tile.openstreetmap.org/&#123;z}/&#123;x}/&#123;y}.png </p>" +
+          "or https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername&#64;EPSG:3857&#64;jpeg/&#123;z}/&#123;x}/&#123;y}.jpeg&#63;flipY=true&authkey=123")
+  public String CustomUrl() {
+    return mapController.getCustomUrl();
+  }
+
+  /**
+   * Update the custom URL of the base tile layer in use by the map.
+   * e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+   * e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername@EPSG:3857@jpeg/{z}/{x}/{y}.jpeg?flipY=true&authkey=123
+   */
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
+  public void CustomUrl(String url) {
+    mapController.setCustomUrl(url);
   }
 
   /**
@@ -368,9 +403,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Shows or hides an icon indicating the user's current location on the {@link Map}. The
-   * availability and accuracy of this feature will depend on whether the user has location
-   * services enabled and which location providers are available.
+   * Specifies whether to show zoom controls or not.
    *
    * @param zoom True if the controls should be shown, otherwise false.
    */
@@ -532,7 +565,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM,
       defaultValue = "1")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScaleUnits(@Options(ScaleUnits.class) int units) {
     // Make sure units is a valid ScaleUnits.
     ScaleUnits scaleUnits = ScaleUnits.fromUnderlyingValue(units);
@@ -604,23 +637,40 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @SimpleFunction(description = "Save the contents of the Map to the specified path.")
   public void Save(final String path) {
     final List<MapFeature> featuresToSave = new ArrayList<MapFeature>(features);
-    AsynchUtil.runAsynchronously(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, path);
-        } catch(final IOException e) {
-          final Form form = $form();
-          form.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              form.dispatchErrorOccurredEvent(Map.this, "Save",
-                  ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
-            }
-          });
+    // Needed for backward compatibility prior to nb188
+    if (path.startsWith("/") || path.startsWith("file:/")) {
+      final java.io.File target = path.startsWith("file:") ? new java.io.File(URI.create(path))
+          : new java.io.File(path);
+      AsynchUtil.runAsynchronously(new Runnable() {
+        @Override
+        public void run() {
+          doSave(featuresToSave, target);
         }
-      }
-    });
+      });
+    } else {
+      new FileWriteOperation($form(), this, "Save", path, $form().DefaultFileScope(), false, true) {
+        @Override
+        protected void processFile(ScopedFile file) {
+          String uri = FileUtil.resolveFileName(form, file);
+          java.io.File target = new java.io.File(URI.create(uri));
+          doSave(featuresToSave, target);
+        }
+      }.run();
+    }
+  }
+
+  private void doSave(List<MapFeature> featuresToSave, java.io.File target) {
+    try {
+      GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, target.getAbsolutePath());
+    } catch (final IOException e) {
+      $form().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          $form().dispatchErrorOccurredEvent(Map.this, "Save",
+              ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
+        }
+      });
+    }
   }
 
   /**

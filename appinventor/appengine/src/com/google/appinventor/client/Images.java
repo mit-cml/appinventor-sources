@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -26,7 +26,7 @@ public interface Images extends Resources {
   ImageResource codiVert();
 
   /**
-   * App Inventor Logo
+   * App Inventor Logo 
    * {@link Ode#createWelcomeDialog(boolean)}
    */
   @Source("com/google/appinventor/images/appinvlogo-32.png")
@@ -409,6 +409,12 @@ public interface Images extends Resources {
   ImageResource gameclient();
 
   /**
+   * Designer pallete item: Spreadsheet component
+   */
+  @Source("com/google/appinventor/images/spreadsheet.png")
+  ImageResource spreadsheet();
+
+  /**
    * Designer palette item: Sprite
    */
   @Source("com/google/appinventor/images/imageSprite.png")
@@ -503,6 +509,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/voting.png")
   ImageResource voting();
+
+  /**
+   * Designer palette item: ImageBot.
+   */
+  @Source("com/google/appinventor/images/paintpalette.png")
+  ImageResource paintPalette();
 
   /**
    * Designer palette item: Pedometer Component
@@ -638,6 +650,18 @@ public interface Images extends Resources {
   ImageResource spinner();
 
   /**
+   * Designer palette item: Translator Component
+   */
+  @Source("com/google/appinventor/images/translator.png")
+  ImageResource translator();
+
+  /**
+   * Designer pallette item: ChatBot Component
+   */
+  @Source("com/google/appinventor/images/chatbot.png")
+  ImageResource chatbot();
+
+  /**
     * Designer palette item: YandexTranslate
     */
   @Source("com/google/appinventor/images/yandex.png")
@@ -762,4 +786,52 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/get-app.png")
   ImageResource GetApp();
+
+  /**
+   * Designer palette item: Chart.
+   */
+  @Source("com/google/appinventor/images/chart.png")
+  ImageResource chart();
+
+  /**
+   * Designer palette item: ChartData2D.
+   */
+  @Source("com/google/appinventor/images/chartData.png")
+  ImageResource chartData2D();
+
+  /**
+   * Designer palette item: Regression.
+   */
+  @Source("com/google/appinventor/images/regression.png")
+  ImageResource regression();
+
+  /**
+   * Designer palette item: AnomalyDetection.
+   */
+  @Source("com/google/appinventor/images/anomaly.png")
+  ImageResource anomalyDetection();
+
+  /**
+   * Designer palette item: DataFile.
+   */
+  @Source("com/google/appinventor/images/dataFile.png")
+  ImageResource dataFile();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/circularProgress.png")
+  ImageResource circularProgress();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/linearProgress.png")
+  ImageResource linearProgress();
+
+  /**
+   * Designer palette item: Trendline.
+   */
+  @Source("com/google/appinventor/images/trendline.png")
+  ImageResource trendline();
 }

@@ -5,6 +5,8 @@
 		"locale": "ru",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Это изображение ссылается на следующие блоки, которые требуют расширений, отсутствующих в проекте:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "Ошибка: Не удалось разобрать XML из PNG файла. Пожалуйста, попробуйте снова.",
 	"Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION": "Этот блок не может использоваться в определении",
 	"Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER": "Это дубликат обработчика события для этого элемента.",
 	"Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Выберите подходящий пункт из выпадающего меню.",
@@ -543,6 +545,7 @@
 	"Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS": "<br/><i>Внимание:</i>&nbsp;Отчет о другой ошибке появится не ранее, чем через 5 секунд.",
 	"Blockly.Msg.REPL_NO_START_EMULATOR": "Невозможно запустить MIT AI Companion с эмулятором",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Перезагрузить",
 	"Blockly.Msg.REPL_OK_LOWER": "Ок",
 	"Blockly.Msg.REPL_PLUGGED_IN_Q": "Вы подключены?",
 	"Blockly.Msg.REPL_RUNTIME_ERROR": "Ошибка времени исполнения",

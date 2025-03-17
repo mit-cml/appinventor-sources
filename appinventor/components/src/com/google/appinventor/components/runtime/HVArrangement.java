@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -108,14 +108,14 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
     if (scrollable) {
       switch (orientation) {
-      case LAYOUT_ORIENTATION_VERTICAL:
-        Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
-        frameContainer = new ScrollView(context);
-        break;
-      case LAYOUT_ORIENTATION_HORIZONTAL:
-        Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
-        frameContainer = new HorizontalScrollView(context);
-        break;
+        case ComponentConstants.LAYOUT_ORIENTATION_VERTICAL:
+          Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
+          frameContainer = new ScrollView(context);
+          break;
+        case ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL:
+          Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
+          frameContainer = new HorizontalScrollView(context);
+          break;
       }
     } else {
       Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
@@ -215,6 +215,11 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     } else {
       ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
     }
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for linear layout
   }
 
   // AndroidViewComponent implementation

@@ -5,6 +5,12 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
+
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.common.FileScope;
@@ -87,6 +93,7 @@ public abstract class FileOperation implements Runnable, PermissionResultHandler
         if (!hasPermission) {
           if (askedForPermission) {
             form.dispatchPermissionDeniedEvent(component, method, neededPermissions.get(0));
+            askedForPermission = false;
           } else {
             askedForPermission = true;
             form.askPermission(new BulkPermissionRequest(component, method,
@@ -276,6 +283,14 @@ public abstract class FileOperation implements Runnable, PermissionResultHandler
       if (permission != null) {
         neededPermissions.add(permission);
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+          && file.getScope() == FileScope.Shared && accessMode == FileAccessMode.READ) {
+        // READ_EXTERNAL_STORAGE was migrated into finer-grained permissions in SDK 33
+        neededPermissions.remove(READ_EXTERNAL_STORAGE);
+        neededPermissions.add(READ_MEDIA_AUDIO);
+        neededPermissions.add(READ_MEDIA_IMAGES);
+        neededPermissions.add(READ_MEDIA_VIDEO);
+      }
       return this;
     }
 
@@ -308,7 +323,7 @@ public abstract class FileOperation implements Runnable, PermissionResultHandler
 
         @Override
         protected void performOperation() {
-          if (askPermission && neededPermissions.size() > 0) {
+          if (askPermission && !neededPermissions.isEmpty()) {
             // Check whether file permissions are granted
             Iterator<String> i = neededPermissions.iterator();
             while (i.hasNext()) {

@@ -22,7 +22,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author sharon@google.com (Sharon Perl)
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener{
+abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener {
+  protected static final String PROPERTY_NAME_HINTCOLOR = "HintColor";
 
   // GWT widget used to mock a Simple TextBox
   private final TextBox textBoxWidget;
@@ -148,22 +149,7 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
    * Sets the textbox's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(textBoxWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the textbox's Hint property to a new value.
-   */
-  private void setHintProperty(String text) {
-    textBoxWidget.setTitle(text);
-  }
-
-  /*
-   * Sets the textbox's Text property to a new value.
-   */
-  private void setTextProperty(String text) {
-    textBoxWidget.setText(text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, textBoxWidget, text);
     updatePreferredSize();
   }
 
@@ -184,6 +170,27 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
 
     MockComponentsUtil.setWidgetTextColor(textBoxWidget, text);
 
+  }
+
+  /**
+   * Updates the appearance of the textbox text based on the hint, text, and color properties.
+   */
+  private void updateAppearance() {
+    if (hasProperty(PROPERTY_NAME_TEXT) && !getPropertyValue(PROPERTY_NAME_TEXT).isEmpty()) {
+      textBoxWidget.setText(getPropertyValue(PROPERTY_NAME_TEXT));
+      if (hasProperty(PROPERTY_NAME_TEXTCOLOR)) {
+        setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      }
+    } else if (hasProperty(PROPERTY_NAME_HINT)) {
+      textBoxWidget.setText(getPropertyValue(PROPERTY_NAME_HINT));
+      if (hasProperty(PROPERTY_NAME_HINTCOLOR)) {
+        MockComponentsUtil.setWidgetTextColor(textBoxWidget,
+            getPropertyValue(PROPERTY_NAME_HINTCOLOR));
+      }
+    } else {
+      textBoxWidget.setText("");
+      MockComponentsUtil.setWidgetTextColor(textBoxWidget, "&HFF000000");
+    }
   }
 
   // PropertyChangeListener implementation
@@ -213,12 +220,20 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
       setFontTypefaceProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HINT)) {
-      setHintProperty(newValue);
+      updateAppearance();
+      updatePreferredSize();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_HINTCOLOR)) {
+      updateAppearance();
     } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
+      updateAppearance();
+      updatePreferredSize();
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(textBoxWidget, newValue);
+      refreshForm();
     }
   }
 

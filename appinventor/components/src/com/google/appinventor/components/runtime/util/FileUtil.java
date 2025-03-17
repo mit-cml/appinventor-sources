@@ -51,6 +51,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,34 +142,29 @@ public class FileUtil {
    * @return the file's contents as a byte array
    */
   public static byte[] readFile(Form form, String inputFileName) throws IOException {
-    File inputFile = new File(inputFileName);
-    // There are cases where our caller will hand us a file to read that
-    // doesn't exist and is expecting a FileNotFoundException if this is the
-    // case. So we check if the file exists and throw the exception
-    if (!inputFile.isFile()) {
-      throw new FileNotFoundException("Cannot find file: " + inputFileName);
+    if (inputFileName.startsWith("file://")) {
+      // The remainder of this function expects Unix-like paths, not URIs
+      inputFileName = inputFileName.substring(7);
     }
-    FileInputStream inputStream = null;
+    InputStream inputStream = null;
     byte[] content;
     try {
-      inputStream = openFile(form, inputFileName);
-      int fileLength = (int) inputFile.length();
-      content = new byte[fileLength];
-      int offset = 0;
-      int bytesRead;
-      do {
-        bytesRead = inputStream.read(content, offset, fileLength - offset);
-        if (bytesRead > 0) {
-          offset += bytesRead;
+      if (inputFileName.startsWith("/android_asset/")) {
+        // Assets don't live in the file system, so need to be handled separately.
+        inputStream = form.openAsset(inputFileName.substring(inputFileName.lastIndexOf('/') + 1));
+      } else {
+        File inputFile = new File(inputFileName);
+        // There are cases where our caller will hand us a file to read that
+        // doesn't exist and is expecting a FileNotFoundException if this is the
+        // case. So we check if the file exists and throw the exception
+        if (!inputFile.isFile()) {
+          throw new FileNotFoundException("Cannot find file: " + inputFileName);
         }
-        if (offset == fileLength) {
-          break;
-        }
-      } while (bytesRead >= 0);
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
+        inputStream = openFile(form, inputFileName);
       }
+      content = IOUtils.readStream(inputStream);
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, inputStream);
     }
     return content;
   }
@@ -216,7 +212,9 @@ public class FileUtil {
    */
   public static FileInputStream openFile(Form form, String fileName) throws IOException,
       PermissionException {
-    if (MediaUtil.isExternalFile(form, fileName)) {
+    // Make fileName a URI for testing permissions
+    String fileUri = fileName.startsWith("/") ? "file://" + fileName : fileName;
+    if (needsReadPermission(form, fileUri)) {
       form.assertPermission(READ_EXTERNAL_STORAGE);
     }
     return new FileInputStream(fileName);
@@ -491,6 +489,18 @@ public class FileUtil {
   }
 
   /**
+   * Creates a {@link ScopedFile} for a picture file with the given {@code extension} relative to
+   * the Picture directory in the {@code form}'s {@link Form#DefaultFileScope()}.
+   *
+   * @param form the Form object to provide the scope
+   * @param extension the image extension (e.g., "png")
+   * @return a fresh file, scoped to the form's default scope
+   */
+  public static ScopedFile getScopedPictureFile(Form form, String extension) {
+    return getScopedFile(form, DIRECTORY_PICTURES, extension);
+  }
+
+  /**
    * Creates a {@link File} representing the complete path for a recording,
    * creating the enclosing directories if needed.  This does not actually
    * open the file.  Any component that calls this must have
@@ -588,7 +598,45 @@ public class FileUtil {
       throws IOException, FileException {
     String fileName = DOCUMENT_DIRECTORY + category + "/" + FILENAME_PREFIX
         + System.currentTimeMillis() + "." + extension;
-    return getExternalFile(form, fileName);
+    File target = getExternalFile(form, fileName);
+    File parent = target.getParentFile();
+    if (!parent.exists() && !parent.mkdirs()) {
+      throw new IOException("Unable to create directory: " + parent.getAbsolutePath());
+    }
+    return target;
+  }
+
+  /**
+   * Determines the best directory in which to store a file of the given type
+   * and generates the corresponding ScopedFile object using the default scope
+   * provided by the {@code form}. Note that since {@link FileScope#Asset} scope
+   * is read-only, calls to this method will use {@link FileScope#Private} as
+   * a fallback.
+   *
+   * @param form the form to use as an Android context
+   * @param category a descriptive category, such as {@link #DIRECTORY_PICTURES}
+   *                 to include in the path
+   * @param extension the extension for the end of the file, not including the
+   *                  period, such as "png"
+   * @return the ScopedFile referencing
+   */
+  private static ScopedFile getScopedFile(Form form, String category, String extension) {
+    String fullPath;
+    FileScope scope = form.DefaultFileScope();
+    if (scope == FileScope.Legacy) {
+      // NB: we need the first slash here when using Legacy mode so that the file will appear in the
+      // external storage rather than internal storage.
+      fullPath = "/" + DOCUMENT_DIRECTORY + category;
+    } else {
+      fullPath = category;
+      if (scope == FileScope.Asset) {
+        // This method is called to create new files, but assets are read-only.
+        // We fall back to private storage in this case
+        scope = FileScope.Private;
+      }
+    }
+    fullPath += "/" + FILENAME_PREFIX + System.currentTimeMillis() + "." + extension;
+    return new ScopedFile(scope, fullPath);
   }
 
   /**
@@ -626,6 +674,10 @@ public class FileUtil {
    * @throws FileException if the external storage is not writeable.
    */
   public static File getExternalFile(Form form, String fileName) throws FileException {
+    if (form.DefaultFileScope() == FileScope.Legacy && !fileName.startsWith("/")) {
+      // The legacy File component used a single slash as a prefix to indicate external storage.
+      fileName = "/" + fileName;
+    }
     String uri = resolveFileName(form, fileName, form.DefaultFileScope());
     if (isExternalStorageUri(form, uri)) {
       checkExternalStorageWriteable();
@@ -739,34 +791,47 @@ public class FileUtil {
    * @return a String of the form "file://..." with the full path to the file based on the
    *     permission mode in effect
    */
-  public static String resolveFileName(Form form, String fileName,
-      FileScope scope) {
+  public static String resolveFileName(Form form, String fileName, FileScope scope) {
+    File path;
     if (fileName.startsWith("//")) {  // Asset files in legacy mode
-      return form.getAssetPath(fileName.substring(2));
+      path = new File(form.getAssetPath(fileName.substring(2)).substring(7));
+    } else if (fileName.startsWith("content:")) {
+      return fileName;
     } else if (scope == FileScope.App && Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-      return "file://" + new File(form.getExternalFilesDir(""), fileName).getAbsolutePath();
+      path = new File(form.getExternalFilesDir(""), fileName);
     } else if (scope == FileScope.Asset) {
-      return form.getAssetPath(fileName);
+      path = new File(form.getAssetPath(fileName).substring(7));
     } else if (scope == FileScope.Cache) {
-      return form.getCachePath(fileName);
+      path = new File(form.getCachePath(fileName).substring(7));
     } else if ((scope == FileScope.Legacy || scope == null) && fileName.startsWith("/")) {
-      return "file://"
-          + new File(QUtil.getExternalStorageDir(form, false, true), fileName.substring(1))
-              .getAbsolutePath();
+      path = new File(QUtil.getExternalStorageDir(form, false, true), fileName.substring(1));
     } else if (scope == FileScope.Private) {
-      return form.getPrivatePath(fileName);
+      path = new File(form.getPrivatePath(fileName).substring(7));
     } else if (scope == FileScope.Shared) {
-      return "file://" + Environment.getExternalStorageDirectory() + "/" + fileName;
+      path = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
     } else if (!fileName.startsWith("/")) {  // Private files in legacy mode
-      return form.getPrivatePath(fileName);
+      path = new File(form.getPrivatePath(fileName).substring(7));
     } else {
       /* Starting with nb186, files will be placed in different locations when the file name starts
        * with a single "/" character. For Android Q and later, this is the app-specific directory
        * on external storage. For Android versions prior to Q, it will be the root of the external
        * storage, such as /sdcard or /storage/external/0/.
        */
-      return "file://" + getExternalFile(form, fileName.substring(1), scope).getAbsolutePath();
+      path = getExternalFile(form, fileName.substring(1), scope);
     }
+    return Uri.fromFile(path).toString();
+  }
+
+  /**
+   * Given a scoped file, resolves the name to an absolute file URI.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param file the ScopedFile for which to obtain an absolute URI
+   * @return a String of the form "file://..." with the full path to the file based on the
+   *     permission mode in effect
+   */
+  public static String resolveFileName(Form form, ScopedFile file) {
+    return resolveFileName(form, file.getFileName(), file.getScope());
   }
 
   /**
@@ -790,6 +855,99 @@ public class FileUtil {
     } else {
       return isExternalStorageUri(form, fileUri);
     }
+  }
+
+  /**
+   * Check if the given {@code fileUri} will need READ permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the READ_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsReadPermission(Form form, String fileUri) {
+    return needsPermission(form, fileUri);
+  }
+
+  /**
+   * Check whether the given scoped file needs the READ_EXTERNAL_STORAGE permission to be
+   * granted to the app before the file can be read.
+   *
+   * @param scopedFile the scoped file to check for permission
+   * @return true if the file will need READ_EXTERNAL_STORAGE permission, otherwise false
+   */
+  public static boolean needsReadPermission(ScopedFile scopedFile) {
+    switch (scopedFile.getScope()) {
+      case Legacy:
+      case Shared:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check if the given {@code fileUri} will need WRITE permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the WRITE_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsWritePermission(Form form, String fileUri) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // WRITE_EXTERNAL_STORAGE is removed starting with Android R
+      // For files the app can write to, write operations will proceed as expected
+      // For file the app cannot write to, write operations will fail
+      return false;
+    } else {
+      return needsPermission(form, fileUri);
+    }
+  }
+
+  /**
+   * Check whether the given scoped file needs the WRITE_EXTERNAL_STORAGE permission to be
+   * granted to the app before the file can be written. Note: WRITE_EXTERNAL_STORAGE was removed
+   * starting in Android 11 (SDK 30).
+   *
+   * @param scopedFile the scoped file to check for permission
+   * @return true if the file will need WRITE_EXTERNAL_STORAGE permission, otherwise false
+   */
+  public static boolean needsWritePermission(ScopedFile scopedFile) {
+    return needsWritePermission(scopedFile.getScope());
+  }
+
+  /**
+   * Check whether the given file scope needs the WRITE_EXTERNAL_STORAGE permisison to be
+   * granted to the app before files can be written to that scope. Note: WRITE_EXTERNAL_STORAGE was
+   * removed starting in Android 11 (SDK 30).
+   *
+   * @param scope the file scope
+   * @return true if the file scope needs WRITE_EXTERNAL_STORAGE permission, otherwise false
+   */
+  public static boolean needsWritePermission(FileScope scope) {
+    switch (scope) {
+      case Legacy:
+      case Shared:
+        // Write permission no longer exists in Android R
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.R;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check whether the given scoped file will cause access to external storage. This can be used to
+   * determine whether a check for the mount state of the external storage is also needed. Note that
+   * the file need not exist since we may want to create it.
+   *
+   * @param form the Form object to use as the Android context
+   * @param scopedFile the scoped file to check against the external storage
+   * @return true if operations on the scoped file will involve external storage, otherwise false
+   */
+  public static boolean needsExternalStorage(Form form, ScopedFile scopedFile) {
+    return isExternalStorageUri(form,
+        resolveFileName(form, scopedFile.getFileName(), scopedFile.getScope()));
   }
 
   /**
@@ -889,8 +1047,13 @@ public class FileUtil {
           return null;
         } else if (mode == FileAccessMode.READ) {
           return READ_EXTERNAL_STORAGE;
-        } else {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+          // According to the Android documentation:
+          // > Note: If your app targets Build.VERSION_CODES.R or higher,
+          // > this permission has no effect.
           return WRITE_EXTERNAL_STORAGE;
+        } else {
+          return null;
         }
       }
     } else if (!path.contains(":")) {
@@ -918,7 +1081,7 @@ public class FileUtil {
       // New style. Use Java NIO to move the file, potentially between file system providers
       Path source = Paths.get(src.resolve(form).toURI());
       Path destination = Paths.get(dest.resolve(form).toURI());
-      Files.move(source, destination);
+      Files.move(source, destination, REPLACE_EXISTING);
       return true;
     } else {
       // Old style. Copy the file and then delete the original.
@@ -1022,26 +1185,32 @@ public class FileUtil {
       case Private:
         return new FileInputStream(new File(URI.create(form.getPrivatePath(file.getFileName()))));
       case Shared:
-        String[] parts = file.getFileName().split("/", 2);
-        Uri contentUri = getContentUriForPath(parts[0]);
-        String[] projection = new String[] {
-            MediaStore.Files.FileColumns._ID,
-            MediaStore.Files.FileColumns.DISPLAY_NAME
-        };
-        Cursor cursor = null;
-        try {
-          cursor = form.getContentResolver().query(contentUri, projection,
-              MediaStore.Files.FileColumns.DISPLAY_NAME + " = ?", new String[] { parts[1] }, null);
-          int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
-          if (cursor.moveToFirst()) {
-            long id = cursor.getLong(idColumn);
-            Uri targetUri = ContentUris.withAppendedId(contentUri, id);
-            return form.getContentResolver().openInputStream(targetUri);
+        Uri targetUri;
+        if (file.getFileName().startsWith("content:")) {
+          targetUri = Uri.parse(file.getFileName());
+        } else {
+          String[] parts = file.getFileName().split("/", 2);
+          Uri contentUri = getContentUriForPath(parts[0]);
+          String[] projection = new String[]{
+              MediaStore.Files.FileColumns._ID,
+              MediaStore.Files.FileColumns.DISPLAY_NAME
+          };
+          Cursor cursor = null;
+          try {
+            cursor = form.getContentResolver().query(contentUri, projection,
+                MediaStore.Files.FileColumns.DISPLAY_NAME + " = ?", new String[]{parts[1]}, null);
+            int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
+            if (cursor.moveToFirst()) {
+              long id = cursor.getLong(idColumn);
+              targetUri = ContentUris.withAppendedId(contentUri, id);
+            } else {
+              throw new FileNotFoundException("Unable to find shared file: " + file.getFileName());
+            }
+          } finally {
+            IOUtils.closeQuietly(LOG_TAG, cursor);
           }
-        } finally {
-          IOUtils.closeQuietly(LOG_TAG, cursor);
         }
-        break;
+        return form.getContentResolver().openInputStream(targetUri);
       default:
         break;
     }
@@ -1076,31 +1245,31 @@ public class FileUtil {
       case Private:
         return new FileOutputStream(new File(URI.create(form.getPrivatePath(file.getFileName()))));
       case Shared:
+        final ContentResolver resolver = form.getContentResolver();
+        if (file.getFileName().startsWith("content:")) {
+          Log.d(LOG_TAG, "Opening content URI: " + file.getFileName());
+          return resolver.openOutputStream(Uri.parse(file.getFileName()));
+        }
         String[] parts = file.getFileName().split("/", 2);
         final ContentValues values = new ContentValues();
         values.put(MediaStore.MediaColumns.DISPLAY_NAME, parts[1]);
         values.put(MediaStore.MediaColumns.MIME_TYPE, "");
         values.put(MediaStore.MediaColumns.RELATIVE_PATH, parts[0]);
-        final ContentResolver resolver = form.getContentResolver();
         Uri contentUri = getContentUriForPath(parts[0]);
         if (contentUri == null) {
           throw new IOException("Unrecognized shared folder: " + parts[0]);
         }
-        try {
-          Uri uri = resolver.insert(contentUri, values);
+        Uri uri = resolver.insert(contentUri, values);
 
-          if (uri == null) {
-            throw new IOException("Unable to insert MediaStore entry for shared content");
-          }
-
-          OutputStream out = resolver.openOutputStream(uri);
-          if (out == null) {
-            throw new IOException("Unable to open stream for writing");
-          }
-          return out;
-        } catch (IllegalArgumentException e) {
-          // report the issue to the user
+        if (uri == null) {
+          throw new IOException("Unable to insert MediaStore entry for shared content");
         }
+
+        OutputStream out = resolver.openOutputStream(uri);
+        if (out == null) {
+          throw new IOException("Unable to open stream for writing");
+        }
+        return out;
       default:
         break;
     }
@@ -1143,11 +1312,14 @@ public class FileUtil {
         }
         return null;
       case Shared:
-        String filename = file.getFileName();
-        if (filename.startsWith("/")) {
-          filename = filename.substring(1);
+        String dirname = file.getFileName();
+        if (dirname.startsWith("/")) {
+          dirname = dirname.substring(1);
         }
-        String[] parts = filename.split("/", 2);
+        String[] parts = dirname.split("/", 2);
+        if (!dirname.endsWith("/")) {
+          dirname += "/";
+        }
         final ContentResolver resolver = form.getContentResolver();
         Uri contentUri = getContentUriForPath(parts[0]);
         if (contentUri == null) {
@@ -1169,10 +1341,14 @@ public class FileUtil {
           while (cursor.moveToNext()) {
             String name = cursor.getString(nameColumn);
             String path = cursor.getString(pathColumn);
+            String pathname;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-              results.add(path.replace(rootPath, ""));
+              pathname = path.replace(rootPath, "");
             } else {
-              results.add(path + name);
+              pathname = path + name;
+            }
+            if (pathname.startsWith(dirname)) {
+              results.add(pathname.substring(dirname.length()));
             }
           }
           return results;
@@ -1203,6 +1379,8 @@ public class FileUtil {
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         && ("Download".equals(path) || "Downloads".equals(path))) {
       return MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      return MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL);
     }
     return null;
   }

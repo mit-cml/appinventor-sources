@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -122,6 +122,7 @@ public final class ErrorMessages {
   public static final int ERROR_NO_FOCUSABLE_VIEW_FOUND = 906;
   public static final int ERROR_ACTIONBAR_NOT_SUPPORTED = 907;
   public static final int ERROR_PERMISSION_DENIED = 908;
+  public static final int ERROR_UNCAUGHT_EXCEPTION_IN_THREAD = 909;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
@@ -292,8 +293,28 @@ public final class ErrorMessages {
   public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
   public static final int ERROR_NO_ROUTE_FOUND = 4004;
 
+  //ChartData Errors
+  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 4101;
+  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 4102;
+  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103;
+  public static final int ERROR_INVALID_CHART_DATA_COLOR = 4104;
 
-  // Start the next group of errors at 4100
+  // ChatBot Errors
+  public static final int ERROR_CHATBOT_ERROR = 4200;
+
+  // ImageBot Errors
+  public static final int ERROR_IMAGEBOT_ERROR = 4300;
+
+  // Spreadsheet Errors
+  public static final int ERROR_SPREADSHEET_ERROR = 4401;
+
+  // FilePicker Errors
+  public static final int ERROR_FILEPICKER_NO_URI_RETURNED = 4501;
+
+  // ListView Errors
+  public static final int ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601;
+
+  // Start the next group of errors at 4700
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -507,6 +528,8 @@ public final class ErrorMessages {
         "ActionBar is not supported on this device.");
     errorMessages.put(ERROR_PERMISSION_DENIED,
         "The permission %s has been denied. Please enable it in the Settings app.");
+    errorMessages.put(ERROR_UNCAUGHT_EXCEPTION_IN_THREAD,
+        "Uncaught exception on %s thread: %s");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
@@ -719,6 +742,30 @@ public final class ErrorMessages {
         "Unable to request directions. Reason: %s");
     errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
     errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
+
+    //ChartData Errors
+    errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
+    errorMessages.put(ERROR_NULL_CHART_ENTRY_VALUES, "Undefined value was present in Chart Entry");
+    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough "
+        + "values; Expected %1$d, but was %2$d");
+    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter "
+        + "specified: %1$s");
+
+    // ChatBot Errors
+    errorMessages.put(ERROR_CHATBOT_ERROR, "Error from the ChatBot code %1$d %2$s");
+
+    // ImageBot Errors
+    errorMessages.put(ERROR_IMAGEBOT_ERROR, "Error from the ImageBot code %1$d %2$s");
+
+    // Spreadsheet Errors
+    errorMessages.put(ERROR_SPREADSHEET_ERROR, "Error in Spreadsheet: %1$s");
+
+    // FilePicker Errors
+    errorMessages.put(ERROR_FILEPICKER_NO_URI_RETURNED, "No URI returned to FilePicker");
+
+    // ListView Errors
+    errorMessages.put(ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS,
+        "The index %d is out of bounds for the list view.");
   }
 
   private ErrorMessages() {

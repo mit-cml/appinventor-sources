@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -79,7 +81,11 @@ import java.util.Set;
                  "android.permission.ACCESS_MOCK_LOCATION," +
                  "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
 public class LocationSensor extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener, Deleteable {
+    implements Component, OnStopListener, OnResumeListener, Deleteable,
+    RealTimeDataSource<String, Float> {
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -282,6 +288,11 @@ public class LocationSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent(description = "Indicates that a new location has been detected.")
   public void LocationChanged(double latitude, double longitude, double altitude, float speed) {
+    notifyDataObservers("latitude", latitude);
+    notifyDataObservers("longitude", longitude);
+    notifyDataObservers("altitude", altitude);
+    notifyDataObservers("speed", speed);
+
     EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude, speed);
   }
 
@@ -571,19 +582,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
         latitude <= 90 && latitude >= -90 &&
         longitude <= 180 || longitude >= -180) {
       try {
-        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        if (addresses != null && addresses.size() == 1) {
-          Address address = addresses.get(0);
-          if (address != null) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-              sb.append(address.getAddressLine(i));
-              sb.append("\n");
-            }
-            return sb.toString();
-          }
-        }
-
+        return addressFromLatLong(latitude, longitude);
       } catch (Exception e) {
         // getFromLocation can throw an IOException or an IllegalArgumentException
         // a bad result can give an indexOutOfBoundsException
@@ -603,6 +602,46 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * Derives address from the given `latitutde` and `longitude`.
+   *
+   * @param latitude (double): given latitude
+   * @param longitude (double): given longitude
+   *
+   * @return Address (String): return the Address, if found
+   */
+  public String addressFromLatLong(double latitude, double longitude) throws IOException {
+    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+    if (addresses != null && addresses.size() == 1) {
+      Address address = addresses.get(0);
+      if (address != null) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+          sb.append(address.getAddressLine(i));
+          sb.append("\n");
+        }
+        return sb.toString();
+      }
+    }
+    return "Address with latitude " + Double.toString(latitude) + " and longitutde " + Double.toString(longitude) + " not found";
+  }
+
+  /**
+   * Derives an address from the given `locationName`.
+   *
+   * @param locationName  human-readable address
+   *
+   * @return first Address object that is found
+   */
+  public Address getAddress(String locationName) throws IOException {
+    List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
+    Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+    if ( (addressObjs == null) || (addressObjs.size() == 0) ){
+      throw new IOException("");
+    }
+    return addressObjs.get(0);
+  }
+
+  /**
    * Derives latitude from the given `locationName`.
    *
    * @param locationName  human-readable address
@@ -612,12 +651,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives latitude of given address")
   public double LatitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLatitude();
+      Address address = getAddress(locationName);
+      return address.getLatitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LatitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, locationName);
@@ -635,17 +670,59 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives longitude of given address")
   public double LongitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLongitude();
+      Address address = getAddress(locationName);
+      return address.getLongitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LongitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND, locationName);
       return 0;
     }
+  }
+
+  /**
+   * @param address human-readable address
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Converts an address into a latitude and longitude through the "
+      + "GotLocationFromAddress event.")
+  public void Geocode(final String address) {
+    final double latitude = LatitudeFromAddress(address);
+    final double longitude = LongitudeFromAddress(address);
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        GotLocationFromAddress(address, latitude, longitude);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Reports the latitude and longitude in response to a Geocode request.")
+  public void GotLocationFromAddress(String address, double latitude, double longitude) {
+    EventDispatcher.dispatchEvent(this, "GotLocationFromAddress", address, latitude, longitude);
+  }
+
+  /**
+   * @param latitude given latitude
+   * @param longitude given longitude
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Determines the address associated with the given latitude and "
+      + " and reports it through the GotAddress event.")
+  public void ReverseGeocode(double latitude, double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    final String address = CurrentAddress();
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        GotAddress(address);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Reports the address in response to a ReverseGeocode request.")
+  public void GotAddress(String address) {
+    EventDispatcher.dispatchEvent(this, "GotAddress", address);
   }
 
   /**
@@ -676,24 +753,18 @@ public class LocationSensor extends AndroidNonvisibleComponent
       androidUIHandler.post(new Runnable() {
           @Override
           public void run() {
-            me.form.askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
-              new PermissionResultHandler() {
+            me.form.askPermission(new BulkPermissionRequest(me, "RefreshProvider", Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION) {
                 @Override
-                public void HandlePermissionResponse(String permission, boolean granted) {
-                  if (granted) {
-                    me.havePermission = true;
-                    me.RefreshProvider(caller);
-                    Log.d(LOG_TAG, "Permission Granted");
-                  } else {
-                    me.havePermission = false;
-                    me.enabled = false;
-                    me.form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.ACCESS_FINE_LOCATION);
-                  }
+                public void onGranted() {
+                  me.havePermission = true;
+                  me.RefreshProvider(caller);
+                  Log.d(LOG_TAG, "Permission Granted");
                 }
               });
           }
         });
     }
+
     if (providerLocked && !empty(providerName)) {
       listening = startProvider(providerName);
       return;
@@ -784,5 +855,55 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private boolean empty(String s) {
     return s == null || s.length() == 0;
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value for a given key. Possible keys include:
+   * <ul>
+   *   <li>latitude  - latitude value</li>
+   *   <li>longitude - longitude value</li>
+   *   <li>altitude  - altitude value</li>
+   *   <li>speed     - speed value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "latitude":
+        return (float) latitude;
+
+      case "longitude":
+        return (float )longitude;
+
+      case "altitude":
+        return (float) altitude;
+
+      case "speed":
+        return speed;
+
+      default:
+        return 0f;
+    }
   }
 }
