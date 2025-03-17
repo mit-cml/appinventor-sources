@@ -900,7 +900,7 @@ public class YaVersion {
   // - The ValueFormat property was added
   public static final int CHART_COMPONENT_VERSION = 4;
 
-  // For CHART_DATA_2D_COMPONENT_VERSION 2
+  // For CHART_DATA_2D_COMPONENT_VERSION 2:
   // - The dataLabelColor property was added
   // - The setDataLabelColor method was added
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
