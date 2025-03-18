@@ -1,7 +1,7 @@
 //
-//  Alamofire.swift
+//  URLSessionConfiguration+Alamofire.swift
 //
-//  Copyright (c) 2014-2021 Alamofire Software Foundation (http://alamofire.org/)
+//  Copyright (c) 2014-2018 Alamofire Software Foundation (http://alamofire.org/)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,25 @@
 //  THE SOFTWARE.
 //
 
-import Dispatch
 import Foundation
-#if canImport(FoundationNetworking)
-@_exported import FoundationNetworking
-#endif
 
-// Enforce minimum Swift version for all platforms and build systems.
-#if swift(<5.9.0)
-#error("Alamofire doesn't support Swift versions below 5.9.")
-#endif
+extension URLSessionConfiguration: AlamofireExtended {}
+extension AlamofireExtension where ExtendedType: URLSessionConfiguration {
+    /// Alamofire's default configuration. Same as `URLSessionConfiguration.default` but adds Alamofire default
+    /// `Accept-Language`, `Accept-Encoding`, and `User-Agent` headers.
+    public static var `default`: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.default
+        configuration.headers = .default
 
-/// Reference to `Session.default` for quick bootstrapping and examples.
-public let AF = Session.default
+        return configuration
+    }
 
-/// Namespace for informational Alamofire values.
-public enum AFInfo {
-    /// Current Alamofire version.
-    public static let version = "5.10.2"
+    /// `.ephemeral` configuration with Alamofire's default `Accept-Language`, `Accept-Encoding`, and `User-Agent`
+    /// headers.
+    public static var ephemeral: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.headers = .default
+
+        return configuration
+    }
 }

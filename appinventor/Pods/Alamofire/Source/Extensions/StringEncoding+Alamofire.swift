@@ -1,7 +1,7 @@
 //
-//  Alamofire.swift
+//  StringEncoding+Alamofire.swift
 //
-//  Copyright (c) 2014-2021 Alamofire Software Foundation (http://alamofire.org/)
+//  Copyright (c) 2020 Alamofire Software Foundation (http://alamofire.org/)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,34 @@
 //  THE SOFTWARE.
 //
 
-import Dispatch
 import Foundation
-#if canImport(FoundationNetworking)
-@_exported import FoundationNetworking
-#endif
 
-// Enforce minimum Swift version for all platforms and build systems.
-#if swift(<5.9.0)
-#error("Alamofire doesn't support Swift versions below 5.9.")
-#endif
-
-/// Reference to `Session.default` for quick bootstrapping and examples.
-public let AF = Session.default
-
-/// Namespace for informational Alamofire values.
-public enum AFInfo {
-    /// Current Alamofire version.
-    public static let version = "5.10.2"
+extension String.Encoding {
+    /// Creates an encoding from the IANA charset name.
+    ///
+    /// - Notes: These mappings match those [provided by CoreFoundation](https://opensource.apple.com/source/CF/CF-476.18/CFStringUtilities.c.auto.html)
+    ///
+    /// - Parameter name: IANA charset name.
+    init?(ianaCharsetName name: String) {
+        switch name.lowercased() {
+        case "utf-8":
+            self = .utf8
+        case "iso-8859-1":
+            self = .isoLatin1
+        case "unicode-1-1", "iso-10646-ucs-2", "utf-16":
+            self = .utf16
+        case "utf-16be":
+            self = .utf16BigEndian
+        case "utf-16le":
+            self = .utf16LittleEndian
+        case "utf-32":
+            self = .utf32
+        case "utf-32be":
+            self = .utf32BigEndian
+        case "utf-32le":
+            self = .utf32LittleEndian
+        default:
+            return nil
+        }
+    }
 }
