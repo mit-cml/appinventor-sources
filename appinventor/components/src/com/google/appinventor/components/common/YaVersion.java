@@ -1195,6 +1195,7 @@ public class YaVersion {
   // - Changed the default ElementColor from Black to None
   // For LISTVIEW_COMPONENT_VERSION 10:
   // - Changed TextSize property to FontSize
+  // - Add new layout
   public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:

@@ -1535,6 +1535,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 10) {
       // The TextSize property was renamed to FontSize.
+      // Add new layout
       handlePropertyRename(componentProperties, "TextSize", "FontSize");
       // Properties related to this component have now been upgraded to version 10.
       srcCompVersion = 10;

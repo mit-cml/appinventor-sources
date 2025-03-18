@@ -120,6 +120,8 @@ public class ComponentConstants {
   public static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+  public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT_VERTICAL = 5;
+
 
   /*
    * Chart Components

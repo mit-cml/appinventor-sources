@@ -19,7 +19,9 @@ public class YoungAndroidListViewLayoutChoicePropertyEditor extends ChoiceProper
     new Choice(MESSAGES.twoTextLayout(), "1"),
     new Choice(MESSAGES.twoTextLinearLayout(), "2"),
     new Choice(MESSAGES.imageSingleTextLayout(), "3"),
-    new Choice(MESSAGES.imageTwoTextLayout(), "4")
+    new Choice(MESSAGES.imageTwoTextLayout(), "4"),
+    new Choice(MESSAGES.imageTwoTextVerticalLayout(), "5")
+
   };
 
   public YoungAndroidListViewLayoutChoicePropertyEditor() {
