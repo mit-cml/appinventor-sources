@@ -24,7 +24,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This class is used to display a `Slider`.
@@ -33,7 +32,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *
  * A `Slider` is a progress bar that adds a draggable thumb. You can touch the thumb and drag left
  * or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the
- * {@link #PositionChanged(float)} event, reporting the position of the `Slider` thumb. The
+ * {@link #PositionChanged(float, boolean)} event, reporting the position of the `Slider` thumb. The
  * reported position of the thumb can be used to dynamically update another component attribute,
  * such as the {@link TextBox#FontSize(float)} of a `TextBox` or the
  * [Radius](animation.html#Ball.Radius) of a `Ball`.
@@ -64,7 +63,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
   private final SeekBar seekbar;
 
-  private int scaleGraduation;
+  private int numberOfSteps;
   private boolean notice = true;
   // slider mix, max, and thumb positions
   private float minValue;
@@ -97,8 +96,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     }
   }
 
-  public final boolean referenceGetThumb = (SdkLevel.getLevel() >= SdkLevel.LEVEL_JELLYBEAN);
-
   /**
    * Creates a new Slider component.
    *
@@ -108,7 +105,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     super(container);
     seekbar = new SeekBar(container.$context());
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       seekbar.setSplitTrack(false);
     }
 
@@ -124,14 +121,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
     thumbEnabled = true;
-    scaleGraduation = 100;
+    numberOfSteps = 100;
 
     seekbar.setOnSeekBarChangeListener(this);
 
     // We set the maximum range of the slider to scaleGraduation, 
     // obtaining the slider precision exactly as we want.
 
-    seekbar.setMax(scaleGraduation);
+    seekbar.setMax(numberOfSteps);
 
     // Based on given minValue, maxValue, and thumbPosition, determine where the seekbar
     // thumb position would be within normal SeekBar 0 - scaleGraduation range
@@ -140,11 +137,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Slider initial min, max, thumb values are: " +
-          MinValue() + "/" + MaxValue() + "/" + ThumbPosition() + "/" + ScaleGraduation());
+          MinValue() + "/" + MaxValue() + "/" + ThumbPosition() + "/" + NumberOfSteps());
     }
 
     if (DEBUG) {
-      Log.d(LOG_TAG, "API level is " + SdkLevel.getLevel());
+      Log.d(LOG_TAG, "API level is " + VERSION.SDK_INT);
     }
 
   }
@@ -183,7 +180,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
  // seekbar position is an integer in the range [0,scaleGraduation] and is determined by MinValue,
  // MaxValue and ThumbPosition
  private void setSeekbarPosition() {
-    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * scaleGraduation;
+    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * numberOfSteps;
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Trying to recalculate seekbar position "
@@ -194,7 +191,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     // I've enabled animations when changing progress programmatically, 
     // as it does in the iOS version. 
     // However, animation is disabled when setting the ScaleGraduation property.
-    seekbar.setProgress((int) seekbarPosition, notice);
+    if (VERSION.SDK_INT >= VERSION_CODES.N) {
+      seekbar.setProgress((int) seekbarPosition, notice);
+    } else {
+      seekbar.setProgress((int) seekbarPosition);
+    }
   }
 
   /**
@@ -209,7 +210,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   public void ThumbEnabled(boolean enabled) {
     thumbEnabled = enabled;
     int alpha = thumbEnabled ? 255 : 0;
-    if (referenceGetThumb) {
+    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
       new SeekBarHelper().getThumb(alpha);
     }
 
@@ -288,7 +289,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
       Log.d(LOG_TAG, "Min value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / scaleGraduation) + minValue;
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
   }
 
 
@@ -321,7 +322,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
      Log.d (LOG_TAG, "Max value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / scaleGraduation) + minValue;
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
   }
 
   /**
@@ -337,18 +338,27 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   }
 
   /**
-   * Set the slider scale graduation. This allows you to set the number of points on the slider scale. 
+   * Get the number of points from the slider scale. 
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+      description = "Number of steps on the slider scale. Combined with" +
+        "MinValue and MaxValue, it allows you to get the slider precision that you want, e.g. MinValue = 0," + 
+        "MaxValue = 150, ScaleGraduation = 1000, the slider will change position every 0.15.",
+      userVisible = true)
+  public int NumberOfSteps() {
+    return numberOfSteps;
+  }
+
+  /**
+   * Set the number of points on the slider scale. 
    * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want, 
    * e.g. MinValue = 0, MaxValue = 150, ScaleGraduation = 1000. The slider will change position every 0.15.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "100")
-  @SimpleProperty(description = "Set the slider scale graduation. This allows you to set the number of points " +
-      "on the slider scale. Combined with MinValue and MaxValue, it allows you to get the slider precision " + 
-      "that you want, e.g. MinValue = 0, MaxValue = 150, ScaleGraduation = 1000, the slider will change " + 
-      "position every 0.15.", userVisible = true)
-  public void ScaleGraduation(int value) {
-    scaleGraduation = value;
+  @SimpleProperty
+  public void NumberOfSteps(int value) {
+    numberOfSteps = value;
     // We save the position to restore it after setting the properties
     float oldPosition = thumbPosition;
     // We set the notice flag to false so that the user is not informed in any way about the change of this property
@@ -358,12 +368,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     thumbPosition = oldPosition;
     setSeekbarPosition();
     notice = true;
-  }
-
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
-      description = "Returns the slider increase.", userVisible = true)
-  public int ScaleGraduation() {
-    return scaleGraduation;
   }
 
   /**
@@ -443,31 +447,31 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     // We check the notice flag so as not to trigger the event when we change the ScaleGraduation property.
     if (notice) {
-      thumbPosition = ((maxValue - minValue) * (float) progress / scaleGraduation) + minValue;
+      thumbPosition = ((maxValue - minValue) * (float) progress / numberOfSteps) + minValue;
 
       if (DEBUG) {
-      Log.d(LOG_TAG, "onProgressChanged progress value [0-scaleGraduation]: " + progress
+      Log.d(LOG_TAG, "onProgressChanged progress value [0 - numberOfSteps]: " + progress
           + ", reporting to user as: " + thumbPosition);
       }
 
       // Trigger the event, reporting this new value
     
-      PositionChanged(thumbPosition);
+      PositionChanged(thumbPosition, fromUser);
     }
   }
 
   /**
    * Indicates that position of the slider thumb has changed.
    */
-  @SimpleEvent
-  public void PositionChanged(float thumbPosition) {
-    EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
+  @SimpleEvent(description = "Triggered when the thumb slider position has changed.")
+  public void PositionChanged(float thumbPosition, boolean fromUser) {
+    EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition, fromUser);
   }
 
   /**
    * Indicates that the user has started a touch gesture.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Triggered when the user has started a touch gesture.")
   public void TouchDown() {
     EventDispatcher.dispatchEvent(this, "TouchDown");
   }
@@ -475,7 +479,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   /**
   * Indicates that the user has finished a touch gesture.
   */
-  @SimpleEvent
+  @SimpleEvent(description = "Triggered when the user has finished a touch gesture.")
   public void TouchUp() {
     EventDispatcher.dispatchEvent(this, "TouchUp");
   }
