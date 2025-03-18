@@ -1,9 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -40,7 +43,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
@@ -60,8 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Editor for Young Android Blocks (.blk) files.
@@ -86,7 +86,7 @@ public final class YaBlocksEditor extends FileEditor
   // Keep a map from projectid_formname -> YaBlocksEditor for handling blocks workspace changed
   // callbacks from the BlocklyPanel objects. This has to be static because it is used by
   // static methods that are called from the Javascript Blockly world.
-  private static final Map<String, YaBlocksEditor> formToBlocksEditor = Maps.newHashMap();
+  private static final Map<String, YaBlocksEditor> formToBlocksEditor = new HashMap<>();
 
   // projectid_formname for this blocks editor. Our index into the static formToBlocksEditor map.
   private String fullFormName;
@@ -472,6 +472,25 @@ public final class YaBlocksEditor extends FileEditor
       YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
       //get type name from form editor
       return blocksEditor.myFormEditor.getComponentInstanceTypeName(instanceName);
+  }
+
+  /**
+   * Get the UUID for the parent component identified by {@code instanceName}. If the component
+   * is not contained within another component (e.g., Form), the empty string is returned.
+   *
+   * @param formName the name for the screen in project_name format
+   * @param instanceName the name of the component instance of interest
+   * @return the parent component UUID
+   */
+  public static String getComponentContainerUuid(String formName, String instanceName) {
+    YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
+    MockComponent component = blocksEditor.myFormEditor.getComponents().get(instanceName);
+    component = component.getContainer();
+    if (component == null) {
+      return "";
+    } else {
+      return component.getUuid();
+    }
   }
 
   public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName){

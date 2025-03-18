@@ -603,7 +603,12 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
-  public static final int YOUNG_ANDROID_VERSION = 231;
+  // For YOUNG_ANDROID_VERSION 232:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
+  // - CHART_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -739,7 +744,9 @@ public class YaVersion {
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
 
-
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
+  // - AbsoluteArrangement component was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
@@ -887,9 +894,16 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
   // - The Type getter block was made visible
-  public static final int CHART_COMPONENT_VERSION = 3;
+  // For CHART_COMPONENT_VERSION 4:
+  // - The axesTextColor property was added
+  // - The setAxesTextColor method was added
+  // - The ValueFormat property was added
+  public static final int CHART_COMPONENT_VERSION = 4;
 
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  // For CHART_DATA_2D_COMPONENT_VERSION 2:
+  // - The dataLabelColor property was added
+  // - The setDataLabelColor method was added
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
@@ -1188,13 +1202,17 @@ public class YaVersion {
   // - Added HintText property, performance optimization
   // For LISTVIEW_COMPONENT_VERSION 9:
   // - Changed the default ElementColor from Black to None
-  public static final int LISTVIEW_COMPONENT_VERSION = 9;
+  // For LISTVIEW_COMPONENT_VERSION 10:
+  // - Changed TextSize property to FontSize
+  public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 4:
+  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap
@@ -1212,7 +1230,9 @@ public class YaVersion {
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
   // - Adds ScaleUnits and MapType dropdowns.
-  public static final int MAP_COMPONENT_VERSION = 6;
+  // For MAP_COMPONENT_VERSION 7:
+  // - Adds CustomUrl (MapType 4).
+  public static final int MAP_COMPONENT_VERSION = 7;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap

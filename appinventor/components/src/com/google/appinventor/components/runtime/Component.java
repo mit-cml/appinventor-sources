@@ -156,4 +156,12 @@ public interface Component {
   static final String LISTVIEW_KEY_MAIN_TEXT = "Text1";
   static final String LISTVIEW_KEY_DESCRIPTION = "Text2";
   static final String LISTVIEW_KEY_IMAGE = "Image";
+
+  /*
+  Chart value types
+   */
+  static final int CHART_VALUE_DECIMAL = 0;
+  static final int CHART_VALUE_INTEGER = 1;
+  static final int CHART_VALUE_DATE = 2;
+  static final int CHART_VALUE_TIME = 3;
 }
