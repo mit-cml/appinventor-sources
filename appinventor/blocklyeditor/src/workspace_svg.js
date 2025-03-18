@@ -212,6 +212,7 @@ Blockly.WorkspaceSvg.prototype.addBackpack = function() {
         scrollbars: true,
         media: './assets/',
         disabledPatternId: this.options.disabledPatternId,
+        renderer: 'geras2_renderer',
       });
     this.backpack_.init();
   }
