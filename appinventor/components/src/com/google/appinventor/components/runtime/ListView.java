@@ -922,7 +922,6 @@ public final class ListView extends AndroidViewComponent {
       layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     }
     recyclerView.requestLayout();
-    setDivider();
   }
 
   /**
@@ -1366,16 +1365,8 @@ public final class ListView extends AndroidViewComponent {
             layoutChangeListener =
                 new View.OnLayoutChangeListener() {
                   @Override
-                  public void onLayoutChange(
-                      View v,
-                      int left,
-                      int top,
-                      int right,
-                      int bottom,
-                      int oldLeft,
-                      int oldTop,
-                      int oldRight,
-                      int oldBottom) {
+                  public void onLayoutChange(View v, int left, int top, int right,
+                      int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     if (recyclerViewWidth != parent.getWidth()) {
                       recyclerViewWidth = parent.getWidth();
                       for (int i = 0; i < parent.getChildCount(); i++) {
