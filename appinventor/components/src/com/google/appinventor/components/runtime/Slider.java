@@ -442,10 +442,10 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @Override
   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
     // progress has been changed. Set the sliderThumbPosition and then trigger the event
-    // Now convert this progress value (which is between 0-scaleGraduation), back to a value between the
+    // Now convert this progress value (which is between 0-numberOfSteps), back to a value between the
     // range that user has set within minValue, maxValue
 
-    // We check the notice flag so as not to trigger the event when we change the ScaleGraduation property.
+    // We check the notice flag so as not to trigger the event when we change the NumberOfSteps property.
     if (notice) {
       thumbPosition = ((maxValue - minValue) * (float) progress / numberOfSteps) + minValue;
 
