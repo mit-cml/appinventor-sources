@@ -9,7 +9,7 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
