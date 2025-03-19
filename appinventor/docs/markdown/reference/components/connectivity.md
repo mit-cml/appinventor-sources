@@ -127,7 +127,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
 {:id="BluetoothClient.AddressesAndNames" .list .ro .bo} *AddressesAndNames*
 : Returns the list of paired Bluetooth devices. Each element of the returned
  list is a String consisting of the device's address, a space, and the
- device's name.
+ device's name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+ and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+ an error via the Screen's PermissionDenied event.
 
 {:id="BluetoothClient.Available" .boolean .ro .bo} *Available*
 : Returns `true`{:.logic.block} if Bluetooth is available on the device,
@@ -142,7 +144,8 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  ReceiveUnsignedBytes.
 
 {:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
-: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+: Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.
 
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
@@ -152,7 +155,13 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  byte first.
 
 {:id="BluetoothClient.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
+
+{:id="BluetoothClient.NoLocationNeeded" .boolean .do} *NoLocationNeeded*
+: On Android 12 and later, indicates that Bluetooth is not used to determine the user's location.
+
+{:id="BluetoothClient.PollingRate" .number} *PollingRate*
+: Returns the configured polling rate value of the Bluetooth Client.
 
 {:id="BluetoothClient.Secure" .boolean} *Secure*
 : Specifies whether a secure connection should be used.
@@ -289,7 +298,7 @@ Use the `BluetoothServer` component to turn your device into a server that recei
  incoming connection.
 
 {:id="BluetoothServer.IsConnected" .boolean .ro .bo} *IsConnected*
-: Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
+: Returns `true`{:.logic.block} if a connection to a Bluetooth device has been made.
 
 {:id="BluetoothServer.Secure" .boolean} *Secure*
 : Specifies whether a secure connection should be used.
@@ -463,6 +472,9 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
  If SaveResponse is true and ResponseFileName is empty, then a new file
  name will be generated.
 
+{:id="Web.ResponseTextEncoding" .text} *ResponseTextEncoding*
+: Specifies the Response Text Encoding.
+
 {:id="Web.SaveResponse" .boolean} *SaveResponse*
 : Specifies whether the response should be saved in a file.
 
@@ -546,6 +558,37 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
 : Decodes the given JSON encoded value to produce a corresponding App Inventor value.
  A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
  denoted as \{a: b\} decodes to a dictionary with the key a and value b.
+
+{:id="Web.PatchFile" class="method"} <i/> PatchFile(*path*{:.text})
+: Performs an HTTP PATCH request using the Url property and data from the specified file.
+
+   If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
+
+{:id="Web.PatchText" class="method"} <i/> PatchText(*text*{:.text})
+: Performs an HTTP PATCH request using the Url property and the specified text.
+
+   The characters of the text are encoded using UTF-8 encoding.
+
+   If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
+
+{:id="Web.PatchTextWithEncoding" class="method"} <i/> PatchTextWithEncoding(*text*{:.text},*encoding*{:.text})
+: Performs an HTTP PATCH request using the Url property and the specified text.
+
+   The characters of the text are encoded using the given encoding.
+
+   If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
 
 {:id="Web.PostFile" class="method"} <i/> PostFile(*path*{:.text})
 : Performs an HTTP POST request using the Url property and data from the specified file.

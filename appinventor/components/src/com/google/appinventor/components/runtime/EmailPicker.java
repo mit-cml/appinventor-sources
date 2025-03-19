@@ -51,7 +51,8 @@ import android.widget.AutoCompleteTextView;
     "<p>Text boxes like this are usually used with <code>Button</code> " +
     "components, with the user clicking on the button when text entry is " +
     "complete.",
-    category = ComponentCategory.SOCIAL)
+    category = ComponentCategory.SOCIAL,
+    iconName = "images/emailPicker.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class EmailPicker extends TextBoxBase {

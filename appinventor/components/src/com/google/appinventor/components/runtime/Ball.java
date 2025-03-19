@@ -6,6 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -17,9 +20,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import com.google.appinventor.components.runtime.util.Vector2D;
 
 /**
  * A round 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
@@ -52,7 +53,8 @@ import android.graphics.Paint;
         "that the latter can get its appearance from an image file, while a " +
         "<code>Ball</code>'s appearance can be changed only by varying its " +
         "<code>PaintColor</code> and <code>Radius</code> properties.</p>",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/ball.png")
 @SimpleObject
 public final class Ball extends Sprite {
   private int radius;
@@ -80,6 +82,25 @@ public final class Ball extends Sprite {
       canvas.drawCircle(correctedXLeft + correctedRadius, correctedYTop +
           correctedRadius, correctedRadius, paint);
     }
+  }
+
+  // Get the vector to the center of the circle
+  Vector2D getCenterVector() {
+    double xCenter = xLeft + Width() / 2.0;
+    double yCenter = yTop + Height() / 2.0;
+    return new Vector2D(xCenter, yCenter);
+  }
+
+  // The min projection is the projection of the center minus the radius. We consider dot product
+  // values as the projection so the radius needs to be multiplied by the axis's magnitude.
+  double getMinProjection(Vector2D axis) {
+    return Vector2D.dotProduct(getCenterVector(), axis) - Radius() * axis.magnitude();
+  }
+
+  // The max projection is the projection of the center plus the radius. We consider dot product
+  // values as the projection so the radius needs to be multiplied by the axis's magnitude.
+  double getMaxProjection(Vector2D axis) {
+    return Vector2D.dotProduct(getCenterVector(), axis) + Radius() * axis.magnitude();
   }
 
   // The following four methods are required by abstract superclass
@@ -117,6 +138,8 @@ public final class Ball extends Sprite {
 
   @Override
   public boolean containsPoint(double qx, double qy) {
+    double xCenter = xLeft + Width() / 2.0;
+    double yCenter = yTop + Height() / 2.0;
     return ((qx - xCenter) * (qx - xCenter) + (qy - yCenter) * (qy - yCenter))
         <= radius * radius;
   }
@@ -126,15 +149,12 @@ public final class Ball extends Sprite {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "5")
-  @SimpleProperty(description = "The distance from the edge of the Ball to its center.")
+  @SimpleProperty(description = "The distance from the edge of the Ball to its center.",
+      category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
-    int dr = radius - this.radius;
-    // If the origin is at the center, the upper left corner moves to keep the center constant.
-    if (originAtCenter) {
-      xLeft -= dr;
-      yTop -= dr;
-    }
     this.radius = radius;
+    xLeft = xOriginToLeft(xOrigin);
+    yTop = yOriginToTop(yOrigin);
     registerChange();
   }
 
@@ -167,7 +187,7 @@ public final class Ball extends Sprite {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void PaintColor(int argb) {
     paintColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
@@ -189,7 +209,8 @@ public final class Ball extends Sprite {
       defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible = false,
       description = "Whether the x- and y-coordinates should represent the center of the Ball " +
-          "(true) or its left and top edges (false).")
+          "(true) or its left and top edges (false).",
+      category = PropertyCategory.BEHAVIOR)
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
   }

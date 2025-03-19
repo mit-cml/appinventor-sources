@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.content.Intent;
 
@@ -36,12 +37,16 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
 
   @Override
   public void click() {
-    BeforePicking();
+    if (!BeforePicking()) {
+      // If a block throws an exception here, we need the error to be displayed rather than opening
+      // the ListPickerActivity so that it can be dealt with first.
+      return;
+    }
     if (requestCode == 0) { // only need to register once
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(getIntent(), requestCode);
-    String openAnim = container.$form().getOpenAnimType();
+    String openAnim = container.$form().OpenScreenAnimation();
     AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
   }
 
@@ -61,10 +66,13 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
    * Event to raise when the `%type%` is clicked or the picker is shown
    * using the {@link #Open()} method.  This event occurs before the picker is displayed, and
    * can be used to prepare the picker before it is shown.
+   *
+   * @return true if the picker should be opened, false if it should not.
    */
   @SimpleEvent
-  public void BeforePicking() {
-    EventDispatcher.dispatchEvent(this, "BeforePicking");
+  public boolean BeforePicking() {
+    Object result = EventDispatcher.dispatchFallibleEvent(this, "BeforePicking");
+    return !(result instanceof StopBlocksExecution);
   }
 
   /**

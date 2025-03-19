@@ -5,20 +5,22 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
@@ -34,6 +36,8 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -54,12 +58,32 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
+import java.util.logging.Logger;
 
 public class SubsetJSONPropertyEditor  extends PropertyEditor
         implements ProjectChangeListener {
 
+  private static final Logger LOG = Logger.getLogger(Ode.class.getName());
+
+  interface BeginnerToolkit extends ClientBundle {
+    BeginnerToolkit INSTANCE = GWT.create(BeginnerToolkit.class);
+
+    @Source("toolkit_beginner.json")
+    TextResource getToolkit();
+  }
+
+  interface IntermediateToolkit extends ClientBundle {
+    IntermediateToolkit INSTANCE = GWT.create(IntermediateToolkit.class);
+
+    @Source("toolkit_intermediate.json")
+    TextResource getToolkit();
+  }
+
   private static SubsetJSONPropertyEditor INSTANCE;
+
   Tree componentTree;
   Tree blockTree;
   DropDownButton dropDownButton;
@@ -68,16 +92,15 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
+    this(false);
+  }
+
+  public SubsetJSONPropertyEditor(boolean newProject) {
     buildTrees();
     file.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent changeEvent) {
-        if (customPopupShowing) {
-          loadJSONfile(file, false);
-        }
-        else {
-          loadJSONfile(file, true);
-        }
+        loadJSONfile(file, !customPopupShowing);
       }
     });
 
@@ -89,31 +112,59 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     invisibleFilePanel.setVisible(false);
     invisibleFilePanel.show();
 
-    List<DropDownButton.DropDownItem> items = Lists.newArrayList();
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.allButton(), new Command() {
+    // Create toolkit based on whether new project is being created
+    List<DropDownItem> items = Lists.newArrayList();
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.beginnerToolkitButton(), new Command() {
+      @Override
+      public void execute() {
+        property.setValue(BeginnerToolkit.INSTANCE.getToolkit().getText());
+        updateValue();
+        dropDownButton.setFocus(true);
+      }}));
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.intermediateToolkitButton(), new Command() {
+      @Override
+      public void execute() {
+        property.setValue(IntermediateToolkit.INSTANCE.getToolkit().getText());
+        updateValue();
+        dropDownButton.setFocus(true);
+      }}));
+
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.defaultText(), new Command() {
       @Override
       public void execute() {
         property.setValue("");
         updateValue();
+        dropDownButton.setFocus(true);
       }}));
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
-      @Override
-      public void execute() {
-        matchProject();
-        property.setValue(createJSONString());
-        updateValue();
-      }}));
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
+    if (!newProject) {
+      items.add(new DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
+        @Override
+        public void execute() {
+          matchProject();
+          property.setValue(createJSONString());
+          updateValue();
+          dropDownButton.setFocus(true);
+        }
+      }));
+    }
+    /*
+     Temporarily turning this off until we can determine why file.click() is not doing anything.
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
       public void execute() {
         file.click();
       }}));
+    */
 
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.viewAndModifyButton(), new Command() {
+    items.add(new DropDownItem("Subset Property Editor", MESSAGES.customEllipsis(), new Command() {
       @Override
       public void execute() {
         showCustomSubsetPanel();
+        dropDownButton.setFocus(true);
       }}));
+    
     dropDownButton = new DropDownButton("Subset Property Editor", "", items, false);
     dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
     initWidget(dropDownButton);
@@ -143,6 +194,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
       blockPanel.add(blockTree);
 
+      /*
       Button loadButton = new Button(MESSAGES.fileUploadWizardCaption());
       loadButton.addClickHandler(new ClickHandler() {
         @Override
@@ -150,6 +202,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           file.click();
         }
       });
+      */
       Button saveButton = new Button(MESSAGES.saveAsButton());
       saveButton.addClickHandler(new ClickHandler() {
         @Override
@@ -174,7 +227,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       Button cancelButton = new Button(MESSAGES.cancelButton());
       Button okButton = new Button(MESSAGES.okButton());
       buttonPanel.add(saveButton);
-      buttonPanel.add(loadButton);
+/*      buttonPanel.add(loadButton); */
       buttonPanel.add(clearButton);
       buttonPanel.add(initializeButton);
       cancelButton.addClickHandler(new ClickHandler() {
@@ -217,7 +270,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
     for (ComponentCategory cat : ComponentCategory.values()) {
       if (cat != ComponentCategory.INTERNAL && cat != ComponentCategory.UNINITIALIZED) {
-        CheckBox cb = new CheckBox(ComponentsTranslation.getCategoryName(cat.getName()));
+        CheckBox cb = new CheckBox(ComponentTranslationTable.getCategoryName(cat.getName()));
         cb.setName(cat.getDocName());
         categoryItems.put(cat.getDocName(), createCascadeCheckboxItem(cb));
       }
@@ -225,26 +278,26 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     for (String cname : db.getComponentNames()) {
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
       if (categoryItems.containsKey(cd.getCategoryDocUrlString()) && db.getShowOnPalette(cname) ) {
-        final CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
+        final CheckBox subcb = new CheckBox(ComponentTranslationTable.getComponentName(cname));
         final TreeItem subTree = createCascadeCheckboxItem(subcb);
         subcb.setName(cname);
         // Event, Method, Property order needs to match Blockly.Drawer.prototype.instanceRecordToXMLArray
         // so that component blocks are displayed in the same order with or without a subset defined.
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
-          CheckBox eventcb = new CheckBox(ComponentsTranslation.getEventName(edef.getName()));
+          CheckBox eventcb = new CheckBox(ComponentTranslationTable.getEventName(edef.getName()));
           eventcb.setName("events");
           eventcb.setFormValue("none");
           subTree.addItem(createCascadeCheckboxItem(eventcb));
         }
         for (ComponentDatabaseInterface.MethodDefinition mdef : cd.getMethods()) {
-          CheckBox methcb = new CheckBox(ComponentsTranslation.getMethodName(mdef.getName()));
+          CheckBox methcb = new CheckBox(ComponentTranslationTable.getMethodName(mdef.getName()));
           methcb.setName("methods");
           methcb.setFormValue("none");
           subTree.addItem(createCascadeCheckboxItem(methcb));
         }
         for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
           if (pdef.getRW() != "invisible") {
-            CheckBox propcb = new CheckBox(ComponentsTranslation.getPropertyName(pdef.getName()));
+            CheckBox propcb = new CheckBox(ComponentTranslationTable.getPropertyName(pdef.getName()));
             propcb.setName("blockProperties");
             propcb.setFormValue(pdef.getRW());
             subTree.addItem(createCascadeCheckboxItem(propcb));
@@ -592,11 +645,16 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   }
 
   protected void updateValue() {
+    LOG.info(property.getValue());
     if (StringUtils.isNullOrEmpty(property.getValue())) {
-      dropDownButton.setCaption("All");
+      dropDownButton.setCaption(MESSAGES.defaultText());
       dropDownButton.setWidth("");
+    } else if (Objects.equals(property.getValue().replaceAll("\\s+",""), BeginnerToolkit.INSTANCE.getToolkit().getText().replaceAll("\\s+",""))){
+      dropDownButton.setCaption(MESSAGES.beginnerToolkitButton());
+    } else if (Objects.equals(property.getValue(), IntermediateToolkit.INSTANCE.getToolkit().getText())){
+      dropDownButton.setCaption(MESSAGES.intermediateToolkitButton());
     } else {
-      dropDownButton.setCaption("Toolkit Defined");
+      dropDownButton.setCaption(MESSAGES.customEllipsis());
     }
   }
 
@@ -675,23 +733,22 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
   private native JavaScriptObject getBlockDict()/*-{
     var blockCatDict = {};
-    for (var blockName in Blockly.Blocks) {
-      if (!Blockly.Blocks.hasOwnProperty(blockName)) continue;
-      var block = Blockly.Blocks[blockName];
+    for (var blockName in $wnd.Blockly.Blocks) {
+      var block = $wnd.Blockly.Blocks[blockName];
       // Component blocks are handled in the component tree and don't behave the same as the others
       if (block.category && (block.category !== "Component") && (typeof block.typeblock !== 'undefined')) {
         if (!blockCatDict[block.category]) {
           blockCatDict[block.category] = {};
         }
         var arrTranslatedNames = new Array();
-        for (i = 0; i < block.typeblock.length; ++i) {
+        for (var i = 0; i < block.typeblock.length; ++i) {
           arrTranslatedNames[i] = block.typeblock[i].translatedName;
           // Have not found a way to genericize code where multiple blocks have the exact same translated name.
           // If there's a better way, please fix.
           if (blockName == 'controls_forRange') {
-            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX;
+            arrTranslatedNames[i] += $wnd.Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX;
           } else if (blockName == 'controls_forEach') {
-            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
+            arrTranslatedNames[i] += $wnd.Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
           }
         }
         // List all variations on a block, separated by commas

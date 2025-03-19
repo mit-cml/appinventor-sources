@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.ui.InlineHTML;
  * @author lizlooney@google.com (Liz Looney), srlane@mit.edu (Susan Rati Lane)
  */
 public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
+
 
   /**
    * Component type name.
@@ -141,6 +143,20 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
   }
 
   @Override
+  protected void setFontSizeProperty(String text) {
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (Float.parseFloat(text) == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), text);
+    }
+
+    updatePreferredSize();
+  }
+
+  @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
@@ -149,23 +165,5 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
       setCheckedProperty(newValue);
       refreshForm();
     }
-  }
-
-  /*
-   * We add the DesignPreviewChangeListener here instead of in the
-   * constructor because at construction time we do not have a
-   * container so getForm() fails.
-   */
-
-  @Override
-  protected void setContainer(MockContainer container) {
-    super.setContainer(container);
-    getForm().addDesignPreviewChangeListener(this);
-  }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    paintCheckBox(checked);
   }
 }

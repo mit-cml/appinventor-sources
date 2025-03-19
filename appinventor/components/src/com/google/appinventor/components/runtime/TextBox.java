@@ -70,7 +70,8 @@ import android.widget.EditText;
     "complete.</p>" +
     "<p>If the text entered by the user should not be displayed, use " +
     "<code>PasswordTextBox</code> instead.</p>",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/textbox.png")
 @SimpleObject
 public final class TextBox extends TextBoxBase {
   /* TODO(user): this code requires Android SDK M5 or newer - we are currently on M3
@@ -218,14 +219,14 @@ public final class TextBox extends TextBoxBase {
 
   @SimpleProperty(
     category = PropertyCategory.BEHAVIOR,
-    description = "Whether the %type% is read-only. By default, this is true."
+    description = "Whether the %type% is read-only. By default, this is false."
   )
   public boolean ReadOnly() {
     return readOnly;
   }
 
   /**
-   * Whether the %type% is read-only. By default, this is `true`{:.logic.block}.
+   * Whether the %type% is read-only. By default, this is `false`{:.logic.block}.
    * @param readOnly
    */
   @DesignerProperty(

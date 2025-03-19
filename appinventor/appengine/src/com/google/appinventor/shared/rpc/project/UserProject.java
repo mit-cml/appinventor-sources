@@ -46,6 +46,12 @@ public class UserProject implements IsSerializable {
    */
   private long modificationDate;
 
+  /**
+   * The last date the project was exported expressed in milliseconds since
+   * January 1, 1970 UTC
+   */
+  private long buildDate;
+
   private static final String DELIM = "#DELIM#";
 
   /**
@@ -63,12 +69,8 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate, boolean projectMovedToTrashFlag) {
-    this.projectId = projectId;
-    this.projectName = projectName;
-    this.projectType = projectType;
-    this.creationDate = creationDate;
-    this.modificationDate = creationDate;
-    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this(projectId, projectName, projectType, creationDate, creationDate, 0,
+        projectMovedToTrashFlag);
   }
 
   /**
@@ -80,12 +82,26 @@ public class UserProject implements IsSerializable {
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
       long modificationDate, boolean projectMovedToTrashFlag) {
+    this(projectId, projectName, projectType, creationDate, modificationDate, 0,
+        projectMovedToTrashFlag);
+  }
+
+  /**
+   * Creates a new project info object.
+   *
+   * @param projectId the project id
+   * @param projectName the project name
+   * @param projectType the project type
+   */
+  public UserProject(long projectId, String projectName, String projectType, long creationDate,
+      long modificationDate, long buildDate, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.buildDate = buildDate;
   }
 
   /**
@@ -129,6 +145,16 @@ public class UserProject implements IsSerializable {
     }
   }
 
+  public long getDateBuilt() {
+    return buildDate;
+  }
+
+  public void setDateBuilt(long buildDate) {
+    if (buildDate != 0) {
+      this.buildDate = buildDate;
+    }
+  }
+
   public void moveToTrash() {
     this.projectMovedToTrashFlag = true;
   }
@@ -154,7 +180,8 @@ public class UserProject implements IsSerializable {
         projectName.equals(otherUserProject.projectName) &&
         projectType.equals(otherUserProject.projectType) &&
         creationDate == otherUserProject.creationDate &&
-        modificationDate == otherUserProject.modificationDate;
+        modificationDate == otherUserProject.modificationDate &&
+        buildDate == otherUserProject.buildDate;
   }
 
   @Override
@@ -165,12 +192,12 @@ public class UserProject implements IsSerializable {
   @Override
   public String toString() {
     return projectId + DELIM + projectName + DELIM + projectType + DELIM + creationDate +
-        DELIM + modificationDate;
+        DELIM + modificationDate + DELIM + buildDate;
   }
 
   public static UserProject valueOf(String text) {
     String[] parts = text.split(DELIM);
-    if (parts.length != 5) {
+    if (parts.length < 5) {
       throw new IllegalArgumentException();
     }
     UserProject userProject = new UserProject();
@@ -179,6 +206,7 @@ public class UserProject implements IsSerializable {
     userProject.projectType = parts[2];
     userProject.creationDate = Long.parseLong(parts[3]);
     userProject.modificationDate = Long.parseLong(parts[4]);
+    userProject.buildDate = Long.parseLong(parts[5]);
     return userProject;
   }
 }

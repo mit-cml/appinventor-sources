@@ -1,0 +1,49 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+    ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+    ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <g:FlowPanel styleName='ode-ProjectTable'>
+    <g:FlowPanel styleName='ode-ProjectHeaderRow'>
+      <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox"/>
+      <g:FocusPanel ui:field='nameFocusPanel' styleName='ode-NameFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListName">
+          <g:Label text='{messages.projectNameHeader}' ui:field='projectName'
+              styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
+              styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
+              styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+      <g:FocusPanel ui:field='createdateFocusPanel' styleName='ode-CreateDateFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
+          <g:Label text='{messages.projectDateCreatedHeader}' ui:field='createDate'
+              styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='createDateSortDec' text="&#x25BC;" visible="false"
+              styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='createDateSortAsc' text="&#x25B2;" visible="false"
+              styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+      <g:FocusPanel ui:field='modDateFocusPanel' styleName='ode-ModifiedDateFocusPanel'>
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
+          <g:Label text='{messages.projectDateModifiedHeader}' ui:field='modDate'
+              styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='modDateSortDec' text="&#x25BC;" visible="false"
+              styleName="gwt-Label ode-ProjectHeaderLabel"/>
+          <g:InlineLabel ui:field='modDateSortAsc' text="&#x25B2;" visible="false"
+              styleName="gwt-Label ode-ProjectHeaderLabel"/>
+        </g:FlowPanel>
+      </g:FocusPanel>
+    </g:FlowPanel>
+    <g:FlowPanel styleName="ode-ProjectRowList" ui:field='container'>
+
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

@@ -8,11 +8,13 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * Abstract superclass for textbox based mock components.
@@ -20,7 +22,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author sharon@google.com (Sharon Perl)
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockTextBoxBase extends MockWrapper {
+abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener {
+  protected static final String PROPERTY_NAME_HINTCOLOR = "HintColor";
 
   // GWT widget used to mock a Simple TextBox
   private final TextBox textBoxWidget;
@@ -38,6 +41,16 @@ abstract class MockTextBoxBase extends MockWrapper {
     initWrapper(textBoxWidget);
   }
 
+  @Override
+  protected void onAttach() {
+        super.onAttach();
+        ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+  @Override
+  protected void onDetach() {
+        super.onDetach();
+        ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+  }
   /**
    * Class that extends TextBox so we can use a protected constructor.
    *
@@ -84,7 +97,12 @@ abstract class MockTextBoxBase extends MockWrapper {
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        text = "&HFF000000";  //black
+      } else {
+        text = "&HFFFFFFFF";  // white
+      }
     }
     MockComponentsUtil.setWidgetBackgroundColor(textBoxWidget, text);
   }
@@ -116,7 +134,14 @@ abstract class MockTextBoxBase extends MockWrapper {
    * Sets the textbox's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(textBoxWidget, text);
+    float convertedText = Float.parseFloat(text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == 14.0 && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(textBoxWidget, "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(textBoxWidget, text);
+    }
     updatePreferredSize();
   }
 
@@ -124,22 +149,7 @@ abstract class MockTextBoxBase extends MockWrapper {
    * Sets the textbox's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(textBoxWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the textbox's Hint property to a new value.
-   */
-  private void setHintProperty(String text) {
-    textBoxWidget.setTitle(text);
-  }
-
-  /*
-   * Sets the textbox's Text property to a new value.
-   */
-  private void setTextProperty(String text) {
-    textBoxWidget.setText(text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, textBoxWidget, text);
     updatePreferredSize();
   }
 
@@ -148,12 +158,43 @@ abstract class MockTextBoxBase extends MockWrapper {
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFF000000";  // black
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        text = "&HFFFFFFFF";  // white
+      } else {
+        text = "&HFF000000";  //black
+
+      }
+
     }
+
     MockComponentsUtil.setWidgetTextColor(textBoxWidget, text);
+
+  }
+
+  /**
+   * Updates the appearance of the textbox text based on the hint, text, and color properties.
+   */
+  private void updateAppearance() {
+    if (hasProperty(PROPERTY_NAME_TEXT) && !getPropertyValue(PROPERTY_NAME_TEXT).isEmpty()) {
+      textBoxWidget.setText(getPropertyValue(PROPERTY_NAME_TEXT));
+      if (hasProperty(PROPERTY_NAME_TEXTCOLOR)) {
+        setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      }
+    } else if (hasProperty(PROPERTY_NAME_HINT)) {
+      textBoxWidget.setText(getPropertyValue(PROPERTY_NAME_HINT));
+      if (hasProperty(PROPERTY_NAME_HINTCOLOR)) {
+        MockComponentsUtil.setWidgetTextColor(textBoxWidget,
+            getPropertyValue(PROPERTY_NAME_HINTCOLOR));
+      }
+    } else {
+      textBoxWidget.setText("");
+      MockComponentsUtil.setWidgetTextColor(textBoxWidget, "&HFF000000");
+    }
   }
 
   // PropertyChangeListener implementation
+
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
@@ -179,12 +220,56 @@ abstract class MockTextBoxBase extends MockWrapper {
       setFontTypefaceProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HINT)) {
-      setHintProperty(newValue);
+      updateAppearance();
+      updatePreferredSize();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_HINTCOLOR)) {
+      updateAppearance();
     } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
+      updateAppearance();
+      updatePreferredSize();
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(textBoxWidget, newValue);
+      refreshForm();
     }
+  }
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
+      setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
+      setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      //setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      updatePreferredSize();
+      refreshForm();
+    }
+    else if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      updatePreferredSize();
+      refreshForm();
+    }
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

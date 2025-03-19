@@ -298,7 +298,9 @@ public final class GeoJSONUtil {
       throw new IllegalArgumentException(String.format("Unknown type \"%s\"", type));
     }
     if (geometry == null) {
-      throw new IllegalArgumentException("No geometry defined for feature.");
+      // While GeoJSON supports features with null geometries, App Inventor has no way to
+      // represent them.
+      return null;
     }
     MapFactory.MapFeature feature = processGeometry(logTag, container, geometry);
     if (properties != null) {

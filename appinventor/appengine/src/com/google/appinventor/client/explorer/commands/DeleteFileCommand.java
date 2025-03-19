@@ -22,6 +22,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNo
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
@@ -100,13 +103,19 @@ public class DeleteFileCommand extends ChainableCommand {
     private final String formName;
 
     DeleteFormDialog(final YoungAndroidSourceNode node) {
-      super(false, true);
+      super(false, false);
+      setGlassEnabled(true);
 
       this.node = node;
       formName = node.getFormName();
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.removeFormButton());
+
+      Button topInvisible = new Button();
+      Button bottomInvisible = new Button();
+      topInvisible.setStyleName("FocusTrap");
+      bottomInvisible.setStyleName("FocusTrap");
 
       Button cancelButton = new Button(MESSAGES.cancelButton());
       cancelButton.addClickHandler(new ClickHandler() {
@@ -133,11 +142,13 @@ public class DeleteFileCommand extends ChainableCommand {
       labelPanel.add(warnmsg);
       labelPanel.setSize("100%", "22px");
       contentPanel.add(labelPanel);
+      contentPanel.add(topInvisible);
       contentPanel.add(nameTextBox);
       HorizontalPanel buttonPanel = new HorizontalPanel();
       HorizontalPanel checkboxPanel = new HorizontalPanel();
       buttonPanel.add(cancelButton);
       buttonPanel.add(deleteButton);
+      buttonPanel.add(bottomInvisible);
       checkboxPanel.add(cb);
       checkboxPanel.setSize("100%", "20px");
       contentPanel.add(checkboxPanel);
@@ -148,13 +159,30 @@ public class DeleteFileCommand extends ChainableCommand {
       nameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
         @Override
         public void onKeyUp(KeyUpEvent event) {
+          if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+            hide();
+            executionFailedOrCanceled();
+          }
           if (nameTextBox.getText().equals(formName)) {
             deleteButton.setEnabled(true);
             nameTextBox.setColor("#00c8ff");
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+              handleOkClick();
+            }
           } else {
             deleteButton.setEnabled(false);
             nameTextBox.setColor("red");
           }
+        }
+      });
+      topInvisible.addFocusHandler(new FocusHandler() {
+        public void onFocus(FocusEvent event) {
+          cancelButton.setFocus(true);
+        }
+      });
+      bottomInvisible.addFocusHandler(new FocusHandler() {
+        public void onFocus(FocusEvent event) {
+          nameTextBox.setFocus(true);
         }
       });
       add(contentPanel);

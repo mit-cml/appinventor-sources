@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -247,7 +247,9 @@ set the following properties:
   <dt id="BluetoothClient.AddressesAndNames" class="list ro bo"><em>AddressesAndNames</em></dt>
   <dd>Returns the list of paired Bluetooth devices. Each element of the returned
  list is a String consisting of the device’s address, a space, and the
- device’s name.</dd>
+ device’s name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+ and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+ an error via the Screen’s PermissionDenied event.</dd>
   <dt id="BluetoothClient.Available" class="boolean ro bo"><em>Available</em></dt>
   <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
  <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
@@ -258,14 +260,19 @@ set the following properties:
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.</dd>
   <dt id="BluetoothClient.DisconnectOnError" class="boolean"><em>DisconnectOnError</em></dt>
-  <dd>Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.</dd>
+  <dd>Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.</dd>
   <dt id="BluetoothClient.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
   <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothClient.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
   <dd>Specifies whether numbers are sent and received with the most significant
  byte first.</dd>
   <dt id="BluetoothClient.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">frue</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
+  <dt id="BluetoothClient.NoLocationNeeded" class="boolean do"><em>NoLocationNeeded</em></dt>
+  <dd>On Android 12 and later, indicates that Bluetooth is not used to determine the user’s location.</dd>
+  <dt id="BluetoothClient.PollingRate" class="number"><em>PollingRate</em></dt>
+  <dd>Returns the configured polling rate value of the Bluetooth Client.</dd>
   <dt id="BluetoothClient.Secure" class="boolean"><em>Secure</em></dt>
   <dd>Specifies whether a secure connection should be used.</dd>
 </dl>
@@ -380,7 +387,7 @@ set the following properties:
   <dd>Returns true if this BluetoothServer component is accepting an
  incoming connection.</dd>
   <dt id="BluetoothServer.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">frue</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
   <dt id="BluetoothServer.Secure" class="boolean"><em>Secure</em></dt>
   <dd>Specifies whether a secure connection should be used.</dd>
 </dl>
@@ -525,6 +532,8 @@ set the following properties:
   <dd>Specifies the name of the file where the response should be saved.
  If SaveResponse is true and ResponseFileName is empty, then a new file
  name will be generated.</dd>
+  <dt id="Web.ResponseTextEncoding" class="text"><em>ResponseTextEncoding</em></dt>
+  <dd>Specifies the Response Text Encoding.</dd>
   <dt id="Web.SaveResponse" class="boolean"><em>SaveResponse</em></dt>
   <dd>Specifies whether the response should be saved in a file.</dd>
   <dt id="Web.Timeout" class="number"><em>Timeout</em></dt>
@@ -601,6 +610,37 @@ set the following properties:
   <dd>Decodes the given JSON encoded value to produce a corresponding App Inventor value.
  A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
  denoted as {a: b} decodes to a dictionary with the key a and value b.</dd>
+  <dt id="Web.PatchFile" class="method"><i></i> PatchFile(<em class="text">path</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and data from the specified file.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchText" class="method"><i></i> PatchText(<em class="text">text</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using UTF-8 encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchTextWithEncoding" class="method"><i></i> PatchTextWithEncoding(<em class="text">text</em>,<em class="text">encoding</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using the given encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
   <dt id="Web.PostFile" class="method"><i></i> PostFile(<em class="text">path</em>)</dt>
   <dd>Performs an HTTP POST request using the Url property and data from the specified file.
 
@@ -801,7 +841,7 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -820,15 +860,16 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

@@ -51,7 +51,8 @@ import android.view.WindowManager;
     "<p>Setting property ShowFilterBar to true, will make the list searchable.  " +
     "Other properties affect the appearance of the button " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-    "whether it can be clicked on (<code>Enabled</code>).</p>")
+    "whether it can be clicked on (<code>Enabled</code>).</p>",
+    iconName = "images/listPicker.png")
 @SimpleObject
 @UsesActivities(activities = {
     @ActivityElement(name = "com.google.appinventor.components.runtime.ListPickerActivity",
@@ -294,7 +295,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     // Get the current Form's opening transition anim type,
     // and pass it to the list picker activity. For consistency,
     // the closing animation will be the same (but in reverse)
-    String openAnim = container.$form().getOpenAnimType();
+    String openAnim = container.$form().OpenScreenAnimation();
     intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim);
     intent.putExtra(LIST_ACTIVITY_ORIENTATION_TYPE,container.$form().ScreenOrientation());
     intent.putExtra(LIST_ACTIVITY_ITEM_TEXT_COLOR, itemTextColor);

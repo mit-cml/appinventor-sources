@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -133,9 +133,11 @@
 <ul>
   <li><a href="#Button">Button</a></li>
   <li><a href="#CheckBox">CheckBox</a></li>
+  <li><a href="#CircularProgress">CircularProgress</a></li>
   <li><a href="#DatePicker">DatePicker</a></li>
   <li><a href="#Image">Image</a></li>
   <li><a href="#Label">Label</a></li>
+  <li><a href="#LinearProgress">LinearProgress</a></li>
   <li><a href="#ListPicker">ListPicker</a></li>
   <li><a href="#ListView">ListView</a></li>
   <li><a href="#Notifier">Notifier</a></li>
@@ -172,9 +174,10 @@
  Some fonts do not support italic.</dd>
   <dt id="Button.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">Button</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="Button.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="Button.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">Button</code> as default, serif, sans
- serif, or monospace.</dd>
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
   <dt id="Button.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Button</code>’s vertical height, measured in pixels.</dd>
   <dt id="Button.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -260,7 +263,7 @@
  Some fonts do not support italic.</dd>
   <dt id="CheckBox.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">CheckBox</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="CheckBox.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="CheckBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">CheckBox</code> as default, serif, sans
  serif, or monospace.</dd>
   <dt id="CheckBox.Height" class="number bo"><em>Height</em></dt>
@@ -298,6 +301,38 @@
 
 <p class="methods">None</p>
 
+<h2 id="CircularProgress">CircularProgress</h2>
+
+<p>Component for CircularProgress</p>
+
+<h3 id="CircularProgress-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="CircularProgress.Color" class="color"><em>Color</em></dt>
+  <dd>Change the indeterminate color of the circular progress bar.</dd>
+  <dt id="CircularProgress.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CircularProgress</code>’s vertical height, measured in pixels.</dd>
+  <dt id="CircularProgress.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CircularProgress</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="CircularProgress.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">CircularProgress</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">CircularProgress</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="CircularProgress.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CircularProgress</code>, measured in pixels.</dd>
+  <dt id="CircularProgress.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CircularProgress</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="CircularProgress-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="CircularProgress-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 <h2 id="DatePicker">DatePicker</h2>
 
 <p>A button that, when clicked on, launches a popup dialog to allow the user to select a date on
@@ -324,9 +359,10 @@
  Some fonts do not support italic.</dd>
   <dt id="DatePicker.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">DatePicker</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="DatePicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="DatePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">DatePicker</code> as default, serif, sans
- serif, or monospace.</dd>
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
   <dt id="DatePicker.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">DatePicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="DatePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -410,6 +446,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="Image-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
+  <dd>A written description of what the image looks like.</dd>
   <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
@@ -473,7 +511,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  Some fonts do not support italic.</dd>
   <dt id="Label.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the label’s text’s font size, measured in sp(scale-independent pixels).</dd>
-  <dt id="Label.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="Label.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the label’s text’s font face as default, serif, sans
  serif, or monospace.</dd>
   <dt id="Label.HTMLContent" class="text ro bo"><em>HTMLContent</em></dt>
@@ -518,6 +556,49 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <p class="methods">None</p>
 
+<h2 id="LinearProgress">LinearProgress</h2>
+
+<p>Component for LinearProgress</p>
+
+<h3 id="LinearProgress-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="LinearProgress.Indeterminate" class="boolean"><em>Indeterminate</em></dt>
+  <dd>Indicate whether this progress bar is in indeterminate mode.</dd>
+  <dt id="LinearProgress.IndeterminateColor" class="color"><em>IndeterminateColor</em></dt>
+  <dd>Change the indeterminate color of the progress bar.</dd>
+  <dt id="LinearProgress.Maximum" class="number"><em>Maximum</em></dt>
+  <dd>Set the upper range of the progress bar max.</dd>
+  <dt id="LinearProgress.Minimum" class="number"><em>Minimum</em></dt>
+  <dd>Set the lower range of the progress bar to min. This function works only for devices with API &gt;= 26</dd>
+  <dt id="LinearProgress.Progress" class="number bo"><em>Progress</em></dt>
+  <dd>Get the progress bar’s current level of progress.</dd>
+  <dt id="LinearProgress.ProgressColor" class="color"><em>ProgressColor</em></dt>
+  <dd>Change the progress color of the progress bar.</dd>
+  <dt id="LinearProgress.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">LinearProgress</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">LinearProgress</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="LinearProgress.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">LinearProgress</code>, measured in pixels.</dd>
+  <dt id="LinearProgress.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">LinearProgress</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="LinearProgress-Events">Events</h3>
+
+<dl class="events">
+  <dt id="LinearProgress.ProgressChanged">ProgressChanged(<em class="number">progress</em>)</dt>
+  <dd>Event that indicates that the progress of the progress bar has been changed. Returns the current progress value. If “Indeterminate” is set to true, then it returns “0”.</dd>
+</dl>
+
+<h3 id="LinearProgress-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="LinearProgress.IncrementProgressBy" class="method"><i></i> IncrementProgressBy(<em class="number">value</em>)</dt>
+  <dd>Increase the progress bar’s progress by the specified amount.</dd>
+</dl>
+
 <h2 id="ListPicker">ListPicker</h2>
 
 <p>A button that, when clicked on, displays a list of texts for the user to choose among. The texts
@@ -552,9 +633,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  Some fonts do not support italic.</dd>
   <dt id="ListPicker.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">ListPicker</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="ListPicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="ListPicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">ListPicker</code> as default, serif, sans
- serif, or monospace.</dd>
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
   <dt id="ListPicker.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListPicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="ListPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -635,9 +717,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h2 id="ListView">ListView</h2>
 
-<p>This is a visible component that allows to place a list of text elements in your <a href="#Screen"><code class="highlighter-rouge">Screen</code></a> to
- display. The list can be set using the <a href="#ListView.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property or using the
- <a href="#ListView.Elements"><code class="highlighter-rouge">Elements</code></a> block in the blocks editor.</p>
+<p>This is a visible component that displays a list of text and image elements in your <a href="#Screen"><code class="highlighter-rouge">Screen</code></a> to
+ display. Simple lists of strings may be set using the <a href="#ListView.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ <a href="#ListView.ListData"><code class="highlighter-rouge">ListData</code></a> and <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a> properties.</p>
+
+<p><a href="../other/advanced-listview.html">Information on Layouts</a></p>
 
 <p>Warning: This component will not work correctly on Screens that are scrollable if its
  <a href="#ListView.Height"><code class="highlighter-rouge">Height</code></a> is set to Fill Parent.</p>
@@ -647,19 +732,61 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <dl class="properties">
   <dt id="ListView.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> background.</dd>
+  <dt id="ListView.BounceEdgeEffect" class="boolean"><em>BounceEdgeEffect</em></dt>
+  <dd>Sets the bounce effect function. <code class="logic block highlighter-rouge">true</code> will enable the function,
+ <code class="logic block highlighter-rouge">false</code> will disable.</dd>
+  <dt id="ListView.DividerColor" class="color"><em>DividerColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> divider.</dd>
+  <dt id="ListView.DividerThickness" class="number"><em>DividerThickness</em></dt>
+  <dd>Specifies the divider thickness of list view</dd>
+  <dt id="ListView.ElementColor" class="color"><em>ElementColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> element.</dd>
+  <dt id="ListView.ElementCornerRadius" class="number"><em>ElementCornerRadius</em></dt>
+  <dd>Specifies the corner radius of the list view element.</dd>
+  <dt id="ListView.ElementMarginsWidth" class="number"><em>ElementMarginsWidth</em></dt>
+  <dd>Specifies the width of the margins of a list view element</dd>
   <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
-  <dd>Set the list of choices from a string of comma-separated values.</dd>
+  <dd>Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.</dd>
+  <dt id="ListView.FontSizeDetail" class="number"><em>FontSizeDetail</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
+  <dt id="ListView.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="ListView.FontTypefaceDetail" class="text do"><em>FontTypefaceDetail</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
   <dt id="ListView.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height, measured in pixels.</dd>
   <dt id="ListView.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListView.HintText" class="text"><em>HintText</em></dt>
+  <dd>Sets hint on the filter bar.</dd>
+  <dt id="ListView.ImageHeight" class="number"><em>ImageHeight</em></dt>
+  <dd>Specifies the image height of ListView layouts containing images</dd>
+  <dt id="ListView.ImageWidth" class="number"><em>ImageWidth</em></dt>
+  <dd>Specifies the image width of ListView layouts containing images</dd>
+  <dt id="ListView.ListData" class="text do"><em>ListData</em></dt>
+  <dd>Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a>. For example, if the chosen
+ layout is <code class="highlighter-rouge">Image,MainText</code> this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.</dd>
+  <dt id="ListView.ListViewLayout" class="number"><em>ListViewLayout</em></dt>
+  <dd>Specifies type of layout for ListView row.</dd>
+  <dt id="ListView.Orientation" class="number"><em>Orientation</em></dt>
+  <dd>Specifies the layout’s orientation. This may be: <code class="highlighter-rouge">Vertical</code>, which displays elements
+ in rows one after the other; or <code class="highlighter-rouge">Horizontal</code>, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.</dd>
   <dt id="ListView.Selection" class="text"><em>Selection</em></dt>
   <dd>Returns the text in the <code class="highlighter-rouge">ListView</code> at the position of <a href="#ListView.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a>.</dd>
   <dt id="ListView.SelectionColor" class="color"><em>SelectionColor</em></dt>
   <dd>The color of the item when it is selected.</dd>
+  <dt id="ListView.SelectionDetailText" class="text ro bo"><em>SelectionDetailText</em></dt>
+  <dd>Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex</dd>
   <dt id="ListView.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
   <dd>The index of the currently selected item, starting at <code class="highlighter-rouge">1</code>. If no item is selected, the value
  will be <code class="highlighter-rouge">0</code>. If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the
@@ -670,6 +797,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <code class="logic block highlighter-rouge">false</code> will hide it.</dd>
   <dt id="ListView.TextColor" class="color"><em>TextColor</em></dt>
   <dd>The text color of the <code class="highlighter-rouge">ListView</code> items.</dd>
+  <dt id="ListView.TextColorDetail" class="color"><em>TextColorDetail</em></dt>
+  <dd>Specifies the color of the secondary text in a ListView layout</dd>
   <dt id="ListView.TextSize" class="number"><em>TextSize</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
   <dt id="ListView.Visible" class="boolean"><em>Visible</em></dt>
@@ -692,7 +821,26 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="ListView-Methods">Methods</h3>
 
-<p class="methods">None</p>
+<dl class="methods">
+  <dt id="ListView.AddItem" class="method"><i></i> AddItem(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list</dd>
+  <dt id="ListView.AddItemAtIndex" class="method"><i></i> AddItemAtIndex(<em class="number">index</em>,<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list at a given index</dd>
+  <dt id="ListView.AddItems" class="method"><i></i> AddItems(<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list</dd>
+  <dt id="ListView.AddItemsAtIndex" class="method"><i></i> AddItemsAtIndex(<em class="number">index</em>,<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list at specific index</dd>
+  <dt id="ListView.CreateElement" class="method returns dictionary"><i></i> CreateElement(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Creates a</dd>
+  <dt id="ListView.GetDetailText" class="method returns text"><i></i> GetDetailText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Detail Text of a ListView element.</dd>
+  <dt id="ListView.GetImageName" class="method returns text"><i></i> GetImageName(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the filename of the image of a ListView element that has been uploaded to Media.</dd>
+  <dt id="ListView.GetMainText" class="method returns text"><i></i> GetMainText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Main Text of a ListView element.</dd>
+  <dt id="ListView.RemoveItemAtIndex" class="method"><i></i> RemoveItemAtIndex(<em class="number">index</em>)</dt>
+  <dd>Removes Item from list at a given index</dd>
+</dl>
 
 <h2 id="Notifier">Notifier</h2>
 
@@ -723,7 +871,6 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <a href="#Notifier.ShowChooseDialog"><code class="highlighter-rouge">ShowChooseDialog</code></a>.</dd>
   <dt id="Notifier.TextInputCanceled">TextInputCanceled()</dt>
   <dd>Event raised when the user cancels
- <a href="#Notifier.ShowChooseDialog"><code class="highlighter-rouge">ShowChooseDialog</code></a>,
  <a href="#Notifier.ShowPasswordDialog"><code class="highlighter-rouge">ShowPasswordDialog</code></a>, or
  <a href="#Notifier.ShowTextDialog"><code class="highlighter-rouge">ShowTextDialog</code></a>.</dd>
 </dl>
@@ -804,7 +951,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  Some fonts do not support italic.</dd>
   <dt id="PasswordTextBox.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">PasswordTextBox</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="PasswordTextBox.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="PasswordTextBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>The text font face of the <code class="highlighter-rouge">PasswordTextBox</code>. Valid values are <code class="highlighter-rouge">0</code> (default), <code class="highlighter-rouge">1</code> (serif), <code class="highlighter-rouge">2</code> (sans
  serif), or <code class="highlighter-rouge">3</code> (monospace).</dd>
   <dt id="PasswordTextBox.Height" class="number bo"><em>Height</em></dt>
@@ -814,6 +961,13 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="PasswordTextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">PasswordTextBox</code> hint for the user.</dd>
+  <dt id="PasswordTextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the PasswordTextBox.</dd>
+  <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
+  <dd>If true, then this <code class="highlighter-rouge">PasswordTextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
+ [</code>Text`](#PasswordTextBox.Text) property.</dd>
   <dt id="PasswordTextBox.PasswordVisible" class="boolean bo"><em>PasswordVisible</em></dt>
   <dd>Specifies whether the password is hidden (default) or shown.</dd>
   <dt id="PasswordTextBox.Text" class="text"><em>Text</em></dt>
@@ -846,11 +1000,19 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="PasswordTextBox.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">PasswordTextBox</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="PasswordTextBox.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the PasswordTextBox is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="PasswordTextBox-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="PasswordTextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the PasswordTextBox before the character at the given 1-indexed position. If the given position is larger than the length of the PasswordTextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="PasswordTextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the PasswordTextBox’s text.</dd>
+  <dt id="PasswordTextBox.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the PasswordTextBox’s text.</dd>
   <dt id="PasswordTextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
 </dl>
@@ -872,7 +1034,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <a href="#Notifier"><code class="highlighter-rouge">Notifier</code></a>, the <a href="#DatePicker"><code class="highlighter-rouge">DatePicker</code></a>, and others.</dd>
   <dt id="Screen.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
   <dd>A number that encodes how contents of the screen are aligned horizontally. The choices are:
- <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">2</code> (horizontally centered), <code class="highlighter-rouge">3</code> (right aligned).</dd>
+ <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">3</code> (horizontally centered), <code class="highlighter-rouge">2</code> (right aligned).</dd>
   <dt id="Screen.AlignVertical" class="number"><em>AlignVertical</em></dt>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices
  are: <code class="highlighter-rouge">1</code> (aligned at the top), <code class="highlighter-rouge">2</code> (vertically centered), <code class="highlighter-rouge">3</code> (aligned at the bottom). Vertical
@@ -887,20 +1049,27 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
   <dd>Specifies the path of the <code class="highlighter-rouge">Screen</code>’s background image. If there is both an <code class="highlighter-rouge">BackgroundImage</code>
  and a <a href="#Screen.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">BackgroundImage</code> will be visible.</dd>
+  <dt id="Screen.BigDefaultText" class="boolean"><em>BigDefaultText</em></dt>
+  <dd>When checked, all default size text will be increased in size.</dd>
   <dt id="Screen.BlocksToolkit" class="text wo do"><em>BlocksToolkit</em></dt>
-  <dd>A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.</dd>
+  <dd>Choose the set of components you’ll need for your project. A smaller set is good for beginner projects, while experts can use all options to build complex apps. For example, the Beginner Toolkit gives you access to all the features you need for our novice tutorials and curriculum.&lt;/p&gt;&lt;p&gt;You can always change your toolkit in Project Properties, so your choice now won’t limit the future possibilities for your app.&lt;/p&gt;</dd>
   <dt id="Screen.CloseScreenAnimation" class="text"><em>CloseScreenAnimation</em></dt>
   <dd>Sets the animation type for the transition of this form closing and returning
  to a form behind it in the activity stack.</dd>
+  <dt id="Screen.DefaultFileScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultFileScope</em></dt>
+  <dd>Specifies the default scope used when components access files. Note that the
+ <a href="/reference/components/storage.html#File" target="_blank">File</a>
+ component has its own property for controlling file scopes.</dd>
   <dt id="Screen.Height" class="number ro bo"><em>Height</em></dt>
   <dd>Returns the Screen height in pixels (y-size).</dd>
+  <dt id="Screen.HighContrast" class="boolean"><em>HighContrast</em></dt>
+  <dd>When checked, there will be high contrast mode turned on.</dd>
   <dt id="Screen.Icon" class="text wo do"><em>Icon</em></dt>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
-  <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
- <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
+  <dd>Sets the animation type for the transition of this form opening.</dd>
   <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
   <dd>Gets the name of the underlying platform running the app. Currently, this is the text
  “Android”. Other platforms may be supported in the future.</dd>
@@ -1169,7 +1338,7 @@ having dark grey components.</li>
  Some fonts do not support italic.</dd>
   <dt id="Switch.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">Switch</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="Switch.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="Switch.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">Switch</code> as default, serif, sans
  serif, or monospace.</dd>
   <dt id="Switch.Height" class="number bo"><em>Height</em></dt>
@@ -1259,7 +1428,7 @@ having dark grey components.</li>
  Some fonts do not support italic.</dd>
   <dt id="TextBox.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">TextBox</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="TextBox.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="TextBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>The text font face of the <code class="highlighter-rouge">TextBox</code>. Valid values are <code class="highlighter-rouge">0</code> (default), <code class="highlighter-rouge">1</code> (serif), <code class="highlighter-rouge">2</code> (sans
  serif), or <code class="highlighter-rouge">3</code> (monospace).</dd>
   <dt id="TextBox.Height" class="number bo"><em>Height</em></dt>
@@ -1269,6 +1438,8 @@ having dark grey components.</li>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="TextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">TextBox</code> hint for the user.</dd>
+  <dt id="TextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the TextBox.</dd>
   <dt id="TextBox.MultiLine" class="boolean"><em>MultiLine</em></dt>
   <dd>If true, then this <code class="highlighter-rouge">TextBox</code> accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1280,7 +1451,7 @@ having dark grey components.</li>
  if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
  [</code>Text`](#TextBox.Text) property.</dd>
   <dt id="TextBox.ReadOnly" class="boolean"><em>ReadOnly</em></dt>
-  <dd>Whether the TextBox is read-only. By default, this is <code class="logic block highlighter-rouge">true</code>.</dd>
+  <dd>Whether the TextBox is read-only. By default, this is <code class="logic block highlighter-rouge">false</code>.</dd>
   <dt id="TextBox.Text" class="text"><em>Text</em></dt>
   <dd>The text in the <code class="highlighter-rouge">TextBox</code>, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the <a href="#TextBox.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
@@ -1311,6 +1482,8 @@ having dark grey components.</li>
   <dt id="TextBox.LostFocus">LostFocus()</dt>
   <dd>Event raised when the <code class="highlighter-rouge">TextBox</code> is no longer selected for input, such
  as if the user touches a different text box.</dd>
+  <dt id="TextBox.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the TextBox is changed, either by the user or the program.</dd>
 </dl>
 
 <h3 id="TextBox-Methods">Methods</h3>
@@ -1319,6 +1492,12 @@ having dark grey components.</li>
   <dt id="TextBox.HideKeyboard" class="method"><i></i> HideKeyboard()</dt>
   <dd>Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
  keyboard when the users presses the Done key.</dd>
+  <dt id="TextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the TextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="TextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the TextBox’s text.</dd>
+  <dt id="TextBox.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the TextBox’s text.</dd>
   <dt id="TextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
   <dd>Request focus to current <code class="highlighter-rouge">TextBox</code>.</dd>
 </dl>
@@ -1346,9 +1525,10 @@ having dark grey components.</li>
  Some fonts do not support italic.</dd>
   <dt id="TimePicker.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the text font size of the <code class="highlighter-rouge">TimePicker</code>, measured in sp(scale-independent pixels).</dd>
-  <dt id="TimePicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dt id="TimePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the text font face of the <code class="highlighter-rouge">TimePicker</code> as default, serif, sans
- serif, or monospace.</dd>
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
   <dt id="TimePicker.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">TimePicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="TimePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -1441,13 +1621,13 @@ having dark grey components.</li>
  <code class="highlighter-rouge">window.AppInventor</code> object, using the methods <code class="highlighter-rouge">getWebViewString()</code> and <code class="highlighter-rouge">setWebViewString(text)</code>.</p>
 
 <p>For example, if the <code class="highlighter-rouge">WebViewer</code> opens to a page that contains the Javascript command</p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">"The answer is"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">"</span><span class="s2">The answer is</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
 </code></pre></div></div>
 <p>and if you set <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> The answer is hello.
 </code></pre></div></div>
 <p>And if the Web page contains Javascript that executes the command</p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">windowAppInventor</span><span class="p">.</span><span class="nx">setWebViewString</span><span class="p">(</span><span class="s2">"hello from Javascript"</span><span class="p">),</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">windowAppInventor</span><span class="p">.</span><span class="nx">setWebViewString</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello from Javascript</span><span class="dl">"</span><span class="p">),</span>
 </code></pre></div></div>
 <p>then the value of the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property will be</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> hello from Javascript.
@@ -1638,7 +1818,7 @@ Eclair, this function is a no-op on older phones.</p>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -1657,15 +1837,16 @@ Eclair, this function is a no-op on older phones.</p>
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

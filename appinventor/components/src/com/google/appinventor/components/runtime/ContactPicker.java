@@ -74,7 +74,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     "<p>The ContactPicker component might not work on all phones. For " +
     "example, on Android systems before system 3.0, it cannot pick phone " +
     "numbers, and the list of email addresses will contain only one email.",
-    category = ComponentCategory.SOCIAL)
+    category = ComponentCategory.SOCIAL,
+    iconName = "images/contactPicker.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class ContactPicker extends Picker implements ActivityResultListener {

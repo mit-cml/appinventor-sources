@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.repltest;
 
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.File;
 import com.google.appinventor.components.runtime.FileTest;
 import com.google.appinventor.components.runtime.ReplFormTest;

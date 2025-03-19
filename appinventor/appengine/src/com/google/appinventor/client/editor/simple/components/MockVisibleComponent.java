@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -26,7 +27,7 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_TEXTALIGNMENT = "TextAlignment";
-  protected static final String PROPERTY_NAME_BUTTONSHAPE = "Shape";
+  protected static final String PROPERTY_NAME_BUTTONSHAPE= "Shape";
   protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = "BackgroundColor";
   protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = "BackgroundImage";
   protected static final String PROPERTY_NAME_THUMBCOLORACTIVE = "ThumbColorActive";
@@ -40,17 +41,33 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_FONTTYPEFACE = "FontTypeface";
   protected static final String PROPERTY_NAME_TEXT = "Text";
   protected static final String PROPERTY_NAME_LISTVIEW = "ElementsFromString";
+  protected static final String PROPERTY_NAME_LISTVIEW_IMAGES = "Picture";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
+  // to set color for secondary text of listview items
+  protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
+  protected static final String PROPERTY_NAME_TEXTSIZE = "TextSize";
+  protected static final String PROPERTY_NAME_FONTSIZEDETAIL = "FontSizeDetail";
+  protected static final String PROPERTY_NAME_FONTTYPEFACEDETAIL = "FontTypefaceDetail";
+  protected static final String PROPERTY_NAME_ELEMENTCOLOR = "ElementColor";
+  protected static final String PROPERTY_NAME_DIVIDERCOLOR = "DividerColor";
+  protected static final String PROPERTY_NAME_DIVIDERTHICKNESS = "DividerThickness";
+  protected static final String PROPERTY_NAME_ELEMENTCORNERRADIUS = "ElementCornerRadius";
+  protected static final String PROPERTY_NAME_ELEMENTMARGINSWIDTH = "ElementMarginsWidth";
+  protected static final String PROPERTY_NAME_ORIENTATION = "Orientation";
+  protected static final String PROPERTY_NAME_IMAGEHEIGHT = "ImageHeight";
+  protected static final String PROPERTY_NAME_IMAGEWIDTH = "ImageWidth";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
-  protected static final String PROPERTY_NAME_HINT = "Hint";
+  protected static final String PROPERTY_NAME_HINT = "HintText";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   public static final String PROPERTY_NAME_COLUMN = "Column";
   public static final String PROPERTY_NAME_ROW = "Row";
+  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
+  protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
@@ -62,6 +79,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   // If the length is <= -1000 then add 1000 and change the sign to
   // get the length is percent of Screen1
   public static final int LENGTH_PERCENT_TAG = -1000;
+
+  public static final int FONT_DEFAULT_SIZE = 14;
 
   // Useful colors
   protected static final String COLOR_NONE = "00FFFFFF";
@@ -91,18 +110,18 @@ public abstract class MockVisibleComponent extends MockComponent {
     // Add standard per-child layout properties
     // NOTE: Not all layouts use these properties
     addProperty(PROPERTY_NAME_COLUMN, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        new TextPropertyEditor());
+        null, "Appearance", new TextPropertyEditor());
     addWidthHeightProperties();
   }
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -150,15 +169,9 @@ public abstract class MockVisibleComponent extends MockComponent {
       refreshForm();
     }
   }
-
-  @Override
-  public void onDesignPreviewChanged() {
-    super.onDesignPreviewChanged();
-    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
-    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+  
+  public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
+    return editor.getNonVisibleComponentsPanel();
   }
+  
 }

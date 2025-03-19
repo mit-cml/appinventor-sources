@@ -1,0 +1,47 @@
+// NOTE WELL!!! This file must define the same structures as the version
+// in the components hierarchy
+syntax = "proto2";
+
+option java_package = "com.google.appinventor.components.runtime.chatbot";
+option java_outer_classname = "ChatBotToken";
+
+message unsigned {
+    optional string huuid = 1;  // obfuscated userId of requestor
+    optional uint64 version = 2 [default = 0]; // incremented in case of previous revoked
+    optional uint64 generation = 3 [default =0];
+}
+
+// This is the actual message token. The "unsigned" field
+// contains the serialized version of the "unsigned" message
+// above. The "signature" fields contains the raw bytes of
+// the output of HMAC-SHA1 using the key identified by
+// "keyid"
+
+// When stored in a project, this token is base58 encoded
+
+message token {
+    optional uint64 version = 1 [default = 1];
+    optional uint64 keyid = 2 [default = 1];
+    optional uint64 generation = 3 [default = 0];
+    optional bytes unsigned = 4;
+    optional bytes signature = 5;
+}
+
+message request {
+    optional uint64 version = 1 [default = 1];
+    optional token token = 2;
+    optional string uuid = 3;
+    optional string question = 4;
+    optional string system = 5;
+    optional string apikey = 6;
+    optional string provider = 7 [default = "chatgpt"];
+    optional string model = 8;
+    optional bytes inputimage = 9;
+}
+
+message response {
+    optional uint64 version = 1 [default = 1];
+    optional uint64 status = 2 [default = 0]; // 0 = success, otherwise error code
+    optional string uuid = 3;
+    optional string answer = 4;
+}

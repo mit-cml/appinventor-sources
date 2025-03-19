@@ -1,0 +1,128 @@
+PODS:
+  - Alamofire (4.9.1)
+  - Base58Swift (2.1.10):
+    - BigInt (~> 5.0.0)
+  - BigInt (5.0.0)
+  - CocoaAsyncSocket (7.6.5)
+  - CryptoSwift (1.8.3)
+  - DGCharts (5.0.0):
+    - DGCharts/Core (= 5.0.0)
+  - DGCharts/Core (5.0.0)
+  - GCDWebServer (3.4.2):
+    - GCDWebServer/Core (= 3.4.2)
+  - GCDWebServer/Core (3.4.2)
+  - geos (3.7.1)
+  - GEOSwift (3.1.2):
+    - geos (= 3.7.1)
+  - GoogleAPIClientForREST/Core (4.0.0):
+    - GTMSessionFetcher/Full (< 5.0, >= 1.6.1)
+  - GoogleAPIClientForREST/Sheets (4.0.0):
+    - GoogleAPIClientForREST/Core
+    - GTMSessionFetcher/Full (< 5.0, >= 1.6.1)
+  - GTMSessionFetcher/Core (3.5.0)
+  - GTMSessionFetcher/Full (3.5.0):
+    - GTMSessionFetcher/Core
+  - KTVJSONWebToken (2.1.0)
+  - PSSRedisClient (0.1.14):
+    - CocoaAsyncSocket (>= 7.6.1)
+  - SQLite.swift (0.11.6):
+    - SQLite.swift/standard (= 0.11.6)
+  - SQLite.swift/standard (0.11.6)
+  - SwiftProtobuf (1.28.2)
+  - SwiftSVG (2.3.2)
+  - SwiftyBase64 (1.1.1)
+  - Toast-Swift (4.0.1)
+  - Zip (2.1.2)
+  - ZIPFoundation (0.9.19)
+  - ZXingObjC (3.6.2):
+    - ZXingObjC/All (= 3.6.2)
+  - ZXingObjC/All (3.6.2)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.8)
+  - Base58Swift (~> 2.1.0)
+  - CryptoSwift
+  - DGCharts (~> 5.0.0)
+  - GCDWebServer (~> 3.4.1)
+  - GEOSwift (~> 3.1.0)
+  - GoogleAPIClientForREST/Sheets
+  - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
+  - "PSSRedisClient (from `git@github.com:mit-cml/PSSRedisClient.git`, commit `344302b`)"
+  - SQLite.swift (~> 0.11.5)
+  - SwiftProtobuf (~> 1.0)
+  - SwiftSVG (~> 2.0)
+  - SwiftyBase64
+  - Toast-Swift (~> 4.0.0)
+  - Zip (~> 2.1)
+  - ZIPFoundation
+  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Base58Swift
+    - BigInt
+    - CocoaAsyncSocket
+    - CryptoSwift
+    - DGCharts
+    - GCDWebServer
+    - geos
+    - GEOSwift
+    - GoogleAPIClientForREST
+    - GTMSessionFetcher
+    - SQLite.swift
+    - SwiftProtobuf
+    - SwiftSVG
+    - SwiftyBase64
+    - Toast-Swift
+    - Zip
+    - ZIPFoundation
+
+EXTERNAL SOURCES:
+  KTVJSONWebToken:
+    :commit: d2e37fa
+    :git: https://github.com/kreactive/JSONWebToken.git
+  PSSRedisClient:
+    :commit: 344302b
+    :git: "git@github.com:mit-cml/PSSRedisClient.git"
+  ZXingObjC:
+    :commit: 47704a8
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
+
+CHECKOUT OPTIONS:
+  KTVJSONWebToken:
+    :commit: d2e37fa
+    :git: https://github.com/kreactive/JSONWebToken.git
+  PSSRedisClient:
+    :commit: 344302b
+    :git: "git@github.com:mit-cml/PSSRedisClient.git"
+  ZXingObjC:
+    :commit: 47704a8
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
+
+SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  Base58Swift: 53d551f0b33d9478fa63b3445e453a772d6b31a7
+  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CryptoSwift: 967f37cea5a3294d9cce358f78861652155be483
+  DGCharts: 6e0cf2644e8f81ad13f04caa8bc18502870a1c54
+  GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
+  geos: 4f86329dc270f513bc220c77d9079aef38c5960d
+  GEOSwift: afa7e88d5e9e31e8b442420e394ad48cf0e5aa57
+  GoogleAPIClientForREST: f2c48f89acfb29b462bc75747b70eab19e33c83e
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  KTVJSONWebToken: 1a9c7c6899a40c4505891366cd92c549ecdc69c2
+  PSSRedisClient: 1b8e9d807999f0ee3d1f09e5b80da4367ba41550
+  SQLite.swift: 46d890be8601964454bd3392527f863d1b802d45
+  SwiftProtobuf: 4dbaffec76a39a8dc5da23b40af1a5dc01a4c02d
+  SwiftSVG: ca7f64e403b8ea7ea8eba8c823b83ba4a059834c
+  SwiftyBase64: 8de4de96a08454e742fdda614dff12d2c62ecbe9
+  Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
+  Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
+  ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
+  ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
+
+PODFILE CHECKSUM: 925eaca15780fdd8ad073324b32d93e53b17c9df
+
+COCOAPODS: 1.16.2
