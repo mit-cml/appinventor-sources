@@ -15,7 +15,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   private var _thumbPosition: Float32 = kSliderThumbValue
   private var _leftColor: UIColor = UIColor.orange
   private var _rightColor: UIColor = UIColor.gray
-  private var _isTracking: Bool = false
+  private var _fromUser: Bool = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UISlider()
@@ -66,7 +66,6 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(position) {
       _thumbPosition = min(max(position, _minValue), _maxValue)
-      _isTracking = false
       setSliderPosition()
     }
   }
@@ -106,7 +105,6 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
       _view.maximumValue = _numberOfSteps
       // restore the original position
       _thumbPosition = oldPosition
-      _isTracking = false
       setSliderPosition()
       _notice = true;
     }
@@ -143,22 +141,22 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   @objc func positionChanged(sender: UISlider) {
     if (_notice) {
       _thumbPosition = (_maxValue - _minValue) * sender.value / _numberOfSteps + _minValue
-      PositionChanged(_thumbPosition, _isTracking)
+      PositionChanged(_thumbPosition, _fromUser)
     }
   }
 
   @objc func handleTouchDown() {
-    _isTracking = true
+    _fromUser = true
     TouchDown();
   }
 
   @objc func handleTouchUp() {
-    _isTracking = false
+    _fromUser = false
     TouchUp();
   }
   
   @objc open func PositionChanged(_ thumbPosition: Float, _ fromUser: Bool) {
-    EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber)
+    EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber, fromUser as NSNumber)
   }
 
   @objc open func TouchDown() {
