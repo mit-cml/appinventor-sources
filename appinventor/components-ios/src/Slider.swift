@@ -9,12 +9,13 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   private var _view: UISlider
   private var _minValue: Float32 = kSliderMinValue
   private var _maxValue: Float32 = kSliderMaxValue
-  private var _scaleGraduationInt: Int32 = 100
-  private var _scaleGraduation: Float32 = 100.0
+  private var _numberOfStepsInt: Int32 = 100
+  private var _numberOfSteps: Float32 = 100.0
   private var _notice: Bool = true
   private var _thumbPosition: Float32 = kSliderThumbValue
   private var _leftColor: UIColor = UIColor.orange
   private var _rightColor: UIColor = UIColor.gray
+  private var _isTracking: Bool = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UISlider()
@@ -27,7 +28,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     ThumbPosition = kSliderThumbValue
     MinValue = kSliderMinValue
     MaxValue = kSliderMaxValue
-    ScaleGraduation = _scaleGraduationInt;
+    NumberOfSteps = _numberOfStepsInt;
     Width = 50
   }
   
@@ -36,7 +37,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.minimumTrackTintColor = _leftColor
     _view.maximumTrackTintColor = _rightColor
-    _view.maximumValue = _scaleGraduation
+    _view.maximumValue = _numberOfSteps
     _view.minimumValue = 0.0
     _view.isEnabled = true
     _view.addTarget(self, action: #selector(self.positionChanged(sender:)), for: .valueChanged)
@@ -65,6 +66,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(position) {
       _thumbPosition = min(max(position, _minValue), _maxValue)
+      _isTracking = false
       setSliderPosition()
     }
   }
@@ -76,7 +78,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     set(value) {
       _minValue = value
       _maxValue = max(value, _maxValue)
-      _thumbPosition = ((_maxValue - _minValue) * _view.value / _scaleGraduation) + _minValue;
+      _thumbPosition = ((_maxValue - _minValue) * _view.value / _numberOfSteps) + _minValue;
     }
   }
   
@@ -87,23 +89,24 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     set(value) {
       _maxValue = value
       _minValue = min(value, _minValue)
-      _thumbPosition = ((_maxValue - _minValue) * _view.value / _scaleGraduation) + _minValue;
+      _thumbPosition = ((_maxValue - _minValue) * _view.value / _numberOfSteps) + _minValue;
     }
   }
 
-  @objc public var ScaleGraduation: Int32 {
+  @objc public var NumberOfSteps: Int32 {
     get {
-      return Int32(_scaleGraduationInt)
+      return Int32(_numberOfStepsInt)
     }
     set(value) {
-      _scaleGraduationInt = value
-      _scaleGraduation = Float(value)
+      _numberOfStepsInt = value
+      _numberOfSteps = Float(value)
       let oldPosition: Float = _thumbPosition
       // We set the notice flag to false so that the user is not informed in any way about the change of this property
       _notice = false
-      _view.maximumValue = _scaleGraduation
+      _view.maximumValue = _numberOfSteps
       // restore the original position
       _thumbPosition = oldPosition
+      _isTracking = false
       setSliderPosition()
       _notice = true;
     }
@@ -130,29 +133,31 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   }
   
   // Set the slider position based on _minValue, _maxValue, and _thumbPosition
-  // Slider position is a float in the range [0,_scaleGraduation] and is determined by _minValue,
+  // Slider position is a float in the range [0,_numberOfSteps] and is determined by _minValue,
   // _maxValue and _thumbPosition
   private func setSliderPosition() {
-    let thumbPosition: Float = (_thumbPosition - _minValue) / (_maxValue - _minValue) * _scaleGraduation
+    let thumbPosition: Float = (_thumbPosition - _minValue) / (_maxValue - _minValue) * _numberOfSteps
     thumbPosition.isNaN ? _view.setValue(50.0, animated: _notice) : _view.setValue(thumbPosition, animated: _notice)
   }
   
   @objc func positionChanged(sender: UISlider) {
     if (_notice) {
-      _thumbPosition = (_maxValue - _minValue) * sender.value / _scaleGraduation + _minValue
-      PositionChanged(_thumbPosition)
+      _thumbPosition = (_maxValue - _minValue) * sender.value / _numberOfSteps + _minValue
+      PositionChanged(_thumbPosition, _isTracking)
     }
   }
 
   @objc func handleTouchDown() {
+    _isTracking = true
     TouchDown();
   }
 
   @objc func handleTouchUp() {
+    _isTracking = false
     TouchUp();
   }
   
-  @objc open func PositionChanged(_ thumbPosition: Float) {
+  @objc open func PositionChanged(_ thumbPosition: Float, _ fromUser: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber)
   }
 
