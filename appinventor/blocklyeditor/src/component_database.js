@@ -238,7 +238,7 @@ Blockly.ComponentDatabase.prototype.getInstance = function(uidOrName) {
  */
 Blockly.ComponentDatabase.prototype.getContainer = function(formName, uidOrName) {
   var component = this.getInstance(uidOrName);
-  var containerUuid = top.BlocklyPanel_getComponentContainerUuid(formName, component.name);
+  var containerUuid = top.BlocklyPanel_getComponentContainerUuid(component.name);
   return this.getInstance(containerUuid);
 }
 
