@@ -875,22 +875,6 @@ Blockly.Versioning.changeEventParameterName = function(componentType, eventName,
   }
 };
 
-Blockly.Versioning.addEventArgument= function(componentType, eventBlock, argName) {
-  return function(blocksRep) {
-    var dom = Blockly.Versioning.ensureDom(blocksRep);
-    var eventHandlerBlocks = Blockly.Versioning.findAllEventHandlers(dom, componentType, eventBlock);      
-    for (var b = 0, eventBlock; eventBlock = eventHandlerBlocks[b]; b++) {
-      var mutation = Blockly.Versioning.firstChildWithTagName(eventBlock, 'mutation');
-      if(mutation){
-        var newArg = document.createElement('arg');
-        newArg.setAttribute('name',argName);
-        mutation.appendChild(newArg);
-      }
-    }
-    return dom;
-  }
-}
-
 /**
  * Rename all blocks with oldType to newType
  * @param oldBlockType: string name of old block type
@@ -3119,10 +3103,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // Added the property to allow for the removal of the Thumb Slider
     2: "noUpgrade",
 
-    // Added the NumberOfSteps property, TouchDown and TouchUp events, modify PositionChanged event
-    3: [
-      Blockly.Versioning.addEventArgument("Slider", "PositionChanged", "fromUser")
-    ]
+    // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events, 
+    3: "noUpgrade"
 
   }, // End Slider upgraders
 

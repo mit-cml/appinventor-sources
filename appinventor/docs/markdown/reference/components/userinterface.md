@@ -1451,6 +1451,11 @@ This class is used to display a `Slider`.
  integer, i.e., `0xAARRGGBB`.  An alpha of `00`
  indicates fully transparent and `FF` means opaque.
 
+{:id="Slider.ColorThumb" .color} *ColorThumb*
+: Specifies the color of the thumb slider as an alpha-red-green-blue
+ integer, i.e., `0xAARRGGBB`.  An alpha of `00`
+ indicates fully transparent and `FF` means opaque.
+
 {:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Slider`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
@@ -1467,8 +1472,10 @@ This class is used to display a `Slider`.
 : Sets the minimum value of slider. If the new minimum is greater than the
  current maximum, then minimum and maximum will both be set to this value.
 
-{:id="Slider.ScaleGraduation" .number} *ScaleGraduation*
-: Returns the slider increase.
+{:id="Slider.NumberOfSteps" .number} *NumberOfSteps*
+: Set the number of points on the slider scale. 
+ Combined with MinValue and MaxValue, it allows you to get the slider precision that you want, 
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
 
 {:id="Slider.ThumbEnabled" .boolean} *ThumbEnabled*
 : Whether or not the slider thumb is being be shown.

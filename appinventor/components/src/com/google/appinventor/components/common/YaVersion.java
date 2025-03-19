@@ -1391,7 +1391,7 @@ public class YaVersion {
   // For SLIDER_COMPONENT_VERSION 2:
   // - Added the property to allow for the removal of the Thumb Slider
   // For SLIDER_COMPONENT_VERSION 3:
-  // - Added the NumberOfSteps property, TouchDown and TouchUp events
+  // - Added the NumberOfStepsand ColorThumb property, TouchDown and TouchUp events
   public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:

@@ -75,11 +75,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   // colors of the bar after and before the thumb position
   private int rightColor;
   private int leftColor;
+  private int thumbColor;
 
   private final static int initialRightColor = Component.COLOR_GRAY;
   private final static String initialRightColorString = Component.DEFAULT_VALUE_COLOR_GRAY;
   private final static int initialLeftColor = Component.COLOR_ORANGE;
   private final static String initialLeftColorString = Component.DEFAULT_VALUE_COLOR_ORANGE;
+  private final static int initialThumbColor = Component.COLOR_DKGRAY;
+  private final static String initialThumbColorString = Component.DEFAULT_VALUE_COLOR_DKGRAY;
 
   // seekbar.getThumb was introduced in API level 16 and the component warns the user
   // that apps using Sliders won't work if the API level is below 16.  But for very old systems the
@@ -111,6 +114,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     leftColor = initialLeftColor;
     rightColor = initialRightColor;
+    thumbColor = initialThumbColor;
     setSliderColors();
 
     // Adds the component to its designated container
@@ -125,13 +129,13 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     seekbar.setOnSeekBarChangeListener(this);
 
-    // We set the maximum range of the slider to scaleGraduation, 
+    // We set the maximum range of the slider to numberOfSteps, 
     // obtaining the slider precision exactly as we want.
 
     seekbar.setMax(numberOfSteps);
 
     // Based on given minValue, maxValue, and thumbPosition, determine where the seekbar
-    // thumb position would be within normal SeekBar 0 - scaleGraduation range
+    // thumb position would be within normal SeekBar 0 - numberOfSteps range
     
     setSeekbarPosition();
 
@@ -151,10 +155,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private void setSliderColors() {
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       seekbar.setProgressTintList(ColorStateList.valueOf(leftColor));
+      seekbar.setThumbTintList(ColorStateList.valueOf(thumbColor));
       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP_MR1 ||
           !(seekbar.getProgressDrawable() instanceof StateListDrawable)) {
         seekbar.setProgressBackgroundTintList(ColorStateList.valueOf(rightColor));
-        seekbar.setProgressBackgroundTintMode(Mode.MULTIPLY);
+        //seekbar.setProgressBackgroundTintMode(Mode.MULTIPLY);
       } else {
         // Looking at the AOSP code, the previous calls should effectively accomplish what the
         // following code does... except it doesn't on Android 5.0. Instead, the result is that the
@@ -177,7 +182,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   }
 
  // Set the seekbar position based on minValue, maxValue, and thumbPosition
- // seekbar position is an integer in the range [0,scaleGraduation] and is determined by MinValue,
+ // seekbar position is an integer in the range [0,numberOfSteps] and is determined by MinValue,
  // MaxValue and ThumbPosition
  private void setSeekbarPosition() {
     float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * numberOfSteps;
@@ -190,7 +195,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     // Set the thumb position on the seekbar
     // I've enabled animations when changing progress programmatically, 
     // as it does in the iOS version. 
-    // However, animation is disabled when setting the ScaleGraduation property.
+    // However, animation is disabled when setting the NumberOfSteps property.
     if (VERSION.SDK_INT >= VERSION_CODES.N) {
       seekbar.setProgress((int) seekbarPosition, notice);
     } else {
@@ -343,7 +348,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(category = PropertyCategory.APPEARANCE, 
       description = "Number of steps on the slider scale. Combined with" +
         "MinValue and MaxValue, it allows you to get the slider precision that you want, e.g. MinValue = 0," + 
-        "MaxValue = 150, ScaleGraduation = 1000, the slider will change position every 0.15.",
+        "MaxValue = 150, NumberOfSteps = 1000, the slider will change position every 0.15.",
       userVisible = true)
   public int NumberOfSteps() {
     return numberOfSteps;
@@ -352,7 +357,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   /**
    * Set the number of points on the slider scale. 
    * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want, 
-   * e.g. MinValue = 0, MaxValue = 150, ScaleGraduation = 1000. The slider will change position every 0.15.
+   * e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "100")
@@ -434,6 +439,38 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     setSliderColors();
   }
 
+  /**
+   * Returns the color of the thumb slider, as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @return thumb color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(
+      description = "The slider thumb color",
+      category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int ColorThumb() {
+    return thumbColor;
+  }
+
+  /**
+   * Specifies the color of the thumb slider as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @param argb thumb color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = initialThumbColorString)
+  @SimpleProperty
+  public void ColorThumb(int argb) {
+    thumbColor = argb;
+    setSliderColors();
+  }
+
   @Override
   public View getView() {
     return seekbar;
@@ -454,9 +491,8 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
           + ", reporting to user as: " + thumbPosition);
       }
 
-      // Trigger the event, reporting this new value
-    
-      PositionChanged(thumbPosition, fromUser);
+      // Trigger the event, reporting this new value    
+      PositionChanged(thumbPosition);
     }
   }
 
@@ -464,8 +500,8 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    * Indicates that position of the slider thumb has changed.
    */
   @SimpleEvent(description = "Triggered when the thumb slider position has changed.")
-  public void PositionChanged(float thumbPosition, boolean fromUser) {
-    EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition, fromUser);
+  public void PositionChanged(float thumbPosition) {
+    EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
   }
 
   /**

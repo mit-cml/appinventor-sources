@@ -15,7 +15,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   private var _thumbPosition: Float32 = kSliderThumbValue
   private var _leftColor: UIColor = UIColor.orange
   private var _rightColor: UIColor = UIColor.gray
-  private var _fromUser: Bool = false
+  private var _thumbColor: UIColor = UIColor.darkGray
   
   public override init(_ parent: ComponentContainer) {
     _view = UISlider()
@@ -37,6 +37,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.minimumTrackTintColor = _leftColor
     _view.maximumTrackTintColor = _rightColor
+    _view.thumbTintColor = _thumbColor
     _view.maximumValue = _numberOfSteps
     _view.minimumValue = 0.0
     _view.isEnabled = true
@@ -129,6 +130,16 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
       _view.maximumTrackTintColor = _rightColor
     }
   }
+
+  @objc public var ColorThumb: Int32 {
+    get {
+      return colorToArgb(_thumbColor)
+    }
+    set(argb) {
+      _thumbColor = argbToColor(argb)
+      _view.thumbTintColor = _thumbColor
+    }
+  }
   
   // Set the slider position based on _minValue, _maxValue, and _thumbPosition
   // Slider position is a float in the range [0,_numberOfSteps] and is determined by _minValue,
@@ -141,22 +152,20 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   @objc func positionChanged(sender: UISlider) {
     if (_notice) {
       _thumbPosition = (_maxValue - _minValue) * sender.value / _numberOfSteps + _minValue
-      PositionChanged(_thumbPosition, _fromUser)
+      PositionChanged(_thumbPosition)
     }
   }
 
   @objc func handleTouchDown() {
-    _fromUser = true
     TouchDown();
   }
 
   @objc func handleTouchUp() {
-    _fromUser = false
     TouchUp();
   }
   
-  @objc open func PositionChanged(_ thumbPosition: Float, _ fromUser: Bool) {
-    EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber, fromUser as NSNumber)
+  @objc open func PositionChanged(_ thumbPosition: Float) {
+    EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber)
   }
 
   @objc open func TouchDown() {
