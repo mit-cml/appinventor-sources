@@ -32,7 +32,7 @@ import com.google.appinventor.components.common.YaVersion;
  *
  * A `Slider` is a progress bar that adds a draggable thumb. You can touch the thumb and drag left
  * or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the
- * {@link #PositionChanged(float, boolean)} event, reporting the position of the `Slider` thumb. The
+ * {@link #PositionChanged(float)} event, reporting the position of the `Slider` thumb. The
  * reported position of the thumb can be used to dynamically update another component attribute,
  * such as the {@link TextBox#FontSize(float)} of a `TextBox` or the
  * [Radius](animation.html#Ball.Radius) of a `Ball`.
