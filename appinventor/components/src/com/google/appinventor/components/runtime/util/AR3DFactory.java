@@ -11,7 +11,10 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 import java.util.List;
 
 import com.google.appinventor.components.runtime.util.YailList;
-
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Plane;
+import com.google.ar.core.Session;
+import com.google.ar.core.Trackable;
 
 /**
  * Utilities used by the Augmented Reality components.
@@ -27,9 +30,10 @@ public final class AR3DFactory {
    *
    * @author niclarke@mit.edu (Nichole I. Clarke)
    */
-   public interface ARNode extends Component, CanLook {
 
-     // Properties
+   public interface ARNode extends FollowsMarker, Component, CanLook {
+
+       // Properties
      int Height();
      void Height(int height);
 
@@ -37,6 +41,18 @@ public final class AR3DFactory {
      void Width(int width);
 
      String Type();
+
+     Anchor Anchor();
+     void Anchor(Anchor a);
+
+     Trackable Trackable();
+     void Trackable(Trackable t);
+
+     Session Session();
+     void Session(Session t);
+
+     String Model();
+     void Model(String o);
 
      boolean Visible();
      void Visible(boolean visible);
@@ -103,6 +119,7 @@ public final class AR3DFactory {
      void ScaleBy(float scalar);
      void MoveBy(float x, float y, float z);
      void MoveTo(float x, float y, float z);
+     void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p);
      float DistanceToNode(ARNode node);
      float DistanceToSpotlight(ARSpotlight light);
      float DistanceToPointLight(ARPointLight light);
@@ -317,6 +334,9 @@ public final class AR3DFactory {
    public interface ARDetectedPlane extends Component {
      boolean IsHorizontal();
 
+     Plane DetectedPlane();
+     void DetectedPlane(Plane p);
+
      int Opacity();
      void Opacity(int opacity);
 
@@ -362,6 +382,7 @@ public final class AR3DFactory {
 
      void MoveBy(float x, float y, float z);
      void MoveTo(float x, float y, float z);
+     void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p);
      float DistanceToNode(ARNode node);
      float DistanceToSpotlight(ARSpotlight light);
      float DistanceToPointLight(ARPointLight light);
@@ -451,6 +472,7 @@ public final class AR3DFactory {
      void ShowBoundingBoxes(boolean showBoundingBoxes);
 
      // getARView()
+     void addNode(ARNode node);
      void NodeClick(ARNode node);
      void NodeLongClick(ARNode node);
      void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint);
@@ -465,7 +487,7 @@ public final class AR3DFactory {
      List<ARDetectedPlane> DetectedPlanes();
 
      // Events
-     void ClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint);
+     void ClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, Object p, boolean isANodeAtPoint);
      void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint);
      void PlaneDetected(ARDetectedPlane detectedPlane);
      void DetectedPlaneUpdated(ARDetectedPlane detectedPlane);
