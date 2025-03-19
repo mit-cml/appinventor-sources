@@ -7,6 +7,7 @@
 package com.google.appinventor.client.boxes;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
@@ -48,9 +49,9 @@ public final class SourceStructureBoxFilter implements ISourceStructureBox {
     container.getHeaderContainer().add(dropDownButton, DockPanel.LINE_START);
   }
 
-  public void show(MockForm form) {
-    sourceStructureExplorer.updateTree(form.buildComponentsTree(view),
-        form.getLastSelectedComponent().getSourceStructureExplorerItem());
+  public void show(DesignerRootComponent root) {
+    sourceStructureExplorer.updateTree(root.buildComponentsTree(view),
+        root.getLastSelectedComponent().getSourceStructureExplorerItem());
     updateSourceDropdownButtonCaption();
 
     sourceStructureExplorer.setVisible(true);

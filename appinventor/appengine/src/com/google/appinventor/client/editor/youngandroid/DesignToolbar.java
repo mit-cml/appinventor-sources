@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchToBlocksEditorAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchToFormEditorAction;
@@ -23,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -34,8 +36,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * The design toolbar houses command buttons in the Young Android Design
  * tab (for the UI designer (a.k.a, Form Editor) and Blocks Editor).
@@ -45,19 +45,25 @@ public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
 
   /*
-   * A Screen groups together the form editor and blocks editor for an
+   * A EditorPair groups together the designer and blocks editor for an
    * application screen. Name is the name of the screen (form) displayed
    * in the screens pull-down.
    */
-  public static class Screen {
+  public static class EditorPair {
     public final String screenName;
-    public final FileEditor formEditor;
+    public final FileEditor designerEditor;
     public final FileEditor blocksEditor;
 
-    public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
+    public EditorPair(String name, FileEditor designerEditor, FileEditor blocksEditor) {
       this.screenName = name;
-      this.formEditor = formEditor;
+      this.designerEditor = designerEditor;
       this.blocksEditor = blocksEditor;
+    }
+  }
+
+  public static class Screen extends EditorPair {
+    public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
+      super(name, formEditor, blocksEditor);
     }
   }
 
@@ -115,10 +121,10 @@ public class DesignToolbar extends Toolbar {
 
   // Enum for type of view showing in the design tab
   public enum View {
-    FORM,   // Form editor view
+    DESIGNER,   // Designer editor view
     BLOCKS  // Blocks editor view
   }
-  public View currentView = View.FORM;
+  public View currentView = View.DESIGNER;
 
   @UiField public Label projectNameLabel;
 
@@ -216,12 +222,12 @@ public class DesignToolbar extends Toolbar {
     }
     currentView = view;
     Screen screen = currentProject.screens.get(newScreenName);
-    ProjectEditor projectEditor = screen.formEditor.getProjectEditor();
+    ProjectEditor projectEditor = screen.designerEditor.getProjectEditor();
     currentProject.setCurrentScreen(newScreenName);
     setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, newScreenName);
     LOG.info("Setting currentScreen to " + newScreenName);
-    if (currentView == View.FORM) {
-      projectEditor.selectFileEditor(screen.formEditor);
+    if (currentView == View.DESIGNER) {
+      projectEditor.selectFileEditor(screen.designerEditor);
       toggleEditor(false);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
@@ -262,7 +268,8 @@ public class DesignToolbar extends Toolbar {
       // TODO(sharon): add screens to drop-down menu in the right order
       for (Screen screen : currentProject.screens.values()) {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,
-            screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
+            screen.screenName, new SwitchScreenAction(projectId, screen.screenName),
+            new Image(Ode.getImageBundle().form())));
       }
       projectNameLabel.setText(projectName);
       YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project
@@ -278,7 +285,7 @@ public class DesignToolbar extends Toolbar {
 
   /*
    * Add a screen name to the drop-down for the project with id projectId.
-   * name is the form name, formEditor is the file editor for the form UI,
+   * name is the form name, designerEditor is the file editor for the form UI,
    * and blocksEditor is the file editor for the form's blocks.
    */
   public void addScreen(long projectId, String name, FileEditor formEditor,
@@ -292,12 +299,12 @@ public class DesignToolbar extends Toolbar {
     if (project.addScreen(name, formEditor, blocksEditor)) {
       if (currentProject == project) {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(name,
-            name, new SwitchScreenAction(projectId, name)));
+            name, new SwitchScreenAction(projectId, name), new Image(Ode.getImageBundle().form())));
       }
     }
   }
 
-/*
+  /*
  * PushScreen -- Static method called by Blockly when the Companion requests
  * That we switch to a new screen. We keep track of the Screen we were on
  * and push that onto a stack of Screens which we pop when requested by the
@@ -338,8 +345,11 @@ public class DesignToolbar extends Toolbar {
     doSwitchScreen(projectId, screenName, view);
   }
 
-  /*
+  /**
    * Remove screen name (if it exists) from project projectId
+   *
+   * @param  projectId The project ID
+   * @param  name   Name of the Screen
    */
   public void removeScreen(long projectId, String name) {
     if (!projectMap.containsKey(projectId)) {
@@ -359,7 +369,7 @@ public class DesignToolbar extends Toolbar {
       if (currentProject.currentScreen.equals(name)) {
         // TODO(sharon): maybe make a better choice than screen1, but for now
         // switch to screen1 because we know it is always there
-        switchToScreen(projectId, YoungAndroidSourceNode.SCREEN1_FORM_NAME, View.FORM);
+        switchToScreen(projectId, YoungAndroidSourceNode.SCREEN1_FORM_NAME, View.DESIGNER);
       }
       removeDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, name);
     }
@@ -381,7 +391,7 @@ public class DesignToolbar extends Toolbar {
     RootPanel.get().addDomHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent event) {
         if (event.isControlKeyDown() && event.isAltKeyDown()) {
-          if (currentView == DesignToolbar.View.FORM) {
+          if (currentView == View.DESIGNER) {
             blockView.execute();
           } else if (currentView == DesignToolbar.View.BLOCKS) {
             designView.execute();
