@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 final class MockTableLayout extends MockLayout {
   private static final Logger LOG = Logger.getLogger(MockTableLayout.class.getName());
 
-  private static class Cell {
+  static class Cell {
     int row;
     int col;
 
@@ -192,7 +192,7 @@ final class MockTableLayout extends MockLayout {
    * Returns the cell that contains the specified point,
    * or {@code null} if the point is out of bounds.
    */
-  private Cell getCellContainingPoint(int x, int y) {
+  Cell getCellContainingPoint(int x, int y) {
     if (x < 0 || y < 0) {
       return null;
     }
