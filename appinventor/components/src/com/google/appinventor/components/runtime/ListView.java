@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -124,12 +125,10 @@ public final class ListView extends AndroidViewComponent {
   private String propertyValue;  // JSON string representing data entered through the Designer
 
   private boolean multiSelect;
-  private boolean divider;
   private Paint dividerPaint;
   private int dividerColor;
   private int dividerSize;
   private static final int DEFAULT_DIVIDER_SIZE = 0;
-  private boolean first = true; //flag for first element margins
   private int margins;
   private static final int DEFAULT_RADIUS = 0;
   private int radius;
@@ -217,7 +216,7 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    BackgroundColor(Component.COLOR_BLACK);
+    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
     TextColorDetail(Component.COLOR_WHITE);
@@ -246,7 +245,6 @@ public final class ListView extends AndroidViewComponent {
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
-    setDivider();
   }
 
   @Override
@@ -1284,6 +1282,7 @@ public final class ListView extends AndroidViewComponent {
    */
   private void setDivider() {
     DividerItemDecoration dividerDecoration = new DividerItemDecoration();
+    dividerDecoration.removeLayoutChangeListener();
     for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
       RecyclerView.ItemDecoration decoration = recyclerView.getItemDecorationAt(i);
       if (decoration instanceof DividerItemDecoration) {
@@ -1298,17 +1297,24 @@ public final class ListView extends AndroidViewComponent {
    * A class that creates dividers between elements or margins, depending on the options selected.
    */
   private class DividerItemDecoration extends RecyclerView.ItemDecoration {
-    public DividerItemDecoration() {
-    }
+    private int recyclerViewWidth = 0;
+    private View.OnLayoutChangeListener layoutChangeListener;
+    private RecyclerView parent;
+
+    public DividerItemDecoration() {}
 
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-      //If margins are set, dividers will not be created.
+      // If margins are set, dividers will not be created.
       if (margins == 0) {
+        ViewGroup.LayoutParams layoutParams;
         int childCount = parent.getChildCount();
         if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
+            layoutParams = child.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int left = child.getRight();
@@ -1322,6 +1328,9 @@ public final class ListView extends AndroidViewComponent {
           int width = parent.getWidth();
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
+            layoutParams = child.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int top = child.getBottom();
@@ -1334,11 +1343,14 @@ public final class ListView extends AndroidViewComponent {
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(
+        Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+      this.parent = parent;
+      ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
       int position = parent.getChildAdapterPosition(view);
-      int spanCount = 1; //No GridLayout support, so spanCount set to 1.
       if (margins == 0) {
-        if (position != RecyclerView.NO_POSITION && position < parent.getAdapter().getItemCount() - 1) {
+        if (position != RecyclerView.NO_POSITION
+            && position < parent.getAdapter().getItemCount() - 1) {
           if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
             outRect.set(0, 0, dividerSize, 0);
           } else {
@@ -1348,14 +1360,50 @@ public final class ListView extends AndroidViewComponent {
           outRect.setEmpty();
         }
       } else {
-        int column = position % spanCount;
-        outRect.left = margins - column * margins / spanCount;
-        outRect.right = (column + 1) * margins / spanCount;
-        if (position < spanCount || first) {
-          first = false;
-          outRect.top = margins;
+        if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+          if (layoutChangeListener == null) {
+            layoutChangeListener =
+                new View.OnLayoutChangeListener() {
+                  @Override
+                  public void onLayoutChange(View v, int left, int top, int right,
+                      int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    if (recyclerViewWidth != parent.getWidth()) {
+                      recyclerViewWidth = parent.getWidth();
+                      for (int i = 0; i < parent.getChildCount(); i++) {
+                        View child = parent.getChildAt(i);
+                        ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
+                        childLayoutParams.width = recyclerViewWidth - (2 * margins);
+                        child.setLayoutParams(childLayoutParams);
+                      }
+                      parent.invalidate();
+                    }
+                  }
+                };
+            parent.addOnLayoutChangeListener(layoutChangeListener);
+          }
+          recyclerViewWidth = parent.getWidth();
+          layoutParams.width = recyclerViewWidth - (2 * margins);
+          view.setLayoutParams(layoutParams);
+          if (position == 0) {
+            outRect.set(margins, margins, margins, margins);
+          } else {
+            outRect.set(0, margins, margins, margins);
+          }
+        } else {
+          layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+          if (position == 0) {
+            outRect.set(margins, margins, margins, margins);
+          } else {
+            outRect.set(margins, 0, margins, margins);
+          }
         }
-        outRect.bottom = margins;
+        view.setLayoutParams(layoutParams);
+      }
+    }
+
+    public void removeLayoutChangeListener() {
+      if (layoutChangeListener != null) {
+        parent.removeOnLayoutChangeListener(layoutChangeListener);
       }
     }
   }
