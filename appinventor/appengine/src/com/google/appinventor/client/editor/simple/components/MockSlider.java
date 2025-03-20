@@ -26,7 +26,7 @@ public final class MockSlider extends MockVisibleComponent {
 
   protected static final String PROPERTY_NAME_COLORLEFT = "ColorLeft";
   protected static final String PROPERTY_NAME_COLORRIGHT = "ColorRight";
-  protected static final String PROPERTY_NAME_COLORTHUMB = "ColorThumb";
+  protected static final String PROPERTY_NAME_THUMBCOLOR = "ThumbColor";
 
   // Widget for showing the mock slider
   protected final HorizontalPanel panel;
@@ -228,7 +228,7 @@ public final class MockSlider extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_COLORRIGHT)) {
       setTrackColorInactiveProperty(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_COLORTHUMB)) {
+    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLOR)) {
       setThumbColorProperty(newValue);
       refreshForm();
     }
