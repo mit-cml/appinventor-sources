@@ -2465,7 +2465,7 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
     // AI2: 
     // - Changed TextSize property to FontSize
-    // - Add new layout and change name of old layout
+    // - Add new layout
     10: "noUpgrade"
 
   }, // End ListView upgraders
