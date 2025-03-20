@@ -152,10 +152,11 @@ public class RelativeLayout implements Layout {
         handler.post(new Runnable() {
           public void run() {
             synchronized (componentsToAdd) {
-              for (AndroidViewComponent component : componentsToAdd) {
+              List<AndroidViewComponent> copy = new LinkedList<>(componentsToAdd);
+              componentsToAdd.clear();
+              for (AndroidViewComponent component : copy) {
                 addComponent(component);
               }
-              componentsToAdd.clear();
             }
           }
         });
