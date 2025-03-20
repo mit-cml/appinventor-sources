@@ -24,7 +24,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This class is used to display a `Slider`.
@@ -64,6 +63,8 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
   private final SeekBar seekbar;
 
+  private int numberOfSteps;
+  private boolean notice = true;
   // slider mix, max, and thumb positions
   private float minValue;
   private float maxValue;
@@ -74,11 +75,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   // colors of the bar after and before the thumb position
   private int rightColor;
   private int leftColor;
+  private int thumbColor;
 
   private final static int initialRightColor = Component.COLOR_GRAY;
   private final static String initialRightColorString = Component.DEFAULT_VALUE_COLOR_GRAY;
   private final static int initialLeftColor = Component.COLOR_ORANGE;
   private final static String initialLeftColorString = Component.DEFAULT_VALUE_COLOR_ORANGE;
+  private final static int initialThumbColor = Component.COLOR_DKGRAY;
+  private final static String initialThumbColorString = Component.DEFAULT_VALUE_COLOR_DKGRAY;
 
   // seekbar.getThumb was introduced in API level 16 and the component warns the user
   // that apps using Sliders won't work if the API level is below 16.  But for very old systems the
@@ -95,8 +99,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     }
   }
 
-  public final boolean referenceGetThumb = (SdkLevel.getLevel() >= SdkLevel.LEVEL_JELLYBEAN);
-
   /**
    * Creates a new Slider component.
    *
@@ -106,12 +108,13 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     super(container);
     seekbar = new SeekBar(container.$context());
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       seekbar.setSplitTrack(false);
     }
 
     leftColor = initialLeftColor;
     rightColor = initialRightColor;
+    thumbColor = initialThumbColor;
     setSliderColors();
 
     // Adds the component to its designated container
@@ -122,26 +125,27 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
     thumbEnabled = true;
+    numberOfSteps = 100;
 
     seekbar.setOnSeekBarChangeListener(this);
 
-    //NOTE(kashi01): The boundaries for Seekbar are between 0-100 and there is no lower-limit that could
-    // be set. We keep the SeekBar effectively at [0-100] and calculate thumb position within that
-    // range.
-    seekbar.setMax(100);
+    // We set the maximum range of the slider to numberOfSteps, 
+    // obtaining the slider precision exactly as we want.
+
+    seekbar.setMax(numberOfSteps);
 
     // Based on given minValue, maxValue, and thumbPosition, determine where the seekbar
-    // thumb position would be within normal SeekBar 0-100 range
-    // !!! check this.  maybe don't want to pass the args???
+    // thumb position would be within normal SeekBar 0 - numberOfSteps range
+    
     setSeekbarPosition();
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Slider initial min, max, thumb values are: " +
-          MinValue() + "/" + MaxValue() + "/" + ThumbPosition());
+          MinValue() + "/" + MaxValue() + "/" + ThumbPosition() + "/" + NumberOfSteps());
     }
 
     if (DEBUG) {
-      Log.d(LOG_TAG, "API level is " + SdkLevel.getLevel());
+      Log.d(LOG_TAG, "API level is " + VERSION.SDK_INT);
     }
 
   }
@@ -151,10 +155,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private void setSliderColors() {
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       seekbar.setProgressTintList(ColorStateList.valueOf(leftColor));
+      seekbar.setThumbTintList(ColorStateList.valueOf(thumbColor));
       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP_MR1 ||
           !(seekbar.getProgressDrawable() instanceof StateListDrawable)) {
         seekbar.setProgressBackgroundTintList(ColorStateList.valueOf(rightColor));
-        seekbar.setProgressBackgroundTintMode(Mode.MULTIPLY);
+        //seekbar.setProgressBackgroundTintMode(Mode.MULTIPLY);
       } else {
         // Looking at the AOSP code, the previous calls should effectively accomplish what the
         // following code does... except it doesn't on Android 5.0. Instead, the result is that the
@@ -171,16 +176,16 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       }
     } else {
       LayerDrawable fullBar = (LayerDrawable) seekbar.getProgressDrawable();
-      fullBar.setColorFilter(rightColor,PorterDuff.Mode.SRC);
+      fullBar.setColorFilter(rightColor, PorterDuff.Mode.SRC);
       fullBar.findDrawableByLayerId(R.id.progress).setColorFilter(leftColor, PorterDuff.Mode.SRC);
     }
   }
 
  // Set the seekbar position based on minValue, maxValue, and thumbPosition
- // seekbar position is an integer in the range [0,100] and is determined by MinValue,
+ // seekbar position is an integer in the range [0,numberOfSteps] and is determined by MinValue,
  // MaxValue and ThumbPosition
  private void setSeekbarPosition() {
-    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * 100;
+    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * numberOfSteps;
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Trying to recalculate seekbar position "
@@ -188,7 +193,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     }
 
     // Set the thumb position on the seekbar
-    seekbar.setProgress((int) seekbarPosition);
+    // I've enabled animations when changing progress programmatically, 
+    // as it does in the iOS version. 
+    // However, animation is disabled when setting the NumberOfSteps property.
+    if (VERSION.SDK_INT >= VERSION_CODES.N) {
+      seekbar.setProgress((int) seekbarPosition, notice);
+    } else {
+      seekbar.setProgress((int) seekbarPosition);
+    }
   }
 
   /**
@@ -203,7 +215,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   public void ThumbEnabled(boolean enabled) {
     thumbEnabled = enabled;
     int alpha = thumbEnabled ? 255 : 0;
-    if (referenceGetThumb) {
+    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
       new SeekBarHelper().getThumb(alpha);
     }
 
@@ -249,7 +261,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
       Log.d(LOG_TAG, "ThumbPosition is set to: " + thumbPosition);}
     setSeekbarPosition();
-    PositionChanged(thumbPosition);
   }
 
   /**
@@ -268,17 +279,12 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   /**
    * Sets the minimum value of slider. If the new minimum is greater than the
    * current maximum, then minimum and maximum will both be set to this value.
-   * Setting `MinValue` resets the thumb position to halfway between `MinValue`
-   * and {@link #MaxValue()} and signals the {@link #PositionChanged(float)}`
-   * event.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = Component.SLIDER_MIN_VALUE + "")
-  @SimpleProperty(description = "Sets the minimum value of slider.  Changing the minimum value " +
-      "also resets Thumbposition to be halfway between the (new) minimum and the maximum. " +
+  @SimpleProperty(description = "Sets the minimum value of slider. " +
       "If the new minimum is greater than the current maximum, then minimum and maximum will " +
-      "both be set to this value.  Setting MinValue resets the thumb position to halfway " +
-      "between MinValue and MaxValue and signals the PositionChanged event.",
+      "both be set to this value.",
       userVisible = true)
   public void MinValue(float value) {
     minValue = value;
@@ -288,7 +294,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
       Log.d(LOG_TAG, "Min value is set to: " + value);
     }
-    ThumbPosition ((minValue + maxValue) / 2.0f);
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
   }
 
 
@@ -307,16 +313,12 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   /**
    * Sets the maximum value of slider. If the new maximum is less than the
    * current minimum, then minimum and maximum will both be set to this value.
-   * Setting `MaxValue` resets the thumb position to halfway between {@link #MinValue()}
-   * and `MaxValue` and signals the {@link #PositionChanged(float)}` event.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = Component.SLIDER_MAX_VALUE + "")
-  @SimpleProperty(description = "Sets the maximum value of slider.  Changing the maximum value " +
-      "also resets Thumbposition to be halfway between the minimum and the (new) maximum. " +
+  @SimpleProperty(description = "Sets the maximum value of slider. " +
       "If the new maximum is less than the current minimum, then minimum and maximum will both " +
-      "be set to this value.  Setting MaxValue resets the thumb position to halfway " +
-      "between MinValue and MaxValue and signals the PositionChanged event.",
+      "be set to this value. ",
       userVisible = true)
   public void MaxValue(float value) {
     maxValue = value;
@@ -325,7 +327,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
      Log.d (LOG_TAG, "Max value is set to: " + value);
     }
-    ThumbPosition ((minValue + maxValue) / 2.0f);
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
   }
 
   /**
@@ -340,6 +342,38 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     return maxValue;
   }
 
+  /**
+   * Get the number of points from the slider scale. 
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+      description = "Number of steps on the slider scale. Combined with" +
+        "MinValue and MaxValue, it allows you to get the slider precision that you want, e.g. MinValue = 0," + 
+        "MaxValue = 150, NumberOfSteps = 1000, the slider will change position every 0.15.",
+      userVisible = true)
+  public int NumberOfSteps() {
+    return numberOfSteps;
+  }
+
+  /**
+   * Set the number of points on the slider scale. 
+   * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want, 
+   * e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "100")
+  @SimpleProperty
+  public void NumberOfSteps(int value) {
+    numberOfSteps = value;
+    // We save the position to restore it after setting the properties
+    float oldPosition = thumbPosition;
+    // We set the notice flag to false so that the user is not informed in any way about the change of this property
+    notice = false;
+    seekbar.setMax(value);
+    // restore the original position
+    thumbPosition = oldPosition;
+    setSeekbarPosition();
+    notice = true;
+  }
 
   /**
    * Returns the color of the slider bar to the left of the thumb, as an alpha-red-green-blue
@@ -405,6 +439,38 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     setSliderColors();
   }
 
+  /**
+   * Returns the color of the thumb slider, as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @return thumb color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(
+      description = "The slider thumb color",
+      category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int ColorThumb() {
+    return thumbColor;
+  }
+
+  /**
+   * Specifies the color of the thumb slider as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @param argb thumb color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = initialThumbColorString)
+  @SimpleProperty
+  public void ColorThumb(int argb) {
+    thumbColor = argb;
+    setSliderColors();
+  }
+
   @Override
   public View getView() {
     return seekbar;
@@ -412,38 +478,56 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
   @Override
   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-    //progress has been changed. Set the sliderThumbPosition and then trigger the event
+    // progress has been changed. Set the sliderThumbPosition and then trigger the event
+    // Now convert this progress value (which is between 0-numberOfSteps), back to a value between the
+    // range that user has set within minValue, maxValue
 
-    //Now convert this progress value (which is between 0-100), back to a value between the
-    //range that user has set within minValue, maxValue
-    thumbPosition = ((maxValue - minValue) * (float) progress / 100)
-        + minValue;
+    // We check the notice flag so as not to trigger the event when we change the NumberOfSteps property.
+    if (notice) {
+      thumbPosition = ((maxValue - minValue) * (float) progress / numberOfSteps) + minValue;
 
-    if (DEBUG) {
-    Log.d(LOG_TAG, "onProgressChanged progress value [0-100]: " + progress
-        + ", reporting to user as: " + thumbPosition);
+      if (DEBUG) {
+      Log.d(LOG_TAG, "onProgressChanged progress value [0 - numberOfSteps]: " + progress
+          + ", reporting to user as: " + thumbPosition);
+      }
+
+      // Trigger the event, reporting this new value    
+      PositionChanged(thumbPosition);
     }
-
-    //Trigger the event, reporting this new value
-    PositionChanged(thumbPosition);
   }
 
   /**
    * Indicates that position of the slider thumb has changed.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Triggered when the thumb slider position has changed.")
   public void PositionChanged(float thumbPosition) {
     EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
   }
 
+  /**
+   * Indicates that the user has started a touch gesture.
+   */
+  @SimpleEvent(description = "Triggered when the user has started a touch gesture.")
+  public void TouchDown() {
+    EventDispatcher.dispatchEvent(this, "TouchDown");
+  }
+
+  /**
+  * Indicates that the user has finished a touch gesture.
+  */
+  @SimpleEvent(description = "Triggered when the user has finished a touch gesture.")
+  public void TouchUp() {
+    EventDispatcher.dispatchEvent(this, "TouchUp");
+  }
+
   @Override
   public void onStartTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+    TouchDown();
   }
 
   @Override
   public void onStopTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+    TouchUp();
   }
 
   /**
