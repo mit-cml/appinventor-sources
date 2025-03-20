@@ -35,6 +35,7 @@ import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.ProjectSharingData;
 import com.google.appinventor.server.storage.StoredData.PWData;
 import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
@@ -193,6 +194,7 @@ public class ObjectifyStorageIo implements StorageIo {
     // Register the data object classes stored in the database
     ObjectifyService.register(UserData.class);
     ObjectifyService.register(ProjectData.class);
+    ObjectifyService.register(ProjectSharingData.class);
     ObjectifyService.register(UserProjectData.class);
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
@@ -528,6 +530,20 @@ public class ObjectifyStorageIo implements StorageIo {
           // written in this job, reading the assigned id from pd should work.
 
           Key<ProjectData> projectKey = projectKey(projectId.t);
+
+          // do we create share data here?
+          ProjectSharingData psd = new ProjectSharingData();
+          psd.id = null;
+          psd.projectKey = projectKey;
+          psd.isProjectSharedWithAll = false;
+          psd.permissions = "";
+          datastore.put(psd);
+
+          assert psd.id != null;
+
+          LOG.log(Level.INFO, "Created new share project id: " + psd.id + " for project " + psd.projectKey + 
+          " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+
           for (TextFile file : project.getSourceFiles()) {
             try {
               addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,
@@ -629,6 +645,19 @@ public class ObjectifyStorageIo implements StorageIo {
     final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
     try {
+      //0th job removes access from everyone
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          // delete the ProjectSharingData object
+          Key<ProjectData> projectKey = projectKey(projectId);
+          List<Long> shareIds = getProjectShareLinks(projectId);
+          for (long shareProjectId : shareIds) {
+            datastore.delete(sharingProjectKey(projectKey, shareProjectId));
+            LOG.log(Level.INFO, "Delete share project id: " + shareProjectId + " for project " + projectId);
+          }
+        }
+      }, true);
       // first job deletes the UserProjectData in the user's entity group
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -696,6 +725,27 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
+  private List<Long> getProjectShareLinks(final long projectId) {
+    final List<Long> sharedProjectIds = new ArrayList<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<ProjectData> projectKey = projectKey(projectId);
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).ancestor(projectKey)) {
+            sharedProjectIds.add(psd.id);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), e);
+    }
+
+    return sharedProjectIds;
+  }
+
+
+    // TODO(ZAMANOVA) GET SHARED PROJECTS
   @Override
   public List<Long> getProjects(final String userId) {
     final List<Long> projects = new ArrayList<Long>();
@@ -714,6 +764,143 @@ public class ObjectifyStorageIo implements StorageIo {
     }
 
     return projects;
+  }
+
+  @Override
+  public void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails){
+    updateProjectIsShareAll(projectId, isShareAll);
+    List<String> currentUserEmails = new ArrayList<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<ProjectData> projectKey = projectKey(projectId);
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).ancestor(projectKey)) {
+            currentUserEmails.addAll(new ArrayList<String>( 
+              Arrays.asList(psd.permissions.split(","))));
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), e);
+    }
+
+    List<String> needToGiveAccessEmails = new ArrayList<String>();
+    List<String> needToRetractAccessEmails = new ArrayList<String>();
+    for (String user : userEmails) {
+      if (!currentUserEmails.contains(user)) {
+        needToGiveAccessEmails.add(user);
+      }
+    }
+
+    for (String user : currentUserEmails) {
+      if (!userEmails.contains(user)) {
+        needToRetractAccessEmails.add(user);
+      }
+    }
+    
+    shareProjectWithUsers(projectId, needToGiveAccessEmails);
+    retractAccessFromUsers(projectId, needToRetractAccessEmails);
+  }
+
+  private void updateProjectIsShareAll(final long projectId, boolean isShareAll) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          List<Long> shareIds = getProjectShareLinks(projectId);
+          if (shareIds.size() == 0) {
+            Key<ProjectData> projectKey = projectKey(projectId);
+            ProjectSharingData psd = new ProjectSharingData();
+            psd.id = null;
+            psd.projectKey = projectKey;
+            psd.isProjectSharedWithAll = isShareAll;
+            psd.permissions = "";
+            datastore.put(psd);
+            assert psd.id != null;
+            LOG.log(Level.INFO, "Created new share project id: " + psd.id + " for project " + psd.projectKey + 
+            " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+          }
+          else {
+            for (long shareProjectId : shareIds) {
+              ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey(projectId), shareProjectId));
+              if (psd != null) {
+                psd.isProjectSharedWithAll = isShareAll;
+                datastore.put(psd);
+                LOG.log(Level.INFO, "Update share project id: " + psd.id + " for project " + psd.projectKey + 
+                " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+              }
+            }
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error while setting project is shared with everyone to " + isShareAll, e);
+    }
+  }
+
+  @Override
+  public void shareProjectWithUsers(final long projectId, List<String> userEmails) {
+    Key<ProjectData> projectKey = projectKey(projectId);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          List<Long> shareIds = getProjectShareLinks(projectId);
+          for (long shareProjectId : shareIds) {
+            ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey, shareProjectId));
+            if (psd != null) {
+              String permissions =  psd.permissions;
+              for (String userEmail : userEmails) {
+                  permissions = permissions + String.join(",", userEmails);
+              }
+              psd.permissions = permissions;
+              LOG.log(Level.INFO, "Update share project id: " + psd.id + " for project " + psd.projectKey + 
+              " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+              datastore.put(psd);
+            }
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error while giving access to users: " + userEmails, e);
+    }
+  }
+
+
+  @Override
+  public void retractAccessFromUsers(final long projectId, List<String> userEmails) {
+    Key<ProjectData> projectKey = projectKey(projectId);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          List<Long> shareIds = getProjectShareLinks(projectId);
+          for (long shareProjectId : shareIds) {
+            ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey, shareProjectId));
+            if (psd != null) {
+              String permissions =  psd.permissions;
+              for (String userEmail : userEmails) {
+                int index = permissions.indexOf(userEmail);
+                if (index != -1) {
+                  permissions = permissions.substring(0, index) + permissions.substring(index + userEmail.length());
+                  psd.isProjectSharedWithAll = false;
+                }
+              }
+              psd.permissions = permissions;
+              LOG.log(Level.INFO, "Retract share project id: " + psd.id + " for project " + psd.projectKey + 
+              " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+              datastore.put(psd);
+            }
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error while retracting access from users: " + userEmails, e);
+    }
   }
 
   @Override
@@ -2327,6 +2514,11 @@ public class ObjectifyStorageIo implements StorageIo {
     return new Key<ProjectData>(ProjectData.class, projectId);
   }
 
+  // TODO(zamanova) how does this even work???
+  private Key<ProjectSharingData> sharingProjectKey(Key<ProjectData> projectKey, long shareId) {
+    return new Key<ProjectSharingData>(projectKey, ProjectSharingData.class, shareId);
+  }
+
   private Key<UserProjectData> userProjectKey(Key<UserData> userKey, long projectId) {
     return new Key<UserProjectData>(userKey, UserProjectData.class, projectId);
   }
@@ -2419,6 +2611,10 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static String collectUserProjectErrorInfo(final String userId, final long projectId) {
     return "user=" + userId + ", project=" + projectId;
+  }
+
+  private static String collectShareProjectErrorInfo(final long projectId) {
+    return "project=" + projectId;
   }
 
   @Override
@@ -2767,6 +2963,7 @@ public class ObjectifyStorageIo implements StorageIo {
     return returnValue;
   }
 
+  // TODO(zamanova) do we need to remove from permissions?
   @Override
   public boolean deleteAccount(final String userId) {
     List<Long> projectIds = getProjects(userId);

@@ -33,6 +33,13 @@ public final class TextValidators {
     DUPLICATEINTRASH
   }
 
+  // TODO ASK JEFF
+  public enum UserStatus {
+    VALID,
+    INVALIDFORMAT,
+    UNCOMMON
+  }
+
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
           "SimpleForm", "String", "Pattern", "YailDictionary", "YailList", "YailNumberToString", "YailRuntimeError");
@@ -130,6 +137,26 @@ public final class TextValidators {
   }
 
   /**
+   * 
+   * @param userName the user identifies being used to share project with
+   * @return {@code true} if the user name is valid, {@code false} otherwise
+   */
+  public static UserStatus checkNewUserName(String userName) {
+    // Check the format of the folder name
+    if (isValidEmailList(userName) != "") {
+      // TODO: Decide whether to use new strings
+      Window.alert("bad username for some reason: " + userName);
+      return UserStatus.INVALIDFORMAT;
+    }
+
+    // Check that user email is gmail
+    
+    return UserStatus.VALID;
+  }
+
+
+
+  /**
    * Determines whether the given folder name is valid, displaying an alert
    * if it is not.  In order to be valid, the folder name must satisfy
    * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
@@ -175,6 +202,21 @@ public final class TextValidators {
    */
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
+  }
+
+    /**
+   * Checks whether the argument is a legal list of emails
+   *
+   * @param text the proposed identifier
+   * @return {@code ""} if the argument is a legal email list, {@code error_message}
+   *         otherwise
+   */
+  public static String isValidEmailList(String text) {
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(,\\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\s*)*$";
+    if(text.matches(regex)) {
+      return MESSAGES.invalidEmailListError();
+    }
+    return "";
   }
 
   /**

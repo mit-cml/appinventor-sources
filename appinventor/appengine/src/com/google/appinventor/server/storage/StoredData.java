@@ -104,6 +104,24 @@ public class StoredData {
     boolean projectMovedToTrashFlag;
   }
 
+  // Project sharing properties
+  @Unindexed
+  static final class ProjectSharingData {
+    // Auto-generated unique share id
+    @Id Long id;
+
+    // key of project that this id shares
+    @Parent Key<ProjectData> projectKey;
+
+    // some permission info
+    String permissions;
+
+    //adding a boolean variable to mark whether project is shared with everyone
+    boolean isProjectSharedWithAll;
+
+    // access type (read only vs write)
+  }
+
   // Project properties specific to the user
   @Unindexed
   static final class UserProjectData {

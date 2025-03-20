@@ -56,6 +56,21 @@ public interface ProjectServiceAsync {
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#updateProjectPermissions(long, Boolean, List<String>)
+   */
+  void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback);
+
+  /**
+   * @see ProjectService#shareProjectWithUsers(long, Boolean, List<String>)
+   */
+  void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback);
+  
+  /**
+   * @see ProjectService#retractAccessFromUsers(long, List<String>)
+   */
+  void retractAccessFromUsers(long projectId, List<String> userEmails, AsyncCallback<Void> callback);
+  
+  /**
    * @see ProjectService@loginToGallery()
    */
 

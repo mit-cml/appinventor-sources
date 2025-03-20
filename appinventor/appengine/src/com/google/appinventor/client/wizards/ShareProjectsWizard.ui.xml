@@ -1,0 +1,58 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!--NewYoungAndroidProjectWizard.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:s="urn:import:com.google.appinventor.client.widgets.properties"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <wiz:Dialog ui:field="shareDialog" caption="{messages.shareProjectsWizardCaption}"
+              styleName="ode-DialogBox" width="340px" height="40px">
+    <g:FlowPanel>
+    <!-- what is this button for?? -->
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+      <!--ProjectName-->
+      <g:FlowPanel>
+        <g:Label ui:field='projectNameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='test'/>
+        <!-- add ? icon though using property help widget would not be possible so?-->
+      </g:FlowPanel>
+      <!--Select gmails-->
+      <!-- TODO: change in the future to work with SuggestBox possibly modify to add multiple at the same time?  -->
+      <!-- <g:SuggestBox ui:field="usernames" /> -->
+      <w:LabeledTextBox ui:field="userNameTextBox" caption="{messages.userEmailsLabel}"
+                        stylePrimaryName="ode-LabeledTextBox"/>
+      <!--People with Access-->
+      <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='usersContainer'/>
+      <!-- checkbox to share with everyone -->
+      <g:FlowPanel>
+        <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='{messages.shareAll}'/> -->
+        <g:CheckBox ui:field='checkBoxShareAll' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.shareAll}'/>
+      </g:FlowPanel>
+      
+      <!-- checkbox to send email with link -->
+      <g:FlowPanel>
+        <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/> -->
+        <g:CheckBox ui:field='checkBoxSendEmail' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.sendEmail}'/>
+      </g:FlowPanel>
+      <!-- copy link -->
+      <g:FlowPanel>
+        <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
+        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false"/>
+      </g:FlowPanel>
+      
+      <!-- cancel/done -->
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'/>
+        <g:Button ui:field='shareButton' text='{messages.okButton}'/>
+      </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

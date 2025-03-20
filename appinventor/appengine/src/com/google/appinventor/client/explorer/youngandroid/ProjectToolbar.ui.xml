@@ -28,6 +28,9 @@
     <ai:ToolbarItem name="Move" caption="{messages.moveProjectButton}">
       <actions:MoveProjectsAction/>
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="Share" caption="{messages.shareProjectButton}">
+      <actions:ShareProjectsAction/>
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}">
       <actions:DeleteAction/>
     </ai:ToolbarItem>

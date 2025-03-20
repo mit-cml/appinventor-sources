@@ -91,6 +91,32 @@ public interface ProjectService extends RemoteService {
    */
   UserProject restoreProject(long projectId);
 
+  // PROJECT SHARING 
+  // TODO(zamanova) add access type in the future
+
+  /**
+   * update access for users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails);
+  
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails);
+
+  /**
+   * retract access from users for the given project
+   * @param projectId the id of the project
+   * @param userIds a list of user emails
+   */
+  void retractAccessFromUsers(long projectId, List<String> userEmails);
+
   /**
    * Facilitate logging into the new gallery by
    * generating a token which is passed to the gallery

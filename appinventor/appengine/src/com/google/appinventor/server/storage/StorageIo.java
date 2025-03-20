@@ -265,6 +265,30 @@ public interface StorageIo {
    * @return long milliseconds
    */
 
+  // PROJECT SHARING 
+  // TODO(zamanova) add access type in the future
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param userEmails a list of user emails
+   */
+  void updateProjectPermissions(long projectId, Boolean isShareAll, List<String> userEmails);
+
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param userEmails a list of user emails
+   */
+  void shareProjectWithUsers(long projectId, List<String> userEmails);
+
+  /**
+   * retract access from users for the given project
+   * @param projectId the id of the project
+   * @param userIds a list of user emails
+   */
+  void retractAccessFromUsers(long projectId, List<String> userEmails);
+
+
   // Non-project-specific file management
 
   /**

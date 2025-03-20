@@ -2376,15 +2376,53 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on 'Next' button to proceed to the next page of the wizard.")
   String nextButton();
 
+  // Used in wizards/ShareProjectsWizard.java
+
+  @DefaultMessage("Share App Inventor projects")
+  @Description("Caption for the wizard to share Young Android projects")
+  String shareProjectsWizardCaption();
+
+  @DefaultMessage("User Emails")
+  @Description("Label for user emails textbox")
+  String userEmailsLabel();
+
+  @DefaultMessage("Share")
+  @Description("Label for the share projects button")
+  String shareProjectButton();
+
+  @DefaultMessage("Server error: could not share project. Please try again later!")
+  @Description("Error message reported when the project couldn't be shared on the server.")
+  String shareProjectError();
+
+  @DefaultMessage("Please select a project to share")
+  @Description("Error message displayed when no project is selected")
+  String noProjectSelectedToShare();
+
+  @DefaultMessage("Anyone with the link")
+  @Description("Label for the share all checkbox")
+  String shareAll();
+
+  @DefaultMessage("Email people")
+  @Description("Label for the send email checkbox")
+  String sendEmail();
+
+  @DefaultMessage("Copy")
+  @Description("Label for the copy link button")
+  String copyButton();
+
+  @DefaultMessage("Invalid character. User names can only contain letters, numbers, dots, commas, and @")
+  @Description("Error shown when user types invalid character into user names")
+  String invalidEmailListError();
+
   // Used in wizards/youngandroid/NewYoungAndroidProjectWizard.java
 
   @DefaultMessage("Create new App Inventor project")
   @Description("Caption for the wizard to create a new Young Android project")
   String newYoungAndroidProjectWizardCaption();
 
-  @DefaultMessage("Project name:")
-  @Description("Label for the project name input text box")
-  String projectNameLabel();
+    @DefaultMessage("Project name:")
+    @Description("Label for the project name input text box")
+    String projectNameLabel();
 
   // Used in youngandroid/TextValidators.java
 

@@ -191,6 +191,36 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * update access for users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  public void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, isShareAll, userEmails);
+  }
+  
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  public void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, isShareAll, userEmails);
+  }
+
+  /**
+   * retract access from users for the given project
+   * @param projectId the id of the project
+   * @param userIds a list of user emails
+   */
+  public void retractAccessFromUsers(long projectId, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, false, userEmails);
+  }
+
+
+  /**
    * Copies a project with a new name.
    * @param oldProjectId  old project ID
    * @param newName new project name

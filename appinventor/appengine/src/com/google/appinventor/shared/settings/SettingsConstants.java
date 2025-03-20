@@ -68,6 +68,11 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW = "PhonePreview";
   public static final String YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE = "DefaultFileScope";
 
+  // share settings
+  public static final String YOUNG_ANDROID_SETTINGS_SHARE_ALL = "ShareAll";
+  public static final String YOUNG_ANDROID_SETTINGS_SHARED_WITH_USERS = "UsersWithAccess";
+  public static final String YOUNG_ANDROID_SETTINGS_ACCESSURL = "AccessURL";
+
   /**
    * Settings for the Blocks editor.
    */
