@@ -5760,4 +5760,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("You can always change your user interface under the Settings menu.")
   @Description("Dialog to introduce users to new UI. Shown once to each user.")
   String selectUIStyle();
+
+  @DefaultMessage("Integer")
+  @Description("Set x-axis label values as Integers")
+  String labelInteger();
+
+  @DefaultMessage("Decimal")
+  @Description("Set x-axis label values as Decimal")
+  String labelDecimal();
+
+  @DefaultMessage("Date")
+  @Description("Set x-axis label values Type as Date")
+  String labelDate();
+
+  @DefaultMessage("Time")
+  @Description("Set x-axis label values Type as Time")
+  String labelTime();
 }
