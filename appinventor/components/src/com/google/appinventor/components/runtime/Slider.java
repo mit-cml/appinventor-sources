@@ -451,7 +451,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       description = "The slider thumb color",
       category = PropertyCategory.APPEARANCE)
   @IsColor
-  public int ColorThumb() {
+  public int ThumbColor() {
     return thumbColor;
   }
 
@@ -466,7 +466,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = initialThumbColorString)
   @SimpleProperty
-  public void ColorThumb(int argb) {
+  public void ThumbColor(int argb) {
     thumbColor = argb;
     setSliderColors();
   }

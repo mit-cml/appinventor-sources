@@ -131,7 +131,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  @objc public var ColorThumb: Int32 {
+  @objc public var ThumbColor: Int32 {
     get {
       return colorToArgb(_thumbColor)
     }
