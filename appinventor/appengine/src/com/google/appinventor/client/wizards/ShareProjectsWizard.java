@@ -272,6 +272,7 @@ public class ShareProjectsWizard {
     // AtomicInteger remainingProjects = new AtomicInteger(projectIDs.size());
     // LOG.warning("got ode ?" + remainingProjects);
     // update project parameters with new users
+    LOG.info("got ode ?" + this.mainOde);
     OdeAsyncCallback<Void> callback =
         new OdeAsyncCallback<Void>(
           // failure message
