@@ -361,7 +361,7 @@ public final class MockListView extends MockVisibleComponent {
       createImageSingleTextLayout(object);
     } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
       createImageTwoTextLayout(object);
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT_VERTICAL) {
+    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
       createImageTwoTextVerticalLayout(object);
     }
   }

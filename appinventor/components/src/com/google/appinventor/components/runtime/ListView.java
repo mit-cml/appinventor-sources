@@ -96,7 +96,7 @@ public final class ListView extends AndroidViewComponent {
   private int orientation;
 
   private int backgroundColor;
-  private static final int DEFAULT_BACKGROUND_COLOR = COLOR_BLACK;
+  private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
   private int elementColor = COLOR_NONE;
 
@@ -122,9 +122,9 @@ public final class ListView extends AndroidViewComponent {
   // variable for ListView layout types
   private int layout;
   private String propertyValue;  // JSON string representing data entered through the Designer
-  private String layoutValue;
 
   private boolean multiSelect;
+  private boolean divider;
   private Paint dividerPaint;
   private int dividerColor;
   private int dividerSize;
@@ -217,17 +217,17 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    SelectionColor(COLOR_LTGRAY);
-    TextColor(COLOR_WHITE);
-    TextColorDetail(COLOR_WHITE);
-    DividerColor(COLOR_WHITE);
+    BackgroundColor(Component.COLOR_BLACK);
+    SelectionColor(Component.COLOR_LTGRAY);
+    TextColor(Component.COLOR_WHITE);
+    TextColorDetail(Component.COLOR_WHITE);
+    DividerColor(Component.COLOR_WHITE);
     DividerThickness(DEFAULT_DIVIDER_SIZE);
     ElementMarginsWidth(DEFAULT_MARGINS_SIZE);
     FontSize(DEFAULT_TEXT_SIZE);  // This was the original size of ListView text.
-    FontSizeDetail(FONT_DEFAULT_SIZE);
-    FontTypeface(TYPEFACE_DEFAULT);
-    FontTypefaceDetail(TYPEFACE_DEFAULT);
+    FontSizeDetail(Component.FONT_DEFAULT_SIZE);
+    FontTypeface(Component.TYPEFACE_DEFAULT);
+    FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
     // initially assuming that the image is of square shape
     ImageWidth(DEFAULT_IMAGE_WIDTH);
     ImageHeight(DEFAULT_IMAGE_WIDTH);
@@ -242,8 +242,8 @@ public final class ListView extends AndroidViewComponent {
     linearLayout.addView(listLayout);
     linearLayout.requestLayout();
     container.$add(this);
-    Width(LENGTH_FILL_PARENT);
-    ListViewLayout(LISTVIEW_LAYOUT_SINGLE_TEXT);
+    Width(Component.LENGTH_FILL_PARENT);
+    ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
     setDivider();
@@ -1284,7 +1284,7 @@ public final class ListView extends AndroidViewComponent {
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight));
         break;
-      case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT_VERTICAL:
+      case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
         setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
           textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
           elementColor, selectionColor, radius, imageWidth, imageHeight));

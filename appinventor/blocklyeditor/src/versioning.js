@@ -1029,48 +1029,6 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
-/**
- * Function that attempts to replace a dropdown value if it matches
- * the old value with a new value.
- * @param {string} componentType Name of the component type for method.
- * @param {string} propertyName Name of the property.
- * @param {string} oldValue The value to look for.
- * @param {string} newValue The value to replace with.
- */
-Blockly.Versioning.replaceDropdownValue =
-function (componentType, propertyName, oldValue, newValue) {
-  return function (blocksRep) {
-    var dom = Blockly.Versioning.ensureDom(blocksRep);
-    var allBlocks = dom.getElementsByTagName("block");
-    for (var i = 0, block; (block = allBlocks[i]); i++) {
-      if (block.getAttribute("type") === "component_set_get") {
-        var mutation = Blockly.Versioning.firstChildWithTagName(
-          block, "mutation");
-        if (mutation &&
-          mutation.getAttribute("component_type") === componentType &&
-          mutation.getAttribute("property_name") === propertyName) {
-          var value = Blockly.Versioning.firstChildWithTagName(block, "value");
-          if (value) {
-            var targetBlock = Blockly.Versioning.firstChildWithTagName(
-              value, "block");
-            if (targetBlock &&
-              targetBlock.getAttribute("type") === "helpers_dropdown") {
-              var optionField = Blockly.Versioning.firstChildWithTagName(
-                targetBlock, "field");
-              if (optionField && optionField.getAttribute("name") == "OPTION") {
-                if (optionField.textContent == oldValue) {
-                  optionField.textContent = newValue;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return dom;
-  }
-}
-
 Blockly.Versioning.makeMethodUseHelper =
   function(componentType, methodName, argNum, replaceFunc) {
     return function(blocksRep, workspace) {
@@ -2505,11 +2463,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: 
     // - Changed TextSize property to FontSize
     // - Add new layout and change name of old layout
-    10: [
-      Blockly.Versioning.changePropertyName("ListView", "TextSize", "FontSize"),
-      Blockly.Versioning.replaceDropdownValue("ListView", "ListViewLayout", "Image_MainText_DetailText_Vertical", "Image_MainText_DetailText")
-      //Blockly.Versioning.replaceListViewLayout()
-    ]
+    10: "noUpgrade"
 
   }, // End ListView upgraders
 

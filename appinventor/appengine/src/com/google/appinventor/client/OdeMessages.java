@@ -5657,13 +5657,13 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display Text for ListView layout choice having an image and single line of text.")
   String imageSingleTextLayout();
 
-  @DefaultMessage("Image, MainText, DetailText")
+  @DefaultMessage("Image, MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having an image and two lines of text.")
   String imageTwoTextLayout();
 
-  @DefaultMessage("Image, MainText, DetailText (Vertical)")
-  @Description("Display Text for ListView layout choice having an image and two lines of text, arranged vertically.")
-  String imageTwoTextVerticalLayout();
+  @DefaultMessage("Image (Top), MainText, DetailText")
+  @Description("Display Text for ListView layout choice having an image on top and two lines of text.")
+  String imageTopTwoTextLayout();
 
   // File Scope choices
 

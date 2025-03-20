@@ -227,7 +227,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
         table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
       } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
-          layoutValue ==ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT_VERTICAL) {
+          layoutValue ==ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
         table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
         table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
         table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
@@ -252,7 +252,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
             data.put("Text1", new JSONString(""));
             data.put("Image", new JSONString("None"));
           } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
-              layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT_VERTICAL) {
+              layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
             data.put("Image", new JSONString("None"));
