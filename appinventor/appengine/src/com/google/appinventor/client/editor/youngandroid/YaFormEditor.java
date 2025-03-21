@@ -1195,13 +1195,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (JSONValue element : components.getElements()) {
       JSONObject object = element.asObject();
       String type = object.get("$Type").asString().getString();
-      if (container.willAcceptComponentType(type)) {
+      if (container.willAcceptComponentType(type) && container.canPasteComponentOfType(type)) {
         MockComponent pasted = createMockComponent(object, container, substitution);
         if (pasted.isVisibleComponent()) {
           container.removeComponent(pasted, false);
           container.addVisibleComponent(pasted, insertBefore);
           insertBefore = container.getChildren().indexOf(pasted) + 1;
         }
+        container.onPaste(pasted);
         lastComponentCreated = pasted;
       }
     }
