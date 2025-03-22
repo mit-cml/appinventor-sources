@@ -375,6 +375,21 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
     set(path) {
       if (path == nil || path == "") {
         _backgroundImage = nil
+      } else if path!.lowercased().hasPrefix("http://") || path!.lowercased().hasPrefix("https://") {
+        // Handle URL based image loading
+        guard let url = URL(string: path!) else { return }
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+          guard let self = self,
+                let data = data,
+                let image = UIImage(data: data) else { return }
+          DispatchQueue.main.async {
+            self._imagePath = path
+            self._backgroundImage = image
+            self._view.frame.size = image.size
+            self._view.invalidateIntrinsicContentSize()
+            self.setNeedsStyleApplied()
+          }
+        }.resume()
       } else {
         var image = UIImage(named: path!);
         if (image == nil) {
