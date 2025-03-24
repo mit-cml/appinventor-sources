@@ -182,7 +182,17 @@ public class ProjectFolder extends Composite {
     cachedJson = null;
   }
 
-  public void refresh() {
+  public void refresh(boolean applySort) {
+    if (applySort) {
+      List<ProjectFolder> childFolders = getChildFolders();
+      List<Project> childProjects = getProjects();
+      
+      Comparator<ProjectFolder> folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
+      Comparator<Project> projectComparator = ProjectComparators.COMPARE_BY_NAME_ASCENDING;
+      
+      Collections.sort(childFolders, folderComparator);
+      Collections.sort(childProjects, projectComparator);
+    }
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
