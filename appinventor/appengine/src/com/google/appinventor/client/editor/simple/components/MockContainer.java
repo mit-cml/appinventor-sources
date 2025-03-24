@@ -162,6 +162,16 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   /**
+   * Called when a component is pasted into this container in case additional
+   * processing is needed.
+   *
+   * @param child the child component that was pasted
+   */
+  public void onPaste(MockComponent child) {
+    // Provided for subclasses
+  }
+
+  /**
    * Adds a new component to the container at the specified index.
    *
    * @param component  component to be added
@@ -282,6 +292,18 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   public boolean willAcceptComponentType(String type) {
     return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+  }
+
+  /**
+   * Indicates whether a component of the given type can be pasted into this container. By default,
+   * this is the same as {@link #willAcceptComponentType(String)}. Subclasses may override this
+   * behavior if they have custom rules.
+   *
+   * @param type the type of the component being considered for pasting
+   * @return true if the component can be pasted, false otherwise
+   */
+  public boolean canPasteComponentOfType(String type) {
+    return willAcceptComponentType(type);
   }
 
   // TODO(user): Draw a colored border around the edges of the container
