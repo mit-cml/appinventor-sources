@@ -1,7 +1,7 @@
 //
-//  Alamofire.swift
+//  URLRequest+Alamofire.swift
 //
-//  Copyright (c) 2014-2021 Alamofire Software Foundation (http://alamofire.org/)
+//  Copyright (c) 2019 Alamofire Software Foundation (http://alamofire.org/)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,18 @@
 //  THE SOFTWARE.
 //
 
-import Dispatch
 import Foundation
-#if canImport(FoundationNetworking)
-@_exported import FoundationNetworking
-#endif
 
-// Enforce minimum Swift version for all platforms and build systems.
-#if swift(<5.9.0)
-#error("Alamofire doesn't support Swift versions below 5.9.")
-#endif
+extension URLRequest {
+    /// Returns the `httpMethod` as Alamofire's `HTTPMethod` type.
+    public var method: HTTPMethod? {
+        get { httpMethod.map(HTTPMethod.init) }
+        set { httpMethod = newValue?.rawValue }
+    }
 
-/// Reference to `Session.default` for quick bootstrapping and examples.
-public let AF = Session.default
-
-/// Namespace for informational Alamofire values.
-public enum AFInfo {
-    /// Current Alamofire version.
-    public static let version = "5.10.2"
+    public func validate() throws {
+        if method == .get, let bodyData = httpBody {
+            throw AFError.urlRequestValidationFailed(reason: .bodyDataInGETRequest(bodyData))
+        }
+    }
 }
