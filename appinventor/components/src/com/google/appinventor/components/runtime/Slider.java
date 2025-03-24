@@ -355,8 +355,8 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   }
 
   /**
-   * Set the number of points on the slider scale. 
-   * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want, 
+   * Set the number of points on the slider scale.
+   * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
    * e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
