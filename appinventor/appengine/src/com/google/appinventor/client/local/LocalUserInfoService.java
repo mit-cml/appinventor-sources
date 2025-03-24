@@ -20,6 +20,7 @@ public class LocalUserInfoService implements UserInfoServiceAsync {
     config.setUser(user);
     SplashConfig splashConfig = new SplashConfig(0, 0, 0, "");
     config.setSplashConfig(splashConfig);
+    config.setIosExtensions("[]");
     callback.onSuccess(config);
   }
 
