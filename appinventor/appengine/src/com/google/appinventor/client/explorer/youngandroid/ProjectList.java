@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.appinventor.client.explorer.folder.SortField;
+import com.google.appinventor.client.explorer.folder.SortOrder;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,24 +42,13 @@ import java.util.logging.Logger;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class ProjectList extends Composite implements FolderManagerEventListener,
-    ProjectManagerEventListener {
+        ProjectManagerEventListener {
   interface ProjectListUiBinder extends UiBinder<FlowPanel, ProjectList> {}
 
   private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
 
-  private enum SortField {
-    NAME,
-    DATE_CREATED,
-    DATE_MODIFIED,
-  }
-
-  private enum SortOrder {
-    ASCENDING,
-    DESCENDING,
-  }
-
-  private SortField sortField;
-  private SortOrder sortOrder;
+  private SortField sortField = SortField.DATE_MODIFIED;
+  private SortOrder sortOrder = SortOrder.DESCENDING;
 
   private ProjectFolder folder;
   private boolean isTrash;
@@ -87,6 +78,18 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     bindIU();
     setIsTrash(false);
     refreshSortIndicators();
+  }
+
+  @Override
+  public void onSortFieldChanged(SortField newSortField) {
+    this.sortField = newSortField;
+    refresh(true);
+  }
+
+  @Override
+  public void onSortOrderChanged(SortOrder newSortOrder) {
+    this.sortOrder = newSortOrder;
+    refresh(true);
   }
 
   public void bindIU() {
@@ -137,17 +140,12 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   private void changeSortOrder(SortField clickedSortField) {
-    if (sortField != clickedSortField) {
-      sortField = clickedSortField;
-      sortOrder = SortOrder.ASCENDING;
-    } else {
-      if (sortOrder == SortOrder.ASCENDING) {
-        sortOrder = SortOrder.DESCENDING;
-      } else {
-        sortOrder = SortOrder.ASCENDING;
-      }
-    }
-    refresh(true);
+    this.sortField = clickedSortField;
+    this.sortOrder = (this.sortOrder == SortOrder.ASCENDING) ?
+            SortOrder.DESCENDING : SortOrder.ASCENDING;
+
+    Ode.getInstance().getFolderManager().setSortField(sortField);
+    Ode.getInstance().getFolderManager().setSortOrder(sortOrder);
   }
 
   private void refreshSortIndicators() {
@@ -216,13 +214,13 @@ public class ProjectList extends Composite implements FolderManagerEventListener
           break;
         case DATE_CREATED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
+                  ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
+                  : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
           break;
         case DATE_MODIFIED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
+                  ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
+                  : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
           break;
       }
       Collections.sort(projects, comparator);
@@ -247,11 +245,11 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       childFolder.refresh();
       container.add(childFolder);
     }
-    folder.clearProjectList();
+
     for (final Project project : projects) {
       ProjectListItem item = createProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
-      folder.addProjectListItem(item);
+
       container.add(item);
     }
     selectAllCheckBox.setValue(false);
@@ -263,7 +261,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   public ProjectListItem createProjectListItem(Project p) {
-   return new ProjectListItem(p) ;
+    return new ProjectListItem(p) ;
   }
 
   public boolean isSelected() {
@@ -277,8 +275,8 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     int selectedProjects = folder.getSelectedProjects().size();
 
     if (selectableFolders + visibleProjects > 0
-        && selectableFolders == selectedFolders
-        && visibleProjects == selectedProjects) {
+            && selectableFolders == selectedFolders
+            && visibleProjects == selectedProjects) {
       selectAllCheckBox.setValue(true);
     } else {
       selectAllCheckBox.setValue(false);

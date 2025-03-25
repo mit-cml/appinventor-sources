@@ -12,5 +12,7 @@ public interface FolderManagerEventListener {
   void onFolderRenamed(ProjectFolder folder);
   void onFoldersChanged();
   void onFoldersLoaded();
+  void onSortFieldChanged(com.google.appinventor.client.explorer.folder.SortField newSortField);
+  void onSortOrderChanged(com.google.appinventor.client.explorer.folder.SortOrder newSortOrder);
 
 }

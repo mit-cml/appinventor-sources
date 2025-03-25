@@ -9,7 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.shared.settings.SettingsConstants;
-
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 
@@ -22,6 +22,8 @@ import java.util.logging.Logger;
  *
  */
 public final class FolderManager {
+  private SortField currentSortField = SortField.DATE_MODIFIED;
+  private SortOrder currentSortOrder = SortOrder.DESCENDING;
   private static final Logger LOG = Logger.getLogger(FolderManager.class.getName());
 
   private ProjectFolder globalFolder;
@@ -37,6 +39,49 @@ public final class FolderManager {
     folderManagerEventListeners = new ArrayList<>();
     LOG.info("Created new folder manager");
   }
+
+  public SortField getCurrentSortField() {
+    return currentSortField;
+  }
+
+  public SortOrder getCurrentSortOrder() {
+    return currentSortOrder;
+  }
+
+  public void setSortField(SortField sortField) {
+    if (this.currentSortField != sortField) {
+      this.currentSortField = sortField;
+      notifySortFieldChanged(sortField);
+      propagateSortSettings();
+    }
+  }
+
+  public void setSortOrder(SortOrder sortOrder) {
+    if (this.currentSortOrder != sortOrder) {
+      this.currentSortOrder = sortOrder;
+      notifySortOrderChanged(sortOrder);
+      propagateSortSettings();
+    }
+  }
+
+  private void propagateSortSettings() {
+    if (globalFolder != null) {
+      globalFolder.propagateSortSettings(currentSortField, currentSortOrder);
+    }
+  }
+
+  private void notifySortFieldChanged(SortField newSortField) {
+    for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
+      listener.onSortFieldChanged(newSortField);
+    }
+  }
+
+  private void notifySortOrderChanged(SortOrder newSortOrder) {
+    for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
+      listener.onSortOrderChanged(newSortOrder);
+    }
+  }
+
 
   public void loadFolders() {
     String foldersAsString = Ode.getUserSettings()
@@ -60,6 +105,13 @@ public final class FolderManager {
       return;
     }
 
+    if (folderJSON.containsKey("sortField")) {
+      currentSortField = SortField.valueOf(folderJSON.get("sortField").isString().stringValue());
+    }
+    if (folderJSON.containsKey("sortOrder")) {
+      currentSortOrder = SortOrder.valueOf(folderJSON.get("sortOrder").isString().stringValue());
+    }
+
     LOG.info("folderJSON - " + folderJSON);
     globalFolder = uiFactory.createProjectFolder(folderJSON, null);
     LOG.info("Creating Trash Folder");
@@ -69,7 +121,9 @@ public final class FolderManager {
   }
 
   public void saveAllFolders() {
-    LOG.info("Saved Folder JSON: " + globalFolder.toJSON().toString());
+    JSONObject json = globalFolder.toJSON();
+    json.put("sortField", new JSONString(currentSortField.name()));
+    json.put("sortOrder", new JSONString(currentSortOrder.name()));
 
     Ode.getUserSettings()
         .getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
