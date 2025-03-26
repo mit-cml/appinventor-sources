@@ -36,7 +36,7 @@ public class LocalUserInfoService implements UserInfoServiceAsync {
 
   @Override
   public void loadUserSettings(AsyncCallback<String> callback) {
-    String settings = "{\"GeneralSettings\":{\"LastLocale\":\"en\",\"Folders\":\"\",\"AutoloadLastProject\":\"false\"}}";
+    String settings = "{\"GeneralSettings\":{\"LastLocale\":\"en\",\"Folders\":\"\",\"AutoloadLastProject\":\"false\",\"ShowUIPicker\":\"false\",\"NewLayout\":\"true\"}}";
     callback.onSuccess(settings);
   }
 

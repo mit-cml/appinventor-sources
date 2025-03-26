@@ -31,6 +31,8 @@ import com.google.appinventor.client.jzip.Type;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.client.settings.project.YoungAndroidSettings;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.properties.json.JSONUtil;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
@@ -41,6 +43,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
@@ -70,7 +73,87 @@ public class LocalProjectService implements ProjectServiceAsync {
   @Override
   public void newProject(String projectType, String projectName, NewProjectParameters params,
       AsyncCallback<UserProject> callback) {
+    long hash = projectName.hashCode();
+    UserProject project = new UserProject(hash, projectName, projectType,
+        System.currentTimeMillis(), System.currentTimeMillis(), false);
+    projects.put(projectName, project);
+    YoungAndroidProjectNode root = new YoungAndroidProjectNode(projectName, hash);
+    ProjectNode assetsNode = new YoungAndroidAssetsFolder("assets");
+    YoungAndroidSourceFolderNode sourcesNode = new YoungAndroidSourceFolderNode("src");
+    ProjectNode compsNode = new YoungAndroidComponentsFolder("assets/external_comps");
+    root.addChild(assetsNode);
+    root.addChild(sourcesNode);
+    root.addChild(compsNode);
+    projectData.put(hash, root);
+    NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
+    String packageName = youngAndroidParams.getPackageName();
+    YoungAndroidPackageNode packageNode = new YoungAndroidPackageNode(packageName,
+        packageNameToPath(packageName));
+    sourcesNode.addChild(packageNode);
 
+    String qualifiedName = youngAndroidParams.getQualifiedFormName();
+    String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedName);
+    String formFileContents = getInitialFormPropertiesFileContents(qualifiedName, youngAndroidParams);
+    contents.put(hash + ":" + formFileName, new TextEncoder("utf-8").encode(formFileContents));
+    packageNode.addChild(new YoungAndroidFormNode(formFileName));
+
+    String blocksFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedName);
+    contents.put(hash + ":" + blocksFileName, new TextEncoder("utf-8").encode(""));
+    packageNode.addChild(new YoungAndroidBlocksNode(blocksFileName));
+
+    String projectPropertiesFileName = "youngandroidproject/project.properties";
+    String projectPropertiesFileContents = "sizing=Responsive\n" +
+        "color.primary.dark=&HFF303F9F\n" +
+        "color.primary=&HFF3F51B5\n" +
+        "color.accent=&HFFFF4081\n" +
+        "aname=rl_maze\n" +
+        "defaultfilescope=App\n" +
+        "main=" + qualifiedName + ".Screen1\n" +
+        "source=../src\n" +
+        "actionbar=True\n" +
+        "useslocation=False\n" +
+        "assets=../assets\n" +
+        "build=../build\n" +
+        "name=" + projectName + "\n" +
+        "showlistsasjson=True\n" +
+        "theme=AppTheme.Light.DarkActionBar\n" +
+        "versioncode=1\n" +
+        "versionname=1.0\n";
+    contents.put(hash + ":" + projectPropertiesFileName,
+        new TextEncoder("utf-8").encode(projectPropertiesFileContents));
+
+    callback.onSuccess(project);
+  }
+
+  /*
+   * Note that this is copied from
+   * {@link com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService}.
+   * We should refactor this into a common class under the rpc package.
+   */
+  public static String getInitialFormPropertiesFileContents(String qualifiedName, NewYoungAndroidProjectParameters youngAndroidParams) {
+    final int lastDotPos = qualifiedName.lastIndexOf('.');
+    String packageName = qualifiedName.split("\\.")[2];
+    String formName = qualifiedName.substring(lastDotPos + 1);
+    String themeName = youngAndroidParams.getThemeName();
+    String blocksToolkit = youngAndroidParams.getBlocksToolkit();
+
+    String newString = "#|\n$JSON\n" +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
+        "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" +
+        themeName + "\"}}\n|#";
+    if (!blocksToolkit.isEmpty()){
+      newString = "#|\n$JSON\n" +
+          "{\"authURL\":[]," +
+          "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+          "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+          "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
+          "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" +
+          themeName +  "\",\"BlocksToolkit\":" + JSONUtil.toJson(blocksToolkit) +"}}\n|#";
+    }
+    return newString;
   }
 
   @Override
