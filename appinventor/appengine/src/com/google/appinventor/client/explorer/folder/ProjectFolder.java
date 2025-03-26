@@ -6,6 +6,9 @@
 package com.google.appinventor.client.explorer.folder;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import java.util.Comparator;
+import java.util.Collections;
+import com.google.appinventor.client.explorer.project.ProjectComparators;
 import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
@@ -182,7 +185,17 @@ public class ProjectFolder extends Composite {
     cachedJson = null;
   }
 
-  public void refresh() {
+  public void refresh(boolean applySort) {
+    if (applySort) {
+      List<ProjectFolder> childFolders = getChildFolders();
+      List<Project> childProjects = getProjects();
+      
+      Comparator<ProjectFolder> folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
+      Comparator<Project> projectComparator = ProjectComparators.COMPARE_BY_NAME_ASCENDING;
+      
+      Collections.sort(childFolders, folderComparator);
+      Collections.sort(childProjects, projectComparator);
+    }
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
@@ -191,7 +204,7 @@ public class ProjectFolder extends Composite {
       if (changeHandler != null) {
         f.setSelectionChangeHandler(changeHandler);
       }
-      f.refresh();
+      f.refresh(false);
       childrenContainer.add(f);
     }
     projectListItems.clear();

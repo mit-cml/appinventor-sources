@@ -244,7 +244,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         continue;
       }
       childFolder.setSelectionChangeHandler(selectionEvent);
-      childFolder.refresh();
+      childFolder.refresh(needToSort);
       container.add(childFolder);
     }
     folder.clearProjectList();
