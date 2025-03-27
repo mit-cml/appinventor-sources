@@ -206,7 +206,7 @@ public class CreateManifest implements AndroidTask {
       // testing their packaged apps.  Maybe we should make that an option, somehow.
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
-      out.write("android:debuggable=\"false\" ");
+      out.write("android:debuggable=\"" + context.isDebuggable() + "\" ");
       // out.write("android:debuggable=\"true\" "); // DEBUGGING
       if (appName.isEmpty()) {
         out.write("android:label=\"" + projectName + "\" ");

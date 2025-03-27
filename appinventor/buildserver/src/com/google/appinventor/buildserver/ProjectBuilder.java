@@ -102,7 +102,7 @@ public final class ProjectBuilder {
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
-      boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
+      boolean debug, boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
       String[] extraExtensions, int childProcessRam, String dexCachePath,
       BuildServer.ProgressReporter reporter, String ext) {
     try {
@@ -187,6 +187,7 @@ public final class ProjectBuilder {
                 .withFormOrientations(formOrientations)
                 .withReporter(r)
                 .withStatReporter(statReporter)
+                .withDebuggable(debug)
                 .withCompanion(isForCompanion)
                 .withEmulator(isForEmulator)
                 .withDangerousPermissions(includeDangerousPermissions)

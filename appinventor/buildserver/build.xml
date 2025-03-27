@@ -8,7 +8,7 @@
      App Inventor build server
      ====================================================================== -->
 
-<project name="buildserver" default="all">
+<project name="buildserver" default="all" xmlns:unless="ant:unless">
   <description>
     App Inventor build server
   </description>
@@ -27,6 +27,11 @@
           depends="BuildServerTests">
 
   </target>
+
+  <property name="debug" value="false"/>
+  <condition property="opt.debug.flag" value="--debug" else="">
+    <equals arg1="${debug}" arg2="true" />
+  </condition>
 
   <!-- =====================================================================
        Import common directory, task, and target definitions.
@@ -214,6 +219,7 @@
       <arg value="--userName" />
       <arg value="App Inventor" />
       <arg value="--isForCompanion" />
+      <arg value="${opt.debug.flag}" unless:blank="${opt.debug.flag}" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
       <arg value="--dexCacheDir" />
@@ -254,6 +260,7 @@
       <arg value="--userName" />
       <arg value="App Inventor" />
       <arg value="--isForCompanion" />
+      <arg value="${opt.debug.flag}" unless:blank="${opt.debug.flag}" />
       <arg value="--includeDangerousPermissions" />
       <arg value="--extensions" />
       <arg value="edu.mit.appinventor.companionextras.CompanionExtras" />
@@ -293,6 +300,7 @@
       <arg value="App Inventor" />
       <arg value="--isForCompanion" />
       <arg value="--isForEmulator" />
+      <arg value="${opt.debug.flag}" unless:blank="${opt.debug.flag}" />
       <arg value="--includeDangerousPermissions" />
       <arg value="--extensions" />
       <arg value="edu.mit.appinventor.companionextras.CompanionExtras" />
