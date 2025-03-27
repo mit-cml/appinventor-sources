@@ -694,6 +694,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the property to allow for the removal of the Thumb Slider
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Added the NumberOfSteps property, TouchDown and TouchUp events
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
