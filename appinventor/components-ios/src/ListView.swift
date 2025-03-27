@@ -637,8 +637,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
           ])
         }
       } else if _listViewLayoutMode == 4 {
@@ -688,8 +688,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
           ])
         }
       } else if _listViewLayoutMode == 5 {
@@ -729,8 +729,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
             verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
             verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
             verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
-            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
+            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
           ])
         }
       } else {
