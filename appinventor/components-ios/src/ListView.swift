@@ -41,6 +41,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _elementCornerRadius = Int32(0)
   fileprivate var _elementMarginsWidth = Int32(0)
+  fileprivate var _imageHeight = Int32(200)
+  fileprivate var _imageWidth = Int32(200)
 
 
   public override init(_ parent: ComponentContainer) {
@@ -230,6 +232,26 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     set(elementMarginsWidth) {
       _elementMarginsWidth = elementMarginsWidth
       _view.reloadData()
+    }
+  }
+
+  @objc open var ImageHeight: Int32 {
+    get {
+        return _imageHeight
+    }
+    set(height) {
+        _imageHeight = height
+        _view.reloadData()
+    }
+}
+
+  @objc open var ImageWidth: Int32 {
+    get {
+        return _imageWidth
+    }
+    set(width) {
+        _imageWidth = width
+        _view.reloadData()
     }
   }
 
@@ -544,10 +566,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else {
       let listDataIndex = indexPath.row - _elements.count
       if _listViewLayoutMode == 1{
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
       } else if _listViewLayoutMode == 2 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
 
@@ -578,11 +603,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
         ])
       } else if _listViewLayoutMode == 3 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -610,16 +637,19 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
           ])
         }
       } else if _listViewLayoutMode == 4 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -658,7 +688,49 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
+          ])
+        }
+      } else if _listViewLayoutMode == 5 {
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 120
+        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+        if let imagePath = _listData[listDataIndex]["Image"],
+          let image = AssetManager.shared.imageFromPath(path: imagePath) {
+          cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
+
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          // Create a vertical stack view
+          let verticalStackView = UIStackView()
+          verticalStackView.axis = .vertical
+          verticalStackView.alignment = .center
+          verticalStackView.distribution = .fill
+          verticalStackView.spacing = 8.0
+
+          // Add the imageView, textLabel and detailTextLabel to the vertical stack view
+          verticalStackView.addArrangedSubview(cell.imageView!)
+          verticalStackView.addArrangedSubview(cell.textLabel!)
+          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Add the horizontal stack view to the cell's content view
+          cell.contentView.addSubview(verticalStackView)
+
+          // Set up constraints
+          verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth / 4)),
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(imageHeight / 4))
           ])
         }
       } else {
