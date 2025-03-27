@@ -70,6 +70,16 @@ public class LocalProjectService implements ProjectServiceAsync {
   private final Map<Long, ProjectRootNode> projectData = new HashMap<>();
   private final Map<String, ArrayBuffer> contents = new HashMap<>();
 
+  String getProjectName(String projectId) {
+    long hash = Long.parseLong(projectId);
+    for (Map.Entry<String, UserProject> entry : projects.entrySet()) {
+      if (entry.getValue().getProjectId() == hash) {
+        return entry.getKey();
+      }
+    }
+    return null;
+  }
+
   @Override
   public void newProject(String projectType, String projectName, NewProjectParameters params,
       AsyncCallback<UserProject> callback) {
@@ -490,7 +500,7 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   }
 
-  public Promise<JSZip> exportProject(long projectId) {
+  public Promise<String> exportProject(long projectId) {
     JSZip zip = new JSZip();
     for (String key : contents.keySet()) {
       if (key.startsWith(projectId + ":")) {

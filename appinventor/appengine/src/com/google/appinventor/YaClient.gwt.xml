@@ -193,4 +193,9 @@
     <when-type-is class="com.google.appinventor.shared.rpc.user.TokenAuthService"/>
     <when-property-is name="local.services" value="true"/>
   </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalDownloader">
+    <when-type-is class="com.google.appinventor.client.utils.Downloader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
 </module>
