@@ -1280,12 +1280,12 @@ public final class ListView extends AndroidViewComponent {
             elementColor, selectionColor, radius, imageWidth, imageHeight));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextAdapter(container, items,
+        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
+        setListAdapter(new ListViewImageTopTwoTextAdapter(container, items,
           textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
           elementColor, selectionColor, radius, imageWidth, imageHeight));
         break;
