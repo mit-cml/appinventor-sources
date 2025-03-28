@@ -2,24 +2,24 @@
 
 /* a4cf47 */
 /* @def clr-primary-50 #4f6925; */
-@def clr-primary-50 #4f6925;
+@def clr-primary-50 #838e6f;
 /* 83b70f */
 /* @def clr-primary-75 #2c372c; */
 @def clr-primary-75 #1a1a1a;
 /* possible rgba(0, 51, 0, 0.3) */
 /* @def clr-primary-200 #456f03; */
 
-@def clr-primary-200 #648C1E;
+@def clr-primary-200 #727f5c;
 /* TODO: @def clr-primary-200 #62704a; */
 /* 556b2f */
 @def clr-primary #cbe397;
 /* possibly change to 700 */
-@def clr-primary-500 #556b2f;
-/* TODO: @def clr-primary-600 #62704a; */
+@def clr-primary-500 #838e6f;
+ @def clr-primary-600 #62704a;
 /* bar-color */
 /* @def clr-primary-700 #6ca300; */
 
-@def clr-primary-700 #3a4b1e;
+@def clr-primary-700 #838e6f;
 /* 3a4b1e */
 
 @def error #ff6666;
