@@ -734,6 +734,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
           ])
         }
       } else {
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
       }
 
