@@ -50,7 +50,7 @@ public class LocalUploader extends Uploader {
   private static void handleProjectUpload(FileUpload upload, String[] urlParts,
       AsyncCallback<UploadResponse> callback) {
     String projectName = urlParts[2];
-    getFile(upload.getElement())
+    getFileBase64(upload.getElement())
         .then(zipBase64 -> Promise.<UserProject>call(MESSAGES.projectUploadError(),
             c -> Ode.getInstance().getProjectService()
                 .newProjectFromExternalTemplate(projectName, zipBase64, c)))
@@ -65,25 +65,25 @@ public class LocalUploader extends Uploader {
         });
   }
 
-  private static native Promise<String> getFile(Element element) /*-{
+  private static native Promise<String> getFileBase64(Element element) /*-{
+    function _arrayBufferToBase64(buffer) {
+      var binary = '';
+      var bytes = new Uint8Array(buffer);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return $wnd.btoa(binary);
+    }
     return new Promise(function(resolve, reject) {
-      var zip = new top.JSZip();
-      zip.loadAsync(element.files[0]).then(function(zip) {
-        return zip.generateAsync({type: "base64"});
-      }).then(resolve)['catch'](reject);  // GWT doesn't know catch can be an identifier here.
-      if (false) {
       var reader = new FileReader();
       reader.onload = function(event) {
-        var zip = new top.JSZip();
-        zip.loadAsync(event.target.result).then(function(zip) {
-          return zip.generateAsync({type: "base64"});
-        }).then(resolve)['catch'](reject);  // GWT doesn't know catch can be an identifier here.
+        resolve(_arrayBufferToBase64(event.target.result));
       };
       reader.onerror = function(event) {
         reject(new Error("Failed to read file: " + event.target.error));
       };
       reader.readAsArrayBuffer(element.files[0]);
-      }
     });
   }-*/;
 }
