@@ -14,9 +14,6 @@
 
 goog.provide('AI.Blockly.WarningIndicator');
 
-goog.require('goog.Timer');
-
-
 /**
  * Class for a warning indicator.
  * @implements {Blockly.IPositionable}
