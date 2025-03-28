@@ -1499,7 +1499,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .listViewComponentStyle .listViewFilterStyle {
   flex: 0 0 30px;
-  width: calc(100% - 6px);
+  width: calc(100%-6px);
   border-radius: 0px;
   margin-bottom: 0px;
   padding: 0px 2px;

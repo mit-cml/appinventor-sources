@@ -845,7 +845,8 @@ This is a visible component that displays a list of text and image elements in y
 : The color of the `ListView` divider.
 
 {:id="ListView.DividerThickness" .number} *DividerThickness*
-: Specifies the divider thickness of list view
+: Specifies the divider thickness of list view.
+ If the thickness is 0, the divider is not visible.
 
 {:id="ListView.ElementColor" .color} *ElementColor*
 : The color of the `ListView` element.
@@ -854,7 +855,8 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the corner radius of the list view element.
 
 {:id="ListView.ElementMarginsWidth" .number} *ElementMarginsWidth*
-: Specifies the width of the margins of a list view element
+: Specifies the width of the margins of a list view element.
+ If margins width > 0, then the divider is not displayed.
 
 {:id="ListView.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
