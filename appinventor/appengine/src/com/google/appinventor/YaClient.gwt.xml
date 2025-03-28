@@ -198,4 +198,9 @@
     <when-type-is class="com.google.appinventor.client.utils.Downloader"/>
     <when-property-is name="local.services" value="true"/>
   </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUploader">
+    <when-type-is class="com.google.appinventor.client.utils.Uploader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
 </module>
