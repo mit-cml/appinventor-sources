@@ -19,11 +19,6 @@
 
   <property name="release" value="false"/>
 
-  <condition property="blockly.config"
-             value="ploverConfig.js"
-             else="ploverConfig-dev.js">
-    <equals arg1="${release}" arg2="true"/>
-  </condition>
   <condition property="compilation_level"
 	     value="SIMPLE" else="BUNDLE">
     <equals arg1="${release}" arg2="true"/>
@@ -117,7 +112,6 @@
       <srcfiles dir="${blockly.src.dir}/" includes="*.js" />
       <srcfiles dir="${blockly.plugin.dir}/" includes="*.js" />
       <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-      <srcfiles dir="${basedir}" includes="${blockly.config}" />
     </uptodate>
   </target>
 
