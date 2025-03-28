@@ -20,7 +20,6 @@
 goog.provide('AI.Blockly.Drawer');
 
 goog.require('AI.Blockly.Util.xml');
-goog.require('goog.object');
 goog.require('bd.toolbox.ctr');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
@@ -310,7 +309,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }
 
     // Create event blocks.
-    goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
+    Object.entries(componentInfo.eventDictionary).forEach(function (pair) {
+      const name = pair[0];
+      const event = pair[1];
       if (event.deprecated) {
         return;
       }
@@ -329,7 +330,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }, this);
 
     // Create method blocks.
-    goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
+    Object.entries(componentInfo.methodDictionary).forEach(function (pair) {
+      const name = pair[0];
+      const method = pair[1];
       if (method.deprecated) {
         return;
       }
@@ -358,7 +361,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }, this);
 
     // Create getter and setter blocks.
-    goog.object.forEach(componentInfo.properties, function (property, name) {
+    Object.entries(componentInfo.properties).forEach(function(pair) {
+      const name = pair[0];
+      const property = pair[1];
       if (property.deprecated) {
         return;
       }
@@ -451,7 +456,9 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }
 
   //create generic event blocks
-  goog.object.forEach(componentInfo.eventDictionary, function(event, name){
+  Object.entries(componentInfo.eventDictionary).forEach(function(pair){
+    const name = pair[0];
+    const event = pair[1];
     if(!event.deprecated){
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
         component_type: typeName, event_name: name, is_generic: 'true'
@@ -464,7 +471,9 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }, this);
 
   //create generic method blocks
-  goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
+  Object.entries(componentInfo.methodDictionary).forEach(function(pair) {
+    const name = pair[0];
+    const method = pair[1];
     if (!method.deprecated) {
       var methodXml = this.blockTypeToXML('component_method', {
         component_type: typeName, method_name: name, is_generic: "true"
@@ -489,7 +498,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }, this);
 
   //for each property
-  goog.object.forEach(componentInfo.properties, function(property, name) {
+  Object.entries(componentInfo.properties).forEach(function(property, name) {
     if (!property.deprecated) {
       var params = {component_type: typeName, property_name: name};
       if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
