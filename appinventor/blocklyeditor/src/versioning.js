@@ -24,8 +24,6 @@
 goog.provide('AI.Blockly.Versioning');
 
 goog.require('AI.Substitution');
-goog.require('goog.dom');
-goog.require('goog.dom.xml');
 
 if (Blockly.Versioning === undefined) Blockly.Versioning = {};
 
@@ -294,7 +292,9 @@ Blockly.Versioning.ensureDom = function (blocksRep) {
 
 Blockly.Versioning.getBlockChildren = function (dom) {
     var result = [];
-    var gdChildren = goog.dom.getChildren(dom);
+    var gdChildren = Array.prototype.filter.call(dom.childNodes, function(node) {
+      return node.nodeType === Element.ELEMENT_NODE;
+    });
     for (var gdi = 0, gdChild; gdChild = gdChildren[gdi]; gdi++) {
       result.push(gdChild);
     }
@@ -603,7 +603,7 @@ Blockly.Versioning.v17_translateEvent = function(blockElem, workspace) {
   blockElem.setAttribute('type','component_event');
   // <mutation component_type=​"Canvas" instance_name=​"Canvas1" event_name=​"Dragged">​</mutation>
   // add mutation tag
-  var mutationElement = goog.dom.createElement('mutation');
+  var mutationElement = blockElem.ownerDocument.createElement('mutation');
   //mutationElement.setAttribute('component_type',component);
   mutationElement.setAttribute('instance_name', instance);
   mutationElement.setAttribute('event_name', event);
@@ -632,7 +632,7 @@ Blockly.Versioning.v17_translateMethod = function(blockElem, workspace) {
   blockElem.setAttribute('type','component_method');
   // <mutation component_type=​"Canvas" instance_name=​"Canvas1" event_name=​"Dragged">​</mutation>
   // add mutation tag
-  var mutationElement = goog.dom.createElement('mutation');
+  var mutationElement = blockElem.ownerDocument.createElement('mutation');
   //mutationElement.setAttribute('component_type',component);
   mutationElement.setAttribute('instance_name', instance);
   mutationElement.setAttribute('method_name', method);
@@ -661,7 +661,7 @@ Blockly.Versioning.v17_translateAnyMethod = function(blockElem) {
   blockElem.setAttribute('type','component_method');
   // <mutation component_type=​"Canvas" instance_name=​"Canvas1" event_name=​"Dragged">​</mutation>
   // add mutation tag
-  var mutationElement = goog.dom.createElement('mutation');
+  var mutationElement = blockElem.ownerDocument.createElement('mutation');
   mutationElement.setAttribute('method_name', method);
   mutationElement.setAttribute('component_type',componentType);
   mutationElement.setAttribute('is_generic','true');
@@ -690,7 +690,7 @@ Blockly.Versioning.v17_translateComponentGet = function(blockElem, workspace) {
   blockElem.setAttribute('type','component_component_block');
   // <mutation component_type=​"Canvas" instance_name=​"Canvas1" event_name=​"Dragged">​</mutation>
   // add mutation tag
-  var mutationElement = goog.dom.createElement('mutation');
+  var mutationElement = blockElem.ownerDocument.createElement('mutation');
   //mutationElement.setAttribute('component_type',component);
   mutationElement.setAttribute('instance_name', instance);
   mutationElement.setAttribute('component_type',componentType);
@@ -916,7 +916,9 @@ Blockly.Versioning.addDefaultMethodArgument = function(componentType, methodName
     // For each matching method call block, change it to have new argument block for value child ARG<argumentIndex>
     var methodCallBlocks =  Blockly.Versioning.findAllMethodCalls(dom, componentType, methodName);
     for (var b = 0, methodCallBlock; methodCallBlock = methodCallBlocks[b]; b++) {
-      var childBlocks = goog.dom.getChildren(methodCallBlock);
+      var childBlocks = Array.prototype.filter.call(methodCallBlock, function(node) {
+        return node.nodeType === Element.ELEMENT_NODE;
+      });
       var insertionChild = null; // Value with name ARG<N> we want to insert default before
       for (var c = 0, child; child = childBlocks[c]; c++) {
         if (child.tagName == "VALUE") {
@@ -940,7 +942,7 @@ Blockly.Versioning.addDefaultMethodArgument = function(componentType, methodName
       }
       // Create the new argument block for this method call
       // (careful: can't share one dom element across multiple calls!)
-      var argumentElement = goog.dom.createElement('value');
+      var argumentElement = dom.ownerDocument.createElement('value');
       argumentElement.setAttribute('name', 'ARG' + argumentIndex);
       var argumentChild = Blockly.Versioning.xmlBlockTextToDom(defaultXMLArgumentBlockText);
       argumentElement.insertBefore(argumentChild, null); // The first and only child (a block)
@@ -1014,7 +1016,7 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
     for (var b = 0, propertyBlock; propertyBlock = propertyBlocks[b]; b++) {
       var mutation = Blockly.Versioning.firstChildWithTagName(propertyBlock, "mutation");
       mutation.setAttribute("property_name", newPropertyName);
-      var children = goog.dom.getChildren(propertyBlock);
+      var children = dom.ownerDocument.getChildren(propertyBlock);
       for (var c = 0, child; child = children[c]; c++) {
         if (child.tagName.toUpperCase() == "FIELD") {
           if (child.getAttribute("name") == "PROP") {
@@ -1469,7 +1471,9 @@ Blockly.Versioning.renameComponentType = function(componentType, newComponentTyp
  */
 Blockly.Versioning.firstChildWithTagName = function (elem, tag) {
   var upcaseTag = tag.toUpperCase();
-  var children = goog.dom.getChildren(elem);
+  var children = Array.prototype.filter.call(elem.childNodes, function(node) {
+    return node.nodeType === Element.ELEMENT_NODE;
+  });
   for (var c = 0, child; child = children[c]; c++) {
     if (child.tagName.toUpperCase() == upcaseTag) {
       return child;
@@ -1490,7 +1494,9 @@ Blockly.Versioning.xmlBlockTextToDom = function(xmlBlockText) {
   var topLevelXmlString = "<xml>" + xmlBlockText + "</xml>";
   var topLevelDom = Blockly.utils.xml.textToDom(topLevelXmlString);
   // Now extract single block dom from top-level dom
-  var children = goog.dom.getChildren(topLevelDom);
+  var children = Array.prototype.filter.call(topLevelDom.childNodes, function(node) {
+    return node.nodeType === Element.ELEMENT_NODE;
+  });
   if (children.length != 1) {
     throw "Unexpected number of childred in Blockly.Versioning.xmlBlockTextToDom: "
           + children.length;

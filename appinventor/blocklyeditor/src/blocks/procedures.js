@@ -67,7 +67,6 @@ goog.require('AI.Blockly.FieldProcedure');
 goog.require('AI.Blockly.ProcedureNameDropdown')
 goog.require('AI.NameSet');
 goog.require('AI.Substitution');
-goog.require('goog.dom');
 
 Blockly.Blocks['procedures_defnoreturn'] = {
   // Define a procedure with no return value.
@@ -303,7 +302,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   },
   domToMutation: function(xmlElement) {
     var params = [];
-    var children = goog.dom.getChildren(xmlElement);
+    var children = Array.prototype.filter.call(xmlElement.childNodes, function(node) {
+      return node.nodeType == Element.ELEMENT_NODE;
+    })
     for (var x = 0, childNode; childNode = children[x]; x++) {
       if (childNode.nodeName.toLowerCase() == 'arg') {
         params.push(childNode.getAttribute('name'));
@@ -805,7 +806,9 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     // [lyn, 10/27/13] Significantly cleaned up this code. Always take arg names from xmlElement.
     // Do not attempt to find definition.
     this.arguments_ = [];
-    var children = goog.dom.getChildren(xmlElement);
+    var children = Array.prototype.filter.call(xmlElement.childNodes, function(node) {
+      return node.nodeType === Element.ELEMENT_NODE;
+    });
     for (var x = 0, childNode; childNode = children[x]; x++) {
       if (childNode.nodeName.toLowerCase() == 'arg') {
         this.arguments_.push(childNode.getAttribute('name'));
