@@ -18,6 +18,8 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 
+import java.util.List;
+import java.util.Collection;
 
 @SimpleObject
 public abstract class ARNodeBase implements ARNode, FollowsMarker {
@@ -68,7 +70,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @SimpleProperty(description = "Returns the type of node as a String.")
-  public String Type() { return ""; };
+  public String Type() { return getClass().getSimpleName(); };
+
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,

@@ -1,5 +1,5 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-
+import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
 import com.google.ar.core.Camera;
@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 /** Renders a point cloud. */
+@UsesAssets(fileNames = "point_cloud.frag, point_cloud.vert," +
+        "plane.frag, plane.vert")
 public class PointCloudRenderer {
     private static final String TAG = PointCloud.class.getSimpleName();
     private VertexBuffer pointCloudVertexBuffer;

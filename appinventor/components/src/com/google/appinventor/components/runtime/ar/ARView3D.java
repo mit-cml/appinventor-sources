@@ -72,14 +72,18 @@ import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import android.util.Log;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+
 
 
 
@@ -97,12 +101,15 @@ import android.util.Log;
     androidMinSdk = 14)
 
 @SimpleObject
-@UsesLibraries({"ar-core.jar", "ar-core.aar", "obj-0.3.0.jar"})
+@UsesLibraries({"ar-core.jar", "ar-core.aar", "obj-0.3.0.jar",
+        "filament-v1.9.11-android.jar",
+                "gltfio-v1.9.11-android.jar"})
 @UsesNativeLibraries(
-    v7aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so",
-    v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so",
-    x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so"
+    v7aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
+    v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
+    x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so"
 )
+
 @UsesPermissions({CAMERA})
 @UsesApplicationMetadata(metaDataElements = {
     @MetaDataElement(name = "com.google.ar.core", value = "required"),
@@ -119,7 +126,12 @@ import android.util.Log;
         theme = "@android:style/Theme.Material.Light.Dialog.Alert"
     )
 })
-@UsesAssets(fileNames = "ar_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag, Cat_diffuse.jpg, cat.obj, cube.obj, pawn.obj, sphere.obj, torus.obj, trigrid.png")
+@UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag, Cat_diffuse.jpg," +
+        "cat.obj, cube.obj, pawn.obj, sphere.obj, torus.obj, trigrid.png, chick_baby_chicken_bird.glb," +
+        "background_show_camera.frag, background_show_camera.vert," +
+        "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
+        "occlusion.frag, occlusion.vert, depth_color_palette.png, pawn_albedo.png"
+)
 public final class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer, ARImageMarkerContainer,
    ARDetectedPlaneContainer, ARLightContainer, OnPauseListener, OnResumeListener, OnClearListener, OnDestroyListener,
    ARViewRender.Renderer {
@@ -161,23 +173,18 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
     private PlaneRenderer planeRenderer;
     private PointCloudRenderer pointCloudRenderer;
     private BackgroundRenderer backgroundRenderer;
+    private ARFilamentRenderer arFilamentRenderer;
     private Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
     private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
-    private Mesh virtualObjectMesh;
     private Shader virtualObjectShader;
-    private Texture virtualObjectAlbedoTexture;
-    private Texture virtualObjectAlbedoInstantPlacementTexture;
     private final List<WrappedAnchor> wrappedAnchors = new ArrayList<>();
     private Texture dfgTexture;
     private SpecularCubeMapFilter cubeMapFilter;
-    private final float[] modelMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
-    private final float[] modelViewMatrix = new float[16];
-    private final float[] modelViewProjectionMatrix = new float[16];
     private final float[] sphericalHarmonicsCoefficients = new float[9 * 3];
     private final float[] viewInverseMatrix = new float[16];
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -307,26 +314,68 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
     @Override
     public void onSurfaceCreated(ARViewRender render) {
         try {
-            planeRenderer = new PlaneRenderer(render);
+            // Initialize background renderer for showing camera feed
             backgroundRenderer = new BackgroundRenderer(render);
-            mazeRenderer = new ObjectRenderer(render);
+
+            // Initialize plane renderer for showing detected planes
+            planeRenderer = new PlaneRenderer(render);
+
+            // Initialize point cloud renderer for showing feature points
             pointCloudRenderer = new PointCloudRenderer(render);
 
+            // Initialize the Filament renderer
+            arFilamentRenderer = new ARFilamentRenderer(render);
+            arFilamentRenderer.onSurfaceCreated(view);
+
+            // Create a framebuffer for compatibility during transition
             virtualSceneFramebuffer = new Framebuffer(render, 1, 1);
 
-
-
+            // Set up camera texture for ARCore
+            if (backgroundRenderer.getCameraColorTexture() != null &&
+                    backgroundRenderer.getCameraColorTexture().getTextureId() != 0) {
+                try {
+                    session.setCameraTextureNames(
+                            new int[]{backgroundRenderer.getCameraColorTexture().getTextureId()});
+                    hasSetTextureNames = true;
+                    Log.d(LOG_TAG, "Camera texture set successfully: " +
+                            backgroundRenderer.getCameraColorTexture().getTextureId());
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Failed to set camera texture: " + e.getMessage(), e);
+                }
+            } else {
+                Log.w(LOG_TAG, "Camera texture not ready in onSurfaceCreated");
+            }
         } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+            Log.e(LOG_TAG, "Failed to create renderers", e);
         }
     }
 
+    /**
+     * Updates to the onSurfaceChanged method
+     */
     @Override
     public void onSurfaceChanged(ARViewRender render, int width, int height) {
         displayRotationHelper.onSurfaceChanged(width, height);
-        if (virtualSceneFramebuffer != null){
+
+        // Resize the framebuffer
+        if (virtualSceneFramebuffer != null) {
             virtualSceneFramebuffer.resize(width, height);
         }
+
+        // Update the Filament renderer with new dimensions
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.onSurfaceChanged(width, height);
+        }
+    }
+
+    public static List<ARNode> sort(List<ARNode> nodes, String nodeType) {
+        List<ARNode> filteredNodes = nodes.stream()
+                .filter(n -> {
+                    return n.Type().contains(nodeType);
+                } )
+                .collect(Collectors.toList());
+        System.out.println("Filtered : " + filteredNodes);
+        return filteredNodes;
     }
 
     @Override
@@ -334,91 +383,134 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
         if (session == null) {
             return;
         }
-        if (!hasSetTextureNames) {
-            session.setCameraTextureNames(new int[]{backgroundRenderer.getCameraColorTexture().getTextureId()});
-            hasSetTextureNames = true;
-        }
 
-        displayRotationHelper.updateSessionIfNeeded(session);
-        Frame frame;
         try {
-            frame = session.update();
-        } catch (CameraNotAvailableException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            return;
-        }
-        Camera camera = frame.getCamera();
-        try {
-            backgroundRenderer.setUseDepthVisualization(render, depthSettings.depthColorVisualizationEnabled());
-            backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            return;
-        }
-        backgroundRenderer.updateDisplayGeometry(frame);
-        if (camera.getTrackingState() == TrackingState.TRACKING && (depthSettings.useDepthForOcclusion() || depthSettings.depthColorVisualizationEnabled())) {
-            try (Image depthImage = frame.acquireDepthImage16Bits()) {
-                backgroundRenderer.updateCameraDepthTexture(depthImage);
-            } catch (NotYetAvailableException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
+            // Ensure the Filament renderer is initialized
+            if (arFilamentRenderer == null) {
+                arFilamentRenderer = new ARFilamentRenderer(render);
+                arFilamentRenderer.onSurfaceCreated(view);
+                Log.d(LOG_TAG, "Initializing arFilamentRenderer in onDrawFrame");
             }
-        }
 
-        handleTap(frame, camera);
+            // Make sure we have camera texture names set for ARCore
+            if (!hasSetTextureNames) {
+                if (backgroundRenderer.getCameraColorTexture() != null) {
+                    int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
+                    if (textureId != 0) {
+                        try {
+                            session.setCameraTextureNames(new int[]{textureId});
+                            hasSetTextureNames = true;
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "Error setting camera texture: " + e.getMessage());
+                            return;
+                        }
+                    }
+                }
 
-        trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
-        String message = null;
-        float[] tintColor = new float[] {0.0f, 0.5f, 0.0f, 1.0f};
-        if (camera.getTrackingState() == TrackingState.PAUSED) {
-            if (camera.getTrackingFailureReason() == TrackingFailureReason.NONE) {
-                message = SEARCHING_PLANE_MESSAGE;
-            } else {
-                message = TrackingStateHelper.getTrackingFailureReasonString(camera);
+                // If we still haven't set textures, wait until next frame
+                if (!hasSetTextureNames) {
+                    return;
+                }
             }
-        } else if (hasTrackingPlane()) {
-            if (wrappedAnchors.isEmpty()) {
-                message = WAITING_FOR_TAP_MESSAGE;
+
+            // Update the display rotation if needed
+            displayRotationHelper.updateSessionIfNeeded(session);
+
+            // Get the current frame from ARCore
+            Frame frame;
+            try {
+                frame = session.update();
+            } catch (CameraNotAvailableException e) {
+                Log.e(LOG_TAG, "Camera not available during onDrawFrame", e);
+                return;
             }
-        } else {
-            message = SEARCHING_PLANE_MESSAGE;
+
+            // Get the camera for this frame
+            Camera camera = frame.getCamera();
+
+            // Process camera images for background texture
+            backgroundRenderer.updateDisplayGeometry(frame);
+
+            if (camera.getTrackingState() == TrackingState.TRACKING) {
+                // Update depth information if needed
+                if (depthSettings.useDepthForOcclusion() || depthSettings.depthColorVisualizationEnabled()) {
+                    try (Image depthImage = frame.acquireDepthImage16Bits()) {
+                        backgroundRenderer.updateCameraDepthTexture(depthImage);
+                    } catch (NotYetAvailableException e) {
+                        // This is normal when depth data isn't available yet
+                    }
+                }
+
+                // Process any user interactions (taps on screen)
+                handleTap(frame, camera);
+
+                // Update light estimation in Filament if enabled
+                if (LightingEstimation()) {
+                    LightEstimate lightEstimate = frame.getLightEstimate();
+                    if (lightEstimate.getState() == LightEstimate.State.VALID) {
+                        arFilamentRenderer.updateLightEstimation(lightEstimate);
+
+                        // Trigger the lighting update event
+                        float[] colorCorrection = new float[4];
+                        lightEstimate.getColorCorrection(colorCorrection, 0);
+                        float ambientIntensity = (colorCorrection[0] + colorCorrection[1] + colorCorrection[2]) / 3.0f;
+                        float ambientTemperature = 6500.0f; // Approximate color temperature
+
+                        LightingEstimateUpdated(ambientIntensity, ambientTemperature);
+                    }
+                }
+            }
+
+            // Draw the background texture (camera feed)
+            if (frame.getTimestamp() != 0) {
+                backgroundRenderer.drawBackground(render);
+            }
+
+            // If camera is not tracking, don't render 3D content
+            if (camera.getTrackingState() == TrackingState.PAUSED) {
+                return;
+            }
+
+            // Get the projection and view matrices from ARCore
+            camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
+            camera.getViewMatrix(viewMatrix, 0);
+
+            // Draw detected planes if enabled
+            if (PlaneDetectionType() != 0) {
+                planeRenderer.drawPlanes(
+                        render,
+                        session.getAllTrackables(Plane.class),
+                        camera.getDisplayOrientedPose(),
+                        projectionMatrix
+                );
+            }
+
+            // Draw point cloud if enabled
+            if (ShowFeaturePoints()) {
+                pointCloudRenderer.draw(
+                        render,
+                        frame.acquirePointCloud(),
+                        viewMatrix,
+                        projectionMatrix
+                );
+            }
+
+            // Render 3D content using Filament
+            // Get nodes that should be rendered with Filament (3D models)
+            List<ARNode> modelNodes = sort(arNodes, "ModelNode");
+            if (!modelNodes.isEmpty()) {
+                arFilamentRenderer.draw(render, modelNodes, viewMatrix, projectionMatrix);
+            }
+
+            // We still have the virtualSceneFramebuffer for compatibility and transitions
+            // Eventually this could be replaced with direct rendering from Filament
+            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception on the OpenGL thread", e);
         }
-        if (message == null) {
-            //messageSnackbarHelper.hide(this);
-        } else {
-            //Toast.makeText($context(), message, Toast.LENGTH_SHORT).show();
-            Log.i(LOG_TAG, message);
-        }
-        if (frame.getTimestamp() != 0) {
-            backgroundRenderer.drawBackground(render);
-        }
-        if (camera.getTrackingState() == TrackingState.PAUSED) {
-            return;
-        }
-
-        // Compute lighting from average intensity of the image.
-        final float[] colorCorrectionRgba = new float[4];
-        frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
-
-        camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-        camera.getViewMatrix(viewMatrix, 0);
-
-
-        planeRenderer.drawPlanes(render, session.getAllTrackables(Plane.class),  camera.getDisplayOrientedPose(), projectionMatrix);
-        pointCloudRenderer.draw(render, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-       // if (virtualObjectShader.hasUniform("u_LightEstimateIsValid")) {
-       //     updateLightEstimation(frame.getLightEstimate(), viewMatrix);
-       // }
-
-        render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
-
-        if (arNodes != null){
-            mazeRenderer.draw(render, arNodes, viewMatrix, projectionMatrix);
-        }
-
-        backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
     }
-
-    private void handleTap(Frame frame, Camera camera) {
+   private void handleTap(Frame frame, Camera camera) {
 
         MotionEvent tap = tapHelper.poll();
         if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
@@ -439,6 +531,8 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
                 Trackable mostRecentTrackable = hit.getTrackable();
                 Anchor a = hit.createAnchor();
                 Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+
+                // CSB, will have to handle Nodes,
                 if (mostRecentTrackable instanceof Plane){
                     ARDetectedPlane arplane = (ARDetectedPlane) new DetectedPlane((Plane)mostRecentTrackable);
 
@@ -603,7 +697,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
 
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
     public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
-        Log.i("creating Capsule node", "with detecte plane and pose "  );
+        Log.i("creating Sphere node", "with detecte plane and pose "  );
         Pose p1 = (Pose) p;
         SphereNode sphereNode = new SphereNode(this);
 

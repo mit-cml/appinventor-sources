@@ -102,7 +102,7 @@ Component for ARView3D
 
 {:.events}
 
-{:id="ARView3D.ClickOnDetectedPlaneAt"} ClickOnDetectedPlaneAt(*detectedPlane*{:.component},*x*{:.number},*y*{:.number},*z*{:.number},*isANodeAtPoint*{:.boolean})
+{:id="ARView3D.ClickOnDetectedPlaneAt"} ClickOnDetectedPlaneAt(*targetPlane*{:.component},*p*{:.any},*isANodeAtPoint*{:.boolean})
 : The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.
 
 {:id="ARView3D.DetectedPlaneRemoved"} DetectedPlaneRemoved(*detectedPlane*{:.component})
@@ -132,6 +132,9 @@ Component for ARView3D
 {:id="ARView3D.TapAtPoint"} TapAtPoint(*x*{:.number},*y*{:.number},*z*{:.number},*isANodeAtPoint*{:.boolean})
 : The user tapped on a point on the ARView3D.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.
 
+{:id="ARView3D.addNode"} addNode(*node*{:.component})
+: The user tapped on a node in the ARView3D.
+
 ### Methods  {#ARView3D-Methods}
 
 {:.methods}
@@ -141,6 +144,9 @@ Component for ARView3D
 
 {:id="ARView3D.CreateCapsuleNode" class="method returns component"} <i/> CreateCapsuleNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new CapsuleNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateCapsuleNodeAtPlane" class="method returns component"} <i/> CreateCapsuleNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new CapsuleNode with default properties at the plane position.
 
 {:id="ARView3D.CreateConeNode" class="method returns component"} <i/> CreateConeNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new ConeNode with default properties at the specified (x,y,z) position.
@@ -156,6 +162,9 @@ Component for ARView3D
 
 {:id="ARView3D.CreateSphereNode" class="method returns component"} <i/> CreateSphereNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new SphereNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateSphereNodeAtPlane" class="method returns component"} <i/> CreateSphereNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new CapsuleNode with default properties at the plane position.
 
 {:id="ARView3D.CreateTextNode" class="method returns component"} <i/> CreateTextNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new TextNode with default properties at the specified (x,y,z) position.
@@ -362,6 +371,9 @@ Component for BoxNode
 {:id="BoxNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the node's position to (x,y,z).
 
+{:id="BoxNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: Changes the node's position to (x,y,z).
+
 {:id="BoxNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -402,6 +414,9 @@ Component for CapsuleNode
 {:id="CapsuleNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="CapsuleNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="CapsuleNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -419,9 +434,6 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
-
-{:id="CapsuleNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
 
 {:id="CapsuleNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -504,7 +516,10 @@ Component for CapsuleNode
 : Changes the node's position by (x,y,z).
 
 {:id="CapsuleNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
+
+{:id="CapsuleNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: move a capsule node properties to detectedplane.
 
 {:id="CapsuleNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
@@ -653,6 +668,9 @@ Component for ConeNode
 {:id="ConeNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the node's position to (x,y,z).
 
+{:id="ConeNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: Changes the node's position to (x,y,z).
+
 {:id="ConeNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -795,6 +813,9 @@ Component for CylinderNode
 : Changes the node's position by (x,y,z).
 
 {:id="CylinderNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
+: Changes the node's position to (x,y,z).
+
+{:id="CylinderNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
 {:id="CylinderNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
@@ -1075,7 +1096,10 @@ Component for ModelNode
 : Changes the node's position by (x,y,z).
 
 {:id="ModelNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
+
+{:id="ModelNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="ModelNode.PlayAnimationsForAllNodes" class="method"} <i/> PlayAnimationsForAllNodes()
 : Plays all animations in the model, if it has animations.
@@ -1257,6 +1281,9 @@ Component for PlaneNode
 {:id="PlaneNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the node's position to (x,y,z).
 
+{:id="PlaneNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: Changes the node's position to (x,y,z).
+
 {:id="PlaneNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -1342,6 +1369,9 @@ None
 
 {:id="PointLight.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the PointLight's position to (x,y,z).
+
+{:id="PointLight.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: move a capsule node properties to detectedplane.
 
 ## PyramidNode  {#PyramidNode}
 
@@ -1475,6 +1505,9 @@ Component for PyramidNode
 {:id="PyramidNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the node's position to (x,y,z).
 
+{:id="PyramidNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: Changes the node's position to (x,y,z).
+
 {:id="PyramidNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -1500,14 +1533,17 @@ Component for SphereNode
 
 {:.properties}
 
-{:id="SphereNode.FillColor" .color} *FillColor*
+{:id="SphereNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
-{:id="SphereNode.FillColorOpacity" .number} *FillColorOpacity*
+{:id="SphereNode.FillColorOpacity" .number .do} *FillColorOpacity*
 : The opacity of the node's FillColor.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
 {:id="SphereNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="SphereNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
 
 {:id="SphereNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -1527,13 +1563,13 @@ Component for SphereNode
 {:id="SphereNode.Scale" .number} *Scale*
 : The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
-{:id="SphereNode.ShowShadow" .boolean} *ShowShadow*
+{:id="SphereNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="SphereNode.Texture" .text} *Texture*
+{:id="SphereNode.Texture" .text .do} *Texture*
 : The image used to texture the node.  If set, the FillColor is not shown.
 
-{:id="SphereNode.TextureOpacity" .number} *TextureOpacity*
+{:id="SphereNode.TextureOpacity" .number .do} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
 {:id="SphereNode.Type" .text .ro .bo} *Type*
@@ -1569,6 +1605,9 @@ Component for SphereNode
 
 {:id="SphereNode.LongClick"} LongClick()
 : The user long-pressed on the node.
+
+{:id="SphereNode.NodeNotFound"} NodeNotFound(*name*{:.text})
+: This event is triggered when the user tries to access a node named "name", but a node with that "name" does not exist.
 
 {:id="SphereNode.StoppedFollowingMarker"} StoppedFollowingMarker()
 : The node stopped following an ImageMarker.  This event will trigger after the StopFollowingImageMarker block is called.
@@ -1614,7 +1653,19 @@ Component for SphereNode
 : Changes the node's position by (x,y,z).
 
 {:id="SphereNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
+
+{:id="SphereNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: move a capsule node properties at the specified (x,y,z) position.
+
+{:id="SphereNode.PlayAnimationsForAllNodes" class="method"} <i/> PlayAnimationsForAllNodes()
+: Plays all animations in the model, if it has animations.
+
+{:id="SphereNode.PlayAnimationsForNode" class="method"} <i/> PlayAnimationsForNode(*name*{:.text},*shouldPlayChildNodes*{:.boolean})
+: Plays animations attached to a node named "name".  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldPlayChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their animations played.
+
+{:id="SphereNode.RenameNode" class="method"} <i/> RenameNode(*oldName*{:.text},*newName*{:.text})
+: Renames a node named "oldName" to "newName".  If no node exists with name "oldName", then the <code>NodeNotFound</code> event will be triggered.
 
 {:id="SphereNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
@@ -1627,6 +1678,30 @@ Component for SphereNode
 
 {:id="SphereNode.ScaleBy" class="method"} <i/> ScaleBy(*scalar*{:.number})
 : Changes the node's scale by the given scalar.
+
+{:id="SphereNode.SetFillColorForAllNodes" class="method"} <i/> SetFillColorForAllNodes(*color*{:.number},*opacity*{:.number})
+: Sets the color of all nodes with the given opacity.  Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.
+
+{:id="SphereNode.SetFillColorForNode" class="method"} <i/> SetFillColorForNode(*name*{:.text},*color*{:.number},*opacity*{:.number},*shouldColorChildNodes*{:.boolean})
+: <p>Sets the color of a node named "name" with the given opacity.  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldColorChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their color set.  If <code>shouldColorChildNodes</code> is false and the named node cannot be colored, an error will occur.  Otherwise, no error will occur, and the child nodes will attempt to be colored.</p>Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.
+
+{:id="SphereNode.SetShowShadowForAllNodes" class="method"} <i/> SetShowShadowForAllNodes(*showShadow*{:.boolean})
+: Sets if all nodes show a shadow.
+
+{:id="SphereNode.SetShowShadowForNode" class="method"} <i/> SetShowShadowForNode(*name*{:.text},*showShadow*{:.boolean},*shouldShadowChildNodes*{:.boolean})
+: <p>Sets whether the shadow is shown for a node named "name".  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldShadowChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their shadow set.
+
+{:id="SphereNode.SetTextureForAllNodes" class="method"} <i/> SetTextureForAllNodes(*texture*{:.text},*opacity*{:.number})
+: Sets the texture of all nodes with the given opacity.Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.
+
+{:id="SphereNode.SetTextureForNode" class="method"} <i/> SetTextureForNode(*name*{:.text},*texture*{:.text},*opacity*{:.number},*shouldTexturizeChildNodes*{:.boolean})
+: <p>Sets the texture of a node named "name" with the given opacity.  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldTexturizeChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their color set.  If <code>shouldTexturizeChildNodes</code> is false and the named node cannot be textured, an error will occur.  Otherwise, no error will occur, and the child nodes will attempt to be textured.</p>Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.
+
+{:id="SphereNode.StopAnimationsForAllNodes" class="method"} <i/> StopAnimationsForAllNodes()
+: Stops all animations in the model, if it has animations.
+
+{:id="SphereNode.StopAnimationsForNode" class="method"} <i/> StopAnimationsForNode(*name*{:.text},*shouldStopChildNodes*{:.boolean})
+: Stops animations attached to a node named "name".  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldStopChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their animations stopped.
 
 {:id="SphereNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
@@ -1746,6 +1821,9 @@ None
 
 {:id="Spotlight.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the PointLight's position to (x,y,z).
+
+{:id="Spotlight.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: move a capsule node properties to detectedplane.
 
 {:id="Spotlight.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the Spotlight's x rotation by the given degrees.
@@ -1888,6 +1966,9 @@ Component for TextNode
 {:id="TextNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : Changes the node's position to (x,y,z).
 
+{:id="TextNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
+: Changes the node's position to (x,y,z).
+
 {:id="TextNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -1922,6 +2003,9 @@ Component for TorusNode
 {:id="TorusNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="TorusNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="TorusNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -1945,9 +2029,6 @@ Component for TorusNode
 
 {:id="TorusNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
-
-{:id="TorusNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
 
 {:id="TorusNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -2030,6 +2111,9 @@ Component for TorusNode
 : Changes the node's position by (x,y,z).
 
 {:id="TorusNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
+: Changes the node's position to (x,y,z).
+
+{:id="TorusNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
 {:id="TorusNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
@@ -2177,6 +2261,9 @@ Component for TubeNode
 : Changes the node's position by (x,y,z).
 
 {:id="TubeNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
+: Changes the node's position to (x,y,z).
+
+{:id="TubeNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
 {:id="TubeNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
@@ -2336,6 +2423,9 @@ Component for VideoNode
 : Changes the node's position by (x,y,z).
 
 {:id="VideoNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
+: Changes the node's position to (x,y,z).
+
+{:id="VideoNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
 {:id="VideoNode.Pause" class="method"} <i/> Pause()
@@ -2504,6 +2594,9 @@ Component for WebViewNode
 : Changes the node's position by (x,y,z).
 
 {:id="WebViewNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
+: Changes the node's position to (x,y,z).
+
+{:id="WebViewNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
 {:id="WebViewNode.Reload" class="method"} <i/> Reload()

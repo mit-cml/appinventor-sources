@@ -1,5 +1,5 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-
+import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import android.util.Log;
 import com.google.appinventor.components.runtime.*;
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Renders an object loaded from an OBJ file in OpenGL. */
+@UsesAssets(fileNames = "ar_object.frag, ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, pawn.obj, pawn_abledo.png")
 public class ObjectRenderer {
   private static final String TAG = ObjectRenderer.class.getSimpleName();
 
@@ -31,8 +32,8 @@ public class ObjectRenderer {
   }
 
   // Default model and texture if none specified
-  private static final String DEFAULT_MODEL_NAME = "pawn.obj";
-  private static final String DEFAULT_TEXTURE_NAME = "pawn_albedo.png";
+  private static final String DEFAULT_MODEL_NAME = "chick_baby_chicken_bird.glb";
+  private static final String DEFAULT_TEXTURE_NAME = "Palette.png";
 
   // Shader names.
   private static final String VERTEX_SHADER_NAME = "ar_object.vert";
@@ -109,7 +110,11 @@ public class ObjectRenderer {
 
     // Create new mesh and cache it
     try {
+
+
       Mesh newMesh = Mesh.createFromAsset(render, modelName);
+
+
       meshCache.put(modelName, newMesh);
       return newMesh;
     } catch (IOException e) {
@@ -138,6 +143,7 @@ public class ObjectRenderer {
 
     // Create new texture and cache it
     try {
+      Log.i("Object renderer", "creating texture ");
       Texture newTexture = Texture.createFromAsset(
               render,
               textureName,
@@ -207,7 +213,8 @@ public class ObjectRenderer {
           ARViewRender render,
           Collection<ARNode> allObjectNodes,
           float[] viewMatrix,
-          float[] cameraProjection
+          float[] cameraProjection,
+          Framebuffer virtualSceneFramebuffer
   ) {
     if (allObjectNodes == null || allObjectNodes.isEmpty()) {
       return;
@@ -229,7 +236,6 @@ public class ObjectRenderer {
 
         Log.i(TAG, "Rendering node: " + arNode.toString() + " " + arNode.Model());
 
-        // Get or create the mesh and texture for this node
         Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
         String textureToUse = arNode.Texture();
         Texture nodeTexture = createOrGetTexture(render, textureToUse);
@@ -256,7 +262,7 @@ public class ObjectRenderer {
         shader.setVec4("u_ObjColor", defaultObjectColor);
 
         // Draw the mesh with this shader
-        render.draw(nodeMesh, shader);
+        render.draw(nodeMesh, shader, virtualSceneFramebuffer);
       } catch (Exception e) {
         Log.e(TAG, "Error rendering object: " + e.toString(), e);
       }

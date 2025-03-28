@@ -95,7 +95,7 @@ public class ARViewRender {
         return assetManager;
     }
 
-    Form getForm() {
+    public Form getForm() {
         return form;
     }
 

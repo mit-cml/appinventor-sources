@@ -1,11 +1,12 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-
+import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Renders the detected AR planes. */
+@UsesAssets(fileNames = "plane.vert, plane.frag, trigrid.png")
 public class PlaneRenderer {
     private static final String TAG = PlaneRenderer.class.getSimpleName();
 
@@ -105,6 +107,8 @@ public class PlaneRenderer {
         VertexBuffer[] vertexBuffers = {vertexBufferObject};
         mesh = new Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, indexBufferObject, vertexBuffers);
     }
+
+
 
     /** Updates the plane model transform matrix and extents. */
     private void updatePlaneParameters(

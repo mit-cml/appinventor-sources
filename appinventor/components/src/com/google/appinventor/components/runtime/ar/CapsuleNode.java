@@ -59,7 +59,6 @@ import java.util.Collection;
     @Override
     public void Trackable(Trackable t) { this.trackable = t;}
 
-
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",
             category = PropertyCategory.APPEARANCE)
