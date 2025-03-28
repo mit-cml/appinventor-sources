@@ -12,8 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ExportBlocksImage');
-goog.require('goog.Timer');
-
 
 /**
  * saveSvgAsPng

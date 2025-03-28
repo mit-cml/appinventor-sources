@@ -39,7 +39,6 @@ goog.provide('AI.Blockly.Backpack');
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.BackpackFlyout');
 goog.require('AI.Blockly.Util');
-goog.require('goog.Timer');
 
 /**
  * Class for a backpack.
@@ -119,13 +118,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
    * @private
    */
   svgBody_ = null;
-
-  /**
-   * Task ID of opening/closing animation.
-   * @type {number}
-   * @private
-   */
-  openTask_ = 0;
 
   /**
    * Left coordinate of the backpack.
@@ -372,7 +364,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     }
     this.flyout_.dispose();
     this.flyout_ = null;
-    clearTimeout(this.openTask_);
   }
 
   /**
@@ -683,7 +674,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     if (this.isOpen == state) {
       return;
     }
-    goog.Timer.clear(this.openTask_);
     this.isOpen = state;
     this.animateBackpack_();
   }
