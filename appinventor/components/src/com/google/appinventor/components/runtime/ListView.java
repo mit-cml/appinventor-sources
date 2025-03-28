@@ -599,7 +599,7 @@ public final class ListView extends AndroidViewComponent {
    * @return background color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @SimpleProperty(description = "The text color of the listview stringItems.",
+  @SimpleProperty(description = "The color of the main text of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
@@ -628,7 +628,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return color of the secondary text
    */
-  @SimpleProperty(description = "The text color of DetailText of listview stringItems. ",
+  @SimpleProperty(description = "The color of the detail text of ListView elements. ",
       category = PropertyCategory.APPEARANCE)
   public int TextColorDetail() {
     return detailTextColor;
@@ -792,7 +792,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of image
    */
-  @SimpleProperty(description = "The image width of the listview image.",
+  @SimpleProperty(description = "Image width of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageWidth() {
     return imageWidth;
@@ -816,7 +816,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return height of image
    */
-  @SimpleProperty(description = "The image height of the listview image stringItems.",
+  @SimpleProperty(description = "Image height of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageHeight() {
     return imageHeight;
@@ -1054,7 +1054,8 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the divider thickness of list view
+   * Specifies the divider thickness of list view.
+   * If the thickness is 0, the divider is not visible.
    *
    * @param size sets the thickness of divider in the list view
    */
@@ -1071,14 +1072,16 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of margins
    */
-  @SimpleProperty(description = "The margins width of the list view element.",
+  @SimpleProperty(description = "The margins width of the list view element. "
+                                    + "If margins width > 0, then the divider is not displayed.",
       category = PropertyCategory.APPEARANCE)
   public int ElementMarginsWidth() {
     return margins;
   }
 
   /**
-   * Specifies the width of the margins of a list view element
+   * Specifies the width of the margins of a list view element.
+   * If margins width > 0, then the divider is not displayed.
    *
    * @param width sets the width of the margins in the list view element
    */
@@ -1095,7 +1098,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return corner radius
    */
-  @SimpleProperty(description = "The radius of the rounded corners of a list view item.",
+  @SimpleProperty(description = "The radius of the rounded corners of a list view element.",
       category = PropertyCategory.APPEARANCE)
   public int ElementCornerRadius() {
     return radius;
