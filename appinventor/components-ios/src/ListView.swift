@@ -484,7 +484,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
     if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
-           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
+           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
     let index = Int(addIndex - 1)
