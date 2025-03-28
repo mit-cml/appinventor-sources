@@ -81,7 +81,6 @@ goog.require('AI.Blockly.FieldGlobalFlydown');
 goog.require('AI.BlockUtils');
 goog.require('AI.NameSet');
 goog.require('AI.Substitution');
-goog.require('goog.dom');
 
 /**
  * Prototype bindings for a global variable declaration block
@@ -386,7 +385,9 @@ Blockly.Blocks['local_declaration_statement'] = {
   },
   domToMutation: function(xmlElement) { // Retrieve local names from mutation element of XML for block
                                         // and replace existing declarations
-    var children = goog.dom.getChildren(xmlElement);
+    var children = Array.prototype.filter.call(xmlElement.childNodes, function(node) {
+      return node.nodeType === Element.ELEMENT_NODE;
+    });
     if (children.length > 0) { // Ensure xml element is nonempty
       // Else we'll overwrite initial list with "name" for new block
       this.localNames_ = [];
