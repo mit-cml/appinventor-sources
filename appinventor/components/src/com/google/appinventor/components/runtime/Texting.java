@@ -1297,4 +1297,3 @@ public class Texting extends AndroidNonvisibleComponent
 
 }
 
-
