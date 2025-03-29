@@ -522,7 +522,7 @@ public class Texting extends AndroidNonvisibleComponent
               @IntentFilterElement(actionElements = {
                   @ActionElement(name = "com.google.android.apps.googlevoice.SMS_RECEIVED")
               })
-          }, exported = "false")
+          })
   })
   public void GoogleVoiceEnabled(boolean enabled) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
@@ -614,36 +614,38 @@ public class Texting extends AndroidNonvisibleComponent
   })
   public void ReceivingEnabled(@Options(ReceivingState.class) int enabled) {
     // Make sure enabled is a valid ReceivingState.
-    ReceivingState state = ReceivingState.fromUnderlyingValue(enabled);
+    final ReceivingState state = ReceivingState.fromUnderlyingValue(enabled);
     if (state == null) {
       container.$form().dispatchErrorOccurredEvent(this, "Texting",
           ErrorMessages.ERROR_BAD_VALUE_FOR_TEXT_RECEIVING, enabled);
       return;
     }
-    if (state == ReceivingState.Always) {
-      checkForNotificationPermission("ReceivingEnabled");
-    }
-    ReceivingEnabledAbstract(state);
-  }
-
-  private void checkForNotificationPermission(final String caller) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      return;
-    }
-    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
-        != PackageManager.PERMISSION_GRANTED) {
+    if (state == ReceivingState.Always && requiresPostNotificationPermission()) {
       form.askPermission(Manifest.permission.POST_NOTIFICATIONS, new PermissionResultHandler() {
         @Override
         public void HandlePermissionResponse(String permission, boolean granted) {
           if (granted) {
             Log.i(TAG, "Post Notifications permission granted");
+            ReceivingEnabledAbstract(state);
           } else {
             Log.i(TAG, "Post Notifications permission denied");
-            form.dispatchPermissionDeniedEvent(Texting.this, caller, Manifest.permission.POST_NOTIFICATIONS);
+            form.dispatchPermissionDeniedEvent(
+                Texting.this,
+                "ReceivingEnabled",
+                Manifest.permission.POST_NOTIFICATIONS);
           }
         }
       });
+      return;
     }
+    ReceivingEnabledAbstract(state);
+  }
+
+
+  private boolean requiresPostNotificationPermission() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
+    return ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
+        != PackageManager.PERMISSION_GRANTED;
   }
 
   public static int isReceivingEnabled(Context context) {
