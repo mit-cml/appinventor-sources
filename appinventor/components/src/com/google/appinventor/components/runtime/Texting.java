@@ -15,8 +15,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
@@ -162,7 +164,8 @@ import org.json.JSONObject;
   "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
   "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
-  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
+  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS, " +
+  "android.permission.POST_NOTIFICATIONS")
 @UsesLibraries(libraries =
   "google-api-client.jar," +
   "google-api-client-android2-beta.jar," +
@@ -519,7 +522,7 @@ public class Texting extends AndroidNonvisibleComponent
               @IntentFilterElement(actionElements = {
                   @ActionElement(name = "com.google.android.apps.googlevoice.SMS_RECEIVED")
               })
-          })
+          }, exported = "false")
   })
   public void GoogleVoiceEnabled(boolean enabled) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
@@ -617,7 +620,30 @@ public class Texting extends AndroidNonvisibleComponent
           ErrorMessages.ERROR_BAD_VALUE_FOR_TEXT_RECEIVING, enabled);
       return;
     }
+    if (state == ReceivingState.Always) {
+      checkForNotificationPermission("ReceivingEnabled");
+    }
     ReceivingEnabledAbstract(state);
+  }
+
+  private void checkForNotificationPermission(final String caller) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      return;
+    }
+    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
+        != PackageManager.PERMISSION_GRANTED) {
+      form.askPermission(Manifest.permission.POST_NOTIFICATIONS, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            Log.i(TAG, "Post Notifications permission granted");
+          } else {
+            Log.i(TAG, "Post Notifications permission denied");
+            form.dispatchPermissionDeniedEvent(Texting.this, caller, Manifest.permission.POST_NOTIFICATIONS);
+          }
+        }
+      });
+    }
   }
 
   public static int isReceivingEnabled(Context context) {
@@ -1268,4 +1294,5 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
 }
+
 
