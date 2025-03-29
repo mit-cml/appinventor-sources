@@ -134,7 +134,8 @@ import org.json.JSONObject;
   "screen) and, moreso, even if the app is not running, so long as it's " +
   "installed on the phone. If the phone receives a text message when the " +
   "app is not in the foreground, the phone will show a notification in " +
-  "the notification bar.  Selecting the notification will bring up the " +
+  "the notification bar. (User should have granted the POST_NOTIFICATIONS " +
+  "permission). Selecting the notification will bring up the " +
   "app.  As an app developer, you'll probably want to give your users the " +
   "ability to control ReceivingEnabled so that they can make the phone " +
   "ignore text messages.</p> " +
