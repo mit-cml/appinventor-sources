@@ -16,6 +16,7 @@ goog.require('AI.BlockUtils');
 
 Blockly.Blocks['matrices_create'] = {
   category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_CREATE_HELPURL,
   init: function () {
     this.setColour(Blockly.MATRIX_CATEGORY_HUE);
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));

@@ -599,7 +599,7 @@ public interface Images extends Resources {
   /**
    * Built in drawer item: matrices
    */
-  @Source("com/google/appinventor/images/math.png")
+  @Source("com/google/appinventor/images/matrices.png")
   ImageResource matrices();
 
   /**

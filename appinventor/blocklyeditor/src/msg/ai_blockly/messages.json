@@ -731,7 +731,7 @@
 	"Blockly.Msg.LANG_CATEGORY_MATRICES": "Matrices",
 	"Blockly.Msg.LANG_MATRICES_CREATE": "create matrix with size",
 	"Blockly.Msg.LANG_MATRICES_CREATE_TOOLTIP": "Return a matrix with specified dimensions",
-	"Blockly.Msg.LANG_MATRICES_CREATE_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_CREATE_HELPURL": "/reference/blocks/matrices.html#creatematrix",
 
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW": "row",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN": "column",
@@ -740,37 +740,37 @@
 	
 	"Blockly.Msg.LANG_MATRICES_GET_ROW": "get matrix row",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP": "Returns the row of the matrix",
-	"Blockly.Msg.LANG_MATRICES_GET_ROW_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_GET_ROW_HELPURL": "/reference/blocks/matrices.html#getrow",
 	
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN": "get matrix column",
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_TOOLTIP": "Returns the column of the matrix",
-	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_HELPURL": "/reference/blocks/matrices.html#getcolumn",
 
 	"Blockly.Msg.LANG_MATRICES_GET_CELL": "get matrix cell",
 	"Blockly.Msg.LANG_MATRICES_GET_CELL_TOOLTIP": "Returns the value for a cell of the matrix",
-	"Blockly.Msg.LANG_MATRICES_GET_CELL_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_GET_CELL_HELPURL": "/reference/blocks/matrices.html#getcell",
 
 	"Blockly.Msg.LANG_MATRICES_SET_CELL": "set matrix cell",
 	"Blockly.Msg.LANG_MATRICES_SET_CELL_TOOLTIP": "Sets the value for a cell of the matrix",
-	"Blockly.Msg.LANG_MATRICES_SET_CELL_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_SET_CELL_HELPURL": "/reference/blocks/matrices.html#setcell",
 
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_INVERSE": "inverse",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_INVERSE": "Returns the inverse of the matrix",
-	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_INVERSE": "",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_INVERSE": "/reference/blocks/matrices.html#inverse",
 
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TRANSPOSE": "transpose",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_TRANSPOSE": "Returns the transpose of the matrix",
-	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_TRANSPOSE": "",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_TRANSPOSE": "/reference/blocks/matrices.html#transpose",
 
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_ADD_TOOLTIP": "Returns the sum of two matrices",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP": "Returns the different between two matrices",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY_TOOLTIP": "Returns the product of two matrices or one matrix and a scalar",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER_TOOLTIP": "Returns the exponentiation of a matrix",
 
-	"Blockly.Msg.LANG_MATRICES_ADD_HELPURL": "",
-	"Blockly.Msg.LANG_MATRICES_SUBTRACT_HELPURL": "",
-	"Blockly.Msg.LANG_MATRICES_MULTIPLY_HELPURL": "",
-	"Blockly.Msg.LANG_MATRICES_POWER_HELPURL": "",
+	"Blockly.Msg.LANG_MATRICES_ADD_HELPURL": "/reference/blocks/matrices.html#matrixadd",
+	"Blockly.Msg.LANG_MATRICES_SUBTRACT_HELPURL": "/reference/blocks/matrices.html#matrixsubtract",
+	"Blockly.Msg.LANG_MATRICES_MULTIPLY_HELPURL": "/reference/blocks/matrices.html#matrixmultiply",
+	"Blockly.Msg.LANG_MATRICES_POWER_HELPURL": "/reference/blocks/matrices.html#matrixpower",
 
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT": "initialize global",
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME": "name",
