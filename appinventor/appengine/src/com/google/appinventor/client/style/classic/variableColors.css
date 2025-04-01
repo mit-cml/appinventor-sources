@@ -336,8 +336,6 @@ body {
   background-image:-o-linear-gradient(top, v-white, gray-300);*/
   background-repeat: repeat-x;
   border: 1px solid gray-300;
-  border-color: gray-300 gray-300 #bfbfbf;
-  border-color: elevation-2 elevation-2 rgba(0, 0, 0, 0.25);
   border-bottom-color: #b3b3b3;
   filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='#ffe6e6e6', GradientType=0)";
   filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
@@ -359,8 +357,6 @@ body {
 .ode-TextButton:hover,
 .gwt-Button:hover {
   color: gray-800;
-  border-color: gray-300 gray-300 #bfbfbf;
-  border-color: elevation-2 elevation-2 rgba(0, 0, 0, 0.25);
   background-color: gray-300;
   /* *background-color: gray-300; */
 }
@@ -935,11 +931,11 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus,
 .uneditable-input:focus {
-  border-color: rgba(82, 168, 236, 0.8);
+  border-color: simple-panel-shadow;
 
   /* -webkit-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px rgba(82, 168, 236, 0.6);
   -moz-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px rgba(82, 168, 236, 0.6); */
-  box-shadow: inset 0 1px 1px elevation-2, 0 0 8px rgba(82, 168, 236, 0.6);
+  box-shadow: inset 0 1px 1px elevation-2, 0 0 8px simple-panel-shadow;
 }
 
 
@@ -1218,21 +1214,10 @@ textarea::-webkit-input-placeholder {
 .ac-renderer {
   background: v-white;
   border: 1px solid #666;
-  /* -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4); */
 }
 
 .ac-active {
   background-color: #b2b4bf;
-}
-
-div.dropdiv.good {
-  background-color: rgba(128, 255, 128, 0.3);
-  border: 8px dashed darkgreen;
-}
-
-div.dropdiv p {
-  color: darkgreen;
 }
 
 .download-barcode:before {

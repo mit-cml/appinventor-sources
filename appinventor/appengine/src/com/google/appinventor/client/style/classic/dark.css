@@ -61,6 +61,7 @@
 /* blue */
 @def explorer-border                    #D6E9F8;
 @def simple-panel-border                #67A7E3;
+@def simple-panel-shadow                rgba(82, 168, 236, 0.8);
 @def project-color                      #F9FAF5;
 
 

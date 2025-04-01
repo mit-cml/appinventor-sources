@@ -18,6 +18,11 @@ body {
   background: lightgrey;
   font-family: Poppins, Helvetica, Arial, sans-serif;
 }
+
+.ode-Logo {
+    content: logo-image;
+}
+
 .dyslexic * {
   font-family: OpenDyslexic, Poppins, Helvetica, Arial, sans-serif;
 }
@@ -25,7 +30,7 @@ body {
 /* For the TOS Form*/
 .floatingBox {
   background-color: v-white;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
+  box-shadow: 0 0 4px container-shadow;
   border: 1px gray-800;
 }
 
@@ -157,7 +162,7 @@ body {
 
 .ode-ProjectListButton-down-hovering {
   border: 1px inset;
-  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px v-black-shadow;
 }
 
 .ode-ProjectListButton-up-disabled,
@@ -202,7 +207,7 @@ body {
 
 .inline:hover {
   background-color: gray-200;
-  color: rgba(167, 36, 122, 1);
+  color: text-highlight;
 }
 
 .action {
@@ -267,7 +272,7 @@ body {
 }
 
 .ode-ProjectRowHighlighted {
-  background-color: rgba(167, 36, 122, 0.21) !important;
+  background-color: row-highlight !important;
 }
 
 .ode-ProjectRowUnHighlighted {
@@ -353,7 +358,7 @@ body {
 
 .ode-ComponentRowHighlighted {
   border-bottom: 1px solid gray-300;
-  background-color: rgba(167, 36, 122, 0.21);
+  background-color: row-highlight;
 }
 
 .ode-ComponentRowUnHighlighted {
@@ -463,7 +468,7 @@ body {
 .ode-TopPanelLinks .gwt-Label,
 .ode-TopPanelLinks .gwt-Anchor,
 .ode-TopPanelLinks .gwt-TitleLabel {
-  color: rgb(100, 100, 100);
+  color: gray-550;
 }
 
 .ode-TopPanelLinks .gwt-Label:hover,
@@ -481,8 +486,7 @@ body {
 }
 
 .ode-TopPanelIconButton:hover {
-  /* -webkit-filter: drop-shadow(0px 0px 3px gray-900); */
-  filter: drop-shadow(0px 0px 3px gray-900);
+  filter: drop-shadow(0px 0px 3px gray-700);
 }
 
 .ode-TopPanelIconButton:active {
@@ -492,7 +496,7 @@ body {
 .ActionDropDown-Default,
 .ActionDropDown-Options {
   /*all: unset;*/
-  background-color: rgba(150, 150, 150, 0.1);
+  background-color: v-black-shadow;
   border-color: transparent;
   border-radius: 4px;
   position: relative;
@@ -517,7 +521,7 @@ body {
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
 .ActionDropDown-Options:hover {
-  background-color: gray-200;
+  background-color: gray-300;
   color: gray-800;
 }
 
@@ -617,7 +621,7 @@ body {
 
 .gwt-Tree .gwt-TreeItem-selected span,
 .gwt-Tree .gwt-TreeItem-selected span:hover {
-  background-color: rgba(167, 36, 122, 0.21) !important;
+  background-color: row-highlight !important;
 }
 
 .gwt-Tree .gwt-TreeItem span,
@@ -626,7 +630,7 @@ body {
 }
 
 .gwt-Tree .gwt-TreeItem span:hover {
-  color: rgba(167, 36, 122, 1);
+  color: text-highlight;
 }
 
 /* Young Android Toolbar */
@@ -690,7 +694,7 @@ body {
 
 .ode-TextButton-down-hovering,
 .gwt-Button-down-hovering {
-  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px v-black-shadow;
 }
 
 .ode-TextButton:hover,
@@ -702,7 +706,7 @@ body {
 
 .ode-TextButton:active,
 .gwt-Button:active {
-  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px v-black-shadow;
 }
 
 .destructive-action {
@@ -728,11 +732,8 @@ body {
 
 .ode-BlocksDesignerButton {
   color: v-white;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  text-shadow: 0 -1px 0 v-black-shadow;
   background-image: linear-gradient(to bottom, #fbb450, #f89406);
-  background-repeat: repeat-x;
-  border-color: #f89406 #f89406 #ad6704;
-  border-color: container-shadow container-shadow rgba(0, 0, 0, 0.25);
   /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0); warning
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); */
   background-repeat: unset;
@@ -789,7 +790,7 @@ body {
 }
 
 .ode-SimplePaletteItem-Selected {
-  background-color: rgba(167, 36, 122, 0.21) !important;
+  background-color: row-highlight !important;
 }
 
 .ode-SimplePaletteItem-icon {
@@ -888,7 +889,7 @@ body {
 
 .ode-ChoicePropertyEditor:focus {
   border-color: gray-300;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px gray-300;
+  box-shadow: inset 0 1px 1px v-back-shadow, 0 0 8px gray-300;
 }
 
 select.ode-PropertyEditor[disabled] {
@@ -902,7 +903,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ColorChoicePropertyEditor:focus {
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 1px 1px v-black;
 }
 
 .ode-SimpleMockForm {
@@ -1119,7 +1120,7 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-SimpleMockButton {
   background-color: gray-300;
   border-bottom: 2px gray-400 solid;
-  color: rgba(0, 0, 0, 0.87);
+  color: v-black;
   border-radius: 0px;
 }
 
@@ -1392,10 +1393,8 @@ a.ode-ExtensionAnchor:hover {
 
 .gwt-PopupPanel {
   background-color: v-white;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  /* -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); warning
-    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); */
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid v-black;
+  box-shadow: 0 5px 10px v-black-shadow;
 }
 
 /*
@@ -1445,12 +1444,7 @@ input[type="color"],
 .uneditable-input {
   background-color: v-white;
   border: 1px solid gray-300;
-  /* -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); warning
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); */
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  /* -webkit-transition: border linear 0.2s, box-shadow linear 0.2s; warning
-    -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
-    -o-transition: border linear 0.2s, box-shadow linear 0.2s; */
+  box-shadow: inset 0 1px 1px gray-200;
   transition: border linear 0.2s, box-shadow linear 0.2s;
   font-size: 10px;
 }
@@ -1471,13 +1465,9 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus,
 .uneditable-input:focus {
-  border-color: rgba(82, 168, 236, 0.8);
-  /* IE6-9 */
-
-  /* -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6); warning
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6); */
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(82, 168, 236, 0.6);
+  border-color: simple-panel-shadow;
+  box-shadow: inset 0 1px 1px gray-200,
+    0 0 8px simple-panel-shadow;
 }
 
 input[type="file"],
@@ -1507,9 +1497,7 @@ input[type="checkbox"]:focus {
   color: gray-500;
   background-color: #fcfcfc;
   border-color: gray-300;
-  /* -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025); warning
-    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025); */
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+  box-shadow: inset 0 1px 2px v-black-shadow;
 }
 /*   warning
   input:-moz-placeholder,
@@ -1627,8 +1615,8 @@ input[type="checkbox"]:focus {
 .paragraph-end-block {
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 1)
+    v-white,
+    v-white
   );
   /* filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='#ffffff'); warning */
 }
@@ -1785,21 +1773,10 @@ input[type="checkbox"]:focus {
 
 .ac-renderer {
   background: v-white;
-  border: 1px solid #666;
-  /* -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4); warning
-    -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4); */
+  border: 1px solid gray-700;
 }
 .ac-active {
   background-color: #b2b4bf;
-}
-
-div.dropdiv.good {
-  background-color: rgba(128, 255, 128, 0.3);
-  border: 8px dashed darkgreen;
-}
-
-div.dropdiv p {
-  color: darkgreen;
 }
 
 .ya-Toolbar .left {

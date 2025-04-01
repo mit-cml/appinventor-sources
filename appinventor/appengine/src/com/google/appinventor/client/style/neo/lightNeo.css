@@ -9,6 +9,7 @@
 /* Greys */
 @def v-white #ffffff;
 @def v-black #000000;
+@def v-black-shadow                     rgba(0, 0, 0, 0.025);
 @def container-shadow                   rgba(0,0,0,0.1);
 @def button-shadow-color                rgba(0, 0, 0, 0.15);
 @def gray-200 #eeeeee;
@@ -27,6 +28,7 @@
 /* blue */
 @def explorer-border                    #D6E9F8;
 @def simple-panel-border                #67A7E3;
+@def simple-panel-shadow                rgba(82, 168, 236, 0.8);
 @def project-color                      #112abb;
 
 /* change once get modern mockform */
@@ -59,6 +61,9 @@
 
 @def error   #ff6666;
 @def v-red   #ff0000;
+
+@def row-highlight  rgba(167, 36, 122, 0.21);
+@def text-highlight rgba(167, 36, 122, 1);
 
 
 
