@@ -1220,6 +1220,64 @@ path.ode-SimpleMockMapFeature-selected {
   box-shadow: 0 0 2px gray-550;
 }
 
+/* Start of NoProjectsDialogBox. */
+.ode-noDialogDiv {
+    box-shadow: 0 0 10px gray-500;
+    background-color: v-white;
+}
+
+.ode-noDialogDivHeader {
+    background-color: clr-primary-600;
+    border-bottom: 1px gray-200 solid;
+}
+
+.ode-headerTitle {
+    color: v-white;
+}
+
+.ode-tutorialsTitle {
+    color: v-black;
+}
+
+.ode-noDialogExampleDiv {
+    box-shadow: 0 0 2px gray-500;
+}
+
+.ode-noDialogExampleDivs {
+    color: gray-700;
+}
+
+.ode-tutorialButton {
+    background-color: v-white;
+    border: 1px clr-primary solid;
+    color: clr-primary;
+}
+
+.ode-tutorialButton:hover {
+    background-color: clr-primary;
+    color: v-white;
+}
+
+.ode-closeDialogBox {
+    background-color: v-white;
+    border: 1px gray-700 solid;
+    color: gray-700;
+}
+
+.ode-closeDialogBox:hover {
+    background-color: gray-200;
+}
+.ode-noDialogNewProject {
+    background-color: v-white;
+    border: 1px clr-primary solid;
+    color: clr-primary;
+}
+
+.ode-noDialogNewProject:hover {
+    background-color: clr-primary;
+    color: v-white;
+}
+
 /* End of NoProjectsDialogBox. */
 
 .ode-DialogBox {
