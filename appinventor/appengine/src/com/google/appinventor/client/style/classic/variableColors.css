@@ -16,6 +16,11 @@ body {
   background-color: border-color;
   background-image: background-image;
 }
+
+.ode-Logo {
+    content: logo-image;
+}
+
 /* For the TOS Form*/
 .floatingBox {
   background-color: v-white;
