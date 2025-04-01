@@ -1,26 +1,26 @@
 package com.google.appinventor.components.runtime;
 
-import android.opengl.GLSurfaceView;
+import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.Choreographer;
+
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.google.android.filament.Box;
 import com.google.android.filament.Camera;
 import com.google.android.filament.Engine;
-import com.google.android.filament.Entity;
 import com.google.android.filament.EntityManager;
-import com.google.android.filament.Fence;
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.LightManager;
 import com.google.android.filament.Material;
 import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.RenderableManager;
 import com.google.android.filament.Renderer;
-import com.google.android.filament.RenderTarget;
 import com.google.android.filament.Scene;
-import com.google.android.filament.Skybox;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.Texture;
-import com.google.android.filament.TextureSampler;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.View;
@@ -30,21 +30,22 @@ import com.google.android.filament.gltfio.FilamentAsset;
 import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.android.filament.gltfio.ResourceLoader;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.core.Frame;
-import com.google.ar.core.LightEstimate;
-import com.google.ar.core.Pose;
-import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingState;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
-import com.google.appinventor.components.runtime.arview.helper.GLTextureHelper;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ARViewRender;
+import com.google.appinventor.components.runtime.arview.renderer.BackgroundRenderer;
+
+
+import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
+import com.google.ar.core.TrackingState;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
+import java.nio.ShortBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -52,550 +53,595 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Enhanced ARFilamentRenderer - A complete Filament-based renderer for ARCore
- *
- * This renderer integrates ARCore with Filament for high-quality 3D rendering in AR applications.
- * It manages the complete rendering pipeline including:
- * - Loading and managing 3D models (glTF/glb assets)
- * - Configuring materials and lighting
- * - Handling AR anchors and tracking
- * - Adapting to AR environment through ARCore's lighting estimation
+ * ARFilamentRenderer handles 3D rendering using Google Filament engine
+ * integrated with ARCore for Augmented Reality applications.
  */
 public class ARFilamentRenderer {
-    private static final String TAG = ARFilamentRenderer.class.getSimpleName();
+    private static final String LOG_TAG = ARFilamentRenderer.class.getSimpleName();
 
-    // Filament engine core components
+    // Filament core components
     private Engine engine;
     private Renderer renderer;
     private Scene scene;
     private View view;
     private Camera camera;
     private SwapChain swapChain;
-    private Skybox skybox;
 
-    // Asset loading components
+    // For loading models
     private AssetLoader assetLoader;
     private ResourceLoader resourceLoader;
     private MaterialProvider materialProvider;
 
-    // Cache for loaded assets
+    // Background renderer for camera feed - using your implementation
+    private BackgroundRenderer backgroundRenderer;
+
+    // Testing
+    private int testTriangleEntity = 0;
+
+    // Cache for models
     private Map<ARNode, FilamentAsset> nodeAssetMap = new ConcurrentHashMap<>();
-    private Map<FilamentAsset, List<Integer>> assetEntityMap = new ConcurrentHashMap<>();
+    private Map<String, Material> materialCache = new HashMap<>();
 
     // Rendering state
     private int cameraEntity;
     private int mainLightEntity;
     private int viewportWidth = 1;
     private int viewportHeight = 1;
-    private boolean hasInitialized = false;
 
-    // Animation support
-    private float animationTime = 0.0f;
-    private boolean animationEnabled = true;
 
-    // AR environment integration
-    private float[] lightIntensity = {1.0f, 1.0f, 1.0f};
-    private float[] lightDirection = {0.0f, -1.0f, 0.0f};
-    private float lightTemperature = 6500.0f;
+    private Form formCopy;
+    private ARViewRender arViewRender;
+    private boolean isInitialized = false;
+    private boolean hasSetTextureNames = false;
 
-    // Texture capture and export
-    private GLTextureHelper textureHelper;
-    private Texture filamentCapturedTexture;
-
-    // Constants
     private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 100.0f;
-    private static final String DEFAULT_MODEL = "chick_baby_chicken_bird.glb";
+    private static final float Z_FAR = 100f;
+    private final float[] viewMatrix = new float[16];
+    private final float[] projectionMatrix = new float[16];
 
+    // Framebuffer for virtual scene
+    private ARFrameBuffer virtualSceneFramebuffer;
+
+    private ComponentContainer contextContainer = null;
     /**
-     * Creates a new ARFilamentRenderer
-     *
-     * @param render The ARViewRender that manages the OpenGL context
-     * @throws IOException If asset loading fails
+     * Create a new ARFilamentRenderer
      */
-    public ARFilamentRenderer(ARViewRender render) throws IOException {
-        textureHelper = new GLTextureHelper();
+    public ARFilamentRenderer(ComponentContainer container) throws IOException {
+        this.contextContainer = container;
+        formCopy = container.$form();
+        Log.d(LOG_TAG, "ARFilamentRenderer constructor called");
     }
 
     /**
-     * Initializes the Filament engine and core components
-     *
-     * @param arView The GLSurfaceView used for AR rendering
+     * Initialize Filament components
      */
-    public void onSurfaceCreated(GLSurfaceView arView) {
+    /**
+     * Initialize Filament components
+     */
+    public void initialize(SurfaceView surfaceView, BackgroundRenderer backgroundRenderer) {
+        if (isInitialized) {
+            Log.d(LOG_TAG, "Filament already initialized, skipping");
+            return;
+        }
+
         try {
-            // Initialize Filament
+            Log.d(LOG_TAG, "Initializing Filament");
+
+            // Load Filament libraries
             initializeFilament();
 
-            // Create the core Filament components
+            // Create Filament engine
             engine = Engine.create();
+            Log.d(LOG_TAG, "Engine created successfully");
+
             renderer = engine.createRenderer();
             scene = engine.createScene();
 
             // Create camera entity
             cameraEntity = EntityManager.get().create();
             camera = engine.createCamera(cameraEntity);
-            camera.setExposure(16.0f, 1.0f/125.0f, 100.0f);
 
-            // Set up the view
+            // Create view
             view = engine.createView();
             view.setScene(scene);
             view.setCamera(camera);
-            view.setShadowingEnabled(true);
-            view.setPostProcessingEnabled(true);
 
-            // Create a skybox with subtle ambient color
-            skybox = new Skybox.Builder()
-                    .color(0.1f, 0.125f, 0.25f, 1.0f)
-                    .build(engine);
-            scene.setSkybox(skybox);
+            // Get dimensions from the surface
+            // Note: We'll update these when surface changes
+            viewportWidth = 1080;  // Default, will be updated
+            viewportHeight = 1920; // Default, will be updated
+            view.setViewport(new Viewport(0, 0, viewportWidth, viewportHeight));
+            Log.d(LOG_TAG, "View created with viewport " + viewportWidth + "x" + viewportHeight);
 
-            // Set up asset loaders for glTF models
+            // Create a SwapChain using the provided Surface
+            Surface surface = surfaceView.getHolder().getSurface();
+            swapChain = engine.createSwapChain(surface);
+            Log.d(LOG_TAG, "SwapChain created successfully");
+
+            // Store the background renderer
+            this.backgroundRenderer = backgroundRenderer;
+            Log.d(LOG_TAG, "BackgroundRenderer passed into ARFilamentRenderer");
+
+            // Create asset loaders for models
             materialProvider = new MaterialProvider(engine);
             assetLoader = new AssetLoader(engine, materialProvider, EntityManager.get());
             resourceLoader = new ResourceLoader(engine);
+            Log.d(LOG_TAG, "Asset loaders created successfully");
 
             // Set up lighting
             setupLighting();
 
-            // Create an offscreen SwapChain
-            swapChain = engine.createSwapChain(0, 0, SwapChain.CONFIG_READABLE);
+            isInitialized = true;
+            Log.d(LOG_TAG, "Filament initialized successfully");
 
-            hasInitialized = true;
-            Log.d(TAG, "Filament engine initialized successfully");
+            // Draw a test triangle
+            drawTestTriangleEntity();
+
         } catch (Exception e) {
-            Log.e(TAG, "Failed to initialize Filament engine", e);
+            Log.e(LOG_TAG, "Error initializing Filament: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Initialize Filament native library loading
+     * Initialize the camera texture from ARCore
+     */
+    public void initializeCameraTexture(int cameraTextureId) {
+        if (cameraTextureId == 0) {
+            Log.e(LOG_TAG, "Invalid camera texture ID: 0");
+            return;
+        }
+
+        try {
+            // The BackgroundRenderer already has the camera texture
+            // We just need to flag that we've set it
+            hasSetTextureNames = true;
+            Log.d(LOG_TAG, "Camera texture initialized with ID: " + cameraTextureId);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to initialize camera texture: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Set up occlusion if using depth
+     */
+    public void setupOcclusion(boolean useOcclusion) {
+        try {
+            if (backgroundRenderer != null) {
+                backgroundRenderer.setUseOcclusion(arViewRender, useOcclusion);
+                Log.d(LOG_TAG, "Occlusion set to: " + useOcclusion);
+            }
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Failed to set occlusion: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Load Filament libraries - ensures proper loading of native libraries
      */
     private void initializeFilament() {
         try {
             System.loadLibrary("filament-jni");
             System.loadLibrary("gltfio-jni");
-            Log.d(TAG, "Filament libraries loaded successfully");
+            Log.d(LOG_TAG, "Filament libraries loaded successfully");
         } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Failed to load Filament libraries", e);
+            Log.e(LOG_TAG, "Failed to load Filament libraries", e);
             throw e;
         }
     }
 
     /**
-     * Sets up the lighting environment for Filament
+     * Set up basic lighting for the scene
      */
     private void setupLighting() {
         // Create a main directional light (sun)
         mainLightEntity = EntityManager.get().create();
 
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
-        lightBuilder.color(lightIntensity[0], lightIntensity[1], lightIntensity[2])
-                .intensity(100000.0f)
-                .direction(lightDirection[0], lightDirection[1], lightDirection[2])
+        lightBuilder.color(1.0f, 1.0f, 0.8f)    // Slightly warm sunlight color
+                .intensity(100000.0f)           // Bright sunlight
+                .direction(0.0f, -1.0f, -0.2f)  // Coming from above and slightly in front
                 .castShadows(true);
 
         LightManager lightManager = engine.getLightManager();
         lightBuilder.build(engine, mainLightEntity);
         scene.addEntity(mainLightEntity);
 
-        // Add additional ambient light
+        // Add an ambient light - use SUN type for version 1.9.11 compatibility
         int ambientLightEntity = EntityManager.get().create();
         new LightManager.Builder(LightManager.Type.SUN)
-                .color(0.8f, 0.8f, 1.0f)
-                .intensity(0.5f)
+                .color(0.8f, 0.8f, 1.0f)       // Slightly blue ambient light (sky color)
+                .intensity(20000.0f)           // Moderate intensity for ambient
+                .direction(0.0f, 1.0f, 0.0f)   // Coming from below (bounce light)
+                .castShadows(false)
                 .build(engine, ambientLightEntity);
         scene.addEntity(ambientLightEntity);
+
+        Log.d(LOG_TAG, "Lighting setup complete with main and ambient lights");
     }
 
     /**
-     * Updates the view when surface dimensions change
-     *
-     * @param width The new surface width
-     * @param height The new surface height
+     * Create a simple test triangle to verify rendering works
      */
-    public void onSurfaceChanged(int width, int height) {
-        if (width <= 0 || height <= 0) {
-            Log.w(TAG, "Invalid surface dimensions: " + width + "x" + height);
-            return;
-        }
-
-        this.viewportWidth = width;
-        this.viewportHeight = height;
-
-        // Update the viewport dimensions
-        view.setViewport(new Viewport(0, 0, width, height));
-
-        // Create our texture for output capture
-        textureHelper.createTexture(width, height);
-
-        // Recreate SwapChain
-        if (swapChain != null) {
-            engine.destroySwapChain(swapChain);
-        }
-        swapChain = engine.createSwapChain(width, height, SwapChain.CONFIG_READABLE);
-
-        Log.d(TAG, "Surface changed: " + width + "x" + height);
-    }
-
-    /**
-     * Draws the AR scene using Filament
-     *
-     * @param render The ARViewRender context
-     * @param allNodes Collection of ARNodes to render
-     * @param viewMatrix The AR camera view matrix
-     * @param projectionMatrix The AR camera projection matrix
-     */
-    public void draw(ARViewRender render, Collection<ARNode> allNodes,
-                     float[] viewMatrix, float[] projectionMatrix) {
-        if (!hasInitialized || engine == null) {
-            Log.w(TAG, "Skipping draw - renderer not initialized");
-            return;
-        }
-
+    public void drawTestTriangleEntity() {
         try {
-            // Update camera transform from ARCore
-            updateCameraFromARCore(viewMatrix, projectionMatrix);
+            Log.d(LOG_TAG, "Creating test triangle entity");
 
-            // Begin capturing to texture
-            textureHelper.beginCapture();
+            // Create a new entity
+            if (testTriangleEntity == 0) {
+                testTriangleEntity = EntityManager.get().create();
 
-            // Process each node
-            boolean hasVisibleNodes = processNodes(render, allNodes);
+                Log.d(LOG_TAG, "Test entity created: " + testTriangleEntity);
 
-            // If no visible nodes, ensure default model
-            if (!hasVisibleNodes && nodeAssetMap.isEmpty()) {
-                ensureDefaultModel(render);
+                // Define vertices for a visible colored triangle
+                float[] triangleVertices = {
+                        0.0f, 0.5f, -1.5f,  // top
+                        -0.5f, -0.5f, -1.5f,  // bottom left
+                        0.5f, -0.5f, -1.5f   // bottom right
+                };
+
+                // Define bright colors for visibility
+                float[] triangleColors = {
+                        1.0f, 0.0f, 0.0f, 1.0f,  // bright red
+                        0.0f, 1.0f, 0.0f, 1.0f,  // bright green
+                        0.0f, 0.0f, 1.0f, 1.0f   // bright blue
+                };
+
+                // Create and setup vertex buffer
+                FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleVertices.length * 4)
+                        .order(ByteOrder.nativeOrder())
+                        .asFloatBuffer();
+                vertexBuffer.put(triangleVertices).position(0);
+
+                FloatBuffer colorBuffer = ByteBuffer.allocateDirect(triangleColors.length * 4)
+                        .order(ByteOrder.nativeOrder())
+                        .asFloatBuffer();
+                colorBuffer.put(triangleColors).position(0);
+
+                // Create Filament vertex buffer
+                VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
+                        .vertexCount(3)
+                        .bufferCount(2)
+                        .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                                VertexBuffer.AttributeType.FLOAT3, 0, 0)
+                        .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
+                                VertexBuffer.AttributeType.FLOAT4, 0, 0);
+
+                VertexBuffer vertexBufferObj = vbBuilder.build(engine);
+                vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
+                vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
+
+                // Create index buffer
+                short[] indices = {0, 1, 2};
+                ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
+                        .order(ByteOrder.nativeOrder())
+                        .asShortBuffer();
+                indexBuffer.put(indices).position(0);
+
+                IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
+                        .indexCount(3)
+                        .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+                IndexBuffer indexBufferObj = ibBuilder.build(engine);
+                indexBufferObj.setBuffer(engine, indexBuffer);
+
+                // We'll attempt to create a simple material
+                Material testMaterial = null;
+                MaterialInstance materialInstance = null;
+
+                try {
+                    // Try to load a simple material from file
+                    ByteBuffer materialBuffer = readAsset("basic.filamat");
+                    if (materialBuffer != null) {
+                        testMaterial = new Material.Builder()
+                                .payload(materialBuffer, materialBuffer.capacity())
+                                .build(engine);
+                        materialInstance = testMaterial.createInstance();
+                        Log.d(LOG_TAG, "Created material from file");
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Failed to load material: " + e.getMessage());
+                }
+
+                // If loading from file failed, create a default material
+                if (materialInstance == null) {
+                    try {
+                        // Use a default material builder
+                        testMaterial = new Material.Builder().build(engine);
+                        materialInstance = testMaterial.createInstance();
+
+                        // Try to set a color parameter if it exists
+                        if (testMaterial.hasParameter("baseColor")) {
+                            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 1.0f, 1.0f);
+                        }
+
+                        Log.d(LOG_TAG, "Created default material");
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Failed to create default material: " + e.getMessage());
+                        return;
+                    }
+                }
+
+                // Build renderable with larger bounding box for visibility
+                RenderableManager.Builder builder = new RenderableManager.Builder(1);
+                builder.boundingBox(new Box(-0.5f, -0.5f, -2.0f, 0.5f, 0.5f, -1.0f))
+                        .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
+                        .material(0, materialInstance)
+                        .culling(false)       // Disable culling to ensure visibility
+                        .receiveShadows(false)
+                        .castShadows(false)
+                        .priority(100)        // High priority to ensure it's drawn
+                        .build(engine, testTriangleEntity);
+
+                // Add to scene
+                scene.addEntity(testTriangleEntity);
+                Log.d(LOG_TAG, "Added test triangle entity to scene");
             }
 
-            // Update animations
-            updateAnimations();
+            // Position the triangle in front of the camera
+            TransformManager transformManager = engine.getTransformManager();
+            transformManager.create(testTriangleEntity);
 
-            // Render the scene
-            if (renderer.beginFrame(swapChain, 0L)) {
-                renderer.render(view);
-                renderer.endFrame();
-            }
+            float[] modelMatrix = new float[16];
+            Matrix.setIdentityM(modelMatrix, 0);
 
-            // Finish capturing to texture
-            textureHelper.endCapture();
+            // Place it directly in front of where the camera starts
+            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -1.5f);
+
+            transformManager.setTransform(transformManager.getInstance(testTriangleEntity), modelMatrix);
 
         } catch (Exception e) {
-            Log.e(TAG, "Error during rendering: " + e.getMessage(), e);
+            Log.e(LOG_TAG, "Exception in drawTestTriangleEntity: " + e.getMessage(), e);
+        }
+    }
+
+    public void updateSurfaceDimensions(int width, int height) {
+        if (width <= 0 || height <= 0) {
+            Log.e(LOG_TAG, "Invalid surface dimensions: " + width + "x" + height);
+            return;
+        }
+
+        viewportWidth = width;
+        viewportHeight = height;
+
+        if (view != null) {
+            view.setViewport(new Viewport(0, 0, width, height));
+            Log.d(LOG_TAG, "Updated viewport to " + width + "x" + height);
         }
     }
 
     /**
-     * Updates the Filament camera using ARCore camera matrices
+     * Updates the camera position and projection based on ARCore camera data
      */
-    private void updateCameraFromARCore(float[] viewMatrix, float[] projectionMatrix) {
-        // Invert the AR view matrix to get camera pose in world space
-        float[] cameraModelMatrix = new float[16];
-        Matrix.invertM(cameraModelMatrix, 0, viewMatrix, 0);
+    public void updateCameraFromARCore(float[] viewMatrix, float[] projectionMatrix) {
+        if (camera == null) {
+            Log.e(LOG_TAG, "Camera not initialized in updateCameraFromARCore");
+            return;
+        }
+        if (viewportWidth <= 0 || viewportHeight <= 0) {
+            Log.e(LOG_TAG, "Invalid viewport dimensions: " + viewportWidth + "x" + viewportHeight);
+            return;
+        }
 
-        // Update camera transform
-        TransformManager transformManager = engine.getTransformManager();
-        int cameraInstance = transformManager.getInstance(cameraEntity);
-        transformManager.setTransform(cameraInstance, cameraModelMatrix);
+        try {
+            // ARCore's viewMatrix is already a view matrix (camera pose inverse)
+            // We need to invert it to get the camera's world position
+            float[] cameraModelMatrix = new float[16];
+            Matrix.invertM(cameraModelMatrix, 0, viewMatrix, 0);
 
-        double aspectRatio = (double) viewportWidth / viewportHeight;
-        camera.setProjection(
-                45.0,                // fov in degrees
-                aspectRatio,         // aspect ratio
-                Z_NEAR,              // near plane
-                Z_FAR,               // far plane
-                Camera.Fov.VERTICAL  // field of view direction
+            // Set camera transform
+            TransformManager transformManager = engine.getTransformManager();
+            int cameraInstance = transformManager.getInstance(cameraEntity);
+            transformManager.setTransform(cameraInstance, cameraModelMatrix);
+
+            // Extract FOV from ARCore's projection matrix
+            double fovY = 2.0 * Math.toDegrees(Math.atan(1.0 / projectionMatrix[5]));
+
+            // Set the camera projection
+            camera.setProjection(
+                    fovY,                   // vertical field of view
+                    (double)viewportWidth / viewportHeight,  // aspect ratio
+                    0.01f,                  // near plane (closer for AR)
+                    100.0f,                 // far plane
+                    Camera.Fov.VERTICAL
+            );
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error updating camera: " + e.getMessage(), e);
+        }
+    }
+
+    // In ARFilamentRenderer.draw:
+public void draw(Collection<ARNode> nodes, Session session,
+                 BackgroundRenderer backgroundRenderer) {
+
+try{
+    if (!isInitialized || viewportWidth <= 0 || viewportHeight <= 0) {
+        Log.d(LOG_TAG, "Not rendering - not initialized or invalid dimensions");
+        return;
+    }
+
+  /*  if (!hasSetTextureNames) {
+        if (backgroundRenderer.getCameraColorTexture() != null) {
+            int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
+            if (textureId != 0) {
+                try {
+                    session.setCameraTextureNames(new int[]{textureId});
+                    hasSetTextureNames = true;
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error setting camera texture: " + e.getMessage());
+                    return;
+                }
+            }
+        }
+
+
+
+        // If we still haven't set textures, wait until next frame
+        if (!hasSetTextureNames) {
+            return;
+        }
+    }
+    Frame frame = session.update();
+        // Skip if not tracking
+    if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+        return;
+    }
+
+   */
+
+
+    // Handle depth if needed
+            /*if (backgroundRenderer.useDepthVisualization) {
+                Image depthImage = frame.acquireDepthImage16Bits();
+                backgroundRenderer.updateCameraDepthTexture(depthImage);
+                depthImage.close();
+            }*/
+
+    // Delegate ALL rendering to ARFilamentRenderer
+    /*if (arFilamentRenderer != null && arNodes.size() > 0) {
+        List<ARNode> modelNodes = sort(arNodes, "ModelNode");
+        arFilamentRenderer.draw(
+                render,
+                modelNodes,
+                session,
+                backgroundRenderer
         );
     }
+        // Get camera matrices
+        frame.getCamera().getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
+        frame.getCamera().getViewMatrix(viewMatrix, 0);
 
-    /**
-     * Process all ARNodes for rendering
-     *
-     * @return true if any nodes are visible and being rendered
-     */
-    private boolean processNodes(ARViewRender render, Collection<ARNode> nodes) {
-        if (nodes == null || nodes.isEmpty()) {
-            return false;
+        // Update camera
+        updateCameraFromARCore(viewMatrix, projectionMatrix);
+        // Update BackgroundRenderer with frame data
+        //backgroundRenderer.updateDisplayGeometry(frame);
+*/
+
+        // Begin Filament frame - this is where we draw to the screen
+        if (renderer.beginFrame(swapChain, 0L)) {
+            // First draw the camera background using BackgroundRenderer
+            //if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
+               // backgroundRenderer.drawBackground(render); // camera texture
+            //}
+
+            // Then render all 3D objects with Filament
+            // This doesn't use virtualSceneFramebuffer at all
+            //renderNodesWithFilament(nodes, viewMatrix, projectionMatrix);
+            drawTestTriangleEntity();
+
+            // Render the view
+            renderer.render(view);
+
+            // End the frame
+            renderer.endFrame();
         }
-
-        boolean hasVisibleNodes = false;
-
-        for (ARNode node : nodes) {
-            // Skip nodes with no model specified
-            if (node.Model() == null || node.Model().isEmpty() || !node.Visible()) {
-                continue;
+    } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception in onDrawFrame", e);
+    }
+}
+    /**
+     * Read an asset into a ByteBuffer
+     */
+    private ByteBuffer readAsset(String assetName) throws IOException {
+        try (java.io.InputStream is = MediaUtil.openMedia(this.formCopy, assetName)) {
+            if (is == null) {
+                throw new IOException("Asset not found: " + assetName);
             }
 
-            // Check if model needs to be loaded
-            if (!nodeAssetMap.containsKey(node)) {
-                try {
-                    loadModelForNode(render, node);
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to load model for node: " + node, e);
-                    continue;
-                }
-            }
-
-            FilamentAsset asset = nodeAssetMap.get(node);
-            if (asset == null) continue;
-
-            // Get node pose
-            float[] poseMatrix = new float[16];
-            Matrix.setIdentityM(poseMatrix, 0);
-
-            // Use anchor pose if available
-            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
-                node.Anchor().getPose().toMatrix(poseMatrix, 0);
-                hasVisibleNodes = true;
-            } else {
-                // Use node position if no anchor or tracking lost
-                Pose defaultPose = new Pose(
-                        new float[] {node.XPosition(), node.YPosition(), node.ZPosition()},
-                        new float[] {0, 0, 0, 1} // Default quaternion
-                );
-                defaultPose.toMatrix(poseMatrix, 0);
-                hasVisibleNodes = true;
-            }
-
-            // Apply node transformations (scale, rotation)
-            applyNodeTransformation(node, asset, poseMatrix);
-        }
-
-        return hasVisibleNodes;
-    }
-
-    /**
-     * Apply node-specific transformations
-     */
-    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] poseMatrix) {
-        TransformManager transformManager = engine.getTransformManager();
-        int rootEntityId = asset.getRoot();
-        int rootInstance = transformManager.getInstance(rootEntityId);
-
-        // Apply scale
-        float scale = node.Scale();
-        if (scale != 1.0f) {
-            float[] scaleMatrix = new float[16];
-            Matrix.setIdentityM(scaleMatrix, 0);
-            scaleMatrix[0] = scale;
-            scaleMatrix[5] = scale;
-            scaleMatrix[10] = scale;
-
-            float[] finalMatrix = new float[16];
-            Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
-            transformManager.setTransform(rootInstance, finalMatrix);
-        } else {
-            transformManager.setTransform(rootInstance, poseMatrix);
-        }
-    }
-
-    /**
-     * Update animations for all assets
-     */
-    private void updateAnimations() {
-        if (!animationEnabled) return;
-
-        // Update global animation time
-        animationTime += 1.0f / 60.0f; // Assuming 60fps
-
-        // Apply animation to each asset that has animations
-        for (FilamentAsset asset : nodeAssetMap.values()) {
-            if (asset != null && asset.getAnimator().getAnimationCount() > 0) {
-                asset.getAnimator().applyAnimation(0, animationTime);
-                asset.getAnimator().updateBoneMatrices();
-            }
-        }
-    }
-
-    /**
-     * Loads a model for a node
-     */
-    private void loadModelForNode(ARViewRender render, ARNode node) throws IOException {
-        String modelFile = node.Model();
-        if (modelFile == null || modelFile.isEmpty()) {
-            throw new IOException("No model specified for node");
-        }
-
-        Log.d(TAG, "Loading model: " + modelFile + " for node: " + node);
-
-        try {
-            // Read the asset file
-            ByteBuffer buffer = readAsset(render, modelFile);
-
-            // Create the asset
-            FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
-            if (asset == null) {
-                throw new IOException("Failed to create asset from model: " + modelFile);
-            }
-
-            // Track entity IDs for this asset
-            List<Integer> entityIds = new ArrayList<>();
-
-            // Add root and all renderable entities to scene
-            int rootEntityId = asset.getRoot();
-            scene.addEntity(rootEntityId);
-            entityIds.add(rootEntityId);
-
-            for (int entityId : asset.getEntities()) {
-                if (entityId != rootEntityId) {
-                    scene.addEntity(entityId);
-                    entityIds.add(entityId);
-                }
-            }
-
-            // Load all resources for the asset
-            resourceLoader.loadResources(asset);
-
-            // Store mappings
-            nodeAssetMap.put(node, asset);
-            assetEntityMap.put(asset, entityIds);
-
-            Log.d(TAG, "Successfully loaded model " + modelFile +
-                    " with " + entityIds.size() + " entities");
-
-        } catch (IOException e) {
-            Log.e(TAG, "Error loading model: " + modelFile, e);
-            throw e;
-        }
-    }
-
-    /**
-     * Ensures that a default model is loaded if no other models are present
-     */
-    public void loadDefaultModel(ARViewRender render) {
-        try {
-            // Create a mock node for the default model
-            ARNode defaultNode = new ModelNode(null);
-            defaultNode.Model(DEFAULT_MODEL);
-            defaultNode.XPosition(0);
-            defaultNode.YPosition(0);
-            defaultNode.ZPosition(-1.5f);
-            defaultNode.Scale(0.5f);
-
-            // Load model for this node
-            loadModelForNode(render, defaultNode);
-
-            Log.d(TAG, "Default model loaded");
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to load default model", e);
-        }
-    }
-
-    /**
-     * Ensures a default model is loaded if needed
-     */
-    private void ensureDefaultModel(ARViewRender render) {
-        // Check if we already have any models loaded
-        if (nodeAssetMap.isEmpty()) {
-            loadDefaultModel(render);
-        }
-    }
-
-    /**
-     * Reads an asset file into a ByteBuffer
-     */
-    private ByteBuffer readAsset(ARViewRender render, String assetName) throws IOException {
-        try (java.io.InputStream is = render.getForm().openAsset(assetName)) {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(buffer.length);
             byteBuffer.put(buffer);
             byteBuffer.rewind();
             return byteBuffer;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error reading asset " + assetName + ": " + e.getMessage());
+            throw new IOException("Failed to read asset: " + assetName, e);
         }
     }
 
     /**
-     * Updates lighting based on ARCore light estimation
+     * Creates a loader for 3D model assets
      */
-    public void updateLightEstimation(LightEstimate lightEstimate) {
-        if (lightEstimate == null || lightEstimate.getState() != LightEstimate.State.VALID) {
-            return;
-        }
+    public void loadAsset(ARNode node, String assetPath) {
+        try {
+            // Read the asset file
+            ByteBuffer buffer = readAsset(assetPath);
 
-        // Get light parameters from ARCore
-        float[] colorCorrection = new float[4];
-        lightEstimate.getColorCorrection(colorCorrection, 0);
+            // Use the appropriate loading method based on file extension
+            FilamentAsset asset = null;
 
-        // Update directional light
-        LightManager lightManager = engine.getLightManager();
-        int lightInstance = lightManager.getInstance(mainLightEntity);
-
-        // Update intensity based on color correction (RGB)
-        float intensity = (colorCorrection[0] + colorCorrection[1] + colorCorrection[2]) / 3.0f;
-        intensity = Math.max(intensity * 100000.0f, 5000.0f); // Keep a minimum level
-
-        lightManager.setColor(lightInstance,
-                colorCorrection[0], colorCorrection[1], colorCorrection[2]);
-        lightManager.setIntensity(lightInstance, intensity);
-
-        // If using environmental HDR light estimation (ARCore 1.18+)
-        if (lightEstimate.getEnvironmentalHdrMainLightIntensity() != null) {
-            float[] direction = lightEstimate.getEnvironmentalHdrMainLightDirection();
-            float[] envLightIntensity = lightEstimate.getEnvironmentalHdrMainLightIntensity();
-
-            lightManager.setDirection(lightInstance,
-                    direction[0], direction[1], direction[2]);
-            lightManager.setColor(lightInstance,
-                    envLightIntensity[0], envLightIntensity[1], envLightIntensity[2]);
-        }
-    }
-
-    /**
-     * Gets the rendered texture ID for external use
-     */
-    public int getRenderedTextureId() {
-        return textureHelper.getTextureId();
-    }
-
-    /**
-     * Removes a node from the scene
-     */
-    public void removeNode(ARNode node) {
-        FilamentAsset asset = nodeAssetMap.get(node);
-        if (asset != null) {
-            List<Integer> entities = assetEntityMap.get(asset);
-            if (entities != null) {
-                for (int entityId : entities) {
-                    scene.remove(entityId);
-                }
+            if (assetPath.toLowerCase().endsWith(".glb") || assetPath.toLowerCase().endsWith(".gltf")) {
+                // Load glTF/GLB model
+                asset = assetLoader.createAssetFromBinary(buffer);
+            } else {
+                Log.e(LOG_TAG, "Unsupported asset type: " + assetPath);
+                return;
             }
 
-            assetLoader.destroyAsset(asset);
-            assetEntityMap.remove(asset);
-            nodeAssetMap.remove(node);
+            if (asset == null) {
+                Log.e(LOG_TAG, "Failed to load asset: " + assetPath);
+                return;
+            }
+
+            // Initialize the resource loader and load resources
+            resourceLoader.loadResources(asset);
+
+            // Cache the asset for this node
+            nodeAssetMap.put(node, asset);
+
+            // Add all entities to the scene
+            EntityManager entityManager = EntityManager.get();
+            for (int entity : asset.getEntities()) {
+                scene.addEntity(entity);
+            }
+
+            Log.d(LOG_TAG, "Loaded asset: " + assetPath);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load asset " + assetPath + ": " + e.getMessage(), e);
         }
     }
 
     /**
-     * Enables or disables animation
-     */
-    public void setAnimationEnabled(boolean enabled) {
-        this.animationEnabled = enabled;
-    }
-
-    /**
-     * Cleanup all resources when done
+     * Clean up resources
      */
     public void destroy() {
         if (engine != null) {
-            // Clean up all loaded assets
-            for (Map.Entry<ARNode, FilamentAsset> entry : nodeAssetMap.entrySet()) {
-                FilamentAsset asset = entry.getValue();
-                List<Integer> entities = assetEntityMap.get(asset);
+            Log.d(LOG_TAG, "Destroying Filament resources");
 
-                if (entities != null) {
-                    for (int entityId : entities) {
-                        scene.remove(entityId);
-                        EntityManager.get().destroy(entityId);
-                    }
-                }
-
-                assetLoader.destroyAsset(asset);
+            // Clean up virtual scene framebuffer
+            if (virtualSceneFramebuffer != null) {
+                virtualSceneFramebuffer.release();
+                virtualSceneFramebuffer = null;
             }
 
+            // Destroy assets
+            for (FilamentAsset asset : nodeAssetMap.values()) {
+                assetLoader.destroyAsset(asset);
+            }
             nodeAssetMap.clear();
-            assetEntityMap.clear();
+
+            // Release material cache
+            for (Material material : materialCache.values()) {
+                engine.destroyMaterial(material);
+            }
+            materialCache.clear();
+
+            // Clean up entities
+            if (testTriangleEntity != 0) {
+                scene.remove(testTriangleEntity);
+                EntityManager.get().destroy(testTriangleEntity);
+                testTriangleEntity = 0;
+            }
+
+            if (mainLightEntity != 0) {
+                scene.remove(mainLightEntity);
+                EntityManager.get().destroy(mainLightEntity);
+                mainLightEntity = 0;
+            }
+
+            if (cameraEntity != 0) {
+                EntityManager.get().destroy(cameraEntity);
+                cameraEntity = 0;
+            }
 
             // Clean up Filament resources
             engine.destroyRenderer(renderer);
@@ -603,22 +649,34 @@ public class ARFilamentRenderer {
             engine.destroyScene(scene);
             engine.destroyCamera(camera);
 
-            if (skybox != null) {
-                engine.destroySkybox(skybox);
-            }
-
             if (swapChain != null) {
                 engine.destroySwapChain(swapChain);
+                swapChain = null;
+            }
+
+            // Destroy resource loader and asset loader
+            if (resourceLoader != null) {
+                resourceLoader.destroy();
+                resourceLoader = null;
+            }
+
+            if (assetLoader != null) {
+                assetLoader.destroy();
+                assetLoader = null;
+            }
+
+            if (materialProvider != null) {
+                materialProvider.destroyMaterials();
+                materialProvider.destroy();
+                materialProvider = null;
             }
 
             // Destroy engine last
             engine.destroy();
             engine = null;
-        }
+            isInitialized = false;
 
-        // Clean up texture helper
-        if (textureHelper != null) {
-            textureHelper.destroy();
+            Log.d(LOG_TAG, "Filament resources destroyed");
         }
     }
 }
