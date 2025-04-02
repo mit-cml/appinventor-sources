@@ -1690,7 +1690,9 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(ok);
-    holder.add(noshow);
+    if (splashConfig.version != -2) { // Don't show checkbox if splash is mandatory
+      holder.add(noshow);
+    }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
@@ -1746,6 +1748,11 @@ public class Ode implements EntryPoint {
     if (splashConfig.version == 0) {   // Never show splash if version is 0
       return false;             // Check first to avoid others unnecessary calls
     }
+
+    if (splashConfig.version == -2) {  // Always show splash if version is -2
+      return true;
+    }
+
     String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
       getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
     int uversion;
