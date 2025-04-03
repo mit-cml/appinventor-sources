@@ -1470,7 +1470,7 @@ This class is used to display a `Slider`.
 {:id="Slider.NumberOfSteps" .number} *NumberOfSteps*
 : Set the number of points on the slider scale.
  Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
- e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1001. The slider will change position every 0.15.
 
 {:id="Slider.ThumbColor" .color} *ThumbColor*
 : Specifies the color of the thumb slider as an alpha-red-green-blue

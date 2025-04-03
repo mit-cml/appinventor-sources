@@ -125,14 +125,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
     thumbEnabled = true;
-    numberOfSteps = 100;
+    numberOfSteps = 101;
 
     seekbar.setOnSeekBarChangeListener(this);
 
-    // We set the maximum range of the slider to numberOfSteps, 
+    // We set the maximum range of the slider to numberOfSteps - 1, 
     // obtaining the slider precision exactly as we want.
 
-    seekbar.setMax(numberOfSteps);
+    seekbar.setMax(numberOfSteps - 1);
 
     // Based on given minValue, maxValue, and thumbPosition, determine where the seekbar
     // thumb position would be within normal SeekBar 0 - numberOfSteps range
@@ -141,7 +141,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Slider initial min, max, thumb values are: " +
-          MinValue() + "/" + MaxValue() + "/" + ThumbPosition() + "/" + NumberOfSteps());
+          MinValue() + "/" + MaxValue() + "/" + ThumbPosition() + "/ (" + NumberOfSteps() + " - 1");
     }
 
     if (DEBUG) {
@@ -185,7 +185,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
  // seekbar position is an integer in the range [0,numberOfSteps] and is determined by MinValue,
  // MaxValue and ThumbPosition
  private void setSeekbarPosition() {
-    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * numberOfSteps;
+    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * (numberOfSteps - 1);
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Trying to recalculate seekbar position "
@@ -294,7 +294,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
       Log.d(LOG_TAG, "Min value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / (numberOfSteps - 1)) + minValue;
   }
 
 
@@ -327,7 +327,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
      Log.d (LOG_TAG, "Max value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
+    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / (numberOfSteps - 1)) + minValue;
   }
 
   /**
@@ -348,7 +348,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(category = PropertyCategory.APPEARANCE, 
       description = "Number of steps on the slider scale. Combined with" +
         "MinValue and MaxValue, it allows you to get the slider precision that you want, e.g. MinValue = 0," + 
-        "MaxValue = 150, NumberOfSteps = 1000, the slider will change position every 0.15.",
+        "MaxValue = 150, NumberOfSteps = 1001, the slider will change position every 0.15.",
       userVisible = true)
   public int NumberOfSteps() {
     return numberOfSteps;
@@ -357,10 +357,10 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   /**
    * Set the number of points on the slider scale.
    * Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
-   * e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
+   * e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1001. The slider will change position every 0.15.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = "100")
+      defaultValue = "101")
   @SimpleProperty
   public void NumberOfSteps(int value) {
     numberOfSteps = value;
@@ -368,7 +368,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     float oldPosition = thumbPosition;
     // We set the notice flag to false so that the user is not informed in any way about the change of this property
     notice = false;
-    seekbar.setMax(value);
+    seekbar.setMax(value - 1);
     // restore the original position
     thumbPosition = oldPosition;
     setSeekbarPosition();
@@ -484,7 +484,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     // We check the notice flag so as not to trigger the event when we change the NumberOfSteps property.
     if (notice) {
-      thumbPosition = ((maxValue - minValue) * (float) progress / numberOfSteps) + minValue;
+      thumbPosition = ((maxValue - minValue) * (float) progress / (numberOfSteps - 1)) + minValue;
 
       if (DEBUG) {
       Log.d(LOG_TAG, "onProgressChanged progress value [0 - numberOfSteps]: " + progress
