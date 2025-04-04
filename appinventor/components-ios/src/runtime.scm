@@ -1658,6 +1658,75 @@ Dictionary implementation.
 ;;;; End of Dictionary implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Matrix implementation.
+
+- make matrix           (make-yail-matrix . dataValues)
+- get matrix row        (yail-matrix-get-row yail-matrix row)
+- get matrix column     (yail-matrix-get-column yail-matrix col)
+- get matrix cell       (yail-matrix-get-cell yail-matrix row col)
+- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
+- is YailMatrix?        (yail-matrix? x)
+- get matrix inverse    (yail-matrix-inverse matrix)
+- get matrix transpose  (yail-matrix-transpose matrix)
+- matrix add            (yail-matrix-add matrix1 matrix2)
+- matrix subtract       (yail-matrix-subtract matrix1 matrix2)
+- matrix multiply       (yail-matrix-multiply matrix1 matrix2-or-scalar)
+- matrix power          (yail-matrix-power matrix exponent)
+- turn matrix to alist  (yail-matrix-to-alist matrix)
+- matrix equal?         (yail-matrix-equal? m1 m2)
+
+|#
+
+(define (make-yail-matrix . dataValues)
+  (yail:invoke 'SchemeKit.YailMatrix 'makeMatrix: dataValues))
+
+(define (yail-matrix-get-row matrix row)
+  (apply make-yail-list (*:getRow (as YailMatrix matrix) row)))
+
+(define (yail-matrix-get-column matrix col)
+  (apply make-yail-list (*:getColumn (as YailMatrix matrix) col)))
+
+(define (yail-matrix-get-cell matrix row col)
+  (invoke 'SchemeKit.YailMatrix 'getCell: matrix row col))
+
+(define (yail-matrix-set-cell! matrix row col value)
+  (invoke 'SchemeKit.YailMatrix 'setCell: matrix row col value))
+
+(define (yail-matrix? x)
+  (instance? x YailMatrix))
+
+(define (yail-matrix-inverse matrix)
+  (YailMatrix:inverse (as YailMatrix matrix)))
+
+(define (yail-matrix-transpose matrix)
+  (YailMatrix:transpose (as YailMatrix matrix)))
+
+(define (yail-matrix-add matrix1 matrix2)
+  (YailMatrix:add (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-subtract matrix1 matrix2)
+  (YailMatrix:subtract (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+(define (yail-matrix-multiply matrix1 matrix2-or-scalar)
+  (if (number? matrix2-or-scalar)
+      (YailMatrix:scalarMultiply (as YailMatrix matrix1) matrix2-or-scalar)
+      (YailMatrix:multiply (as YailMatrix matrix1) (as YailMatrix matrix2-or-scalar))))
+
+(define (yail-matrix-power matrix exponent)
+  (YailMatrix:power (as YailMatrix matrix) exponent))
+
+(define (yail-matrix-to-alist matrix)
+  (YailMatrix:matrixToAlist matrix))
+
+(define (yail-matrix-equal? matrix1 matrix2)
+  (YailMatrix:matrixEqual (as YailMatrix matrix1) (as YailMatrix matrix2)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Matrix implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
