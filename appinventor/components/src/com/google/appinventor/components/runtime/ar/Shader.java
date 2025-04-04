@@ -129,12 +129,16 @@ public class Shader implements Closeable {
      * @param defines A map of shader precompiler symbols to be defined with the given names and
      *                values
      */
+
+
     public static Shader createFromAssets(
             ARViewRender render,
             String vertexShaderFileName,
             String fragmentShaderFileName,
             Map<String, String> defines)
             throws IOException {
+        Log.d(TAG, "shader " +vertexShaderFileName);
+        Log.d(TAG, "shader " +fragmentShaderFileName);
         return new Shader(
                 render,
                 inputStreamToString(render.getForm().openAsset(vertexShaderFileName)),

@@ -4,6 +4,8 @@ import android.view.SurfaceView;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.Choreographer;
+import android.opengl.GLES30;  // Import all GLES30 methods statically
+
 
 import android.opengl.Matrix;
 import android.util.Log;
@@ -12,15 +14,19 @@ import com.google.android.filament.Box;
 import com.google.android.filament.Camera;
 import com.google.android.filament.Engine;
 import com.google.android.filament.EntityManager;
+import com.google.android.filament.Fence;
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.LightManager;
 import com.google.android.filament.Material;
 import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.RenderableManager;
 import com.google.android.filament.Renderer;
+import com.google.android.filament.RenderTarget;
 import com.google.android.filament.Scene;
+import com.google.android.filament.Stream;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.Texture;
+import com.google.android.filament.TextureSampler;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.View;
@@ -34,8 +40,6 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ARViewRender;
-import com.google.appinventor.components.runtime.arview.renderer.BackgroundRenderer;
-
 
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
@@ -72,9 +76,6 @@ public class ARFilamentRenderer {
     private ResourceLoader resourceLoader;
     private MaterialProvider materialProvider;
 
-    // Background renderer for camera feed - using your implementation
-    private BackgroundRenderer backgroundRenderer;
-
     // Testing
     private int testTriangleEntity = 0;
 
@@ -88,7 +89,6 @@ public class ARFilamentRenderer {
     private int viewportWidth = 1;
     private int viewportHeight = 1;
 
-
     private Form formCopy;
     private ARViewRender arViewRender;
     private boolean isInitialized = false;
@@ -101,6 +101,13 @@ public class ARFilamentRenderer {
 
     // Framebuffer for virtual scene
     private ARFrameBuffer virtualSceneFramebuffer;
+    Texture filamentRenderTexture;
+    RenderTarget filamentRenderTarget;
+    private int displayTextureId = -1;
+    private int framebufferId ;
+
+    private ByteBuffer pixelBuffer = null;
+    private int pixelBufferSize = 0;
 
     private ComponentContainer contextContainer = null;
     /**
@@ -112,13 +119,13 @@ public class ARFilamentRenderer {
         Log.d(LOG_TAG, "ARFilamentRenderer constructor called");
     }
 
+
+
+
     /**
      * Initialize Filament components
      */
-    /**
-     * Initialize Filament components
-     */
-    public void initialize(SurfaceView surfaceView, BackgroundRenderer backgroundRenderer) {
+    public void initialize(ARViewRenderer arVR) {
         if (isInitialized) {
             Log.d(LOG_TAG, "Filament already initialized, skipping");
             return;
@@ -135,7 +142,8 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "Engine created successfully");
 
             renderer = engine.createRenderer();
-            scene = engine.createScene();
+            // In ARFilamentRenderer initialization
+            engine = Engine.create(arVR.getEGLContext());
 
             // Create camera entity
             cameraEntity = EntityManager.get().create();
@@ -153,14 +161,10 @@ public class ARFilamentRenderer {
             view.setViewport(new Viewport(0, 0, viewportWidth, viewportHeight));
             Log.d(LOG_TAG, "View created with viewport " + viewportWidth + "x" + viewportHeight);
 
-            // Create a SwapChain using the provided Surface
-            Surface surface = surfaceView.getHolder().getSurface();
-            swapChain = engine.createSwapChain(surface);
-            Log.d(LOG_TAG, "SwapChain created successfully");
+            //swapChain = engine.createSwapChain(0, 0, SwapChain.CONFIG_READABLE);
 
-            // Store the background renderer
-            this.backgroundRenderer = backgroundRenderer;
-            Log.d(LOG_TAG, "BackgroundRenderer passed into ARFilamentRenderer");
+            swapChain = engine.createSwapChain(surface);
+
 
             // Create asset loaders for models
             materialProvider = new MaterialProvider(engine);
@@ -174,44 +178,13 @@ public class ARFilamentRenderer {
             isInitialized = true;
             Log.d(LOG_TAG, "Filament initialized successfully");
 
-            // Draw a test triangle
+            // Draw a test triangle to scene
             drawTestTriangleEntity();
+
+            initializeRenderTargetStream();
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error initializing Filament: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Initialize the camera texture from ARCore
-     */
-    public void initializeCameraTexture(int cameraTextureId) {
-        if (cameraTextureId == 0) {
-            Log.e(LOG_TAG, "Invalid camera texture ID: 0");
-            return;
-        }
-
-        try {
-            // The BackgroundRenderer already has the camera texture
-            // We just need to flag that we've set it
-            hasSetTextureNames = true;
-            Log.d(LOG_TAG, "Camera texture initialized with ID: " + cameraTextureId);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to initialize camera texture: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Set up occlusion if using depth
-     */
-    public void setupOcclusion(boolean useOcclusion) {
-        try {
-            if (backgroundRenderer != null) {
-                backgroundRenderer.setUseOcclusion(arViewRender, useOcclusion);
-                Log.d(LOG_TAG, "Occlusion set to: " + useOcclusion);
-            }
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Failed to set occlusion: " + e.getMessage());
         }
     }
 
@@ -368,7 +341,7 @@ public class ARFilamentRenderer {
                         .culling(false)       // Disable culling to ensure visibility
                         .receiveShadows(false)
                         .castShadows(false)
-                        .priority(100)        // High priority to ensure it's drawn
+                        .priority(1000)        // High priority to ensure it's drawn
                         .build(engine, testTriangleEntity);
 
                 // Add to scene
@@ -384,7 +357,7 @@ public class ARFilamentRenderer {
             Matrix.setIdentityM(modelMatrix, 0);
 
             // Place it directly in front of where the camera starts
-            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -1.5f);
+            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -0.5f);
 
             transformManager.setTransform(transformManager.getInstance(testTriangleEntity), modelMatrix);
 
@@ -448,100 +421,80 @@ public class ARFilamentRenderer {
         }
     }
 
-    // In ARFilamentRenderer.draw:
-public void draw(Collection<ARNode> nodes, Session session,
-                 BackgroundRenderer backgroundRenderer) {
-
-try{
-    if (!isInitialized || viewportWidth <= 0 || viewportHeight <= 0) {
-        Log.d(LOG_TAG, "Not rendering - not initialized or invalid dimensions");
-        return;
-    }
-
-  /*  if (!hasSetTextureNames) {
-        if (backgroundRenderer.getCameraColorTexture() != null) {
-            int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
-            if (textureId != 0) {
-                try {
-                    session.setCameraTextureNames(new int[]{textureId});
-                    hasSetTextureNames = true;
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Error setting camera texture: " + e.getMessage());
-                    return;
-                }
-            }
-        }
-
-
-
-        // If we still haven't set textures, wait until next frame
-        if (!hasSetTextureNames) {
-            return;
-        }
-    }
-    Frame frame = session.update();
-        // Skip if not tracking
-    if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
-        return;
-    }
-
-   */
-
-
-    // Handle depth if needed
-            /*if (backgroundRenderer.useDepthVisualization) {
-                Image depthImage = frame.acquireDepthImage16Bits();
-                backgroundRenderer.updateCameraDepthTexture(depthImage);
-                depthImage.close();
-            }*/
-
-    // Delegate ALL rendering to ARFilamentRenderer
-    /*if (arFilamentRenderer != null && arNodes.size() > 0) {
-        List<ARNode> modelNodes = sort(arNodes, "ModelNode");
-        arFilamentRenderer.draw(
-                render,
-                modelNodes,
-                session,
-                backgroundRenderer
-        );
-    }
-        // Get camera matrices
-        frame.getCamera().getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-        frame.getCamera().getViewMatrix(viewMatrix, 0);
-
-        // Update camera
+    public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
+        // Update camera matrices
         updateCameraFromARCore(viewMatrix, projectionMatrix);
-        // Update BackgroundRenderer with frame data
-        //backgroundRenderer.updateDisplayGeometry(frame);
-*/
 
-        // Begin Filament frame - this is where we draw to the screen
+        // Draw the test triangle
+        //drawTestTriangleEntity();
+
+        // Render with Filament directly to its swapchain
         if (renderer.beginFrame(swapChain, 0L)) {
-            // First draw the camera background using BackgroundRenderer
-            //if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
-               // backgroundRenderer.drawBackground(render); // camera texture
-            //}
-
-            // Then render all 3D objects with Filament
-            // This doesn't use virtualSceneFramebuffer at all
-            //renderNodesWithFilament(nodes, viewMatrix, projectionMatrix);
-            drawTestTriangleEntity();
-
-            // Render the view
             renderer.render(view);
-
-            // End the frame
             renderer.endFrame();
+            Log.d(LOG_TAG, "Filament rendered frame successfully");
+        } else {
+            Log.e(LOG_TAG, "Filament beginFrame returned false");
         }
-    } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in onDrawFrame", e);
     }
-}
+
+    private void initializeRenderTargetStream() {
+        try {
+            // Create an external texture for display
+            int[] textures = new int[1];
+            GLES30.glGenTextures(1, textures, 0);
+            displayTextureId = textures[0];
+
+            // Set up the texture parameters
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, viewportWidth, viewportHeight,
+                    0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null);
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+
+            // Create a Stream to this texture
+            Stream stream = new Stream.Builder()
+                    .stream(displayTextureId)
+                    .build(engine);
+
+            // Create a Filament texture
+            Texture streamTexture = new Texture.Builder()
+                    .sampler(Texture.Sampler.SAMPLER_2D)
+                    .format(Texture.InternalFormat.RGBA8)
+                    .usage(Texture.Usage.COLOR_ATTACHMENT | Texture.Usage.SAMPLEABLE)
+                    .width(viewportWidth)
+                    .height(viewportHeight)
+                    .build(engine);
+
+            // Attach the stream
+            streamTexture.setExternalStream(engine, stream);
+
+            // Use this texture as your render target
+            RenderTarget renderTarget = new RenderTarget.Builder()
+                    .texture(RenderTarget.AttachmentPoint.COLOR, streamTexture)
+                    .build(engine);
+
+            // Set the render target on your view
+            view.setRenderTarget(renderTarget);
+
+            Log.d(LOG_TAG, "Render target initialized with texture ID " + displayTextureId);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error initializing render target: " + e.getMessage(), e);
+        }
+    }
+
+    // Add a getter for the display texture
+    public int getDisplayTextureId() {
+        return displayTextureId;
+    }
     /**
      * Read an asset into a ByteBuffer
      */
     private ByteBuffer readAsset(String assetName) throws IOException {
-        try (java.io.InputStream is = MediaUtil.openMedia(this.formCopy, assetName)) {
+        try (java.io.InputStream is = MediaUtil.getAssetsIgnoreCaseInputStream(this.formCopy, assetName)) {
             if (is == null) {
                 throw new IOException("Asset not found: " + assetName);
             }

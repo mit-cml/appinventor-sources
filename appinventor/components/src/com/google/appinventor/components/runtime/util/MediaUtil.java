@@ -261,7 +261,7 @@ public class MediaUtil {
    * @param form the Form
    * @param mediaPath the path to the media
    */
-  private static InputStream getAssetsIgnoreCaseInputStream(Form form, String mediaPath)
+  public static InputStream getAssetsIgnoreCaseInputStream(Form form, String mediaPath)
       throws IOException{
     try {
       return form.getAssets().open(mediaPath);
@@ -280,6 +280,7 @@ public class MediaUtil {
       throws IOException {
     switch (mediaSource) {
       case ASSET:
+        Log.d(LOG_TAG, "openMedia " + mediaPath);
         if (mediaPath.startsWith("file:")) {
           mediaPath = mediaPath.substring(mediaPath.indexOf("/android_asset/")
               + "/android_asset/".length());

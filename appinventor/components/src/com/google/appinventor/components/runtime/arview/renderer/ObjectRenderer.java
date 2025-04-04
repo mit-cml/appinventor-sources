@@ -214,7 +214,7 @@ public class ObjectRenderer {
           Collection<ARNode> allObjectNodes,
           float[] viewMatrix,
           float[] cameraProjection,
-          Framebuffer virtualSceneFramebuffer
+          ARFrameBuffer virtualSceneFramebuffer
   ) {
     if (allObjectNodes == null || allObjectNodes.isEmpty()) {
       return;

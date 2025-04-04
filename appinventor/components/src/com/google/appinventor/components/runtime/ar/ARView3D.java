@@ -1,8 +1,3 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
-// Released under the Apache License, Version 2.0
-// http://www.apache.org/licenses/LICENSE-2.0
-
 package com.google.appinventor.components.runtime;
 
 import static android.Manifest.permission.CAMERA;
@@ -12,29 +7,16 @@ import android.graphics.Color;
 import android.app.Activity;
 import android.media.Image;
 import android.opengl.GLES30;
-
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.Choreographer;
-//import android.opengl.GLSurfaceView;
+import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesActivities;
-import com.google.appinventor.components.annotations.UsesApplicationMetadata;
-import com.google.appinventor.components.annotations.UsesAssets;
-import com.google.appinventor.components.annotations.UsesLibraries;
-import com.google.appinventor.components.annotations.UsesNativeLibraries;
-import com.google.appinventor.components.annotations.UsesPermissions;
-import com.google.appinventor.components.annotations.UsesQueries;
+
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.MetaDataElement;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -83,7 +65,6 @@ import com.google.android.filament.Renderer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -121,7 +102,6 @@ import java.util.stream.Collectors;
         v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
         x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so"
 )
-
 @UsesPermissions({CAMERA})
 @UsesApplicationMetadata(metaDataElements = {
         @MetaDataElement(name = "com.google.ar.core", value = "required"),
@@ -156,15 +136,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private static final String WAITING_FOR_TAP_MESSAGE = "Tap on the Surface.";
 
     private static final float[] sphericalHarmonicFactors = {
-            0.282095f,
-            -0.325735f,
-            0.325735f,
-            -0.325735f,
-            0.273137f,
-            -0.273137f,
-            0.078848f,
-            -0.273137f,
-            0.136569f,
+            0.282095f, -0.325735f, 0.325735f, -0.325735f, 0.273137f,
+            -0.273137f, 0.078848f, -0.273137f, 0.136569f,
     };
     private static final float TINT_INTENSITY = 0.1f;
     private static final float TINT_ALPHA = 1.0f;
@@ -176,39 +149,42 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private static final float Z_FAR = 100f;
     private static final int CUBE_MAP_RESOLUTION = 16;
     private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
-    //private final GLSurfaceView view;
+    private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
 
+    private final GLSurfaceView glview;
     private final SurfaceView view;
     private ARViewRender arViewRender;
 
+    // ARCore components
     private boolean installRequested;
     private Session session;
-    private TapHelper tapHelper;
-    private DisplayRotationHelper displayRotationHelper;
+    private final TapHelper tapHelper;
+    private final DisplayRotationHelper displayRotationHelper;
     private final TrackingStateHelper trackingStateHelper;
-    private ARFilamentRenderer arFilamentRenderer;
-    private BackgroundRenderer backgroundRenderer;
     private boolean hasSetTextureNames = false;
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
-    private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
+
+    // Rendering components
+    private ARFilamentRenderer arFilamentRenderer;
+    private BackgroundRenderer backgroundRenderer;
+    private ARFrameBuffer virtualSceneFramebuffer;
+    private int quadShader = 0;
     private Shader virtualObjectShader;
-    private final List<WrappedAnchor> wrappedAnchors = new ArrayList<>();
+
     private Texture dfgTexture;
     private SpecularCubeMapFilter cubeMapFilter;
 
-    // Constants and matrices
-
+    // Matrices and math components
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
-
     private final float[] sphericalHarmonicsCoefficients = new float[9 * 3];
     private final float[] viewInverseMatrix = new float[16];
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4];
 
+    // AR content
     private List<ARNode> arNodes = Nodes();
-
 
     public ARView3D(final ComponentContainer container) {
         super(container);
@@ -217,9 +193,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         this.tapHelper = new TapHelper(container.$context());
 
 
-        //this.view = new GLSurfaceView(container.$form());
-        //this.view.setPreserveEGLContextOnPause(true);
-        //this.view.setOnTouchListener(tapHelper);
+        this.glview = new GLSurfaceView(container.$form());
+        this.glview.setPreserveEGLContextOnPause(true);
+        this.glview.setOnTouchListener(tapHelper);
         // Create SurfaceView instead of GLSurfaceView
         this.view = new SurfaceView(container.$form());
 
@@ -256,6 +232,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
 
+        // Register with container and form lifecycle events
         container.$add(this);
         container.$form().registerForOnClear(this);
         container.$form().registerForOnResume(this);
@@ -267,21 +244,33 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         onResume();
     }
 
+    // Shader compilation utility
+    private int compileShader(int type, String shaderCode) {
+        int shader = GLES30.glCreateShader(type);
+        GLES30.glShaderSource(shader, shaderCode);
+        GLES30.glCompileShader(shader);
 
+        // Check for compilation errors
+        int[] compiled = new int[1];
+        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0);
+        if (compiled[0] == 0) {
+            Log.e(LOG_TAG, "Shader compilation error: " + GLES30.glGetShaderInfoLog(shader));
+            GLES30.glDeleteShader(shader);
+            return 0;
+        }
+        return shader;
+    }
 
     @Override
     public void onSurfaceCreated(ARViewRender render) {
         try {
             Log.d(LOG_TAG, "onSurfaceCreated called");
-
             initializeFilamentAndRenderers();
             Log.d(LOG_TAG, "ARView3D surface created successfully");
         } catch (Exception e) {
             Log.e(LOG_TAG, "Failed to create renderers", e);
         }
     }
-
-
 
     @Override
     public void onSurfaceChanged(ARViewRender render, int width, int height) {
@@ -293,22 +282,29 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             return;
         }
 
-        // Update any framebuffers or rendering sizes
-        /*if (virtualSceneFramebuffer != null) {
+        // Create or resize framebuffer
+       /* if (virtualSceneFramebuffer != null) {
             virtualSceneFramebuffer.resize(width, height);
         } else {
-            // Create the virtual scene framebuffer if it doesn't exist
-            virtualSceneFramebuffer = new ARFrameBuffer(render, width, height);
-        }*/
+            // Create the virtual scene framebuffer
+            try {
+                virtualSceneFramebuffer = new ARFrameBuffer(render, width, height);
+                Log.d(LOG_TAG, "Created virtualSceneFramebuffer: " + width + "x" + height);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
+            }
+        }
+*/
 
+        // Update ARFilamentRenderer dimensions if available
         if (arFilamentRenderer != null) {
-            arFilamentRenderer.updateSurfaceDimensions( width, height);
+            arFilamentRenderer.updateSurfaceDimensions(width, height);
         }
 
         Log.d(LOG_TAG, "Surface changed processing complete");
     }
 
-
+    // Filter ARNodes by type and ensure they have anchors
     public List<ARNode> sort(List<ARNode> nodes, String nodeType) {
         List<ARNode> filteredNodes = nodes.stream()
                 .filter(n -> {
@@ -316,134 +312,188 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         n.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
                     }
                     return n.Type().contains(nodeType);
-                } )
+                })
                 .collect(Collectors.toList());
         System.out.println("Filtered : " + filteredNodes);
         return filteredNodes;
     }
 
-    // In ARView3D.onDrawFrame:
+    @Override
     public void onDrawFrame(ARViewRender render) {
-
+        if (session == null) {
+            return;
+        }
 
         try {
-
-
-            // Delegate ALL rendering to ARFilamentRenderer
-            if (arFilamentRenderer != null) {
-                List<ARNode> modelNodes = null;
-                arFilamentRenderer.draw(
-                        modelNodes,
-                        session,
-                        backgroundRenderer
-                );
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in onDrawFrame", e);
-        }
-    }
-
-
-
-    // Add Choreographer frame callback for rendering loop
-    private final Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-            if (session == null) {
-                Choreographer.getInstance().postFrameCallback(this);
-                return;
-            }
+            Frame frame;
+            Camera camera;
 
             try {
-                // Update the display rotation if needed
-                displayRotationHelper.updateSessionIfNeeded(session);
-
-                // Update session
-                Frame frame = session.update();
-                Camera camera = frame.getCamera();
-
-                // Skip if not tracking
-                if (camera.getTrackingState() != TrackingState.TRACKING) {
-                    Choreographer.getInstance().postFrameCallback(this);
-                    return;
-                }
-
-                // Set up camera texture for ARCore if not already done
+                // Ensure we have camera texture set up for ARCore
                 if (!hasSetTextureNames) {
-                    if (backgroundRenderer != null &&
-                            backgroundRenderer.getCameraColorTexture() != null) {
+                    if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
                         int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
                         if (textureId != 0) {
-                            try {
-                                session.setCameraTextureNames(new int[]{textureId});
-                                hasSetTextureNames = true;
-                                Log.d(LOG_TAG, "Camera texture set successfully: " + textureId);
-                            } catch (Exception e) {
-                                Log.e(LOG_TAG, "Error setting camera texture: " + e.getMessage());
-                            }
+                            session.setCameraTextureNames(new int[]{textureId});
+                            hasSetTextureNames = true;
                         }
+                    }
+
+                    if (!hasSetTextureNames) {
+                        return;
                     }
                 }
 
-                // Skip rendering if camera texture isn't set up yet
-                if (!hasSetTextureNames) {
-                    Choreographer.getInstance().postFrameCallback(this);
-                    return;
-                }
-
-                // Get camera matrices
-                //camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-                //camera.getViewMatrix(viewMatrix, 0);
-
-                // Update display geometry
-                if (backgroundRenderer != null) {
-                    backgroundRenderer.updateDisplayGeometry(frame);
-                }
-
-                // Handle taps
-                //handleTap(frame, camera);
-
-                // Render with Filament
-                /*if (arFilamentRenderer != null) {
-                    List<ARNode> modelNodes = sort(arNodes, "ModelNode");
-                    arFilamentRenderer.draw(modelNodes,frame, backgroundRenderer);
-                }*/
-
-                // Request next frame
-                Choreographer.getInstance().postFrameCallback(this);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Exception in frame callback", e);
-                Choreographer.getInstance().postFrameCallback(this);
+                // Update ARCore frame and camera
+                frame = session.update();
+                camera = frame.getCamera();
+            } catch (CameraNotAvailableException e) {
+                Log.e(LOG_TAG, "Camera not available: " + e.getMessage(), e);
+                return;
             }
+
+            // Update display rotation and geometry for rendering
+            displayRotationHelper.updateSessionIfNeeded(session);
+            backgroundRenderer.updateDisplayGeometry(frame);
+
+            // Draw camera background using the BackgroundRenderer
+            if (frame.getTimestamp() != 0) {
+                backgroundRenderer.drawBackground(render);
+            }
+
+            // Skip further rendering if tracking is paused
+            if (camera.getTrackingState() == TrackingState.PAUSED) {
+                return;
+            }
+
+            // Get camera matrices for 3D rendering
+            camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
+            camera.getViewMatrix(viewMatrix, 0);
+
+            // Render 3D content with Filament
+            List<ARNode> modelNodes = sort(arNodes, "ModelNode");
+            arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
+
+            // Note: we don't need to extract texture or draw composed scene manually
+            // Filament renders directly to the swapchain
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception in onDrawFrame: " + e.getMessage(), e);
         }
-    };
-
-    // Start the rendering loop
-    private void startRenderingLoop() {
-        Choreographer.getInstance().postFrameCallback(frameCallback);
     }
 
-    // Stop the rendering loop
-    private void stopRenderingLoop() {
-        Choreographer.getInstance().removeFrameCallback(frameCallback);
+    // Method to draw a textured quad for compositing Filament content
+    private void drawTexturedQuad(int textureId) {
+        if (textureId <= 0) return;
+
+        // Create shader for the quad if needed
+        if (quadShader == 0) {
+            quadShader = createQuadShader();
+        }
+
+        // Use the shader
+        GLES30.glUseProgram(quadShader);
+
+        // Set up vertices for a fullscreen quad
+        float[] quadVertices = {
+                -1.0f, -1.0f,  // bottom-left
+                1.0f, -1.0f,  // bottom-right
+                -1.0f, 1.0f,  // top-left
+                1.0f, 1.0f   // top-right
+        };
+
+        // Texture coordinates
+        float[] texCoords = {
+                0.0f, 0.0f,  // bottom-left
+                1.0f, 0.0f,  // bottom-right
+                0.0f, 1.0f,  // top-left
+                1.0f, 1.0f   // top-right
+        };
+
+        // Set up the vertex arrays
+        int posHandle = GLES30.glGetAttribLocation(quadShader, "a_position");
+        int texHandle = GLES30.glGetAttribLocation(quadShader, "a_texCoord");
+
+        // Load vertices
+        FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        vertexBuffer.put(quadVertices).position(0);
+
+        FloatBuffer texBuffer = ByteBuffer.allocateDirect(texCoords.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        texBuffer.put(texCoords).position(0);
+
+        // Set up the texture
+        int texUniform = GLES30.glGetUniformLocation(quadShader, "u_texture");
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
+        GLES30.glUniform1i(texUniform, 0);
+
+        // Set up blending for transparency
+        GLES30.glEnable(GLES30.GL_BLEND);
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+        // Draw the quad
+        GLES30.glEnableVertexAttribArray(posHandle);
+        GLES30.glVertexAttribPointer(posHandle, 2, GLES30.GL_FLOAT, false, 0, vertexBuffer);
+
+        GLES30.glEnableVertexAttribArray(texHandle);
+        GLES30.glVertexAttribPointer(texHandle, 2, GLES30.GL_FLOAT, false, 0, texBuffer);
+
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
+
+        // Clean up
+        GLES30.glDisableVertexAttribArray(posHandle);
+        GLES30.glDisableVertexAttribArray(texHandle);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+        GLES30.glDisable(GLES30.GL_BLEND);
+        GLES30.glUseProgram(0);
     }
 
-    // Initialize Filament and background renderer
+    // Create a simple shader for the quad
+    private int createQuadShader() {
+        // Simple vertex shader
+        String vertexShaderCode =
+                "attribute vec2 a_position;\n" +
+                        "attribute vec2 a_texCoord;\n" +
+                        "varying vec2 v_texCoord;\n" +
+                        "void main() {\n" +
+                        "  gl_Position = vec4(a_position, 0.0, 1.0);\n" +
+                        "  v_texCoord = a_texCoord;\n" +
+                        "}";
+
+        // Simple fragment shader
+        String fragmentShaderCode =
+                "precision mediump float;\n" +
+                        "varying vec2 v_texCoord;\n" +
+                        "uniform sampler2D u_texture;\n" +
+                        "void main() {\n" +
+                        "  gl_FragColor = texture2D(u_texture, v_texCoord);\n" +
+                        "}";
+
+        // Compile shaders
+        int vertexShader = compileShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode);
+        int fragmentShader = compileShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode);
+
+        // Create program
+        int program = GLES30.glCreateProgram();
+        GLES30.glAttachShader(program, vertexShader);
+        GLES30.glAttachShader(program, fragmentShader);
+        GLES30.glLinkProgram(program);
+
+        return program;
+    }
+
+    // Initialize renderers
     private void initializeFilamentAndRenderers() {
         try {
             // Initialize background renderer
-            backgroundRenderer = new BackgroundRenderer(arViewRender);
+            //backgroundRenderer = new BackgroundRenderer(arViewRender);
 
-            try {
-                backgroundRenderer.setUseDepthVisualization(arViewRender, false);
-                backgroundRenderer.setUseOcclusion(arViewRender, false);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Failed to set background renderer modes", e);
-            }
-
-            // Create and initialize ARFilamentRenderer with the Surface
+            // Create and initialize ARFilamentRenderer
             arFilamentRenderer = new ARFilamentRenderer(this.container);
-            arFilamentRenderer.initialize(this.view, backgroundRenderer);
+            arFilamentRenderer.initialize();
 
             Log.d(LOG_TAG, "Filament and renderers initialized successfully");
         } catch (IOException e) {
@@ -451,12 +501,118 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-    // OnResumeListener implementation
+    // Create a default anchor for placing objects
+    public Anchor CreateDefaultAnchor() {
+        float[] position = {0f, 0f, -1.5f};
+        float[] rotation = {0, 0, 0, 1};
+        Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
+        Log.i("creating default Anchor", defaultAnchor.toString());
+        return defaultAnchor;
+    }
+
+    // Handle tap events for AR interaction
+    private void handleTap(Frame frame, Camera camera) {
+        MotionEvent tap = tapHelper.poll();
+        if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
+            List<HitResult> hitResultList = frame.hitTest(tap);
+            for (HitResult hit : hitResultList) {
+                Trackable trackable = hit.getTrackable();
+                Anchor anchor = hit.createAnchor();
+
+                if (trackable instanceof Plane) {
+                    ARDetectedPlane arplane = new DetectedPlane((Plane)trackable);
+                    ClickOnDetectedPlaneAt(arplane, anchor.getPose(), true);
+                } else if (trackable instanceof Point &&
+                        ((Point)trackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL) {
+                    float[] translation = anchor.getPose().getTranslation();
+                    TapAtPoint(translation[0], translation[1], translation[2], true);
+                }
+            }
+        }
+    }
+
+    // Check if there are any tracking planes
+    private boolean hasTrackingPlane() {
+        if (session == null) return false;
+
+        for (Plane plane : session.getAllTrackables(Plane.class)) {
+            if (plane.getTrackingState() == TrackingState.TRACKING) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Configure ARCore session
+    private void configureSession() {
+        Config config = session.getConfig();
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        } else {
+            config.setDepthMode(Config.DepthMode.DISABLED);
+        }
+
+        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        session.configure(config);
+    }
+
+    // Update lighting estimation from ARCore
+    private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {
+        if (virtualObjectShader == null) {
+            return;
+        }
+
+        if (lightEstimate.getState() != LightEstimate.State.VALID) {
+            virtualObjectShader.setBool("u_LightEstimateIsValid", false);
+            return;
+        }
+
+        virtualObjectShader.setBool("u_LightEstimateIsValid", true);
+        Matrix.invertM(viewInverseMatrix, 0, viewMatrix, 0);
+        virtualObjectShader.setMat4("u_ViewInverse", viewInverseMatrix);
+
+        // Update main light
+        float[] direction = lightEstimate.getEnvironmentalHdrMainLightDirection();
+        float[] intensity = lightEstimate.getEnvironmentalHdrMainLightIntensity();
+
+        worldLightDirection[0] = direction[0];
+        worldLightDirection[1] = direction[1];
+        worldLightDirection[2] = direction[2];
+        Matrix.multiplyMV(viewLightDirection, 0, viewMatrix, 0, worldLightDirection, 0);
+        virtualObjectShader.setVec4("u_ViewLightDirection", viewLightDirection);
+        virtualObjectShader.setVec3("u_LightIntensity", intensity);
+
+        // Update spherical harmonics
+        updateSphericalHarmonicsCoefficients(lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
+
+        // Update cube map
+        cubeMapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
+    }
+
+    // Update spherical harmonics coefficients for lighting
+    private void updateSphericalHarmonicsCoefficients(float[] coefficients) {
+        if (coefficients.length != 9 * 3) {
+            throw new IllegalArgumentException("The given coefficients array must be of length 27 (3 components per 9 coefficients)");
+        }
+
+        for (int i = 0; i < 9 * 3; ++i) {
+            sphericalHarmonicsCoefficients[i] = coefficients[i] * sphericalHarmonicFactors[i / 3];
+        }
+
+        virtualObjectShader.setVec3Array("u_SphericalHarmonicsCoefficients", sphericalHarmonicsCoefficients);
+    }
+
+    // LIFECYCLE METHODS
+
+    // Resume AR session
     @Override
     public void onResume() {
         if (session != null) {
             return;
         }
+
         try {
             // Request ARCore installation if needed
             switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
@@ -481,84 +637,162 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 return;
             }
 
-            // Create ARCore session
+            // Create and configure ARCore session
             session = new Session($context());
             configureSession();
             session.resume();
-
-            // Initialize Filament and renderers now that ARCore session is ready
-            initializeFilamentAndRenderers();
-
-            // Start the rendering loop
-            startRenderingLoop();
+            Log.d(LOG_TAG, "resume called");
+            // Initialize renderers with ARCore session
+            //initializeFilamentAndRenderers();
 
             // Resume display rotation helper
             displayRotationHelper.onResume();
-
-            return;
         } catch (Exception e) {
-            // Handle ARCore initialization errors
             Log.e(LOG_TAG, "Failed to create AR session", e);
         }
     }
 
 
-    private void drawARNodes(float[] viewMatrix, float[] projectionMatrix) {
-        // draw the nodes here...?
-        // how will that work?
-    }
-    public Anchor CreateDefaultAnchor() {
-
-        float[] position = { 0f, 0f, -1.5f };
-        float[] rotation = { 0, 0, 0, 1 };
-
-        Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
-
-        Log.i("creating default Anchor", defaultAnchor.toString());
-
-        return defaultAnchor;
-
+    @Override
+    public View getView() {
+        return view;
     }
 
-    private void handleTap(Frame frame, Camera camera) {
+    @Override
+    public List<Component> getChildren() {
+        return new ArrayList<>();
+    }
+    //@Override
+    public Activity $context() {
+        return container.$context();
+    }
 
-        MotionEvent tap = tapHelper.poll();
-        if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-            Log.i("inside handle tap2  ", "");
-            List<HitResult> hitResultList;
-            /*if (instantPlacementSettings.isInstantPlacementEnabled()) {
-                hitResultList =
-                        frame.hitTestInstantPlacement(tap.getX(), tap.getY(), APPROXIMATE_DISTANCE_METERS);
-            } else {
-                hitResultList = frame.hitTest(tap);
-            }*/
+    //@Override
+    public Form $form() {
+        return container.$form();
+    }
 
-            //TBD node tapped?
+    //@Override
+    public void $add(AndroidViewComponent component) {}
 
-            hitResultList = frame.hitTest(tap);
-            for (HitResult hit : hitResultList) {
+    //@Override
+    public void setChildWidth(AndroidViewComponent component, int width) {}
 
-                Trackable mostRecentTrackable = hit.getTrackable();
-                Anchor a = hit.createAnchor();
-                Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+    //@Override
+    public void setChildHeight(AndroidViewComponent component, int height) {}
 
-                // CSB, will have to handle Nodes,
-                if (mostRecentTrackable instanceof Plane){
-                    ARDetectedPlane arplane = (ARDetectedPlane) new DetectedPlane((Plane)mostRecentTrackable);
 
-                    ClickOnDetectedPlaneAt(arplane, (Object) a.getPose(), true);
+    @Override
+    public void onPause() {
 
-                }
-                else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
-                    TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
-                }
-                else if ((mostRecentTrackable instanceof InstantPlacementPoint)
-                        || (mostRecentTrackable instanceof DepthPoint)){
-                    // are there hooks for this?
-                }
-            }
+        if (session == null) {
+            return;
+        }
+
+        displayRotationHelper.onPause();
+        session.pause();
+    }
+
+    @Override
+    public void onClear() {
+        onPause();
+        if (session != null) {
+            session.close();
+            session = null;
         }
     }
+
+    @Override
+    public void onDestroy() {
+        if (session != null) {
+            session.close();
+            session = null;
+        }
+
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.destroy();
+            arFilamentRenderer = null;
+        }
+    }
+
+    @SimpleFunction(description = "Sets Visible to false for all Lights.")
+    public void HideAllLights() {}
+
+
+    //@Override
+    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+    public void addNode(ARNode node){
+        Log.i("ADDING ARNODE", "");
+        arNodes.add(node);
+        Log.i("ADDED ARNODE", "");
+        // or would this dispatch a create node event?
+    }
+
+    // @Override
+    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+    public void NodeClick(ARNode node) {}
+
+    // @Override
+    @SimpleEvent(description = "The user long-pressed a node in the ARView3D.")
+    public void NodeLongClick(ARNode node) {}
+
+    //@Override
+    @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
+            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+            "at that point and false otherwise.")
+    public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
+        Log.i("TAPPED at ARVIEW3D point", "");
+        EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z);
+    }
+
+    //@Override
+    @SimpleEvent(description = "The user long-pressed on a point on the ARView3D.  (x,y,z) is " +
+            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+            "at that point and false otherwise.")
+    public void LongPressAtPoint(float x, float y, float z, boolean isANodeAtPoint) {}
+
+
+    @Override
+    @SimpleEvent(description = "A real-world plane was detected.  The detectedPlane is the " +
+            "component added at the location of the real-world plane.  This event will only trigger if " +
+            "PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default " +
+            "FillColor of a DetectedPlane is None, so it is shown visually by default.")
+    public void PlaneDetected(ARDetectedPlane detectedPlane) {}
+
+    @Override
+    @SimpleEvent(description = "A DetectedPlane updated its properties, either its rotation, " +
+            "position, or size.  This event will only trigger if PlaneDetection is not None, and the " +
+            "TrackingType is WorldTracking.")
+    public void DetectedPlaneUpdated(ARDetectedPlane detectedPlane) {}
+
+    @Override
+    @SimpleEvent(description = "The user long-pressed on a DetectedPlane, detectedPlane.  (x,y,z) is " +
+            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
+            "None, and the TrackingType is WorldTracking.")
+    public void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint) {}
+
+    @Override
+    @SimpleEvent(description = "The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is " +
+            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
+            "None, and the TrackingType is WorldTracking.")
+    public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean isANodeAtPoint) {
+        EventDispatcher.dispatchEvent(this, "ClickOnDetectedPlaneAt",targetPlane, p, isANodeAtPoint);
+        Log.i("dispatching Click On Detected Plane", "");
+    }
+
+    @Override
+    @SimpleEvent(description = "A DetectedPlane was removed from the ARView3D.  This happens " +
+            "when two DetectedPlanes are combined to form one or the detected items were reset.  " +
+            "This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.")
+    public void DetectedPlaneRemoved(ARDetectedPlane detectedPlane) {}
+
+    @Override
+    @SimpleEvent(description = "The lighting estimate has been updated.  This provides an " +
+            "estimate for the real-world ambient lighting.  This event will only trigger if " +
+            "LightingEstimation is true.")
+    public void LightingEstimateUpdated(float ambientIntensity, float ambientTemperature) {}
 
     // PROPERTIES
 
@@ -705,343 +939,110 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new BoxNode(this);
     }
 
-    @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
+    @SimpleFunction(description = "Create a new SphereNode with default properties at the detected plane position.")
     public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
-        Log.i("creating Sphere node", "with detecte plane and pose "  );
-        Pose p1 = (Pose) p;
+        Log.i("creating Sphere node", "with detected plane and pose");
+        Pose pose = (Pose) p;
         SphereNode sphereNode = new SphereNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
-        sphereNode.Anchor(trackable.createAnchor((Pose) p));
+        sphereNode.Anchor(trackable.createAnchor(pose));
         sphereNode.Trackable(trackable);
-        Log.i("creating sphere node  myAnchor is", sphereNode.Anchor().toString());
+        Log.i("creating sphere node, anchor is", sphereNode.Anchor().toString());
         return sphereNode;
     }
 
-    @SimpleFunction(description = "Create a new SphereNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new SphereNode with default properties at the specified (x,y,z) position.")
     public SphereNode CreateSphereNode(float x, float y, float z) {
-
-        Log.i("creating Sphere node", "with x, y, z " + x + " " + " " + y + " " + z );
+        Log.i("creating Sphere node", "with x, y, z " + x + " " + y + " " + z);
         SphereNode sphereNode = new SphereNode(this);
         sphereNode.XPosition(x);
         sphereNode.YPosition(y);
         sphereNode.ZPosition(z);
-        float[] position = { x, y, z };      //  { x, y, z } position
-        float[] rotation = { 0, 0, 0, 1 };      //  { x, y, z, w } quaternion rotation
-        //this.parentContainer.frame.creatAnchor(new Pose(position, rotation));
+
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
         Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i("creating sphere node  myAnchor is", myAnchor.toString());
+        Log.i("creating sphere node, anchor is", myAnchor.toString());
         sphereNode.Anchor(myAnchor);
 
         return sphereNode;
-
     }
 
-    @SimpleFunction(description = "Create a new PlaneNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new PlaneNode with default properties at the specified (x,y,z) position.")
     public PlaneNode CreatePlaneNode(float x, float y, float z) {
         return new PlaneNode(this);
     }
 
-    @SimpleFunction(description = "Create a new CylinderNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new CylinderNode with default properties at the specified (x,y,z) position.")
     public CylinderNode CreateCylinderNode(float x, float y, float z) {
         return new CylinderNode(this);
     }
 
-    @SimpleFunction(description = "Create a new ConeNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new ConeNode with default properties at the specified (x,y,z) position.")
     public ConeNode CreateConeNode(float x, float y, float z) {
         return new ConeNode(this);
     }
 
-
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
     public CapsuleNode CreateCapsuleNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
-        Log.i("creating Capsule node", "with detecte plane and pose "  );
-        Pose p1 = (Pose) p;
+        Log.i("creating Capsule node", "with detected plane and pose");
+        Pose pose = (Pose) p;
         CapsuleNode capNode = new CapsuleNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
-
-        capNode.Anchor(trackable.createAnchor((Pose) p));
+        capNode.Anchor(trackable.createAnchor(pose));
         capNode.Trackable(trackable);
-        //this.parentContainer.frame.creatAnchor(new Pose(position, rotation));
 
-        Log.i("creating Capsule node  myAnchor is", capNode.Anchor().toString());
-
-
+        Log.i("creating Capsule node, anchor is", capNode.Anchor().toString());
         return capNode;
     }
 
-    @SimpleFunction(description = "Create a new CapsuleNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new CapsuleNode with default properties at the specified (x,y,z) position.")
     public CapsuleNode CreateCapsuleNode(float x, float y, float z) {
-        Log.i("creating Capsule node", "with x, y, z " + x + " " + " " + y + " " + z );
+        Log.i("creating Capsule node", "with x, y, z " + x + " " + y + " " + z);
         CapsuleNode capNode = new CapsuleNode(this);
         capNode.XPosition(x);
         capNode.YPosition(y);
         capNode.ZPosition(z);
-        float[] position = { x, y, z };      //  { x, y, z } position
-        float[] rotation = { 0, 0, 0, 1 };      //  { x, y, z, w } quaternion rotation
-        //this.parentContainer.frame.creatAnchor(new Pose(position, rotation));
+
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
         Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i("creating Capsule node  myAnchor is", myAnchor.toString());
+        Log.i("creating Capsule node, anchor is", myAnchor.toString());
         capNode.Anchor(myAnchor);
 
         return capNode;
     }
 
-    @SimpleFunction(description = "Create a new TubeNode with default properties at the " + "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new TubeNode with default properties at the specified (x,y,z) position.")
     public TubeNode CreateTubeNode(float x, float y, float z) {
         return new TubeNode(this);
     }
 
-    @SimpleFunction(description = "Create a new TorusNode with default properties at the " + "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new TorusNode with default properties at the specified (x,y,z) position.")
     public TorusNode CreateTorusNode(float x, float y, float z) {
         return new TorusNode(this);
     }
 
-    @SimpleFunction(description = "Create a new PyramidNode with default properties at the " + "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new PyramidNode with default properties at the specified (x,y,z) position.")
     public PyramidNode CreatePyramidNode(float x, float y, float z) {
         return new PyramidNode(this);
     }
 
-    @SimpleFunction(description = "Create a new TextNode with default properties at the " + "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new TextNode with default properties at the specified (x,y,z) position.")
     public TextNode CreateTextNode(float x, float y, float z) {
         return new TextNode(this);
     }
 
-    @SimpleFunction(description = "Create a new VideoNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new VideoNode with default properties at the specified (x,y,z) position.")
     public VideoNode CreateVideoNode(float x, float y, float z) {
         return new VideoNode(this);
     }
 
-    @SimpleFunction(description = "Create a new WebViewNode with default properties at the " +
-            "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new WebViewNode with default properties at the specified (x,y,z) position.")
     public WebViewNode CreateWebViewNode(float x, float y, float z) {
         return new WebViewNode(this);
     }
 
-
-    @SimpleFunction(description = "Sets Visible to false for all Lights.")
-    public void HideAllLights() {}
-
-
-
-    @Override
-    public void onPause() {
-        // Stop the rendering loop
-        stopRenderingLoop();
-
-        if (session == null) {
-            return;
-        }
-
-        displayRotationHelper.onPause();
-        session.pause();
-    }
-
-    @Override
-    public void onClear() {
-        onPause();
-        if (session != null) {
-            session.close();
-            session = null;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (session != null) {
-            session.close();
-            session = null;
-        }
-
-        if (arFilamentRenderer != null) {
-            arFilamentRenderer.destroy();
-            arFilamentRenderer = null;
-        }
-    }
-
-    @Override
-    public View getView() {
-        return view;
-    }
-
-    @Override
-    public List<Component> getChildren() {
-        return new ArrayList<>();
-    }
-    //@Override
-    public Activity $context() {
-        return container.$context();
-    }
-
-    //@Override
-    public Form $form() {
-        return container.$form();
-    }
-
-    //@Override
-    public void $add(AndroidViewComponent component) {}
-
-    //@Override
-    public void setChildWidth(AndroidViewComponent component, int width) {}
-
-    //@Override
-    public void setChildHeight(AndroidViewComponent component, int height) {}
-
-    // EVENTS
-
-    //@Override
-    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
-    public void addNode(ARNode node){
-        Log.i("ADDING ARNODE", "");
-        arNodes.add(node);
-        Log.i("ADDED ARNODE", "");
-        // or would this dispatch a create node event?
-    }
-
-    // @Override
-    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
-    public void NodeClick(ARNode node) {}
-
-    // @Override
-    @SimpleEvent(description = "The user long-pressed a node in the ARView3D.")
-    public void NodeLongClick(ARNode node) {}
-
-    //@Override
-    @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.")
-    public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
-        Log.i("TAPPED at ARVIEW3D point", "");
-        EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z);
-    }
-
-    //@Override
-    @SimpleEvent(description = "The user long-pressed on a point on the ARView3D.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.")
-    public void LongPressAtPoint(float x, float y, float z, boolean isANodeAtPoint) {}
-
-    @Override
-    @SimpleEvent(description = "A real-world plane was detected.  The detectedPlane is the " +
-            "component added at the location of the real-world plane.  This event will only trigger if " +
-            "PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default " +
-            "FillColor of a DetectedPlane is None, so it is shown visually by default.")
-    public void PlaneDetected(ARDetectedPlane detectedPlane) {}
-
-    @Override
-    @SimpleEvent(description = "A DetectedPlane updated its properties, either its rotation, " +
-            "position, or size.  This event will only trigger if PlaneDetection is not None, and the " +
-            "TrackingType is WorldTracking.")
-    public void DetectedPlaneUpdated(ARDetectedPlane detectedPlane) {}
-
-    @Override
-    @SimpleEvent(description = "The user long-pressed on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
-            "None, and the TrackingType is WorldTracking.")
-    public void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint) {}
-
-    @Override
-    @SimpleEvent(description = "The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
-            "None, and the TrackingType is WorldTracking.")
-    public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean isANodeAtPoint) {
-        EventDispatcher.dispatchEvent(this, "ClickOnDetectedPlaneAt",targetPlane, p, isANodeAtPoint);
-        Log.i("dispatching Click On Detected Plane", "");
-    }
-
-    @Override
-    @SimpleEvent(description = "A DetectedPlane was removed from the ARView3D.  This happens " +
-            "when two DetectedPlanes are combined to form one or the detected items were reset.  " +
-            "This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.")
-    public void DetectedPlaneRemoved(ARDetectedPlane detectedPlane) {}
-
-    @Override
-    @SimpleEvent(description = "The lighting estimate has been updated.  This provides an " +
-            "estimate for the real-world ambient lighting.  This event will only trigger if " +
-            "LightingEstimation is true.")
-    public void LightingEstimateUpdated(float ambientIntensity, float ambientTemperature) {}
-
-    private boolean hasTrackingPlane() {
-        for (Plane plane : session.getAllTrackables(Plane.class)) {
-            if (plane.getTrackingState() == TrackingState.TRACKING) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {
-
-        if (virtualObjectShader == null){
-            return;
-        }
-        if (lightEstimate.getState() != LightEstimate.State.VALID) {
-            virtualObjectShader.setBool("u_LightEstimateIsValid", false);
-            return;
-        }
-        virtualObjectShader.setBool("u_LightEstimateIsValid", true);
-        Matrix.invertM(viewInverseMatrix, 0, viewMatrix, 0);
-        virtualObjectShader.setMat4("u_ViewInverse", viewInverseMatrix);
-        updateMainLight(lightEstimate.getEnvironmentalHdrMainLightDirection(), lightEstimate.getEnvironmentalHdrMainLightIntensity(), viewMatrix);
-        updateSphericalHarmonicsCoefficients(lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
-        cubeMapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
-    }
-
-    private void updateMainLight(float[] direction, float[] intensity, float[] viewMatrix) {
-        worldLightDirection[0] = direction[0];
-        worldLightDirection[1] = direction[1];
-        worldLightDirection[2] = direction[2];
-        Matrix.multiplyMV(viewLightDirection, 0, viewMatrix, 0, worldLightDirection, 0);
-        virtualObjectShader.setVec4("u_ViewLightDirection", viewLightDirection);
-        virtualObjectShader.setVec3("u_LightIntensity", intensity);
-    }
-
-    private void updateSphericalHarmonicsCoefficients(float[] coefficients) {
-        if (coefficients.length != 9 * 3) {
-            throw new IllegalArgumentException("The given coefficients array must be of length 27 (3 components per 9 coefficients");
-        }
-        for (int i = 0; i < 9 * 3; ++i) {
-            sphericalHarmonicsCoefficients[i] = coefficients[i] * sphericalHarmonicFactors[i / 3];
-        }
-        virtualObjectShader.setVec3Array("u_SphericalHarmonicsCoefficients", sphericalHarmonicsCoefficients);
-    }
-
-    private void configureSession() {
-        Config config = session.getConfig();
-        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        } else {
-            config.setDepthMode(Config.DepthMode.DISABLED);
-        }
-        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
-        session.configure(config);
-    }
-}
-
-class WrappedAnchor {
-    private Anchor anchor;
-    private Trackable trackable;
-
-    public WrappedAnchor(Anchor anchor, Trackable trackable) {
-        this.anchor = anchor;
-        this.trackable = trackable;
-    }
-
-    public Anchor getAnchor() {
-        return anchor;
-    }
-
-    public Trackable getTrackable() {
-        return trackable;
-    }
 }

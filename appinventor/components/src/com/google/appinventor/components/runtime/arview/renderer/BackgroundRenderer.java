@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import android.util.Log;
 
 /**
  * This class both renders the AR camera background and composes the a scene foreground. The camera
@@ -63,7 +64,7 @@ public class BackgroundRenderer {
      * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
      * during a {@link ARViewRender} callback, typically in {@link
      */
-    public BackgroundRenderer(ARViewRender render) {
+    public BackgroundRenderer(ARViewRender render) throws IOException{
         cameraColorTexture =
                 new Texture(
                         render,
@@ -91,6 +92,32 @@ public class BackgroundRenderer {
         };
         mesh =
                 new Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, /*indexBuffer=*/ null, vertexBuffers);
+
+
+        backgroundShader = Shader.createFromAssets(
+                        render,
+                        "background_show_camera.vert",
+                        "background_show_camera.frag",
+                        null)
+                .setTexture("u_CameraColorTexture", cameraColorTexture)
+                .setDepthTest(false)
+                .setDepthWrite(false);
+
+        // Initialize occlusion shader with default settings
+        HashMap<String, String> defines = new HashMap<>();
+        defines.put("USE_OCCLUSION", "0");  // Start with occlusion disabled
+        occlusionShader = Shader.createFromAssets(
+                        render,
+                        "occlusion.vert",
+                        "occlusion.frag",
+                        defines)
+                .setTexture("u_VirtualSceneColorTexture", cameraColorTexture)
+                .setDepthTest(false)
+                .setDepthWrite(false)
+                .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+
+        // Set default aspect ratio
+        aspectRatio = 1.0f;
     }
 
     /**
@@ -222,17 +249,29 @@ public class BackgroundRenderer {
      * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
      */
     public void drawVirtualScene(
-            ARViewRender render, Framebuffer virtualSceneFramebuffer,
+            ARViewRender render, ARFrameBuffer virtualSceneFramebuffer,
            float zNear, float zFar) {
-        occlusionShader.setTexture(
-                "u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
-        if (useOcclusion) {
-            occlusionShader
-                    .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture())
-                    .setFloat("u_ZNear", zNear)
-                    .setFloat("u_ZFar", zFar);
+
+        Log.d("backgroundRenderer", " draw virtual scene shader is : " + occlusionShader);
+        if (occlusionShader == null) {
+            Log.e(TAG, "Cannot draw virtual scene: occlusion shader is null");
+            return;
         }
-        render.draw(mesh, occlusionShader);
+
+        // Set the color texture - this uniform exists regardless of USE_OCCLUSION
+        occlusionShader.setTexture("u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
+
+        // Only set depth-related uniforms if occlusion is enabled
+        if (useOcclusion) {
+            occlusionShader.setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture());
+            occlusionShader.setTexture("u_CameraDepthTexture", cameraDepthTexture);
+            occlusionShader.setFloat("u_ZNear", zNear);
+            occlusionShader.setFloat("u_ZFar", zFar);
+            occlusionShader.setFloat("u_DepthAspectRatio", aspectRatio);
+        }
+
+        // Now draw with the prepared shader
+        render.draw(mesh, occlusionShader, virtualSceneFramebuffer);
     }
 
 

@@ -13,6 +13,7 @@ public class ARFrameBuffer {
 
     private int framebufferId;
     private Texture colorTexture;
+    private int colorTextureId;
     private Texture depthTexture;
     private int width;
     private int height;
@@ -30,84 +31,103 @@ public class ARFrameBuffer {
         this.width = width;
         this.height = height;
 
-        createFramebuffer();
+        createFramebuffer(width, height);
     }
 
     public int getFrameBufferId(){
         return framebufferId;
     }
 
-    /**
-     * Creates the framebuffer and its attachments.
-     */
-    private void createFramebuffer() {
+
+    private void createFramebuffer(int width, int height) {
+        this.width = width;
+        this.height = height;
+
         try {
-            // Generate framebuffer
-            int[] framebuffers = new int[1];
-            GLES30.glGenFramebuffers(1, framebuffers, 0);
-            framebufferId = framebuffers[0];
+            // Create texture
+            int[] textures = new int[1];
+            GLES30.glGenTextures(1, textures, 0);
+            colorTextureId = textures[0];
 
-            // Create color texture attachment
-            colorTexture = new Texture(
-                    render,
-                    Texture.Target.TEXTURE_2D,
-                    Texture.WrapMode.CLAMP_TO_EDGE,
-                    /*useMipmaps=*/ false);
-
-            // Create depth texture attachment
-            depthTexture = new Texture(
-                    render,
-                    Texture.Target.TEXTURE_2D,
-                    Texture.WrapMode.CLAMP_TO_EDGE,
-                    /*useMipmaps=*/ false);
-
-
-
-            // Bind framebuffer and set up attachments
+            // Bind framebuffer
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, framebufferId);
 
             // Set up color attachment
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, colorTexture.getTextureId());
-            /*GLES30.glTexImage2D(
-                    GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA8,
-                    width, height, 0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null);*/
 
+            // Set texture parameters for color attachment
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+            // Allocate storage for color texture
             GLES30.glTexImage2D(
-                    GLES30.GL_TEXTURE_2D, 0, GLES30.GL_DEPTH_COMPONENT32F,
-                    width, height, 0, GLES30.GL_DEPTH_COMPONENT, GLES30.GL_FLOAT, null);
+                    GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA8,
+                    width, height, 0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null);
+
+            // Create framebuffer
+            int[] framebuffers = new int[1];
+            GLES30.glGenFramebuffers(1, framebuffers, 0);
+            framebufferId = framebuffers[0];
+
+
+
+            // Attach color texture to framebuffer
             GLES30.glFramebufferTexture2D(
                     GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0,
                     GLES30.GL_TEXTURE_2D, colorTexture.getTextureId(), 0);
 
-            // Set up depth attachment
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTexture.getTextureId());
+
+            // Set texture parameters for depth texture
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_MODE, GLES30.GL_NONE);
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_NEAREST);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+
+            // Allocate storage for depth texture
             GLES30.glTexImage2D(
                     GLES30.GL_TEXTURE_2D, 0, GLES30.GL_DEPTH_COMPONENT24,
                     width, height, 0, GLES30.GL_DEPTH_COMPONENT, GLES30.GL_UNSIGNED_INT, null);
+
+            // Attach depth texture to framebuffer
             GLES30.glFramebufferTexture2D(
                     GLES30.GL_FRAMEBUFFER, GLES30.GL_DEPTH_ATTACHMENT,
                     GLES30.GL_TEXTURE_2D, depthTexture.getTextureId(), 0);
 
-            // Check framebuffer completion status
+            // Check status
             int status = GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER);
             if (status != GLES30.GL_FRAMEBUFFER_COMPLETE) {
-                Log.e(TAG, "Framebuffer creation failed: " + status);
-                //throw new RuntimeException("Framebuffer is not complete: " + status);
-                GLError.maybeThrowGLException("Framebuffer creation failed with status: " + status, "glCheckFramebufferStatus");
+                String reason;
+                switch (status) {
+                    case GLES30.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                        reason = "INCOMPLETE_ATTACHMENT";
+                        break;
+                    case GLES30.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+                        reason = "INCOMPLETE_DIMENSIONS";
+                        break;
+                    case GLES30.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                        reason = "INCOMPLETE_MISSING_ATTACHMENT";
+                        break;
+                    case GLES30.GL_FRAMEBUFFER_UNSUPPORTED:
+                        reason = "UNSUPPORTED";
+                        break;
+                    default:
+                        reason = "Unknown error: " + status;
+                }
+                Log.e(TAG, "Framebuffer creation failed: " + reason);
+                throw new RuntimeException("Framebuffer is not complete: " + reason);
             }
 
-            // Unbind framebuffer
+            // Unbind
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
 
-            Log.d(TAG, "Framebuffer created successfully: " + width + "x" + height);
-        } catch (Exception e) {
+        } catch (Exception e){
             Log.e(TAG, "Error creating framebuffer: " + e.getMessage(), e);
             throw new RuntimeException("Failed to create framebuffer", e);
         }
     }
+
 
     /**
      * Resizes the framebuffer and its attachments.
@@ -132,7 +152,7 @@ public class ARFrameBuffer {
         release();
 
         // Create new framebuffer with updated dimensions
-        createFramebuffer();
+        createFramebuffer(width, height);
     }
 
     /**
