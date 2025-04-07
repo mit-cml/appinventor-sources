@@ -864,7 +864,7 @@ public final class YaBlocksEditor extends FileEditor
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
                 var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
-                  new $wnd.goog.math.Coordinate(blockX, blockY));
+                  new $wnd.Blockly.utils.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;
