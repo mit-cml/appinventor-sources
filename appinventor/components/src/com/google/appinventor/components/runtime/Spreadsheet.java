@@ -243,17 +243,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  @SimpleProperty(description = "The ID for the Google Sheets file you want to edit. You can "
-      + "find the spreadsheetID in the URL of the Google Sheets file.")
-  public void SpreadsheetID(String spreadsheetID) {
-    if (spreadsheetID.startsWith("https:")) {
-      // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
-      String[] parts = spreadsheetID.substring(8).split("/");
-      spreadsheetID = parts[3];
-    }
-    this.spreadsheetID = spreadsheetID;
+    defaultValue = "")
+@SimpleProperty(description = "The SpreadsheetID is part of the web address of the Google Sheets "
++ "spreadsheet you want to use. The web address (URL) starts https://docs.google.com/spreadsheets . . . . "
++ "Go to the spreadsheet in your browser and paste its web address here.")
+public void SpreadsheetID(String spreadsheetID) {
+  if (spreadsheetID.startsWith("https:")) {
+    // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
+    String[] parts = spreadsheetID.substring(8).split("/");
+    spreadsheetID = parts[3];
   }
+  this.spreadsheetID = spreadsheetID;
+}
 
   /**
    * Specifies the name of the application given when doing an API call.
