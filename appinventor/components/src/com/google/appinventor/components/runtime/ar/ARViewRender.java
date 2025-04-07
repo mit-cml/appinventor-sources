@@ -149,6 +149,7 @@ public class ARViewRender implements SurfaceHolder.Callback {
 
     // Add this method to initialize EGL
     private void initializeEGL(Surface surface) {
+        Log.d(LOG_TAG, "Initialize EGL " );
         eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
         if (eglDisplay == EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("Unable to get EGL14 display");
@@ -169,6 +170,8 @@ public class ARViewRender implements SurfaceHolder.Callback {
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_NONE
         };
+
+
 
         EGLConfig[] configs = new EGLConfig[1];
         int[] numConfigs = new int[1];
@@ -193,6 +196,13 @@ public class ARViewRender implements SurfaceHolder.Callback {
         // Make the context current
         if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
             throw new RuntimeException("Unable to make EGL context current");
+        }
+
+        int[] formats = new int[100];
+        GLES30.glGetIntegerv(GLES30.GL_NUM_EXTENSIONS, formats, 0);
+        for (int i = 0; i < formats[0]; i++) {
+            String extension = GLES30.glGetStringi(GLES30.GL_EXTENSIONS, i);
+            Log.d(LOG_TAG, "OpenGL Extension: " + extension);
         }
     }
 

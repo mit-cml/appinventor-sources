@@ -183,6 +183,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4];
 
+    private int currentViewportWidth = 0;
+    private int currentViewportHeight = 0;
+
     // AR content
     private List<ARNode> arNodes = Nodes();
 
@@ -266,7 +269,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         try {
             Log.d(LOG_TAG, "onSurfaceCreated called");
             initializeFilamentAndRenderers();
-            Log.d(LOG_TAG, "ARView3D surface created successfully");
+            Log.d(LOG_TAG, "ARView3D onSurfaceCreated successfully");
         } catch (Exception e) {
             Log.e(LOG_TAG, "Failed to create renderers", e);
         }
@@ -295,13 +298,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         }
 */
+        currentViewportWidth = width;
+        currentViewportHeight = height;
 
         // Update ARFilamentRenderer dimensions if available
         if (arFilamentRenderer != null) {
+            Log.d(LOG_TAG, "Loading onsurface changed for  arfilamentrenderer");
             arFilamentRenderer.updateSurfaceDimensions(width, height);
         }
 
-        Log.d(LOG_TAG, "Surface changed processing complete");
+        Log.d(LOG_TAG, "Surface changed processin" +
+                "g complete");
     }
 
     // Filter ARNodes by type and ensure they have anchors
@@ -328,12 +335,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Frame frame;
             Camera camera;
 
-            try {
+
                 // Ensure we have camera texture set up for ARCore
-                if (!hasSetTextureNames) {
+             /*   if (!hasSetTextureNames) {
+
                     if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
                         int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
                         if (textureId != 0) {
+                            Log.d(LOG_TAG, "onDrawFrame  has texture" + textureId);
                             session.setCameraTextureNames(new int[]{textureId});
                             hasSetTextureNames = true;
                         }
@@ -348,19 +357,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 frame = session.update();
                 camera = frame.getCamera();
             } catch (CameraNotAvailableException e) {
-                Log.e(LOG_TAG, "Camera not available: " + e.getMessage(), e);
+                Log.e(LOG_TAG, "onDrawframe Camera not available: " + e.getMessage(), e);
                 return;
             }
 
+            Log.d(LOG_TAG, "onDrawFrame  update displayrotation and BR");
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
-            backgroundRenderer.updateDisplayGeometry(frame);
-
-            // Draw camera background using the BackgroundRenderer
-            if (frame.getTimestamp() != 0) {
-                backgroundRenderer.drawBackground(render);
+            if (backgroundRenderer != null){
+                backgroundRenderer.updateDisplayGeometry(frame);
+                if (frame.getTimestamp() != 0) {
+                    backgroundRenderer.drawBackground(render);
+                }
             }
-
+            Log.d(LOG_TAG, "drawing " );
             // Skip further rendering if tracking is paused
             if (camera.getTrackingState() == TrackingState.PAUSED) {
                 return;
@@ -370,10 +380,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
-            // Render 3D content with Filament
-            List<ARNode> modelNodes = sort(arNodes, "ModelNode");
-            arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
+              */
+            Log.d(LOG_TAG, "arFilamentRenderer " + arFilamentRenderer);
+            if (arFilamentRenderer != null) {
 
+               arFilamentRenderer.draw(arNodes, new float[16], new float[16]);
+
+                GLES30.glFinish();
+
+                int filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+                Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
+                if (filamentTextureId > 0) {
+                    //Log.d(LOG_TAG, "glenable blending");
+                   // GLES30.glEnable(GLES30.GL_BLEND);
+                   // GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+                    // Get the actual dimensions of the texture
+// Alternative way to check texture dimensions
+                    int[] dimension = new int[1];
+                    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, filamentTextureId);
+                    GLES30.glGetIntegerv(GLES30.GL_TEXTURE_BINDING_2D, dimension, 0);
+                    Log.d(LOG_TAG, "Texture ID bound: " + dimension[0]);
+
+// Just log that we're using the texture without trying to get its dimensions
+                    Log.d(LOG_TAG, "Using texture ID: " + filamentTextureId + " with expected dimensions: " +
+                            currentViewportWidth  + " " + currentViewportHeight);
+
+                    Log.d(LOG_TAG, "about to call drawtextured quad");
+                    drawTexturedQuad(filamentTextureId);
+
+                   // GLES30.glDisable(GLES30.GL_BLEND);
+                }
+            }
             // Note: we don't need to extract texture or draw composed scene manually
             // Filament renders directly to the swapchain
         } catch (Exception e) {
@@ -384,6 +421,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Method to draw a textured quad for compositing Filament content
     private void drawTexturedQuad(int textureId) {
         if (textureId <= 0) return;
+        GLES30.glFinish();
+        Log.e(LOG_TAG, "drawing textured quad");
 
         // Create shader for the quad if needed
         if (quadShader == 0) {
@@ -393,22 +432,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         // Use the shader
         GLES30.glUseProgram(quadShader);
 
-        // Set up vertices for a fullscreen quad
+
+        // Set up vertices for a fullscreen quad (using normalized device coordinates)
         float[] quadVertices = {
                 -1.0f, -1.0f,  // bottom-left
-                1.0f, -1.0f,  // bottom-right
-                -1.0f, 1.0f,  // top-left
-                1.0f, 1.0f   // top-right
+                1.0f, -1.0f,   // bottom-right
+                -1.0f, 1.0f,   // top-left
+                1.0f, 1.0f     // top-right
         };
 
-        // Texture coordinates
+
+        // Texture coordinates - try this specific orientation
         float[] texCoords = {
-                0.0f, 0.0f,  // bottom-left
-                1.0f, 0.0f,  // bottom-right
-                0.0f, 1.0f,  // top-left
-                1.0f, 1.0f   // top-right
+                0.0f, 1.0f,  // bottom-left
+                1.0f, 1.0f,  // bottom-right
+                0.0f, 0.0f,  // top-left
+                1.0f, 0.0f   // top-right
         };
-
         // Set up the vertex arrays
         int posHandle = GLES30.glGetAttribLocation(quadShader, "a_position");
         int texHandle = GLES30.glGetAttribLocation(quadShader, "a_texCoord");
@@ -426,13 +466,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         // Set up the texture
         int texUniform = GLES30.glGetUniformLocation(quadShader, "u_texture");
+
+
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
         GLES30.glUniform1i(texUniform, 0);
+// In your drawTexturedQuad method, before any drawing
 
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
         // Set up blending for transparency
-        GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+        //GLES30.glEnable(GLES30.GL_BLEND);
+        //GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
         // Draw the quad
         GLES30.glEnableVertexAttribArray(posHandle);
@@ -463,15 +510,24 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         "  v_texCoord = a_texCoord;\n" +
                         "}";
 
-        // Simple fragment shader
         String fragmentShaderCode =
-                "precision mediump float;\n" +
+                "precision highp float;\n" +
                         "varying vec2 v_texCoord;\n" +
                         "uniform sampler2D u_texture;\n" +
                         "void main() {\n" +
-                        "  gl_FragColor = texture2D(u_texture, v_texCoord);\n" +
+                        "  // Read texture and expand the sampling area slightly\n" +
+                        "  vec4 color = texture2D(u_texture, v_texCoord);\n" +
+                        "  // Ensure we're properly handling the SRGB data\n" +
+                        "  gl_FragColor = color;\n" +
+                        "}";
+        // Simple colored fragment shader
+ /*       String fragmentShaderCode =
+                "precision mediump float;\n" +
+                        "void main() {\n" +
+                        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" + // Solid red
                         "}";
 
+  */
         // Compile shaders
         int vertexShader = compileShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode);
         int fragmentShader = compileShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -481,7 +537,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         GLES30.glAttachShader(program, vertexShader);
         GLES30.glAttachShader(program, fragmentShader);
         GLES30.glLinkProgram(program);
-
+        Log.e(LOG_TAG, "SUCCeSS drawing textured quad");
         return program;
     }
 
@@ -492,10 +548,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             //backgroundRenderer = new BackgroundRenderer(arViewRender);
 
             // Create and initialize ARFilamentRenderer
+            Log.d(LOG_TAG, "instantiating new arfilamentrenderer");
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initialize();
 
-            Log.d(LOG_TAG, "Filament and renderers initialized successfully");
+            Log.d(LOG_TAG, "ARFilamentRenderer initialized successfully");
         } catch (IOException e) {
             Log.e(LOG_TAG, "Failed to initialize Filament and renderers", e);
         }
