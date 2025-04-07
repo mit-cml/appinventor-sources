@@ -46,7 +46,7 @@ import com.google.appinventor.components.runtime.ARViewRender;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
-
+import java.lang.System;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -111,7 +111,7 @@ public class ARFilamentRenderer {
 
     private ByteBuffer pixelBuffer = null;
     private int pixelBufferSize = 0;
-    private int colorEntity = 0;
+    private int simpleTriangleEntity = 0;
 
 
 // In your initialization
@@ -334,154 +334,12 @@ public class ARFilamentRenderer {
 
 
 
-    private int createSimpleColorEntity() {
-        try {
-            int entity = EntityManager.get().create();
-
-            // Very simple quad vertices
-            float[] quadVertices = {
-                    -1.0f, -1.0f, -1.0f,  // bottom-left
-                    1.0f, -1.0f, -1.0f,  // bottom-right
-                    -1.0f, 1.0f, -1.0f,  // top-left
-                    1.0f, 1.0f, -1.0f   // top-right
-            };
-
-            // Bright magenta color for all vertices
-            float[] quadColors = {
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f   // magenta
-            };
- /*           ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(TEXTURE_WIDTH * TEXTURE_HEIGHT * 4)
-                    .order(ByteOrder.NATIVE_ORDER);
-
-  */
-            // Create buffers
-            FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            vertexBuffer.put(quadVertices).position(0);
-
-            FloatBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            colorBuffer.put(quadColors).position(0);
-
-            // Create vertex buffer
-            VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
-                    .vertexCount(4)
-                    .bufferCount(2)
-                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                            VertexBuffer.AttributeType.FLOAT3, 0, 0)
-                    .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
-                            VertexBuffer.AttributeType.FLOAT4, 0, 0);
-
-            VertexBuffer vertexBufferObj = vbBuilder.build(engine);
-            //this.vb.setBufferAt(engine, 0, TRIANGLE_POSITIONS);
-            //this.vb.setBufferAt(engine, 1, TRIANGLE_COLORS);
-            vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
-            vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
-
-            // Create index buffer
-            short[] indices = {0, 1, 2, 2, 1, 3};
-            ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
-                    .order(ByteOrder.nativeOrder())
-                    .asShortBuffer();
-            indexBuffer.put(indices).position(0);
-
-            IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
-                    .indexCount(6)
-                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-            IndexBuffer indexBufferObj = ibBuilder.build(engine);
-            indexBufferObj.setBuffer(engine, indexBuffer);
-
-            // Basic material - simplest possible
-            MaterialInstance materialInstance = loadOrCreateMaterial();
-            // Build renderable
-            RenderableManager.Builder builder = new RenderableManager.Builder(1);
-            builder.boundingBox(new Box(-1.0f, -1.0f, -0.6f, 1.0f, 1.0f, -0.4f))
-                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
-                    .material(0, materialInstance)
-                    .culling(false)
-                    .receiveShadows(false)
-                    .castShadows(false)
-                    .build(engine, entity);
-
-
-            // Add to scene
-            scene.addEntity(entity);
-
-            return entity;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error creating simple entity: " + e.getMessage(), e);
-            return 0;
-        }
-    }
-
-    private void drawSimpleOpenGLTriangle() {
-        // Simple shader for a red triangle
-        String vertexShaderSource =
-                "attribute vec3 aPosition;\n" +
-                        "void main() {\n" +
-                        "  gl_Position = vec4(aPosition, 1.0);\n" +
-                        "}";
-
-        String fragmentShaderSource =
-                "precision mediump float;\n" +
-                        "void main() {\n" +
-                        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
-                        "}";
-
-        // Compile vertex shader
-        int vertexShader = GLES30.glCreateShader(GLES30.GL_VERTEX_SHADER);
-        GLES30.glShaderSource(vertexShader, vertexShaderSource);
-        GLES30.glCompileShader(vertexShader);
-
-        // Compile fragment shader
-        int fragmentShader = GLES30.glCreateShader(GLES30.GL_FRAGMENT_SHADER);
-        GLES30.glShaderSource(fragmentShader, fragmentShaderSource);
-        GLES30.glCompileShader(fragmentShader);
-
-        // Create program
-        int program = GLES30.glCreateProgram();
-        GLES30.glAttachShader(program, vertexShader);
-        GLES30.glAttachShader(program, fragmentShader);
-        GLES30.glLinkProgram(program);
-        GLES30.glUseProgram(program);
-
-        // Triangle vertex data
-        float[] triangleVertices = {
-                0.0f, 0.5f, 0.0f,  // top
-                -0.5f, -0.5f, 0.0f,  // bottom left
-                0.5f, -0.5f, 0.0f   // bottom right
-        };
-
-        // Load vertex data
-        FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleVertices.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        vertexBuffer.put(triangleVertices).position(0);
-
-        // Get position attribute and enable it
-        int positionHandle = GLES30.glGetAttribLocation(program, "aPosition");
-        GLES30.glEnableVertexAttribArray(positionHandle);
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer);
-
-        // Draw triangle
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 3);
-
-        // Clean up
-        GLES30.glDisableVertexAttribArray(positionHandle);
-        GLES30.glUseProgram(0);
-    }
-
     // Do this during initialization
     public void createDummyTriangeWithMaterialEntity() {
         try {
             // Create a simple entity
             EntityManager entityManager = EntityManager.get();
-            int entity = entityManager.create();
+            simpleTriangleEntity = entityManager.create();
 
             MaterialInstance materialInstance = loadOrCreateMaterial();
 
@@ -489,11 +347,13 @@ public class ARFilamentRenderer {
             materialInstance.setParameter("baseColor", 0.0f, 1.0f, 0.0f, 1.0f); // Bright green
             Log.d(LOG_TAG, "Material color set to bright green");
 
+            // Adjusted vertices to cover more of the screen vertically
             float[] vertices = {
-                    0.0f,  0.0f, -0.1f,   // Top vertex (very close to camera)
-                    -0.5f, -0.5f, -0.1f,  // Bottom left (very close to camera)
-                    0.5f, -0.5f, -0.1f    // Bottom right (very close to camera)
+                    0.0f, 1.0f, -0.5f,    // top (higher up)
+                    -1.0f, -1.0f, -0.5f,  // bottom left (wider)
+                    1.0f, -1.0f, -0.5f    // bottom right (wider)
             };
+
 
             short[] indices = { 0, 1, 2 };
 
@@ -537,14 +397,14 @@ public class ARFilamentRenderer {
                     .receiveShadows(false)
                     .castShadows(false)
                     .priority(1000)        // High priority to ensure it's drawn
-                    .build(engine, entity);
+                    .build(engine, simpleTriangleEntity);
 
             Log.d(LOG_TAG, "Creating dummy triangle entity");
             Log.d(LOG_TAG, "Triangle vertices: " +
                     Arrays.toString(vertices));
 
             // Add entity to scene
-            scene.addEntity(entity);
+            scene.addEntity(simpleTriangleEntity);
 
             Log.d(LOG_TAG, "Dummy triangle added to scene");
             Log.d(LOG_TAG, "Scene renderable count: " + scene.getRenderableCount());
@@ -600,7 +460,7 @@ public class ARFilamentRenderer {
 //java.lang.IllegalStateException: Invalid texture sampler: When used with a stream, a texture must use a SAMPLER_EXTERNAL
 
             // Create a Stream with explicit dimensions to the display texture
-       /*     Stream stream = new Stream.Builder()
+           Stream stream = new Stream.Builder()
                     .stream(displayTextureId)
                     .width(viewportWidth)
                     .height(viewportHeight)
@@ -626,7 +486,7 @@ public class ARFilamentRenderer {
 
             // Set the render target on your view
             view.setRenderTarget(filamentRenderTarget);
-*/
+
             Log.d(LOG_TAG, "Render target stream initialized with texture ID " + displayTextureId);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error initializing render target: " + e.getMessage(), e);
@@ -650,20 +510,18 @@ public class ARFilamentRenderer {
             // Create a single, precise triangle
             testTriangleEntity = EntityManager.get().create();
 
-            // Exactly defined vertices
+            // Adjusted vertices to cover more of the screen vertically
             float[] triangleVertices = {
-                    0.0f, 0.5f, -0.5f,    // top (precisely centered)
-                    -0.5f, -0.5f, -0.5f,  // bottom left
-                    0.5f, -0.5f, -0.5f    // bottom right
+                    0.0f, 1.0f, -0.5f,    // top (higher up)
+                    -1.0f, -1.0f, -0.5f,  // bottom left (wider)
+                    1.0f, -1.0f, -0.5f    // bottom right (wider)
             };
 
-            // Single color for all vertices
             float[] triangleColors = {
-                    1.0f, 0.0f, 0.0f, 1.0f,  // solid red
-                    1.0f, 0.0f, 0.0f, 1.0f,
-                    1.0f, 0.0f, 0.0f, 1.0f
+                    1.0f, 0.0f, 0.0f, 1.0f,  // red at top
+                    0.0f, 1.0f, 0.0f, 1.0f,  // green at bottom left
+                    0.0f, 0.0f, 1.0f, 1.0f   // blue at bottom right
             };
-
             // Vertex Buffer with explicit, minimal configuration
             VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
                     .vertexCount(3)
@@ -822,10 +680,10 @@ public class ARFilamentRenderer {
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
         try {
             // Prevent rapid, repeated frame attempts
-            long currentTime = SystemClock.elapsedRealtime();
+            long currentTime = System.currentTimeMillis();
 
             // Introduce a minimum frame interval (e.g., 16ms for ~60 FPS)
-            final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
+            final long MINIMUM_FRAME_INTERVAL = 32; // milliseconds
 
             // Track last successful frame time
             if (lastSuccessfulFrameTime > 0 &&
@@ -836,6 +694,15 @@ public class ARFilamentRenderer {
 
             // Update camera and view
             updateCameraFromARCore(viewMatrix, projectionMatrix);
+
+            // Ensure triangle is in the scene
+           /* if (simpleTriangleEntity == 0) {
+                createDummyTriangeWithMaterialEntity();
+            }*/
+            if (simpleTriangleEntity == 0) {
+                createDummyTriangeWithMaterialEntity();
+            }
+
 
             // Explicit render target and view configuration
             view.setScene(scene);
@@ -883,7 +750,7 @@ public class ARFilamentRenderer {
                             processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
 
                             // Update last successful frame time
-                            lastSuccessfulFrameTime = SystemClock.elapsedRealtime();
+                            lastSuccessfulFrameTime = System.currentTimeMillis();
                         } catch (Exception callbackError) {
                             Log.e(LOG_TAG, "Pixel buffer callback error", callbackError);
                         }
@@ -950,22 +817,22 @@ public class ARFilamentRenderer {
         // Reset buffer position
         sampleBuffer.rewind();
 
-
         // Bind the texture and upload data
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
-        GLES30.glTexImage2D(
-                GLES30.GL_TEXTURE_2D,
-                0,
-                GLES30.GL_RGBA8,
-                viewportWidth,
-                viewportHeight,
-                0,
-                GLES30.GL_RGBA,
-                GLES30.GL_UNSIGNED_BYTE,
-                sampleBuffer
-        );
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-
+        if (displayTextureId > 0) {
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+            GLES30.glTexImage2D(
+                    GLES30.GL_TEXTURE_2D,
+                    0,
+                    GLES30.GL_RGBA8,
+                    viewportWidth,
+                    viewportHeight,
+                    0,
+                    GLES30.GL_RGBA,
+                    GLES30.GL_UNSIGNED_BYTE,
+                    sampleBuffer
+            );
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+        }
         // Check for errors
         int error = GLES30.glGetError();
         if (error != GLES30.GL_NO_ERROR) {
