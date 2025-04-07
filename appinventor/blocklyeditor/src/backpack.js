@@ -766,11 +766,11 @@ AI.Blockly.Backpack.prototype.openBackpack = function(e) {
 /**
  * When block is let go over the backpack, copy it and return to original position
  * @param {!Event} e Mouse up event
- * @param {!goog.math.Coordinate} start coordinate of the mouseDown event
+ * @param {!Blockly.utils.Coordinate} start coordinate of the mouseDown event
  */
 AI.Blockly.Backpack.prototype.onMouseUp = function(e, start){
   var xy = Blockly.common.getSelected().getRelativeToSurfaceXY();
-  var diffXY = goog.math.Coordinate.difference(start, xy);
+  var diffXY = Blockly.utils.Coordinate.difference(start, xy);
   Blockly.common.getSelected().moveBy(diffXY.x, diffXY.y);
   Blockly.common.getMainWorkspace().render();
 };
