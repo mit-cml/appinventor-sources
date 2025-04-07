@@ -168,8 +168,8 @@ public class ARFilamentRenderer {
 
             // Get dimensions from the surface
             // Note: We'll update these when surface changes
-            viewportWidth = 1080;  // Default, will be updated
-            viewportHeight = 1920; // Default, will be updated
+            viewportWidth = 1020;  // Default, will be updated
+            viewportHeight = 1745; // Default, will be updated
             view.setViewport(new Viewport(0, 0, viewportWidth, viewportHeight));
             Log.d(LOG_TAG, "View created with viewport " + viewportWidth + "x" + viewportHeight);
 
@@ -191,13 +191,48 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "setup render target stream");
 
             initializeDisplayTextureRenderTargetStream(); //display texture set to target via stream
-            drawTestTriangleWithMaterialEntity();  //entity added to scene
+            //drawTestTriangleWithMaterialEntity();  //entity added to scene
             makeSimpleTextureBufferForRenderTarget();
             createDummyTriangeWithMaterialEntity();
             view.setScene(scene);
 
             // Draw a test triangle to scene
+            // Verify triangle configuration
+// In your diagnostic code
+            if (testTriangleEntity != 0) {
+                RenderableManager renderableManager = engine.getRenderableManager();
+                int renderableInstance = renderableManager.getInstance(testTriangleEntity);
 
+                if (renderableInstance != 0) {
+                    Log.d(LOG_TAG, "Renderable Instance Valid: true");
+                    Log.d(LOG_TAG, "Renderable Primitive Count: " + renderableManager.getPrimitiveCount(renderableInstance));
+
+                    try {
+                        MaterialInstance materialInstance = renderableManager.getMaterialInstanceAt(renderableInstance, 0);
+                        if (materialInstance != null) {
+                            Log.d(LOG_TAG, "Material Instance Valid: true");
+
+                            Material material = materialInstance.getMaterial();
+                            if (material != null) {
+                                Log.d(LOG_TAG, "Material Name: " + material.getName());
+
+                                // Safely log parameter names instead of using toString
+                                List<Material.Parameter> parameters = material.getParameters();
+                                if (parameters != null) {
+
+                                    Log.d(LOG_TAG, parameters.toString());
+                                }
+                            }
+                        } else {
+                            Log.e(LOG_TAG, "Material Instance is NULL");
+                        }
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error accessing material instance", e);
+                    }
+                } else {
+                    Log.e(LOG_TAG, "Renderable Instance is INVALID");
+                }
+            }
            // Renderer.ClearOptions co = new Renderer.ClearOptions();
           ///  float[] fl =  {0.0f, 0.0f, 1.0f, 0.0f };
           //  co.clearColor = fl;
@@ -442,103 +477,99 @@ public class ARFilamentRenderer {
     }
 
     // Do this during initialization
-    private void createDummyTriangeWithMaterialEntity() {
-        // Create a simple entity
-        EntityManager entityManager = EntityManager.get();
-        int entity = entityManager.create();
+    public void createDummyTriangeWithMaterialEntity() {
+        try {
+            // Create a simple entity
+            EntityManager entityManager = EntityManager.get();
+            int entity = entityManager.create();
 
-        MaterialInstance materialInstance = loadOrCreateMaterial();
+            MaterialInstance materialInstance = loadOrCreateMaterial();
 
-        // Set the material color to magenta
-        materialInstance.setParameter("baseColor", 1.0f, 0.0f, 1.0f, 1.0f); //magenta
+            // Explicitly set a bright, contrasting color
+            materialInstance.setParameter("baseColor", 0.0f, 1.0f, 0.0f, 1.0f); // Bright green
+            Log.d(LOG_TAG, "Material color set to bright green");
 
-        // Create a simple triangle mesh
-        float[] vertices = {
-                0.0f,  0.1f, 0.0f,   // Top vertex position
-                -0.1f, -0.1f, 0.0f,  // Bottom left vertex position
-                0.1f, -0.1f, 0.0f    // Bottom right vertex position
-        };
+            float[] vertices = {
+                    0.0f,  0.0f, -0.1f,   // Top vertex (very close to camera)
+                    -0.5f, -0.5f, -0.1f,  // Bottom left (very close to camera)
+                    0.5f, -0.5f, -0.1f    // Bottom right (very close to camera)
+            };
 
-        short[] indices = { 0, 1, 2 };
+            short[] indices = { 0, 1, 2 };
 
-        // Create vertex buffer
-        VertexBuffer.Builder vbb = new VertexBuffer.Builder()
-                .vertexCount(3)
-                .bufferCount(1)
-                .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                        VertexBuffer.AttributeType.FLOAT3, 0, 12);
-        VertexBuffer vertexBuffer = vbb.build(engine);
+            // Create vertex buffer
+            VertexBuffer.Builder vbb = new VertexBuffer.Builder()
+                    .vertexCount(3)
+                    .bufferCount(1)
+                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                            VertexBuffer.AttributeType.FLOAT3, 0, 12);
+            VertexBuffer vertexBuffer = vbb.build(engine);
 
-        // Fill the vertex buffer
-        ByteBuffer vertexData = ByteBuffer.allocateDirect(vertices.length * 4)
-                .order(ByteOrder.nativeOrder());
-        FloatBuffer floatBuffer = vertexData.asFloatBuffer();
-        floatBuffer.put(vertices);
-        floatBuffer.flip();
-        vertexBuffer.setBufferAt(engine, 0, vertexData);
+            // Fill the vertex buffer
+            ByteBuffer vertexData = ByteBuffer.allocateDirect(vertices.length * 4)
+                    .order(ByteOrder.nativeOrder());
+            FloatBuffer floatBuffer = vertexData.asFloatBuffer();
+            floatBuffer.put(vertices);
+            floatBuffer.flip();
+            vertexBuffer.setBufferAt(engine, 0, vertexData);
 
-        // Create index buffer
-        IndexBuffer.Builder ibb = new IndexBuffer.Builder()
-                .indexCount(3)
-                .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-        IndexBuffer indexBuffer = ibb.build(engine);
+            // Create index buffer
+            IndexBuffer.Builder ibb = new IndexBuffer.Builder()
+                    .indexCount(3)
+                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+            IndexBuffer indexBuffer = ibb.build(engine);
 
-        // Fill the index buffer
-        ByteBuffer indexData = ByteBuffer.allocateDirect(indices.length * 2)
-                .order(ByteOrder.nativeOrder());
-        ShortBuffer shortBuffer = indexData.asShortBuffer();
-        shortBuffer.put(indices);
-        shortBuffer.flip();
-        indexBuffer.setBuffer(engine, indexData);
+            // Fill the index buffer
+            ByteBuffer indexData = ByteBuffer.allocateDirect(indices.length * 2)
+                    .order(ByteOrder.nativeOrder());
+            ShortBuffer shortBuffer = indexData.asShortBuffer();
+            shortBuffer.put(indices);
+            shortBuffer.flip();
+            indexBuffer.setBuffer(engine, indexData);
 
-        // Add renderable component to the entity
-       /* RenderableManager.Builder renderableBuilder = new RenderableManager.Builder(1)
-                .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
-                .material(0, materialInstance);
-        renderableBuilder.build(engine, entity);
-*/
+            // Add renderable component to the entity
+            RenderableManager.Builder builder = new RenderableManager.Builder(1);
+            builder
+                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
+                    .material(0, materialInstance)
+                    .boundingBox(new Box(-1.0f, -1.0f, -3.0f, 1.0f, 1.0f, -1.0f))
+                    .culling(false)       // Disable culling to ensure visibility
+                    .receiveShadows(false)
+                    .castShadows(false)
+                    .priority(1000)        // High priority to ensure it's drawn
+                    .build(engine, entity);
 
-        RenderableManager.Builder builder = new RenderableManager.Builder(1);
-        //.boundingBox(new Box(-0.5f, -0.5f, -2.0f, 0.5f, 0.5f, -1.0f))
-        builder.geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
-                .material(0, materialInstance)
-                .culling(false)       // Disable culling to ensure visibility
-                .receiveShadows(false)
-                .castShadows(false)
-                .priority(1000)        // High priority to ensure it's drawn
-                .build(engine, entity);
-        Log.d(LOG_TAG, "Creating dummy triange entity");
-        // Add entity to scene
-        scene.addEntity(entity);
+            Log.d(LOG_TAG, "Creating dummy triangle entity");
+            Log.d(LOG_TAG, "Triangle vertices: " +
+                    Arrays.toString(vertices));
 
+            // Add entity to scene
+            scene.addEntity(entity);
 
-
-        // Set the camera's position (slightly away from the triangle)
-
-
-        // Associate scene and camera with view
-        view.setScene(scene);
-        //view.setCamera(camera);
+            Log.d(LOG_TAG, "Dummy triangle added to scene");
+            Log.d(LOG_TAG, "Scene renderable count: " + scene.getRenderableCount());
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error creating dummy triangle", e);
+        }
     }
 
     public void makeSimpleTextureBufferForRenderTarget(){
-        // First, create a texture to serve as the color attachment
-
+        // Use actual viewport dimensions
+        viewportWidth = 1020;
+        viewportHeight = 1745;
 
         Texture.Builder textureBuilder = new Texture.Builder()
-                .width(viewportWidth)      // Match your desired dimensions
-                .height(viewportHeight)
-                .format(Texture.InternalFormat.RGBA8)  // Standard color format
+                .width(viewportWidth)      // Use actual width
+                .height(viewportHeight)    // Use actual height
+                .format(Texture.InternalFormat.RGBA8)
                 .sampler(Texture.Sampler.SAMPLER_2D)
                 .usage(Texture.Usage.COLOR_ATTACHMENT | Texture.Usage.SAMPLEABLE);
 
         Texture colorTexture = textureBuilder.build(engine);
 
-// Create the render target with just a color attachment
         RenderTarget.Builder renderTargetBuilder = new RenderTarget.Builder()
                 .texture(RenderTarget.AttachmentPoint.COLOR, colorTexture);
 
-// Build the render target
         filamentRenderTarget = renderTargetBuilder.build(engine);
         view.setRenderTarget(filamentRenderTarget);
     }
@@ -607,104 +638,98 @@ public class ARFilamentRenderer {
     public int getDisplayTextureId() {
         return displayTextureId;
     }
-
-    /**
-     * Create a simple test triangle to verify rendering works
-     */
     public void drawTestTriangleWithMaterialEntity() {
         try {
-            Log.d(LOG_TAG, "Creating test triangle entity");
-
-            // Create a new entity
-            if (testTriangleEntity == 0) {
-                testTriangleEntity = EntityManager.get().create();
-
-                Log.d(LOG_TAG, "Test entity created: " + testTriangleEntity);
-
-                float[] triangleVertices = {
-                        0.0f, 0.9f, -0.5f,  // top
-                        -0.9f, -0.9f, -0.5f,  // bottom left
-                        0.9f, -0.9f, -0.5f   // bottom right
-                };
-
-                float[] triangleColors = {
-                        1.0f, 0.0f, 0.0f, 1.0f,  // bright red
-                        0.0f, 1.0f, 0.0f, 1.0f,  // bright green
-                        0.0f, 0.0f, 1.0f, 1.0f   // bright blue
-                };
-
-                // Create and setup vertex buffer
-                FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleVertices.length * 4)
-                        .order(ByteOrder.nativeOrder())
-                        .asFloatBuffer();
-                vertexBuffer.put(triangleVertices).position(0);
-
-                FloatBuffer colorBuffer = ByteBuffer.allocateDirect(triangleColors.length * 4)
-                        .order(ByteOrder.nativeOrder())
-                        .asFloatBuffer();
-                colorBuffer.put(triangleColors).position(0);
-
-                // Create Filament vertex buffer
-                VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
-                        .vertexCount(3)
-                        .bufferCount(2)
-                        .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                                VertexBuffer.AttributeType.FLOAT3, 0, 0)
-                        .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
-                                VertexBuffer.AttributeType.FLOAT4, 0, 0);
-
-                VertexBuffer vertexBufferObj = vbBuilder.build(engine);
-// Try setting explicit stride in your vertex buffers
-                vertexBufferObj.setBufferAt(engine, 0, vertexBuffer); //, 0, 0, 3 * 4); // 3 floats * 4 bytes
-                vertexBufferObj.setBufferAt(engine, 1, colorBuffer); //, 0, 0, 4 * 4);  // 4 floats * 4 bytes
-
-                // Create index buffer
-                short[] indices = {0, 1, 2};
-                ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
-                        .order(ByteOrder.nativeOrder())
-                        .asShortBuffer();
-                indexBuffer.put(indices).position(0);
-
-                IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
-                        .indexCount(3)
-                        .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-                IndexBuffer indexBufferObj = ibBuilder.build(engine);
-                indexBufferObj.setBuffer(engine, indexBuffer);
-
-                // We'll attempt to create a simple material
-
-                MaterialInstance materialInstance = loadOrCreateMaterial();
-
-                // Build renderable with larger bounding box for visibility
-                RenderableManager.Builder builder = new RenderableManager.Builder(1);
-                builder.boundingBox(new Box(-0.5f, -0.5f, -2.0f, 0.5f, 0.5f, -1.0f))
-                        .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
-                        .material(0, materialInstance)
-                        .culling(false)       // Disable culling to ensure visibility
-                        .receiveShadows(false)
-                        .castShadows(false)
-                        .priority(1000)        // High priority to ensure it's drawn
-                        .build(engine, testTriangleEntity);
-
-                // Add to scene
-                scene.addEntity(testTriangleEntity);
-                Log.d(LOG_TAG, "Added test triangle entity with materialInstance to scene");
+            // Remove any existing triangle
+            if (testTriangleEntity != 0) {
+                scene.remove(testTriangleEntity);
+                EntityManager.get().destroy(testTriangleEntity);
+                testTriangleEntity = 0;
             }
 
-            // Position the triangle in front of the camera
-            TransformManager transformManager = engine.getTransformManager();
-            transformManager.create(testTriangleEntity);
+            // Create a single, precise triangle
+            testTriangleEntity = EntityManager.get().create();
 
+            // Exactly defined vertices
+            float[] triangleVertices = {
+                    0.0f, 0.5f, -0.5f,    // top (precisely centered)
+                    -0.5f, -0.5f, -0.5f,  // bottom left
+                    0.5f, -0.5f, -0.5f    // bottom right
+            };
+
+            // Single color for all vertices
+            float[] triangleColors = {
+                    1.0f, 0.0f, 0.0f, 1.0f,  // solid red
+                    1.0f, 0.0f, 0.0f, 1.0f,
+                    1.0f, 0.0f, 0.0f, 1.0f
+            };
+
+            // Vertex Buffer with explicit, minimal configuration
+            VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
+                    .vertexCount(3)
+                    .bufferCount(2)
+                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                            VertexBuffer.AttributeType.FLOAT3, 0, 12)  // Explicit stride
+                    .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
+                            VertexBuffer.AttributeType.FLOAT4, 0, 16); // Explicit stride
+
+            VertexBuffer vertexBufferObj = vbBuilder.build(engine);
+
+            // Create and fill buffers
+            FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleVertices.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            vertexBuffer.put(triangleVertices).position(0);
+
+            FloatBuffer colorBuffer = ByteBuffer.allocateDirect(triangleColors.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            colorBuffer.put(triangleColors).position(0);
+
+            vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
+            vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
+
+            // Index Buffer
+            short[] indices = {0, 1, 2};
+            IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
+                    .indexCount(3)
+                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+            IndexBuffer indexBufferObj = ibBuilder.build(engine);
+
+            ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
+                    .order(ByteOrder.nativeOrder())
+                    .asShortBuffer();
+            indexBuffer.put(indices).position(0);
+            indexBufferObj.setBuffer(engine, indexBuffer);
+
+            // Material with explicit, non-transparent settings
+            MaterialInstance materialInstance = loadOrCreateMaterial();
+            materialInstance.setParameter("baseColor", 1.0f, 0.0f, 0.0f, 1.0f); // Solid, opaque red
+
+            // Renderable with precise configuration
+            RenderableManager.Builder builder = new RenderableManager.Builder(1);
+            builder
+                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
+                    .material(0, materialInstance)
+                    .culling(false)
+                    .receiveShadows(false)
+                    .castShadows(false)
+                    .priority(1000)
+                    .build(engine, testTriangleEntity);
+
+            // Add to scene
+            scene.addEntity(testTriangleEntity);
+
+            // Precise transformation
+            TransformManager transformManager = engine.getTransformManager();
             float[] modelMatrix = new float[16];
             Matrix.setIdentityM(modelMatrix, 0);
-
-            // Place it directly in front of where the camera starts
             Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -0.5f);
-
+            transformManager.create(testTriangleEntity);
             transformManager.setTransform(transformManager.getInstance(testTriangleEntity), modelMatrix);
 
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in drawTestTriangleEntity: " + e.getMessage(), e);
+            Log.e(LOG_TAG, "Triangle creation error", e);
         }
     }
 
@@ -762,7 +787,7 @@ public class ARFilamentRenderer {
            // view.setCamera(camera);
             // Set the camera projection
             camera.setProjection(
-                    fovY,                   // vertical field of view
+                    (double) 120.0,                   // vertical field of view
                     (double) viewportWidth / viewportHeight,  // aspect ratio
                     0.01f,                  // near plane (closer for AR)
                     100.0f,                 // far plane
@@ -770,19 +795,23 @@ public class ARFilamentRenderer {
             );
 
 
-            float[] position = new float[3];
-            camera.getPosition(position);
-            Log.d(LOG_TAG, "Camera position: " + position[0] + ", " + position[1] + ", " + position[2]);
-// Log frustum to see what's visible
-            double[] projection = new double[16];
-            camera.getProjectionMatrix(projection);
-            Log.d(LOG_TAG, "Projection matrix: " + Arrays.toString(projection));
+                // Explicitly position and orient the camera
+                camera.lookAt(
+                        0.0f, 0.0f, 0.0f,  // Eye position at origin
+                        0.0f, 0.0f, -1.0f, // Look directly down negative Z
+                        0.0f, 1.0f, 0.0f   // Up vector
+                );
 
-            camera.lookAt(
-                    0.0f, 0.0f, 1.0f,  // Eye position (1 unit away)
-                    0.0f, 0.0f, 0.0f,  // Target at origin
-                    0.0f, 1.0f, 0.0f   // Up vector
-            );
+                // Log camera position and orientation
+                float[] position = new float[3];
+                camera.getPosition(position);
+                Log.d(LOG_TAG, "Camera position: " + Arrays.toString(position));
+
+                // Log camera projection details
+                double[] projMatrix = new double[16];
+                camera.getProjectionMatrix(projMatrix);
+                Log.d(LOG_TAG, "Projection matrix: " + Arrays.toString(projMatrix));
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error updating camera: " + e.getMessage(), e);
         }
@@ -790,122 +819,116 @@ public class ARFilamentRenderer {
 
 
 
-
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
         try {
+            // Prevent rapid, repeated frame attempts
+            long currentTime = SystemClock.elapsedRealtime();
 
+            // Introduce a minimum frame interval (e.g., 16ms for ~60 FPS)
+            final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
+
+            // Track last successful frame time
+            if (lastSuccessfulFrameTime > 0 &&
+                    (currentTime - lastSuccessfulFrameTime) < MINIMUM_FRAME_INTERVAL) {
+                Log.d(LOG_TAG, "Skipping frame to maintain consistent rate");
+                return;
+            }
+
+            // Update camera and view
             updateCameraFromARCore(viewMatrix, projectionMatrix);
-// Log to confirm the render target is not null
-            Log.d(LOG_TAG, "RenderTarget valid: " + (filamentRenderTarget != null));
-            Log.d(LOG_TAG, "RenderTarget texture valid: " +
-                    (filamentRenderTarget.getTexture(RenderTarget.AttachmentPoint.COLOR) != null));
 
+            // Explicit render target and view configuration
+            view.setScene(scene);
+            view.setRenderTarget(filamentRenderTarget);
 
-           /* This DOES write to the display texture! hurray!!! and with callack - no flicker!
-*/
-          /* Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
-            clearOptions.clear = true;
-            clearOptions.discard = true;
-            clearOptions.clearColor = new float[] {0.0f, 0.0f, 1.0f, 1.0f}; // blue background
+            // Minimize clear operations
+            Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
+            clearOptions.clear = false;
+            clearOptions.discard = false;
             renderer.setClearOptions(clearOptions);
-*/
 
+            // Robust frame beginning with multiple attempts
+            boolean frameBegun = false;
+            int maxAttempts = 3;
+            for (int attempt = 0; attempt < maxAttempts; attempt++) {
+                try {
+                    frameBegun = renderer.beginFrame(swapChain, 0L);
+                    if (frameBegun) break;
 
-            //drawTestTriangleWithMaterialEntity();
-            //createSimpleColorEntity();
-            //Log.d(LOG_TAG, "triangle entity in scene: " +testTriangleEntity);
-           // Log.d(LOG_TAG, "color entity in scene: " + colorEntity);
-            Log.d(LOG_TAG, "num entityz in scene: " +scene.getRenderableCount());
-
-
-            if (renderer.beginFrame(swapChain, 0L)) {
-                Log.d(LOG_TAG, "viewport dimensions: " + viewportWidth + "x" + viewportHeight);
-                Log.d(LOG_TAG, "filamentRenderTarget: " + filamentRenderTarget);
-
-                if (filamentRenderTarget != null) {
-
-                    view.setRenderTarget(filamentRenderTarget);
-
-                    // Render the view
-                    renderer.render(view);
-
-                    // Prepare a minimal buffer for sampling (just checking a few pixels)
-                    int sampleSize = 4 * viewportWidth * viewportHeight; // Just sample 10 pixels (RGBA)
-                    ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
-                    sampleBuffer.order(ByteOrder.nativeOrder());
-
-                    final Runnable callbackRunnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d(LOG_TAG, "Callback executed - pixel data should be ready now");
-
-                                // Check if any color data is present
-                                sampleBuffer.rewind();
-                                boolean hasContent = false;
-                                int nonZeroPixels = 0;
-
-                                // Just check a few pixels to see if there's any content
-                                for (int i = 0; i < 100 && i < viewportWidth * viewportHeight; i++) {
-                                    int offset = i * 4;
-                                    byte r = sampleBuffer.get(offset);
-                                    byte g = sampleBuffer.get(offset + 1);
-                                    byte b = sampleBuffer.get(offset + 2);
-                                    byte a = sampleBuffer.get(offset + 3);
-
-                                    if ((r & 0xFF) > 0 || (g & 0xFF) > 0 || (b & 0xFF) > 0) {
-                                        hasContent = true;
-                                        nonZeroPixels++;
-                                        Log.d(LOG_TAG, String.format("Callback - Pixel %d: R:%d G:%d B:%d A:%d",
-                                                i, r & 0xFF, g & 0xFF, b & 0xFF, a & 0xFF));
-                                    }
-                                }
-                                Log.d(LOG_TAG, "Callback - Content detected: " + hasContent +
-                                        " (" + nonZeroPixels + "/100 non-zero pixels)");
-
-                                // Only update the display texture if content was detected
-                                if (hasContent) {
-                                    processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
-                                } else {
-                                    Log.d(LOG_TAG, "No content detected in callback - not updating texture");
-                                }
-                            }
-                        };
-
-                        // Create the descriptor with a callback
-                    Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
-                            sampleBuffer,
-                            Texture.Format.RGBA,
-                            Texture.Type.UBYTE,
-                            4,                    // Alignment - set to 4 for RGBA (4 bytes per pixel)
-                            0,                    // Left padding
-                            0,                    // Top padding
-                            viewportWidth,        // Stride
-                            new Handler(Looper.getMainLooper()),                // Handler (can be null)
-                            callbackRunnable
-                    );
-
-                    // IMPORTANT: Actually read the pixels
-
-                    try {
-                        // This is a hypothetical method - you'll need to use the actual Filament API
-                        renderer.readPixels(
-                                filamentRenderTarget, // Use the render target
-                                0, 0,     // Start at center
-                                viewportWidth, viewportHeight,                // Just read 10 pixels in one row
-                                descriptor
-                        );
-
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error reading pixels", e);
-                    }
+                    // Short sleep between attempts to prevent tight looping
+                    Thread.sleep(5);
+                } catch (Exception beginFrameError) {
+                    Log.e(LOG_TAG, "Frame begin attempt " + (attempt + 1) + " failed", beginFrameError);
                 }
+            }
+
+            if (!frameBegun) {
+                Log.e(LOG_TAG, "Failed to begin frame after " + maxAttempts + " attempts");
+                return;
+            }
+
+            try {
+                // Render the view
+                renderer.render(view);
+
+                // Pixel buffer preparation with diagnostic logging
+                int sampleSize = 4 * viewportWidth * viewportHeight;
+                ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
+                sampleBuffer.order(ByteOrder.nativeOrder());
+
+                final Runnable callbackRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
+
+                            // Update last successful frame time
+                            lastSuccessfulFrameTime = SystemClock.elapsedRealtime();
+                        } catch (Exception callbackError) {
+                            Log.e(LOG_TAG, "Pixel buffer callback error", callbackError);
+                        }
+                    }
+                };
+
+                // Pixel buffer descriptor configuration
+                Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
+                        sampleBuffer,
+                        Texture.Format.RGBA,
+                        Texture.Type.UBYTE,
+                        4,                    // Alignment
+                        0,                    // Left padding
+                        0,                    // Top padding
+                        viewportWidth,        // Stride
+                        new Handler(Looper.getMainLooper()),  // Explicit main looper handler
+                        callbackRunnable
+                );
+
+                // Read pixels with error handling
+                renderer.readPixels(
+                        filamentRenderTarget,
+                        0, 0,              // x, y start
+                        viewportWidth,
+                        viewportHeight,    // width, height
+                        descriptor
+                );
+
+            } catch (Exception renderError) {
+                Log.e(LOG_TAG, "Rendering process error", renderError);
+            } finally {
+                // Always end the frame
                 renderer.endFrame();
             }
-        } catch (Exception e) {
-         Log.e(LOG_TAG, "Rendering error", e);
-         renderer.endFrame(); // Make sure we still end the frame
+
+        } catch (Exception catastrophicError) {
+            Log.e(LOG_TAG, "Catastrophic rendering error", catastrophicError);
+            if (renderer != null) {
+                renderer.endFrame();
+            }
         }
     }
+
+    // Add this field to the class
+    private long lastSuccessfulFrameTime = 0;
 
     private void processSmallSample(final ByteBuffer sampleBuffer, final int pixelCount) {
         // Check if we're on the UI thread
