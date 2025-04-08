@@ -14,6 +14,7 @@ import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
+import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -39,9 +40,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
+import java.util.Collections;
 
 public class ProjectFolder extends Composite {
+
+  private SortField sortField = SortField.DATE_MODIFIED;
+  private SortOrder sortOrder = SortOrder.DESCENDING;
+
   private static final Logger LOG = Logger.getLogger(ProjectFolder.class.getName());
   private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
   /**
@@ -110,7 +115,7 @@ public class ProjectFolder extends Composite {
     JSONArray childFoldersJson = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
     for (int i = 0; i < childFoldersJson.size(); i++) {
       addChildFolder(styleFactory.createProjectFolder(childFoldersJson.get(i).isObject(),
-          this));
+              this));
     }
     cachedJson = null;
   }
@@ -173,6 +178,25 @@ public class ProjectFolder extends Composite {
     }
   }
 
+  public void propagateSortSettings(SortField field, SortOrder order) {
+    this.sortField = field;
+    this.sortOrder = order;
+
+    for (ProjectFolder folder : folders.values()) {
+      folder.propagateSortSettings(field, order);
+    }
+
+    refresh();
+  }
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+
+    FolderManager folderManager = Ode.getInstance().getFolderManager();
+    this.sortField = folderManager.getCurrentSortField();
+    this.sortOrder = folderManager.getCurrentSortOrder();
+  }
+
   public void addProject(Project project) {
     if (project.getHomeFolder() != null) {
       project.getHomeFolder().removeProject(project);
@@ -182,26 +206,61 @@ public class ProjectFolder extends Composite {
     cachedJson = null;
   }
 
+  private void sortProjects(List<Project> projects) {
+    switch (sortField) {
+      case NAME:
+        if (sortOrder == SortOrder.ASCENDING) {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_NAME_ASCENDING);
+        } else {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_NAME_DESCENDING);
+        }
+        break;
+      case DATE_CREATED:
+        if (sortOrder == SortOrder.ASCENDING) {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING);
+        } else {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING);
+        }
+        break;
+      case DATE_MODIFIED:
+        if (sortOrder == SortOrder.ASCENDING) {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING);
+        } else {
+          Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING);
+        }
+        break;
+    }
+  }
+
+  private void sortFolders(List<ProjectFolder> folders) {
+    if (sortOrder == SortOrder.ASCENDING) {
+      Collections.sort(folders, ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING);
+    } else {
+      Collections.sort(folders, ProjectComparators.COMPARE_BY_FOLDER_NAME_DESCENDING);
+    }
+  }
+  private List<ProjectFolder> getSortedChildFolders() {
+    List<ProjectFolder> foldersList = new ArrayList<>(folders.values());
+    sortFolders(foldersList);
+    return foldersList;
+  }
+
   public void refresh() {
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
+
     childrenContainer.clear();
-    for (ProjectFolder f : folders.values()) {
-      if (changeHandler != null) {
-        f.setSelectionChangeHandler(changeHandler);
-      }
-      f.refresh();
-      childrenContainer.add(f);
-    }
-    projectListItems.clear();
-    for (Project p : projects) {
-      ProjectListItem item =  createProjectListItem(p);
+
+    List<Project> sortedProjects = new ArrayList<>(projects);
+    sortProjects(sortedProjects);
+
+    for (Project p : sortedProjects) {
+      ProjectListItem item = createProjectListItem(p);
       if (changeHandler != null) {
         item.setSelectionChangeHandler(changeHandler);
       }
       childrenContainer.add(item);
-      projectListItems.add(item);
     }
   }
 
@@ -270,6 +329,7 @@ public class ProjectFolder extends Composite {
         list.add(item.getProject());
       }
     }
+
     for (ProjectFolder f : folders.values()) {
       if ("*trash*".equals(f.getName())) {
         continue;
@@ -278,6 +338,7 @@ public class ProjectFolder extends Composite {
         list.addAll(f.getVisibleProjects(onlySelected));
       }
     }
+    sortProjects(list);
     return list;
   }
 
@@ -373,7 +434,9 @@ public class ProjectFolder extends Composite {
   }
 
   public List<ProjectFolder> getChildFolders() {
-    return Arrays.asList(folders.values().toArray(new ProjectFolder[0]));
+    List<ProjectFolder> folderList = new ArrayList<>(folders.values());
+    sortFolders(folderList);
+    return folderList;
   }
 
   public List<ProjectFolder> getNestedFolders() {
