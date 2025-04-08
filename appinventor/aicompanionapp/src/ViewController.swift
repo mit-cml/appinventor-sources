@@ -293,7 +293,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func saveApp(){
-    let name = "HelloCodi"
+    let name = "HelloWorld"
     let newapp = BundledApp(aiaPath: Bundle.main.url(forResource: "samples/\(name)", withExtension: "aia")!)
     newapp.makeCurrent()
     newapp.loadScreen1(self.form)
@@ -337,6 +337,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         controller.dismiss(animated: false)
       })
       controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
+        RetValManager.shared().startCache()
         controller.dismiss(animated:true)
       })
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in

@@ -1800,7 +1800,8 @@ public class ObjectifyStorageIo implements StorageIo {
       final boolean includeScreenShots,
       final boolean forGallery,
       final boolean fatalError,
-      final boolean forAppStore) throws IOException {
+      final boolean forAppStore,
+      final boolean locallyCachedApp) throws IOException {
     final boolean forBuildserver = includeAndroidKeystore && includeYail;
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
@@ -1846,7 +1847,9 @@ public class ObjectifyStorageIo implements StorageIo {
               it.remove();
             } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
                       (fileName.startsWith("screenshots") && !includeScreenShots) ||
-                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail)) {
+                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".bky") && locallyCachedApp) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".scm") && locallyCachedApp)) {
               // Skip legacy remix history files that were previous stored with the project
               // only include screenshots if asked ...
               // Don't include YAIL files when exporting projects
@@ -1856,6 +1859,9 @@ public class ObjectifyStorageIo implements StorageIo {
               // Otherwise Yail files are confusing cruft. In the case of
               // the Firebase Component they may contain secrets which we would
               // rather not have leak into an export .aia file or into the Gallery
+              // We don't include the .scm and .bky files when exporting the source
+              // to be cached locally by a device to avoid leaking potentially sensitive
+              // information such as keys.
               it.remove();
             } else if (forBuildserver && fileName.startsWith("src/") &&
                 (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {

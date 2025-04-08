@@ -52,6 +52,7 @@ public class DownloadServlet extends OdeServlet {
    *    /<baseurl>/download/all-projects-source
    *    /<baseurl>/download/file/<projectId>/<file-path>
    *    /<baseurl>/download/userfile/<file-path>
+   *    /<baseurl>/download/project-cached/<projectId>
    */
 
   // Constants for accessing split URI
@@ -146,7 +147,7 @@ public class DownloadServlet extends OdeServlet {
         StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
           projectId, includeProjectHistory, false, zipName, includeYail,
-          includeScreenShots, false, false, false);
+          includeScreenShots, false, false, false, false);
         downloadableFile = zipFile.getRawFile();
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE)) {
@@ -201,7 +202,7 @@ public class DownloadServlet extends OdeServlet {
           zipName = "u" + projectUserId + "_p" + projectId + ".aia";
         }
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
-          projectId, /* include history*/ true, /* include keystore */ true, zipName, true, true, false, false, false);
+          projectId, /* include history*/ true, /* include keystore */ true, zipName, true, true, false, false, false, false);
         downloadableFile = zipFile.getRawFile();
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE)) {
         String[] projectIdStrings = uriComponents[PROJECT_ID_INDEX].split("-");
@@ -255,6 +256,25 @@ public class DownloadServlet extends OdeServlet {
         } else {
           downloadableFile = new RawFile("AppInventor.certSigningRequest", csr);
         }
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_CACHED)) {
+        System.out.println("Downloading project cache");
+        // Download project source files as a zip.
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+        uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE);
+        String projectTitle = (uriComponents.length > PROJECT_TITLE_INDEX) ?
+                uriComponents[PROJECT_TITLE_INDEX] : null;
+        final boolean includeProjectHistory = true;
+        String zipName = (projectTitle == null) ? null :
+                StringUtils.normalizeForFilename(projectTitle) + ".aia";
+        // If the requester is an Admin, we include any Yail files in the
+        // project in the export
+        boolean includeYail = userInfoProvider.getIsAdmin();
+        boolean includeScreenShots = includeYail;
+        StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
+        ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
+                projectId, includeProjectHistory, false, zipName, includeYail,
+                includeScreenShots, false, false, false, true);
+        downloadableFile = zipFile.getRawFile();
       } else {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);
       }

@@ -541,7 +541,7 @@ public interface StorageIo {
     final boolean includeYail,
     final boolean includeScreenShots,
     final boolean forGallery,
-    final boolean fatalError, boolean forAppStore) throws IOException;
+    final boolean fatalError, boolean forAppStore, boolean locallyCachedApp) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case

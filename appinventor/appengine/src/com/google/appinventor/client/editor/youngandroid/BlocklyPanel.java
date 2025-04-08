@@ -13,6 +13,9 @@ import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -306,6 +309,16 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static void popScreen() {
     DesignToolbar.popScreen();
+  }
+
+  public static boolean startCache() {
+    // Return a promise, do-then, resolve promise on next command to generate yail
+    ChainableCommand cmd = new SaveAllEditorsCommand(
+      new GenerateYailCommand(null));
+
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    String projectName = Ode.getCurrentProject().getProjectName();
+    return connectCache(Long.toString(projectId), projectName);
   }
 
   public void getBlocksImage(Callback<String, String> callback) {
@@ -604,6 +617,8 @@ public class BlocklyPanel extends HTMLPanel {
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::pushScreen(Ljava/lang/String;));
     $wnd.BlocklyPanel_popScreen =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
+    $wnd.BlocklyPanel_startCache =
+        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::startCache());
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_hideDialog =
@@ -741,6 +756,10 @@ public class BlocklyPanel extends HTMLPanel {
   public native void removeAsset(String name)/*-{
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
       .removeAsset(name);
+  }-*/;
+
+  public static native boolean connectCache(String projectId, String projectName)/*-{
+    return $wnd.Blockly.ReplMgr.connectCache(projectId, projectName);
   }-*/;
 
   /**
