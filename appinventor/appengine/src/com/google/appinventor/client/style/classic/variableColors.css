@@ -13,108 +13,118 @@ they get cut off in Windows.
 
 @external .*;
 body {
-  background: border-color background-image;
+  background-color: border-color;
+  background-image: background-image;
 }
+
+.ode-Logo {
+    content: logo-image;
+}
+
 /* For the TOS Form*/
 .floatingBox {
-  background-color: background-color;
-  box-shadow: 0 0 4px shadow-color;
-  border: 1px panel-shadow;
+  background-color: v-white;
+  box-shadow: 0 0 4px elevation-2;
+  border: 1px gray-800;
 }
 
 .ode-ContextMenu {
-  background-color: background-color;
+  background-color: v-white;
 }
 .ode-ContextMenuItem-Red,
 .ode-ContextMenuItem,
 .ode-CurrentColor {
-  color: panel-shadow;
+  color: gray-800;
 }
 .ode-ContextMenuItem-Red {
-  color: item-color-red;
+  color: v-red;
 }
 
 .ode-ContextMenuItemSeparator {
-  background-color: border-color;
-  border-bottom: 1px solid background-color;
+  background-color: gray-300;
+  border-bottom: 1px solid v-white;
 }
 
 .ode-ContextMenuItem-selected {
-  color: background-color;
-  background: selected-color;
+  color: v-white;
+  background: clr-primary-600;
 }
 
 .ode-ContextMenuItem-Red-selected {
-  color: item-color-red;
-  background: selected-color;
+  color: v-red;
+  background: clr-primary-600;
 }
 
 .ode-ContextMenuItem-disabled {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-Box-content {
-  background-color: box-background-color;
+  background-color: clr-primary-75;
   /* TODO(opensource): Delete the background-image line below once we're ready */
   background-image: box-background-image;
-  color: panel-shadow;
-  border-left: 1px solid border-color;
-  border-bottom: 1px solid border-color;
-  border-right: 1px solid border-color;
-  box-shadow: 0 0 4px shadow-color;
+  color: gray-800;
+  border-left: 1px solid gray-300;
+  border-bottom: 1px solid gray-300;
+  border-right: 1px solid gray-300;
+  box-shadow: 0 0 4px 1px elevation-2;
 }
 
 .ode-Box-header {
-  background: box-background;
-  border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
+  background: clr-primary-200;
+  border-color: gray-300 gray-300 gray-400 gray-300;
 }
 
 .ode-Box-toolkit {
-  color: panel-shadow;
-  background: box-background;
+  color: gray-800;
+  background: clr-primary-200;
 }
 
 .ode-Box-header-caption {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-Box-header-caption-highlighted {
-  color:  item-color-red; /* too strong, but use red for now */
+  color:  v-red; /* too strong, but use red for now */
 }
 
 .ode-BoxResizeControl {
-  background-color: background-color;
+  background-color: v-white;
 }
 /*
   * MessagesOutputBox
   */
 .ode-MessagesOutput {
-  background-color: background-color;
+  background-color: v-white;
 }
 /*
   * MotdBox
   */
 .ode-Motd {
-  background-color: box-background-color;
-  color: panel-shadow;
+  background-color: clr-primary-75;
+  color: gray-800;
 }
 .ode-ProjectNameLabel {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-ProjectFieldLabel {
-  color: panel-shadow;
+  color: gray-800;
+}
+
+.ode-ProjectRow {
+  background-color: v-white;
 }
 
 .ode-ProjectTable {
-  background-color: background-color;
+  background-color: v-white;
 }
 .ode-ProjectRowHighlighted {
   background-color: project-background-color !important;
 }
 
 .ode-ProjectRowUnHighlighted {
-  background-color: background-color;
+  background-color: v-white;
 }
 
 .ode-ProjectHeaderRow {
@@ -127,18 +137,18 @@ body {
 }
 
 .ode-CheckpointProjectTable {
-  border: 1px solid background-color;
+  border: 1px solid v-white;
 
 }
 /*
   * ComponentList
   */
 .ode-ComponentNameLabel {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-ComponentTable td {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-ComponentRowHighlighted {
@@ -148,7 +158,7 @@ body {
 
 .ode-ComponentRowUnHighlighted {
   border-bottom: 1px solid component-border-bottom;
-  background-color: background-color
+  background-color: v-white;
 }
 
 .ode-ComponentHeaderRow {
@@ -164,61 +174,61 @@ body {
   */
 
   .ode-TopPanel {
-  background-color: top-panel-background-color;
-  background-image: linear-gradient(to bottom, top-panel-background-color, top-panel-background-image);
-  /*background-image: -moz-linear-gradient(top, top-panel-background-color, top-panel-background-image);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(top-panel-background-color), to(top-panel-background-image));
-  background-image: -webkit-linear-gradient(top, top-panel-background-color, top-panel-background-image);
-  background-image: -o-linear-gradient(top, top-panel-background-color, top-panel-background-image); */
+  background-color: gray-100;
+  background-image: linear-gradient(to bottom, gray-100, gray-50);
+  /*background-image: -moz-linear-gradient(top, gray-100, gray-50);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(gray-100), to(gray-50));
+  background-image: -webkit-linear-gradient(top, gray-100, gray-50);
+  background-image: -o-linear-gradient(top, gray-100, gray-50); */
   background-repeat: repeat-x;
-  border: 1px solid top-panel-border;
-  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='top-panel-end-color', GradientType=0)";
-  box-shadow: 0 1px 4px shadow-color;
+  border: 1px solid gray-300;
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='srfc-high-emphasis', GradientType=0)";
+  box-shadow: 0 1px 4px elevation-2;
   /* -webkit-box-shadow: 0 1px 4px box-shadow;
   -moz-box-shadow: 0 1px 4px box-shadow;*/
 }
 
 .ode-LogoText {
-  color: label-color;
-  text-shadow: 0 0 0 panel-shadow;
+  color: gray-500;
+  text-shadow: 0 0 0 gray-800;
 }
 
 .ode-TopPanelAccount {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-TopPanelAccount a {
-  color: selected-color;
+  color: clr-primary-600;
 }
 
 .ode-TopPanelAccount .linkdivider {
-  color: border-color;
+  color: gray-300;
 }
 
 
 .ode-TopPanelLinks .gwt-Label,
 .ode-TopPanelLinks .gwt-Anchor,
 .ode-TopPanelLinks .gwt-TitleLabel {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-TopPanelLinks .gwt-Label:hover,
 .ode-TopPanelLinks .gwt-Anchor:hover,
 .ode-TopPanelLinks .gwt-TitleLabel:hover {
-  text-shadow: 0 0 1px label-color;
+  text-shadow: 0 0 1px gray-500;
 }
 
 .ode-TopPanelWarningLabel {
-  color: item-color-red;
+  color: v-red;
 }
 
 .ode-TopPanelLabel {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-TopPanelIconButton:hover {
-  /* -webkit-filter: drop-shadow(0px 0px 3px panel-shadow); */
-  filter: drop-shadow(0px 0px 3px panel-shadow);
+  /* -webkit-filter: drop-shadow(0px 0px 3px gray-800); */
+  filter: drop-shadow(0px 0px 3px gray-800);
 }
   
 .ode-TopPanelButton,
@@ -226,23 +236,23 @@ body {
 .ActionDropDown-Options {
   border: transparent;
   background: transparent;
-  color: top-panel-color;
+  color: gray-600;
 }
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
 .ActionDropDown-Options:hover {
-  background: border-color;
-  color: panel-shadow;
+  background: gray-300;
+  color: gray-800;
 }
 
 .ode-NavArrow {
   border: transparent;
-  background: label-color;
+  background: gray-500;
 }
 
 .ode-NavArrow:hover {
-  background-color: background-color;
+  background-color: v-white;
 }
 
 /*
@@ -250,12 +260,12 @@ body {
   */
 
 .ode-StatusPanel {
-  color: label-color;
+  color: gray-500;
   border-bottom: 1px solid explorer-border;
 }
 
 .ode-StatusPanel a {
-  color: label-color;
+  color: gray-500;
 }
 
 /*
@@ -263,34 +273,34 @@ body {
   */
 
 .ya-NonVisibleComponentsHeader {
-  color: panel-shadow;
+  color: gray-800;
 }
   
 .ode-SimpleUiDesignerNonVisibleComponents .gwt-Label {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-Icon-selected {
-  border: 2px solid selected-color;
+  border: 2px solid clr-primary-600;
 }
 
 .gwt-TabBar .gwt-TabBarItem {
-  color: tab-bar-color;
-  background-color: tab-bar-background-color;
-  border: 2px solid bar-color;
+  color: v-black;
+  background-color: clr-primary-50;
+  border: 2px solid clr-primary-200;
 }
 
 .gwt-TabBar .gwt-TabBarItem-selected {
-  background-color: selected-color;
-  border: 2px solid selected-color;
+  background-color: clr-primary-600;
+  border: 2px solid clr-primary-600;
 }
 
 .gwt-VerticalSplitPanel, .gwt-HorizontalSplitPanel {
-  background: background-color;
+  background: v-white;
 }
 
 .gwt-Tree .gwt-TreeItem {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
@@ -299,7 +309,7 @@ body {
 
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
-  background-color: bar-color;
+  background-color: clr-primary-700;
 }
 
 .gwt-Tree-focused {
@@ -309,42 +319,40 @@ body {
 /* Young Android Toolbar */
 
 .ya-Toolbar {
-  background-color: selected-color;
+  background-color: clr-primary-600;
 }
 
 .ya-Toolbar .ya-ProjectName {
-  color: background-color;
-  text-shadow: 0 0 1px panel-shadow;
+  color: v-white;
+  text-shadow: 0 0 1px gray-800;
 }
 
 .ode-TextButton,
 .gwt-Button {
-  color: panel-shadow;
+  color: gray-800;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  background-color: top-panel-background-color;
-  /* *background-color: border-color; */
-  background-image:linear-gradient(to bottom, background-color, border-color);  
-  /* background-image:-moz-linear-gradient(top, background-color, border-color);
-  background-image:-webkit-gradient(linear, 0 0, 0 100%, from(background-color), to(border-color));
-  background-image:-webkit-linear-gradient(top, background-color, border-color);
-  background-image:-o-linear-gradient(top, background-color, border-color);*/
+  background-color: gray-100;
+  /* *background-color: gray-300; */
+  background-image:linear-gradient(to bottom, v-white, gray-300);  
+  /* background-image:-moz-linear-gradient(top, v-white, gray-300);
+  background-image:-webkit-gradient(linear, 0 0, 0 100%, from(v-white), to(gray-300));
+  background-image:-webkit-linear-gradient(top, v-white, gray-300);
+  background-image:-o-linear-gradient(top, v-white, gray-300);*/
   background-repeat: repeat-x;
-  border: 1px solid border-color;
-  border-color: border-color border-color #bfbfbf;
-  border-color: shadow-color shadow-color rgba(0, 0, 0, 0.25);
+  border: 1px solid gray-300;
   border-bottom-color: #b3b3b3;
   filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='#ffe6e6e6', GradientType=0)";
   filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px shadow-color;
-  /*-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px shadow-color;
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px shadow-color;*/
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;
+  /*-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;*/
 }
 
 .ode-TextButton-up-disabled,
 .gwt-Button-up-disabled {
-  color: panel-shadow;
-  background-color: border-color;
-  /* *background-color: border-color; */
+  color: gray-800;
+  background-color: gray-300;
+  /* *background-color: gray-300; */
   cursor: default;
   background-image: none;
   opacity: 0.65;
@@ -352,42 +360,40 @@ body {
 
 .ode-TextButton:hover,
 .gwt-Button:hover {
-  color: panel-shadow;
-  border-color: border-color border-color #bfbfbf;
-  border-color: shadow-color shadow-color rgba(0, 0, 0, 0.25);
-  background-color: border-color;
-  /* *background-color: border-color; */
+  color: gray-800;
+  background-color: gray-300;
+  /* *background-color: gray-300; */
 }
 
 .ode-TextButton:active,
 .gwt-Button:active {
-  /* -webkit-box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px shadow-color;
-  -moz-box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px shadow-color; */
-  box-shadow: inset 0 2px 4px button-shadow-color, 0 1px 2px shadow-color;
+  /* -webkit-box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2;
+  -moz-box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2; */
+  box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2;
 }
 
 .destructive-action {
-  background:  item-color-red;
-  color: background-color;
+  background:  v-red;
+  color: v-white;
   text-shadow: none;
 }
 
 .destructive-action:hover {
-  background: destructive-action-hover;
-  color: background-color;
+  background: error;
+  color: v-white;
   text-shadow: none;
 }
 
 .destructive-action[disabled],
 .destructive-action[disabled]:hover {
-  background: destructive-action-hover;
-  color: label-color;
+  background: error;
+  color: gray-500;
 }
 
 
 .ode-BlocksDesignerButton {
-  color: background-color;
-  text-shadow: 0 -1px 0 button-shadow-color;
+  color: v-white;
+  text-shadow: 0 -1px 0 elevation-16;
   background-color: #faa732;
   /* *background-color: blocks-designer-color; 
   background-image: -moz-linear-gradient(top, #fbb450, blocks-designer-color);
@@ -397,49 +403,82 @@ body {
   background-image: linear-gradient(to bottom, #fbb450, blocks-designer-color);
   background-repeat: repeat-x; 
   border-color: blocks-designer-color blocks-designer-color #ad6704;
-  border-color: shadow-color shadow-color button-shadow-color; 
+  border-color: elevation-2 elevation-2 elevation-16; 
   filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0)";
   filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
 }
 
 .ode-BlocksDesignerButton:hover,
 .ode-BlocksDesignerButon:disabled {
-  color: background-color;
+  color: v-white;
   background-color: blocks-designer-color;
 }
 
 /* Palette */
 
+.ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+  color: gray-700;
+  font-size: 13px;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+  border-top: 1px solid gray-300;
+  border-bottom: 1px solid gray-300;
+  background-color: clr-primary-500;
+  cursor: pointer;
+  height: 14px;
+  padding: 8px 16px;
+}
+
+.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+  padding: 8px 4px 8px 8px;
+  background-color: v-white;
+  border: 1px solid gray-400;
+  border-bottom: 0px;
+  margin-left: 0px;
+}
+
+.ode-PropertiesPanel .gwt-DisclosurePanel > tbody > tr > td > a {
+  background-color: clr-primary-700;
+}
+
+
+.gwt-DisclosurePanel .header, .gwt-DisclosurePanel .header a, .gwt-DisclosurePanel .header td {
+  color: v-black;
+}
+
 .gwt-StackPanelItem div {
-  border-top: 1px solid border-color;
-  border-bottom: 1px solid border-color;
-  background-color: tab-bar-background-color;
-  color: panel-shadow;
+  border-top: 1px solid gray-300;
+  border-bottom: 1px solid gray-300;
+  background-color: clr-primary-50;
+  color: gray-800;
 }
 
 .gwt-StackPanel .gwt-StackPanelContent {
-  background-color: background-color; /* needed for dark mmode */
+  background-color: v-white; /* needed for dark mmode */
 }
   
 .ode-SimplePaletteItem {
-  background-color: background-color; /* needed on Firefox */
+  background-color: v-white; /* needed on Firefox */
 }
 
 .ode-SimplePaletteItem-caption {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-SimplePaletteItem-Selected {
-  background-color: bar-color !important;
+  background-color: clr-primary-700 !important;
 }
 
 .gwt-SimplePanel {
   border: 1px solid simple-panel-border;
-  background-color: background-color;
+  background-color: v-white;
 }
 
 .gwt-ListBox {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-ExplorerContent {
@@ -461,130 +500,168 @@ body {
 
 .ode-CollapsiblePanelTitle {
   background-color: explorer-border;
-  color: tab-bar-color;
+  color: v-black;
 }
 
 .ode-HeaderPanel {
   border: 1px solid explorer-border;
-  background-color: background-color;
+  background-color: v-white;
 }
 
 .ode-HeaderPanelTitleBar {
   background-color: explorer-border;
-  color: tab-bar-color;
+  color: v-black;
 }
 
 .ode-PropertiesPanel {
-  background-color: box-background-color;
+  background-color: clr-primary-75;
 }
 
 .ode-PropertiesPanel td {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-PropertiesComponentName {
-  background-color: tab-bar-background-color;
-  color: panel-shadow;
-  border-bottom: 1px solid border-color;
+  background-color: clr-primary-50;
+  color: gray-800;
+  border-bottom: 1px solid gray-300;
 }
 
 .ode-PropertyEditor button{
-  color: panel-shadow;
-  background-color: background-color;
-  border: 1px solid border-color;
+  color: gray-800;
+  background-color: v-white;
+  border: 1px solid gray-300;
 }
 
 .ode-ChoicePropertyEditor {
-  border: thin solid border-color;
-  background-color: background-color;
-  box-shadow: border-color;
-  color: panel-shadow;
+  border: thin solid gray-200;
+  background-color: v-white;
+  box-shadow: gray-300;
+  color: gray-800;
 }
 
 .ode-ChoicePropertyEditor:hover {
-  background: border-color;
-  color: panel-shadow;
+  background: gray-300;
+  color: gray-800;
 }
 
 .ode-ChoicePropertyEditor:focus {
-  border-color: border-color;
+  border-color: gray-300;
   /* IE6-9 */
-  /* -webkit-box-shadow: inset 0 1px 1px shadow-color, 0 0 8px border-color;
-  -moz-box-shadow: inset 0 1px 1px shadow-color, 0 0 8px border-color;*/
-  box-shadow: inset 0 1px 1px shadow-color, 0 0 8px border-color; 
+  /* -webkit-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px gray-300;
+  -moz-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px gray-300;*/
+  box-shadow: inset 0 1px 1px elevation-2, 0 0 8px gray-300; 
 }
 
 select.ode-PropertyEditor[disabled] {
-  background-color: label-color;
+  background-color: gray-500;
 }
 
 .ode-MultipleChoicePropertyEditor {
-  background-color: background-color;
-  color: tab-bar-color;
-  border: 1px solid label-color;
+  background-color: v-white;
+  color: v-black;
+  border: 1px solid gray-500;
 }
 
 .ode-SimpleMockForm {
-  background-color: bar-color;
-  border: 2px solid tab-bar-color;
+  background-color: clr-primary-200;
+  border: 2px solid v-black;
 }
 
+/* ==== start: skins for Android */
+.ode-SimpleMockFormPhoneLandscape {
+  background: phoneLandscape;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhonePortrait {
+  background: phonePortrait no-repeat right top;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhoneLandscapeTablet {
+  background: phoneLandscapeTablet;
+  background-size: 100% 100%;
+}
+.ode-SimpleMockFormPhonePortraitTablet {
+  background: phonePortraitTablet no-repeat right top;
+  background-size: 100% 100%;
+}
+.ode-SimpleMockFormPhoneLandscapeMonitor {
+  background: phoneLandscapeMonitor no-repeat right top;
+  background-size: 100% 100%;
+}
+
+.ode-SimpleMockFormPhonePortraitMonitor {
+  background: phonePortraitMonitor no-repeat right top;
+  background-size: 100% 100%;
+}
+/* ==== end: skins for Android */
+
 .ode-SimpleMockForm-selected {
-  border: 2px solid selected-color;
+  border: 2px solid clr-primary-600;
 }
 
 .ode-SimpleMockFormTitleBar {
-  background-color: label-color;
-  color: background-color;
-  border-bottom: 1px solid border-color;
+  background-color: gray-500;
+  color: v-white;
+  border-bottom: 1px solid gray-300;
 }
 
 .ode-SimpleMockFormTitleBar-ActionBar {
-  background-color: selected-color;
-  color: background-color;
+  background-color: clr-primary-600;
+  color: v-white;
 }
 
 .ode-SimpleMockFormMenuButton {
   background-color: transparent;
-  color: background-color;
+  color: v-white;
 }
 
 .ode-SimpleMockFormNavigationBarPortrait,
 .ode-SimpleMockFormNavigationBarLandscape {
-  background-color: tab-bar-color;
+  background-color: v-black;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait {
+  background-image: navigationbarPortrait;
+}
+
+.ode-SimpleMockFormNavigationBarLandscape {
+  background-image: navigationbarLandscape;
 }
 
 .ode-SimpleMockContainer {
   background-color: transparent;
-  border: 2px solid tab-bar-color;
+  border: 2px solid v-black;
 }
 
 .ode-SimpleMockContainer-selected {
-  border: 2px solid selected-color;
+  border: 2px solid clr-primary-600;
 }
 
 .ode-SimpleMockComponent-disabled {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-SimpleMockComponent-selected {
-  border: 2px solid selected-color;
+  border: 2px solid clr-primary-600;
 }
 
 .ode-SimpleMockMapFeature-selected svg * {
-  stroke: selected-color;
+  stroke: clr-primary-600;
 }
 
 path.ode-SimpleMockMapFeature-selected {
-  stroke: selected-color;
+  stroke: clr-primary-600;
 }
 
 .ode-SimpleMockMapFeature-selected img {
-  border: 2px solid selected-color;
+  border: 2px solid clr-primary-600;
 }
 
 .ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon {
-  color: label-color;
+  color: gray-500;
 }
 
 .ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon:hover {
@@ -592,39 +669,39 @@ path.ode-SimpleMockMapFeature-selected {
 }
   
 .listViewItemStyle {
-  border-bottom: 1px solid label-color;
+  border-bottom: 1px solid gray-500;
 }
 
 /* class for the ListView Mock component */
 .spinnerComponentStyle {
-  outline: 1px solid border-color;
+  outline: 1px solid gray-300;
 }
   
 /* Component Help */
 
 .ode-ComponentHelpPopup {
-  background-color: background-color;
-  border-left: 4px solid selected-color;
-  border-right: 4px solid selected-color;
-  border-bottom: 4px solid selected-color;
-  box-shadow: 0 0 4px shadow-color;
+  background-color: v-white;
+  border-left: 4px solid clr-primary-600;
+  border-right: 4px solid clr-primary-600;
+  border-bottom: 4px solid clr-primary-600;
+  box-shadow: 0 0 4px elevation-2;
 }
 
 .ode-ComponentHelpPopup-TitleBar {
-  background-color: selected-color;
-  color: background-color;
+  background-color: clr-primary-600;
+  color: v-white;
 }
 
 .ode-ComponentHelpPopup-Body {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-ComponentHelpPopup-Link a {
-  color: selected-color;
+  color: clr-primary-600;
 }
   
 .compiler-ErrorMarker {
-  color:  item-color-red;
+  color:  v-red;
 }
 
 .compiler-WarningMarker {
@@ -643,7 +720,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ErrorMessage {
-  color: item-color-red;
+  color: v-red;
 }
 
 .ode-InfoMessage {
@@ -658,38 +735,73 @@ path.ode-SimpleMockMapFeature-selected {
 
 /* Start of NoProjectsDialogBox. */
 .ode-noDialogDiv {
-  box-shadow: 0 0 10px label-color;
-  background-color: background-color;
+  box-shadow: 0 0 10px gray-500;
+  background-color: v-white;
 }
 
 .ode-noDialogDivHeader {
-  background-color: selected-color;
-  border-bottom: 1px #e9e9e9 solid;
+  background-color: clr-primary-600;
+  border-bottom: 1px gray-200 solid;
 }
 
 .ode-headerTitle {
-  color: background-color;
+  color: v-white;
 }
 
 .ode-tutorialsTitle {
-  color: tab-bar-color;
+  color: v-black;
 }
 
 .ode-noDialogExampleDiv {
-  box-shadow: 0 0 2px label-color;
+  box-shadow: 0 0 2px gray-500;
 }
-  
+
+.ode-noDialogExampleDivs {
+    color: gray-600;
+}
+
+.ode-tutorialButton {
+    background-color: v-white;
+    border: 1px clr-primary-600 solid;
+    color: clr-primary-600;
+}
+
+.ode-tutorialButton:hover {
+    background-color: clr-primary-600;
+    color: v-white;
+}
+
+.ode-closeDialogBox {
+    background-color: v-white;
+    border: 1px gray-600 solid;
+    color: gray-600;
+}
+
+.ode-closeDialogBox:hover {
+    background-color: gray-200;
+}
+.ode-noDialogNewProject {
+    background-color: v-white;
+    border: 1px clr-primary-600 solid;
+    color: clr-primary-600;
+}
+
+.ode-noDialogNewProject:hover {
+    background-color: clr-primary-600;
+    color: v-white;
+}
+
 /* End of NoProjectsDialogBox. */
 
 .ode-DialogBox {
-  background-color: background-color;
-  border-left: 4px solid selected-color;
-  border-right: 4px solid selected-color;
-  border-bottom: 4px solid selected-color;
+  background-color: v-white;
+  border-left: 4px solid clr-primary-600;
+  border-right: 4px solid clr-primary-600;
+  border-bottom: 4px solid clr-primary-600;
 }
 
 .ode-DialogBox .gwt-Label {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-DialogBox .ExtendedText {
@@ -697,59 +809,59 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .gwt-Tree {
-  border: thin solid border-color;
+  border: thin solid gray-300;
 }
 
 .ode-DialogBox .dialogTop {
-  background-color: selected-color;
+  background-color: clr-primary-600;
 }
 
 .ode-DialogBox .Caption {
-  background-color: selected-color;
-  color: background-color;
-  box-shadow: 0 0 4px shadow-color;
+  background-color: clr-primary-600;
+  color: v-white;
+  box-shadow: 0 0 4px elevation-2;
 
 }
 
 .ode-DialogBox .dialogContent {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .ode-DialogBox .dialogContent td {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 /* AI2 Extensions Styles */
 
 a.ode-ExtensionAnchor {
-  color: label-color;
+  color: gray-500;
 }
 
 a.ode-ExtensionAnchor:hover {
-  color: panel-shadow;
+  color: gray-800;
 }
   
 .ode-Android-caption {
-  background-color: selected-color;
-  color: background-color;
+  background-color: clr-primary-600;
+  color: v-white;
 }
 
 .ode-Android-footer {
   background-color: explorer-border;
-  color: tab-bar-color;
+  color: v-black;
 }
 
 .gwt-ProgressBar-shell {
   border: 2px solid project-background-color;
-  border-right: 2px solid panel-shadow;
-  border-bottom: 2px solid panel-shadow;
-  background-color: label-color;
+  border-right: 2px solid gray-800;
+  border-bottom: 2px solid gray-800;
+  background-color: gray-500;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-  background-color: selected-color;
+  background-color: clr-primary-600;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
-  color: background-color;
+  color: v-white;
 }
 
 /*
@@ -757,11 +869,11 @@ a.ode-ExtensionAnchor:hover {
   */
 
 .gwt-PopupPanel {
-  background-color: background-color;
-  border: 1px solid button-shadow-color;
-  /* -webkit-box-shadow: 0 5px 10px button-shadow-color;
-  -moz-box-shadow: 0 5px 10px button-shadow-color;*/
-  box-shadow: 0 5px 10px button-shadow-color; 
+  background-color: v-white;
+  border: 1px solid elevation-16;
+  /* -webkit-box-shadow: 0 5px 10px elevation-16;
+  -moz-box-shadow: 0 5px 10px elevation-16;*/
+  box-shadow: 0 5px 10px elevation-16; 
 }
 
 /*
@@ -785,7 +897,7 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 textarea,
@@ -804,11 +916,11 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input {
-  background-color: background-color;
-  border: 1px solid border-color;
-  /* -webkit-box-shadow: inset 0 1px 1px shadow-color;
-  -moz-box-shadow: inset 0 1px 1px shadow-color;*/
-  box-shadow: inset 0 1px 1px shadow-color; 
+  background-color: v-white;
+  border: 1px solid gray-200;
+  /* -webkit-box-shadow: inset 0 1px 1px elevation-2;
+  -moz-box-shadow: inset 0 1px 1px elevation-2;*/
+  box-shadow: inset 0 1px 1px elevation-2; 
 }
 
 textarea:focus,
@@ -827,112 +939,109 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus,
 .uneditable-input:focus {
-  border-color: rgba(82, 168, 236, 0.8);
+  border-color: simple-panel-shadow;
 
-  /* -webkit-box-shadow: inset 0 1px 1px shadow-color, 0 0 8px rgba(82, 168, 236, 0.6);
-  -moz-box-shadow: inset 0 1px 1px shadow-color, 0 0 8px rgba(82, 168, 236, 0.6); */
-  box-shadow: inset 0 1px 1px shadow-color, 0 0 8px rgba(82, 168, 236, 0.6);
+  /* -webkit-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px rgba(82, 168, 236, 0.6);
+  -moz-box-shadow: inset 0 1px 1px elevation-2, 0 0 8px rgba(82, 168, 236, 0.6); */
+  box-shadow: inset 0 1px 1px elevation-2, 0 0 8px simple-panel-shadow;
 }
 
 
 
 select {
-  background-color: background-color;
-  border: 1px solid border-color;
+  background-color: v-white;
+  border: 1px solid gray-300;
 }
 
 select:focus,
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
-  outline: 2px solid panel-shadow;
-
+  outline: thin dotted panel-shadow;
 }
 
 .uneditable-input,
 .uneditable-textarea {
-  color: label-color;
-  background-color: #fcfcfc;
-  border-color: border-color;
-  /* -webkit-box-shadow: inset 0 1px 2px shadow-color;
-  -moz-box-shadow: inset 0 1px 2px shadow-color;*/
-  box-shadow: inset 0 1px 2px shadow-color; 
+  color: gray-500;
+  background-color: v-white;
+  border-color: gray-300;
+  box-shadow: inset 0 1px 2px elevation-2;
 }
 
 /* input:-moz-placeholder,
 textarea:-moz-placeholder {
-  color: label-color;
+  color: gray-500;
 }
 
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
-  color: label-color;
+  color: gray-500;
 }
 
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-  color: label-color;
+  color: gray-500;
 } */
 
 
 /* Gallery Toolbar*/
 .ya-GalleryToolbar {
-  background-color: selected-color;
+  background-color: clr-primary-600;
 }
 
 .gallery-container {
-  background: background-color;
-  box-shadow: 0 2px 4px container-shadow;
-  /* -moz-box-shadow: 0 2px 4px container-shadow;
-  -ms-box-shadow: 0 2px 4px container-shadow;
-  -webkit-box-shadow: 0 2px 4px container-shadow; */
+  background: v-white;
+  box-shadow: 0 2px 4px elevation-6;
+  /* -moz-box-shadow: 0 2px 4px elevation-6;
+  -ms-box-shadow: 0 2px 4px elevation-6;
+  -webkit-box-shadow: 0 2px 4px elevation-6; */
 }
 
 .ode-UserProfileWrapper .profile-textdisplay {
-  color: panel-shadow;
+  color: gray-800;
 }
 .ode-UserProfileWrapper .profile-textlabel {
-  color: label-color;
+  color: gray-500;
 }
 
 .profile-textlabel-emaildescription {
-  color: label-color;
+  color: gray-500;
 }
 
 
 .gallery .gwt-TabBar .gwt-TabBarItem {
-  color: label-color;
+  color: gray-500;
 }
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .gallery-nav-prev .active,
 .gallery-nav-next .active,
 .gallery-report-next .active {
-  color: label-color;
+  color: gray-500;
 }
 .gallery-nav-prev .disabled,
 .gallery-nav-next .disabled,
 .gallery-report-next .disabled {
-  color: border-color;
+  color: gray-300;
 }
 .gallery-nav-prev .active:hover,
 .gallery-nav-next .active:hover,
 .gallery-report-next .active:hover {
-  background-color: background-color;
+  background-color: v-white;
 }
 
 .gallery-nav-return .gwt-Label {
-  color: selected-color;
+  color: clr-primary-600;
 }
 
 .gallery-app-collection .gallery-card {
-  background: background-color;
-  box-shadow: 0 2px 4px container-shadow;
-  /* -moz-box-shadow: 0 2px 4px container-shadow;
-  -ms-box-shadow: 0 2px 4px container-shadow;
-  -webkit-box-shadow: 0 2px 4px container-shadow; */
+  background: v-white;
+  box-shadow: 0 2px 4px elevation-6;
+  /* -moz-box-shadow: 0 2px 4px elevation-6;
+  -ms-box-shadow: 0 2px 4px elevation-6;
+  -webkit-box-shadow: 0 2px 4px elevation-6; */
 }
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
@@ -940,39 +1049,39 @@ textarea::-webkit-input-placeholder {
 }
 
 .gallery-card-content .gallery-title {
-  color: panel-shadow;
+  color: gray-800;
 }
 /* more color */
 .paragraph-end-block {
-  /* background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,transparent),color-stop(100%,background-color));
-  background-image: -webkit-linear-gradient(left,transparent,background-color);
-  background-image: -moz-linear-gradient(left,transparent,background-color);
-  background-image: -ms-linear-gradient(left,transparent,background-color);
-  background-image: -o-linear-gradient(left,transparent,background-color); */
-  background: linear-gradient(to right,transparent,background-color);
+  /* background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,transparent),color-stop(100%,v-white));
+  background-image: -webkit-linear-gradient(left,transparent,v-white);
+  background-image: -moz-linear-gradient(left,transparent,v-white);
+  background-image: -ms-linear-gradient(left,transparent,v-white);
+  background-image: -o-linear-gradient(left,transparent,v-white); */
+  background: linear-gradient(to right,transparent,v-white);
   filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='background-color')";
 }
 .gallery-card-content .gallery-subtitle {
-  color: label-color;
+  color: gray-500;
 }
 .gallery-meta {
-  color: label-color;
+  color: gray-500;
 }
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
 }
 
 .gallery-search-textarea {
-  color: panel-shadow;
-  background-color: background-color;
+  color: gray-800;
+  background-color: v-white;
 }
 
 .gallery-editbox {
-  border: 1px dashed border-color!important;
-  background-color: background-color!important;
+  border: 1px dashed gray-300!important;
+  background-color: v-white!important;
 }
 .gallery-editprompt {
-  color: panel-shadow;
+  color: gray-800;
 }
 
 .gallery-showcase-desc,
@@ -984,8 +1093,8 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-action-button,
 .gallery-app-details .app-comments-submit,
 .ode-UserProfileWrapper .profile-submit {
-  color: background-color;
-  background-color: label-color;
+  color: v-white;
+  background-color: gray-500;
 }
 
 .gallery-app-details .app-comments-textarea,
@@ -993,18 +1102,18 @@ textarea::-webkit-input-placeholder {
   color: #bebebe;
 }
 .app-otherinfo-textdisplay {
-  color: panel-shadow;
+  color: gray-800;
 }
 .app-otherinfo-textlink {
-  color: label-color;
-  border-bottom: 1px dotted label-color;
+  color: gray-500;
+  border-bottom: 1px dotted gray-500;
 }
 .app-otherinfo-textlink:hover {
-  background-color: label-color;
-  color: background-color;
+  background-color: gray-500;
+  color: v-white;
 }
 .app-otherinfo-textlabel {
-  color: label-color;
+  color: gray-500;
 }
 .app-otherinfo-textbox {
   color: #bebebe;
@@ -1020,45 +1129,45 @@ textarea::-webkit-input-placeholder {
 }
 
 .gallery-app-details .app-username {
-  color: label-color;
-  border-bottom: 1px dotted label-color;
+  color: gray-500;
+  border-bottom: 1px dotted gray-500;
 }
 .gallery-app-details .app-username:hover {
-  background-color: label-color;
-  color: background-color;
+  background-color: gray-500;
+  color: v-white;
 }
 .gallery-app-details .app-attributor-username {
-  color: label-color;
-  border-bottom: 1px dotted label-color;
+  color: gray-500;
+  border-bottom: 1px dotted gray-500;
 }
 
 .app-stats {
-  color: label-color;
+  color: gray-500;
 }
 
 .app-meta .gwt-Label {
-  color: label-color;
+  color: gray-500;
 }
 .app-meta .gwt-Label-auto {
-  color: label-color;
+  color: gray-500;
 }
 
 .gallery-app-details .app-tags .gwt-Label {
   background-color: #EEE;
-  color: label-color;
+  color: gray-500;
 }
 .gallery-app-details .app-tags .gwt-Label:hover {
-  background-color: label-color;
-  color: background-color;
+  background-color: gray-500;
+  color: v-white;
 }
 
 .comment-meta .comment-date {
-  color: label-color;
+  color: gray-500;
 }
 
 .gallery-page-single .gwt-TabBar .gwt-TabBarItem-selected,
 .gallery-app-single .gwt-TabBar .gwt-TabBarItem-selected {
-  color: label-color;
+  color: gray-500;
 }
 .gallery-nav-return .gwt-Label,
 .app-description,
@@ -1069,30 +1178,30 @@ textarea::-webkit-input-placeholder {
 }
 
 .primary-link-small {
-  color: label-color;
-  border-bottom: 1px dotted label-color;
+  color: gray-500;
+  border-bottom: 1px dotted gray-500;
 }
 .primary-link,
 .moderator-link {
-  color: label-color;
-  border-bottom: 1px dotted label-color;
+  color: gray-500;
+  border-bottom: 1px dotted gray-500;
 }
 
 .ode-ProjectGalleryLink:hover,
 .primary-link:hover,
 .primary-link-small:hover,
 .moderator-link:hover {
-  background-color: label-color;
-  color: background-color;
+  background-color: gray-500;
+  color: v-white;
 }
 
 .ode-ModerationTable .primary-link {
-  color: tab-bar-color;
+  color: v-black;
 }
 
 .seemore-link {
   color: #333399;
-  border-bottom: 1px dotted selected-color;
+  border-bottom: 1px dotted clr-primary-600;
 }
 
 .seemore-link:hover {
@@ -1102,38 +1211,31 @@ textarea::-webkit-input-placeholder {
 
 /* General gallery helper styles */
 .message-popup {
-  background-color: background-color;
-  border: 1px solid border-color;
+  background-color: v-white;
+  border: 1px solid gray-300;
 }
 
 
 .ac-renderer {
-  background: background-color;
+  background: v-white;
   border: 1px solid #666;
-  /* -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4); */
 }
 
 .ac-active {
   background-color: #b2b4bf;
 }
 
-div.dropdiv.good {
-  background-color: rgba(128, 255, 128, 0.3);
-  border: 8px dashed darkgreen;
-}
-
-div.dropdiv p {
-  color: darkgreen;
-}
-
 .download-barcode:before {
-    background-color: label-color;
+    background-color: gray-500;
 }
 
 /* Evan's code */
 svg.blocklySvg,
 .blocklyMainBackground,
 rect.gridBackground {
-  fill: background-color;
+  fill: v-white;
+}
+
+.blocklyCount {
+  fill: v-black;
 }

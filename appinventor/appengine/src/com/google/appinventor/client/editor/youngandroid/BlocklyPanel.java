@@ -674,7 +674,15 @@ public class BlocklyPanel extends HTMLPanel {
    */
   native void injectWorkspace()/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
-    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace, false);
+  }-*/;
+
+  /**
+   * Inject the workspace into the &lt;div&gt; element with specific mode
+   */
+  native void injectWorkspace(boolean isDarkMode)/*-{
+    var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
+    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace, isDarkMode);
   }-*/;
 
   /**

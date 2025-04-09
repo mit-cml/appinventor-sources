@@ -38,13 +38,12 @@
           </label>
         </div>
       </g:HTMLPanel>
-      <!--
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectMode}" width="30%" />
-        <g:RadioButton ui:field='lightModeRadioButton' name='theme' text="{messages.disableDarkTheme}" enabled="false"/>
-        <g:RadioButton ui:field='darkModeRadioButton' name='theme' text="{messages.enableDarkTheme}" enabled="false"/>
+        <g:RadioButton ui:field='lightModeRadioButton' name='theme' text="{messages.disableDarkTheme}"/>
+        <g:RadioButton ui:field='darkModeRadioButton' name='theme' text="{messages.enableDarkTheme}"/>
       </g:FlowPanel>
-      -->
+     
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
         <g:Button ui:field="applyButton" text='{messages.okButton}' styleName="ode-ProjectListButton"/>

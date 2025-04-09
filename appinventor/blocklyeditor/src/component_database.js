@@ -375,6 +375,51 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
 };
 
 /**
+ *
+ *
+ */
+Blockly.ComponentDatabase.prototype.getTypeToNameMap = function() {
+  var typeToNameMap = {};
+  for (var type of this.getComponentTypes()) {
+    typeToNameMap[type[0]] = this.getComponentNamesByType(type[0]).map(function(instance) {
+      return instance[0];
+    });
+    typeToNameMap[type[0]].push(`any ${type[0]}`)
+    typeToNameMap[type[0]].push(`all ${type[0]}`)
+  }
+  return typeToNameMap;
+};
+
+/**
+ * Obtain a map containing instances of all components used in the project.
+ *
+ * @returns
+ */
+Blockly.ComponentDatabase.prototype.getTypeToInstanceMap = function() {
+  var typeMap = new Map();
+
+  for (var type of this.getComponentTypes()) {
+    var i18Name = type[0];
+    var englishName = type[1];
+
+    // for extensions, if no internationalized string available use the englishName
+    if (i18Name === undefined) {
+      i18Name = englishName;
+    }
+    var instances = this.getComponentNamesByType(englishName).map(instances => instances[0]);
+
+    var innerMap = new Map();
+    innerMap.set('englishName', englishName);
+    innerMap.set('instances', instances);
+
+    // Setting the innerMap to the typeMap
+    typeMap.set(i18Name, innerMap);
+  }
+
+  return typeMap;
+}
+
+/**
  * Obtain type names of added components for presentation in a drop-down field.
  *
  * @returns {Array.<Array.<string>>} An array of 2-tuples containing the type of each component.
