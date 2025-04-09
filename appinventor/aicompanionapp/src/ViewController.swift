@@ -180,7 +180,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
-      libraryButton?.addTarget(self, action: #selector(saveApp), for: .touchUpInside)
+      libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -292,26 +292,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
   
-  @objc func saveApp(){
-    let name = "HelloWorld"
-    let newapp = BundledApp(aiaPath: Bundle.main.url(forResource: "samples/\(name)", withExtension: "aia")!)
-    newapp.makeCurrent()
-    newapp.loadScreen1(self.form)
-  }
-  
   @objc func openLibrary(){
-    let name = "HelloWorld"
-    if let directoryURL = Bundle.main.url(forResource: "samples/\(name)", withExtension: nil) {
-        let path = directoryURL.path
-        print("Directory Path: \(path)")
-        let newapp = BundledApp(named: name, at: path)
-        newapp.makeCurrent()
-        newapp.loadScreen1(self.form)
-    } else {
-        print("Directory not found in bundle.")
+//    let name = "CodiGram"
+//    let newapp = BundledApp(aiaPath: Bundle.main.url(forResource: "samples/\(name)", withExtension: "aia")!)
+//    newapp.makeCurrent()
+//    newapp.loadScreen1(self.form)
+      let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as! AppLibraryViewController
+      libraryVC.form = self.form
+      self.pushViewController(libraryVC, animated:true)
     }
-    
-  }
   
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text

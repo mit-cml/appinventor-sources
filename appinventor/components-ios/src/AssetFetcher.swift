@@ -42,8 +42,8 @@ class AssetLoadError: Error {
               return
             }
             let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
-            window.makeToast("Project was successfully downloaded! Head to your Library to access your downloaded app.", point: center,
-                             title: nil, image: nil, completion: nil)
+            window.makeToast("Head to your Library to open your downloaded app.", point: center,
+                             title: "Project successfully downloaded!", image: nil, completion: nil)
           }
         } else if let error = error {
           DispatchQueue.main.async {
@@ -124,26 +124,25 @@ class AssetLoadError: Error {
     var request = URLRequest(url: url)
     request.setValue("AppInventor = " + cookieValue, forHTTPHeaderField: "Cookie")
     let task = URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
-      if let samplesPath = Bundle.main.path(forResource: "samples", ofType: nil) {
-        let destination = URL(fileURLWithPath: samplesPath).appendingPathComponent(projectName + ".aia")
-        print("Saving asset to \(destination)")
-        if let data = data {
-                  do {
-                    try data.write(to: destination)
-                    DispatchQueue.main.async {
-                      completionHandler(true, nil)
-                    }
-                  } catch {
-                    getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: depth + 1, completionHandler: completionHandler)
-                  }
-                } else if let error = responseerror {
-                  completionHandler(false, error)
-                }
+      let samplesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+          .appendingPathComponent("samples", isDirectory: true)
+      let destination = samplesDirectory.appendingPathComponent(projectName + ".aia")
+      print("Saving project to \(destination)")
+      if let data = data {
+        do {
+          try data.write(to: destination)
+          DispatchQueue.main.async {
+            completionHandler(true, nil)
+          }
+        } catch {
+          getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: depth + 1, completionHandler: completionHandler)
+        }
+      } else if let error = responseerror {
+        completionHandler(false, error)
       }
-      
-            }
-            task.priority = 1.0
-            task.resume()
+    }
+    task.priority = 1.0
+    task.resume()
   }
   
 }

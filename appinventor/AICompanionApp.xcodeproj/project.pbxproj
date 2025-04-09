@@ -36,6 +36,7 @@
 		06B2161A1DBC5F1B000B3366 /* Title.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216151DBC5F1B000B3366 /* Title.png */; };
 		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
+		471232A82DA5C67F0065B73F /* AppLibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */; };
 		47D10E222D7E1FE40084D7C3 /* samples in Resources */ = {isa = PBXBuildFile; fileRef = 47D10E212D7E1FE30084D7C3 /* samples */; };
 		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
 		C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */; };
@@ -114,6 +115,7 @@
 		0B5F0E886334FD3FB7921E2A /* Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		27D9D934728B60311591CBCD /* Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3D0329B479305BA955F33EC1 /* Pods-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLibraryViewController.swift; sourceTree = "<group>"; };
 		47D10E212D7E1FE30084D7C3 /* samples */ = {isa = PBXFileReference; lastKnownFileType = folder; name = samples; path = aicompanionapp/src/samples; sourceTree = "<group>"; };
 		48988B3241F275E69F533B33 /* Pods-AICompanionAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppUITests/Pods-AICompanionAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		508620DE32C8BAF851F5708A /* Pods-AICompanionApp-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 				06984C3D1DBFE3D100FD4FA7 /* NSString_SHA1.m */,
 				C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */,
 				066FE95A25ACB94C00C6193B /* SystemVariables.swift */,
+				471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */,
 				066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */,
 				06463EFD1D95956800B23DCD /* ViewController.swift */,
 				47D10E172D7E1FB20084D7C3 /* samples */,
@@ -643,6 +646,7 @@
 				C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */,
 				066FE95F25ACB98100C6193B /* UIFont_Fitting.swift in Sources */,
 				06463EFC1D95956800B23DCD /* AppDelegate.swift in Sources */,
+				471232A82DA5C67F0065B73F /* AppLibraryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
