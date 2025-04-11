@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * A GPU-side texture.
@@ -16,7 +17,7 @@ import java.nio.ByteBuffer;
 public class Texture implements Closeable {
     private static final String TAG = Texture.class.getSimpleName();
 
-    private final int[] textureId = {0};
+    private int[] textureId = {0};
     private final Target target;
 
     /**
@@ -81,12 +82,21 @@ public class Texture implements Closeable {
      * #createFromAsset} if you want a texture with data.
      */
     public Texture(ARViewRender render, Target target, WrapMode wrapMode) {
-        this(render, target, wrapMode, /*useMipmaps=*/ true);
+        this(render, target, wrapMode, /*useMipmaps=*/ true, 0);
     }
 
-    public Texture(ARViewRender render, Target target, WrapMode wrapMode, boolean useMipmaps) {
-        this.target = target;
+    public Texture(ARViewRender render, Target target, WrapMode wrapMode, int textureId) {
+        this(render, target, wrapMode, /*useMipmaps=*/ true, textureId);
+    }
 
+    public Texture(ARViewRender render, Target target, WrapMode wrapMode, boolean useMipmaps){
+        this(render, target, wrapMode, useMipmaps, 0);
+    }
+
+    public Texture(ARViewRender render, Target target, WrapMode wrapMode, boolean useMipmaps, int altTextureId) {
+        this.target = target;
+        int[] altId = {altTextureId};
+        textureId = altId;
         GLES30.glGenTextures(1, textureId, 0);
         GLError.maybeThrowGLException("Texture creation failed", "glGenTextures");
 
@@ -157,6 +167,49 @@ public class Texture implements Closeable {
         }
         return texture;
     }
+
+    /**
+     * Create a texture from the given asset file name.
+     */
+    public static Texture createFromId(
+            ARViewRender render, int textureId, int width, int height)
+            throws IOException {
+
+        Texture texture = new Texture(render, Target.TEXTURE_2D, WrapMode.REPEAT, textureId); // empty handle really
+        try {
+            // for textures already created via OpenGL
+
+            int sampleSize = 4 * width * height;
+            ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
+            sampleBuffer.order(ByteOrder.nativeOrder());
+
+            // Reset buffer position
+            sampleBuffer.rewind();
+
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
+            GLError.maybeThrowGLException("Failed to bind texture", "glBindTexture");
+            GLES30.glTexImage2D(
+                    GLES30.GL_TEXTURE_2D,
+                    /*level=*/ 0,
+                    GLES30.GL_RGBA8,
+                    width,
+                    height,
+                    /*border=*/ 0,
+                    GLES30.GL_RGBA,
+                    GLES30.GL_UNSIGNED_BYTE,
+                    sampleBuffer);
+            GLError.maybeThrowGLException("Failed to populate texture data", "glTexImage2D");
+            GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D);
+            GLError.maybeThrowGLException("Failed to generate mipmaps", "glGenerateMipmap");
+
+
+        } catch (Throwable t) {
+            //texture.close();
+            throw t;
+        }
+        return texture;
+    }
+
 
     @Override
     public void close() {
