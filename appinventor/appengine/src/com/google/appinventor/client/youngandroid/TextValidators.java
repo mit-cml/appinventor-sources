@@ -230,84 +230,76 @@ public final class TextValidators {
     return !(filename.length() > MAX_FILENAME_SIZE || filename.length() < MIN_FILENAME_SIZE);
   }
 
-  /**
-   * Determines human-readable message for specific error.
-   * @param filename The filename (not path) of uploaded file
-   * @return String representing error message, empty string if no error
-   */
-  public static String getErrorMessage(String filename){
-    String errorMessage = "";
-    String noWhitespace = "[\\S]+";
-    String firstCharacterLetter = "[A-Za-z].*";
-    String temp = filename.trim().replaceAll("( )+", " ").replace(" ","_");
-    if (temp.length() > 0) {
-      if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        if (!temp.matches(firstCharacterLetter)) {
-          //Check to make sure that the first character is a letter
-          errorMessage = MESSAGES.firstCharProjectNameError();
-        } else { //The text contains a character that is not a letter, number, or underscore
-          errorMessage = MESSAGES.invalidCharProjectNameError();
-        }
-      }
-    }
-    return errorMessage;
+  enum NameValidationError {
+    NONE,
+    FIRST_CHAR_NOT_LETTER,
+    CONTAINS_INVALID_CHARS
   }
 
-  /**
-   * Returns an error message if the folder name is invalid.
-   * It checks if the folder name starts with a letter and contains only letters, numbers, and underscores.
-   * @param folderName The name of the folder to validate.
-   * @return String representing the error message, empty string if no error.
-   */
+  private static class ValidationResult {
+    final NameValidationError error;
+    final String modifiedName;
+
+    ValidationResult(NameValidationError error, String modifiedName) {
+      this.error = error;
+      this.modifiedName = modifiedName;
+    }
+  }
+
+  private static ValidationResult validateName(String name) {
+    String temp = name.trim().replaceAll("( )+", " ").replace(" ", "_");
+    NameValidationError error;
+    if (temp.length() == 0) {
+      error = NameValidationError.NONE;
+    } else if (temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
+      error = NameValidationError.NONE;
+    } else if (!temp.matches("[A-Za-z].*")) {
+      error = NameValidationError.FIRST_CHAR_NOT_LETTER;
+    } else {
+      error = NameValidationError.CONTAINS_INVALID_CHARS;
+    }
+    return new ValidationResult(error, temp);
+  }
+
+  public static String getErrorMessage(String filename) {
+    ValidationResult result = validateName(filename);
+    switch (result.error) {
+      case FIRST_CHAR_NOT_LETTER:
+        return MESSAGES.firstCharProjectNameError();
+      case CONTAINS_INVALID_CHARS:
+        return MESSAGES.invalidCharProjectNameError();
+      default:
+        return "";
+    }
+  }
+
   public static String getFolderErrorMessage(String folderName) {
-    String errorMessage = "";
-    String firstCharacterLetter = "[A-Za-z].*";
-    String temp = folderName.trim().replaceAll("( )+", " ").replace(" ", "_");
-    if (temp.length() > 0) {
-      if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        if (!temp.matches(firstCharacterLetter)) {
-          errorMessage = MESSAGES.firstCharFolderNameError();
-        } else {
-          errorMessage = MESSAGES.invalidCharFolderNameError();
-        }
-      }
+    ValidationResult result = validateName(folderName);
+    switch (result.error) {
+      case FIRST_CHAR_NOT_LETTER:
+        return MESSAGES.firstCharFolderNameError();
+      case CONTAINS_INVALID_CHARS:
+        return MESSAGES.invalidCharFolderNameError();
+      default:
+        return "";
     }
-    return errorMessage;
   }
 
-  /**
-   * Determines human-readable message for specific warning if there are no errors.
-   * @param filename The filename (not path) of uploaded file
-   * @return String representing warning message, empty string if no warning and no error
-   */
   public static String getWarningMessages(String filename) {
-    String warningMessage = "";
-    if (getErrorMessage(filename).length() == 0 && filename.trim().length() > 0) {
-      if (!filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        // check to make sure if filename has no spaces
-        String errorMessage = MESSAGES.whitespaceProjectNameError();
-        filename = filename.trim().replaceAll("( )+", " ").replace(" ","_");
-        warningMessage = errorMessage + ". \n '" + filename + "' will be used if continued.";
-      }
+    ValidationResult result = validateName(filename);
+    if (result.error == NameValidationError.NONE && filename.trim().length() > 0 && !filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
+      return MESSAGES.whitespaceProjectNameError() + ". \n '" + result.modifiedName + "' will be used if continued.";
+    } else {
+      return "";
     }
-    return warningMessage;
   }
 
-  /**
-   * Returns a warning message if the folder name contains spaces.
-   * It suggests a modified folder name with spaces replaced by underscores.
-   * @param folderName The name of the folder to validate.
-   * @return String representing the warning message, empty string if no warning and no error.
-   */
   public static String getFolderWarningMessages(String folderName) {
-    String warningMessage = "";
-    if (getFolderErrorMessage(folderName).length() == 0 && folderName.trim().length() > 0) {
-      if (!folderName.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        String errorMessage = MESSAGES.whitespaceFolderNameError();
-        folderName = folderName.trim().replaceAll("( )+", " ").replace(" ", "_");
-        warningMessage = errorMessage + ". \n '" + folderName + "' will be used if continued.";
-      }
+    ValidationResult result = validateName(folderName);
+    if (result.error == NameValidationError.NONE && folderName.trim().length() > 0 && !folderName.matches("[A-Za-z][A-Za-z0-9_]*")) {
+      return MESSAGES.whitespaceFolderNameError() + ". \n '" + result.modifiedName + "' will be used if continued.";
+    } else {
+      return "";
     }
-    return warningMessage;
   }
 }
