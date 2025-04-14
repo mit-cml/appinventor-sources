@@ -63,13 +63,13 @@ public final class NewFolderWizard {
     input.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
-        errorMessage = TextValidators.getErrorMessage(value);
+        errorMessage = TextValidators.getFolderErrorMessage(value);
         input.setErrorMessage(errorMessage);
         if (errorMessage.length() > 0) {
           addButton.setEnabled(false);
           return false;
         }
-        errorMessage = TextValidators.getWarningMessages(value);
+        errorMessage = TextValidators.getFolderWarningMessages(value);
         addButton.setEnabled(true);
         return true;
       }
@@ -127,15 +127,33 @@ public final class NewFolderWizard {
     addDialog.hide();
   }
 
+  /**
+   * Handles the addition of a new folder when the add button is clicked.
+   * It validates the folder name, creates the folder if valid, and displays appropriate error messages if not.
+   * @param e The click event triggered by the add button.
+   */
   @UiHandler("addButton")
   void addFolder(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewFolderName(
-        input.getText(), treeItem.getFolder());
+    String folderName = input.getText().trim().replaceAll("( )+", " ").replace(" ", "_");
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewFolderName(folderName, treeItem.getFolder());
+
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
-      manager.createFolder(input.getText(), treeItem.getFolder());
+      manager.createFolder(folderName, treeItem.getFolder());
+      addDialog.hide();
+    } else {
+      String errorMessage = TextValidators.getFolderErrorMessage(input.getText());
+      if (errorMessage.isEmpty()) {
+        errorMessage = TextValidators.getFolderWarningMessages(input.getText());
+        if (errorMessage.isEmpty()) {
+          input.setErrorMessage("There has been an unexpected error validating the folder name.");
+        } else {
+          input.setErrorMessage(errorMessage);
+        }
+      } else {
+        input.setErrorMessage(errorMessage);
+      }
     }
-    addDialog.hide();
   }
 
   @UiHandler("topInvisible")
