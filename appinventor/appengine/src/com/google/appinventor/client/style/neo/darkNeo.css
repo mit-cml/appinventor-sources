@@ -43,7 +43,7 @@
 @def navigationbarLandscape              url('static/images/navigationbarLandscape.png'); */
 
 @def phoneLandscape                      url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscape.png');
-@def phonePortrait                       url('static/images/dark_mode_mockups/dark-mode-phonephonePortrait.png');
+@def phonePortrait                       url('static/images/dark_mode_mockups/dark-mode-phonePortraitModern.png');
 @def phoneLandscapeTablet                url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscapeTablet.png');
 @def phonePortraitTablet                 url('static/images/dark_mode_mockups/dark-mode-phonephonePortraitTablet.png');
 @def phoneLandscapeMonitor               url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscapeMonitor.png');
