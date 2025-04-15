@@ -191,14 +191,11 @@ AI.Blockly.ContextMenuItems.registerDoItOption = function() {
       const connectedToRepl =
           top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
       if (!connectedToRepl) {
-        const dialog = new goog.ui.Dialog(
-            null, true, new goog.dom.DomHelper(top.document));
-        dialog.setTitle(Blockly.Msg['CAN_NOT_DO_IT']);
-        dialog.setTextContent(Blockly.Msg['CONNECT_TO_DO_IT']);
-        dialog.setButtonSet(new goog.ui.Dialog.ButtonSet()
-            .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-                false, true));
-        dialog.setVisible(true);
+        const dialog = new Blockly.Util.Dialog(Blockly.Msg['CAN_NOT_DO_IT'],
+            Blockly.Msg['CONNECT_TO_DO_IT'], Blockly.Msg['REPL_OK'], false,
+            null, 1, function() {
+          dialog.hide();
+        });
       } else {
         // AI.Yail.blockToCode1 returns a string if the block is a statement
         // and an array if the block is a value
