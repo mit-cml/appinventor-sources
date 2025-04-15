@@ -1047,9 +1047,9 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   workspace.blocksNeedingRendering = [];
   workspace.addWarningHandler();
   if (!readOnly) {
-    var ai_type_block = goog.dom.createElement('div'),
-      p = goog.dom.createElement('p'),
-      ac_input_text = goog.dom.createElement('input'),
+    var ai_type_block = document.createElement('div'),
+      p = document.createElement('p'),
+      ac_input_text = document.createElement('input'),
       typeblockOpts = {
         frame: container,
         typeBlockDiv: ai_type_block,
@@ -1057,10 +1057,10 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       };
     // build dom for typeblock (adapted from blocklyframe.html)
     goog.style.setElementShown(ai_type_block, false);
-    goog.dom.classlist.add(ai_type_block, "ai_type_block");
-    goog.dom.insertChildAt(container, ai_type_block, 0);
-    goog.dom.appendChild(ai_type_block, p);
-    goog.dom.appendChild(p, ac_input_text);
+    ai_type_block.classList.add("ai_type_block");
+    parent.insertBefore(ai_type_block, container[0] || null);
+    ai_type_block.appendChild(p);
+    p.appendChild(ac_input_text);
     workspace.typeBlock_ = new AI.Blockly.TypeBlock(typeblockOpts, workspace);
     var workspaceChanged = function() {
       if (this.workspace && !this.workspace.isDragging()) {
