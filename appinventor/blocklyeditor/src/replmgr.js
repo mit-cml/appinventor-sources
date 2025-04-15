@@ -13,8 +13,6 @@
 goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
-goog.require('goog.dom.DomHelper');
-goog.require('goog.ui.Dialog');
 goog.require('goog.net.XmlHttp');
 goog.require('goog.json');
 goog.require('goog.Uri.QueryData');
