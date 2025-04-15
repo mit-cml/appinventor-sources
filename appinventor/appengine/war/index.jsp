@@ -1,22 +1,27 @@
 <%@page import="com.google.appinventor.server.Server,com.google.appinventor.common.version.AppInventorFeatures,msg.i18n" %>
 <%@page import="com.google.appinventor.server.flags.Flag" %>
+<%@page import="com.google.appinventor.server.OdeAuthFilter" %>
 <%
-   if (request.getScheme().equals("http") && Server.isProductionServer()
-       && AppInventorFeatures.enableHttpRedirect()) {
-        String qs = request.getQueryString();
-        String host = request.getServerName();
-        if (qs != null) {
-           String redirect = "https://" + host + "/?" + qs;
-           response.sendRedirect(redirect);
-        } else {
-           String redirect = "https://" + host;
-           response.sendRedirect(redirect);
-        }
-     return;
-   }
-   if (AppInventorFeatures.enableHttpRedirect()) {
-       response.setHeader("Strict-Transport-Security", "max-age=3600");
-   }
+  if (request.getScheme().equals("http") && Server.isProductionServer()
+      && AppInventorFeatures.enableHttpRedirect()) {
+       String qs = request.getQueryString();
+       String host = request.getServerName();
+       if (qs != null) {
+          String redirect = "https://" + host + "/?" + qs;
+          response.sendRedirect(redirect);
+       } else {
+          String redirect = "https://" + host;
+          response.sendRedirect(redirect);
+       }
+    return;
+  }
+  if (AppInventorFeatures.enableHttpRedirect()) {
+      response.setHeader("Strict-Transport-Security", "max-age=3600");
+  }
+  if (OdeAuthFilter.getUserInfo(request) == null) {
+      response.sendRedirect("/login");
+      return;
+  }
   String cachePostfix = "@blocklyeditor_isRelease@".equals("true") ? "cache" : "nocache";
   String locale = request.getParameter("locale");
   if (locale == null || locale.isEmpty()) {
