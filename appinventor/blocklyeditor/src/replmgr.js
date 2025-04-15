@@ -1042,31 +1042,14 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     var block;
     var context = this;
     var runtimeerr = function(message) {
-        if (!context.runtimeError) {
-            context.runtimeError = new goog.ui.Dialog(null, true, new goog.dom.DomHelper(top.document));
-            var dialogElement = context.runtimeError.getDialogElement();
-            var dialogClass = dialogElement.getAttribute("class");
-            // [lyn, 09/10/14] Add blocklyRuntimeErrorDialog to CSS class.
-            // This limits height & width of dialog box, and makes content scrollable
-            // (see lib/blockly/src/core/css.java)
-            dialogElement.setAttribute("class", dialogClass + " " + "blocklyRuntimeErrorDialog");
+        if (context.runtimeError) {
+            context.runtimeError.hide();
+            context.runtimeError = null;
         }
-        if (context.runtimeError.isVisible()) {
-            context.runtimeError.setVisible(false);
-        }
-        context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
-        context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
-                                       addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
-        if (context.runtimeError.getContentElement()) {
-            // This is not condoned by Google Closure Library rules, but we have already escaped
-            // the return value and the static content should be code reviewed to be safe.
-            context.runtimeError.getContentElement().innerHTML = message;
-        } else {
-            // Fallback option if for some reason the content element did not exist.
-            // This shouldn't happen in practice, but you never know...
-            context.runtimeError.setSafeHtmlContent(goog.html.SafeHtml.htmlEscape(message));
-        }
-        context.runtimeError.setVisible(true);
+        context.runtimeError = BlocklyPanel_createDialog(Blockly.Msg.REPL_RUNTIME_ERROR, message, Blockly.Msg.REPL_DISMISS, false, null, 1, function() {
+            context.runtimeError.hide();
+            context.runtimeError = null;
+        });
     };
     // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
     var escapeHTML = function (str) {
