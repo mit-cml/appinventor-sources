@@ -337,6 +337,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         try {
             Frame frame;
             Camera camera;
+
             try{
 
                 // as soon as this is set up, it seems it grabs the surface from the filament renderer
@@ -376,7 +377,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (backgroundRenderer != null){
                 backgroundRenderer.updateDisplayGeometry(frame);
                 if (frame.getTimestamp() != 0) {
-                    backgroundRenderer.drawBackground(render);
+                    if (arFilamentRenderer != null) {
+                        // just thought I'd see if i can push this texture to mix in with the camera texture
+                        // if this could work, I could confirm there is nothing wrong with the texture from filament
+                        int filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+                        Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
+                        if (filamentTextureId > 0){
+                            backgroundRenderer.drawBackground(render, filamentTextureId, currentViewportWidth, currentViewportHeight);
+                        }
+                    }else{
+                        backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
+
+                    }
+
+
                 }
             }
             Log.d(LOG_TAG, "drawing " );
@@ -393,59 +407,53 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             camera.getViewMatrix(viewMatrix, 0);
 
             GLES30.glFinish();
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+
             virtualSceneFramebuffer.bind();
 
+           // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFrameBufferId());
+
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-            Log.d(LOG_TAG, "arFilamentRenderer " + arFilamentRenderer);
+            error = GLES30.glGetError();
+
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
+            }
+            int filamentTextureId = 0;
             if (arFilamentRenderer != null) {
 
                 arFilamentRenderer.draw(arNodes, viewMatrix, projectionMatrix);
 
+                GLES30.glFinish();
+
+                error = GLES30.glGetError();
+
                 if (error != GLES30.GL_NO_ERROR) {
                     Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
                 }
-                GLES30.glFinish();
-                GLES30.glEnable(GLES30.GL_BLEND);
-
-                GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-                /*GLES30.glBlendFunc(GLES30.GL_DST_ALPHA, // RGB (src)
-                        GLES30.GL_ONE, // RGB (dest)
-                        GLES30.GL_ZERO, // ALPHA (src)
-                        GLES30.GL_ONE_MINUS_SRC_ALPHA);*/
-
-                int filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+                filamentTextureId = arFilamentRenderer.getDisplayTextureId();
                 Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
-                if (filamentTextureId > 0) {
-                    //Log.d(LOG_TAG, "glenable blending");
 
-            /* we need to create a quad from the composited arnode model-filament scene
-            the hope is that the QuadRenderer will work in the same way as thothers and
-            we will resolve the glitching/interlacign issue
-                      create QuadNode with quad model and texture from filamentTextureId
-
-                 */
-// Just log that we're using the texture without trying to get its dimensions
-                    Log.d(LOG_TAG, "Using texture ID: " + filamentTextureId + " with expected dimensions: " +
-                            currentViewportWidth + " " + currentViewportHeight);
-
-                    Log.d(LOG_TAG, "about to call drawtextured quad");
-                    QuadRenderer qRend = new QuadRenderer(render, filamentTextureId, currentViewportWidth, currentViewportHeight);
-                    qRend.draw(render, virtualSceneFramebuffer, viewMatrix, projectionMatrix);
-
-
-                }
                 //GLES30.glDisable(GLES30.GL_BLEND);
             }
             virtualSceneFramebuffer.unbind();
 
-            // so ARCOre kind of controls the whole rendering, hopefully the virtual buffer
-            // will be rendered on top? is blending necesary?
-            int vbTex = virtualSceneFramebuffer.getColorTexture().getTextureId();
-            Log.d(LOG_TAG, "virtualSceneFramebuffer is " + vbTex + " " + virtualSceneFramebuffer);
-            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
-            virtualSceneFramebuffer.unbind();
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+// Enable blending
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+           // int colorTextureId = virtualSceneFramebuffer.getColorTexture().getTextureId();
+
+            // if alpha works why would this cause issues?
+            if (filamentTextureId > 0) {
+                Log.d(LOG_TAG, "drawing meta");
+                //quadRenderer.drawTexturedQuad(filamentTextureId);
+            }
+
+           // backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+            GLES30.glDisable(GLES30.GL_BLEND);
             // Note: we don't need to extract texture or draw composed scene manually
             // Filament renders directly to the swapchain
         } catch (Exception e) {
@@ -465,6 +473,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Log.d(LOG_TAG, "instantiating new arfilamentrenderer");
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initialize();
+
+            quadRenderer = new QuadRenderer();
+
 
             Log.d(LOG_TAG, "ARFilamentRenderer initialized successfully");
         } catch (IOException e) {

@@ -365,6 +365,11 @@ public class ARViewRender implements SurfaceHolder.Callback {
         draw(mesh, shader, /*framebuffer=*/ null);
     }
 
+    public void draw(Mesh mesh, ARFrameBuffer frameBuffer) {
+        draw(mesh, /* shader */ null, frameBuffer);
+    }
+
+
     /**
      * Draw a mesh with a shader to a framebuffer
      */
@@ -500,7 +505,7 @@ public class ARViewRender implements SurfaceHolder.Callback {
                 viewportHeight = framebuffer.getHeight();
             }
 
-            Log.d(LOG_TAG, "viewport" + viewportWidth + " " + viewportHeight);
+            Log.d(LOG_TAG, "binding to framebuffer, viewport " +  framebufferId + " " + viewportWidth + " " + viewportHeight);
 
             // Try to bind framebuffer with error recovery
             try {

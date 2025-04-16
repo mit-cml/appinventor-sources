@@ -23,10 +23,12 @@ import android.util.Log;
         "point_cloud.frag, point_cloud.vert," +
         "plane.frag, plane.vert, pawn_abledo.png")
 public class BackgroundRenderer {
-    private static final String TAG = BackgroundRenderer.class.getSimpleName();
+    private static final String LOG_TAG = BackgroundRenderer.class.getSimpleName();
 
-    // components_per_vertex * number_of_vertices * float_size
-    private static final int COORDS_BUFFER_SIZE = 2 * 4 * 4;
+    private static final int VERTICES_PER_QUAD = 4;
+    private static final int COMPONENTS_PER_VERTEX = 2;
+    private static final int COORDS_BUFFER_SIZE = VERTICES_PER_QUAD * COMPONENTS_PER_VERTEX * Float.BYTES;
+
 
     private static final FloatBuffer NDC_QUAD_COORDS_BUFFER =
             ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -54,6 +56,7 @@ public class BackgroundRenderer {
     private Shader occlusionShader;
     private final Texture cameraDepthTexture;
     private final Texture cameraColorTexture;
+    private final Texture placeHolderTexture;
     private Texture depthColorPaletteTexture;
 
     private boolean useDepthVisualization;
@@ -65,6 +68,13 @@ public class BackgroundRenderer {
      * during a {@link ARViewRender} callback, typically in {@link
      */
     public BackgroundRenderer(ARViewRender render) throws IOException{
+        placeHolderTexture =
+                new Texture(
+                        render,
+                        Texture.Target.TEXTURE_2D,
+                        Texture.WrapMode.CLAMP_TO_EDGE,
+                        /*useMipmaps=*/ false);
+
         cameraColorTexture =
                 new Texture(
                         render,
@@ -78,13 +88,26 @@ public class BackgroundRenderer {
                         Texture.WrapMode.CLAMP_TO_EDGE,
                         /*useMipmaps=*/ false);
 
+        // In initialization
+        FloatBuffer defaultTexCoords = ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        defaultTexCoords.put(new float[] {
+                0.0f, 1.0f,  // bottom-left
+                1.0f, 1.0f,  // bottom-right
+                0.0f, 0.0f,  // top-left
+                1.0f, 0.0f   // top-right
+        });
+        defaultTexCoords.position(0);
+
+
         // Create a Mesh with three vertex buffers: one for the screen coordinates (normalized device
         // coordinates), one for the camera texture coordinates (to be populated with proper data later
         // before drawing), and one for the virtual scene texture coordinates (unit texture quad)
         VertexBuffer screenCoordsVertexBuffer =
                 new VertexBuffer(render, /* numberOfEntriesPerVertex=*/ 2, NDC_QUAD_COORDS_BUFFER);
         cameraTexCoordsVertexBuffer =
-                new VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 2, /*entries=*/ null);
+                new VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 2, /*entries=*/ defaultTexCoords);
         VertexBuffer virtualSceneTexCoordsVertexBuffer =
                 new VertexBuffer(render, /* numberOfEntriesPerVertex=*/ 2, VIRTUAL_SCENE_TEX_COORDS_BUFFER);
         VertexBuffer[] vertexBuffers = {
@@ -100,8 +123,10 @@ public class BackgroundRenderer {
                         "background_show_camera.frag",
                         null)
                 .setTexture("u_CameraColorTexture", cameraColorTexture)
+                .setTexture("u_texture", placeHolderTexture)
                 .setDepthTest(false)
                 .setDepthWrite(false);
+
 
         // Initialize occlusion shader with default settings
         HashMap<String, String> defines = new HashMap<>();
@@ -159,6 +184,7 @@ public class BackgroundRenderer {
                                     "background_show_camera.frag",
                                     /*defines=*/ null)
                             .setTexture("u_CameraColorTexture", cameraColorTexture)
+                            .setTexture("u_texture", placeHolderTexture)
                             .setDepthTest(false)
                             .setDepthWrite(false);
         }
@@ -196,15 +222,46 @@ public class BackgroundRenderer {
      * BackgroundRenderer's draw methods.
      */
     public void updateDisplayGeometry(Frame frame) {
-        if (frame.hasDisplayGeometryChanged()) {
-            // If display rotation changed (also includes view size change), we need to re-query the UV
-            // coordinates for the screen rect, as they may have changed as well.
+        if (frame == null) {
+            Log.e(LOG_TAG, "Cannot update display geometry with null frame");
+            return;
+        }
+
+        // Check frame timestamp to ensure it's valid
+        if (frame.getTimestamp() == 0) {
+            Log.e(LOG_TAG, "Frame has invalid timestamp");
+            return;
+        }
+
+        // Reset buffers properly
+        cameraTexCoords.clear();
+        NDC_QUAD_COORDS_BUFFER.position(0);
+
+        try {
+
             frame.transformCoordinates2d(
                     Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
                     NDC_QUAD_COORDS_BUFFER,
                     Coordinates2d.TEXTURE_NORMALIZED,
                     cameraTexCoords);
+
+            // Rewind buffer for reading
+            cameraTexCoords.position(0);
+
+            // Check if the buffer has data
+            if (cameraTexCoords.limit() == 0) {
+                Log.e(LOG_TAG, "Transformation produced empty buffer");
+                return;
+            }
+
+            // Update the vertex buffer with the new coordinates
             cameraTexCoordsVertexBuffer.set(cameraTexCoords);
+
+            // Debug log to verify buffer sizes
+            Log.d(LOG_TAG, "NDC buffer size: " + NDC_QUAD_COORDS_BUFFER.capacity() +
+                    ", Camera tex coords size: " + cameraTexCoords.capacity());
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error in updateDisplayGeometry", e);
         }
     }
 
@@ -236,8 +293,26 @@ public class BackgroundRenderer {
      * {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
      * accurately follow static physical objects.
      */
-    public void drawBackground(ARViewRender render) {
-        render.draw(mesh, backgroundShader);
+
+    public void drawBackground(ARViewRender render, int textureId, int width, int height) {
+        try {
+            if (textureId > 0) {
+
+                Texture temptex = Texture.createFromId(render, textureId, width, height);
+                backgroundShader.setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+                backgroundShader.setTexture("u_texture", temptex);
+            }
+            render.draw(mesh, backgroundShader, null);
+        } catch (java.lang.Exception e) {
+            Log.d(LOG_TAG, "Error trying to creat texture" + e);
+        }
+
+
+    }
+
+    public void drawBackground(ARViewRender render, ARFrameBuffer framebuffer) {
+
+        render.draw(mesh, backgroundShader, framebuffer);
     }
 
     /**
@@ -250,28 +325,29 @@ public class BackgroundRenderer {
      */
     public void drawVirtualScene(
             ARViewRender render, ARFrameBuffer virtualSceneFramebuffer,
-           float zNear, float zFar) {
+            float zNear, float zFar) {
 
-        Log.d("backgroundRenderer", " draw virtual scene shader is : " + occlusionShader);
-        if (occlusionShader == null) {
-            Log.e(TAG, "Cannot draw virtual scene: occlusion shader is null");
+        Log.d(LOG_TAG, "Drawing virtual scene with backgroundShader instead of occlusionShader");
+
+        if (backgroundShader == null) {
+            Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
             return;
         }
 
-        // Set the color texture - this uniform exists regardless of USE_OCCLUSION
-        occlusionShader.setTexture("u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
+        // Set up a temporary shader for drawing the virtualSceneFramebuffer
+        Shader tempShader = backgroundShader;
 
-        // Only set depth-related uniforms if occlusion is enabled
-        if (useOcclusion) {
-            occlusionShader.setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture());
-            occlusionShader.setTexture("u_CameraDepthTexture", cameraDepthTexture);
-            occlusionShader.setFloat("u_ZNear", zNear);
-            occlusionShader.setFloat("u_ZFar", zFar);
-            occlusionShader.setFloat("u_DepthAspectRatio", aspectRatio);
-        }
+        // Replace the camera texture with the virtual scene texture
+        tempShader.setTexture("u_CameraColorTexture", virtualSceneFramebuffer.getColorTexture());
 
-        // Now draw with the prepared shader
-        render.draw(mesh, occlusionShader, virtualSceneFramebuffer);
+        // Explicitly bind to default framebuffer
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+
+        // Draw to default framebuffer
+        render.draw(mesh, tempShader, null);
+
+        // Restore the camera texture for the next regular camera background draw
+        tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
     }
 
 

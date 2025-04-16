@@ -211,6 +211,7 @@ public class Shader implements Closeable {
     /**
      * Sets a texture uniform.
      */
+
     public Shader setTexture(String name, Texture texture) {
         // Special handling for Textures. If replacing an existing texture uniform, reuse the texture
         // unit.
@@ -603,6 +604,10 @@ public class Shader implements Closeable {
             GLES30.glUniformMatrix4fv(location, values.length / 16, /*transpose=*/ false, values, 0);
             GLError.maybeThrowGLException("Failed to set shader uniform matrix 4f", "glUniformMatrix4fv");
         }
+    }
+
+    public int getProgramId(){
+        return programId;
     }
 
     private int getUniformLocation(String name) {

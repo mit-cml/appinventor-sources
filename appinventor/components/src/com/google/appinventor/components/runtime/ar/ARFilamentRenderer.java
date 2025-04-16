@@ -113,6 +113,8 @@ public class ARFilamentRenderer {
     private int pixelBufferSize = 0;
     private int simpleTriangleEntity = 0;
 
+    private int quadEntity = 0;
+
 
 // In your initialization
 // ...
@@ -188,12 +190,11 @@ public class ARFilamentRenderer {
             isInitialized = true;
             Log.d(LOG_TAG, "Filament initialized successfully");
 
-            Log.d(LOG_TAG, "setup render target stream");
-
-            initializeDisplayTextureRenderTargetStream(); //display texture set to target via stream
+            initializeDisplayTexture(); //display texture setup
             //drawTestTriangleWithMaterialEntity();  //entity added to scene
             makeSimpleTextureBufferForRenderTarget();
-            createDummyTriangeWithMaterialEntity();
+            //createDummyTriangeWithMaterialEntity();
+            createQuadTargetEntity();
             view.setScene(scene);
 
             // Draw a test triangle to scene
@@ -332,7 +333,96 @@ public class ARFilamentRenderer {
         return materialInstance;
     }
 
+    private int createQuadTargetEntity() {
+        try {
+            quadEntity = EntityManager.get().create();
 
+            // Very simple quad vertices
+           /* float[] quadVertices = {
+                    -1.0f, -1.0f, -1.0f,  // bottom-left
+                    1.0f, -1.0f, -1.0f,  // bottom-right
+                    -1.0f, 1.0f, -1.0f,  // top-left
+                    1.0f, 1.0f, -1.0f   // top-right
+            };*/
+            float[] quadVertices = {
+                    -.5f, -.5f, -0.5f,  // bottom-left
+                    .5f, -.5f, -0.5f,   // bottom-right
+                    -.5f, .5f, -0.5f,   // top-left
+                    .5f, .5f, -0.5f     // top-right
+            };
+
+            // Bright magenta color for all vertices
+            float[] quadColors = {
+                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+                    1.0f, 0.0f, 1.0f, 1.0f   // magenta
+            };
+
+            // Create buffers
+            FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            vertexBuffer.put(quadVertices).position(0);
+
+            FloatBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            colorBuffer.put(quadColors).position(0);
+
+            // Create vertex buffer
+            VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
+                    .vertexCount(4)
+                    .bufferCount(2)
+                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                            VertexBuffer.AttributeType.FLOAT3, 0, 0)
+                    .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
+                            VertexBuffer.AttributeType.FLOAT4, 0, 0);
+
+            VertexBuffer vertexBufferObj = vbBuilder.build(engine);
+            //this.vb.setBufferAt(engine, 0, TRIANGLE_POSITIONS);
+            //this.vb.setBufferAt(engine, 1, TRIANGLE_COLORS);
+            vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
+            vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
+
+            // Create index buffer
+            short[] indices = {0, 1, 2, 2, 1, 3};
+            ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
+                    .order(ByteOrder.nativeOrder())
+                    .asShortBuffer();
+            indexBuffer.put(indices).position(0);
+
+            IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
+                    .indexCount(6)
+                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+            IndexBuffer indexBufferObj = ibBuilder.build(engine);
+            indexBufferObj.setBuffer(engine, indexBuffer);
+
+            // Basic material - simplest possible
+            MaterialInstance materialInstance = loadOrCreateMaterial();
+            // Build renderable
+            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, 1.0f); // Bright green
+            RenderableManager.Builder builder = new RenderableManager.Builder(1);
+            builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
+                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
+                    .material(0, materialInstance)
+                    .culling(false)
+                    .receiveShadows(false)
+                    .priority(1001)
+                    .castShadows(false)
+                    .build(engine, quadEntity);
+
+
+            Log.e(LOG_TAG, "created quad entity" );
+            // Add to scene
+            scene.addEntity(quadEntity);
+
+            return quadEntity;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error creating simple entity: " + e.getMessage(), e);
+            return 0;
+        }
+    }
 
     // Do this during initialization
     public void createDummyTriangeWithMaterialEntity() {
@@ -434,7 +524,7 @@ public class ARFilamentRenderer {
         view.setRenderTarget(filamentRenderTarget);
     }
 
-    private void initializeDisplayTextureRenderTargetStream() {
+    private void initializeDisplayTexture() {
         try {
             // Create an external texture for display
             int[] textures = new int[1];
@@ -449,43 +539,6 @@ public class ARFilamentRenderer {
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
             GLES30.glPixelStorei(GLES30.GL_UNPACK_ALIGNMENT, 1);
 
-            // Create texture with SRGB format like Sceneform does for visual content
-
-            GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_SRGB8_ALPHA8,  // Try SRGB format like Sceneform
-                    viewportWidth, viewportHeight,
-                    0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null);
-
-
-//Error initializing render target: Invalid texture sampler: When used with a stream, a texture must use a SAMPLER_EXTERNAL
-//java.lang.IllegalStateException: Invalid texture sampler: When used with a stream, a texture must use a SAMPLER_EXTERNAL
-
-            // Create a Stream with explicit dimensions to the display texture
-           Stream stream = new Stream.Builder()
-                    .stream(displayTextureId)
-                    .width(viewportWidth)
-                    .height(viewportHeight)
-                    .build(engine);
-
-            // Create a Filament texture with SRGB format
-            Texture filamentTextureTarget = new Texture.Builder()
-                    .sampler(Texture.Sampler.SAMPLER_EXTERNAL)
-                    .format(Texture.InternalFormat.SRGB8_A8)  // Use SRGB for color
-                    .usage(Texture.Usage.COLOR_ATTACHMENT | Texture.Usage.SAMPLEABLE)
-                    .width(viewportWidth)
-                    .height(viewportHeight)
-                    .build(engine);
-
-            // Connect the display stream to the texture
-            filamentTextureTarget.setExternalStream(engine, stream);
-
-            // Create a render target for scene to render INTO filamentRenderTarget
-            // and then to be streamed to displayTextureId
-            filamentRenderTarget= new RenderTarget.Builder()
-                    .texture(RenderTarget.AttachmentPoint.COLOR, filamentTextureTarget)
-                    .build(engine);
-
-            // Set the render target on your view
-            view.setRenderTarget(filamentRenderTarget);
 
             Log.d(LOG_TAG, "Render target stream initialized with texture ID " + displayTextureId);
         } catch (Exception e) {
@@ -497,98 +550,6 @@ public class ARFilamentRenderer {
     // Add a getter for the display texture
     public int getDisplayTextureId() {
         return displayTextureId;
-    }
-    public void drawTestTriangleWithMaterialEntity() {
-        try {
-            // Remove any existing triangle
-            if (testTriangleEntity != 0) {
-                scene.remove(testTriangleEntity);
-                EntityManager.get().destroy(testTriangleEntity);
-                testTriangleEntity = 0;
-            }
-
-            // Create a single, precise triangle
-            testTriangleEntity = EntityManager.get().create();
-
-            // Adjusted vertices to cover more of the screen vertically
-            float[] triangleVertices = {
-                    0.0f, 1.0f, -0.5f,    // top (higher up)
-                    -1.0f, -1.0f, -0.5f,  // bottom left (wider)
-                    1.0f, -1.0f, -0.5f    // bottom right (wider)
-            };
-
-            float[] triangleColors = {
-                    1.0f, 0.0f, 0.0f, 1.0f,  // red at top
-                    0.0f, 1.0f, 0.0f, 1.0f,  // green at bottom left
-                    0.0f, 0.0f, 1.0f, 1.0f   // blue at bottom right
-            };
-            // Vertex Buffer with explicit, minimal configuration
-            VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
-                    .vertexCount(3)
-                    .bufferCount(2)
-                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                            VertexBuffer.AttributeType.FLOAT3, 0, 12)  // Explicit stride
-                    .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
-                            VertexBuffer.AttributeType.FLOAT4, 0, 16); // Explicit stride
-
-            VertexBuffer vertexBufferObj = vbBuilder.build(engine);
-
-            // Create and fill buffers
-            FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleVertices.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            vertexBuffer.put(triangleVertices).position(0);
-
-            FloatBuffer colorBuffer = ByteBuffer.allocateDirect(triangleColors.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            colorBuffer.put(triangleColors).position(0);
-
-            vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
-            vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
-
-            // Index Buffer
-            short[] indices = {0, 1, 2};
-            IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
-                    .indexCount(3)
-                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-            IndexBuffer indexBufferObj = ibBuilder.build(engine);
-
-            ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
-                    .order(ByteOrder.nativeOrder())
-                    .asShortBuffer();
-            indexBuffer.put(indices).position(0);
-            indexBufferObj.setBuffer(engine, indexBuffer);
-
-            // Material with explicit, non-transparent settings
-            MaterialInstance materialInstance = loadOrCreateMaterial();
-            materialInstance.setParameter("baseColor", 1.0f, 0.0f, 0.0f, 1.0f); // Solid, opaque red
-
-            // Renderable with precise configuration
-            RenderableManager.Builder builder = new RenderableManager.Builder(1);
-            builder
-                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
-                    .material(0, materialInstance)
-                    .culling(false)
-                    .receiveShadows(false)
-                    .castShadows(false)
-                    .priority(1000)
-                    .build(engine, testTriangleEntity);
-
-            // Add to scene
-            scene.addEntity(testTriangleEntity);
-
-            // Precise transformation
-            TransformManager transformManager = engine.getTransformManager();
-            float[] modelMatrix = new float[16];
-            Matrix.setIdentityM(modelMatrix, 0);
-            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -0.5f);
-            transformManager.create(testTriangleEntity);
-            transformManager.setTransform(transformManager.getInstance(testTriangleEntity), modelMatrix);
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Triangle creation error", e);
-        }
     }
 
     public void updateSurfaceDimensions(int width, int height) {
@@ -700,17 +661,20 @@ public class ARFilamentRenderer {
                 createDummyTriangeWithMaterialEntity();
             }*/
             if (simpleTriangleEntity == 0) {
-                createDummyTriangeWithMaterialEntity();
+                //createDummyTriangeWithMaterialEntity();
             }
-
+            if (quadEntity == 0){
+                createQuadTargetEntity();
+            }
 
             // Explicit render target and view configuration
             view.setScene(scene);
             view.setRenderTarget(filamentRenderTarget);
+            view.setBlendMode(View.BlendMode.TRANSLUCENT);
 
             // Minimize clear operations
             Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
-            clearOptions.clear = false;
+            clearOptions.clear = true;
             clearOptions.discard = false;
             renderer.setClearOptions(clearOptions);
 
