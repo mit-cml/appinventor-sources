@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 /**
  * The HiddenComponentsManager keeps track of which screen you’re on and what its checkbox should do.
  * solved issue #3365(Hidden Components Checkbox not working );
- * @author kumardivyanshu118@gmail.com (Divyanshu Nayak);
  */
 
 public class HiddenComponentsManager {

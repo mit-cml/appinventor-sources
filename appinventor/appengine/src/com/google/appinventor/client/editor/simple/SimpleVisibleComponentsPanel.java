@@ -306,4 +306,20 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     LOG.info("Setting checkbox state for " + form.getTitle() + " to " + effectiveState);
     HiddenComponentsCheckbox.setValue(effectiveState);
   }
+
+  public void showHiddenComponentsCheckbox() {
+    if (HiddenComponentsCheckbox != null) {
+      HiddenComponentsCheckbox.setVisible(true);
+    } else {
+      LOG.severe("HiddenComponentsCheckbox is null in showHiddenComponentsCheckbox");
+    }
+  }
+
+  public void hideHiddenComponentsCheckbox() {
+    if (HiddenComponentsCheckbox != null) {
+      HiddenComponentsCheckbox.setVisible(false);
+    } else {
+      LOG.severe("HiddenComponentsCheckbox is null in hideHiddenComponentsCheckbox");
+    }
+  }
 }

@@ -20,11 +20,10 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
-import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
@@ -83,11 +82,8 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -123,7 +119,6 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -466,18 +461,34 @@ public class Ode implements EntryPoint {
     deckPanel.showWidget(userAdminTabIndex);
   }
 
-  public void hideComponentDesigner() {
-    paletteBox.setVisible(false);
-    sourceStructureBox.setVisible(false);
-    propertiesBox.setVisible(false);
-    HiddenComponentsCheckbox.setVisibility(false);
-  }
-
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
-    HiddenComponentsCheckbox.setVisibility(true);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.showHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in showComponentDesigner");
+      }
+    }
+  }
+
+  public void hideComponentDesigner() {
+    paletteBox.setVisible(false);
+    sourceStructureBox.setVisible(false);
+    propertiesBox.setVisible(false);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.hideHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in hideComponentDesigner");
+      }
+    }
   }
 
   /**
