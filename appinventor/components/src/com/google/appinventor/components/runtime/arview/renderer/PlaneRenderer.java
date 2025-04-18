@@ -1,12 +1,11 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-import com.google.appinventor.components.annotations.UsesAssets;
+
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,13 +18,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.util.Log;
 
 /** Renders the detected AR planes. */
-@UsesAssets(fileNames = "plane.vert, plane.frag, trigrid.png")
 public class PlaneRenderer {
     private static final String TAG = PlaneRenderer.class.getSimpleName();
-    private static final String LOG_TAG = PlaneRenderer.class.getSimpleName();
 
     // Shader names.
     private static final String VERTEX_SHADER_NAME = "plane.vert";
@@ -93,39 +89,22 @@ public class PlaneRenderer {
         Texture texture =
                 Texture.createFromAsset(
                         render, TEXTURE_NAME, Texture.WrapMode.REPEAT, Texture.ColorFormat.LINEAR);
-
-        Log.d(LOG_TAG, "Loaded trigrid texture with ID: " + texture.getTextureId());
         shader =
                 Shader.createFromAssets(render, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME, /*defines=*/ null)
                         .setTexture("u_Texture", texture)
-                        //.setVec4("u_GridControl", new float[]{0.0f, 0.0f, 1.0f, 1.0f}) // Show everything
-                        .setVec4("u_Color", new float[]{1.0f, 0.0f, 0.0f, 0.7f}) // Add a red color with 70% opacit
                         .setVec4("u_GridControl", GRID_CONTROL)
                         .setBlend(
-                                Shader.BlendFactor.SRC_ALPHA,
-                                Shader.BlendFactor.ONE_MINUS_SRC_ALPHA,
-                                Shader.BlendFactor.ONE,
-                                Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
+                                Shader.BlendFactor.DST_ALPHA, // RGB (src)
+                                Shader.BlendFactor.ONE, // RGB (dest)
+                                Shader.BlendFactor.ZERO, // ALPHA (src)
+                                Shader.BlendFactor.ONE_MINUS_SRC_ALPHA) // ALPHA (dest)
                         .setDepthWrite(false);
-
-        if (shader != null) {
-            Log.d(LOG_TAG, "Plane shader compiled successfully");
-        } else {
-            Log.e(LOG_TAG, "Failed to compile plane shader");
-        }
 
         indexBufferObject = new IndexBuffer(render, /*entries=*/ null);
         vertexBufferObject = new VertexBuffer(render, COORDS_PER_VERTEX, /*entries=*/ null);
-
-        Log.d(LOG_TAG, "Drawing plane with " + (vertexBuffer.limit()/COORDS_PER_VERTEX) +
-                " vertices and " + indexBuffer.limit() + " indices");
         VertexBuffer[] vertexBuffers = {vertexBufferObject};
         mesh = new Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, indexBufferObject, vertexBuffers);
-
-
     }
-
-
 
     /** Updates the plane model transform matrix and extents. */
     private void updatePlaneParameters(
@@ -227,7 +206,6 @@ public class PlaneRenderer {
         // they occlude the farther planes.
         List<SortablePlane> sortedPlanes = new ArrayList<>();
 
-        Log.d(LOG_TAG, "inside drawing planes ");
         for (Plane plane : allPlanes) {
             if (plane.getTrackingState() != TrackingState.TRACKING || plane.getSubsumedBy() != null) {
                 continue;
