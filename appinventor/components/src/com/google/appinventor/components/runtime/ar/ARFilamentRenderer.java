@@ -43,6 +43,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ARViewRender;
 
+import com.google.ar.core.Pose;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
@@ -54,6 +55,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.Collection;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +86,7 @@ public class ARFilamentRenderer {
 
     // Cache for models
     private Map<ARNode, FilamentAsset> nodeAssetMap = new ConcurrentHashMap<>();
+    private Map<FilamentAsset, List<Integer>> assetEntityMap = new ConcurrentHashMap<>();
     private Map<String, Material> materialCache = new HashMap<>();
 
     // Rendering state
@@ -108,6 +111,11 @@ public class ARFilamentRenderer {
     RenderTarget filamentRenderTarget;
     private int displayTextureId = -1;
     private int simpleFrameBuffer = -1;
+
+    // Animation support
+    private float animationTime = 0.0f;
+    private boolean animationEnabled = true;
+
 
     private ByteBuffer pixelBuffer = null;
     private int pixelBufferSize = 0;
@@ -401,7 +409,7 @@ public class ARFilamentRenderer {
             // Basic material - simplest possible
             MaterialInstance materialInstance = loadOrCreateMaterial();
             // Build renderable
-            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, 1.0f); // Bright green
+            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, .5f); // Bright green
             RenderableManager.Builder builder = new RenderableManager.Builder(1);
             builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
                     .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
@@ -663,10 +671,15 @@ public class ARFilamentRenderer {
             if (simpleTriangleEntity == 0) {
                 //createDummyTriangeWithMaterialEntity();
             }
+
+
+            if (nodes.size() > 0){
+               processNodes(nodes, viewMatrix, projectionMatrix);
+
+            }
             if (quadEntity == 0){
                 createQuadTargetEntity();
             }
-
             // Explicit render target and view configuration
             view.setScene(scene);
             view.setRenderTarget(filamentRenderTarget);
@@ -698,50 +711,15 @@ public class ARFilamentRenderer {
                 return;
             }
 
+
+            // renderer renders into filamentRenderTarget
+            // then we read those pixels and push them into displayTextureId
             try {
                 // Render the view
                 renderer.render(view);
-
                 // Pixel buffer preparation with diagnostic logging
-                int sampleSize = 4 * viewportWidth * viewportHeight;
-                ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
-                sampleBuffer.order(ByteOrder.nativeOrder());
+                handleRenderableBufferRead();
 
-                final Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
-
-                            // Update last successful frame time
-                            lastSuccessfulFrameTime = System.currentTimeMillis();
-                        } catch (Exception callbackError) {
-                            Log.e(LOG_TAG, "Pixel buffer callback error", callbackError);
-                        }
-                    }
-                };
-
-                // Pixel buffer descriptor configuration
-                Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
-                        sampleBuffer,
-                        Texture.Format.RGBA,
-                        Texture.Type.UBYTE,
-                        4,                    // Alignment
-                        0,                    // Left padding
-                        0,                    // Top padding
-                        viewportWidth,        // Stride
-                        new Handler(Looper.getMainLooper()),  // Explicit main looper handler
-                        callbackRunnable
-                );
-
-                // Read pixels with error handling
-                renderer.readPixels(
-                        filamentRenderTarget,
-                        0, 0,              // x, y start
-                        viewportWidth,
-                        viewportHeight,    // width, height
-                        descriptor
-                );
 
             } catch (Exception renderError) {
                 Log.e(LOG_TAG, "Rendering process error", renderError);
@@ -758,8 +736,55 @@ public class ARFilamentRenderer {
         }
     }
 
+    private void handleRenderableBufferRead(){
+
+    /* read RenderTarget pixels into sample buffer, then bind display texture to that buffer
+    and then we have the texture we grab in ARView3d
+     */
+        int sampleSize = 4 * viewportWidth * viewportHeight;
+        ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
+        sampleBuffer.order(ByteOrder.nativeOrder());
+
+        final Runnable callbackRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
+
+                    // Update last successful frame time
+                    lastSuccessfulFrameTime = System.currentTimeMillis();
+                } catch (Exception callbackError) {
+                    Log.e(LOG_TAG, "Pixel buffer callback error", callbackError);
+                }
+            }
+        };
+
+        // Pixel buffer descriptor configuration
+        Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
+                sampleBuffer,
+                Texture.Format.RGBA,
+                Texture.Type.UBYTE,
+                4,                    // Alignment
+                0,                    // Left padding
+                0,                    // Top padding
+                viewportWidth,        // Stride
+                new Handler(Looper.getMainLooper()),  // Explicit main looper handler
+                callbackRunnable
+        );
+
+        // Read pixels with error handling
+        renderer.readPixels(
+                filamentRenderTarget,
+                0, 0,              // x, y start
+                viewportWidth,
+                viewportHeight,    // width, height
+                descriptor
+        );
+    }
+
     // Add this field to the class
     private long lastSuccessfulFrameTime = 0;
+
 
     private void processSmallSample(final ByteBuffer sampleBuffer, final int pixelCount) {
         // Check if we're on the UI thread
@@ -781,7 +806,7 @@ public class ARFilamentRenderer {
         // Reset buffer position
         sampleBuffer.rewind();
 
-        // Bind the texture and upload data
+        // Bind the texture and push data to the target displayTexture
         if (displayTextureId > 0) {
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
             GLES30.glTexImage2D(
@@ -805,6 +830,212 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
         }
     }
+
+    /**
+     * Process all ARNodes for rendering
+     *
+     * @return true if any nodes are visible and being rendered
+     */
+    private boolean processNodes(Collection<ARNode> nodes,
+                                 float[] viewMatrix, float[] projectionMatrix) {
+        if (nodes == null || nodes.isEmpty()) {
+            return false;
+        }
+
+        boolean hasVisibleNodes = false;
+
+        for (ARNode node : nodes) {
+            // Skip nodes with no model specified
+            if (node.Model() == null || node.Model().isEmpty() || !node.Visible()) {
+                continue;
+            }
+
+            // Check if model needs to be loaded
+            if (!nodeAssetMap.containsKey(node)) {
+                try {
+                    loadModelForNode(node);
+                    Log.i(LOG_TAG, "loaded model " + node.Model() + " with Anchor " + node.Anchor());
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Failed to load model for node: " + node, e);
+                    continue;
+                }
+            }
+
+            // In ARFilamentRenderer.processNodes
+// At the point where you're setting up the model position
+            FilamentAsset asset = nodeAssetMap.get(node);
+            if (asset == null) continue;
+
+           if (asset != null) {
+                RenderableManager renderableManager = engine.getRenderableManager();
+                for (int entityId : asset.getEntities()) {
+                    int instance = renderableManager.getInstance(entityId);
+                    if (instance != 0) {
+                        // Make sure entity is visible
+                        renderableManager.setLayerMask(instance, 0xFF, 0xFF);
+                    }
+                }
+            }
+
+            float[] mvpMatrix = new float[16];
+            float[] modelMatrix = new float[16];
+            float[] modelViewMatrix = new float[16];
+
+            // Set up model matrix - identity for now since vertices are already positioned
+            Matrix.setIdentityM(modelMatrix, 0);
+
+            // Calculate the model-view matrix
+            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+
+            // Calculate the model-view-projection matrix
+            Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
+
+// Apply scale
+            float scale = 3.0f; // Start with a more reasonable scale
+            float[] scaleMatrix = new float[16];
+            Matrix.setIdentityM(scaleMatrix, 0);
+            scaleMatrix[0] = scale;
+            scaleMatrix[5] = scale;
+            scaleMatrix[10] = scale;
+
+            float[] finalMatrix = new float[16];
+            float[] poseMatrix = new float[16];
+            Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
+
+
+
+            // Use anchor pose if available
+            /*if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
+                node.Scale(50.0f);
+                node.Anchor().getPose().toMatrix(poseMatrix, 0);
+                hasVisibleNodes = true;
+                Log.i(LOG_TAG, "drawing model at anchor pose: " + node.Model() + node.Anchor.getPose());
+            } else {*/
+                // Use node position if no anchor or tracking lost
+                Log.i(LOG_TAG, "drawing model for at default pose: " + node.Model());
+                Pose defaultPose = null;
+                if (node.Anchor() != null) {
+                    defaultPose = node.Anchor().getPose();
+                } else {
+                    defaultPose = new Pose(
+                            new float[]{node.XPosition(), node.YPosition(), node.ZPosition()},
+                            new float[]{0, 0, 0, 1} // Default quaternion
+                    );
+                }
+
+                hasVisibleNodes = true;
+
+
+                // Apply node transformations (scale, rotation)
+                applyNodeTransformation(node, asset, poseMatrix);
+            //}
+
+
+        }
+        return hasVisibleNodes;
+    }
+    /**
+     * Apply node-specific transformations
+     */
+    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] poseMatrix) {
+        TransformManager transformManager = engine.getTransformManager();
+        int rootEntityId = asset.getRoot();
+        int rootInstance = transformManager.getInstance(rootEntityId);
+
+        // Apply scale
+        float scale = 10.0f; //node.Scale();
+        if (scale != 1.0f) {
+            float[] scaleMatrix = new float[16];
+            Matrix.setIdentityM(scaleMatrix, 0);
+            scaleMatrix[0] = scale;
+            scaleMatrix[5] = scale;
+            scaleMatrix[10] = scale;
+
+            float[] finalMatrix = new float[16];
+            Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
+            transformManager.setTransform(rootInstance, finalMatrix);
+        } else {
+            transformManager.setTransform(rootInstance, poseMatrix);
+        }
+    }
+    public void setAnimationEnabled(boolean enabled) {
+        this.animationEnabled = enabled;
+    }
+
+    /**
+     * Update animations for all assets
+     */
+    private void updateAnimations() {
+        boolean animationEnabled = false;
+        if (!animationEnabled) return;
+
+        // Update global animation time
+        animationTime += 1.0f / 60.0f; // Assuming 60fps
+
+        // Apply animation to each asset that has animations
+        for (FilamentAsset asset : nodeAssetMap.values()) {
+            if (asset != null && asset.getAnimator().getAnimationCount() > 0) {
+                asset.getAnimator().applyAnimation(0, animationTime);
+                asset.getAnimator().updateBoneMatrices();
+            }
+        }
+    }
+
+    /**
+     * Loads a model for a node
+     */
+    private void loadModelForNode(ARNode node) throws IOException {
+        String modelFile = node.Model();
+        if (modelFile == null || modelFile.isEmpty()) {
+            throw new IOException("No model specified for node");
+        }
+
+        Log.d(LOG_TAG, "Loading model: " + modelFile + " for node: " + node);
+
+        try {
+            // Read the asset file
+            ByteBuffer buffer = readAsset(modelFile);
+
+            // Create the asset
+            FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
+            if (asset == null) {
+                throw new IOException("Failed to create asset from model: " + modelFile);
+            }
+
+            // Track entity IDs for this asset
+            List<Integer> entityIds = new ArrayList<>();
+
+            // Add root and all renderable entities to scene
+            int rootEntityId = asset.getRoot();
+            scene.addEntity(rootEntityId);
+            entityIds.add(rootEntityId);
+            Log.d(LOG_TAG, "  root Entity ID: " + rootEntityId);
+            for (int entityId : asset.getEntities()) {
+                Log.d(LOG_TAG, "  Entity ID: " + entityId);
+                if (entityId != rootEntityId) {
+                    scene.addEntity(entityId);
+                    entityIds.add(entityId);
+                }
+            }
+
+            // Load all resources for the asset
+            resourceLoader.loadResources(asset);
+
+            // Store mappings
+            nodeAssetMap.put(node, asset);
+            assetEntityMap.put(asset, entityIds);
+
+            Log.d(LOG_TAG, "Successfully loaded model " + modelFile +
+                    " with " + entityIds.size() + " entities");
+
+
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error loading model: " + modelFile, e);
+            throw e;
+        }
+    }
+
 
 
     /**
