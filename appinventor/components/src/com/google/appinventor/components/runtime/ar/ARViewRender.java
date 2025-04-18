@@ -3,29 +3,18 @@ package com.google.appinventor.components.runtime;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.util.Log;
 import android.view.Choreographer;
 
-import com.google.android.filament.Camera;
-import com.google.android.filament.Engine;
-import com.google.android.filament.EntityManager;
-import com.google.android.filament.Renderer;
-import com.google.android.filament.Scene;
-import com.google.android.filament.SwapChain;
-import com.google.android.filament.View;
-import com.google.android.filament.Viewport;
-
-// Add these imports
-import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 /**
- * A render context that uses GLSurfaceView.
+ * A render context that uses GLSurfaceView for ARCore compatibility,
+ * with optional Choreographer support for additional frame timing control.
  */
-public class ARViewRender implements SurfaceHolder.Callback {
-    private static final String LOG_TAG = ARView3D.class.getSimpleName();
+public class ARViewRender {
+    private static final String LOG_TAG = ARViewRender.class.getSimpleName();
 
     private final Form form;
     private final GLSurfaceView glView;
@@ -35,16 +24,7 @@ public class ARViewRender implements SurfaceHolder.Callback {
     private int viewportWidth = 1;
     private int viewportHeight = 1;
     private boolean surfaceReady = false;
-    private boolean renderingActive = false;
-
-    // Filament components
-    private Engine engine;
-    private final IRenderer irenderer;
-    private Renderer filamentRenderer = null;
-    private SwapChain swapChain;
-    private View filamentView;
-    private Scene scene;
-    private Camera camera;
+    private boolean useChoreographer = false;
 
     /**
      * Constructs an ARViewRender object with GLSurfaceView.
@@ -53,13 +33,12 @@ public class ARViewRender implements SurfaceHolder.Callback {
      * @param renderer Renderer implementation to receive callbacks
      * @param form Form context for asset access
      */
-    public ARViewRender(GLSurfaceView glSurfaceView, final IRenderer irenderer, Form form) {
+    public ARViewRender(GLSurfaceView glSurfaceView, final IRenderer renderer, Form form) {
         this.form = form;
         this.assetManager = form.getAssets();
         this.glView = glSurfaceView;
-        this.irenderer = irenderer;
 
-        // Configure the GLSurfaceView
+        // Configure the GLSurfaceView - these settings are crucial for ARCore
         glSurfaceView.setPreserveEGLContextOnPause(true);
         glSurfaceView.setEGLContextClientVersion(3);
         glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -68,179 +47,84 @@ public class ARViewRender implements SurfaceHolder.Callback {
         glSurfaceView.setRenderer(new GLSurfaceView.Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+                Log.d(LOG_TAG, "GLSurfaceView.onSurfaceCreated called");
                 surfaceReady = true;
-                // Initialize Filament with the surface
-                initializeFilament(glSurfaceView.getHolder().getSurface());
+
+                // Set up default OpenGL state
+                GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                GLES30.glEnable(GLES30.GL_BLEND);
+                GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
                 // Notify the renderer
-                irenderer.onSurfaceCreated(ARViewRender.this);
+                renderer.onSurfaceCreated(ARViewRender.this);
             }
 
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
+                Log.d(LOG_TAG, "GLSurfaceView.onSurfaceChanged: " + width + "x" + height);
                 viewportWidth = width;
                 viewportHeight = height;
 
-                // Update Filament view
-                if (filamentView != null) {
-                    filamentView.setViewport(
-                            new com.google.android.filament.Viewport(0, 0, width, height));
-                }
-
                 // Notify the renderer
-                irenderer.onSurfaceChanged(ARViewRender.this, width, height);
+                renderer.onSurfaceChanged(ARViewRender.this, width, height);
             }
 
             @Override
             public void onDrawFrame(GL10 gl) {
                 if (surfaceReady) {
                     try {
+                        // Clear with full transparency to start fresh
+                        clear(null, 0.0f, 0.0f, 0.0f, 0.0f);
+
                         // Call the renderer
-                        irenderer.onDrawFrame(ARViewRender.this);
+                        renderer.onDrawFrame(ARViewRender.this);
                     } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error in onDrawFrame: " + e.getMessage());
+                        Log.e(LOG_TAG, "Error in onDrawFrame: " + e.getMessage(), e);
                     }
                 }
             }
         });
 
-        // Set the render mode to continuously
+        // Set the render mode to continuously render
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        glSurfaceView.setWillNotDraw(false);
 
-        // Create a frame callback - will only be used if needed
+        // Create a frame callback for optional Choreographer timing
         this.frameCallback = new Choreographer.FrameCallback() {
             @Override
             public void doFrame(long frameTimeNanos) {
-                // This is optional now as GLSurfaceView handles the render loop
-                if (renderingActive && surfaceReady) {
-                    glSurfaceView.requestRender();
-                    Choreographer.getInstance().postFrameCallback(this);
+                if (surfaceReady && useChoreographer) {
+                    try {
+                        // Request a render from GLSurfaceView
+                        glSurfaceView.requestRender();
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error in choreographer callback: " + e.getMessage(), e);
+                    }
+
+                    // Continue the choreographer loop if active
+                    if (useChoreographer) {
+                        Choreographer.getInstance().postFrameCallback(this);
+                    }
                 }
             }
         };
     }
 
-    // SurfaceHolder.Callback implementation
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(LOG_TAG, "Surface created");
-        // GLSurfaceView handles this now
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.d(LOG_TAG, "Surface changed: " + width + "x" + height);
-        // GLSurfaceView handles this now
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.d(LOG_TAG, "Surface destroyed");
-        surfaceReady = false;
-
-        // Clean up Filament
-        destroyFilament();
+    /**
+     * Start using Choreographer for frame timing
+     */
+    public void startChoreographer() {
+        useChoreographer = true;
+        Choreographer.getInstance().postFrameCallback(frameCallback);
+        Log.d(LOG_TAG, "Choreographer started");
     }
 
     /**
-     * Initialize Filament components
+     * Stop using Choreographer for frame timing
      */
-    private void initializeFilament(Surface surface) {
-        initializeFilamentLibs();
-        try {
-            // Create the engine
-            engine = Engine.create();
-
-            // Create renderer, scene, and camera
-            filamentRenderer = engine.createRenderer();
-            scene = engine.createScene();
-
-            // Create camera entity
-            int cameraEntity = EntityManager.get().create();
-            camera = engine.createCamera(cameraEntity);
-
-            // Create view
-            filamentView = engine.createView();
-            filamentView.setScene(scene);
-            filamentView.setCamera(camera);
-            filamentView.setViewport(
-                    new Viewport(0, 0, viewportWidth, viewportHeight));
-
-            // Create swap chain
-            swapChain = engine.createSwapChain(surface);
-
-            Log.d(LOG_TAG, "Filament initialized successfully");
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to initialize Filament", e);
-        }
-    }
-
-    private void initializeFilamentLibs() {
-        try {
-            System.loadLibrary("filament-jni");
-            System.loadLibrary("gltfio-jni");
-            Log.d(LOG_TAG, "Filament libraries loaded successfully");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(LOG_TAG, "Failed to load Filament libraries", e);
-            throw e;
-        }
-    }
-
-    /**
-     * Clean up Filament resources
-     */
-    private void destroyFilament() {
-        if (engine != null) {
-            if (swapChain != null) {
-                engine.destroySwapChain(swapChain);
-                swapChain = null;
-            }
-
-            if (filamentView != null) {
-                engine.destroyView(filamentView);
-                filamentView = null;
-            }
-
-            if (camera != null) {
-                engine.destroyCamera(camera);
-                camera = null;
-            }
-
-            if (scene != null) {
-                engine.destroyScene(scene);
-                scene = null;
-            }
-
-            if (filamentRenderer != null) {
-                engine.destroyRenderer(filamentRenderer);
-                filamentRenderer = null;
-            }
-
-            engine.destroy();
-            engine = null;
-
-            Log.d(LOG_TAG, "Filament resources destroyed");
-        }
-    }
-
-    /**
-     * Start the rendering loop
-     */
-    public void startRendering() {
-        if (!renderingActive) {
-            renderingActive = true;
-            // GLSurfaceView handles rendering loop now
-            Log.d(LOG_TAG, "Rendering started");
-        }
-    }
-
-    /**
-     * Stop the rendering loop
-     */
-    public void stopRendering() {
-        if (renderingActive) {
-            renderingActive = false;
-            Log.d(LOG_TAG, "Rendering stopped");
-        }
+    public void stopChoreographer() {
+        useChoreographer = false;
+        Log.d(LOG_TAG, "Choreographer stopped");
     }
 
     /**
@@ -250,85 +134,44 @@ public class ARViewRender implements SurfaceHolder.Callback {
         draw(mesh, shader, /*framebuffer=*/ null);
     }
 
-    public void draw(Mesh mesh, ARFrameBuffer frameBuffer) {
-        draw(mesh, /* shader */ null, frameBuffer);
-    }
-
     /**
      * Draw a mesh with a shader to a framebuffer
      */
-    public void draw(Mesh mesh, Shader shader, ARFrameBuffer framebuffer) {
-        useFramebuffer(framebuffer);
-        if (shader != null) {
-            shader.lowLevelUse();
+    public void draw(Mesh mesh, Shader shader, ARFrameBuffer arframebuffer) {
+        if (mesh == null) {
+            Log.e(LOG_TAG, "Cannot draw null mesh");
+            return;
         }
+
+        if (shader == null) {
+            Log.e(LOG_TAG, "Cannot draw with null shader");
+            return;
+        }
+
+        useFramebuffer(arframebuffer);
+        shader.lowLevelUse();
         mesh.lowLevelDraw();
     }
 
     /**
      * Clear the screen or framebuffer
      */
-    public void clear(ARFrameBuffer framebuffer, float r, float g, float b, float a) {
+    public void clear(ARFrameBuffer arFrameBuffer, float r, float g, float b, float a) {
         try {
-            useFramebuffer(framebuffer);
+            useFramebuffer(arFrameBuffer);
 
             // Clear the screen
             GLES30.glClearColor(r, g, b, a);
             GLES30.glDepthMask(true);
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+
+            int error = GLES30.glGetError();
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "GL error in clear: 0x" + Integer.toHexString(error));
+            }
         } catch (Exception e) {
-            // Log error but don't crash
-            Log.e(LOG_TAG, "Error in clear(): " + e.getMessage());
+            Log.e(LOG_TAG, "Error in clear: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Begin a Filament frame
-     */
-    public boolean beginFrame() {
-        if (engine != null && filamentRenderer != null && swapChain != null) {
-            return filamentRenderer.beginFrame(swapChain, 0);
-        }
-        return false;
-    }
-
-    /**
-     * Render the Filament view
-     */
-    public void renderView() {
-        if (filamentRenderer != null && filamentView != null) {
-            filamentRenderer.render(filamentView);
-        }
-    }
-
-    /**
-     * End a Filament frame
-     */
-    public void endFrame() {
-        if (filamentRenderer != null) {
-            filamentRenderer.endFrame();
-        }
-    }
-
-    /**
-     * Get the Filament engine
-     */
-    public Engine getFilamentEngine() {
-        return engine;
-    }
-
-    /**
-     * Get the Filament scene
-     */
-    public Scene getFilamentScene() {
-        return scene;
-    }
-
-    /**
-     * Get the Filament camera
-     */
-    public Camera getFilamentCamera() {
-        return camera;
     }
 
     /**
@@ -340,45 +183,54 @@ public class ARViewRender implements SurfaceHolder.Callback {
         void onDrawFrame(ARViewRender render);
     }
 
-    /* package-private */
+    /**
+     * Get the assets manager
+     */
     AssetManager getAssets() {
         return assetManager;
     }
 
+    /**
+     * Get the form
+     */
     public Form getForm() {
         return form;
     }
 
+    /**
+     * Get the GLSurfaceView
+     */
     public GLSurfaceView getGLSurfaceView() {
         return glView;
     }
 
-    private void useFramebuffer(ARFrameBuffer framebuffer) {
+    /**
+     * Use a framebuffer
+     */
+    private void useFramebuffer(ARFrameBuffer arframebuffer) {
         try {
             int framebufferId;
             int viewportWidth;
             int viewportHeight;
 
-            if (framebuffer == null) {
+            if (arframebuffer == null) {
                 framebufferId = 0;
                 viewportWidth = this.viewportWidth;
                 viewportHeight = this.viewportHeight;
             } else {
-                framebufferId = framebuffer.getFrameBufferId();
-                if (framebufferId <= 0) {
-                    Log.w(LOG_TAG, "Invalid framebuffer ID: " + framebufferId + ", using default");
-                    framebufferId = 0;
-                }
-                viewportWidth = framebuffer.getWidth();
-                viewportHeight = framebuffer.getHeight();
+                framebufferId = arframebuffer.getFrameBufferId();
+                viewportWidth = arframebuffer.getWidth();
+                viewportHeight = arframebuffer.getHeight();
             }
 
-            Log.d(LOG_TAG, "binding to framebuffer, viewport " + framebufferId + " " + viewportWidth + " " + viewportHeight);
-
+            // Bind framebuffer and set viewport
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, framebufferId);
             GLES30.glViewport(0, 0, viewportWidth, viewportHeight);
+
+            Log.d(LOG_TAG, "Binding to framebuffer: " + framebufferId +
+                    ", viewport: " + viewportWidth + "x" + viewportHeight);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in useFramebuffer: " + e.getMessage());
+            Log.e(LOG_TAG, "Error in useFramebuffer: " + e.getMessage(), e);
         }
     }
 }

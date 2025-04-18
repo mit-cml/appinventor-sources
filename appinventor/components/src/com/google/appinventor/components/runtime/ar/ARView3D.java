@@ -400,8 +400,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     // Depth not available yet, this is normal
                 }
             }
-        GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+        //GLES30.glEnable(GLES30.GL_BLEND);
+        //GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
             // Handle tracking state
             trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
@@ -415,7 +415,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.i(LOG_TAG, "Camera not tracking: " + message);
 
                 // Draw background only
-                backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
+                backgroundRenderer.drawBackground(arViewRender);
                 return;
             }
 
@@ -424,18 +424,27 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             //handleTap(frame, camera);
 
             // Draw background
-            backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
-
+           // backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
+        backgroundRenderer.drawBackground(arViewRender);
             // Get camera matrices
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
-            // Draw planes and feature points
-            if (PlaneDetectionType() != 0) {
+
+        if (ShowFeaturePoints()) {
+            pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
+        }
+// Set up blending for planes
+       GLES30.glEnable(GLES30.GL_BLEND);
+       GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+       GLES30.glDisable(GLES30.GL_DEPTH_TEST);  // Ensures planes are drawn on top
+        // Draw planes and feature points
+        if (PlaneDetectionType() != 0) {
+            Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
                 planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
                         camera.getDisplayOrientedPose(), projectionMatrix);
             }
-
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
         Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
         for (Plane plane : planes) {
@@ -444,9 +453,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
         }
 
-            if (ShowFeaturePoints()) {
-                pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-            }
 
 
             //handleTap(frame, camera);
@@ -529,10 +535,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
             List<HitResult> hitResultList = frame.hitTest(tap);
             for (HitResult hit : hitResultList) {
+                Log.d(LOG_TAG, "hit test");
                 Trackable trackable = hit.getTrackable();
                 Anchor anchor = hit.createAnchor();
 
                 if (trackable instanceof Plane) {
+                    Log.d(LOG_TAG, "is tracking a plane");
                     ARDetectedPlane arplane = new DetectedPlane((Plane)trackable);
                     ClickOnDetectedPlaneAt(arplane, anchor.getPose(), true);
                 } else if (trackable instanceof Point &&

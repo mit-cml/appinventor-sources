@@ -30,6 +30,8 @@ public class BackgroundRenderer {
     private static final int COORDS_BUFFER_SIZE = VERTICES_PER_QUAD * COMPONENTS_PER_VERTEX * Float.BYTES;
 
 
+
+
     private static final FloatBuffer NDC_QUAD_COORDS_BUFFER =
             ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
@@ -123,7 +125,7 @@ public class BackgroundRenderer {
                         "background_show_camera.frag",
                         null)
                 .setTexture("u_CameraColorTexture", cameraColorTexture)
-                .setTexture("u_texture", placeHolderTexture)
+                //.setTexture("u_texture", placeHolderTexture)
                 .setDepthTest(false)
                 .setDepthWrite(false);
 
@@ -184,7 +186,7 @@ public class BackgroundRenderer {
                                     "background_show_camera.frag",
                                     /*defines=*/ null)
                             .setTexture("u_CameraColorTexture", cameraColorTexture)
-                            .setTexture("u_texture", placeHolderTexture)
+                            //.setTexture("u_texture", placeHolderTexture)
                             .setDepthTest(false)
                             .setDepthWrite(false);
         }
@@ -294,25 +296,19 @@ public class BackgroundRenderer {
      * accurately follow static physical objects.
      */
 
-    public void drawBackground(ARViewRender render, int textureId, int width, int height) {
-        try {
-            if (textureId > 0) {
-
-                Texture temptex = Texture.createFromId(render, textureId, width, height);
-                backgroundShader.setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
-                backgroundShader.setTexture("u_texture", temptex);
-            }
-            render.draw(mesh, backgroundShader, null);
-        } catch (java.lang.Exception e) {
-            Log.d(LOG_TAG, "Error trying to creat texture" + e);
-        }
-
-
-    }
 
     public void drawBackground(ARViewRender render, ARFrameBuffer framebuffer) {
 
         render.draw(mesh, backgroundShader, framebuffer);
+    }
+    /**
+     * Draws the AR background image. The image will be drawn such that virtual content rendered with
+     * the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)} and
+     * {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
+     * accurately follow static physical objects.
+     */
+    public void drawBackground(ARViewRender render) {
+        render.draw(mesh, backgroundShader);
     }
 
     /**
@@ -326,28 +322,15 @@ public class BackgroundRenderer {
     public void drawVirtualScene(
             ARViewRender render, ARFrameBuffer virtualSceneFramebuffer,
             float zNear, float zFar) {
-
-        Log.d(LOG_TAG, "Drawing virtual scene with backgroundShader instead of occlusionShader");
-
-        if (backgroundShader == null) {
-            Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
-            return;
+        occlusionShader.setTexture(
+                "u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
+        if (useOcclusion) {
+            occlusionShader
+                    .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture())
+                    .setFloat("u_ZNear", zNear)
+                    .setFloat("u_ZFar", zFar);
         }
-
-        // Set up a temporary shader for drawing the virtualSceneFramebuffer
-        Shader tempShader = backgroundShader;
-
-        // Replace the camera texture with the virtual scene texture
-        tempShader.setTexture("u_CameraColorTexture", virtualSceneFramebuffer.getColorTexture());
-
-        // Explicitly bind to default framebuffer
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-
-        // Draw to default framebuffer
-        render.draw(mesh, tempShader, null);
-
-        // Restore the camera texture for the next regular camera background draw
-        tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
+        render.draw(mesh, occlusionShader);
     }
 
 

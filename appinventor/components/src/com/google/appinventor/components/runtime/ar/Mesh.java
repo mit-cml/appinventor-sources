@@ -148,7 +148,7 @@
                 // Sanity check for debugging
                 int numberOfVertices = vertexBuffers[0].getNumberOfVertices();
 
-                Log.i(TAG, "returning mesh with indices " + numberOfVertices);
+                Log.i(TAG, "for first vertexBuffer, the num of vertices " + numberOfVertices);
                 for (int i = 1; i < vertexBuffers.length; ++i) {
                     if (vertexBuffers[i].getNumberOfVertices() != numberOfVertices) {
                         throw new IllegalStateException("Vertex buffers have mismatching numbers of vertices");
