@@ -146,7 +146,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
             0x009688, 0x4CAF50, 0x8BC34A, 0xCDDC39, 0xFFEB3B, 0xFFC107, 0xFF9800,
     };
-    private static final float Z_NEAR = 0.1f;
+    private static final float Z_NEAR = 0.01f;
     private static final float Z_FAR = 100f;
     private static final int CUBE_MAP_RESOLUTION = 16;
     private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
@@ -173,12 +173,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private ObjectRenderer objRenderer;
     private PlaneRenderer planeRenderer;
     private PointCloudRenderer pointCloudRenderer;
-    private ARFrameBuffer virtualSceneFramebuffer;
+    private Framebuffer virtualSceneFramebuffer;
     private int quadShader = 0;
     private Shader virtualObjectShader;
 
     private Texture dfgTexture;
     private SpecularCubeMapFilter cubeMapFilter;
+    int filamentTextureId = 0;
 
     // Matrices and math components
     private final float[] viewMatrix = new float[16];
@@ -302,9 +303,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         } else {
             // Create the virtual scene framebuffer
             try {
-                virtualSceneFramebuffer = new ARFrameBuffer(render, width, height);
+                virtualSceneFramebuffer = new Framebuffer(render, width, height);
                 Log.d(LOG_TAG, "Created virtualSceneFramebuffer: " +
-                        virtualSceneFramebuffer.getFrameBufferId() + " " + width + "x" + height);
+                        virtualSceneFramebuffer.getFramebufferId() + " " + width + "x" + height);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
             }
@@ -324,13 +325,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     // Filter ARNodes by type and ensure they have anchors
-    public List<ARNode> sort(List<ARNode> nodes, String nodeType) {
+    public List<ARNode> sort(List<ARNode> nodes, String[] nodeType) {
         List<ARNode> filteredNodes = nodes.stream()
                 .filter(n -> {
                     if (n.Anchor() == null) {
                         n.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
                     }
-                    return n.Type().contains(nodeType);
+                    // Check if any of the types match
+                    boolean match = false;
+                    for (String type : nodeType) {
+                        if (n.Type().contains(type)) {
+                            match = true;
+                            break;  // Exit the loop once we find a match
+                        }
+                    }
+                    return match;  // Return the match result to the filter
+
                 })
                 .collect(Collectors.toList());
         System.out.println("Filtered : " + filteredNodes);
@@ -400,8 +410,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     // Depth not available yet, this is normal
                 }
             }
-        //GLES30.glEnable(GLES30.GL_BLEND);
-        //GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+        GLES30.glEnable(GLES30.GL_BLEND);
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+        GLES30.glClearColor(0, 0, 1, 0); //blue
 
             // Handle tracking state
             trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
@@ -415,55 +427,60 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.i(LOG_TAG, "Camera not tracking: " + message);
 
                 // Draw background only
-                backgroundRenderer.drawBackground(arViewRender);
+                backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
                 return;
             }
 
-            // Camera is tracking, process planes and handle taps
-           // processTrackables(frame);
-            //handleTap(frame, camera);
-
             // Draw background
            // backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
-        backgroundRenderer.drawBackground(arViewRender);
+        backgroundRenderer.drawBackground(arViewRender, filamentTextureId, currentViewportWidth, currentViewportHeight);
             // Get camera matrices
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
 
-        if (ShowFeaturePoints()) {
+       /* if (ShowFeaturePoints()) {
             pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-        }
-// Set up blending for planes
-       GLES30.glEnable(GLES30.GL_BLEND);
-       GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-       GLES30.glDisable(GLES30.GL_DEPTH_TEST);  // Ensures planes are drawn on top
+        }*/
+
+
         // Draw planes and feature points
-        if (PlaneDetectionType() != 0) {
+       /* if (PlaneDetectionType() != 0) {
             Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
                 planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
                         camera.getDisplayOrientedPose(), projectionMatrix);
             }
-        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
         Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
+
+
         for (Plane plane : planes) {
             Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
                     ", type: " + plane.getType() +
                     ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
+        }*/
+
+    /*    String[] sphereObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
+        List<ARNode> objectNodes = sort(arNodes, sphereObjectTypes);
+        if (objRenderer != null && objectNodes.size() > 0){
+            Log.d(LOG_TAG, "objects " + objectNodes);
+            objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
         }
 
+*/
 
+        Log.d(LOG_TAG, "clear virtual scene frame buffer");
+       // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
 
-            //handleTap(frame, camera);
-
-            /*if (arFilamentRenderer != null) {
-                List<ARNode> modelNodes = sort(arNodes, "ModelNode");
+       // GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+            if (arFilamentRenderer != null) {
+                List<ARNode> modelNodes = sort(arNodes, new String[]{"ModelNode"});
                 if (modelNodes.size() > 0) {
                     arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
 
                     GLES30.glFinish();
-                    error = GLES30.glGetError();
+                    int error = GLES30.glGetError();
                     if (error != GLES30.GL_NO_ERROR) {
                         Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
                     }
@@ -472,23 +489,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
 
                     // if alpha works why would this cause issues?
-                    if (filamentTextureId > 0) {
-                        Log.d(LOG_TAG, "drawing meta");
-                        quadRenderer.draw(render, filamentTextureId, virtualSceneFramebuffer);
+                    if ((filamentTextureId > 0) && quadRenderer != null) {
+                        Log.d(LOG_TAG, "drawing quad");
+                        //quadRenderer.draw(render, filamentTextureId, virtualSceneFramebuffer);
 
                     }
                 }
 
-            }*/
+            }
+
+        //handleTap(frame, camera);
            // virtualSceneFramebuffer.unbind();
+        //GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0); // Switch back to default framebuffer
 
 
-            //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+        //backgroundRenderer.drawVirtualScene(render, filamentTextureId, Z_NEAR, Z_FAR);
 
-            GLES30.glDisable(GLES30.GL_BLEND);
-            // Note: we don't need to extract texture or draw composed scene manually
-            // Filament renders directly to the swapchain
-
+        GLES30.glDisable(GLES30.GL_BLEND);
 
     }
 
@@ -506,12 +523,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             // Initialize point cloud renderer for showing feature points
             pointCloudRenderer = new PointCloudRenderer(arViewRender);
 
+
+            objRenderer = new ObjectRenderer(arViewRender);
+
+            quadRenderer = new QuadRenderer(arViewRender);
             // Create and initialize ARFilamentRenderer
             Log.d(LOG_TAG, "instantiating new arfilamentrenderer");
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initialize();
 
-            //quadRenderer = new QuadRenderer(arViewRender);
+
 
 
             Log.d(LOG_TAG, "ARFilamentRenderer initialized successfully");
@@ -529,24 +550,39 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return defaultAnchor;
     }
 
-    // Handle tap events for AR interaction
     private void handleTap(Frame frame, Camera camera) {
+
         MotionEvent tap = tapHelper.poll();
         if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-            List<HitResult> hitResultList = frame.hitTest(tap);
-            for (HitResult hit : hitResultList) {
-                Log.d(LOG_TAG, "hit test");
-                Trackable trackable = hit.getTrackable();
-                Anchor anchor = hit.createAnchor();
+            Log.i("inside handle tap2  ", "");
+            List<HitResult> hitResultList;
+            /*if (instantPlacementSettings.isInstantPlacementEnabled()) {
+                hitResultList =
+                        frame.hitTestInstantPlacement(tap.getX(), tap.getY(), APPROXIMATE_DISTANCE_METERS);
+            } else {
+                hitResultList = frame.hitTest(tap);
+            }*/
 
-                if (trackable instanceof Plane) {
-                    Log.d(LOG_TAG, "is tracking a plane");
-                    ARDetectedPlane arplane = new DetectedPlane((Plane)trackable);
-                    ClickOnDetectedPlaneAt(arplane, anchor.getPose(), true);
-                } else if (trackable instanceof Point &&
-                        ((Point)trackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL) {
-                    float[] translation = anchor.getPose().getTranslation();
-                    TapAtPoint(translation[0], translation[1], translation[2], true);
+            //TBD node tapped?
+
+            hitResultList = frame.hitTest(tap);
+            for (HitResult hit : hitResultList) {
+
+                Trackable mostRecentTrackable = hit.getTrackable();
+                Anchor a = hit.createAnchor();
+                Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+                if (mostRecentTrackable instanceof Plane){
+                    ARDetectedPlane arplane = (ARDetectedPlane) new DetectedPlane((Plane)mostRecentTrackable);
+
+                    ClickOnDetectedPlaneAt(arplane, (Object) a.getPose(), true);
+
+                }
+                else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
+                    TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                }
+                else if ((mostRecentTrackable instanceof InstantPlacementPoint)
+                        || (mostRecentTrackable instanceof DepthPoint)){
+                    // are there hooks for this?
                 }
             }
         }

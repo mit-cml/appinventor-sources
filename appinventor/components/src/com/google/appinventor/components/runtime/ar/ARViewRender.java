@@ -74,7 +74,7 @@ public class ARViewRender {
                 if (surfaceReady) {
                     try {
                         // Clear with full transparency to start fresh
-                        clear(null, 0.0f, 0.0f, 0.0f, 0.0f);
+                        clear(null, 0.0f, 1.0f, 0.0f, 0.0f);
 
                         // Call the renderer
                         renderer.onDrawFrame(ARViewRender.this);
@@ -113,20 +113,20 @@ public class ARViewRender {
     /**
      * Start using Choreographer for frame timing
      */
-    public void startChoreographer() {
+   /* public void startChoreographer() {
         useChoreographer = true;
         Choreographer.getInstance().postFrameCallback(frameCallback);
         Log.d(LOG_TAG, "Choreographer started");
     }
-
+*/
     /**
      * Stop using Choreographer for frame timing
      */
-    public void stopChoreographer() {
+   /* public void stopChoreographer() {
         useChoreographer = false;
         Log.d(LOG_TAG, "Choreographer stopped");
     }
-
+*/
     /**
      * Draw a mesh with a shader
      */
@@ -137,7 +137,7 @@ public class ARViewRender {
     /**
      * Draw a mesh with a shader to a framebuffer
      */
-    public void draw(Mesh mesh, Shader shader, ARFrameBuffer arframebuffer) {
+    public void draw(Mesh mesh, Shader shader, Framebuffer arframebuffer) {
         if (mesh == null) {
             Log.e(LOG_TAG, "Cannot draw null mesh");
             return;
@@ -156,7 +156,7 @@ public class ARViewRender {
     /**
      * Clear the screen or framebuffer
      */
-    public void clear(ARFrameBuffer arFrameBuffer, float r, float g, float b, float a) {
+    public void clear(Framebuffer arFrameBuffer, float r, float g, float b, float a) {
         try {
             useFramebuffer(arFrameBuffer);
 
@@ -187,6 +187,7 @@ public class ARViewRender {
      * Get the assets manager
      */
     AssetManager getAssets() {
+        Log.d(LOG_TAG, "assets are " + assetManager);
         return assetManager;
     }
 
@@ -207,7 +208,7 @@ public class ARViewRender {
     /**
      * Use a framebuffer
      */
-    private void useFramebuffer(ARFrameBuffer arframebuffer) {
+    private void useFramebuffer(Framebuffer arframebuffer) {
         try {
             int framebufferId;
             int viewportWidth;
@@ -218,7 +219,7 @@ public class ARViewRender {
                 viewportWidth = this.viewportWidth;
                 viewportHeight = this.viewportHeight;
             } else {
-                framebufferId = arframebuffer.getFrameBufferId();
+                framebufferId = arframebuffer.getFramebufferId();
                 viewportWidth = arframebuffer.getWidth();
                 viewportHeight = arframebuffer.getHeight();
             }
