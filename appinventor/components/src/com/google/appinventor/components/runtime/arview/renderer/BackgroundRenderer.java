@@ -30,8 +30,6 @@ public class BackgroundRenderer {
     private static final int COORDS_BUFFER_SIZE = VERTICES_PER_QUAD * COMPONENTS_PER_VERTEX * Float.BYTES;
 
 
-
-
     private static final FloatBuffer NDC_QUAD_COORDS_BUFFER =
             ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
@@ -47,6 +45,8 @@ public class BackgroundRenderer {
                 new float[]{
                         /*0:*/ 0f, 0f, /*1:*/ 1f, 0f, /*2:*/ 0f, 1f, /*3:*/ 1f, 1f,
                 });
+
+
     }
 
     private final FloatBuffer cameraTexCoords =
@@ -58,7 +58,7 @@ public class BackgroundRenderer {
     private Shader occlusionShader;
     private final Texture cameraDepthTexture;
     private final Texture cameraColorTexture;
-    private final Texture placeHolderTexture;
+    private Texture placeHolderTexture;
     private Texture depthColorPaletteTexture;
 
     private boolean useDepthVisualization;
@@ -125,7 +125,7 @@ public class BackgroundRenderer {
                         "background_show_camera.frag",
                         null)
                 .setTexture("u_CameraColorTexture", cameraColorTexture)
-                //.setTexture("u_texture", placeHolderTexture)
+               // .setTexture("u_Texture", placeHolderTexture)
                 .setDepthTest(false)
                 .setDepthWrite(false);
 
@@ -186,7 +186,7 @@ public class BackgroundRenderer {
                                     "background_show_camera.frag",
                                     /*defines=*/ null)
                             .setTexture("u_CameraColorTexture", cameraColorTexture)
-                            //.setTexture("u_texture", placeHolderTexture)
+                           // .setTexture("u_Texture", placeHolderTexture)
                             .setDepthTest(false)
                             .setDepthWrite(false);
         }
@@ -296,20 +296,31 @@ public class BackgroundRenderer {
      * accurately follow static physical objects.
      */
 
+    public void drawBackground(ARViewRender render, int textureId, int width, int height) {
+        try {
+            backgroundShader.setTexture("u_CameraColorTexture", cameraColorTexture);
+            if (textureId > 0) {
+                Log.d(LOG_TAG, "adding in texture to background");
+                Texture temptex = Texture.createFromId(render, textureId);
 
-    public void drawBackground(ARViewRender render, ARFrameBuffer framebuffer) {
+                backgroundShader.setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+
+
+
+                //backgroundShader.setTexture("u_Texture", temptex);
+            }
+            render.draw(mesh, backgroundShader, null);
+        } catch (java.lang.Exception e) {
+            Log.d(LOG_TAG, "Error trying to creat texture" + e);
+        }
+
+
+    }
+
+    /*public void drawBackground(ARViewRender render, ARFrameBuffer framebuffer) {
 
         render.draw(mesh, backgroundShader, framebuffer);
-    }
-    /**
-     * Draws the AR background image. The image will be drawn such that virtual content rendered with
-     * the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)} and
-     * {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
-     * accurately follow static physical objects.
-     */
-    public void drawBackground(ARViewRender render) {
-        render.draw(mesh, backgroundShader);
-    }
+    }*/
 
     /**
      * Draws the virtual scene. Any objects rendered in the given {@link Framebuffer} will be drawn
@@ -320,17 +331,70 @@ public class BackgroundRenderer {
      * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
      */
     public void drawVirtualScene(
-            ARViewRender render, ARFrameBuffer virtualSceneFramebuffer,
+            ARViewRender render, int filamentTextureId, /*ARFrameBuffer virtualSceneFramebuffer,*/
             float zNear, float zFar) {
-        occlusionShader.setTexture(
-                "u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
-        if (useOcclusion) {
-            occlusionShader
-                    .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture())
-                    .setFloat("u_ZNear", zNear)
-                    .setFloat("u_ZFar", zFar);
+
+
+
+        if (backgroundShader == null) {
+            Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
+            return;
         }
-        render.draw(mesh, occlusionShader);
+        Shader tempShader = occlusionShader;
+
+
+        // In drawVirtualScene, temporarily use a test pattern
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, filamentTextureId);
+        // Set texture parameters
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+
+/*
+// Create a simple checkerboard pattern
+        int width = 256;
+        int height = 256;
+        ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4);
+        buffer.order(ByteOrder.nativeOrder());
+        for (int y = 0; y < height/2; y++) {
+            for (int x = 0; x < width/2; x++) {
+                // Checkerboard pattern
+                byte color = (byte)(((x & 32) ^ (y & 32)) == 0 ? 255 : 0);
+                buffer.put(color);  // R
+                buffer.put(color);  // G
+                buffer.put(color);  // B
+                buffer.put((byte)255);  // A
+            }
+        }
+        buffer.rewind();
+
+        GLES30.glTexImage2D(
+                GLES30.GL_TEXTURE_2D,
+                0,
+                GLES30.GL_RGBA8,
+                width,
+                height,
+                0,
+                GLES30.GL_RGBA,
+                GLES30.GL_UNSIGNED_BYTE,
+                buffer
+        );
+
+ */
+        try {
+            Texture temptex = Texture.createFromId(render, filamentTextureId);
+            tempShader.setTexture("u_VirtualSceneColorTexture", temptex);
+        } catch (java.lang.Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Explicitly bind to default framebuffer
+       // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+        Log.d(LOG_TAG, "Drawing virtual scene with occlusionShader and texture " + filamentTextureId);
+        // Draw to default framebuffer
+        render.draw(mesh, tempShader, null);
+
+        // Restore the camera texture for the next regular camera background draw
+        //tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
     }
 
 

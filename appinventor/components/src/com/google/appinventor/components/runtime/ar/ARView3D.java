@@ -15,6 +15,8 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
@@ -243,6 +245,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         //arViewRender = new ARViewRender(this.view, this, container.$form());
         arViewRender = new ARViewRender(this.glview, this, container.$form());
 
+
         installRequested = false;
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
@@ -349,166 +352,182 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     public void onDrawFrame(ARViewRender render) {
+        if (session == null) {
+            return;
+        }
 
-            if (session == null) return;
+        try {
+            Frame frame;
+            Camera camera;
 
-            // Set camera texture first
-            if (!hasSetTextureNames) {
-                if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
-                    int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
-                    if (textureId != 0) {
-                        session.setCameraTextureNames(new int[]{textureId});
-                        hasSetTextureNames = true;
-                        Log.d(LOG_TAG, "Camera texture set: " + textureId);
-                    } else {
-                        Log.d(LOG_TAG, "Invalid texture ID: 0");
+            try{
+
+                // as soon as this is set up, it seems it grabs the surface from the filament renderer
+                // may need to explicitly bind some how
+                if (!hasSetTextureNames) {
+
+                    if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
+                        int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
+                        if (textureId != 0) {
+                            Log.d(LOG_TAG, "onDrawFrame  has CAMERA texture " + textureId);
+                            session.setCameraTextureNames(new int[]{textureId});
+                            hasSetTextureNames = true;
+                        }
+                    }
+
+                    if (!hasSetTextureNames) {
+                        Log.d(LOG_TAG, "no texture");
                         return;
                     }
-                } else {
-                    Log.d(LOG_TAG, "Background renderer or texture not ready");
-                    return;
                 }
-            }
 
-            // Update display rotation
-            displayRotationHelper.updateSessionIfNeeded(session);
-
-            // Get frame and camera
-            Frame frame;
-            try {
+                // Update ARCore frame and camera
                 frame = session.update();
+                camera = frame.getCamera();
             } catch (CameraNotAvailableException e) {
-                Log.e(LOG_TAG, "Camera not available: " + e.getMessage(), e);
+                Log.e(LOG_TAG, "onDrawframe Camera not available: " + e.getMessage(), e);
                 return;
             }
 
-            Camera camera = frame.getCamera();
 
-            // Validate frame timestamp
-            if (frame.getTimestamp() == 0) {
-                Log.d(LOG_TAG, "Frame timestamp is 0, skipping frame");
-                return;
-            }
+            GLES30.glFinish();
 
-            // Update camera textures
-            try {
-                backgroundRenderer.setUseDepthVisualization(render, depthSettings.depthColorVisualizationEnabled());
-                backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error setting visualization: " + e.getMessage(), e);
-            }
 
-            // Update display geometry
-            backgroundRenderer.updateDisplayGeometry(frame);
 
-            // Update depth if available
-            if (camera.getTrackingState() == TrackingState.TRACKING &&
-                    (depthSettings.useDepthForOcclusion() || depthSettings.depthColorVisualizationEnabled())) {
-                try (Image depthImage = frame.acquireDepthImage16Bits()) {
-                    backgroundRenderer.updateCameraDepthTexture(depthImage);
-                } catch (NotYetAvailableException e) {
-                    // Depth not available yet, this is normal
+            // Update display rotation and geometry for rendering
+            displayRotationHelper.updateSessionIfNeeded(session);
+            if (backgroundRenderer != null){
+                backgroundRenderer.updateDisplayGeometry(frame);
+                if (frame.getTimestamp() != 0) {
+                    if (arFilamentRenderer != null) {
+                        // just thought I'd see if i can push this texture to mix in with the camera texture
+                        // if this could work, I could confirm there is nothing wrong with the texture from filament
+                        filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+                        Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
+                        if (filamentTextureId > 0){
+                            backgroundRenderer.drawBackground(render, filamentTextureId, currentViewportWidth, currentViewportHeight);
+                        }
+                    }else{
+                        backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
+
+                    }
+
+
                 }
             }
 
-        GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-        GLES30.glClearColor(0, 0, 1, 0); //blue
-
-            // Handle tracking state
-            trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
-
-            // Early return if camera not tracking
-            if (camera.getTrackingState() != TrackingState.TRACKING) {
-                // Show appropriate message
-                String message = (camera.getTrackingFailureReason() == TrackingFailureReason.NONE)
-                        ? SEARCHING_PLANE_MESSAGE
-                        : TrackingStateHelper.getTrackingFailureReasonString(camera);
-                Log.i(LOG_TAG, "Camera not tracking: " + message);
-
-                // Draw background only
-                backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
+            if (camera.getTrackingState() == TrackingState.PAUSED) {
                 return;
             }
 
-            // Draw background
-           // backgroundRenderer.drawBackground(arViewRender, 0, currentViewportWidth, currentViewportHeight);
-        backgroundRenderer.drawBackground(arViewRender, filamentTextureId, currentViewportWidth, currentViewportHeight);
-            // Get camera matrices
+            int error = GLES30.glGetError();
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "GL error after [draw bakcground]: 0x" + Integer.toHexString(error));
+            }
+            // Get camera matrices for 3D rendering
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
+            Log.d(LOG_TAG, "drawing, camera is not paused" );
+            // Skip further rendering if tracking is pau
 
-       /* if (ShowFeaturePoints()) {
+       if (ShowFeaturePoints()) {
             pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-        }*/
-
+        }
 
         // Draw planes and feature points
-       /* if (PlaneDetectionType() != 0) {
-            Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
-                planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
-                        camera.getDisplayOrientedPose(), projectionMatrix);
-            }
+       if (PlaneDetectionType() != 0) {
+           Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
+           planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
+                   camera.getDisplayOrientedPose(), projectionMatrix);
+
+       }
 
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
         Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
 
 
-        for (Plane plane : planes) {
-            Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
-                    ", type: " + plane.getType() +
-                    ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
-        }*/
-
-    /*    String[] sphereObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
-        List<ARNode> objectNodes = sort(arNodes, sphereObjectTypes);
-        if (objRenderer != null && objectNodes.size() > 0){
-            Log.d(LOG_TAG, "objects " + objectNodes);
-            objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
-        }
-
+           for (Plane plane : planes) {
+               Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
+                       ", type: " + plane.getType() +
+                       ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
+           }
+/*
+           String[] sphereObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
+           List<ARNode> objectNodes = sort(arNodes, sphereObjectTypes);
+           if (objRenderer != null && objectNodes.size() > 0){
+               Log.d(LOG_TAG, "objects " + objectNodes);
+               objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
+           }
 */
+            error = GLES30.glGetError();
 
-        Log.d(LOG_TAG, "clear virtual scene frame buffer");
-       // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
-
-       // GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-            if (arFilamentRenderer != null) {
-                List<ARNode> modelNodes = sort(arNodes, new String[]{"ModelNode"});
-                if (modelNodes.size() > 0) {
-                    arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
-
-                    GLES30.glFinish();
-                    int error = GLES30.glGetError();
-                    if (error != GLES30.GL_NO_ERROR) {
-                        Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
-                    }
-
-                    filamentTextureId = arFilamentRenderer.getDisplayTextureId();
-                    Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
-
-                    // if alpha works why would this cause issues?
-                    if ((filamentTextureId > 0) && quadRenderer != null) {
-                        Log.d(LOG_TAG, "drawing quad");
-                        //quadRenderer.draw(render, filamentTextureId, virtualSceneFramebuffer);
-
-                    }
-                }
-
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "GL error before [draw arfilament]: 0x" + Integer.toHexString(error));
             }
 
-        //handleTap(frame, camera);
+           if (arFilamentRenderer != null) {
+                EGLContext currentContext = EGL14.eglGetCurrentContext();
+                Log.d("ARView3D:: GLContext", "on DrawFrame, Current context: " + currentContext);
+                arFilamentRenderer.draw(arNodes, viewMatrix, projectionMatrix);
+
+                GLES30.glFinish();
+
+                 if (error != GLES30.GL_NO_ERROR) {
+                    Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
+                }
+                filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+                Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
+
+                //GLES30.glDisable(GLES30.GL_BLEND);
+            }
            // virtualSceneFramebuffer.unbind();
-        //GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0); // Switch back to default framebuffer
 
 
-        //backgroundRenderer.drawVirtualScene(render, filamentTextureId, Z_NEAR, Z_FAR);
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+// Enable blending
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-        GLES30.glDisable(GLES30.GL_BLEND);
+            // int colorTextureId = virtualSceneFramebuffer.getColorTexture().getTextureId();
 
+            // if alpha works why would this cause issues?
+            if (filamentTextureId > 0) {
+
+// Verify texture properties
+                int[] params = new int[1];
+                GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, filamentTextureId);
+
+                // Check texture parameters
+                GLES30.glGetTexParameteriv(
+                        GLES30.GL_TEXTURE_2D,
+                        GLES30.GL_TEXTURE_MAG_FILTER,
+                        params,
+                        0
+                );
+                Log.d(LOG_TAG, "Texture Mag Filter: " + params[0]);
+
+                // Check for OpenGL errors
+                error = GLES30.glGetError();
+                if (error != GLES30.GL_NO_ERROR) {
+                    Log.e(LOG_TAG, "OpenGL error before drawing background: 0x" +
+                            Integer.toHexString(error));
+                }
+
+
+                //Log.d(LOG_TAG, "after binding " + params);
+                //quadRenderer.drawTexturedQuad(filamentTextureId);
+            }
+
+             backgroundRenderer.drawVirtualScene(render, filamentTextureId, Z_NEAR, Z_FAR);
+
+            GLES30.glDisable(GLES30.GL_BLEND);
+            // Note: we don't need to extract texture or draw composed scene manually
+            // Filament renders directly to the swapchain
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception in onDrawFrame: " + e.getMessage(), e);
+        }
     }
-
 
     // Initialize renderers
     private void initializeFilamentAndRenderers() {
@@ -528,8 +547,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             quadRenderer = new QuadRenderer(arViewRender);
             // Create and initialize ARFilamentRenderer
-            Log.d(LOG_TAG, "instantiating new arfilamentrenderer");
-            arFilamentRenderer = new ARFilamentRenderer(this.container);
+            Log.d(LOG_TAG, "instantiating new arfilamentrenderer" + this.glview);
+            arFilamentRenderer = new ARFilamentRenderer(this.container, this.glview);
             arFilamentRenderer.initialize();
 
 

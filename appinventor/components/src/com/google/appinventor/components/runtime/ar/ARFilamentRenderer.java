@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.opengl.GLSurfaceView;
 import android.view.SurfaceView;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -7,7 +8,8 @@ import android.view.Choreographer;
 import android.opengl.GLES30;  // Import all GLES30 methods statically
 import android.os.Looper;
 import android.os.Handler;
-
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -128,14 +130,17 @@ public class ARFilamentRenderer {
 // ...
 
     private ComponentContainer contextContainer = null;
-
+    private GLSurfaceView glSurfaceView= null;
     /**
      * Create a new ARFilamentRenderer
      */
-    public ARFilamentRenderer(ComponentContainer container) throws IOException {
+    public ARFilamentRenderer(ComponentContainer container, GLSurfaceView glview) throws IOException {
         this.contextContainer = container;
+        this.glSurfaceView = glview;
         formCopy = container.$form();
-        Log.d(LOG_TAG, "ARFilamentRenderer constructor called");
+        Log.d(LOG_TAG, "ARFilamentRenderer constructor called " + this.glSurfaceView);
+
+        //initialize();
     }
 
 
@@ -152,14 +157,81 @@ public class ARFilamentRenderer {
         GLES30.glGenFramebuffers(1, fbos, 0);
         simpleFrameBuffer = fbos[0];
 
+
+        Log.d(LOG_TAG, "Initializing Filament " + this.glSurfaceView);
+
+        if (this.glSurfaceView != null) {
+                // Queue the initialization to run on the GL thread
+                this.glSurfaceView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        EGLContext context = EGL14.eglGetCurrentContext();
+                        Log.d(LOG_TAG, "Initializing Filament in GL context: " + context);
+
+                        initializeFilamentLibs();
+                        // This code runs on the GL thread where the context is active
+                        initializeFilament();
+                    }
+                });
+            }
+
+    }
+        /**
+         * Load Filament libraries - ensures proper loading of native libraries
+         */
+        private synchronized void initializeFilamentLibs() {
+            try {
+                System.loadLibrary("filament-jni");
+                System.loadLibrary("gltfio-jni");
+                Log.d(LOG_TAG, "Filament libraries loaded successfully");
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(LOG_TAG, "Failed to load Filament libraries", e);
+                throw e;
+            }
+        }
+
+    private long getNativeContextHandle() {
         try {
-            Log.d(LOG_TAG, "Initializing Filament");
+            EGLContext context = EGL14.eglGetCurrentContext();
+            if (context == EGL14.EGL_NO_CONTEXT) {
+                return 0;
+            }
 
-            // Load Filament libraries
-            initializeFilament();
+            // Get the native handle using reflection
+            java.lang.reflect.Method getNativeHandle = EGLContext.class.getMethod("getNativeHandle");
+            Object result = getNativeHandle.invoke(context);
+            if (result instanceof Long) {
+                return (Long) result;
+            }
+            return 0;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to get native context handle: " + e.getMessage(), e);
+            return 0;
+        }
+    }
+                /**
+                 * Load Filament libraries - ensures proper loading of native libraries
+                 */
+    private void initializeFilament() {
+        try {
 
-            // Create Filament engine
-            engine = Engine.create();
+            // Get current EGL context from the GL thread
+            EGLContext currentContext = EGL14.eglGetCurrentContext();
+            Log.d(LOG_TAG, "Creating Filament with shared context: " + currentContext);
+
+
+            long nativeContextHandle = getNativeContextHandle();
+            Log.d(LOG_TAG, "Creating Filament with native context handle: " + nativeContextHandle);
+
+            // Create engine with shared context
+            if (nativeContextHandle > 0) {
+                engine = Engine.create(nativeContextHandle);
+            } else {
+                engine = Engine.create(currentContext);
+            }
+
+
             Log.d(LOG_TAG, "Engine created successfully");
 
             renderer = engine.createRenderer();
@@ -193,80 +265,65 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "Asset loaders created successfully");
 
             // Set up lighting
-            //setupLighting();
+            setupLighting();
 
+
+
+
+           initializeFilamentScene();
             isInitialized = true;
             Log.d(LOG_TAG, "Filament initialized successfully");
-
-            initializeDisplayTexture(); //display texture setup
-            //drawTestTriangleWithMaterialEntity();  //entity added to scene
-            makeSimpleTextureBufferForRenderTarget();
-            //createDummyTriangeWithMaterialEntity();
-            createQuadTargetEntity();
-            view.setScene(scene);
-
-            // Draw a test triangle to scene
-            // Verify triangle configuration
-// In your diagnostic code
-            if (testTriangleEntity != 0) {
-                RenderableManager renderableManager = engine.getRenderableManager();
-                int renderableInstance = renderableManager.getInstance(testTriangleEntity);
-
-                if (renderableInstance != 0) {
-                    Log.d(LOG_TAG, "Renderable Instance Valid: true");
-                    Log.d(LOG_TAG, "Renderable Primitive Count: " + renderableManager.getPrimitiveCount(renderableInstance));
-
-                    try {
-                        MaterialInstance materialInstance = renderableManager.getMaterialInstanceAt(renderableInstance, 0);
-                        if (materialInstance != null) {
-                            Log.d(LOG_TAG, "Material Instance Valid: true");
-
-                            Material material = materialInstance.getMaterial();
-                            if (material != null) {
-                                Log.d(LOG_TAG, "Material Name: " + material.getName());
-
-                                // Safely log parameter names instead of using toString
-                                List<Material.Parameter> parameters = material.getParameters();
-                                if (parameters != null) {
-
-                                    Log.d(LOG_TAG, parameters.toString());
-                                }
-                            }
-                        } else {
-                            Log.e(LOG_TAG, "Material Instance is NULL");
-                        }
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error accessing material instance", e);
-                    }
-                } else {
-                    Log.e(LOG_TAG, "Renderable Instance is INVALID");
-                }
-            }
-           // Renderer.ClearOptions co = new Renderer.ClearOptions();
-          ///  float[] fl =  {0.0f, 0.0f, 1.0f, 0.0f };
-          //  co.clearColor = fl;
-          //  renderer.setClearOptions(co);
-            //Log.d(LOG_TAG, "draw triangle");
-            //drawTestTriangleEntity();
 
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error initializing Filament: " + e.getMessage(), e);
         }
     }
+    private void initializeFilamentScene() {
+        initializeDisplayTexture(); //display texture setup
+        //drawTestTriangleWithMaterialEntity();  //entity added to scene
+        makeSimpleTextureBufferForRenderTarget();
+        //createDummyTriangeWithMaterialEntity();
+        createQuadTargetEntity();
+        view.setScene(scene);
 
-    /**
-     * Load Filament libraries - ensures proper loading of native libraries
-     */
-    private void initializeFilament() {
-        try {
-            System.loadLibrary("filament-jni");
-            System.loadLibrary("gltfio-jni");
-            Log.d(LOG_TAG, "Filament libraries loaded successfully");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(LOG_TAG, "Failed to load Filament libraries", e);
-            throw e;
-        }
+        // Draw a test triangle to scene
+        // Verify triangle configuration
+
+        /*if (testTriangleEntity != 0) {
+            RenderableManager renderableManager = engine.getRenderableManager();
+            int renderableInstance = renderableManager.getInstance(testTriangleEntity);
+
+            if (renderableInstance != 0) {
+                Log.d(LOG_TAG, "Renderable Instance Valid: true");
+                Log.d(LOG_TAG, "Renderable Primitive Count: " + renderableManager.getPrimitiveCount(renderableInstance));
+
+                try {
+                    MaterialInstance materialInstance = renderableManager.getMaterialInstanceAt(renderableInstance, 0);
+                    if (materialInstance != null) {
+                        Log.d(LOG_TAG, "Material Instance Valid: true");
+
+                        Material material = materialInstance.getMaterial();
+                        if (material != null) {
+                            Log.d(LOG_TAG, "Material Name: " + material.getName());
+
+                            // Safely log parameter names instead of using toString
+                            List<Material.Parameter> parameters = material.getParameters();
+                            if (parameters != null) {
+
+                                Log.d(LOG_TAG, parameters.toString());
+                            }
+                        }
+                    } else {
+                        Log.e(LOG_TAG, "Material Instance is NULL");
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error accessing material instance", e);
+                }
+            } else {
+                Log.e(LOG_TAG, "Renderable Instance is INVALID");
+            }
+        }*/
     }
 
 
@@ -647,20 +704,30 @@ public class ARFilamentRenderer {
 
 
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
+
+        if (!isInitialized) {
+            Log.d(LOG_TAG, "Skipping draw - Filament not yet initialized");
+            return;
+        }
+
         try {
             // Prevent rapid, repeated frame attempts
             long currentTime = System.currentTimeMillis();
+            Log.d(LOG_TAG, "ARFilamentRenderer.draw called with displayTextureId: " + displayTextureId);
 
             // Introduce a minimum frame interval (e.g., 16ms for ~60 FPS)
-            final long MINIMUM_FRAME_INTERVAL = 32; // milliseconds
-
+            final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
+/* temp take out throttling
             // Track last successful frame time
             if (lastSuccessfulFrameTime > 0 &&
                     (currentTime - lastSuccessfulFrameTime) < MINIMUM_FRAME_INTERVAL) {
                 Log.d(LOG_TAG, "Skipping frame to maintain consistent rate");
                 return;
             }
+*/
 
+            EGLContext currentContext = EGL14.eglGetCurrentContext();
+            Log.d("GLContext", "ARFilaentRenderer Draw:: Current context: " + currentContext);
             // Update camera and view
             updateCameraFromARCore(viewMatrix, projectionMatrix);
 
@@ -672,9 +739,9 @@ public class ARFilamentRenderer {
                 //createDummyTriangeWithMaterialEntity();
             }
 
-
+            Log.d(LOG_TAG, "about to draw quad with" + filamentRenderTarget);
             if (nodes.size() > 0){
-               processNodes(nodes, viewMatrix, projectionMatrix);
+               //processNodes(nodes, viewMatrix, projectionMatrix);
 
             }
             if (quadEntity == 0){
@@ -683,12 +750,15 @@ public class ARFilamentRenderer {
             // Explicit render target and view configuration
             view.setScene(scene);
             view.setRenderTarget(filamentRenderTarget);
-            view.setBlendMode(View.BlendMode.TRANSLUCENT);
+            //view.setBlendMode(View.BlendMode.TRANSLUCENT);
+            view.setBlendMode(View.BlendMode.OPAQUE);
 
-            // Minimize clear operations
             Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
             clearOptions.clear = true;
-            clearOptions.discard = false;
+            clearOptions.clearColor[0] = 1.0f; // Red
+            clearOptions.clearColor[1] = 0.0f; // Green
+            clearOptions.clearColor[2] = 1.0f; // Blue
+            clearOptions.clearColor[3] = 1.0f; // Alpha
             renderer.setClearOptions(clearOptions);
 
             // Robust frame beginning with multiple attempts
@@ -736,30 +806,88 @@ public class ARFilamentRenderer {
         }
     }
 
-    private void handleRenderableBufferRead(){
 
-    /* read RenderTarget pixels into sample buffer, then bind display texture to that buffer
-    and then we have the texture we grab in ARView3d
-     */
+long lastSuccessfulFrameTime = 0;
+
+    private void handleRenderableBufferRead() {
+        // Capture the current context before read pixels
+        final EGLContext originalContext = EGL14.eglGetCurrentContext();
+        Log.d(LOG_TAG, "Original context before readPixels: " + originalContext);
+
         int sampleSize = 4 * viewportWidth * viewportHeight;
-        ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
+        final ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
         sampleBuffer.order(ByteOrder.nativeOrder());
 
-        final Runnable callbackRunnable = new Runnable() {
+        Runnable callbackRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
+                // Ensure we're on the GL thread with the correct context
+                glSurfaceView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        EGLContext currentGLContext = EGL14.eglGetCurrentContext();
+                        Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
 
-                    // Update last successful frame time
-                    lastSuccessfulFrameTime = System.currentTimeMillis();
-                } catch (Exception callbackError) {
-                    Log.e(LOG_TAG, "Pixel buffer callback error", callbackError);
-                }
+                        try {
+                            // Process sample and ensure texture is updated in this context
+                            processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
+
+                            // Explicitly recreate the texture in the current context
+                            recreateDisplayTexture(sampleBuffer);
+
+                            lastSuccessfulFrameTime = System.currentTimeMillis();
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "Error updating texture", e);
+                        }
+                    }
+
+                    private void recreateDisplayTexture(ByteBuffer pixelBuffer) {
+                        // Delete existing texture if it exists
+                        if (displayTextureId > 0) {
+                            int[] textures = {displayTextureId};
+                            GLES30.glDeleteTextures(1, textures, 0);
+                        }
+
+                        // Generate new texture
+                        int[] textures = new int[1];
+                        GLES30.glGenTextures(1, textures, 0);
+                        displayTextureId = textures[0];
+
+                        // Bind and configure the new texture
+                        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+
+                        // Set texture parameters
+                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+
+                        // Upload pixel data
+                        GLES30.glTexImage2D(
+                                GLES30.GL_TEXTURE_2D,
+                                0,
+                                GLES30.GL_RGBA,
+                                viewportWidth,
+                                viewportHeight,
+                                0,
+                                GLES30.GL_RGBA,
+                                GLES30.GL_UNSIGNED_BYTE,
+                                pixelBuffer
+                        );
+
+                        // Check for OpenGL errors
+                        int error = GLES30.glGetError();
+                        if (error != GLES30.GL_NO_ERROR) {
+                            Log.e(LOG_TAG, "OpenGL texture creation error: 0x" + Integer.toHexString(error));
+                        }
+
+                        Log.d(LOG_TAG, "Recreated display texture with ID: " + displayTextureId);
+                    }
+                });
             }
         };
 
-        // Pixel buffer descriptor configuration
+        // Rest of the readPixels configuration remains the same
         Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
                 sampleBuffer,
                 Texture.Format.RGBA,
@@ -782,33 +910,79 @@ public class ARFilamentRenderer {
         );
     }
 
-    // Add this field to the class
-    private long lastSuccessfulFrameTime = 0;
-
-
     private void processSmallSample(final ByteBuffer sampleBuffer, final int pixelCount) {
-        // Check if we're on the UI thread
-        if (Looper.getMainLooper() != Looper.myLooper()) {
-            Log.d(LOG_TAG, "Not on UI thread - posting to UI thread");
-            // Post to UI thread to ensure OpenGL context
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    processSmallSample(sampleBuffer, pixelCount);
-                }
-            });
+        // Ensure we're on the main thread
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            new Handler(Looper.getMainLooper()).post(() -> processSmallSample(sampleBuffer, pixelCount));
             return;
         }
-
         // Now we should be on the UI thread
-        Log.d(LOG_TAG, "Processing sample on UI thread");
+        Log.d(LOG_TAG, "Processing smallSample on UI thread");
 
         // Reset buffer position
+        sampleBuffer.rewind();
+
+        // Calculate the middle of the buffer
+        int middlePixelIndex = pixelCount / 2;
+        // Determine starting position for a small window around the middle
+        int startPixel = middlePixelIndex - 5; // 5 pixels before the middle
+        int endPixel = middlePixelIndex + 5;   // 5 pixels after the middle
+
+        // Make sure we don't go out of bounds
+        startPixel = Math.max(0, startPixel);
+        endPixel = Math.min(pixelCount - 1, endPixel);
+        int pixelsToPrint = endPixel - startPixel + 1;
+
+        Log.d(LOG_TAG, "Sample buffer size: " + sampleBuffer.capacity() +
+                ", Printing " + pixelsToPrint + " pixels from the middle region");
+
+        // Skip to the start position (each pixel is 4 bytes - RGBA)
+        sampleBuffer.position(startPixel * 4);
+
+        ByteBuffer modifiedBuffer = ByteBuffer.allocateDirect(sampleBuffer.capacity());
+        modifiedBuffer.order(ByteOrder.nativeOrder());
+
+        for (int i = 0; i < pixelsToPrint; i++) {
+            int pixelPos = startPixel + i;
+            // Read RGBA values for the pixel
+            byte r = sampleBuffer.get();
+            byte g = sampleBuffer.get();
+            byte b = sampleBuffer.get();
+            byte a = sampleBuffer.get();
+
+            // Convert to unsigned values (Java bytes are signed)
+            int rUnsigned = r & 0xFF;
+            int gUnsigned = g & 0xFF;
+            int bUnsigned = b & 0xFF;
+            int aUnsigned = a & 0xFF;
+
+            // Calculate the x,y position based on the pixel index
+            int x = pixelPos % viewportWidth;
+            int y = pixelPos / viewportWidth;
+
+            // For testing, force red color and full alpha
+            modifiedBuffer.put(i, (byte)255);  // R - force red
+            modifiedBuffer.put(i + 1, g);      // G - keep original
+            modifiedBuffer.put(i + 2, b);      // B - keep original
+            modifiedBuffer.put(i + 3, (byte)255);  // A - force full alpha
+
+            Log.d(LOG_TAG, "Pixel at (" + x + "," + y + "): R=" + rUnsigned +
+                    ", G=" + gUnsigned + ", B=" + bUnsigned + ", A=" + aUnsigned);
+        }
+        // Reset buffer position after printing
+        modifiedBuffer.rewind();
         sampleBuffer.rewind();
 
         // Bind the texture and push data to the target displayTexture
         if (displayTextureId > 0) {
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+
+
             GLES30.glTexImage2D(
                     GLES30.GL_TEXTURE_2D,
                     0,
@@ -820,8 +994,28 @@ public class ARFilamentRenderer {
                     GLES30.GL_UNSIGNED_BYTE,
                     sampleBuffer
             );
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+}
+
+// Add this to processSmallSample
+        ByteBuffer testPattern = ByteBuffer.allocateDirect(4 * 4 * 4); // 4x4 RGBA texture
+        testPattern.order(ByteOrder.nativeOrder());
+// Fill with bright red
+        for (int i = 0; i < 16; i++) {
+            testPattern.put((byte)255); // R
+            testPattern.put((byte)0);   // G
+            testPattern.put((byte)0);   // B
+            testPattern.put((byte)255); // A
         }
+        testPattern.rewind();
+
+// Create a new test texture
+        int[] testTexId = new int[1];
+        GLES30.glGenTextures(1, testTexId, 0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, testTexId[0]);
+        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, 4, 4, 0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, testPattern);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+
+
         // Check for errors
         int error = GLES30.glGetError();
         if (error != GLES30.GL_NO_ERROR) {

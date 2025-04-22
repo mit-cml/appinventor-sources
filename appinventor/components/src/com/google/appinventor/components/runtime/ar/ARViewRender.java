@@ -5,7 +5,8 @@ import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.Choreographer;
-
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -148,6 +149,9 @@ public class ARViewRender {
             return;
         }
 
+
+        EGLContext currentGLContext = EGL14.eglGetCurrentContext();
+        Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
         useFramebuffer(arframebuffer);
         shader.lowLevelUse();
         mesh.lowLevelDraw();
