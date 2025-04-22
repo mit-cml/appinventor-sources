@@ -213,7 +213,7 @@ public final class TextValidators {
    */
   public static String isValidEmailList(String text) {
     String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(,\\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\s*)*$";
-    if(text.matches(regex)) {
+    if(!text.matches(regex)) {
       return MESSAGES.invalidEmailListError();
     }
     return "";
@@ -289,6 +289,35 @@ public final class TextValidators {
           errorMessage = MESSAGES.firstCharProjectNameError();
         } else { //The text contains a character that is not a letter, number, or underscore
           errorMessage = MESSAGES.invalidCharProjectNameError();
+        }
+      }
+    }
+    return errorMessage;
+  }
+
+    /**
+   * Determines human-readable message for specific error.
+   * @param user The username (for now email)
+   * @return String representing error message, empty string if no error
+   */
+  public static String getErrorMessageForUser(String user){
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
+    String errorMessage = "";
+    String firstCharacterLetter = "[a-zA-Z0-9._%+-]+";
+    String containsAt = firstCharacterLetter + "@[a-zA-Z0-9.-]+";
+    String temp = user.trim();
+    if (temp.length() > 0) {
+      if (!temp.matches(regex)) {
+        if (!temp.matches(firstCharacterLetter)) {
+          //Check to make sure that the first character is a letter
+          // TODO add to messages
+          errorMessage = "The email maust start with a valid character";
+        } else { //The text contains a character that is not a letter, number, or underscore
+          if (!temp.matches(containsAt)) {
+            errorMessage = "The email maust contain @";
+          } else {
+            errorMessage = "The email maust end with domain";
+          }
         }
       }
     }

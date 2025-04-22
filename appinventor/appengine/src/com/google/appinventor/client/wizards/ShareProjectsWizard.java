@@ -40,8 +40,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -73,7 +75,9 @@ public class ShareProjectsWizard {
   @UiField protected Button bottomInvisible;
   @UiField protected Label linkForProject;
 
-  private List<Long> projectsToShare;
+  private List<Long> projectsToShare = new ArrayList<>();
+  private List<String> readOnlyAccessList = new ArrayList<>();
+  private List<Long> shareIds = new ArrayList<>();
   private Ode mainOde;
 
   /**
@@ -176,6 +180,18 @@ public class ShareProjectsWizard {
       //   //Add the command to stop this current project from saving
       // }
     }
+    for (long project : this.projectsToShare) {
+      this.mainOde.getAccessInfo(project, new OdeAsyncCallback<HashMap<String, List<String>>>() {
+        @Override
+        public void onSuccess(HashMap<String, List<String>> result) {
+          readOnlyAccessList.addAll(result.get("readonly"));
+          userNameTextBox.setText(String.join(", ", readOnlyAccessList));
+          shareIds.addAll(result.get("shareIds").stream()
+                  .map(Long::parseLong)
+                  .collect(Collectors.toList()));
+        }
+      });
+    }
     LOG.warning("project names: " + this.projectsToShare);
     projectNameLabel.setText(this.projectsToShare.toString());
   }
@@ -192,6 +208,10 @@ public class ShareProjectsWizard {
 
   @UiHandler("copyButton")
   protected void copyShareLink(ClickEvent e) {
+    String result = this.shareIds.stream()
+                                .map(String::valueOf)
+                                .collect(Collectors.joining(","));
+    LOG.info("Here is the link: " + result);
     // anything we wanna do? check whether any emails are given?
     // String[] users = userNameTextBox.getText().split(",");
     // List<String> validUsers = this.checkUsers();
@@ -235,26 +255,27 @@ public class ShareProjectsWizard {
     List<String> validUsers = new ArrayList<String>();
     for (String user: users) {
       // check that users are valid
+      user = user.trim();
       LOG.info("Checking usernames: " + user);
       TextValidators.UserStatus status = TextValidators.checkNewUserName(user);
       if (status == TextValidators.UserStatus.VALID) {
         LOG.info("Valid user");
-        validUsers.add(user.trim());
+        validUsers.add(user);
       } else {
         LOG.info("Checking for error");
-        String errorMessage = TextValidators.getErrorMessage(userNameTextBox.getText());
+        String errorMessage = TextValidators.getErrorMessageForUser(userNameTextBox.getText());
         if (!errorMessage.isEmpty()) {
           LOG.info("Found error: " + errorMessage);
           userNameTextBox.setErrorMessage(errorMessage);
         } else {
-          errorMessage = TextValidators.getWarningMessages(userNameTextBox.getText());
-          if (!errorMessage.isEmpty()) {
-            userNameTextBox.setErrorMessage(errorMessage);
-          } else {
+          // errorMessage = TextValidators.getWarningMessages(userNameTextBox.getText());
+          // if (!errorMessage.isEmpty()) {
+          //   userNameTextBox.setErrorMessage(errorMessage);
+          // } else {
             // Internationalize or change handling here.
-            userNameTextBox.setErrorMessage("There has been an unexpected error validating the users.");
+          userNameTextBox.setErrorMessage("There has been an unexpected error validating the users.");
             // TODO(zamanova) also break???
-          }
+          // }
         }
         break;
       }

@@ -68,6 +68,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
@@ -125,6 +126,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -581,11 +585,60 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void getAccessInfo(long projectId, OdeAsyncCallback<HashMap<String, List<String>>> callback) {
+    projectService.getAccessInfo(projectId, callback);
+  }
+
+  /**
+   * Load the user's relation to the project
+   *
+   * @return a Promise to load the user's access type to project
+   */
+  private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId) {
+    projectService.getSharedProject(userId, shareId, new AsyncCallback<UserProject>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          // Handle error here (e.g., show a message to the user)
+          LOG.warning("Failed to load project: " + caught.getMessage());
+          switchToProjectsView();  // the user will need to select a project...
+          ErrorReporter.reportInfo(MESSAGES.chooseProject());
+        }
+    
+        @Override
+        public void onSuccess(UserProject sharedProject) {
+          if (sharedProject != null) {
+            instance.setReadOnly();
+            LOG.info("trying to load project");
+            final long sharedProjectId = sharedProject.getProjectId();
+            LOG.info("project is " + String.valueOf(sharedProjectId));
+            projectManager.addProject(sharedProject);
+            projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+              Project loadedProject = projectManager.getProject(sharedProjectId);
+              if (loadedProject != null) {
+                openYoungAndroidProjectInDesigner(loadedProject);
+              } else {
+                // zamanova_TODO FIRST check whether its owned by someone else
+                LOG.info("user" + user.getUserEmail() + "could not get access to project" + String.valueOf(sharedProjectId));
+                // see whether has access and open
+                switchToProjectsView();  // the user will need to select a project...
+                ErrorReporter.reportInfo(MESSAGES.chooseProject());
+              }
+              return null;
+            });
+            // openYoungAndroidProjectInDesigner(Project.createProject(loadedProject));
+          }
+        }
+      });
+  }
+
   private void openProject(String projectIdString) {
+    LOG.info("project link: " + projectIdString);
     if (projectIdString.equals("")) {
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
       final long projectId = Long.parseLong(projectIdString);
+      // check whether user has the project
+      LOG.info("check whether user has the project " + projectIdString);
       Project project = projectManager.getProject(projectId);
       if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
         openYoungAndroidProjectInDesigner(project);
@@ -600,8 +653,12 @@ public class Ode implements EntryPoint {
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
-            switchToProjectsView();  // the user will need to select a project...
-            ErrorReporter.reportInfo(MESSAGES.chooseProject());
+            // zamanova_TODO FIRST check whether its owned by someone else
+            LOG.info("user" + user.getUserEmail() + "doesnt own the project" + projectIdString);
+            openSharedProject(projectService, user.getUserEmail(), projectId);
+            // see whether has access and open
+            // switchToProjectsView();  // the user will need to select a project...
+            // ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
           return null;
         });
@@ -611,8 +668,11 @@ public class Ode implements EntryPoint {
   }
 
   public void openYoungAndroidProjectInDesigner(final Project project) {
+    LOG.info("trying to open the project" + String.valueOf(project.getProjectId()));
     ProjectRootNode projectRootNode = project.getRootNode();
+    LOG.info("project root node");
     if (projectRootNode == null) {
+      LOG.info("entered if block");
       // The project nodes haven't been loaded yet.
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
@@ -622,25 +682,35 @@ public class Ode implements EntryPoint {
           openYoungAndroidProjectInDesigner(project);
         }
       });
+      LOG.info("added change listener");
       project.loadProjectNodes();
+      LOG.info("loadded project nodes");
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
-
+      LOG.info("entered else block");
       viewerBox.show(projectRootNode);
+      LOG.info("show root node");
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
+      LOG.info("project id");
       if (!History.getToken().equals(projectIdString)) {
         // insert token into history but do not trigger listener event
+        LOG.info("history if block");
         History.newItem(projectIdString, false);
+        LOG.info("history");
       }
       assetManager.loadAssets(project.getProjectId());
+      LOG.info("load assets");
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
+      LOG.info("get assets");
     }
+    LOG.info("finish ifelse");
     getTopToolbar().updateFileMenuButtons(1);
+    LOG.info("finish fully");
   }
 
   /**

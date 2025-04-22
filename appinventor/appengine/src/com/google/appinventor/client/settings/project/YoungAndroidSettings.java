@@ -81,16 +81,5 @@ public final class YoungAndroidSettings extends Settings {
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, "App",
         EditableProperty.TYPE_INVISIBLE));
-
-    // SHARE SETTINGS
-    addProperty(new EditableProperty(this,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHARE_ALL, "false",
-        EditableProperty.TYPE_INVISIBLE));
-    addProperty(new EditableProperty(this,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHARED_WITH_USERS, "",
-        EditableProperty.TYPE_INVISIBLE));
-    addProperty(new EditableProperty(this,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCESSURL, "",
-        EditableProperty.TYPE_INVISIBLE));
   }
 }

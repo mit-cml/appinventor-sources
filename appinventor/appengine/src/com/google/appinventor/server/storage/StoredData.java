@@ -111,7 +111,7 @@ public class StoredData {
     @Id Long id;
 
     // key of project that this id shares
-    @Parent Key<ProjectData> projectKey;
+    @Indexed Key<ProjectData> projectKey;
 
     // some permission info
     String permissions;

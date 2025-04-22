@@ -103,24 +103,30 @@ public final class EditorManager {
    */
   public ProjectEditor openProject(ProjectRootNode projectRootNode) {
     long projectId = projectRootNode.getProjectId();
+    LOG.info("trying to find editor");
     ProjectEditor projectEditor = openProjectEditors.get(projectId);
+    LOG.info("found editor");
     if (projectEditor == null) {
+      LOG.info("editor is null");
       // No open editor for this project yet.
       // Use the ProjectEditorRegistry to get the factory and create the project editor.
       ProjectEditorFactory factory = Ode.getProjectEditorRegistry().get(projectRootNode);
+      LOG.info("created factory");
       if (factory != null) {
+        LOG.info("factory not empty");
         projectEditor = factory.createProjectEditor(projectRootNode);
-
+        LOG.info("editor is set");
         // Add the editor to the openProjectEditors map.
         openProjectEditors.put(projectId, projectEditor);
-        
+        LOG.info("editor is set to open editor");
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
-
+        LOG.info("added to designer");
         // Prepare the project before Loading into the editor.
         // Components are prepared before the project is actually loaded.
         // Load the project into the editor. The actual loading is asynchronous.
         projectEditor.processProject();
+        LOG.info("processed project");
       }
     }
     return projectEditor;

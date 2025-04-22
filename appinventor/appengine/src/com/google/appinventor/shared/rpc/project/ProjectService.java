@@ -17,6 +17,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * Interface for the service providing project information.
@@ -116,6 +117,23 @@ public interface ProjectService extends RemoteService {
    * @param userIds a list of user emails
    */
   void retractAccessFromUsers(long projectId, List<String> userEmails);
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return the list of users who have read access 
+   * TODO: list of users who can edit + creator?
+   */
+  HashMap<String, List<String>> getAccessInfo(long projectId);
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  UserProject getSharedProject(String userId, long shareId);
 
   /**
    * Facilitate logging into the new gallery by

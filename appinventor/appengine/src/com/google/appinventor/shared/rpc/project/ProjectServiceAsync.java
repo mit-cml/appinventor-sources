@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -69,6 +70,16 @@ public interface ProjectServiceAsync {
    * @see ProjectService#retractAccessFromUsers(long, List<String>)
    */
   void retractAccessFromUsers(long projectId, List<String> userEmails, AsyncCallback<Void> callback);
+
+  /**
+   * @see ProjectService#getAccessInfo(long)
+   */
+  void getAccessInfo(long projectId, AsyncCallback<HashMap<String, List<String>>> callback);
+
+  /**
+   * @see ProjectService#getSharedProject(String, long)
+   */
+  void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback);
   
   /**
    * @see ProjectService@loginToGallery()

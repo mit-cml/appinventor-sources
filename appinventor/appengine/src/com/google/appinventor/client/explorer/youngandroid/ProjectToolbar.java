@@ -34,6 +34,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_DELETE_FROM_TRASH = "Delete From Trash";
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
+  private static final String WIDGET_NAME_SHARE = "Share";
 
   private final boolean isReadOnly;
   private final boolean isGalleryReadyOnly;
@@ -82,6 +83,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_NEW, visible);
     setButtonVisible(WIDGET_NAME_TRASH,visible);
     setButtonVisible(WIDGET_NAME_DELETE,visible);
+    setButtonVisible(WIDGET_NAME_SHARE, visible);
     //TODO: This needs to be refactored to be configurable
     setButtonVisible("Folder", visible);
     setButtonVisible("ImportProject", visible);

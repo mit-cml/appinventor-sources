@@ -653,7 +653,7 @@ public class ObjectifyStorageIo implements StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId);
           List<Long> shareIds = getProjectShareLinks(projectId);
           for (long shareProjectId : shareIds) {
-            datastore.delete(sharingProjectKey(projectKey, shareProjectId));
+            datastore.delete(sharingProjectKey(shareProjectId));
             LOG.log(Level.INFO, "Delete share project id: " + shareProjectId + " for project " + projectId);
           }
         }
@@ -732,7 +732,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<ProjectData> projectKey = projectKey(projectId);
-          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).ancestor(projectKey)) {
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
             sharedProjectIds.add(psd.id);
           }
         }
@@ -767,6 +767,65 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
+  public HashMap<String, List<String>> getAccessInfo(long projectId){
+    // String owner = "";
+    // try {
+    //   runJobWithRetries(new JobRetryHelper() {
+    //     @Override
+    //     public void run(Objectify datastore) {
+    //       UserProjectData pd = datastore.find(projectKey(projectId));
+    //       if (pd != null) {
+    //         settings.t = pd.settings;
+    //       } else {
+    //         settings.t = "";
+    //       }
+    //     }
+    //   }, false);
+    // } catch (ObjectifyException e) {
+    //   throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), e);
+    // }
+    List<String> readOnlyUserEmails = new ArrayList<String>();
+    List<String> shareIds = new ArrayList<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<ProjectData> projectKey = projectKey(projectId);
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
+            readOnlyUserEmails.addAll(new ArrayList<String>( 
+              Arrays.asList(psd.permissions.split(","))));
+            shareIds.add(String.valueOf(psd.id));
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), e);
+    }
+    HashMap<String, List<String>> result = new HashMap<>();
+    result.put("readonly",readOnlyUserEmails);
+    result.put("shareIds",shareIds);
+    return result;
+  }
+
+  @Override
+  public UserProject getSharedProject(String userId, long shareId){
+    final Long[] projectIdHolder = {0L}; // Use array to mutate inside inner class
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectSharingData pd = datastore.find(sharingProjectKey(shareId));
+          projectIdHolder[0] = pd.projectKey.getId();
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectIdHolder[0]), e);
+    }
+    return getUserProject(userId, projectIdHolder[0]);
+  }
+
+  @Override
   public void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails){
     updateProjectIsShareAll(projectId, isShareAll);
     List<String> currentUserEmails = new ArrayList<String>();
@@ -775,7 +834,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<ProjectData> projectKey = projectKey(projectId);
-          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).ancestor(projectKey)) {
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey", projectKey)) {
             currentUserEmails.addAll(new ArrayList<String>( 
               Arrays.asList(psd.permissions.split(","))));
           }
@@ -823,7 +882,7 @@ public class ObjectifyStorageIo implements StorageIo {
           }
           else {
             for (long shareProjectId : shareIds) {
-              ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey(projectId), shareProjectId));
+              ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
               if (psd != null) {
                 psd.isProjectSharedWithAll = isShareAll;
                 datastore.put(psd);
@@ -849,7 +908,7 @@ public class ObjectifyStorageIo implements StorageIo {
         public void run(Objectify datastore) {
           List<Long> shareIds = getProjectShareLinks(projectId);
           for (long shareProjectId : shareIds) {
-            ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey, shareProjectId));
+            ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
             if (psd != null) {
               String permissions =  psd.permissions;
               for (String userEmail : userEmails) {
@@ -879,7 +938,7 @@ public class ObjectifyStorageIo implements StorageIo {
         public void run(Objectify datastore) {
           List<Long> shareIds = getProjectShareLinks(projectId);
           for (long shareProjectId : shareIds) {
-            ProjectSharingData psd = datastore.find(sharingProjectKey(projectKey, shareProjectId));
+            ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
             if (psd != null) {
               String permissions =  psd.permissions;
               for (String userEmail : userEmails) {
@@ -1840,6 +1899,7 @@ public class ObjectifyStorageIo implements StorageIo {
     validateGCS();
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();
+    final List<String> readOnlyUserEmails = new ArrayList<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1849,6 +1909,11 @@ public class ObjectifyStorageIo implements StorageIo {
           if (fd.t == null) {
             fd.t = datastore.find(fileKey);
           }
+          Key<ProjectData> projectKey = projectKey(projectId);
+          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
+            readOnlyUserEmails.addAll(new ArrayList<String>( 
+              Arrays.asList(psd.permissions.split(","))));
+          }
         }
       }, false); // Transaction not needed
     } catch (ObjectifyException e) {
@@ -1857,9 +1922,11 @@ public class ObjectifyStorageIo implements StorageIo {
     }
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
+
     if (fileData != null) {
       if (fileData.userId != null && !fileData.userId.equals("")) {
-        if (!fileData.userId.equals(userId)) {
+        // TODO zamanova: add a check?
+        if (!fileData.userId.equals(userId) && !readOnlyUserEmails.contains(userId)) {
           throw CrashReport.createAndLogError(LOG, null,
             collectUserProjectErrorInfo(userId, projectId),
             new UnauthorizedAccessException(userId, projectId, null));
@@ -2515,8 +2582,8 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   // TODO(zamanova) how does this even work???
-  private Key<ProjectSharingData> sharingProjectKey(Key<ProjectData> projectKey, long shareId) {
-    return new Key<ProjectSharingData>(projectKey, ProjectSharingData.class, shareId);
+  private Key<ProjectSharingData> sharingProjectKey(long shareId) {
+    return new Key<ProjectSharingData>(ProjectSharingData.class, shareId);
   }
 
   private Key<UserProjectData> userProjectKey(Key<UserData> userKey, long projectId) {

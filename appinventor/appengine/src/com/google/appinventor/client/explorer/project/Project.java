@@ -18,6 +18,7 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This class represents a project.
@@ -26,6 +27,8 @@ import java.util.List;
 public final class Project {
   // Information about the project
   private final UserProject projectInfo;
+
+  private static final Logger LOG = Logger.getLogger(Project.class.getName());
 
   // List of listeners for any project changes.
   private final List<ProjectChangeListener> projectChangeListeners;
@@ -287,6 +290,7 @@ public final class Project {
    * @param listener  the {@code ProjectChangeListener} to be added
    */
   public void addProjectChangeListener(ProjectChangeListener listener) {
+    LOG.info("adding listeners to: " + String.valueOf(projectChangeListeners) + "listenere: " + String.valueOf(listener));
     projectChangeListeners.add(listener);
   }
 
@@ -328,5 +332,10 @@ public final class Project {
     for (ProjectChangeListener listener : copyProjectChangeListeners()) {
       listener.onProjectNodeRemoved(this, node);
     }
+  }
+
+  // Factory for project zamanova_TODO: ask whether its ok?
+  public static Project createProject(UserProject projectInfo) {
+    return new Project(projectInfo);
   }
 }

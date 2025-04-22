@@ -45,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -217,6 +218,20 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    */
   public void retractAccessFromUsers(long projectId, List<String> userEmails){
     storageIo.updateProjectPermissions(projectId, false, userEmails);
+  }
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return the list of users who have read access 
+   * TODO: list of users who can edit + creator?
+   */
+  public HashMap<String, List<String>> getAccessInfo(long projectId) {
+    return storageIo.getAccessInfo(projectId);
+  }
+
+  public UserProject getSharedProject(String userId, long shareId){
+    return storageIo.getSharedProject(userId, shareId);
   }
 
 

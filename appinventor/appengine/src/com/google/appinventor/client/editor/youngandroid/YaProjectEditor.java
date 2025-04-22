@@ -129,6 +129,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   public YaProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory styleFactory) {
     super(projectRootNode, styleFactory);
+    LOG.info("trying to add project listeners");
     project.addProjectChangeListener(this);
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
   }
