@@ -114,6 +114,7 @@ public class ProjectToolbar extends Toolbar {
       return;
     }
     setButtonEnabled(WIDGET_NAME_MOVE, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_SHARE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);

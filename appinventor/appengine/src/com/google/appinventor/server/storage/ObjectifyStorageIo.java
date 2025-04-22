@@ -786,6 +786,7 @@ public class ObjectifyStorageIo implements StorageIo {
     // }
     List<String> readOnlyUserEmails = new ArrayList<String>();
     List<String> shareIds = new ArrayList<String>();
+    List<String> isSharedAll = new ArrayList<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -795,6 +796,7 @@ public class ObjectifyStorageIo implements StorageIo {
             readOnlyUserEmails.addAll(new ArrayList<String>( 
               Arrays.asList(psd.permissions.split(","))));
             shareIds.add(String.valueOf(psd.id));
+            isSharedAll.add(String.valueOf(psd.isProjectSharedWithAll));
           }
         }
       }, false);
@@ -804,18 +806,25 @@ public class ObjectifyStorageIo implements StorageIo {
     HashMap<String, List<String>> result = new HashMap<>();
     result.put("readonly",readOnlyUserEmails);
     result.put("shareIds",shareIds);
+    result.put("isSharedAll", isSharedAll);
     return result;
   }
 
   @Override
   public UserProject getSharedProject(String userId, long shareId){
+    // check whether user is supposed to have access
     final Long[] projectIdHolder = {0L}; // Use array to mutate inside inner class
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          ProjectSharingData pd = datastore.find(sharingProjectKey(shareId));
-          projectIdHolder[0] = pd.projectKey.getId();
+          ProjectSharingData psd = datastore.find(sharingProjectKey(shareId));
+          if (!psd.isProjectSharedWithAll && !Arrays.asList(psd.permissions.split(",")).contains(userId)) {
+            throw CrashReport.createAndLogError(LOG, null,
+                collectUserProjectErrorInfo(userId, psd.projectKey.getId()),
+                new UnauthorizedAccessException(userId, psd.projectKey.getId(), null));
+          }
+          projectIdHolder[0] = psd.projectKey.getId();
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -1823,13 +1832,13 @@ public class ObjectifyStorageIo implements StorageIo {
           memcache.delete(fileKey.getString());
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
-            if (fileData.userId != null && !fileData.userId.equals("")) {
-              if (!fileData.userId.equals(userId)) {
-                throw CrashReport.createAndLogError(LOG, null,
-                  collectUserProjectErrorInfo(userId, projectId),
-                  new UnauthorizedAccessException(userId, projectId, null));
-              }
-            }
+            // if (fileData.userId != null && !fileData.userId.equals("")) {
+            //   if (!fileData.userId.equals(userId)) {
+            //     throw CrashReport.createAndLogError(LOG, null,
+            //       collectUserProjectErrorInfo(userId, projectId),
+            //       new UnauthorizedAccessException(userId, projectId, null));
+            //   }
+            // }
             oldBlobKeyString.t = fileData.blobKey;
             if (isTrue(fileData.isGCS)) {
               oldgcsName.t = fileData.gcsName;
@@ -1926,11 +1935,11 @@ public class ObjectifyStorageIo implements StorageIo {
     if (fileData != null) {
       if (fileData.userId != null && !fileData.userId.equals("")) {
         // TODO zamanova: add a check?
-        if (!fileData.userId.equals(userId) && !readOnlyUserEmails.contains(userId)) {
-          throw CrashReport.createAndLogError(LOG, null,
-            collectUserProjectErrorInfo(userId, projectId),
-            new UnauthorizedAccessException(userId, projectId, null));
-        }
+        // if (!fileData.userId.equals(userId) && !readOnlyUserEmails.contains(userId)) {
+        //   throw CrashReport.createAndLogError(LOG, null,
+        //     collectUserProjectErrorInfo(userId, projectId),
+        //     new UnauthorizedAccessException(userId, projectId, null));
+        // }
       }
       if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store
         try {

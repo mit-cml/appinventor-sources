@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -75,10 +76,13 @@ public class ShareProjectsWizard {
   @UiField protected Button bottomInvisible;
   @UiField protected Label linkForProject;
 
-  private List<Long> projectsToShare = new ArrayList<>();
+  private List<Long> projectsToShareIds = new ArrayList<>();
+  private List<String> projectsToShareNames = new ArrayList<>();
   private List<String> readOnlyAccessList = new ArrayList<>();
+  private List<String> isSharedAllList = new ArrayList<>();
   private List<Long> shareIds = new ArrayList<>();
   private Ode mainOde;
+  private boolean isSharedAll;
 
   /**
    * Creates a new YoungAndroid project wizard.
@@ -142,45 +146,33 @@ public class ShareProjectsWizard {
     // horizontalBlocksPanel.add(blocksHelpWidget);
     
     this.mainOde = Ode.getInstance();
-    LOG.warning("open wizard: " + this.mainOde);
     if (this.mainOde.getCurrentView() == Ode.PROJECTS) {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
       if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
         for (Project project : selectedProjects) {
-          this.projectsToShare.add(project.getProjectId());
+          this.projectsToShareIds.add(project.getProjectId());
+          this.projectsToShareNames.add(project.getProjectName());
         }
         for (ProjectFolder f : selectedFolders) {
           for (Project project : f.getNestedProjects()) {
-            this.projectsToShare.add(project.getProjectId());
+            this.projectsToShareIds.add(project.getProjectId());
+            this.projectsToShareNames.add(project.getProjectName());
           }
         }
-        // Show one confirmation window for selected projects.
-        // if (deleteConfirmation(projectsToDelete)) {
-        //   for (Project project : projectsToDelete) {
-        //     project.moveToTrash();
-        //   }
-        //   for (ProjectFolder f : selectedFolders) {
-        //     f.getParentFolder().removeChildFolder(f);
-        //   }
-        // }
-
       } else {
         // The user can select a project to resolve the
         // error.
         ErrorReporter.reportInfo(MESSAGES.noProjectSelectedToShare());
       }
     } else { //We are sharing a project in the designer view
-      // List<Project> selectedProjects = new ArrayList<Project>();
-      long currentProject = this.mainOde.getCurrentYoungAndroidProjectId();
-      this.projectsToShare.add(currentProject);
-      // if (deleteConfirmation(selectedProjects)) {
-      //   currentProject.moveToTrash();
-      //   //Add the command to stop this current project from saving
-      // }
+      Project currentProject = this.mainOde.getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
+      long currentProjectId = this.mainOde.getCurrentYoungAndroidProjectId();
+      this.projectsToShareIds.add(currentProjectId);
+      this.projectsToShareNames.add(currentProject.getProjectName());
     }
-    for (long project : this.projectsToShare) {
+    for (long project : this.projectsToShareIds) {
       this.mainOde.getAccessInfo(project, new OdeAsyncCallback<HashMap<String, List<String>>>() {
         @Override
         public void onSuccess(HashMap<String, List<String>> result) {
@@ -189,11 +181,14 @@ public class ShareProjectsWizard {
           shareIds.addAll(result.get("shareIds").stream()
                   .map(Long::parseLong)
                   .collect(Collectors.toList()));
+          isSharedAllList.addAll(result.get("isSharedAll"));
+          isSharedAll = isSharedAllList.stream()
+                              .allMatch(s -> s == "true");
+          checkBoxShareAll.setValue(isSharedAll);
         }
       });
     }
-    LOG.warning("project names: " + this.projectsToShare);
-    projectNameLabel.setText(this.projectsToShare.toString());
+    projectNameLabel.setText(String.join(", ", this.projectsToShareNames));
   }
 
   @UiHandler("checkBoxShareAll")
@@ -217,7 +212,7 @@ public class ShareProjectsWizard {
     // List<String> validUsers = this.checkUsers();
 
     // if (users.length == validUsers.size()) {
-    //   String link = shareProjects(this.projectsToShare, validUsers, true);
+    //   String link = shareProjects(this.projectsToShareIds, validUsers, true);
     // }
     // this.mainOde.getProjectService().getProjectPermissions(project, shareAll, users, callback);
     // OdeAsyncCallback<Void> callback =
@@ -246,7 +241,7 @@ public class ShareProjectsWizard {
     List<String> validUsers = this.checkUsers();
 
     if (users.length == validUsers.size()) {
-      shareProjects(this.projectsToShare, validUsers, true);
+      shareProjects(this.projectsToShareIds, validUsers, true);
     }
   }
 
@@ -290,10 +285,6 @@ public class ShareProjectsWizard {
     Long projectID = projectIDs.get(0);
     Boolean shareAll = checkBoxShareAll.getValue();
     LOG.info("go whether to share all " + shareAll);
-    // AtomicInteger remainingProjects = new AtomicInteger(projectIDs.size());
-    // LOG.warning("got ode ?" + remainingProjects);
-    // update project parameters with new users
-    LOG.info("got ode ?" + this.mainOde);
     OdeAsyncCallback<Void> callback =
         new OdeAsyncCallback<Void>(
           // failure message
@@ -310,15 +301,7 @@ public class ShareProjectsWizard {
             // }  
           }
     };
-    LOG.info("got callback ?");
-    // LOG.warning("shre wizard: " + this.mainOde);
-    LOG.info("got ode ?" + this.mainOde);
-    // share the project on the back-end
-    // for (long projectID : projectIDs) {
-    LOG.info("sharing:" + projectID);
     this.mainOde.getProjectService().updateProjectPermissions(projectID, shareAll, users, callback);
-    // }
-    // shareDialog.hide();
   }
 
   @UiHandler("topInvisible")

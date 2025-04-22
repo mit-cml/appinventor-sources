@@ -607,7 +607,7 @@ public class Ode implements EntryPoint {
         @Override
         public void onSuccess(UserProject sharedProject) {
           if (sharedProject != null) {
-            instance.setReadOnly();
+            Ode.getInstance().setReadOnly();
             LOG.info("trying to load project");
             final long sharedProjectId = sharedProject.getProjectId();
             LOG.info("project is " + String.valueOf(sharedProjectId));
@@ -617,9 +617,7 @@ public class Ode implements EntryPoint {
               if (loadedProject != null) {
                 openYoungAndroidProjectInDesigner(loadedProject);
               } else {
-                // zamanova_TODO FIRST check whether its owned by someone else
                 LOG.info("user" + user.getUserEmail() + "could not get access to project" + String.valueOf(sharedProjectId));
-                // see whether has access and open
                 switchToProjectsView();  // the user will need to select a project...
                 ErrorReporter.reportInfo(MESSAGES.chooseProject());
               }
@@ -668,11 +666,11 @@ public class Ode implements EntryPoint {
   }
 
   public void openYoungAndroidProjectInDesigner(final Project project) {
-    LOG.info("trying to open the project" + String.valueOf(project.getProjectId()));
+    LOG.info("trying to open the project" + String.valueOf(project.getProjectId()) + Ode.getInstance().isReadOnly());
     ProjectRootNode projectRootNode = project.getRootNode();
     LOG.info("project root node");
     if (projectRootNode == null) {
-      LOG.info("entered if block");
+      LOG.info("entered if block"  + Ode.getInstance().isReadOnly());
       // The project nodes haven't been loaded yet.
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
@@ -682,35 +680,35 @@ public class Ode implements EntryPoint {
           openYoungAndroidProjectInDesigner(project);
         }
       });
-      LOG.info("added change listener");
+      LOG.info("added change listener"  + Ode.getInstance().isReadOnly());
       project.loadProjectNodes();
-      LOG.info("loadded project nodes");
+      LOG.info("loadded project nodes"  + Ode.getInstance().isReadOnly());
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
-      LOG.info("entered else block");
+      LOG.info("entered else block"  + Ode.getInstance().isReadOnly());
       viewerBox.show(projectRootNode);
-      LOG.info("show root node");
+      LOG.info("show root node"  + Ode.getInstance().isReadOnly());
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
-      LOG.info("project id");
+      LOG.info("project id"  + Ode.getInstance().isReadOnly());
       if (!History.getToken().equals(projectIdString)) {
         // insert token into history but do not trigger listener event
-        LOG.info("history if block");
+        LOG.info("history if block"  + Ode.getInstance().isReadOnly());
         History.newItem(projectIdString, false);
-        LOG.info("history");
+        LOG.info("history"  + Ode.getInstance().isReadOnly());
       }
       assetManager.loadAssets(project.getProjectId());
-      LOG.info("load assets");
+      LOG.info("load assets"  + Ode.getInstance().isReadOnly());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
-      LOG.info("get assets");
+      LOG.info("get assets"  + Ode.getInstance().isReadOnly());
     }
-    LOG.info("finish ifelse");
+    LOG.info("finish ifelse"  + Ode.getInstance().isReadOnly());
     getTopToolbar().updateFileMenuButtons(1);
-    LOG.info("finish fully");
+    LOG.info("finish fully"  + Ode.getInstance().isReadOnly());
   }
 
   /**
