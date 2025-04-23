@@ -41,7 +41,8 @@ bd.toolbox.ctr.blockObjectToXML = function(block,withXMLTag) {
 
   if(block.fieldNameToValue != null) {
     for(var fieldName in block.fieldNameToValue) {
-      var container = goog.dom.createDom('field', null, block.fieldNameToValue[fieldName]);
+      var container = document.createElement('field');
+      container.appendChild(document.createTextNode(block.fieldNameToValue[fieldName]));
       container.setAttribute('name', fieldName);
       element.appendChild(container);
     }

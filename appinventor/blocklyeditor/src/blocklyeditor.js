@@ -15,8 +15,6 @@
 
 goog.provide('AI.Blockly.BlocklyEditor');
 
-goog.require('goog.ui.HsvaPalette');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly');
 goog.require('AI.Blockly.Backpack');
