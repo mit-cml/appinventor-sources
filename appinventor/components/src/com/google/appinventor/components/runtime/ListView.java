@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2024 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -79,7 +79,7 @@ import android.graphics.Rect;
         "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent {
 
-  private static final String LOG_TAG = "ListView";
+  protected static final String LOG_TAG = "ListView";
 
   private EditText txtSearchBox;
   protected final ComponentContainer container;
@@ -599,7 +599,7 @@ public final class ListView extends AndroidViewComponent {
    * @return background color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @SimpleProperty(description = "The text color of the listview stringItems.",
+  @SimpleProperty(description = "The color of the main text of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
@@ -628,7 +628,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return color of the secondary text
    */
-  @SimpleProperty(description = "The text color of DetailText of listview stringItems. ",
+  @SimpleProperty(description = "The color of the detail text of ListView elements. ",
       category = PropertyCategory.APPEARANCE)
   public int TextColorDetail() {
     return detailTextColor;
@@ -792,7 +792,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of image
    */
-  @SimpleProperty(description = "The image width of the listview image.",
+  @SimpleProperty(description = "Image width of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageWidth() {
     return imageWidth;
@@ -816,7 +816,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return height of image
    */
-  @SimpleProperty(description = "The image height of the listview image stringItems.",
+  @SimpleProperty(description = "Image height of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageHeight() {
     return imageHeight;
@@ -1054,7 +1054,8 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the divider thickness of list view
+   * Specifies the divider thickness of list view.
+   * If the thickness is 0, the divider is not visible.
    *
    * @param size sets the thickness of divider in the list view
    */
@@ -1071,14 +1072,16 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of margins
    */
-  @SimpleProperty(description = "The margins width of the list view element.",
+  @SimpleProperty(description = "The margins width of the list view element. "
+                                    + "If margins width > 0, then the divider is not displayed.",
       category = PropertyCategory.APPEARANCE)
   public int ElementMarginsWidth() {
     return margins;
   }
 
   /**
-   * Specifies the width of the margins of a list view element
+   * Specifies the width of the margins of a list view element.
+   * If margins width > 0, then the divider is not displayed.
    *
    * @param width sets the width of the margins in the list view element
    */
@@ -1095,7 +1098,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return corner radius
    */
-  @SimpleProperty(description = "The radius of the rounded corners of a list view item.",
+  @SimpleProperty(description = "The radius of the rounded corners of a list view element.",
       category = PropertyCategory.APPEARANCE)
   public int ElementCornerRadius() {
     return radius;
@@ -1256,17 +1259,38 @@ public final class ListView extends AndroidViewComponent {
    * Create a new adapter and apply visual changes, load data if it exists.
    */
   public void setAdapterData() {
-    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, items, layout,
-        textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail,
-        elementColor, selectionColor, imageWidth, imageHeight, radius);
-    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-      @Override
-      public void onItemClick(int position, View v) {
-        SelectionIndex(position + 1);
-        AfterPicking();
-      }
-    });
-    recyclerView.setAdapter(listAdapterWithRecyclerView);
+    switch (layout) {
+      case LISTVIEW_LAYOUT_SINGLE_TEXT:
+        setListAdapter(new ListViewSingleTextAdapter(container, items,
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+      case LISTVIEW_LAYOUT_TWO_TEXT:
+        setListAdapter(new ListViewTwoTextAdapter(container, items,
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+      case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
+        setListAdapter(new ListViewTwoTextLinearAdapter(container, items,
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+      case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
+        setListAdapter(new ListViewImageSingleTextAdapter(container, items,
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+      case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
+        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+      case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
+        setListAdapter(new ListViewImageTopTwoTextAdapter(container, items,
+          textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+          elementColor, selectionColor, radius, imageWidth, imageHeight));
+        break;
+    }    
   }
 
   /**
@@ -1293,6 +1317,17 @@ public final class ListView extends AndroidViewComponent {
     recyclerView.addItemDecoration(dividerDecoration);
   }
 
+  public void setListAdapter(ListAdapterWithRecyclerView adapter) {
+    listAdapterWithRecyclerView = adapter;
+    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+      @Override
+      public void onItemClick(int position, View v) {
+        SelectionIndex(position + 1);
+        AfterPicking();
+      }
+    });
+    recyclerView.setAdapter(listAdapterWithRecyclerView);
+  }
   /**
    * A class that creates dividers between elements or margins, depending on the options selected.
    */

@@ -1029,7 +1029,6 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
-
 Blockly.Versioning.makeMethodUseHelper =
   function(componentType, methodName, argNum, replaceFunc) {
     return function(blocksRep, workspace) {
@@ -2466,9 +2465,8 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
     // AI2: 
     // - Changed TextSize property to FontSize
-    10: [
-      Blockly.Versioning.changePropertyName("ListView", "TextSize", "FontSize")
-    ]
+    // - Add new layout
+    10: "noUpgrade"
 
   }, // End ListView upgraders
 
