@@ -153,12 +153,6 @@ public class ServerLayout {
   public static final String UPLOAD_USERFILE = "userfile";
 
   /**
-   * Relative path of the {@link com.google.appinventor.server.GetMotdServiceImpl}
-   * within the ODE GWT module.
-   */
-  public static final String GET_MOTD_SERVICE = "getmotd";
-
-  /**
    * Relative path of the {@link com.google.appinventor.server.components.FirebaseAuthServiceImpl}
    * within the ODE GWT module.
    */

@@ -144,16 +144,7 @@ they get cut off in Windows.
   .ode-MessagesOutput {
     background-color: background-color;
   }
-  
-  /*
-   * MotdBox
-   */
-  
-  .ode-Motd {
-    background-color: #f7f9f2;
-    color: context-menu-color;
-  }
-  
+
   /*
    * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
    */

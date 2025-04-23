@@ -390,13 +390,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("error message when fail to send to user from moderator")
   String moderationErrorFailToSendEmail();
 
-
-  // Used in MotdFetcher.java
-
-  @DefaultMessage("Failed to contact server to get the MOTD.")
-  @Description("Message displayed when cannot get a MOTD from the server.")
-  String getMotdFailed();
-
   // Used in Ode.java
 
   @DefaultMessage("MIT App Inventor")
@@ -932,12 +925,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Messages")
   @Description("Caption for message output box.")
   String messagesOutputBoxCaption();
-
-  // Used in boxes/MotdBox.java
-
-  @DefaultMessage("Welcome to App Inventor!")
-  @Description("Initial caption for MOTD box.")
-  String motdBoxCaption();
 
   // Used in boxes/OdeLogBox.java
 
