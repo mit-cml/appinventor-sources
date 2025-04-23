@@ -331,65 +331,28 @@ public class BackgroundRenderer {
      * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
      */
     public void drawVirtualScene(
-            ARViewRender render, int filamentTextureId, /*ARFrameBuffer virtualSceneFramebuffer,*/
+            ARViewRender render, Framebuffer framebuffer, /*ARFrameBuffer virtualSceneFramebuffer,*/
             float zNear, float zFar) {
 
 
 
-        if (backgroundShader == null) {
+        if (occlusionShader == null) {
             Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
             return;
         }
         Shader tempShader = occlusionShader;
 
 
-        // In drawVirtualScene, temporarily use a test pattern
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, filamentTextureId);
-        // Set texture parameters
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-
-/*
-// Create a simple checkerboard pattern
-        int width = 256;
-        int height = 256;
-        ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4);
-        buffer.order(ByteOrder.nativeOrder());
-        for (int y = 0; y < height/2; y++) {
-            for (int x = 0; x < width/2; x++) {
-                // Checkerboard pattern
-                byte color = (byte)(((x & 32) ^ (y & 32)) == 0 ? 255 : 0);
-                buffer.put(color);  // R
-                buffer.put(color);  // G
-                buffer.put(color);  // B
-                buffer.put((byte)255);  // A
-            }
-        }
-        buffer.rewind();
-
-        GLES30.glTexImage2D(
-                GLES30.GL_TEXTURE_2D,
-                0,
-                GLES30.GL_RGBA8,
-                width,
-                height,
-                0,
-                GLES30.GL_RGBA,
-                GLES30.GL_UNSIGNED_BYTE,
-                buffer
-        );
-
- */
         try {
-            Texture temptex = Texture.createFromId(render, filamentTextureId);
-            tempShader.setTexture("u_VirtualSceneColorTexture", temptex);
+// filament texture that was written to framebuffer by quadrenderer
+            tempShader.setTexture("u_VirtualSceneColorTexture", framebuffer.getColorTexture());
         } catch (java.lang.Exception e) {
             throw new RuntimeException(e);
         }
 
         // Explicitly bind to default framebuffer
        // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-        Log.d(LOG_TAG, "Drawing virtual scene with occlusionShader and texture " + filamentTextureId);
+        Log.d(LOG_TAG, "Drawing virtual scene with occlusionShader" + framebuffer.getColorTexture().getTextureId());
         // Draw to default framebuffer
         render.draw(mesh, tempShader, null);
 

@@ -182,6 +182,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private Texture dfgTexture;
     private SpecularCubeMapFilter cubeMapFilter;
     int filamentTextureId = 0;
+    Texture currentFilamentTexture = null;
 
     // Matrices and math components
     private final float[] viewMatrix = new float[16];
@@ -394,6 +395,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
 
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null){
@@ -428,7 +430,49 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
+
             Log.d(LOG_TAG, "drawing, camera is not paused" );
+
+
+            String[] modelNodeType = new String[]{"ModelNode"};
+            List<ARNode> modelNodes = sort(arNodes, modelNodeType);
+
+            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
+            List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
+
+
+
+
+            if (arFilamentRenderer != null && modelNodes.size() > 0) {
+
+                arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
+
+                filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+
+                if (filamentTextureId > 0 && currentFilamentTexture == null) {
+                    currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
+                    Log.d(LOG_TAG, "current filament texture " + currentFilamentTexture.getTextureId());
+                }
+                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
+                GLES30.glViewport(0, 0, virtualSceneFramebuffer.getWidth(), virtualSceneFramebuffer.getHeight());
+
+
+                // Draw the Filament texture to the framebuffer
+                Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
+                        " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
+                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
+                GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+
+
+                //use model node as SCENE nodes to which pose/translation the quad is attached?
+                ARNode filamentSceneNode = modelNodes.get(0);
+
+                quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, virtualSceneFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+            }
+        GLES30.glEnable(GLES30.GL_BLEND);
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
             // Skip further rendering if tracking is pau
 
        if (ShowFeaturePoints()) {
@@ -453,12 +497,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                        ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
            }
 /*
-           String[] sphereObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
-           List<ARNode> objectNodes = sort(arNodes, sphereObjectTypes);
-           if (objRenderer != null && objectNodes.size() > 0){
-               Log.d(LOG_TAG, "objects " + objectNodes);
-               objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
-           }
+
 */
             error = GLES30.glGetError();
 
@@ -466,62 +505,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.e(LOG_TAG, "GL error before [draw arfilament]: 0x" + Integer.toHexString(error));
             }
 
-           if (arFilamentRenderer != null) {
-                EGLContext currentContext = EGL14.eglGetCurrentContext();
-                Log.d("ARView3D:: GLContext", "on DrawFrame, Current context: " + currentContext);
-                arFilamentRenderer.draw(arNodes, viewMatrix, projectionMatrix);
-
-                GLES30.glFinish();
-
-                 if (error != GLES30.GL_NO_ERROR) {
-                    Log.e(LOG_TAG, "GL error after [draw arfilament]: 0x" + Integer.toHexString(error));
-                }
-                filamentTextureId = arFilamentRenderer.getDisplayTextureId();
-                Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
-
-                //GLES30.glDisable(GLES30.GL_BLEND);
+            if (objRenderer != null && objectNodes.size() > 0){
+                Log.d(LOG_TAG, "objects " + objectNodes);
+                objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
             }
-           // virtualSceneFramebuffer.unbind();
 
+            handleTap(frame, camera);
 
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-// Enable blending
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-
-            // int colorTextureId = virtualSceneFramebuffer.getColorTexture().getTextureId();
-
-            // if alpha works why would this cause issues?
-            if (filamentTextureId > 0) {
-
-// Verify texture properties
-                int[] params = new int[1];
-                GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, filamentTextureId);
-
-                // Check texture parameters
-                GLES30.glGetTexParameteriv(
-                        GLES30.GL_TEXTURE_2D,
-                        GLES30.GL_TEXTURE_MAG_FILTER,
-                        params,
-                        0
-                );
-                Log.d(LOG_TAG, "Texture Mag Filter: " + params[0]);
-
-                // Check for OpenGL errors
-                error = GLES30.glGetError();
-                if (error != GLES30.GL_NO_ERROR) {
-                    Log.e(LOG_TAG, "OpenGL error before drawing background: 0x" +
-                            Integer.toHexString(error));
-                }
-
-
-                //Log.d(LOG_TAG, "after binding " + params);
-                //quadRenderer.drawTexturedQuad(filamentTextureId);
-            }
-
-             backgroundRenderer.drawVirtualScene(render, filamentTextureId, Z_NEAR, Z_FAR);
+           GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
+           backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             GLES30.glDisable(GLES30.GL_BLEND);
+            // Create another fence after drawing
+            GLES30.glFinish();
+
             // Note: we don't need to extract texture or draw composed scene manually
             // Filament renders directly to the swapchain
         } catch (Exception e) {

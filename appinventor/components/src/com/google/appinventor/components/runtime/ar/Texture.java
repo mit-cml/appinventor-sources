@@ -179,7 +179,7 @@ public class Texture implements Closeable {
      * Create a texture from the given asset file name.
      */
     public static Texture createFromId(
-            ARViewRender render, int textureId, int width, int height)
+            ARViewRender render, int textureId)
             throws IOException {
 
         // Create a texture object that references the existing ID
@@ -194,7 +194,7 @@ public class Texture implements Closeable {
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
 
-        Log.d("Texture", "Created wrapper for existing texture with ID " + textureId);
+        Log.d("Texture", "Created wrapper for existing texture with ID " + textureId + " but new texture id is " + texture.getTextureId());
         return texture;
     }
 

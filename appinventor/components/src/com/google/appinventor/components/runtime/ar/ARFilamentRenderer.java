@@ -287,43 +287,6 @@ public class ARFilamentRenderer {
         createQuadTargetEntity();
         view.setScene(scene);
 
-        // Draw a test triangle to scene
-        // Verify triangle configuration
-
-        /*if (testTriangleEntity != 0) {
-            RenderableManager renderableManager = engine.getRenderableManager();
-            int renderableInstance = renderableManager.getInstance(testTriangleEntity);
-
-            if (renderableInstance != 0) {
-                Log.d(LOG_TAG, "Renderable Instance Valid: true");
-                Log.d(LOG_TAG, "Renderable Primitive Count: " + renderableManager.getPrimitiveCount(renderableInstance));
-
-                try {
-                    MaterialInstance materialInstance = renderableManager.getMaterialInstanceAt(renderableInstance, 0);
-                    if (materialInstance != null) {
-                        Log.d(LOG_TAG, "Material Instance Valid: true");
-
-                        Material material = materialInstance.getMaterial();
-                        if (material != null) {
-                            Log.d(LOG_TAG, "Material Name: " + material.getName());
-
-                            // Safely log parameter names instead of using toString
-                            List<Material.Parameter> parameters = material.getParameters();
-                            if (parameters != null) {
-
-                                Log.d(LOG_TAG, parameters.toString());
-                            }
-                        }
-                    } else {
-                        Log.e(LOG_TAG, "Material Instance is NULL");
-                    }
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Error accessing material instance", e);
-                }
-            } else {
-                Log.e(LOG_TAG, "Renderable Instance is INVALID");
-            }
-        }*/
     }
 
 
@@ -717,14 +680,14 @@ public class ARFilamentRenderer {
 
             // Introduce a minimum frame interval (e.g., 16ms for ~60 FPS)
             final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
-/* temp take out throttling
+/*t throttling */
             // Track last successful frame time
             if (lastSuccessfulFrameTime > 0 &&
                     (currentTime - lastSuccessfulFrameTime) < MINIMUM_FRAME_INTERVAL) {
                 Log.d(LOG_TAG, "Skipping frame to maintain consistent rate");
                 return;
             }
-*/
+
 
             EGLContext currentContext = EGL14.eglGetCurrentContext();
             Log.d("GLContext", "ARFilaentRenderer Draw:: Current context: " + currentContext);
@@ -739,25 +702,29 @@ public class ARFilamentRenderer {
                 //createDummyTriangeWithMaterialEntity();
             }
 
-            Log.d(LOG_TAG, "about to draw quad with" + filamentRenderTarget);
-            if (nodes.size() > 0){
-               //processNodes(nodes, viewMatrix, projectionMatrix);
+            if (quadEntity == 0){
+
+
+                createQuadTargetEntity();
 
             }
-            if (quadEntity == 0){
-                createQuadTargetEntity();
+            Log.d(LOG_TAG, "about to draw quad with" + filamentRenderTarget);
+            if (nodes.size() > 0){
+               processNodes(nodes, viewMatrix, projectionMatrix);
+
             }
+
             // Explicit render target and view configuration
             view.setScene(scene);
             view.setRenderTarget(filamentRenderTarget);
-            //view.setBlendMode(View.BlendMode.TRANSLUCENT);
-            view.setBlendMode(View.BlendMode.OPAQUE);
+            view.setBlendMode(View.BlendMode.TRANSLUCENT);
+            //view.setBlendMode(View.BlendMode.OPAQUE);
 
             Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
             clearOptions.clear = true;
             clearOptions.clearColor[0] = 1.0f; // Red
-            clearOptions.clearColor[1] = 0.0f; // Green
-            clearOptions.clearColor[2] = 1.0f; // Blue
+            clearOptions.clearColor[1] = 1.0f; // Green
+            clearOptions.clearColor[2] = .0f; // Blue
             clearOptions.clearColor[3] = 1.0f; // Alpha
             renderer.setClearOptions(clearOptions);
 

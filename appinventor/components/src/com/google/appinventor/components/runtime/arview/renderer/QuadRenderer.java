@@ -1,210 +1,256 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-import com.google.appinventor.components.annotations.UsesAssets;
-import android.media.Image;
+
 import android.opengl.GLES30;
+import android.util.Log;
 import com.google.appinventor.components.runtime.*;
-import com.google.ar.core.Coordinates2d;
-import com.google.ar.core.Frame;
-
-
+import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import android.util.Log;
+import java.util.Map;
+
+import android.opengl.Matrix;
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
+import com.google.ar.core.TrackingState;
+import com.google.ar.core.Trackable;
+import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.Collection;
-import java.util.stream.Collectors;
-
+import java.util.HashMap;
+import java.util.Map;
 /**
- * This class renders a composite quad.
+ * StableQuadRenderer renders textured quads with stable performance.
+ * Following the same architecture as PlaneRenderer and ObjectRenderer.
  */
-@UsesAssets(fileNames = "background_show_camera.frag, background_show_camera.vert," +
-        "plane.frag, plane.vert")
-
-
 public class QuadRenderer {
-    private static final String LOG_TAG = QuadRenderer.class.getSimpleName();
+    private static final String TAG = QuadRenderer.class.getSimpleName();
 
-    private int quadShaderProgram;
+    // Shader names - you would need to create these shader files
+    private static final String VERTEX_SHADER_NAME = "quad.vert";
+    private static final String FRAGMENT_SHADER_NAME = "quad.frag";
+
+    // Quad geometry constants
+    private static final int VERTICES_PER_QUAD = 4;
+    private static final int COORDS_PER_VERTEX = 2;
+    private static final float[] QUAD_COORDS = {
+            -1.0f, -1.0f,  // bottom-left
+            1.0f, -1.0f,   // bottom-right
+            -1.0f, 1.0f,   // top-left
+            1.0f, 1.0f     // top-right
+    };
+    private static final float[] TEXTURE_COORDS = {
+            0.0f, 1.0f,  // bottom-left
+            1.0f, 1.0f,  // bottom-right
+            0.0f, 0.0f,  // top-left
+            1.0f, 0.0f   // top-right
+    };
+
+    private final Mesh quadMesh;
+    private final Shader shader;
+
+    // Cache for textures to avoid recreating wrapper objects
+    private final Map<Integer, Texture> textureCache = new HashMap<>();
+
+
+    // Temporary matrices allocated here to reduce allocations for each frame.
+    private final float[] viewMatrix = new float[16];
+    private final float[] modelMatrix = new float[16];
+    private final float[] modelViewMatrix = new float[16];
+    private final float[] modelViewProjectionMatrix = new float[16];
+    private final float[] arNodeAngleUvMatrix = new float[4]; // 2x2 rotation matrix for uv coords
+
     /**
-     * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
-     * during a {@link ARViewRender} callback, typically in {@link
+     * Create a StableQuadRenderer with persistent OpenGL resources.
      */
-    public QuadRenderer()  {
-        // Create shader for the quad if needed
-        if (quadShaderProgram == 0) {
-            quadShaderProgram = createQuadShader();
-        }
+    public QuadRenderer(ARViewRender render) throws IOException {
+        // Create vertex buffers for position and texture coordinates
+        FloatBuffer quadCoordsBuffer = ByteBuffer.allocateDirect(QUAD_COORDS.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .put(QUAD_COORDS);
+        quadCoordsBuffer.position(0);
 
+        FloatBuffer texCoordsBuffer = ByteBuffer.allocateDirect(TEXTURE_COORDS.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .put(TEXTURE_COORDS);
+        texCoordsBuffer.position(0);
+
+        // Create VertexBuffer objects
+        VertexBuffer quadCoordsVertexBuffer =
+                new VertexBuffer(render, COORDS_PER_VERTEX, quadCoordsBuffer);
+        VertexBuffer texCoordsVertexBuffer =
+                new VertexBuffer(render, COORDS_PER_VERTEX, texCoordsBuffer);
+
+        // Create mesh from vertex buffers
+        VertexBuffer[] vertexBuffers = {
+                quadCoordsVertexBuffer, texCoordsVertexBuffer
+        };
+        quadMesh = new Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, /*indexBuffer=*/null, vertexBuffers);
+
+        // Create shader or load from assets
+        try {
+            shader = createShader(render);
+            // Set default blend mode for proper alpha handling
+            shader.setBlend(
+                    Shader.BlendFactor.SRC_ALPHA,
+                    Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+            // Typically no depth testing needed for quads
+            shader.setDepthTest(false);
+            shader.setDepthWrite(false);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create quad shader", e);
+            throw e;
+        }
     }
 
+    /**
+     * Create a shader for rendering the quad.
+     */
+    private Shader createShader(ARViewRender render) throws IOException {
+        try {
+            // First try to load from asset files
+            return Shader.createFromAssets(
+                    render,
+                    VERTEX_SHADER_NAME,
+                    FRAGMENT_SHADER_NAME,
+                    /*defines=*/ null);
+        } catch (IOException e) {
+            // Fall back to embedded shader code if assets aren't available
+            Log.w(TAG, "Shader assets not found, using embedded shaders");
 
-    public void drawTexturedQuad(int textureId) {
-                if (textureId <= 0) return;
-                GLES30.glFinish();
-                Log.e(LOG_TAG, "drawing textured quad");
+            String vertexShaderCode =
+                    "#version 300 es\n" +
+                            "uniform mat4 u_ModelViewProjection;\n" +
+                            "layout(location = 0) in vec2 a_Position; // Your quad coordinates\n" +
+                            "layout(location = 1) in vec2 a_TexCoord; // Your texture coordinates\n" +
+                            "out vec2 v_TexCoord;\n" +
+                            "\n" +
+                            "void main() {\n" +
+                            "    v_TexCoord = a_TexCoord;\n" +
+                            "    gl_Position = u_ModelViewProjection * vec4(a_Position, 0.0, 1.0);\n" +
+                            "}\n";
 
+            String fragmentShaderCode =
+                    "#version 300 es\n" +
+                            "precision mediump float;\n" +
+                            "uniform sampler2D u_Texture;\n" +
+                            "in vec2 v_TexCoord;\n" +
+                            "layout(location = 0) out vec4 o_FragColor;\n" +
+                            "\n" +
+                            "void main() {\n" +
+                            "    o_FragColor = texture(u_Texture, v_TexCoord);\n" +
+                            "}\n";
 
-                // Use the shader
-                GLES30.glUseProgram(quadShaderProgram);
+            return new Shader(render, vertexShaderCode, fragmentShaderCode, /*defines=*/ null);
+        }
+    }
 
+    public void updateModelMatrix(float[] modelMatrix, float scaleFactor) {
+        float[] scaleMatrix = new float[16];
+        Matrix.setIdentityM(scaleMatrix, 0);
+        scaleMatrix[0] = scaleFactor;
+        scaleMatrix[5] = scaleFactor;
+        scaleMatrix[10] = scaleFactor;
+        Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
+    }
 
-                // Set up vertices for a fullscreen quad (using normalized device coordinates)
-                float[] quadVertices = {
-                        -1.0f, -1.0f,  // bottom-left
-                        1.0f, -1.0f,   // bottom-right
-                        -1.0f, 1.0f,   // top-left
-                        1.0f, 1.0f     // top-right
-                };
+    public void updateModelMatrix(float[] modelMatrix, float scaleFactorX, float scaleFactorY, float scaleFactorZ) {
+        float[] scaleMatrix = new float[16];
+        Matrix.setIdentityM(scaleMatrix, 0);
+        scaleMatrix[0] = scaleFactorX;
+        scaleMatrix[5] = scaleFactorY;
+        scaleMatrix[10] = scaleFactorZ;
+        Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
+    }
 
+    public void draw(ARViewRender render, ARNode filamentSceneNode, Texture currentFilamentTexture,
+                     Framebuffer target, Pose cameraPose, float[] cameraProjection) {
 
-                // Texture coordinates - try this specific orientation
-                float[] texCoords = {
-                        0.0f, 1.0f,  // bottom-left
-                        1.0f, 1.0f,  // bottom-right
-                        0.0f, 0.0f,  // top-left
-                        1.0f, 0.0f   // top-right
-                };
-                // Set up the vertex arrays
-                int posHandle = GLES30.glGetAttribLocation(quadShaderProgram, "a_position");
-                int texHandle = GLES30.glGetAttribLocation(quadShaderProgram, "a_texCoord");
-
-                // Load vertices
-                FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
-                        .order(ByteOrder.nativeOrder())
-                        .asFloatBuffer();
-                vertexBuffer.put(quadVertices).position(0);
-
-                FloatBuffer texBuffer = ByteBuffer.allocateDirect(texCoords.length * 4)
-                        .order(ByteOrder.nativeOrder())
-                        .asFloatBuffer();
-                texBuffer.put(texCoords).position(0);
-
-                // Set up the texture
-                int texUniform = GLES30.glGetUniformLocation(quadShaderProgram, "u_texture");
-
-
-        // Check texture binding and state
-        int[] boundTexture = new int[1];
-        GLES30.glGetIntegerv(GLES30.GL_TEXTURE_BINDING_2D, boundTexture, 0);
-        Log.d(LOG_TAG, "Currently bound texture: " + boundTexture[0]);
-
-        // Check for OpenGL errors before rendering
-        int errorBefore = GLES30.glGetError();
-        if (errorBefore != GLES30.GL_NO_ERROR) {
-            Log.e(LOG_TAG, "OpenGL error before rendering: 0x" +
-                    Integer.toHexString(errorBefore));
+        int texId = currentFilamentTexture.getTextureId();
+        if (texId <= 0) {
+            Log.w(TAG, "Invalid texture ID: " + texId);
+            return;
         }
 
+        try {
+            // Bind framebuffer handling code remains the same
 
-                GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-                GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
-                GLES30.glUniform1i(texUniform, 0);
-// In your drawTexturedQuad method, before any drawing
+            Anchor anchor = filamentSceneNode.Anchor();
+            if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
+                return;
+            }
 
-                GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-                GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-                GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-                GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
-                // Set up blending for transparency
-                GLES30.glEnable(GLES30.GL_BLEND);
-                GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+            // Get the world position of the anchor
+            float[] anchorMatrix = new float[16];
+            anchor.getPose().toMatrix(anchorMatrix, 0);
 
-                // Draw the quad
-                GLES30.glEnableVertexAttribArray(posHandle);
-                GLES30.glVertexAttribPointer(posHandle, 2, GLES30.GL_FLOAT, false, 0, vertexBuffer);
+            // Get camera view matrix
+            cameraPose.inverse().toMatrix(viewMatrix, 0);
 
-                GLES30.glEnableVertexAttribArray(texHandle);
-                GLES30.glVertexAttribPointer(texHandle, 2, GLES30.GL_FLOAT, false, 0, texBuffer);
+            // Calculate the billboard matrix (always facing camera)
+            calculateBillboardMatrix(anchorMatrix, viewMatrix);
 
-                GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
+            // Apply scale
+            updateModelMatrix(modelMatrix, 1.0f);
+
+            // Calculate MVP matrix
+
+            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+            Matrix.multiplyMM(modelViewProjectionMatrix, 0, cameraProjection, 0, modelViewMatrix, 0);
 
 
-        // Check for OpenGL errors after rendering
-        int errorAfter = GLES30.glGetError();
-        if (errorAfter != GLES30.GL_NO_ERROR) {
-            Log.e(LOG_TAG, "OpenGL error after rendering: 0x" +
-                    Integer.toHexString(errorAfter));
+            // Set shader uniforms - much simpler now!
+            shader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
+
+            // Draw the quad
+            render.draw(quadMesh, shader, target);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error during quad rendering", e);
+        }
+    }
+
+    /**
+     * Calculate a billboard matrix that will make the quad face the camera
+     */
+    private void calculateBillboardMatrix(float[] anchorMatrix, float[] viewMatrix) {
+        // Start with the anchor's position
+        System.arraycopy(anchorMatrix, 0, modelMatrix, 0, 16);
+
+        // Clear the rotation part of the model matrix, keeping only translation
+        modelMatrix[0] = 1.0f;
+        modelMatrix[1] = 0.0f;
+        modelMatrix[2] = 0.0f;
+
+        modelMatrix[4] = 0.0f;
+        modelMatrix[5] = 1.0f;
+        modelMatrix[6] = 0.0f;
+
+        modelMatrix[8] = 0.0f;
+        modelMatrix[9] = 0.0f;
+        modelMatrix[10] = 1.0f;
+
+        // For perfect camera facing, you can extract rotation from the view matrix
+        // and apply its inverse, but in most AR cases, just clearing rotation works well
+    }
+     /* Clean up resources when no longer needed.
+     */
+    public void cleanup() {
+        // Clean up shader
+        if (shader != null) {
+            shader.close();
         }
 
-                // Clean up
-                GLES30.glDisableVertexAttribArray(posHandle);
-                GLES30.glDisableVertexAttribArray(texHandle);
-                GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-                GLES30.glDisable(GLES30.GL_BLEND);
-                GLES30.glUseProgram(0);
+        // Clean up texture cache
+        for (Texture texture : textureCache.values()) {
+            if (texture != null) {
+                texture.close();
             }
-
-            // Create a simple shader for the quad
-            private int createQuadShader() {
-                // Simple vertex shader
-                String vertexShaderCode =
-                        "attribute vec2 a_position;\n" +
-                                "attribute vec2 a_texCoord;\n" +
-                                "varying vec2 v_texCoord;\n" +
-                                "void main() {\n" +
-                                "  gl_Position = vec4(a_position, 0.0, 1.0);\n" +
-                                "  v_texCoord = a_texCoord;\n" +
-                                "}";
-                //blend over
-                String fragmentShaderCode =
-                        "precision highp float;\n" +
-                                "varying vec2 v_texCoord;\n" +
-                                "uniform sampler2D u_texture;\n" +
-                                "uniform float u_opacity;\n" +
-                                "void main() {\n" +
-                                "  // Read texture and expand the sampling area slightly\n" +
-                                "  vec4 color = texture2D(u_texture, v_texCoord);\n" +
-                                "  color.a = .5;\n" +
-                                "  // Ensure we're properly handling the SRGB data\n" +
-                                "  gl_FragColor = color;\n" +
-                                "}";
-                // Simple colored fragment shader
- /*       String fragmentShaderCode =
-                "precision mediump float;\n" +
-                        "void main() {\n" +
-                        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" + // Solid red
-                        "}";
-
-  */
-                // Compile shaders
-                int vertexShader = compileShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode);
-                int fragmentShader = compileShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode);
-
-                // Create program
-                int program = GLES30.glCreateProgram();
-                GLES30.glAttachShader(program, vertexShader);
-                GLES30.glAttachShader(program, fragmentShader);
-                GLES30.glLinkProgram(program);
-                Log.e(LOG_TAG, "SUCCeSS drawing textured quad");
-                return program;
-            }
-
-        // Shader compilation utility
-        private int compileShader(int type, String shaderCode) {
-            int shader = GLES30.glCreateShader(type);
-            GLES30.glShaderSource(shader, shaderCode);
-            GLES30.glCompileShader(shader);
-
-            // Check for compilation errors
-            int[] compiled = new int[1];
-            GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0);
-            if (compiled[0] == 0) {
-                Log.e(LOG_TAG, "Shader compilation error: " + GLES30.glGetShaderInfoLog(shader));
-                GLES30.glDeleteShader(shader);
-                return 0;
-            }
-            return shader;
         }
-
-
-
-
+        textureCache.clear();
+    }
 }
-

@@ -22,8 +22,11 @@ layout(location = 1) in vec2 a_CameraTexCoord;
 layout(location = 2) in vec2 a_VirtualSceneTexCoord;
 
 out vec2 v_CameraTexCoord;
+out vec2 v_FilamentTexCoord;
 
 void main() {
+  // Simply use a_Position directly since it's already a vec4
   gl_Position = a_Position;
   v_CameraTexCoord = a_CameraTexCoord;
+  v_FilamentTexCoord = a_VirtualSceneTexCoord;
 }

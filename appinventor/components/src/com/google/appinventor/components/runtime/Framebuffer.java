@@ -162,7 +162,7 @@ public class Framebuffer implements Closeable {
     }
 
     /* package-private */
-    int getFramebufferId() {
+    public int getFramebufferId() {
         return framebufferId[0];
     }
 }
