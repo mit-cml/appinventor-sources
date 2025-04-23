@@ -177,7 +177,9 @@ Blockly.WarningIndicator.prototype.init = function() {
  */
 Blockly.WarningIndicator.prototype.dispose = function() {
   if (this.svgGroup_) {
-    goog.dom.removeNode(this.svgGroup_);
+    if (this.svgGroup_.parentNode) {
+      this.svgGroup_.parentNode.removeChild(this.svgGroup_);
+    }
     this.svgGroup_ = null;
   }
 
