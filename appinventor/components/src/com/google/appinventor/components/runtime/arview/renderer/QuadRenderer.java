@@ -192,15 +192,16 @@ public class QuadRenderer {
             cameraPose.inverse().toMatrix(viewMatrix, 0);
 
             // Calculate the billboard matrix (always facing camera)
-            calculateBillboardMatrix(anchorMatrix, viewMatrix);
+           calculateBillboardMatrix(anchorMatrix, viewMatrix);
 
             // Apply scale
-            updateModelMatrix(modelMatrix, 1.0f);
+            //updateModelMatrix(modelMatrix, 1.0f);
 
             // Calculate MVP matrix
 
             Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, cameraProjection, 0, modelViewMatrix, 0);
+
 
 
             // Set shader uniforms - much simpler now!
@@ -214,28 +215,36 @@ public class QuadRenderer {
         }
     }
 
-    /**
-     * Calculate a billboard matrix that will make the quad face the camera
-     */
     private void calculateBillboardMatrix(float[] anchorMatrix, float[] viewMatrix) {
-        // Start with the anchor's position
-        System.arraycopy(anchorMatrix, 0, modelMatrix, 0, 16);
+        // Extract anchor position
+        float anchorX = anchorMatrix[12];
+        float anchorY = anchorMatrix[13];
+        float anchorZ = anchorMatrix[14];
 
-        // Clear the rotation part of the model matrix, keeping only translation
-        modelMatrix[0] = 1.0f;
-        modelMatrix[1] = 0.0f;
-        modelMatrix[2] = 0.0f;
+        // Create a clean model matrix starting with identity
+        Matrix.setIdentityM(modelMatrix, 0);
 
-        modelMatrix[4] = 0.0f;
-        modelMatrix[5] = 1.0f;
-        modelMatrix[6] = 0.0f;
+        // Extract camera position (using inverse of view matrix)
+        float[] cameraMatrix = new float[16];
+        Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
+        float cameraX = cameraMatrix[12];
+        float cameraY = cameraMatrix[13];
+        float cameraZ = cameraMatrix[14];
 
-        modelMatrix[8] = 0.0f;
-        modelMatrix[9] = 0.0f;
-        modelMatrix[10] = 1.0f;
+        // Vector from anchor to camera (in XZ plane only for Y-up constraint)
+        float dirX = cameraX - anchorX;
+        float dirZ = cameraZ - anchorZ;
 
-        // For perfect camera facing, you can extract rotation from the view matrix
-        // and apply its inverse, but in most AR cases, just clearing rotation works well
+        // Calculate rotation around Y axis to face camera
+        float angle = (float) Math.toDegrees(Math.atan2(dirX, dirZ));
+
+        // Set position from anchor
+        modelMatrix[12] = anchorX;
+        modelMatrix[13] = anchorY;
+        modelMatrix[14] = anchorZ;
+
+        // Apply rotation around Y axis to face camera in XZ plane
+        Matrix.rotateM(modelMatrix, 0, angle, 0, 1, 0);
     }
      /* Clean up resources when no longer needed.
      */

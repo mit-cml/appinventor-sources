@@ -116,7 +116,7 @@ public class ARFilamentRenderer {
 
     // Animation support
     private float animationTime = 0.0f;
-    private boolean animationEnabled = true;
+    private boolean animationEnabled = false;
 
 
     private ByteBuffer pixelBuffer = null;
@@ -137,15 +137,15 @@ public class ARFilamentRenderer {
     IndexBuffer indexBufferObj;
 
     float[] quadVertices = {
-            -.5f, -.5f, -0.5f,  // bottom-left
-            .5f, -.5f, -0.5f,   // bottom-right
-            -.5f, .5f, -0.5f,   // top-left
-            .5f, .5f, -0.5f     // top-right
+            -1.0f, -1.0f, -1.0f,  // bottom-left
+            1.0f, -1.0f, -1.0f,   // bottom-right
+            -1.0f, 1.0f, -1.0f,   // top-left
+            1.0f, 1.0f, -1.0f     // top-right
     };
 
     // Bright magenta color for all vertices
     float[] quadColors = {
-            1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+            0.0f, 1.0f, 1.0f, 1.0f,  // magenta
             1.0f, 0.0f, 1.0f, 1.0f,  // magenta
             1.0f, 0.0f, 1.0f, 1.0f,  // magenta
             1.0f, 0.0f, 1.0f, 1.0f   // magenta
@@ -325,8 +325,8 @@ public class ARFilamentRenderer {
 
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
         lightBuilder.color(1.0f, 1.0f, 0.8f)    // Slightly warm sunlight color
-                .intensity(100000.0f)           // Bright sunlight
-                .direction(0.0f, -1.0f, -0.2f)  // Coming from above and slightly in front
+                .intensity(10000.0f)           // Bright sunlight
+                .direction(0.0f, -1.0f, 0.0f)  // Coming from above and slightly in front
                 .castShadows(true);
 
         LightManager lightManager = engine.getLightManager();
@@ -337,7 +337,7 @@ public class ARFilamentRenderer {
         int ambientLightEntity = EntityManager.get().create();
         new LightManager.Builder(LightManager.Type.SUN)
                 .color(0.8f, 0.8f, 1.0f)       // Slightly blue ambient light (sky color)
-                .intensity(20000.0f)           // Moderate intensity for ambient
+                .intensity(80000.0f)           // Moderate intensity for ambient
                 .direction(0.0f, 1.0f, 0.0f)   // Coming from below (bounce light)
                 .castShadows(false)
                 .build(engine, ambientLightEntity);
@@ -389,15 +389,6 @@ public class ARFilamentRenderer {
     private int createQuadTargetEntity() {
         try {
             quadEntity = EntityManager.get().create();
-
-            // Very simple quad vertices
-           /* float[] quadVertices = {
-                    -1.0f, -1.0f, -1.0f,  // bottom-left
-                    1.0f, -1.0f, -1.0f,  // bottom-right
-                    -1.0f, 1.0f, -1.0f,  // top-left
-                    1.0f, 1.0f, -1.0f   // top-right
-            };*/
-
 
             setupBuffers();
 
@@ -680,7 +671,41 @@ public class ARFilamentRenderer {
             }
 
             if (quadEntity == 0){
+// In your draw method, before rendering
+                TransformManager transformManager = engine.getTransformManager();
+                int quadInstance = transformManager.getInstance(quadEntity);
 
+// Get the camera position and orientation
+                float[] cameraPos = new float[3];
+                camera.getPosition(cameraPos);
+
+// Create a billboard matrix for the quad
+                float[] quadMatrix = new float[16];
+                Matrix.setIdentityM(quadMatrix, 0);
+
+// Position the quad where you want it
+                Matrix.translateM(quadMatrix, 0, 0.0f, 0.0f, -1.0f);  // Put it in front of camera
+
+// Extract rotation from view matrix to make it face camera
+// But only use the camera's rotation around Y-axis (for traditional billboard)
+
+                camera.getViewMatrix(viewMatrix);
+
+// Clear the rotation components but keep position
+                quadMatrix[0] = 1.0f;  // Remove X rotation
+                quadMatrix[1] = 0.0f;
+                quadMatrix[2] = 0.0f;
+
+                quadMatrix[4] = 0.0f;
+                quadMatrix[5] = 1.0f;  // Remove Y rotation
+                quadMatrix[6] = 0.0f;
+
+                quadMatrix[8] = 0.0f;
+                quadMatrix[9] = 0.0f;
+                quadMatrix[10] = 1.0f; // Remove Z rotation
+
+// Apply the transform
+                transformManager.setTransform(quadInstance, quadMatrix);
 
                 createQuadTargetEntity();
 
@@ -725,7 +750,7 @@ public class ARFilamentRenderer {
                 return;
             }
 
-
+            updateAnimations();
             // renderer renders into filamentRenderTarget
             // then we read those pixels and push them into displayTextureId
             try {
@@ -753,99 +778,99 @@ public class ARFilamentRenderer {
 
 long lastSuccessfulFrameTime = 0;
 
-    private void handleRenderableBufferRead() {
-        // Capture the current context before read pixels
-        final EGLContext originalContext = EGL14.eglGetCurrentContext();
-        Log.d(LOG_TAG, "Original context before readPixels: " + originalContext);
+private void handleRenderableBufferRead() {
+    // Capture the current context before read pixels
+    final EGLContext originalContext = EGL14.eglGetCurrentContext();
+    Log.d(LOG_TAG, "Original context before readPixels: " + originalContext);
 
-        int sampleSize = 4 * viewportWidth * viewportHeight;
-        final ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
-        sampleBuffer.order(ByteOrder.nativeOrder());
+    int sampleSize = 4 * viewportWidth * viewportHeight;
+    final ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
+    sampleBuffer.order(ByteOrder.nativeOrder());
 
-        Runnable callbackRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Ensure we're on the GL thread with the correct context
-                glSurfaceView.queueEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        EGLContext currentGLContext = EGL14.eglGetCurrentContext();
-                        Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
+    Runnable callbackRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // Ensure we're on the GL thread with the correct context
+            glSurfaceView.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    EGLContext currentGLContext = EGL14.eglGetCurrentContext();
+                    Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
 
-                        try {
-                            // Process sample and ensure texture is updated in this context
-                            processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
+                    try {
+                        // Process sample and ensure texture is updated in this context
+                        processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
 
-                            // Explicitly recreate the texture in the current context
-                            recreateDisplayTexture(sampleBuffer);
+                        // Explicitly recreate the texture in the current context
+                        recreateDisplayTexture(sampleBuffer);
 
-                            lastSuccessfulFrameTime = System.currentTimeMillis();
-                        } catch (Exception e) {
-                            Log.e(LOG_TAG, "Error updating texture", e);
-                        }
+                        lastSuccessfulFrameTime = System.currentTimeMillis();
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error updating texture", e);
+                    }
+                }
+
+                private void recreateDisplayTexture(ByteBuffer pixelBuffer) {
+                    // Delete existing texture if it exists
+                    if (displayTextureId > 0) {
+                        int[] textures = {displayTextureId};
+                        GLES30.glDeleteTextures(1, textures, 0);
                     }
 
-                    private void recreateDisplayTexture(ByteBuffer pixelBuffer) {
-                        // Delete existing texture if it exists
-                        if (displayTextureId > 0) {
-                            int[] textures = {displayTextureId};
-                            GLES30.glDeleteTextures(1, textures, 0);
-                        }
+                    // Generate new texture
+                    int[] textures = new int[1];
+                    GLES30.glGenTextures(1, textures, 0);
+                    displayTextureId = textures[0];
 
-                        // Generate new texture
-                        int[] textures = new int[1];
-                        GLES30.glGenTextures(1, textures, 0);
-                        displayTextureId = textures[0];
+                    // Bind and configure the new texture
+                    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
 
-                        // Bind and configure the new texture
-                        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+                    // Set texture parameters
+                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
 
-                        // Set texture parameters
-                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-                        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+                    // Upload pixel data
+                    GLES30.glTexImage2D(
+                            GLES30.GL_TEXTURE_2D,
+                            0,
+                            GLES30.GL_RGBA,
+                            viewportWidth,
+                            viewportHeight,
+                            0,
+                            GLES30.GL_RGBA,
+                            GLES30.GL_UNSIGNED_BYTE,
+                            pixelBuffer
+                    );
 
-                        // Upload pixel data
-                        GLES30.glTexImage2D(
-                                GLES30.GL_TEXTURE_2D,
-                                0,
-                                GLES30.GL_RGBA,
-                                viewportWidth,
-                                viewportHeight,
-                                0,
-                                GLES30.GL_RGBA,
-                                GLES30.GL_UNSIGNED_BYTE,
-                                pixelBuffer
-                        );
-
-                        // Check for OpenGL errors
-                        int error = GLES30.glGetError();
-                        if (error != GLES30.GL_NO_ERROR) {
-                            Log.e(LOG_TAG, "OpenGL texture creation error: 0x" + Integer.toHexString(error));
-                        }
-
-                        Log.d(LOG_TAG, "Recreated display texture with ID: " + displayTextureId);
+                    // Check for OpenGL errors
+                    int error = GLES30.glGetError();
+                    if (error != GLES30.GL_NO_ERROR) {
+                        Log.e(LOG_TAG, "OpenGL texture creation error: 0x" + Integer.toHexString(error));
                     }
-                });
-            }
-        };
 
-        // Rest of the readPixels configuration remains the same
-        Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
-                sampleBuffer,
-                Texture.Format.RGBA,
-                Texture.Type.UBYTE,
-                4,                    // Alignment
-                0,                    // Left padding
-                0,                    // Top padding
-                viewportWidth,        // Stride
-                new Handler(Looper.getMainLooper()),  // Explicit main looper handler
-                callbackRunnable
-        );
+                    Log.d(LOG_TAG, "Recreated display texture with ID: " + displayTextureId);
+                }
+            });
+        }
+    };
+
+    // Rest of the readPixels configuration remains the same
+    Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
+            sampleBuffer,
+            Texture.Format.RGBA,
+            Texture.Type.UBYTE,
+            4,                    // Alignment
+            0,                    // Left padding
+            0,                    // Top padding
+            viewportWidth,        // Stride
+            new Handler(Looper.getMainLooper()),  // Explicit main looper handler
+            callbackRunnable
+    );
 
         // Read pixels with error handling
-        renderer.readPixels(
+    renderer.readPixels(
                 filamentRenderTarget,
                 0, 0,              // x, y start
                 viewportWidth,
@@ -863,57 +888,6 @@ long lastSuccessfulFrameTime = 0;
         // Now we should be on the UI thread
         Log.d(LOG_TAG, "Processing smallSample on UI thread");
 
-        // Reset buffer position
-
-     /*   // Calculate the middle of the buffer
-        int middlePixelIndex = pixelCount / 2;
-        // Determine starting position for a small window around the middle
-        int startPixel = middlePixelIndex - 5; // 5 pixels before the middle
-        int endPixel = middlePixelIndex + 5;   // 5 pixels after the middle
-
-        // Make sure we don't go out of bounds
-        startPixel = Math.max(0, startPixel);
-        endPixel = Math.min(pixelCount - 1, endPixel);
-        int pixelsToPrint = endPixel - startPixel + 1;
-
-        Log.d(LOG_TAG, "Sample buffer size: " + sampleBuffer.capacity() +
-                ", Printing " + pixelsToPrint + " pixels from the middle region");
-
-        // Skip to the start position (each pixel is 4 bytes - RGBA)
-        sampleBuffer.position(startPixel * 4);
-*/
-/*
-        for (int i = 0; i < pixelsToPrint; i++) {
-            int pixelPos = startPixel + i;
-            // Read RGBA values for the pixel
-            byte r = sampleBuffer.get();
-            byte g = sampleBuffer.get();
-            byte b = sampleBuffer.get();
-            byte a = sampleBuffer.get();
-
-            // Convert to unsigned values (Java bytes are signed)
-            int rUnsigned = r & 0xFF;
-            int gUnsigned = g & 0xFF;
-            int bUnsigned = b & 0xFF;
-            int aUnsigned = a & 0xFF;
-
-            // Calculate the x,y position based on the pixel index
-            int x = pixelPos % viewportWidth;
-            int y = pixelPos / viewportWidth;
-
-            // For testing, force red color and full alpha
-            modifiedBuffer.put(i, (byte)255);  // R - force red
-            modifiedBuffer.put(i + 1, g);      // G - keep original
-            modifiedBuffer.put(i + 2, b);      // B - keep original
-            modifiedBuffer.put(i + 3, (byte)255);  // A - force full alpha
-
-            Log.d(LOG_TAG, "Pixel at (" + x + "," + y + "): R=" + rUnsigned +
-                    ", G=" + gUnsigned + ", B=" + bUnsigned + ", A=" + aUnsigned);
-
-
-        }
-       */
-        // Reset buffer position after printing
 
         sampleBuffer.rewind();
 
@@ -938,35 +912,15 @@ long lastSuccessfulFrameTime = 0;
                     GLES30.GL_UNSIGNED_BYTE,
                     sampleBuffer
             );
-}
 
-// Add this to processSmallSample
-  /*      ByteBuffer testPattern = ByteBuffer.allocateDirect(4 * 4 * 4); // 4x4 RGBA texture
-        testPattern.order(ByteOrder.nativeOrder());
-// Fill with bright red
-        for (int i = 0; i < 16; i++) {
-            testPattern.put((byte)255); // R
-            testPattern.put((byte)0);   // G
-            testPattern.put((byte)0);   // B
-            testPattern.put((byte)255); // A
-        }
-        testPattern.rewind();
-
-// Create a new test texture
-        int[] testTexId = new int[1];
-        GLES30.glGenTextures(1, testTexId, 0);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, testTexId[0]);
-        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, 4, 4, 0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, testPattern);
-
-
-*/
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-        // Check for errors
-        int error = GLES30.glGetError();
-        if (error != GLES30.GL_NO_ERROR) {
-            Log.e(LOG_TAG, "OpenGL error: 0x" + Integer.toHexString(error));
-        } else {
-            Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+            // Check for errors
+            int error = GLES30.glGetError();
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "OpenGL error: 0x" + Integer.toHexString(error));
+            } else {
+                Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
+            }
         }
     }
 
@@ -1000,12 +954,13 @@ long lastSuccessfulFrameTime = 0;
                 }
             }
 
+
             // In ARFilamentRenderer.processNodes
 // At the point where you're setting up the model position
             FilamentAsset asset = nodeAssetMap.get(node);
             if (asset == null) continue;
 
-           if (asset != null) {
+            if (asset != null) {
                 RenderableManager renderableManager = engine.getRenderableManager();
                 for (int entityId : asset.getEntities()) {
                     int instance = renderableManager.getInstance(entityId);
@@ -1017,61 +972,28 @@ long lastSuccessfulFrameTime = 0;
             }
 
 
-
-           /* float[] mvpMatrix = new float[16];
-            float[] modelMatrix = new float[16];
-            float[] modelViewMatrix = new float[16];
-
-            // Set up model matrix - identity for now since vertices are already positioned
-            Matrix.setIdentityM(modelMatrix, 0);
-
-            // Calculate the model-view matrix
-            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
-
-            // Calculate the model-view-projection matrix
-            Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
-
-// Apply scale
-            float scale = 2.0f; // Start with a more reasonable scale
-            float[] scaleMatrix = new float[16];
-            Matrix.setIdentityM(scaleMatrix, 0);
-            scaleMatrix[0] = scale;
-            scaleMatrix[5] = scale;
-            scaleMatrix[10] = scale;
-
-            float[] finalMatrix = new float[16];
-            float[] poseMatrix = new float[16];
-            Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
-
-*/
-
             // Use anchor pose if available
-            /*if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
-                node.Scale(50.0f);
-                node.Anchor().getPose().toMatrix(poseMatrix, 0);
+            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
+                node.Scale(2.0f);
+                //node.Anchor().getPose().toMatrix(poseMatrix, 0);
                 hasVisibleNodes = true;
-                Log.i(LOG_TAG, "drawing model at anchor pose: " + node.Model() + node.Anchor.getPose());
-            } else {*/
+                Log.i(LOG_TAG, "drawing model at anchor pose: " + node.Model() + node.Anchor().getPose());
+            } else {
                 // Use node position if no anchor or tracking lost
-                Log.i(LOG_TAG, "drawing model for at default pose: " + node.Model());
+                Log.i(LOG_TAG, "drawing model for at default pose: " + node.Anchor().getPose());
                 Pose defaultPose = null;
-                //if (node.Anchor() != null) {
-                //    defaultPose = node.Anchor().getPose();
-               // } else {
+                if (node.Anchor() != null) {
+                    defaultPose = node.Anchor().getPose();
+                } else {
                     defaultPose = new Pose(
                             new float[]{node.XPosition(), node.YPosition(), node.ZPosition()},
                             new float[]{0, 0, 0, 1} // Default quaternion
                     );
-               // }
-
+                }
                 hasVisibleNodes = true;
+            }
 
-
-                // Apply node transformations (scale, rotation)
-                //applyNodeTransformation(node, asset, poseMatrix);
-            //}
-
-
+           
         }
         return hasVisibleNodes;
     }
@@ -1099,6 +1021,7 @@ long lastSuccessfulFrameTime = 0;
             transformManager.setTransform(rootInstance, poseMatrix);
         }
     }
+
     public void setAnimationEnabled(boolean enabled) {
         this.animationEnabled = enabled;
     }
@@ -1107,20 +1030,23 @@ long lastSuccessfulFrameTime = 0;
      * Update animations for all assets
      */
     private void updateAnimations() {
-        boolean animationEnabled = false;
+       // boolean animationEnabled = false;
         if (!animationEnabled) return;
 
+        Log.i(LOG_TAG, "animating  ");
         // Update global animation time
         animationTime += 1.0f / 60.0f; // Assuming 60fps
 
         // Apply animation to each asset that has animations
         for (FilamentAsset asset : nodeAssetMap.values()) {
             if (asset != null && asset.getAnimator().getAnimationCount() > 0) {
+                Log.i(LOG_TAG, "node has animator " );
                 asset.getAnimator().applyAnimation(0, animationTime);
                 asset.getAnimator().updateBoneMatrices();
             }
         }
     }
+
 
     public void createVertexBufferObjWithData() {
 
@@ -1206,11 +1132,14 @@ long lastSuccessfulFrameTime = 0;
                     scene.addEntity(entityId);
                     entityIds.add(entityId);
                 }
-
             }
+
+            resourceLoader.loadResources(asset);
+            Log.d(LOG_TAG, "Resource loading completed successfully");
 
             // Only apply a default material if the model doesn't have its own
             if (asset.getMaterialInstances().length == 0) {
+                Log.d(LOG_TAG, "model doesn't have materials ");
                 MaterialInstance materialInstance = loadOrCreateMaterial();
                 materialInstance.setParameter("baseColor", 0.0f, 1.0f, 1.0f, 0.5f);
 
@@ -1221,15 +1150,15 @@ long lastSuccessfulFrameTime = 0;
                         for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
                             renderableManager.setMaterialInstanceAt(instance, i, materialInstance);
                         }
+                        renderableManager.setCulling(instance, false);
                     }
                 }
             }
 
-            Log.d(LOG_TAG, "Asset entity count: " + asset.getEntities().length);
+            // Check material instances after loading
+            MaterialInstance[] materials = asset.getMaterialInstances();
+            Log.d(LOG_TAG, "Model has " + materials.length + " material instances");
 
-            //Log.d(LOG_TAG, "Asset animation count: " + asset.getAnimator().getAnimationCount());
-            // Load all resources for the asset
-            resourceLoader.loadResources(asset);
 
             // Store mappings
             nodeAssetMap.put(node, asset);
@@ -1246,34 +1175,18 @@ long lastSuccessfulFrameTime = 0;
             float[] modelMatrix = new float[16];
             Matrix.setIdentityM(modelMatrix, 0);
 // Slightly negative Z to ensure it's in front of the camera
-            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -1.0f);
+            Matrix.translateM(modelMatrix, 0, 0.0f, -.5f, -1.0f);
 // Apply an appropriate scale for your model
-            Matrix.scaleM(modelMatrix, 0, 0.5f, 0.5f, 0.5f);
+            Matrix.scaleM(modelMatrix, 0, 0.3f, 0.3f, 0.3f);
             transformManager.setTransform(rootInstance, modelMatrix);
-            //updateAnimations();
 
-          /*  Log.d(LOG_TAG, "Setting up materials ");
-            // Basic material - simplest possible
-          /*  MaterialInstance materialInstance = loadOrCreateMaterial();
-            // Build renderable
-            materialInstance.setParameter("baseColor", 0.0f, 1.0f, 1.0f, .5f);
-            RenderableManager.Builder builder = new RenderableManager.Builder(1);
-            builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
-                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
-                    .material(0, materialInstance)
-                    .culling(false)
-                    .receiveShadows(false)
-                    .priority(1001)
-                    .castShadows(false)
-                    .build(engine, rootEntityId);
-*/
+            setAnimationEnabled(true);
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error loading model: " + modelFile, e);
             throw e;
         }
     }
-
-
 
     /**
      * Read an asset into a ByteBuffer
@@ -1296,47 +1209,6 @@ long lastSuccessfulFrameTime = 0;
         }
     }
 
-    /**
-     * Creates a loader for 3D model assets
-     */
-    public void loadAsset(ARNode node, String assetPath) {
-        try {
-            // Read the asset file
-            ByteBuffer buffer = readAsset(assetPath);
-
-            // Use the appropriate loading method based on file extension
-            FilamentAsset asset = null;
-
-            if (assetPath.toLowerCase().endsWith(".glb") || assetPath.toLowerCase().endsWith(".gltf")) {
-                // Load glTF/GLB model
-                asset = assetLoader.createAssetFromBinary(buffer);
-            } else {
-                Log.e(LOG_TAG, "Unsupported asset type: " + assetPath);
-                return;
-            }
-
-            if (asset == null) {
-                Log.e(LOG_TAG, "Failed to load asset: " + assetPath);
-                return;
-            }
-
-            // Initialize the resource loader and load resources
-            resourceLoader.loadResources(asset);
-
-            // Cache the asset for this node
-            nodeAssetMap.put(node, asset);
-
-            // Add all entities to the scene
-            EntityManager entityManager = EntityManager.get();
-            for (int entity : asset.getEntities()) {
-                scene.addEntity(entity);
-            }
-
-            Log.d(LOG_TAG, "Loaded asset: " + assetPath);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to load asset " + assetPath + ": " + e.getMessage(), e);
-        }
-    }
 
     /**
      * Clean up resources
