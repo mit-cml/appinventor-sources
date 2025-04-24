@@ -126,6 +126,31 @@ public class ARFilamentRenderer {
     private int quadEntity = 0;
 
 
+    VertexBuffer.Builder vbBuilder;
+    VertexBuffer vertexBufferObj;
+    VertexBuffer vertexBuffer;
+    // Create index buffer
+    short[] indices = {0, 1, 2, 2, 1, 3};
+    ShortBuffer indexBuffer;
+
+    IndexBuffer.Builder ibBuilder;
+    IndexBuffer indexBufferObj;
+
+    float[] quadVertices = {
+            -.5f, -.5f, -0.5f,  // bottom-left
+            .5f, -.5f, -0.5f,   // bottom-right
+            -.5f, .5f, -0.5f,   // top-left
+            .5f, .5f, -0.5f     // top-right
+    };
+
+    // Bright magenta color for all vertices
+    float[] quadColors = {
+            1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+            1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+            1.0f, 0.0f, 1.0f, 1.0f,  // magenta
+            1.0f, 0.0f, 1.0f, 1.0f   // magenta
+    };
+
 // In your initialization
 // ...
 
@@ -372,59 +397,9 @@ public class ARFilamentRenderer {
                     -1.0f, 1.0f, -1.0f,  // top-left
                     1.0f, 1.0f, -1.0f   // top-right
             };*/
-            float[] quadVertices = {
-                    -.5f, -.5f, -0.5f,  // bottom-left
-                    .5f, -.5f, -0.5f,   // bottom-right
-                    -.5f, .5f, -0.5f,   // top-left
-                    .5f, .5f, -0.5f     // top-right
-            };
 
-            // Bright magenta color for all vertices
-            float[] quadColors = {
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f,  // magenta
-                    1.0f, 0.0f, 1.0f, 1.0f   // magenta
-            };
 
-            // Create buffers
-            FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            vertexBuffer.put(quadVertices).position(0);
-
-            FloatBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
-                    .order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
-            colorBuffer.put(quadColors).position(0);
-
-            // Create vertex buffer
-            VertexBuffer.Builder vbBuilder = new VertexBuffer.Builder()
-                    .vertexCount(4)
-                    .bufferCount(2)
-                    .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                            VertexBuffer.AttributeType.FLOAT3, 0, 0)
-                    .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
-                            VertexBuffer.AttributeType.FLOAT4, 0, 0);
-
-            VertexBuffer vertexBufferObj = vbBuilder.build(engine);
-            //this.vb.setBufferAt(engine, 0, TRIANGLE_POSITIONS);
-            //this.vb.setBufferAt(engine, 1, TRIANGLE_COLORS);
-            vertexBufferObj.setBufferAt(engine, 0, vertexBuffer);
-            vertexBufferObj.setBufferAt(engine, 1, colorBuffer);
-
-            // Create index buffer
-            short[] indices = {0, 1, 2, 2, 1, 3};
-            ShortBuffer indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
-                    .order(ByteOrder.nativeOrder())
-                    .asShortBuffer();
-            indexBuffer.put(indices).position(0);
-
-            IndexBuffer.Builder ibBuilder = new IndexBuffer.Builder()
-                    .indexCount(6)
-                    .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-            IndexBuffer indexBufferObj = ibBuilder.build(engine);
-            indexBufferObj.setBuffer(engine, indexBuffer);
+            setupBuffers();
 
             // Basic material - simplest possible
             MaterialInstance materialInstance = loadOrCreateMaterial();
@@ -481,7 +456,8 @@ public class ARFilamentRenderer {
                     .bufferCount(1)
                     .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
                             VertexBuffer.AttributeType.FLOAT3, 0, 12);
-            VertexBuffer vertexBuffer = vbb.build(engine);
+
+            vertexBufferObj = vbb.build(engine);
 
             // Fill the vertex buffer
             ByteBuffer vertexData = ByteBuffer.allocateDirect(vertices.length * 4)
@@ -489,13 +465,14 @@ public class ARFilamentRenderer {
             FloatBuffer floatBuffer = vertexData.asFloatBuffer();
             floatBuffer.put(vertices);
             floatBuffer.flip();
-            vertexBuffer.setBufferAt(engine, 0, vertexData);
+
+            vertexBufferObj.setBufferAt(engine, 0, vertexData);
 
             // Create index buffer
             IndexBuffer.Builder ibb = new IndexBuffer.Builder()
                     .indexCount(3)
                     .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-            IndexBuffer indexBuffer = ibb.build(engine);
+            indexBufferObj = ibb.build(engine);
 
             // Fill the index buffer
             ByteBuffer indexData = ByteBuffer.allocateDirect(indices.length * 2)
@@ -503,12 +480,13 @@ public class ARFilamentRenderer {
             ShortBuffer shortBuffer = indexData.asShortBuffer();
             shortBuffer.put(indices);
             shortBuffer.flip();
-            indexBuffer.setBuffer(engine, indexData);
+
+            indexBufferObj.setBuffer(engine, indexData);
 
             // Add renderable component to the entity
             RenderableManager.Builder builder = new RenderableManager.Builder(1);
             builder
-                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
+                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
                     .material(0, materialInstance)
                     .boundingBox(new Box(-1.0f, -1.0f, -3.0f, 1.0f, 1.0f, -1.0f))
                     .culling(false)       // Disable culling to ensure visibility
@@ -643,12 +621,11 @@ public class ARFilamentRenderer {
 
 
                 // Explicitly position and orient the camera
-                camera.lookAt(
-                        0.0f, 0.0f, 0.0f,  // Eye position at origin
-                        0.0f, 0.0f, -1.0f, // Look directly down negative Z
-                        0.0f, 1.0f, 0.0f   // Up vector
-                );
-
+            camera.lookAt(
+                    0.0f, 0.0f, 2.0f,  // Eye position 2 units back
+                    0.0f, 0.0f, 0.0f,  // Look at origin
+                    0.0f, 1.0f, 0.0f   // Up vector
+            );
                 // Log camera position and orientation
                 float[] position = new float[3];
                 camera.getPosition(position);
@@ -887,9 +864,8 @@ long lastSuccessfulFrameTime = 0;
         Log.d(LOG_TAG, "Processing smallSample on UI thread");
 
         // Reset buffer position
-        sampleBuffer.rewind();
 
-        // Calculate the middle of the buffer
+     /*   // Calculate the middle of the buffer
         int middlePixelIndex = pixelCount / 2;
         // Determine starting position for a small window around the middle
         int startPixel = middlePixelIndex - 5; // 5 pixels before the middle
@@ -905,10 +881,8 @@ long lastSuccessfulFrameTime = 0;
 
         // Skip to the start position (each pixel is 4 bytes - RGBA)
         sampleBuffer.position(startPixel * 4);
-
-        ByteBuffer modifiedBuffer = ByteBuffer.allocateDirect(sampleBuffer.capacity());
-        modifiedBuffer.order(ByteOrder.nativeOrder());
-
+*/
+/*
         for (int i = 0; i < pixelsToPrint; i++) {
             int pixelPos = startPixel + i;
             // Read RGBA values for the pixel
@@ -935,9 +909,12 @@ long lastSuccessfulFrameTime = 0;
 
             Log.d(LOG_TAG, "Pixel at (" + x + "," + y + "): R=" + rUnsigned +
                     ", G=" + gUnsigned + ", B=" + bUnsigned + ", A=" + aUnsigned);
+
+
         }
+       */
         // Reset buffer position after printing
-        modifiedBuffer.rewind();
+
         sampleBuffer.rewind();
 
         // Bind the texture and push data to the target displayTexture
@@ -964,7 +941,7 @@ long lastSuccessfulFrameTime = 0;
 }
 
 // Add this to processSmallSample
-        ByteBuffer testPattern = ByteBuffer.allocateDirect(4 * 4 * 4); // 4x4 RGBA texture
+  /*      ByteBuffer testPattern = ByteBuffer.allocateDirect(4 * 4 * 4); // 4x4 RGBA texture
         testPattern.order(ByteOrder.nativeOrder());
 // Fill with bright red
         for (int i = 0; i < 16; i++) {
@@ -980,9 +957,10 @@ long lastSuccessfulFrameTime = 0;
         GLES30.glGenTextures(1, testTexId, 0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, testTexId[0]);
         GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, 4, 4, 0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, testPattern);
+
+
+*/
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-
-
         // Check for errors
         int error = GLES30.glGetError();
         if (error != GLES30.GL_NO_ERROR) {
@@ -1038,7 +1016,9 @@ long lastSuccessfulFrameTime = 0;
                 }
             }
 
-            float[] mvpMatrix = new float[16];
+
+
+           /* float[] mvpMatrix = new float[16];
             float[] modelMatrix = new float[16];
             float[] modelViewMatrix = new float[16];
 
@@ -1052,7 +1032,7 @@ long lastSuccessfulFrameTime = 0;
             Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
 
 // Apply scale
-            float scale = 3.0f; // Start with a more reasonable scale
+            float scale = 2.0f; // Start with a more reasonable scale
             float[] scaleMatrix = new float[16];
             Matrix.setIdentityM(scaleMatrix, 0);
             scaleMatrix[0] = scale;
@@ -1063,7 +1043,7 @@ long lastSuccessfulFrameTime = 0;
             float[] poseMatrix = new float[16];
             Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
 
-
+*/
 
             // Use anchor pose if available
             /*if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
@@ -1075,20 +1055,20 @@ long lastSuccessfulFrameTime = 0;
                 // Use node position if no anchor or tracking lost
                 Log.i(LOG_TAG, "drawing model for at default pose: " + node.Model());
                 Pose defaultPose = null;
-                if (node.Anchor() != null) {
-                    defaultPose = node.Anchor().getPose();
-                } else {
+                //if (node.Anchor() != null) {
+                //    defaultPose = node.Anchor().getPose();
+               // } else {
                     defaultPose = new Pose(
                             new float[]{node.XPosition(), node.YPosition(), node.ZPosition()},
                             new float[]{0, 0, 0, 1} // Default quaternion
                     );
-                }
+               // }
 
                 hasVisibleNodes = true;
 
 
                 // Apply node transformations (scale, rotation)
-                applyNodeTransformation(node, asset, poseMatrix);
+                //applyNodeTransformation(node, asset, poseMatrix);
             //}
 
 
@@ -1142,6 +1122,53 @@ long lastSuccessfulFrameTime = 0;
         }
     }
 
+    public void createVertexBufferObjWithData() {
+
+        ByteBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
+                .order(ByteOrder.nativeOrder());
+        FloatBuffer floatBuffer = vertexBuffer.asFloatBuffer();
+        floatBuffer.put(quadVertices).position(0);
+
+        ByteBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
+                .order(ByteOrder.nativeOrder());
+        FloatBuffer cFloatBuffer =colorBuffer.asFloatBuffer();
+        cFloatBuffer.put(quadColors).position(0);
+
+        vertexBufferObj = new VertexBuffer.Builder()
+                .vertexCount(3)  // Assuming 3 floats per position
+                .bufferCount(2)
+                .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                        VertexBuffer.AttributeType.FLOAT3, 0, 0)
+                .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
+                        VertexBuffer.AttributeType.FLOAT4, 0, 1)
+                .build(engine);
+
+
+        vertexBufferObj.setBufferAt(engine, 0, floatBuffer);
+        vertexBufferObj.setBufferAt(engine, 1, cFloatBuffer);
+
+    }
+
+    private void setupBuffers(){
+
+        createVertexBufferObjWithData();
+
+        // Create index buffer
+        indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
+                .order(ByteOrder.nativeOrder())
+                .asShortBuffer();
+        indexBuffer.put(indices).position(0);
+
+        ibBuilder = new IndexBuffer.Builder()
+                .indexCount(6)
+                .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+        indexBufferObj = ibBuilder.build(engine);
+
+        indexBufferObj.setBuffer(engine, indexBuffer);
+
+    }
+
+
     /**
      * Loads a model for a node
      */
@@ -1166,6 +1193,8 @@ long lastSuccessfulFrameTime = 0;
             // Track entity IDs for this asset
             List<Integer> entityIds = new ArrayList<>();
 
+            RenderableManager renderableManager = engine.getRenderableManager();
+
             // Add root and all renderable entities to scene
             int rootEntityId = asset.getRoot();
             scene.addEntity(rootEntityId);
@@ -1177,8 +1206,28 @@ long lastSuccessfulFrameTime = 0;
                     scene.addEntity(entityId);
                     entityIds.add(entityId);
                 }
+
             }
 
+            // Only apply a default material if the model doesn't have its own
+            if (asset.getMaterialInstances().length == 0) {
+                MaterialInstance materialInstance = loadOrCreateMaterial();
+                materialInstance.setParameter("baseColor", 0.0f, 1.0f, 1.0f, 0.5f);
+
+                // Apply to all entities in the model that need materials
+                for (int entityId : asset.getEntities()) {
+                    if (renderableManager.hasComponent(entityId)) {
+                        int instance = renderableManager.getInstance(entityId);
+                        for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
+                            renderableManager.setMaterialInstanceAt(instance, i, materialInstance);
+                        }
+                    }
+                }
+            }
+
+            Log.d(LOG_TAG, "Asset entity count: " + asset.getEntities().length);
+
+            //Log.d(LOG_TAG, "Asset animation count: " + asset.getAnimator().getAnimationCount());
             // Load all resources for the asset
             resourceLoader.loadResources(asset);
 
@@ -1190,7 +1239,34 @@ long lastSuccessfulFrameTime = 0;
                     " with " + entityIds.size() + " entities");
 
 
+            TransformManager transformManager = engine.getTransformManager();
+            int rootInstance = transformManager.getInstance(asset.getRoot());
 
+// Create a default transform that places the model at the origin
+            float[] modelMatrix = new float[16];
+            Matrix.setIdentityM(modelMatrix, 0);
+// Slightly negative Z to ensure it's in front of the camera
+            Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, -1.0f);
+// Apply an appropriate scale for your model
+            Matrix.scaleM(modelMatrix, 0, 0.5f, 0.5f, 0.5f);
+            transformManager.setTransform(rootInstance, modelMatrix);
+            //updateAnimations();
+
+          /*  Log.d(LOG_TAG, "Setting up materials ");
+            // Basic material - simplest possible
+          /*  MaterialInstance materialInstance = loadOrCreateMaterial();
+            // Build renderable
+            materialInstance.setParameter("baseColor", 0.0f, 1.0f, 1.0f, .5f);
+            RenderableManager.Builder builder = new RenderableManager.Builder(1);
+            builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
+                    .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
+                    .material(0, materialInstance)
+                    .culling(false)
+                    .receiveShadows(false)
+                    .priority(1001)
+                    .castShadows(false)
+                    .build(engine, rootEntityId);
+*/
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error loading model: " + modelFile, e);
             throw e;
