@@ -5,18 +5,20 @@
 
 package com.google.appinventor.components.runtime;
 
+import static com.google.appinventor.components.runtime.Component.CHART_VALUE_DECIMAL;
+
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 /**
  * Base class to represent Chart Data Models. The class (and subclasses)
@@ -102,6 +104,37 @@ public abstract class ChartDataModel<
     if (dataset instanceof DataSet) {
       ((DataSet<?>) dataset).setColors(colors);
     }
+  }
+
+  /**
+   *
+   * @param valueType indicates the type of values Decimal, Integer, Date
+   */
+  public void setChartValueType(final int valueType) {
+    //for rendering point labels as integers
+    dataset.setValueFormatter(new ValueFormatter() {
+      @Override
+      public String getFormattedValue(float value) {
+        if (valueType == CHART_VALUE_DECIMAL) {
+          return super.getFormattedValue(value);
+        }
+        //integer type
+        return "" + ((int) (value));
+      }
+    });
+    //for rendering x-axis labels as integers
+    if (view instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) view).setValueType(valueType);
+    }
+  }
+
+  /**
+   * Changes the color of the labels of the data set.
+   *
+   * @param argb new color
+   */
+  public void setDataLabelColor(int argb) {
+    data.setValueTextColor(argb);
   }
 
   /**

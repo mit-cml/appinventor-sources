@@ -5387,6 +5387,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Terrain map type")
   String mapTypeTerrain();
 
+  @DefaultMessage("Custom")
+  @Description("Custom map type")
+  String mapTypeCustom();
+
+  @DefaultMessage("CustomUrl")
+  @Description("The URL of the custom tile layer to use as the base of the map")
+  String mapCustomUrl();
+
   @DefaultMessage("Metric")
   @Description("Display name for the metric unit system")
   String mapScaleUnitsMetric();
@@ -5454,6 +5462,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("The value supplied for {0} was not a valid latitude, longitude pair.")
   @Description("")
   String expectedLatLongPair(String property);
+
+  @DefaultMessage("The provided URL {0} does not contain placeholders for {1}.") // Can't use {x} here, Java compiler tries to interpret the variable x
+  @Description("")
+  String customUrlNoPlaceholders(String property, String placeholders);
+
+  @DefaultMessage("The provided URL {0}, when tested, failed authentication (with HTTP status code {1}).")
+  @Description("")
+  String customUrlBadAuthentication(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned a bad HTTP status code ({1}).")
+  @Description("")
+  String customUrlBadStatusCode(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned an exception ({1}).")
+  @Description("")
+  String customUrlException(String property, String e);
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")
@@ -5633,21 +5657,25 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display Text for ListView layout choice having single text.")
   String singleTextLayout();
 
-  @DefaultMessage("MainText,DetailText(Vertical)")
+  @DefaultMessage("MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having two lines of text.")
   String twoTextLayout();
 
-  @DefaultMessage("MainText, DetailText(Horizontal)")
+  @DefaultMessage("MainText, DetailText (Horizontal)")
   @Description("Display Text for ListView layout choice having two lines of text in linear manner.")
   String twoTextLinearLayout();
 
-  @DefaultMessage("Image,MainText")
+  @DefaultMessage("Image, MainText")
   @Description("Display Text for ListView layout choice having an image and single line of text.")
   String imageSingleTextLayout();
 
-  @DefaultMessage("Image, MainText, DetailText(Vertical)")
+  @DefaultMessage("Image, MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having an image and two lines of text.")
   String imageTwoTextLayout();
+
+  @DefaultMessage("Image (Top), MainText, DetailText")
+  @Description("Display Text for ListView layout choice having an image on top and two lines of text.")
+  String imageTopTwoTextLayout();
 
   // File Scope choices
 
@@ -5744,4 +5772,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("You can always change your user interface under the Settings menu.")
   @Description("Dialog to introduce users to new UI. Shown once to each user.")
   String selectUIStyle();
+
+  @DefaultMessage("Integer")
+  @Description("Set x-axis label values as Integers")
+  String labelInteger();
+
+  @DefaultMessage("Decimal")
+  @Description("Set x-axis label values as Decimal")
+  String labelDecimal();
+
+  @DefaultMessage("Date")
+  @Description("Set x-axis label values Type as Date")
+  String labelDate();
+
+  @DefaultMessage("Time")
+  @Description("Set x-axis label values Type as Time")
+  String labelTime();
 }

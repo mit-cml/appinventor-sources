@@ -43,6 +43,10 @@ open class ChartDataModel: DataModel {
   func setLabel(_ text: String) {
     dataset?.label = text
   }
+  
+  func setDataLabelColor(_ argb: UIColor) {
+    dataset?.valueTextColor = argb
+  }
 
   func importFromList(_ list: [AnyObject]) {
     for entry in list {
