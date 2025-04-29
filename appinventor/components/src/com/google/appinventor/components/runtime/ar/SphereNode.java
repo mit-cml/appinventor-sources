@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -33,6 +34,7 @@ import android.util.Log;
 
   @SimpleObject
 
+@UsesAssets(fileNames = "sphere.obj,Palette.png")
   public final class SphereNode extends ARNodeBase implements ARSphere {
 
     private Anchor anchor = null;

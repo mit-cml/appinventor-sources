@@ -19,9 +19,7 @@ import android.util.Log;
  */
 @UsesAssets(fileNames = "background_show_camera.frag, background_show_camera.vert," +
         "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
-        "occlusion.frag, occlusion.vert, depth_color_palette.png," +
-        "point_cloud.frag, point_cloud.vert," +
-        "plane.frag, plane.vert, pawn_abledo.png")
+        "occlusion.frag, occlusion.vert, depth_color_palette.png")
 public class BackgroundRenderer {
     private static final String LOG_TAG = BackgroundRenderer.class.getSimpleName();
 

@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import android.opengl.Matrix;
 import android.util.Log;
 import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Renders an object loaded from an OBJ file in OpenGL. */
+@UsesAssets(fileNames = "ar_object.vert, ar_object.frag," +
+        "pawn_albedo.png, pawn.obj")
 public class ObjectRenderer {
   private static final String TAG = ObjectRenderer.class.getSimpleName();
 

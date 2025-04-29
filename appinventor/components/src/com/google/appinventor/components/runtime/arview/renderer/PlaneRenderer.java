@@ -1,5 +1,5 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-
+import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
 import com.google.ar.core.Camera;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Renders the detected AR planes. */
+@UsesAssets(fileNames = "plane.vert, plane.frag,trigrid.png")
 public class PlaneRenderer {
     private static final String TAG = PlaneRenderer.class.getSimpleName();
 
