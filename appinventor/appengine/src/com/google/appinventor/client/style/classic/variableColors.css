@@ -119,8 +119,9 @@ body {
 .ode-ProjectTable {
   background-color: v-white;
 }
+
 .ode-ProjectRowHighlighted {
-  background-color: project-background-color !important;
+  background-color: row-highlight !important;
 }
 
 .ode-ProjectRowUnHighlighted {
@@ -176,10 +177,6 @@ body {
   .ode-TopPanel {
   background-color: gray-100;
   background-image: linear-gradient(to bottom, gray-100, gray-50);
-  /*background-image: -moz-linear-gradient(top, gray-100, gray-50);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(gray-100), to(gray-50));
-  background-image: -webkit-linear-gradient(top, gray-100, gray-50);
-  background-image: -o-linear-gradient(top, gray-100, gray-50); */
   background-repeat: repeat-x;
   border: 1px solid gray-300;
   filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='srfc-high-emphasis', GradientType=0)";
@@ -324,51 +321,41 @@ body {
 
 .ya-Toolbar .ya-ProjectName {
   color: v-white;
-  text-shadow: 0 0 1px gray-800;
+  text-shadow: 0 0 1px gray-500;
 }
 
 .ode-TextButton,
 .gwt-Button {
   color: gray-800;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  background-color: gray-100;
-  /* *background-color: gray-300; */
-  background-image:linear-gradient(to bottom, v-white, gray-300);  
-  /* background-image:-moz-linear-gradient(top, v-white, gray-300);
-  background-image:-webkit-gradient(linear, 0 0, 0 100%, from(v-white), to(gray-300));
-  background-image:-webkit-linear-gradient(top, v-white, gray-300);
-  background-image:-o-linear-gradient(top, v-white, gray-300);*/
+  background-image:linear-gradient(to bottom, v-white, gray-300);
+  background-color:gray-300;
   background-repeat: repeat-x;
   border: 1px solid gray-300;
-  border-bottom-color: #b3b3b3;
-  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='background-color', endColorstr='#ffe6e6e6', GradientType=0)";
-  filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
+  border-bottom-color: gray-400;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;
-  /*-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px elevation-2;*/
 }
 
 .ode-TextButton-up-disabled,
 .gwt-Button-up-disabled {
   color: gray-800;
   background-color: gray-300;
-  /* *background-color: gray-300; */
   cursor: default;
   background-image: none;
   opacity: 0.65;
 }
 
-.ode-TextButton:hover,
-.gwt-Button:hover {
+.ode-TextButton-up-hovering,
+.gwt-Button-up-hovering {
   color: gray-800;
-  background-color: gray-300;
   /* *background-color: gray-300; */
+    background-color: gray-200;
+    /*background-image:linear-gradient(to bottom, gray-300, gray-300);*/
+    background-image: unset;
 }
 
 .ode-TextButton:active,
 .gwt-Button:active {
-  /* -webkit-box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2;
-  -moz-box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2; */
   box-shadow: inset 0 2px 4px elevation-16, 0 1px 2px elevation-2;
 }
 
@@ -395,17 +382,8 @@ body {
   color: v-white;
   text-shadow: 0 -1px 0 elevation-16;
   background-color: #faa732;
-  /* *background-color: blocks-designer-color; 
-  background-image: -moz-linear-gradient(top, #fbb450, blocks-designer-color);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(blocks-designer-color));
-  background-image: -webkit-linear-gradient(top, #fbb450, blocks-designer-color);
-  background-image: -o-linear-gradient(top, #fbb450, blocks-designer-color);*/
   background-image: linear-gradient(to bottom, #fbb450, blocks-designer-color);
   background-repeat: repeat-x; 
-  border-color: blocks-designer-color blocks-designer-color #ad6704;
-  border-color: elevation-2 elevation-2 elevation-16; 
-  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0)";
-  filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)";
 }
 
 .ode-BlocksDesignerButton:hover,
@@ -1053,11 +1031,6 @@ textarea::-webkit-input-placeholder {
 }
 /* more color */
 .paragraph-end-block {
-  /* background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,transparent),color-stop(100%,v-white));
-  background-image: -webkit-linear-gradient(left,transparent,v-white);
-  background-image: -moz-linear-gradient(left,transparent,v-white);
-  background-image: -ms-linear-gradient(left,transparent,v-white);
-  background-image: -o-linear-gradient(left,transparent,v-white); */
   background: linear-gradient(to right,transparent,v-white);
   filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='background-color')";
 }

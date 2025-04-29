@@ -921,13 +921,12 @@ div.StatusPanel {
   box-shadow: none;
 }
 
-.ode-TextButton:hover,
-.gwt-Button:hover {
+.ode-TextButton-up-hovering,
+.gwt-Button-up-hovering:hover {
   color: #333333;
   border-color: #e6e6e6 #e6e6e6 #bfbfbf;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   background-color: #e6e6e6;
-  *background-color: #d9d9d9;
   text-decoration: none;
   background-position: 0 -15px;
   -webkit-transition: background-position 0.1s linear;

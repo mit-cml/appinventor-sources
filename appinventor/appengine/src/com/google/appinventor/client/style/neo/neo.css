@@ -706,7 +706,6 @@ body {
 
 .ode-TextButton:hover,
 .gwt-Button:hover {
-  color: gray-900;
   background-color: #7d9d36;
   transition: background-position 0.1s linear;
 }
@@ -1504,6 +1503,12 @@ a.ode-ExtensionAnchor:hover {
   background-color: v-white;
   border: 1px solid v-black;
   box-shadow: 0 5px 10px v-black-shadow;
+}
+
+.gwt-PopupPanelGlass {
+    z-index: 1000;
+    background-color: v-black;
+    opacity: 0.3;
 }
 
 /*

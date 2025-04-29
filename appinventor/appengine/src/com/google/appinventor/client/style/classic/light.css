@@ -1,20 +1,14 @@
 @def logo-image                         url('static/images/codi-logo.svg');
 @def background-image                   url('static/images/squairy_light.png');
 @def closed-backpack                    url('../bloclyeditor/media/backpack-closed-copy.png');
-/* tab-bar-background-color */
 @def clr-primary-50 #f3f8e6;
-/* box-background-color */
 @def clr-primary-75 #f7f9f2;
-/* box-background, bar-color */
 @def clr-primary-200 #ccddb3;
 @def clr-primary #a4cf47;
-/* selected-color */
-/* @def clr-primary-600 #83b70f; */
 @def clr-primary-600 #8fc202;
-/* @def clr-primary-500 #93c619; */
 @def clr-primary-500 #eef2e0;
 
-@def clr-primary-700 #ceda91;
+@def clr-primary-700 #d2e0a6;
 
 /* destructive-action-hover  */
 @def error #ff6666;
@@ -24,13 +18,12 @@
 /* top-panel-background-image */
 @def gray-50 #fafafa;
 @def gray-75 #f3f3f3;
-/* should be gray-150? */
 /* top-panel-background-color, text-button-background */
 @def gray-100 #f5f5f5;
 @def gray-200 #eeeeee;
 /* border-color */
-@def gray-300 #e0e0e0;
-@def gray-400 #bdbdbd;
+@def gray-300 #e6e6e6;
+@def gray-400 #b3b3b3;
 @def gray-450 #a9a9a9;
 /* label-color  */
 @def gray-500 #9e9e9e;
@@ -79,4 +72,5 @@
 @def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
 @def navigationbarLandscape              url('static/images/navigationbarLandscape.png');
 
-@def project-background   url('static/images/toolbarBG.png');
+@def project-background                  url('static/images/toolbarBG.png');
+@def row-highlight                       #fff6c3;
