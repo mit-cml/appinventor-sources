@@ -195,7 +195,7 @@ public class QuadRenderer {
            calculateBillboardMatrix(anchorMatrix, viewMatrix);
 
             // Apply scale
-            //updateModelMatrix(modelMatrix, 1.0f);
+            updateModelMatrix(modelMatrix, 2.0f);
 
             // Calculate MVP matrix
 
@@ -224,27 +224,43 @@ public class QuadRenderer {
         // Create a clean model matrix starting with identity
         Matrix.setIdentityM(modelMatrix, 0);
 
-        // Extract camera position (using inverse of view matrix)
-        float[] cameraMatrix = new float[16];
-        Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
-        float cameraX = cameraMatrix[12];
-        float cameraY = cameraMatrix[13];
-        float cameraZ = cameraMatrix[14];
+        // There are two approaches for billboarding:
 
-        // Vector from anchor to camera (in XZ plane only for Y-up constraint)
-        float dirX = cameraX - anchorX;
-        float dirZ = cameraZ - anchorZ;
+        // APPROACH 1: FULL BILLBOARDING (always fully faces camera)
+        // Extract the rotation from the view matrix (excluding translation)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                // Take transpose of the rotation component of the view matrix
+                // (transpose of rotation matrix = inverse rotation)
+                modelMatrix[i*4+j] = viewMatrix[j*4+i];
+            }
+        }
 
-        // Calculate rotation around Y axis to face camera
-        float angle = (float) Math.toDegrees(Math.atan2(dirX, dirZ));
+        // APPROACH 2: Y-AXIS CONSTRAINED BILLBOARDING (only rotates around Y, stays upright)
+        // This is your current approach which works well for signs, trees, etc.
+    /*
+    // Extract camera position (using inverse of view matrix)
+    float[] cameraMatrix = new float[16];
+    Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
+    float cameraX = cameraMatrix[12];
+    float cameraY = cameraMatrix[13];
+    float cameraZ = cameraMatrix[14];
+
+    // Vector from anchor to camera (in XZ plane only for Y-up constraint)
+    float dirX = cameraX - anchorX;
+    float dirZ = cameraZ - anchorZ;
+
+    // Calculate rotation around Y axis to face camera
+    float angle = (float) Math.toDegrees(Math.atan2(dirX, dirZ));
+
+    // Apply rotation around Y axis to face camera in XZ plane
+    Matrix.rotateM(modelMatrix, 0, angle, 0, 1, 0);
+    */
 
         // Set position from anchor
         modelMatrix[12] = anchorX;
         modelMatrix[13] = anchorY;
         modelMatrix[14] = anchorZ;
-
-        // Apply rotation around Y axis to face camera in XZ plane
-        Matrix.rotateM(modelMatrix, 0, angle, 0, 1, 0);
     }
      /* Clean up resources when no longer needed.
      */
