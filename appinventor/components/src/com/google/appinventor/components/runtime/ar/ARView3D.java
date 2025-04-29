@@ -332,9 +332,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public List<ARNode> sort(List<ARNode> nodes, String[] nodeType) {
         List<ARNode> filteredNodes = nodes.stream()
                 .filter(n -> {
-                    if (n.Anchor() == null) {
-                        n.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
-                    }
                     // Check if any of the types match
                     boolean match = false;
                     for (String type : nodeType) {
@@ -349,6 +346,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 .collect(Collectors.toList());
         System.out.println("Filtered : " + filteredNodes);
         return filteredNodes;
+    }
+
+
+    // Filter ARNodes by type and ensure they have anchors
+    public void setDefaultPositions(List<ARNode> nodes) {
+        for (ARNode node: nodes){
+            if (node.Anchor() == null) {
+                // TBD handle if anchor is loaded from a db
+                node.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
+            }
+        }
     }
 
     @Override
@@ -433,6 +441,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             Log.d(LOG_TAG, "drawing, camera is not paused" );
 
+
+            setDefaultPositions(arNodes);
 
             String[] modelNodeType = new String[]{"ModelNode"};
             List<ARNode> modelNodes = sort(arNodes, modelNodeType);
@@ -559,12 +569,59 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
+    private Anchor defaultNodePosition(ARNode node, float[] viewMatrix) {
+
+            // Create a model matrix for initial placement
+            float[] modelMatrix = new float[16];
+            Matrix.setIdentityM(modelMatrix, 0);
+
+            // Get camera position from view matrix
+            float[] cameraPosition = new float[3];
+            float[] cameraMatrix = new float[16];
+            Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
+            cameraPosition[0] = cameraMatrix[12];
+            cameraPosition[1] = cameraMatrix[13];
+            cameraPosition[2] = cameraMatrix[14];
+
+            // Get camera forward direction
+            float[] forward = new float[3];
+            forward[0] = -viewMatrix[2];
+            forward[1] = -viewMatrix[6];
+            forward[2] = -viewMatrix[10];
+
+            // Place object 2 units in front of camera
+        //TODO random function so if more than one node, they are scattered
+            float distanceInFront = 2.0f;
+            float objectX = cameraPosition[0] + forward[0] * distanceInFront;
+            float objectY = cameraPosition[1] + forward[1] * distanceInFront;
+            float objectZ = cameraPosition[2] + forward[2] * distanceInFront;
+
+            // Set position in the model matrix
+            modelMatrix[12] = objectX;
+            modelMatrix[13] = objectY;
+            modelMatrix[14] = objectZ;
+
+            // Apply scaling
+            float nodeScale = node.Scale();
+            Matrix.scaleM(modelMatrix, 0, nodeScale, nodeScale, nodeScale);
+
+            // Create an anchor at this position
+            Anchor anchor = session.createAnchor(new Pose(
+                    new float[]{objectX, objectY, objectZ},
+                    new float[]{0, 0, 0, 1}  // Default orientation quaternion
+            ));
+
+            return anchor;
+    }
+
+
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
         float[] position = {0f, 0f, -1.5f};
-        float[] rotation = {0, 0, 0, 1};
+        float[] rotation = {0, 90, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i("creating default Anchor", defaultAnchor.toString());
+        Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
+
         return defaultAnchor;
     }
 

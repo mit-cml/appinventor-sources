@@ -40,6 +40,7 @@ import java.util.Collection;
   private Trackable trackable = null;
   private String texture = "pawn_albedo.png";
   private String objectModel = "pawn.obj";
+  private float scale = 1.0f;
 
     public CapsuleNode(final ARNodeContainer container) {
       super(container);
@@ -58,6 +59,13 @@ import java.util.Collection;
 
     @Override
     public void Trackable(Trackable t) { this.trackable = t;}
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
+    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
+            "sizing properties.  Values less than zero will be treated as their absolute value.")
+   public float Scale() {return this.scale;}
+
 
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",

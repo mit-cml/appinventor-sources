@@ -107,8 +107,7 @@ public class ARFilamentRenderer {
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
 
-    // Framebuffer for virtual scene
-    private ARFrameBuffer virtualSceneFramebuffer;
+    // target for virtual scene
     Texture filamentRenderTexture;
     RenderTarget filamentRenderTarget;
     private int displayTextureId = -1;
@@ -266,10 +265,19 @@ public class ARFilamentRenderer {
             cameraEntity = EntityManager.get().create();
             camera = engine.createCamera(cameraEntity);
 
+
             // Create view
             view = engine.createView();
 
+            // Explicitly position and orient the camera
+            camera.lookAt(
+                    0.0f, 0.0f, 2.0f,  // Eye position 2 units back
+                    0.0f, 0.0f, 0.0f,  // Look at origin
+                    0.0f, 1.0f, 0.0f   // Up vector
+            );
+
             view.setCamera(camera);
+
 
             //colorEntity = createSimpleColorEntity();
 
@@ -325,7 +333,7 @@ public class ARFilamentRenderer {
 
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
         lightBuilder.color(1.0f, 1.0f, 0.8f)    // Slightly warm sunlight color
-                .intensity(10000.0f)           // Bright sunlight
+                .intensity(80000.0f)           // Bright sunlight
                 .direction(0.0f, -1.0f, 0.0f)  // Coming from above and slightly in front
                 .castShadows(true);
 
@@ -395,7 +403,7 @@ public class ARFilamentRenderer {
             // Basic material - simplest possible
             MaterialInstance materialInstance = loadOrCreateMaterial();
             // Build renderable
-            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, .5f); // Bright green
+            materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, 1.0f); // yellow
             RenderableManager.Builder builder = new RenderableManager.Builder(1);
             builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
                     .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
@@ -579,8 +587,7 @@ public class ARFilamentRenderer {
         }
 
         try {
-            // ARCore's viewMatrix is already a view matrix (camera pose inverse)
-            // We need to invert it to get the camera's world position
+            //invert view matrix to get the camera's world position
             float[] cameraModelMatrix = new float[16];
             Matrix.invertM(cameraModelMatrix, 0, viewMatrix, 0);
 
@@ -589,19 +596,8 @@ public class ARFilamentRenderer {
             int cameraInstance = transformManager.getInstance(cameraEntity);
             transformManager.setTransform(cameraInstance, cameraModelMatrix);
 
-            // Extract FOV from ARCore's projection matrix
             double fovY = 2.0 * Math.toDegrees(Math.atan(1.0 / projectionMatrix[5]));
 
-           /* camera.setProjection(Camera.Projection.ORTHOGRAPHIC,
-                    -1.0f, 1.0f,   // left, right
-                    -1.0f, 1.0f,   // bottom, top
-                    0.1f, 10.0f);  // near, far
-*/
-// Position the camera to see objects at the origin
-
-
-           // view.setCamera(camera);
-            // Set the camera projection
             camera.setProjection(
                     (double) 120.0,                   // vertical field of view
                     (double) viewportWidth / viewportHeight,  // aspect ratio
@@ -610,22 +606,15 @@ public class ARFilamentRenderer {
                     Camera.Fov.VERTICAL
             );
 
+            // Log camera position and orientation
+            float[] position = new float[3];
+            camera.getPosition(position);
+            Log.d(LOG_TAG, "Camera position: " + Arrays.toString(position));
 
-                // Explicitly position and orient the camera
-            camera.lookAt(
-                    0.0f, 0.0f, 2.0f,  // Eye position 2 units back
-                    0.0f, 0.0f, 0.0f,  // Look at origin
-                    0.0f, 1.0f, 0.0f   // Up vector
-            );
-                // Log camera position and orientation
-                float[] position = new float[3];
-                camera.getPosition(position);
-                Log.d(LOG_TAG, "Camera position: " + Arrays.toString(position));
-
-                // Log camera projection details
-                double[] projMatrix = new double[16];
-                camera.getProjectionMatrix(projMatrix);
-                Log.d(LOG_TAG, "Projection matrix: " + Arrays.toString(projMatrix));
+            // Log camera projection details
+            double[] projMatrix = new double[16];
+            camera.getProjectionMatrix(projMatrix);
+            Log.d(LOG_TAG, "Projection matrix: " + Arrays.toString(projMatrix));
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error updating camera: " + e.getMessage(), e);
@@ -644,11 +633,10 @@ public class ARFilamentRenderer {
         try {
             // Prevent rapid, repeated frame attempts
             long currentTime = System.currentTimeMillis();
-            Log.d(LOG_TAG, "ARFilamentRenderer.draw called with displayTextureId: " + displayTextureId);
 
-            // Introduce a minimum frame interval (e.g., 16ms for ~60 FPS)
             final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
-/*t throttling */
+
+            /*throttling */
             // Track last successful frame time
             if (lastSuccessfulFrameTime > 0 &&
                     (currentTime - lastSuccessfulFrameTime) < MINIMUM_FRAME_INTERVAL) {
@@ -662,65 +650,16 @@ public class ARFilamentRenderer {
             // Update camera and view
             updateCameraFromARCore(viewMatrix, projectionMatrix);
 
-            // Ensure triangle is in the scene
-           /* if (simpleTriangleEntity == 0) {
-                createDummyTriangeWithMaterialEntity();
-            }*/
-            if (simpleTriangleEntity == 0) {
-                //createDummyTriangeWithMaterialEntity();
-            }
 
-            if (quadEntity == 0){
-// In your draw method, before rendering
-                TransformManager transformManager = engine.getTransformManager();
-                int quadInstance = transformManager.getInstance(quadEntity);
-
-// Get the camera position and orientation
-                float[] cameraPos = new float[3];
-                camera.getPosition(cameraPos);
-
-// Create a billboard matrix for the quad
-                float[] quadMatrix = new float[16];
-                Matrix.setIdentityM(quadMatrix, 0);
-
-// Position the quad where you want it
-                Matrix.translateM(quadMatrix, 0, 0.0f, 0.0f, -1.0f);  // Put it in front of camera
-
-// Extract rotation from view matrix to make it face camera
-// But only use the camera's rotation around Y-axis (for traditional billboard)
-
-                camera.getViewMatrix(viewMatrix);
-
-// Clear the rotation components but keep position
-                quadMatrix[0] = 1.0f;  // Remove X rotation
-                quadMatrix[1] = 0.0f;
-                quadMatrix[2] = 0.0f;
-
-                quadMatrix[4] = 0.0f;
-                quadMatrix[5] = 1.0f;  // Remove Y rotation
-                quadMatrix[6] = 0.0f;
-
-                quadMatrix[8] = 0.0f;
-                quadMatrix[9] = 0.0f;
-                quadMatrix[10] = 1.0f; // Remove Z rotation
-
-// Apply the transform
-                transformManager.setTransform(quadInstance, quadMatrix);
-
-                createQuadTargetEntity();
-
-            }
             Log.d(LOG_TAG, "about to draw quad with" + filamentRenderTarget);
             if (nodes.size() > 0){
                processNodes(nodes, viewMatrix, projectionMatrix);
 
             }
 
-            // Explicit render target and view configuration
             view.setScene(scene);
             view.setRenderTarget(filamentRenderTarget);
             view.setBlendMode(View.BlendMode.TRANSLUCENT);
-            //view.setBlendMode(View.BlendMode.OPAQUE);
 
             Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
             clearOptions.clear = true;
@@ -924,6 +863,8 @@ private void handleRenderableBufferRead() {
         }
     }
 
+
+
     /**
      * Process all ARNodes for rendering
      *
@@ -954,9 +895,6 @@ private void handleRenderableBufferRead() {
                 }
             }
 
-
-            // In ARFilamentRenderer.processNodes
-// At the point where you're setting up the model position
             FilamentAsset asset = nodeAssetMap.get(node);
             if (asset == null) continue;
 
@@ -973,53 +911,53 @@ private void handleRenderableBufferRead() {
 
 
             // Use anchor pose if available
-            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
-                node.Scale(2.0f);
+            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING){
                 //node.Anchor().getPose().toMatrix(poseMatrix, 0);
                 hasVisibleNodes = true;
-                Log.i(LOG_TAG, "drawing model at anchor pose: " + node.Model() + node.Anchor().getPose());
+
+                Log.i(LOG_TAG, "process anchor with pose: " + node.Anchor().getPose() + " "+ node.Anchor().getPose().getTranslation());
             } else {
                 // Use node position if no anchor or tracking lost
-                Log.i(LOG_TAG, "drawing model for at default pose: " + node.Anchor().getPose());
-                Pose defaultPose = null;
-                if (node.Anchor() != null) {
-                    defaultPose = node.Anchor().getPose();
-                } else {
-                    defaultPose = new Pose(
-                            new float[]{node.XPosition(), node.YPosition(), node.ZPosition()},
-                            new float[]{0, 0, 0, 1} // Default quaternion
-                    );
-                }
+                    Log.i(LOG_TAG, "surprise, this shouldn't happen");
+
                 hasVisibleNodes = true;
             }
-
-           
+            applyNodeTransformation(node, asset, viewMatrix);
         }
         return hasVisibleNodes;
     }
     /**
      * Apply node-specific transformations
      */
-    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] poseMatrix) {
+    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] viewMatrix) {
         TransformManager transformManager = engine.getTransformManager();
         int rootEntityId = asset.getRoot();
         int rootInstance = transformManager.getInstance(rootEntityId);
 
-        // Apply scale
-        float scale = 10.0f; //node.Scale();
-        if (scale != 1.0f) {
-            float[] scaleMatrix = new float[16];
-            Matrix.setIdentityM(scaleMatrix, 0);
-            scaleMatrix[0] = scale;
-            scaleMatrix[5] = scale;
-            scaleMatrix[10] = scale;
+        // Create a model matrix with identity (no rotation)
+        float[] modelMatrix = new float[16];
+        Matrix.setIdentityM(modelMatrix, 0);
 
-            float[] finalMatrix = new float[16];
-            Matrix.multiplyMM(finalMatrix, 0, poseMatrix, 0, scaleMatrix, 0);
-            transformManager.setTransform(rootInstance, finalMatrix);
-        } else {
-            transformManager.setTransform(rootInstance, poseMatrix);
-        }
+        // Apply a fixed rotation if needed to orient the model correctly
+        // Uncomment and adjust this if needed:
+        // Matrix.rotateM(modelMatrix, 0, 180, 0, 1, 0);
+        Matrix.rotateM(modelMatrix, 0, 0, 0, 1, 0);  // No rotation (identity)
+        // Get the anchor's position in world space - this stays fixed
+        Pose anchorPose = node.Anchor().getPose();
+        float[] position = anchorPose.getTranslation();
+
+        // Set the world position from the anchor
+        modelMatrix[12] = position[0];
+        modelMatrix[13] = position[1];
+        modelMatrix[14] = position[2];
+
+
+
+        // Apply scale
+        float scale = .2f; // node.Scale();
+        Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
+
+        transformManager.setTransform(rootInstance, modelMatrix);
     }
 
     public void setAnimationEnabled(boolean enabled) {
@@ -1047,52 +985,6 @@ private void handleRenderableBufferRead() {
         }
     }
 
-
-    public void createVertexBufferObjWithData() {
-
-        ByteBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
-                .order(ByteOrder.nativeOrder());
-        FloatBuffer floatBuffer = vertexBuffer.asFloatBuffer();
-        floatBuffer.put(quadVertices).position(0);
-
-        ByteBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
-                .order(ByteOrder.nativeOrder());
-        FloatBuffer cFloatBuffer =colorBuffer.asFloatBuffer();
-        cFloatBuffer.put(quadColors).position(0);
-
-        vertexBufferObj = new VertexBuffer.Builder()
-                .vertexCount(3)  // Assuming 3 floats per position
-                .bufferCount(2)
-                .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
-                        VertexBuffer.AttributeType.FLOAT3, 0, 0)
-                .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
-                        VertexBuffer.AttributeType.FLOAT4, 0, 1)
-                .build(engine);
-
-
-        vertexBufferObj.setBufferAt(engine, 0, floatBuffer);
-        vertexBufferObj.setBufferAt(engine, 1, cFloatBuffer);
-
-    }
-
-    private void setupBuffers(){
-
-        createVertexBufferObjWithData();
-
-        // Create index buffer
-        indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer();
-        indexBuffer.put(indices).position(0);
-
-        ibBuilder = new IndexBuffer.Builder()
-                .indexCount(6)
-                .bufferType(IndexBuffer.Builder.IndexType.USHORT);
-        indexBufferObj = ibBuilder.build(engine);
-
-        indexBufferObj.setBuffer(engine, indexBuffer);
-
-    }
 
 
     /**
@@ -1127,12 +1019,14 @@ private void handleRenderableBufferRead() {
             entityIds.add(rootEntityId);
             Log.d(LOG_TAG, "  root Entity ID: " + rootEntityId);
             for (int entityId : asset.getEntities()) {
-                Log.d(LOG_TAG, "  Entity ID: " + entityId);
+                //Log.d(LOG_TAG, "  Entity ID: " + entityId);
                 if (entityId != rootEntityId) {
                     scene.addEntity(entityId);
                     entityIds.add(entityId);
                 }
             }
+
+            setAnimationEnabled(true);
 
             resourceLoader.loadResources(asset);
             Log.d(LOG_TAG, "Resource loading completed successfully");
@@ -1168,25 +1062,54 @@ private void handleRenderableBufferRead() {
                     " with " + entityIds.size() + " entities");
 
 
-            TransformManager transformManager = engine.getTransformManager();
-            int rootInstance = transformManager.getInstance(asset.getRoot());
-
-// Create a default transform that places the model at the origin
-            float[] modelMatrix = new float[16];
-            Matrix.setIdentityM(modelMatrix, 0);
-// Slightly negative Z to ensure it's in front of the camera
-            Matrix.translateM(modelMatrix, 0, 0.0f, -.5f, -1.0f);
-// Apply an appropriate scale for your model
-            Matrix.scaleM(modelMatrix, 0, 0.3f, 0.3f, 0.3f);
-            transformManager.setTransform(rootInstance, modelMatrix);
-
-            setAnimationEnabled(true);
-
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error loading model: " + modelFile, e);
             throw e;
         }
     }
+
+
+    public void createVertexBufferObjWithData() {
+
+        ByteBuffer vertexBuffer = ByteBuffer.allocateDirect(quadVertices.length * 4)
+                .order(ByteOrder.nativeOrder());
+        FloatBuffer floatBuffer = vertexBuffer.asFloatBuffer();
+        floatBuffer.put(quadVertices).position(0);
+
+        ByteBuffer colorBuffer = ByteBuffer.allocateDirect(quadColors.length * 4)
+                .order(ByteOrder.nativeOrder());
+        FloatBuffer cFloatBuffer =colorBuffer.asFloatBuffer();
+        cFloatBuffer.put(quadColors).position(0);
+
+        vertexBufferObj = new VertexBuffer.Builder()
+                .vertexCount(3)  // Assuming 3 floats per position
+                .bufferCount(2)
+                .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
+                        VertexBuffer.AttributeType.FLOAT3, 0, 0)
+                .attribute(VertexBuffer.VertexAttribute.COLOR, 1,
+                        VertexBuffer.AttributeType.FLOAT4, 0, 1)
+                .build(engine);
+
+        vertexBufferObj.setBufferAt(engine, 0, floatBuffer);
+        vertexBufferObj.setBufferAt(engine, 1, cFloatBuffer);
+    }
+
+    private void setupBuffers(){
+
+        createVertexBufferObjWithData();
+
+        indexBuffer = ByteBuffer.allocateDirect(indices.length * 2)
+                .order(ByteOrder.nativeOrder())
+                .asShortBuffer();
+        indexBuffer.put(indices).position(0);
+
+        ibBuilder = new IndexBuffer.Builder()
+                .indexCount(6)
+                .bufferType(IndexBuffer.Builder.IndexType.USHORT);
+        indexBufferObj = ibBuilder.build(engine);
+        indexBufferObj.setBuffer(engine, indexBuffer);
+    }
+
 
     /**
      * Read an asset into a ByteBuffer
@@ -1216,12 +1139,6 @@ private void handleRenderableBufferRead() {
     public void destroy() {
         if (engine != null) {
             Log.d(LOG_TAG, "Destroying Filament resources");
-
-            // Clean up virtual scene framebuffer
-            if (virtualSceneFramebuffer != null) {
-                virtualSceneFramebuffer.release();
-                virtualSceneFramebuffer = null;
-            }
 
             // Destroy assets
             for (FilamentAsset asset : nodeAssetMap.values()) {
