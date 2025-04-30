@@ -507,7 +507,6 @@ open class Notifier: NonvisibleComponent {
       }
       AfterChoosing(choice)
     }
-    //promoteNextAlert()
   }
 
   @objc fileprivate func cancelChoosing(sender: UIButton) {
