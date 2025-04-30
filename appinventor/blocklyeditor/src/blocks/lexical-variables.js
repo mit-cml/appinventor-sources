@@ -191,54 +191,6 @@ Blockly.Blocks['lexical_variable_get'] = {
     }
     return [[blocksToRename, capturables]];
   },
-  referenceResults: function(name, prefix, env) {
-    const childrensReferenceResults = this.getChildren().map(function(blk) {
-      return Blockly.LexicalVariable.referenceResult(blk, name, prefix, env);
-    });
-    let blocksToRename = [];
-    let capturables = [];
-    for (let r = 0; r < childrensReferenceResults.length; r++) {
-      blocksToRename = blocksToRename.concat(childrensReferenceResults[r][0]);
-      capturables = capturables.concat(childrensReferenceResults[r][1]);
-    }
-    const possiblyPrefixedReferenceName = this.getField('VAR').getValue();
-    const unprefixedPair = Blockly.unprefixName(possiblyPrefixedReferenceName);
-    const referencePrefix = unprefixedPair[0];
-    const referenceName = unprefixedPair[1];
-    const referenceNotInEnv = ((Blockly.usePrefixInCode &&
-            (env.indexOf(possiblyPrefixedReferenceName) == -1)) ||
-        ((!Blockly.usePrefixInCode) && (env.indexOf(referenceName) == -1)));
-    if (!(referencePrefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX)) {
-      if ((referenceName === name) && referenceNotInEnv) {
-        // if referenceName refers to name and not some intervening
-        // declaration, it's a reference to be renamed:
-        blocksToRename.push(this);
-        // Any intervening declared name with the same prefix as the searched
-        // for name can be captured:
-        if (Blockly.usePrefixInCode) {
-          for (let i = 0; i < env.length; i++) {
-            // env is a list of prefixed names.
-            const unprefixedEntry = Blockly.unprefixName(env[i]);
-            if (prefix === unprefixedEntry[0]) {
-              capturables.push(unprefixedEntry[1]);
-            }
-          }
-        } else { // Blockly.usePrefixInCode
-          capturables = capturables.concat(env);
-        }
-      } else if (referenceNotInEnv &&
-          (!Blockly.usePrefixInCode || prefix === referencePrefix)) {
-        // If reference is not in environment, it's externally declared and
-        // capturable When Blockly.usePrefixInYail is true, only consider names
-        // with same prefix to be capturable
-        capturables.push(referenceName);
-      }
-    }
-    if (this.eventparam) {  // also capture untranslated param names
-      capturables.push(this.eventparam);
-    }
-    return [[blocksToRename, capturables]];
-  },
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },

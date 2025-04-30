@@ -25,16 +25,13 @@ goog.require('AI.Blockly.ComponentDatabase');
 goog.require('AI.Blockly.CustomizableConnectionChecker');
 goog.require('AI.Blockly.Drawer');
 goog.require('AI.Blockly.ExportBlocksImage');
-goog.require('AI.Blockly.ConnectionDB');
 goog.require('AI.Blockly.Drawer');
 goog.require('AI.Blockly.ExportBlocksImage');
-goog.require('AI.Blockly.Field');
 goog.require('AI.Blockly.Flydown');
 goog.require('AI.Blockly.ProcedureDatabase');
 goog.require('AI.Blockly.ReplMgr');
 goog.require('AI.Blockly.TypeBlock');
 goog.require('AI.Blockly.VariableDatabase');
-goog.require('AI.Blockly.Warning');
 goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
 
