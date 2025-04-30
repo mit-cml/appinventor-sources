@@ -131,12 +131,56 @@
 <p>Table of Contents:</p>
 
 <ul>
+  <li><a href="#AbsoluteArrangement">AbsoluteArrangement</a></li>
   <li><a href="#HorizontalArrangement">HorizontalArrangement</a></li>
   <li><a href="#HorizontalScrollArrangement">HorizontalScrollArrangement</a></li>
   <li><a href="#TableArrangement">TableArrangement</a></li>
   <li><a href="#VerticalArrangement">VerticalArrangement</a></li>
   <li><a href="#VerticalScrollArrangement">VerticalScrollArrangement</a></li>
 </ul>
+
+<h2 id="AbsoluteArrangement">AbsoluteArrangement</h2>
+
+<p>Container for components that arranges them absolutely.</p>
+
+<h3 id="AbsoluteArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="AbsoluteArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the button’s background color as an alpha-red-green-blue integer.
+ If the parameter is <a href="#Component.COLOR"><code class="highlighter-rouge">Component</code>’s <code class="highlighter-rouge">COLOR</code></a>, the original beveling is
+ restored. If an Image has been set, the color change will not be visible
+ until the Image is removed.</dd>
+  <dt id="AbsoluteArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">AbsoluteArrangement</code>’s vertical height, measured in pixels.</dd>
+  <dt id="AbsoluteArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">AbsoluteArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="AbsoluteArrangement.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the button’s image.</dd>
+  <dt id="AbsoluteArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="AbsoluteArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="AbsoluteArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">AbsoluteArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">AbsoluteArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="AbsoluteArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">AbsoluteArrangement</code>, measured in pixels.</dd>
+  <dt id="AbsoluteArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">AbsoluteArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="AbsoluteArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="AbsoluteArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
 
 <h2 id="HorizontalArrangement">HorizontalArrangement</h2>
 
@@ -191,6 +235,12 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="HorizontalArrangement.Image" class="text"><em>Image</em></dt>
   <dd>Specifies the path of the background image of the <code class="highlighter-rouge">HorizontalArrangement</code>.</dd>
+  <dt id="HorizontalArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="HorizontalArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="HorizontalArrangement.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">HorizontalArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">HorizontalArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -239,6 +289,12 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="HorizontalScrollArrangement.Image" class="text"><em>Image</em></dt>
   <dd>Specifies the path of the background image of the <code class="highlighter-rouge">HorizontalScrollArrangement</code>.</dd>
+  <dt id="HorizontalScrollArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="HorizontalScrollArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="HorizontalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">HorizontalScrollArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">HorizontalScrollArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -290,8 +346,14 @@
   <dt id="TableArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">TableArrangement</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="TableArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="TableArrangement.Rows" class="number do"><em>Rows</em></dt>
   <dd>Determines the number of rows in the table.</dd>
+  <dt id="TableArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="TableArrangement.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">TableArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">TableArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -363,6 +425,12 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="VerticalArrangement.Image" class="text"><em>Image</em></dt>
   <dd>Specifies the path of the background image of the <code class="highlighter-rouge">VerticalArrangement</code>.</dd>
+  <dt id="VerticalArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="VerticalArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="VerticalArrangement.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">VerticalArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">VerticalArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -411,6 +479,12 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="VerticalScrollArrangement.Image" class="text"><em>Image</em></dt>
   <dd>Specifies the path of the background image of the <code class="highlighter-rouge">VerticalScrollArrangement</code>.</dd>
+  <dt id="VerticalScrollArrangement.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="VerticalScrollArrangement.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="VerticalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">VerticalScrollArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">VerticalScrollArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>

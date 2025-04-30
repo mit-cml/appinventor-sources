@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2016 MIT, All rights reserved
+// Copyright © 2013-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -279,6 +279,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     var typeName = instanceRecord.typeName;
     var instanceName = instanceRecord.name;
     var xmlUtils = Blockly.Util.xml;
+    var parent = Blockly.common.getMainWorkspace().getComponentDatabase().getContainer(
+      Blockly.common.getMainWorkspace().formName, instanceName);
+    var freePosition = parent && parent.typeName == 'AbsoluteArrangement';
 
     /**
      * Adds the feature's helper key to the list of HelperKeys if the key is
@@ -360,6 +363,10 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     // Create getter and setter blocks.
     goog.object.forEach(componentInfo.properties, function (property, name) {
       if (property.deprecated) {
+        return;
+      }
+
+      if ((name == 'Left' || name == 'Top') && !freePosition) {
         return;
       }
 

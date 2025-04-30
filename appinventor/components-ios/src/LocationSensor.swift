@@ -191,29 +191,83 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   }
 
   @objc open func LatitudeFromAddress(_ addressStr: String) -> Double {
-    var latitude = LocationSensor.UNKNOWN_VALUE
-    geocoder.geocodeAddressString(addressStr) { placemarks, error in
-      guard let placemarks = placemarks, let location = placemarks.first?.location else {
-        return
-      }
-      latitude = location.coordinate.latitude
+    guard let form = _form else {
+      return LocationSensor.UNKNOWN_VALUE
     }
-    return latitude
+    if form.isRepl {
+      form.dispatchErrorOccurredEvent(self, "LatitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR, "Use Geocode instead")
+    }
+    return LocationSensor.UNKNOWN_VALUE
   }
 
   @objc open func LongitudeFromAddress(_ addressStr: String) -> Double {
-    var longitude = LocationSensor.UNKNOWN_VALUE
-    geocoder.geocodeAddressString(addressStr) { placemarks, error in
-      guard let placemarks = placemarks, let location = placemarks.first?.location else {
+    guard let form = _form else {
+      return LocationSensor.UNKNOWN_VALUE
+    }
+    if form.isRepl {
+      form.dispatchErrorOccurredEvent(self, "LongitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR, "Use Geocode instead")
+    }
+    return LocationSensor.UNKNOWN_VALUE
+  }
+  
+  @objc open func Geocode(_ address: String) {
+    // Perform geocoding asynchronously
+    geocoder.geocodeAddressString(address) { [self] placemarks, error in
+      if let error = error {
+        print("Error geocoding address: \(error.localizedDescription)")
+        // Trigger the GotLocation event with default/fallback values
+        self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
         return
       }
-      longitude = location.coordinate.longitude
+
+      guard let location = placemarks?.first?.location else {
+        // Trigger the GotLocation event with default/fallback values
+        self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
+        return
+      }
+
+      // Extract latitude and longitude
+      let latitude = location.coordinate.latitude
+      let longitude = location.coordinate.longitude
+
+      // Trigger the GotLocation event with the obtained coordinates
+      self.GotLocationFromAddress(address, latitude, longitude)
     }
-    return longitude
   }
 
-  // TODO: update handling of CurrentAddress following update to Android's handling of CurrentAddress
-  //       currentAddress should be a function and not a property
+  @objc open func GotLocationFromAddress(_ address: String, _ latitude: Double, _ longitude: Double) {
+    EventDispatcher.dispatchEvent(of: self, called: "GotLocationFromAddress", arguments: address as NSString,
+                                  latitude as NSNumber, longitude as NSNumber)
+  }
+  
+  @objc open func ReverseGeocode(_ latitude: Double, _ longitude: Double) {
+    var address = "No Address Available"
+    let location = CLLocation(latitude: latitude, longitude: longitude)
+    if -90...90 ~= location.coordinate.latitude && -180...180 ~= location.coordinate.longitude {
+      self.geocoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
+        if let error = error {
+          self._form?.dispatchErrorOccurredEvent(self, "ReverseGeocode",
+              Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
+              error.localizedDescription)
+          return
+        } else if let placemarks = placemarks {
+          guard let placemark = placemarks.first else {
+            // do something here too --> Placemark was nil
+            return
+          }
+          let postalAddress = CNMutablePostalAddress(placemark: placemark)
+          let addressStr = CNPostalAddressFormatter().string(from: postalAddress)
+          address = addressStr.isEmpty ? address : addressStr
+          self.GotAddress(address)
+        }
+      })
+    }
+  }
+  
+  @objc open func GotAddress(_ address: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "GotAddress", arguments: address as NSString)
+  }
+
   fileprivate func getAddressFromLocation (location: CLLocation?) -> String {
     var address = "No Address Available"
     guard let location = location else {

@@ -25,7 +25,7 @@
           <g:item value="2">iOS 13</g:item>
         </g:ListBox>
         <ai:Icon icon="visibility_off" tooltip="{messages.showInvisiblePropertyComponents}"/>
-        <ed:HiddenComponentsCheckbox ui:field="HiddenComponentsCheckbox"/>
+        <g:CheckBox ui:field="HiddenComponentsCheckbox" text="{messages.showHiddenComponentsCheckbox}"/>
       </g:FlowPanel>
     </g:VerticalPanel>
   </g:VerticalPanel>

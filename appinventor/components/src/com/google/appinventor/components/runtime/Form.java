@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -2358,6 +2358,11 @@ public class Form extends AppInventorCompatActivity
 
     // A form is a vertical layout.
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for linear layout
   }
 
   /*

@@ -29,6 +29,7 @@ public final class MockMap extends MockContainer {
   protected static final String PROPERTY_NAME_LATITUDE = "Latitude";
   protected static final String PROPERTY_NAME_LONGITUDE = "Longitude";
   protected static final String PROPERTY_NAME_MAP_TYPE = "MapType";
+  protected static final String PROPERTY_NAME_CUSTOM_URL = "CustomUrl";
   protected static final String PROPERTY_NAME_CENTER_FROM_STRING = "CenterFromString";
   protected static final String PROPERTY_NAME_ZOOM_LEVEL = "ZoomLevel";
   protected static final String PROPERTY_NAME_SHOW_COMPASS = "ShowCompass";
@@ -181,6 +182,8 @@ public final class MockMap extends MockContainer {
       invalidateMap();
     } else if (propertyName.equals(PROPERTY_NAME_MAP_TYPE)) {
       setMapType(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_CUSTOM_URL)) {
+      setCustomUrl(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CENTER_FROM_STRING)) {
       setCenter(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ZOOM_LEVEL)) {
@@ -220,6 +223,10 @@ public final class MockMap extends MockContainer {
       ErrorReporter.reportError(MESSAGES.unknownMapTypeException(tileLayerId));
       changeProperty(PROPERTY_NAME_MAP_TYPE, Integer.toString(selectedTileLayer));
     }
+  }
+
+  private void setCustomUrl(String newCustomUrl) {
+    updateCustomUrl(newCustomUrl);
   }
 
   private void setCenter(String center) {
@@ -484,7 +491,10 @@ public final class MockMap extends MockContainer {
                    attribution: 'Satellite imagery &copy; <a href="http://mapquest.com">USGS</a>'}),
       L.tileLayer('//basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
                   {minZoom: 0, maxZoom: 15,
-                   attribution: 'Map data &copy; <a href="http://www.usgs.gov">USGS</a>'})
+                   attribution: 'Map data &copy; <a href="http://www.usgs.gov">USGS</a>'}),
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  {minZoom: 0, maxZoom: 18,
+                   attribution: 'Custom map'})
     ];
     this.@com.google.appinventor.client.editor.simple.components.MockMap::tileLayers = tileLayers;
     this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer =
@@ -603,6 +613,23 @@ public final class MockMap extends MockContainer {
         baseLayer.bringToBack();
         this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer = baseLayer;
       }
+    }
+  }-*/;
+
+  private native void updateCustomUrl(String customUrl)/*-{
+    var L = $wnd.top.L;
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    var tileLayers = this.@com.google.appinventor.client.editor.simple.components.MockMap::tileLayers;
+    var baseLayer = this.@com.google.appinventor.client.editor.simple.components.MockMap::baseLayer;
+    if (map && baseLayer && tileLayers) {
+      tileLayers[4] = L.tileLayer(customUrl,
+                  {minZoom: 0, maxZoom: 18,
+                   attribution: 'Custom map data'});
+      map.removeLayer(baseLayer);
+      baseLayer = tileLayers[4];
+      map.addLayer(baseLayer);
+      baseLayer.bringToBack();
+      this.@com.google.appinventor.client.editor.simple.components.MockMap::tileLayers = tileLayers;
     }
   }-*/;
 
