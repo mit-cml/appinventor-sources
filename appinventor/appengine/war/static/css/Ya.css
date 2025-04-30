@@ -1922,6 +1922,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
   z-index: 1000;
+  vertical-align: middle;
   min-height: 40px;
 }
 
