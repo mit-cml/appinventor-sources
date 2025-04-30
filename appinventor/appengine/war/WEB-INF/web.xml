@@ -35,29 +35,7 @@
     </web-resource-collection>
   </security-constraint>
 
-  <!-- Security constraint: require admin access for the appstats url -->
-  <security-constraint>
-    <web-resource-collection>
-      <url-pattern>/convert/</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-    </auth-constraint>
-  </security-constraint>
-
   <!-- Servlets -->
-
-  <!-- Blob Conversion Servlet -->
-
-  <servlet>
-    <display-name>Blob Conversion Servlet</display-name>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.BlobUpgradeServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <url-pattern>/convert</url-pattern>
-  </servlet-mapping>
 
   <!-- Generate Login Page for OpenID -->
 
@@ -82,7 +60,18 @@
     <url-pattern>/remote_api</url-pattern>
   </servlet-mapping>
 
+  <!-- REST interface Servlet -->
+
+  <servlet>
+    <servlet-name>RestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.RestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
   <!-- Nonce based APK download -->
+
   <servlet>
     <servlet-name>buildOutputServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.BuildOutputServlet</servlet-class>
@@ -134,34 +123,6 @@
     <servlet-name>projectService</servlet-name>
   </filter-mapping>
 
-  <!-- gallery -->
-  <servlet>
-    <servlet-name>galleryService</servlet-name>
-    <servlet-class>com.google.appinventor.server.GalleryServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>galleryService</servlet-name>
-    <url-pattern>/ode/gallery</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>galleryService</servlet-name>
-  </filter-mapping>
-
-  <!-- gallery image upload servlet -->
-  <servlet>
-    <servlet-name>galleryServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.GalleryServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>galleryServlet</servlet-name>
-    <url-pattern>/ode/gallery_servlet/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>galleryServlet</servlet-name>
-  </filter-mapping>
-
   <!-- upload -->
   <servlet>
     <servlet-name>uploadServlet</servlet-name>
@@ -205,18 +166,18 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
-  <!-- cloudDBAuth -->
+  <!-- TokenAuth -->
   <servlet>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <servlet-class>com.google.appinventor.server.cloudDBAuth.CloudDBAuthServiceImpl</servlet-class>
+    <servlet-name>tokenAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.tokenauth.TokenAuthServiceImpl</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <url-pattern>/ode/cloudDBAuth</url-pattern>
+    <servlet-name>tokenAuthService</servlet-name>
+    <url-pattern>/ode/tokenauth</url-pattern>
   </servlet-mapping>
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>cloudDBAuthService</servlet-name>
+    <servlet-name>tokenAuthService</servlet-name>
   </filter-mapping>
 
   <!-- accept tos -->

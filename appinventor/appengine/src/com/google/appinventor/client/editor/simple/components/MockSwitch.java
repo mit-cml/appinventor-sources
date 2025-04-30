@@ -1,17 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2018-2020 MIT, All rights reserved
+// Copyright 2018-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Switch component, inherited from MockToggleBase
@@ -33,7 +34,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
-  public Boolean isInitialized = false;
+  public Boolean isInitialized;
 
   /**
    * Creates a new MockSwitch component.
@@ -157,13 +158,21 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   @Override
   protected void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (Float.parseFloat(text) == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), text);
+    }
+
     updatePreferredSize();
   }
 
   @Override
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget.getWidget(0), text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 
@@ -189,6 +198,9 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       paintSwitch();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(switchLabel, newValue);
       refreshForm();
     }
   }

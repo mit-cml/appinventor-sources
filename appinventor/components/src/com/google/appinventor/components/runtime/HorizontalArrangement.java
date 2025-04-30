@@ -52,7 +52,8 @@ import com.google.appinventor.components.common.YaVersion;
     "that should be displayed from left to right.  If you wish to have " +
     "components displayed one over another, use " +
     "<code>VerticalArrangement</code> instead.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/horizontal.png")
 @SimpleObject
 public class HorizontalArrangement extends HVArrangement<FrameLayout> {
   public HorizontalArrangement(ComponentContainer container) {

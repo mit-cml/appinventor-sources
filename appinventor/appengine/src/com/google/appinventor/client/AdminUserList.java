@@ -4,17 +4,10 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.admin.AdminComparators;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -38,9 +31,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A list of User elements used in the Admin interface
@@ -48,6 +41,8 @@ import java.util.Map;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 public class AdminUserList extends Composite {
+  private static final Logger LOG = Logger.getLogger(AdminUserList.class.getName());
+
   private enum SortField {
     NAME,
     VISITED,
@@ -71,29 +66,11 @@ public class AdminUserList extends Composite {
   // Date Time Formatter
   static final DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
 
-  private static class GalleryEnabledHolder {
-    boolean enabled;
-  }
-
-  private final static GalleryEnabledHolder galleryEnabledHolder = new GalleryEnabledHolder();
-
   // Callback to fill in table with user objects
   private final OdeAsyncCallback<List<AdminUser>> searchCallback = new OdeAsyncCallback<List<AdminUser>>(
     "Ooops") {
     @Override
     public void onSuccess(List<AdminUser> newadminUsers) {
-
-      // See if it was enabled since we started. We have to do this because
-      // when the UI for App Inventor (Ode) is setup, the getSystemConfig call
-      // may not yet have completed. This call tells us whether or not the Gallery
-      // is enabled. By default it isn't enabled, but it may have been by the time
-      // the search button is pressed, so we have to redraw stuff.
-      boolean tmp = Ode.getInstance().getGallerySettings().galleryEnabled();
-      if (tmp != galleryEnabledHolder.enabled) {
-        galleryEnabledHolder.enabled = tmp;
-        setHeaderRow();
-      }
-
       adminUsers.clear();
       for (AdminUser user : newadminUsers) {
         adminUsers.add(user);
@@ -114,15 +91,8 @@ public class AdminUserList extends Composite {
     sortField = SortField.NAME;
     sortOrder = SortOrder.ASCENDING;;
 
-    galleryEnabledHolder.enabled = Ode.getInstance().getGallerySettings().galleryEnabled();
-
     // Initialize UI
-    if (galleryEnabledHolder.enabled) {
-      table = new Grid(1, 5);
-    } else {
-      table = new Grid(1, 4);
-    }
-
+    table = new Grid(1, 4); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -174,51 +144,33 @@ public class AdminUserList extends Composite {
    *
    */
   private void setHeaderRow() {
-
-    if (galleryEnabledHolder.enabled) {
-      table.resizeColumns(5); // Number of columns varies based on whether or not
-                              // the Gallery is enabled
-    } else {
-      table.resizeColumns(4);
-    }
-
     table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
 
     HorizontalPanel emailHeader = new HorizontalPanel();
     final Label emailHeaderLabel = new Label("User Email");
-    int column = 0;
     emailHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
     emailHeader.add(emailHeaderLabel);
     emailHeader.add(nameSortIndicator);
-    table.setWidget(0, column, emailHeader);
-    column += 1;
+    table.setWidget(0, 0, emailHeader);
 
     HorizontalPanel uidHeader = new HorizontalPanel();
     final Label uidHeaderLabel = new Label("UID");
     uidHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
     uidHeader.add(uidHeaderLabel);
-    table.setWidget(0, column++, uidHeader);
+    table.setWidget(0, 1, uidHeader);
 
     HorizontalPanel adminHeader = new HorizontalPanel();
     final Label adminHeaderLabel = new Label("isAdmin?");
     adminHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
     adminHeader.add(adminHeaderLabel);
-    table.setWidget(0, column++, adminHeader);
-
-    if (galleryEnabledHolder.enabled) {
-      HorizontalPanel moderatorHeader = new HorizontalPanel();
-      final Label moderatorHeaderLabel = new Label("isModerator?");
-      moderatorHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-      moderatorHeader.add(moderatorHeaderLabel);
-      table.setWidget(0, column++, moderatorHeader);
-    }
+    table.setWidget(0, 2, adminHeader);
 
     HorizontalPanel visitedHeader = new HorizontalPanel();
     final Label visitedLabel = new Label("Visited");
     visitedLabel.addStyleName("ode-ProjectHeaderLabel");
     visitedHeader.add(visitedLabel);
     visitedHeader.add(visitedSortIndicator);
-    table.setWidget(0, column++, visitedHeader);
+    table.setWidget(0, 3, visitedHeader);
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
@@ -275,7 +227,6 @@ public class AdminUserList extends Composite {
     final Label uidLabel;
     final Label visitedLabel;
     final Label isAdminLabel;
-    final Label isModeratorLabel;
 
     private UserWidgets(final AdminUser user) {
       nameLabel = new Label(user.getEmail());
@@ -293,18 +244,6 @@ public class AdminUserList extends Composite {
       } else {
         isAdminLabel = new Label("Yes");
       }
-
-      if (galleryEnabledHolder.enabled) {
-        boolean isModerator = user.getIsModerator();
-        if (!isModerator) {
-          isModeratorLabel = new Label("No");
-        } else {
-          isModeratorLabel = new Label("Yes");
-        }
-      } else {
-        isModeratorLabel = null; // Need to keep the compiler happy
-      }
-
       nameLabel.addMouseDownHandler(new MouseDownHandler() {
           @Override
           public void onMouseDown(MouseDownEvent e) {
@@ -340,22 +279,14 @@ public class AdminUserList extends Composite {
     refreshSortIndicators();
 
     // Refill the table.
-    if (galleryEnabledHolder.enabled) {
-      table.resize(1 + adminUsers.size(), 5);
-    } else {
-      table.resize(1 + adminUsers.size(), 4);
-    }
+    table.resize(1 + adminUsers.size(), 4);
     int row = 1;
     for (AdminUser user : adminUsers) {
       UserWidgets uw = new UserWidgets(user);
-      int column = 0;
-      table.setWidget(row, column++, uw.nameLabel);
-      table.setWidget(row, column++, uw.uidLabel);
-      table.setWidget(row, column++, uw.isAdminLabel);
-      if (galleryEnabledHolder.enabled) {
-        table.setWidget(row, column++, uw.isModeratorLabel);
-      }
-      table.setWidget(row, column++, uw.visitedLabel);
+      table.setWidget(row, 0, uw.nameLabel);
+      table.setWidget(row, 1, uw.uidLabel);
+      table.setWidget(row, 2, uw.isAdminLabel);
+      table.setWidget(row, 3, uw.visitedLabel);
       row++;
     }
 
@@ -396,10 +327,6 @@ public class AdminUserList extends Composite {
     final CheckBox hidePasswordCheckbox = new CheckBox("Hide Password");
     final HorizontalPanel checkboxPanel = new HorizontalPanel();
     checkboxPanel.add(isAdminBox);
-    final CheckBox isModeratorBox = new CheckBox("Is Moderator?");
-    if (galleryEnabledHolder.enabled) {
-      checkboxPanel.add(isModeratorBox);
-    }
     checkboxPanel.add(hidePasswordCheckbox);
 
     VerticalPanel vPanel = new VerticalPanel();
@@ -444,13 +371,9 @@ public class AdminUserList extends Composite {
             // Work!!
             AdminUser nuser = user;
             if (nuser == null) {
-              nuser = new AdminUser(null, email, email, false, isAdminBox.isChecked(),
-                galleryEnabledHolder.enabled? isModeratorBox.isChecked(): false, null);
+              nuser = new AdminUser(null, email, email, false, isAdminBox.isChecked(), null);
             } else {
               nuser.setIsAdmin(isAdminBox.isChecked());
-              if (galleryEnabledHolder.enabled) {
-                nuser.setIsModerator(isModeratorBox.isChecked());
-              }
               nuser.setEmail(email);
             }
             nuser.setPassword(password);
@@ -462,7 +385,7 @@ public class AdminUserList extends Composite {
                 }
                 @Override
                 public void onFailure(Throwable error) {
-                  OdeLog.xlog(error);
+                  LOG.log(Level.SEVERE, "Exception updating user", error);
                   if (error instanceof AdminInterfaceException) {
                     ErrorReporter.reportError(error.getMessage());
                   } else {
@@ -486,7 +409,6 @@ public class AdminUserList extends Composite {
     dialogBox.setWidget(vPanel);
     if (!adding) {
       isAdminBox.setChecked(user.getIsAdmin());
-      isModeratorBox.setChecked(user.getIsModerator());
       userName.setText(user.getEmail());
     }
     // switchUserPanel -- Put up a button to permit us to

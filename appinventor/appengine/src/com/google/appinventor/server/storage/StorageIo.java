@@ -111,48 +111,6 @@ public interface StorageIo {
   String loadSettings(String userId);
 
   /**
-   * Sets the stored name for user with id userId
-   *
-   */
-  void setUserName(String userId, String name);
-
-  /**
-   * Returns a string with the user's name.
-   *
-   * @param userId user id
-   * @return name
-   */
-  String getUserName(String userId);
-
-  /**
-   * Returns a string with the user's name.
-   *
-   * @param userId user id
-   * @return name
-   */
-  String getUserLink(String userId);
-
-  /**
-   * Sets the stored link for user with id userId
-   *
-   */
-  void setUserLink(String userId, String link);
-
-  /**
-   * Returns the email notification frequency
-   *
-   * @param userId user id
-   * @return emailFrequency email frequency
-   */
-  int getUserEmailFrequency(String userId);
-
-  /**
-   * Sets the stored email notification frequency for user with id userId
-   *
-   */
-  void setUserEmailFrequency(String userId, int emailFrequency);
-
-  /**
    * Stores a string with the user's settings.
    *
    * @param userId user ID
@@ -189,9 +147,9 @@ public interface StorageIo {
    *
    * @param userId user ID
    * @param projectId project ID
-   * @param boolean flag
+   * @param flag
    */
-  void setMoveToTrashFlag(final String userId, final long projectId,boolean flag);
+  void setMoveToTrashFlag(final String userId, final long projectId, boolean flag);
 
   /**
    * Returns an array with the user's projects.
@@ -200,22 +158,6 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
-
-  /**
-   * sets a projects gallery id when it is published
-   * @param userId a user Id (the request is made on behalf of this user)*
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  void setProjectGalleryId(final String userId, final long projectId,final long galleryId);
-
-   /**
-   * sets a projects attribution id when it is opened from a gallery project
-   * @param userId a user Id (the request is made on behalf of this user)*
-   * @param projectId project ID
-   * @param attributionId attribution ID
-   */
-  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);
 
   /**
    * Returns a string with the project settings.
@@ -279,6 +221,25 @@ public interface StorageIo {
   long getProjectDateModified(String userId, long projectId);
 
   /**
+   * Returns the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getProjectDateBuilt(String userId, long projectId);
+
+  /**
+   * Sets the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   * @long  builtDate the date to set
+   *
+   * @return long milliseconds
+   */
+  long updateProjectBuiltDate(String userId, long projectId, long builtDate);
+
+  /**
    * Returns the specially formatted list of project history.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project id
@@ -303,7 +264,6 @@ public interface StorageIo {
    *
    * @return long milliseconds
    */
-//  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -436,22 +396,6 @@ public interface StorageIo {
    * @return  list of output file ID
    */
   List<String> getProjectOutputFiles(String userId, long projectId);
-
-  /**
-   * Returns the gallery id for a project.
-   * @param projectId  project ID
-   *
-   * @return  list of output file ID
-   */
-  long getProjectGalleryId(String userId, final long projectId);
-
-   /**
-   * Returns the attribution id for a project-- the app it was copied/remixed from
-   * @param projectId  project ID
-   *
-   * @return galleryId
-   */
-  long getProjectAttributionId(final long projectId);
 
   /**
    * Uploads a file.
@@ -646,13 +590,6 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
-  // Check to see if user needs projects upgraded (moved to GCS)
-  // if so, add task to task queue
-  void checkUpgrade(String userId);
-
-  // Called by the task queue to actually upgrade user's projects
-  void doUpgrade(String userId);
-
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 
@@ -726,4 +663,26 @@ public interface StorageIo {
    */
   void assertUserHasProject(String userId, long projectId);
 
+  List<String> getTutorialsUrlAllowed();
+
+  /**
+   * Delete a user account.
+   *
+   * This requires that all of the user's projects are delete, or at
+   * least has the projectMovedToTrashFlag set.  If so, this method
+   * will remove all vestiges of the user's account and returns
+   * true. Otherwise returns false.
+   *
+   * Note: If a user attempts to login again after this method is run,
+   * a new account will automatically be created.
+   *
+   * @param userId id for the user
+   * @return true on successful account deletion, otherwise false
+   */
+  boolean deleteAccount(String userId);
+
+  String getIosExtensionsConfig();
+
 }
+
+

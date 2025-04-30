@@ -8,13 +8,10 @@ package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.allen_sauer.gwt.dnd.client.util.StringUtil;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -40,7 +37,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 import java.util.List;
@@ -94,7 +90,7 @@ public class ComponentImportWizard extends Wizard {
           project.addNode(componentsFolder, node);
           if ((node.getName().equals("component.json") || node.getName().equals("components.json"))
               && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-            projectEditor.addComponent(node, null);
+            projectEditor.importExtension(node);
           }
         }
       }
@@ -156,7 +152,7 @@ public class ComponentImportWizard extends Wizard {
             return;
           }
 
-          String url = GWT.getModuleBaseURL() +
+          String url = ServerLayout.getModuleBaseURL() +
             ServerLayout.UPLOAD_SERVLET + "/" +
             ServerLayout.UPLOAD_COMPONENT + "/" +
             trimLeadingPath(fileUpload.getFilename());

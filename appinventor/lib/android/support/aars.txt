@@ -1,7 +1,7 @@
+annotation-experimental.aar
 appcompat.aar
 appcompat-resources.aar
 asynclayoutinflater.aar
-cardview.aar
 constraintlayout.aar
 coordinatorlayout.aar
 core.aar
@@ -20,13 +20,10 @@ lifecycle-runtime.aar
 lifecycle-viewmodel.aar
 loader.aar
 localbroadcastmanager.aar
-material.aar
 print.aar
-recyclerview.aar
 slidingpanelayout.aar
 swiperefreshlayout.aar
 vectordrawable.aar
 vectordrawable-animated.aar
 versionedparcelable.aar
 viewpager.aar
-viewpager2.aar

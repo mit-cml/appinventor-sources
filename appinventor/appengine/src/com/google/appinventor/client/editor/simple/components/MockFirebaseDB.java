@@ -5,24 +5,28 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
+
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+
 import com.google.appinventor.client.utils.MessageDialog;
+
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+
 import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
 import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.logging.Logger;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Mock for the non-visible FirebaseDB component. This needs a separate mock
@@ -33,6 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 public class MockFirebaseDB extends MockNonVisibleComponent {
+  private static final Logger LOG = Logger.getLogger(MockFirebaseDB.class.getName());
 
   public static final String TYPE = "FirebaseDB";
   private static final String PROPERTY_NAME_DEVELOPER_BUCKET = "DeveloperBucket";
@@ -55,6 +60,7 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
    */
   public MockFirebaseDB(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
+    Ode.setupOrigin(AUTH_SVC);
   }
 
   /**
@@ -89,9 +95,9 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
     // is loaded from the "Flag" module which reads properties from
     // appengine-web.xml (in the App Engine version). The standalone version
     // stores it in appinventor.xml (at least for now)
-    String defaultURL = Ode.getInstance().getSystemConfig().getFirebaseURL();
+    String defaultURL = Ode.getSystemConfig().getFirebaseURL();
     changeProperty(PROPERTY_NAME_DEFAULT_URL, defaultURL);
-    OdeLog.log("Default Firebase URL = " + defaultURL);
+    LOG.info("Default Firebase URL = " + defaultURL);
 
     AsyncCallback<String> callback = new AsyncCallback<String>() {
       @Override
@@ -122,7 +128,7 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
 
       @Override
       public void onFailure(Throwable caught) {
-        OdeLog.elog("Failed to create FirebaseDB JWT!");
+        LOG.severe("Failed to create FirebaseDB JWT!");
       }
     };
 

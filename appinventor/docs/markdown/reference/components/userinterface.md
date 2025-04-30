@@ -10,9 +10,11 @@ Table of Contents:
 
 * [Button](#Button)
 * [CheckBox](#CheckBox)
+* [CircularProgress](#CircularProgress)
 * [DatePicker](#DatePicker)
 * [Image](#Image)
 * [Label](#Label)
+* [LinearProgress](#LinearProgress)
 * [ListPicker](#ListPicker)
 * [ListView](#ListView)
 * [Notifier](#Notifier)
@@ -56,9 +58,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Button`, measured in sp(scale-independent pixels).
 
-{:id="Button.FontTypeface" .number .do} *FontTypeface*
+{:id="Button.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `Button` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="Button.Height" .number .bo} *Height*
 : Specifies the `Button`'s vertical height, measured in pixels.
@@ -70,6 +73,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.Image" .text} *Image*
 : Specifies the path of the `Button`'s image. If there is both an `Image` and a
  [`BackgroundColor`](#Button.BackgroundColor) specified, only the `Image` will be visible.
+
+{:id="Button.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Button.Shape" .number .do} *Shape*
 : Specifies the shape of the `Button`. The valid values for this property are `0` (default),
@@ -92,6 +99,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.TextColor" .color} *TextColor*
 : Specifies the text color of the `Button` as an alpha-red-green-blue
  integer.
+
+{:id="Button.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Button.Visible" .boolean} *Visible*
 : Specifies whether the `Button` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -170,7 +181,7 @@ None
 {:id="CheckBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `CheckBox`, measured in sp(scale-independent pixels).
 
-{:id="CheckBox.FontTypeface" .number .do} *FontTypeface*
+{:id="CheckBox.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `CheckBox` as default, serif, sans
  serif, or monospace.
 
@@ -181,12 +192,20 @@ None
 : Specifies the `CheckBox`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="CheckBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="CheckBox.Text" .text} *Text*
 : Specifies the text displayed by the `CheckBox`.
 
 {:id="CheckBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `CheckBox` as an alpha-red-green-blue
  integer.
+
+{:id="CheckBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="CheckBox.Visible" .boolean} *Visible*
 : Specifies whether the `CheckBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -213,6 +232,57 @@ None
 : `CheckBox` stopped being the focused component.
 
 ### Methods  {#CheckBox-Methods}
+
+{:.methods}
+None
+
+
+## CircularProgress  {#CircularProgress}
+
+Component for CircularProgress
+
+
+
+### Properties  {#CircularProgress-Properties}
+
+{:.properties}
+
+{:id="CircularProgress.Color" .color} *Color*
+: Change the indeterminate color of the circular progress bar.
+
+{:id="CircularProgress.Height" .number .bo} *Height*
+: Specifies the `CircularProgress`'s vertical height, measured in pixels.
+
+{:id="CircularProgress.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `CircularProgress`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="CircularProgress.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="CircularProgress.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="CircularProgress.Visible" .boolean} *Visible*
+: Specifies whether the `CircularProgress` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `CircularProgress` is showing and `false`{:.logic.block} if hidden.
+
+{:id="CircularProgress.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `CircularProgress`, measured in pixels.
+
+{:id="CircularProgress.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `CircularProgress` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#CircularProgress-Events}
+
+{:.events}
+None
+
+
+### Methods  {#CircularProgress-Methods}
 
 {:.methods}
 None
@@ -253,9 +323,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `DatePicker`, measured in sp(scale-independent pixels).
 
-{:id="DatePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="DatePicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `DatePicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="DatePicker.Height" .number .bo} *Height*
 : Specifies the `DatePicker`'s vertical height, measured in pixels.
@@ -270,6 +341,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 
 {:id="DatePicker.Instant" .InstantInTime .ro .bo} *Instant*
 : Returns instant of the date that was last picked using the DatePicker.
+
+{:id="DatePicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="DatePicker.Month" .number .ro .bo} *Month*
 : Returns the number of the Month that was last picked using the DatePicker.
@@ -298,6 +373,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.TextColor" .color} *TextColor*
 : Specifies the text color of the `DatePicker` as an alpha-red-green-blue
  integer.
+
+{:id="DatePicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="DatePicker.Visible" .boolean} *Visible*
 : Specifies whether the `DatePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -362,6 +441,9 @@ Component for displaying images and basic animations.
 
 {:.properties}
 
+{:id="Image.AlternateText" .text .wo} *AlternateText*
+: A written description of what the image looks like.
+
 {:id="Image.Animation" .text .wo .bo} *Animation*
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -377,6 +459,10 @@ Component for displaying images and basic animations.
 : Specifies the `Image`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Image.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Image.Picture" .text} *Picture*
 : Specifies the path of the `Image`'s `Picture`.
 
@@ -388,6 +474,10 @@ Component for displaying images and basic animations.
 
 {:id="Image.Scaling" .number .bo} *Scaling*
 : This property determines how the picture scales according to the Height or Width of the Image. Scale proportionally (0) preserves the picture aspect ratio. Scale to fit (1) matches the Image area, even if the aspect ratio changes.
+
+{:id="Image.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Image.Visible" .boolean} *Visible*
 : Specifies whether the `Image` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -443,7 +533,7 @@ Labels are components used to show text.
 {:id="Label.FontSize" .number} *FontSize*
 : Specifies the label's text's font size, measured in sp(scale-independent pixels).
 
-{:id="Label.FontTypeface" .number .do} *FontTypeface*
+{:id="Label.FontTypeface" .text .do} *FontTypeface*
 : Specifies the label's text's font face as default, serif, sans
  serif, or monospace.
 
@@ -467,6 +557,10 @@ Labels are components used to show text.
 : Specifies the `Label`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Label.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Label.Text" .text} *Text*
 : Specifies the text displayed by the label.
 
@@ -478,6 +572,10 @@ Labels are components used to show text.
 {:id="Label.TextColor" .color} *TextColor*
 : Specifies the label's text color as an alpha-red-green-blue
  integer.
+
+{:id="Label.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Label.Visible" .boolean} *Visible*
 : Specifies whether the `Label` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -501,6 +599,67 @@ None
 {:.methods}
 None
 
+
+## LinearProgress  {#LinearProgress}
+
+Component for LinearProgress
+
+
+
+### Properties  {#LinearProgress-Properties}
+
+{:.properties}
+
+{:id="LinearProgress.Indeterminate" .boolean} *Indeterminate*
+: Indicate whether this progress bar is in indeterminate mode.
+
+{:id="LinearProgress.IndeterminateColor" .color} *IndeterminateColor*
+: Change the indeterminate color of the progress bar.
+
+{:id="LinearProgress.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="LinearProgress.Maximum" .number} *Maximum*
+: Set the upper range of the progress bar max.
+
+{:id="LinearProgress.Minimum" .number} *Minimum*
+: Set the lower range of the progress bar to min. This function works only for devices with API >= 26
+
+{:id="LinearProgress.Progress" .number .bo} *Progress*
+: Get the progress bar's current level of progress.
+
+{:id="LinearProgress.ProgressColor" .color} *ProgressColor*
+: Change the progress color of the progress bar.
+
+{:id="LinearProgress.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="LinearProgress.Visible" .boolean} *Visible*
+: Specifies whether the `LinearProgress` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `LinearProgress` is showing and `false`{:.logic.block} if hidden.
+
+{:id="LinearProgress.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `LinearProgress`, measured in pixels.
+
+{:id="LinearProgress.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `LinearProgress` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#LinearProgress-Events}
+
+{:.events}
+
+{:id="LinearProgress.ProgressChanged"} ProgressChanged(*progress*{:.number})
+: Event that indicates that the progress of the progress bar has been changed. Returns the current progress value. If "Indeterminate" is set to true, then it returns "0".
+
+### Methods  {#LinearProgress-Methods}
+
+{:.methods}
+
+{:id="LinearProgress.IncrementProgressBy" class="method"} <i/> IncrementProgressBy(*value*{:.number})
+: Increase the progress bar's progress by the specified amount.
 
 ## ListPicker  {#ListPicker}
 
@@ -546,9 +705,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ListPicker`, measured in sp(scale-independent pixels).
 
-{:id="ListPicker.FontTypeface" .number .do} *FontTypeface*
+{:id="ListPicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `ListPicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="ListPicker.Height" .number .bo} *Height*
 : Specifies the `ListPicker`'s vertical height, measured in pixels.
@@ -566,6 +726,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 {:id="ListPicker.ItemTextColor" .color} *ItemTextColor*
 : The text color of the ListPicker items.
+
+{:id="ListPicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ListPicker.Selection" .text} *Selection*
 : The selected item. When directly changed by the programmer, the [`SelectionIndex`](#ListPicker.SelectionIndex)
@@ -602,6 +766,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 {:id="ListPicker.Title" .text} *Title*
 : Optional title displayed at the top of the list of choices.
+
+{:id="ListPicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ListPicker.Visible" .boolean} *Visible*
 : Specifies whether the `ListPicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -650,9 +818,12 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 ## ListView  {#ListView}
 
-This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
- display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
- [`Elements`](#ListView.Elements) block in the blocks editor.
+This is a visible component that displays a list of text and image elements in your [`Screen`](#Screen) to
+ display. Simple lists of strings may be set using the [`ElementsFromString`](#ListView.ElementsFromString) property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ [`ListData`](#ListView.ListData) and [`ListViewLayout`](#ListView.ListViewLayout) properties.
+
+ [Information on Layouts](../other/advanced-listview.html)
 
    Warning: This component will not work correctly on Screens that are scrollable if its
  [`Height`](#ListView.Height) is set to Fill Parent.
@@ -666,11 +837,47 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.BackgroundColor" .color} *BackgroundColor*
 : The color of the `ListView` background.
 
+{:id="ListView.BounceEdgeEffect" .boolean} *BounceEdgeEffect*
+: Sets the bounce effect function. `true`{:.logic.block} will enable the function,
+ `false`{:.logic.block} will disable.
+
+{:id="ListView.DividerColor" .color} *DividerColor*
+: The color of the `ListView` divider.
+
+{:id="ListView.DividerThickness" .number} *DividerThickness*
+: Specifies the divider thickness of list view.
+ If the thickness is 0, the divider is not visible.
+
+{:id="ListView.ElementColor" .color} *ElementColor*
+: The color of the `ListView` element.
+
+{:id="ListView.ElementCornerRadius" .number} *ElementCornerRadius*
+: Specifies the corner radius of the list view element.
+
+{:id="ListView.ElementMarginsWidth" .number} *ElementMarginsWidth*
+: Specifies the width of the margins of a list view element.
+ If margins width > 0, then the divider is not displayed.
+
 {:id="ListView.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
 
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
-: Set the list of choices from a string of comma-separated values.
+: Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.
+
+{:id="ListView.FontSize" .number} *FontSize*
+: Specifies the font size of the element's main text.
+
+{:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
+: Specifies the font size of the element's detail text.
+
+{:id="ListView.FontTypeface" .text .do} *FontTypeface*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
+{:id="ListView.FontTypefaceDetail" .text .do} *FontTypefaceDetail*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
 
 {:id="ListView.Height" .number .bo} *Height*
 : Specifies the `ListView`'s vertical height, measured in pixels.
@@ -679,11 +886,42 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.HintText" .text} *HintText*
+: Sets hint on the filter bar.
+
+{:id="ListView.ImageHeight" .number} *ImageHeight*
+: Specifies the image height of ListView layouts containing images
+
+{:id="ListView.ImageWidth" .number} *ImageWidth*
+: Specifies the image width of ListView layouts containing images
+
+{:id="ListView.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="ListView.ListData" .text .do} *ListData*
+: Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in [`ListViewLayout`](#ListView.ListViewLayout). For example, if the chosen
+ layout is `Image,MainText` this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.
+
+{:id="ListView.ListViewLayout" .number} *ListViewLayout*
+: Specifies type of layout for ListView row.
+
+{:id="ListView.Orientation" .number} *Orientation*
+: Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+ in rows one after the other; or `Horizontal`, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
+
+{:id="ListView.SelectionDetailText" .text .ro .bo} *SelectionDetailText*
+: Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
 : The index of the currently selected item, starting at `1`. If no item is selected, the value
@@ -698,8 +936,12 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
 
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
+{:id="ListView.TextColorDetail" .color} *TextColorDetail*
+: Specifies the color of the secondary text in a ListView layout
+
+{:id="ListView.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -723,8 +965,33 @@ This is a visible component that allows to place a list of text elements in your
 ### Methods  {#ListView-Methods}
 
 {:.methods}
-None
 
+{:id="ListView.AddItem" class="method"} <i/> AddItem(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Add new Item to list
+
+{:id="ListView.AddItemAtIndex" class="method"} <i/> AddItemAtIndex(*index*{:.number},*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Add new Item to list at a given index
+
+{:id="ListView.AddItems" class="method"} <i/> AddItems(*itemsList*{:.list})
+: Add new Items to list
+
+{:id="ListView.AddItemsAtIndex" class="method"} <i/> AddItemsAtIndex(*index*{:.number},*itemsList*{:.list})
+: Add new Items to list at specific index
+
+{:id="ListView.CreateElement" class="method returns dictionary"} <i/> CreateElement(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Creates a
+
+{:id="ListView.GetDetailText" class="method returns text"} <i/> GetDetailText(*listElement*{:.dictionary})
+: Get the Detail Text of a ListView element.
+
+{:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
+: Get the filename of the image of a ListView element that has been uploaded to Media.
+
+{:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
+: Get the Main Text of a ListView element.
+
+{:id="ListView.RemoveItemAtIndex" class="method"} <i/> RemoveItemAtIndex(*index*{:.number})
+: Removes Item from list at a given index
 
 ## Notifier  {#Notifier}
 
@@ -763,7 +1030,6 @@ The Notifier component displays alert messages and creates Android log entries t
 
 {:id="Notifier.TextInputCanceled"} TextInputCanceled()
 : Event raised when the user cancels
- [`ShowChooseDialog`](#Notifier.ShowChooseDialog),
  [`ShowPasswordDialog`](#Notifier.ShowPasswordDialog), or
  [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
@@ -860,7 +1126,7 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `PasswordTextBox`, measured in sp(scale-independent pixels).
 
-{:id="PasswordTextBox.FontTypeface" .number .do} *FontTypeface*
+{:id="PasswordTextBox.FontTypeface" .text .do} *FontTypeface*
 : The text font face of the `PasswordTextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -873,6 +1139,19 @@ Users enter passwords in a password text box component, which hides the text tha
 
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
+
+{:id="PasswordTextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the PasswordTextBox.
+
+{:id="PasswordTextBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
 
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
@@ -890,6 +1169,10 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `PasswordTextBox` as an alpha-red-green-blue
  integer.
+
+{:id="PasswordTextBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="PasswordTextBox.Visible" .boolean} *Visible*
 : Specifies whether the `PasswordTextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -914,9 +1197,21 @@ Users enter passwords in a password text box component, which hides the text tha
 : Event raised when the `PasswordTextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="PasswordTextBox.TextChanged"} TextChanged()
+: Event raised when the text of the PasswordTextBox is changed, either by the user or the program.
+
 ### Methods  {#PasswordTextBox-Methods}
 
 {:.methods}
+
+{:id="PasswordTextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the PasswordTextBox before the character at the given 1-indexed position. If the given position is larger than the length of the PasswordTextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.
+
+{:id="PasswordTextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the PasswordTextBox's text.
+
+{:id="PasswordTextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the PasswordTextBox's text.
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
@@ -943,7 +1238,7 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.AlignHorizontal" .number} *AlignHorizontal*
 : A number that encodes how contents of the screen are aligned horizontally. The choices are:
- `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+ `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
 
 {:id="Screen.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the arrangement are aligned vertically. The choices
@@ -963,15 +1258,26 @@ Top-level component containing all other components in the program.
 : Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
  and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
 
+{:id="Screen.BigDefaultText" .boolean} *BigDefaultText*
+: When checked, all default size text will be increased in size.
+
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
-: A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
+: Choose the set of components you’ll need for your project. A smaller set is good for beginner projects, while experts can use all options to build complex apps. For example, the Beginner Toolkit gives you access to all the features you need for our novice tutorials and curriculum.</p><p>You can always change your toolkit in Project Properties, so your choice now won’t limit the future possibilities for your app.</p>
 
 {:id="Screen.CloseScreenAnimation" .text} *CloseScreenAnimation*
 : Sets the animation type for the transition of this form closing and returning
  to a form behind it in the activity stack.
 
+{:id="Screen.DefaultFileScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultFileScope*
+: Specifies the default scope used when components access files. Note that the
+ <a href="/reference/components/storage.html#File" target="_blank">File</a>
+ component has its own property for controlling file scopes.
+
 {:id="Screen.Height" .number .ro .bo} *Height*
 : Returns the Screen height in pixels (y-size).
+
+{:id="Screen.HighContrast" .boolean} *HighContrast*
+: When checked, there will be high contrast mode turned on.
 
 {:id="Screen.Icon" .text .wo .do} *Icon*
 : The image used for your App's display icon should be a square png or jpeg image with dimensions
@@ -979,8 +1285,7 @@ Top-level component containing all other components in the program.
  The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
-: The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
- `slidehorizontal`, `slidevertical`, and `none`.
+: Sets the animation type for the transition of this form opening.
 
 {:id="Screen.Platform" .text .ro .bo} *Platform*
 : Gets the name of the underlying platform running the app. Currently, this is the text
@@ -1152,18 +1457,27 @@ This class is used to display a `Slider`.
 : Specifies the `Slider`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Slider.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
  current minimum, then minimum and maximum will both be set to this value.
- Setting `MaxValue` resets the thumb position to halfway between [`MinValue`](#Slider.MinValue)
- and `MaxValue` and signals the [`PositionChanged`](#Slider.PositionChanged)` event.
 
 {:id="Slider.MinValue" .number} *MinValue*
 : Sets the minimum value of slider. If the new minimum is greater than the
  current maximum, then minimum and maximum will both be set to this value.
- Setting `MinValue` resets the thumb position to halfway between `MinValue`
- and [`MaxValue`](#Slider.MaxValue) and signals the [`PositionChanged`](#Slider.PositionChanged)`
- event.
+
+{:id="Slider.NumberOfSteps" .number} *NumberOfSteps*
+: Set the number of points on the slider scale.
+ Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
+
+{:id="Slider.ThumbColor" .color} *ThumbColor*
+: Specifies the color of the thumb slider as an alpha-red-green-blue
+ integer, i.e., `0xAARRGGBB`.  An alpha of `00`
+ indicates fully transparent and `FF` means opaque.
 
 {:id="Slider.ThumbEnabled" .boolean} *ThumbEnabled*
 : Whether or not the slider thumb is being be shown.
@@ -1172,6 +1486,10 @@ This class is used to display a `Slider`.
 : Sets the position of the slider thumb. If this value is greater than [`MaxValue`](#Slider.MaxValue),
  then it will be set to same value as [`MaxValue`](#Slider.MaxValue). If this value is less than
  [`MinValue`](#Slider.MinValue), then it will be set to same value as [`MinValue`](#Slider.MinValue).
+
+{:id="Slider.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Slider.Visible" .boolean} *Visible*
 : Specifies whether the `Slider` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1190,6 +1508,12 @@ This class is used to display a `Slider`.
 
 {:id="Slider.PositionChanged"} PositionChanged(*thumbPosition*{:.number})
 : Indicates that position of the slider thumb has changed.
+
+{:id="Slider.TouchDown"} TouchDown()
+: Indicates that the user has started a touch gesture.
+
+{:id="Slider.TouchUp"} TouchUp()
+: Indicates that the user has finished a touch gesture.
 
 ### Methods  {#Slider-Methods}
 
@@ -1226,6 +1550,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the `Spinner`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Spinner.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Spinner.Prompt" .text} *Prompt*
 : Specifies the text used for the title of the Spinner window.
 
@@ -1237,6 +1565,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  If an attempt is made to set this to a number less than `1` or greater than the number of
  items in the `Spinner`, `SelectionIndex` will be set to `0`, and [`Selection`](#Spinner.Selection)
  will be set to the empty text.
+
+{:id="Spinner.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Spinner.Visible" .boolean} *Visible*
 : Specifies whether the `Spinner` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1295,7 +1627,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Switch.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Switch`, measured in sp(scale-independent pixels).
 
-{:id="Switch.FontTypeface" .number .do} *FontTypeface*
+{:id="Switch.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `Switch` as default, serif, sans
  serif, or monospace.
 
@@ -1305,6 +1637,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Switch.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Switch`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="Switch.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Switch.On" .boolean} *On*
 : True if the switch is in the On state, false otherwise.
@@ -1321,6 +1657,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 
 {:id="Switch.ThumbColorInactive" .color} *ThumbColorInactive*
 : Specifies the `Switch`'s thumb color when switch is in the Off state.
+
+{:id="Switch.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Switch.TrackColorActive" .color} *TrackColorActive*
 : Specifies the `Switch`'s track color when in the On state.
@@ -1408,7 +1748,7 @@ Users enter text in a text box component.
 {:id="TextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TextBox`, measured in sp(scale-independent pixels).
 
-{:id="TextBox.FontTypeface" .number .do} *FontTypeface*
+{:id="TextBox.FontTypeface" .text .do} *FontTypeface*
 : The text font face of the `TextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -1421,6 +1761,13 @@ Users enter text in a text box component.
 
 {:id="TextBox.Hint" .text} *Hint*
 : `TextBox` hint for the user.
+
+{:id="TextBox.HintColor" .color} *HintColor*
+: Specifies the color of the hint of the TextBox.
+
+{:id="TextBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
 : If true, then this `TextBox` accepts multiple lines of input, which are entered using the
@@ -1435,7 +1782,7 @@ Users enter text in a text box component.
  [`Text`](#TextBox.Text) property.
 
 {:id="TextBox.ReadOnly" .boolean} *ReadOnly*
-: Whether the TextBox is read-only. By default, this is `true`{:.logic.block}.
+: Whether the TextBox is read-only. By default, this is `false`{:.logic.block}.
 
 {:id="TextBox.Text" .text} *Text*
 : The text in the `TextBox`, which can be set by the programmer in the Designer or Blocks Editor,
@@ -1450,6 +1797,10 @@ Users enter text in a text box component.
 {:id="TextBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `TextBox` as an alpha-red-green-blue
  integer.
+
+{:id="TextBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TextBox.Visible" .boolean} *Visible*
 : Specifies whether the `TextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1474,6 +1825,9 @@ Users enter text in a text box component.
 : Event raised when the `TextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
+{:id="TextBox.TextChanged"} TextChanged()
+: Event raised when the text of the TextBox is changed, either by the user or the program.
+
 ### Methods  {#TextBox-Methods}
 
 {:.methods}
@@ -1481,6 +1835,15 @@ Users enter text in a text box component.
 {:id="TextBox.HideKeyboard" class="method"} <i/> HideKeyboard()
 : Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
  keyboard when the users presses the Done key.
+
+{:id="TextBox.MoveCursorTo" class="method"} <i/> MoveCursorTo(*position*{:.number})
+: Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the TextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.
+
+{:id="TextBox.MoveCursorToEnd" class="method"} <i/> MoveCursorToEnd()
+: Repositions the cursor to the end of the TextBox's text.
+
+{:id="TextBox.MoveCursorToStart" class="method"} <i/> MoveCursorToStart()
+: Repositions the cursor to the start of the TextBox's text.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `TextBox`.
@@ -1516,9 +1879,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TimePicker`, measured in sp(scale-independent pixels).
 
-{:id="TimePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="TimePicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `TimePicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="TimePicker.Height" .number .bo} *Height*
 : Specifies the `TimePicker`'s vertical height, measured in pixels.
@@ -1537,6 +1901,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 
 {:id="TimePicker.Instant" .InstantInTime .ro .bo} *Instant*
 : Returns the instant in time that was last picked using the `TimePicker`.
+
+{:id="TimePicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TimePicker.Minute" .number .ro .bo} *Minute*
 : Returns the hour of the time that was last picked using the `TimePicker`.
@@ -1563,6 +1931,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.TextColor" .color} *TextColor*
 : Specifies the text color of the `TimePicker` as an alpha-red-green-blue
  integer.
+
+{:id="TimePicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TimePicker.Visible" .boolean} *Visible*
 : Specifies whether the `TimePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1648,6 +2020,14 @@ Component for viewing Web pages.
  Calling `setWebViewString` from JavaScript will also run the [`WebViewStringChange`](#WebViewer.WebViewStringChange)
  event so that the blocks can handle when the [`WebViewString`](#WebViewer.WebViewString) property changes.
 
+ Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ Both of these options will continue to work but the `http://localhost/` approach will work in
+ both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.
+
 
 
 ### Properties  {#WebViewer-Properties}
@@ -1680,11 +2060,19 @@ Component for viewing Web pages.
 : Determine whether or not to ignore SSL errors. Set to `true`{:.logic.block} to ignore errors.
  Use this to accept self signed certificates from websites.
 
+{:id="WebViewer.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="WebViewer.PromptforPermission" .boolean} *PromptforPermission*
 : Determine if the user should be prompted for permission to use the geolocation API while in
  the `WebViewer`. If `true`{:.logic.block}, prompt the user of the `WebViewer` to give
  permission to access the geolocation API. If `false`{:.logic.block}, assume permission is
  granted.
+
+{:id="WebViewer.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
 : Specifies whether or not this `WebViewer` can access the JavaScript

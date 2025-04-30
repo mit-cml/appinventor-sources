@@ -15,11 +15,6 @@ public final class AppInventorFeatures {
   private AppInventorFeatures() {
   }
 
-  public static boolean hasDebuggingView() {
-    // Set this to true if you want the Debugging view to show.
-    return true;
-  }
-
   public static boolean hasYailGenerationOption() {
     // Set this to true if you want the Package for Phone button to include an option to just
     // generate Yail
@@ -121,6 +116,39 @@ public final class AppInventorFeatures {
    * @return true to display the splash screen in the Companion
    */
   public static boolean doCompanionSplashScreen() {
+    return false;
+  }
+
+  /**
+   * If set to true, the Blockly XML will be prettified for human readability.
+   * If false, the XML is serialized to a more compact form with minimal whitespace.
+   */
+  public static boolean doPrettifyXml() {
+    return false;
+  }
+
+  /**
+   * If set to true, features marked as part of future App Inventor
+   * iterations will be shown.
+   */
+  public static boolean enableFutureFeatures() {
+    return false;
+  }
+
+  /**
+   * If set to true, redirect http connections to https if running in
+   * production (aka, not the Google Dev server).
+   */
+
+  public static boolean enableHttpRedirect() {
+    return true;
+  }
+
+  public static String chatBotHost() {
+    return "https://chatbot.appinventor.mit.edu/";
+  }
+
+  public static boolean doingSurvey() {
     return false;
   }
 

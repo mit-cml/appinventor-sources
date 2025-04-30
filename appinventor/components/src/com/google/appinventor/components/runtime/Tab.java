@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -48,7 +49,8 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
    * @param container  container, component will be placed in
    */
   public Tab (TabArrangement container) {
-    super(container, HVArrangement.LAYOUT_ORIENTATION_VERTICAL, new FrameLayout(container.$context()));
+    super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+        new FrameLayout(container.$context()));
     container.addTab(this);
   }
   
@@ -59,7 +61,27 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public void setTab (TabLayout.Tab tab) {
     this.tab = tab;
   }
-  
+
+  @Override
+  public void Left(int x) {
+    // Tabs can only be in TabArrangements
+  }
+
+  @Override
+  public int Left() {
+    return 0;  // Tabs can only be in TabArrangements
+  }
+
+  @Override
+  public void Top(int y) {
+    // Tabs can only be in TabArrangements
+  }
+
+  @Override
+  public int Top() {
+    return 0;  // Tabs can only be in TabArrangements
+  }
+
   /**
    * Specifies the text displayed by the tab label.
    *
@@ -182,12 +204,18 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public boolean Scrollable() {
     return isScrollable;
   }
-  
+
+  /**
+   * Indicates that the user selected the tab.
+   */
   @SimpleEvent
   public void Click() {
     EventDispatcher.dispatchEvent(this, "Click");
   }
-  
+
+  /**
+   * Shows the tab contents if not currently active.
+   */
   @SimpleFunction
   public void Show() {
     tab.select();

@@ -11,6 +11,7 @@
    String repo = StringEscapeUtils.escapeHtml4((String) request.getAttribute("repo"));
    String autoload = StringEscapeUtils.escapeHtml4((String) request.getAttribute("autoload"));
    String galleryId = StringEscapeUtils.escapeHtml4((String) request.getAttribute("galleryId"));
+   String newGalleryId = StringEscapeUtils.escapeHtml4(request.getParameter("ng"));
    if (locale == null) {
        locale = "en";
    }
@@ -52,6 +53,10 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
    if (galleryId != null && !galleryId.equals("")) {
    %>
 <input type=hidden name=galleryId value="<%= galleryId %>">
+<% }
+   if (newGalleryId != null && !newGalleryId.equals("")) {
+   %>
+<input type=hidden name=ng value="<%= newGalleryId %>">
 <% } %>
 <% if (redirect != null && !redirect.equals("")) {
    %>
@@ -61,13 +66,14 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <center><input type=Submit value="${login}" style="font-size: 300%;"></center>
 </form>
 <p></p>
-<center><p><a href="/login/sendlink"  style="text-decoration:none;">${passwordclickhereLabel}</a></p></center>
+<center><p><a href="/login/sendlink?locale=<%= locale %>"  style="text-decoration:none;">${passwordclickhereLabel}</a></p></center>
 <%    if (useGoogleLabel != null && useGoogleLabel.equals("true")) { %>
 <center><p><a href="<%= new UriBuilder("/login/google")
                               .add("locale", locale)
                               .add("autoload", autoload)
                               .add("repo", repo)
                               .add("galleryId", galleryId)
+                              .add("ng", newGalleryId)
                               .add("redirect", redirect).build() %>" style="text-decoration:none;">Click Here to use your Google Account to login</a></p></center>
 <%    } %>
 <footer>
@@ -88,6 +94,7 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
                    .add("repo", repo)
                    .add("autoload", autoload)
                    .add("galleryId", galleryId)
+                   .add("ng", newGalleryId)
                    .add("redirect", redirect).build() %>"  style="text-decoration:none;" >English</a></center>
 <p></p>
 <center>

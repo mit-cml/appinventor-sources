@@ -3,13 +3,14 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.components.common.ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
@@ -20,7 +21,8 @@ import static com.google.appinventor.components.common.ComponentConstants.LAYOUT
  * @author jsuyash1514@gmail.com (Suyash Jain)
  */
 public class MockTabArrangement extends MockContainer<MockHVLayout> {
-  
+  private static final Logger LOG = Logger.getLogger(MockTabArrangement.class.getName());
+
   /**
    * Component type name.
    */
@@ -163,7 +165,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     try {
       tabBarVisible = Boolean.parseBoolean(getPropertyValue(PROPERTY_TAB_BAR_VISIBLE));
     } catch (Exception e) {
-      OdeLog.log("Exception in retrieving tab bar visibility: " + e);
+      LOG.log(Level.SEVERE, "Exception in retrieving tab bar visibility: ", e);
     }
     if (tabBarVisible) {
       try {

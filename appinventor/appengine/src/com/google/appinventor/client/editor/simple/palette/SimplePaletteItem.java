@@ -6,12 +6,22 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
@@ -61,7 +71,7 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
     panel.setCellWidth(image, "30px");
 
-    Label label = new Label(ComponentsTranslation.getComponentName(scd.getName()));
+    Label label = new Label(ComponentTranslationTable.getComponentName(scd.getName()));
     label.setHorizontalAlignment(Label.ALIGN_LEFT);
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);
@@ -95,10 +105,10 @@ public class SimplePaletteItem extends DragSourcePanel {
    */
   private static void select(Widget paletteItemWidget) {
     if (selectedPaletteItemWidget != null) {
-      selectedPaletteItemWidget.getElement().getStyle().setProperty("backgroundColor", "white");
+      selectedPaletteItemWidget.removeStyleName("ode-SimplePaletteItem-Selected");
     }
     selectedPaletteItemWidget = paletteItemWidget;
-    selectedPaletteItemWidget.getElement().getStyle().setProperty("backgroundColor", "#d2e0a6");
+    selectedPaletteItemWidget.addStyleName("ode-SimplePaletteItem-Selected");
   }
 
   private void addHandlers() {
@@ -114,6 +124,40 @@ public class SimplePaletteItem extends DragSourcePanel {
         select(getWidget());
       }
     });
+    addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+          select(getWidget());
+      }
+    });
+    addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown (KeyDownEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+          addComponent();
+        }
+      }
+    });
+    addDoubleClickHandler(new DoubleClickHandler() {
+      public void onDoubleClick (DoubleClickEvent event) {
+        addComponent();
+      }
+    });
+  }
+
+  private void addComponent() {
+    MockComponent component = createMockComponent();
+    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) dropTargetProvider.getDropTargets()[0];
+    MockForm form = mockVisibleComponent.getForm();
+    MockComponent selectedComponent = form.getLastSelectedComponent();
+    if (selectedComponent instanceof MockContainer && ((MockContainer) selectedComponent).willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
+      ((MockContainer) selectedComponent).addComponent(component);
+    } else if (form.willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
+      form.addComponent(component);
+    } else if (form.willAcceptComponentType(component.getType()) && !component.isVisibleComponent()) {
+      form.addComponent(component);
+      form.getNonVisibleComponentsPanel().addComponent(component);
+    }
   }
 
   /**

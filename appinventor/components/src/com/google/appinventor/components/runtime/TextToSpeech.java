@@ -54,7 +54,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 // TODO(hal): This language and country code method using strings as abbreviations was
 // deprecated in API level 21.
 @DesignerComponent(version = YaVersion.TEXTTOSPEECH_COMPONENT_VERSION,
-description = "The TestToSpeech component speaks a given text aloud.  You can set " +
+description = "The TextToSpeech component speaks a given text aloud.  You can set " +
     "the pitch and the rate of speech. " +
     "<p>You can also set a language by supplying a language code.  This changes the pronunciation " +
     "of words, not the actual language spoken.  For example, setting the language to French " +
@@ -69,7 +69,7 @@ description = "The TestToSpeech component speaks a given text aloud.  You can se
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, ActivityResultListener  */{
+    implements Component, OnStopListener, OnResumeListener, OnDestroyListener, OnClearListener {
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
@@ -190,7 +190,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
-      "and speaking English text with sound like someone speaking English with a Frernch accent.")
+      "and speaking English text with sound like someone speaking English with a French accent.")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {
@@ -441,6 +441,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.speak(message, loc);
   }
 
+  /**
+   * Stops any current speech.
+   */
+  @SimpleFunction
+  public void Stop() {
+    tts.stop();
+    AfterSpeaking(false);
+  }
 
   /**
    * Event to raise when Speak is invoked, before the message is spoken.
@@ -479,4 +487,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.onDestroy();
   }
 
+  @Override
+  public void onClear() {
+    tts.onDestroy();
+  }
 }

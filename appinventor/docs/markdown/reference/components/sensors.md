@@ -576,6 +576,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:.events}
 
+{:id="LocationSensor.GotAddress"} GotAddress(*address*{:.text})
+: Reports the address in response to a ReverseGeocode request.
+
+{:id="LocationSensor.GotLocationFromAddress"} GotLocationFromAddress(*address*{:.text},*latitude*{:.number},*longitude*{:.number})
+: Reports the latitude and longitude in response to a Geocode request.
+
 {:id="LocationSensor.LocationChanged"} LocationChanged(*latitude*{:.number},*longitude*{:.number},*altitude*{:.number},*speed*{:.number})
 : Indicates that a new location has been detected. Speed is reported in meters/second
  Other values match their properties.
@@ -588,11 +594,17 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:.methods}
 
+{:id="LocationSensor.Geocode" class="method"} <i/> Geocode(*address*{:.text})
+: Converts an address into a latitude and longitude through the GotLocationFromAddress event.
+
 {:id="LocationSensor.LatitudeFromAddress" class="method returns number"} <i/> LatitudeFromAddress(*locationName*{:.text})
 : Derives latitude from the given `locationName`.
 
 {:id="LocationSensor.LongitudeFromAddress" class="method returns number"} <i/> LongitudeFromAddress(*locationName*{:.text})
 : Derives longitude from the given `locationName`.
+
+{:id="LocationSensor.ReverseGeocode" class="method"} <i/> ReverseGeocode(*latitude*{:.number},*longitude*{:.number})
+: Determines the address associated with the given latitude and  and reports it through the GotAddress event.
 
 ## MagneticFieldSensor  {#MagneticFieldSensor}
 
@@ -611,7 +623,7 @@ Component for MagneticFieldSensor
 : Indicates that there is a magnetic field sensor in the device and it is available.
 
 {:id="MagneticFieldSensor.Enabled" .boolean} *Enabled*
-: Property for Enabled
+: Indicates whether or not the magnetic field sensor is enabled and working.
 
 {:id="MagneticFieldSensor.MaximumRange" .number .ro .bo} *MaximumRange*
 : Indicates the maximum range the magnetic sensor can reach.
@@ -820,7 +832,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  case, the sensor usually reports its maximum range value in the far state and a lesser value
  in the near state. It reports the following value:
 
-  - **Distance**: The distance from the object to the device
+   - **Distance**: The distance from the object to the device
 
 
 
@@ -840,7 +852,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  are generated.
 
 {:id="ProximitySensor.KeepRunningWhenOnPause" .boolean} *KeepRunningWhenOnPause*
-: Returns value of keepRunningWhenOnPause
+: Returns value of keepRunningWhenOnPause.
 
 {:id="ProximitySensor.MaximumRange" .number .ro .bo} *MaximumRange*
 : Determines a sensor's maximum range. Some proximity sensors return binary values

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -21,13 +21,17 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.VerticalAlignment;
 
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -35,6 +39,8 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A container for components that arranges them linearly, either
@@ -44,6 +50,7 @@ import java.io.IOException;
  * @author kkashi01@gmail.com (Hossein Amerkashi) (added Image and BackgroundColors)
  */
 
+@SuppressWarnings("AbbreviationAsWordInName")
 @SimpleObject
 public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> implements Component, ComponentContainer {
   private final Activity context;
@@ -55,9 +62,9 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
 
-  // the alignment for this component's LinearLayout
-  private int horizontalAlignment;
-  private int verticalAlignment;
+  // The alignment for this component's LinearLayout.
+  private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left;
+  private VerticalAlignment verticalAlignment = VerticalAlignment.Top;
   // Backing for background color
   private int backgroundColor;
   // This is the Drawable corresponding to the Image property.
@@ -65,6 +72,9 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
   private Drawable backgroundImageDrawable;
   // Image path
   private String imagePath = "";
+
+  //list of component children
+  private List<Component> allChildren = new ArrayList<>();
 
   private Drawable defaultButtonDrawable;
 
@@ -92,11 +102,9 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
 
     viewLayout.setBaselineAligned(false);
     alignmentSetter = new AlignmentUtil(viewLayout);
-    horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
-    verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
-    
+
     frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
     frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -126,6 +134,12 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
   @Override
   public void $add(AndroidViewComponent<? extends View> component) {
     viewLayout.add(component);
+    allChildren.add(component);
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return allChildren;
   }
 
   @Override
@@ -185,6 +199,11 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
     }
   }
 
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for linear layout
+  }
+
   // AndroidViewComponent implementation
 
   @Override
@@ -192,11 +211,9 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
     return frameContainer; //: viewLayout.getLayoutManager();
   }
 
-  // The numeric encodings are defined Component Constants
-
   /**
    * Returns a number that encodes how contents of the %type% are aligned horizontally.
-   * The choices are: 1 = left aligned, 2 = right aligned, 3 = horizontally centered
+   * The choices are: 1 = left aligned, 2 = right aligned, 3 = horizontally centered.
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -204,8 +221,26 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
           " horizontally. The choices are: 1 = left aligned, 2 = right aligned, " +
           " 3 = horizontally centered.  Alignment has no effect if the arrangement's width is " +
           "automatic.")
-  public int AlignHorizontal() {
+  public @Options(HorizontalAlignment.class) int AlignHorizontal() {
+    return AlignHorizontalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current horizontal alignment of this arrangement.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public HorizontalAlignment AlignHorizontalAbstract() {
     return horizontalAlignment;
+  }
+
+  /**
+   * Sets the arrangements horizontal alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
+    alignmentSetter.setHorizontalAlignment(alignment);
+    horizontalAlignment = alignment;
   }
 
   /**
@@ -218,16 +253,15 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
-  public void AlignHorizontal(int alignment) {
-    try {
-      // notice that the throw will prevent the alignment from being changed
-      // if the argument is illegal
-      alignmentSetter.setHorizontalAlignment(alignment);
-      horizontalAlignment = alignment;
-    } catch (IllegalArgumentException e) {
+  public void AlignHorizontal(@Options(HorizontalAlignment.class) int alignment) {
+    // Make sure alignment is a valid HorizontalAlignment.
+    HorizontalAlignment align = HorizontalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
       container.$form().dispatchErrorOccurredEvent(this, "HorizontalAlignment",
           ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+      return;
     }
+    AlignHorizontalAbstract(align);
   }
 
   /**
@@ -241,13 +275,31 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
           " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
           "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
           "is automatic.")
-  public int AlignVertical() {
+  public @Options(VerticalAlignment.class) int AlignVertical() {
+    return AlignVerticalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current vertical alignment of this arrangement.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public VerticalAlignment AlignVerticalAbstract() {
     return verticalAlignment;
   }
 
   /**
+   * Sets the arrangements vertical alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignVerticalAbstract(VerticalAlignment alignment) {
+    alignmentSetter.setVerticalAlignment(alignment);
+    verticalAlignment = alignment;
+  }
+
+  /**
    * A number that encodes how the contents of the `%type%` are aligned vertically. The choices
-   * are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+   * are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
    * Alignment has no effect if the `%type%`'s {@link #Height()} is `Automatic`.
    *
    * @param alignment
@@ -255,16 +307,15 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
-  public void AlignVertical(int alignment) {
-    try {
-      // notice that the throw will prevent the alignment from being changed
-      // if the argument is illegal
-      alignmentSetter.setVerticalAlignment(alignment);
-      verticalAlignment = alignment;
-    } catch (IllegalArgumentException e) {
+  public void AlignVertical(@Options(VerticalAlignment.class) int alignment) {
+    // Make sure alignment is a valid VerticalAlignment.
+    VerticalAlignment align = VerticalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
       container.$form().dispatchErrorOccurredEvent(this, "VerticalAlignment",
           ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+      return;
     }
+    AlignVerticalAbstract(align);
   }
 
     /**
@@ -323,7 +374,7 @@ public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
     @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be visible.")
-    public void Image(String path) {
+    public void Image(@Asset String path) {
         // If it's the same as on the prior call and the prior load was successful,
         // do nothing.
         if (path.equals(imagePath) && backgroundImageDrawable != null) {

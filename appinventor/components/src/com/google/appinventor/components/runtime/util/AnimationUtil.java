@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
+import com.google.appinventor.components.common.ScreenAnimation;
 
 /**
  * This class supplies some support for pre-defined component animation.
@@ -72,16 +73,28 @@ public final class AnimationUtil {
   }
 
   /**
-   * Applies a specific animation for transitioning to a new
-   * Screen.
+   * Applies a specific animation for transitioning to a new Screen.
    *
    * @param activity - the form which is calling another screen
    * @param animType - the animation type
    */
   public static void ApplyOpenScreenAnimation(Activity activity, String animType) {
+    ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
+    AnimationUtil.ApplyOpenScreenAnimation(activity, anim);
+  }
+
+  /**
+   * Applies a specific animation for transitioning to a new Screen.
+   *
+   * @param activity - the form which is calling another screen
+   * @param animType - the animation type
+   */
+  @SuppressWarnings("RegularMethodName")
+  public static void ApplyOpenScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (animType == null) {
       return;
     }
+
     if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
@@ -89,26 +102,37 @@ public final class AnimationUtil {
     int enter = 0;
     int exit = 0;
 
-    if (animType.equalsIgnoreCase("fade")) {
-      enter = activity.getResources().getIdentifier("fadein", "anim", activity.getPackageName());
-      exit = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("zoom")) {
-      exit = activity.getResources().getIdentifier("zoom_exit", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("zoom_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidehorizontal")) {
-      exit = activity.getResources().getIdentifier("slide_exit", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("slide_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidevertical")) {
-      exit = activity.getResources().getIdentifier("slide_v_exit", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("slide_v_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("none")) {
-      // enter and exit are already set to 0, so
-      // no animations will be played.
-    } else {
-      // Return here so overridePendingTransitions isn't run, and android
-      // does it's default thing.
-      return;
+    switch (animType) {
+      case Fade:
+        enter = activity.getResources().getIdentifier("fadein", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
+        break;
+      case Zoom:
+        exit = activity.getResources().getIdentifier("zoom_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("zoom_enter", "anim",
+            activity.getPackageName());
+        break;
+      case SlideHorizontal:
+        exit = activity.getResources().getIdentifier("slide_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_enter", "anim",
+            activity.getPackageName());
+        break;
+      case SlideVertical:
+        exit = activity.getResources().getIdentifier("slide_v_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_v_enter", "anim",
+            activity.getPackageName());
+        break;
+      case None:
+        // enter and exit are already set to 0, so no animations will be played.
+        break;
+      default:
+        // Return here so overridePendingTransitions isn't run, and android does it's default thing.
+        return;
     }
+
     EclairUtil.overridePendingTransitions(activity, enter, exit);
   }
 
@@ -119,35 +143,60 @@ public final class AnimationUtil {
    * @param animType - the animation type
    */
   public static void ApplyCloseScreenAnimation(Activity activity, String animType) {
+    ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
+    AnimationUtil.ApplyCloseScreenAnimation(activity, anim);
+  }
+
+  /**
+   * Applies a specific animation for transitioning back a screen.
+   *
+   * @param activity - the form which is closing
+   * @param animType - the animation type
+   */
+  @SuppressWarnings("RegularMethodName")
+  public static void ApplyCloseScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (animType == null) {
       return;
     }
+
     if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
     }
     int enter = 0;
     int exit = 0;
-    if (animType.equalsIgnoreCase("fade")) {
-      exit = activity.getResources().getIdentifier("fadeout", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("zoom")) {
-      exit = activity.getResources().getIdentifier("zoom_exit_reverse", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("zoom_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidehorizontal")) {
-      exit = activity.getResources().getIdentifier("slide_exit_reverse", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("slide_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidevertical")) {
-      exit = activity.getResources().getIdentifier("slide_v_exit_reverse", "anim", activity.getPackageName());
-      enter = activity.getResources().getIdentifier("slide_v_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("none")) {
-      // enter and exit are already set to 0, so
-      // no animations will be played.
-    } else {
-      // Return here so overridePendingTransitions isn't run, and android
-      // does it's default thing.
-      return;
+
+    switch (animType) {
+      case Fade:
+        exit = activity.getResources().getIdentifier("fadeout", "anim", activity.getPackageName());
+        enter = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
+        break;
+      case Zoom:
+        exit = activity.getResources().getIdentifier("zoom_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("zoom_enter_reverse", "anim",
+            activity.getPackageName());
+        break;
+      case SlideHorizontal:
+        exit = activity.getResources().getIdentifier("slide_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_enter_reverse", "anim",
+            activity.getPackageName());
+        break;
+      case SlideVertical:
+        exit = activity.getResources().getIdentifier("slide_v_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_v_enter_reverse", "anim",
+            activity.getPackageName());
+        break;
+      case None:
+        // enter and exit are already set to 0, so no animations will be played.
+        break;
+      default:
+        // Return here so overridePendingTransitions isn't run, and android does it's default thing.
+        return;
     }
+
     EclairUtil.overridePendingTransitions(activity, enter, exit);
   }
 

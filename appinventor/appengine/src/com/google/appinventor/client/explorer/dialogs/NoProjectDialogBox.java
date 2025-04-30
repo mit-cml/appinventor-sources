@@ -12,9 +12,11 @@ import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,6 +30,7 @@ public class NoProjectDialogBox extends DialogBox {
 
   private static NoProjectDialogBoxUiBinder uiBinder =
       GWT.create(NoProjectDialogBoxUiBinder.class);
+  private static NoProjectDialogBox lastDialog = null;
 
   interface NoProjectDialogBoxUiBinder extends UiBinder<Widget, NoProjectDialogBox> {
   }
@@ -52,6 +55,10 @@ public class NoProjectDialogBox extends DialogBox {
   Button goToYR;
   @UiField
   Button noDialogNewProject;
+  @UiField
+  Button topInvisible;
+  @UiField
+  Button bottomInvisible;
 
   /**
    * Creates a new dialog box when the user has no current projects in their
@@ -64,6 +71,9 @@ public class NoProjectDialogBox extends DialogBox {
     this.center();
     this.setAnimationEnabled(true);
     this.setAutoHideEnabled(true);
+    this.setModal(false);
+    noDialogNewProject.setFocus(true);
+    lastDialog = this;
   }
 
   @UiHandler("closeDialogBox")
@@ -74,24 +84,46 @@ public class NoProjectDialogBox extends DialogBox {
   @UiHandler("goToPurr")
   void handleGoToPurr(ClickEvent e) {
     this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject());
+    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),
+            "HelloPurr");
   }
 
   @UiHandler("goToTalk")
   void handleGoToTalk(ClickEvent e) {
     this.hide();
-    TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc", new NewTutorialProject());
+    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
+        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc",
+        new NewTutorialProject());
   }
 
   @UiHandler("goToYR")
   void handleGoToYR(ClickEvent e) {
     this.hide();
-    TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc", new NewTutorialProject());
+    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
+        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc",
+        new NewTutorialProject());
   }
 
   @UiHandler("noDialogNewProject")
   void handleNewProject(ClickEvent e) {
     this.hide();
-    new NewYoungAndroidProjectWizard(null).show();
+    new NewYoungAndroidProjectWizard().show();
+  }
+
+  public static void closeIfOpen() {
+    if (lastDialog != null) {
+      lastDialog.removeFromParent();;
+      lastDialog = null;
+    }
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     closeDialogBox.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     goToPurr.setFocus(true);
   }
 }

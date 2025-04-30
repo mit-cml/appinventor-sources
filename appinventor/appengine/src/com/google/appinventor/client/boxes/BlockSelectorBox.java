@@ -2,14 +2,13 @@
 
 package com.google.appinventor.client.boxes;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
@@ -28,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -42,6 +42,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public final class BlockSelectorBox extends Box {
+  private static final Logger LOG = Logger.getLogger(BlockSelectorBox.class.getName());
+
   private static class BlockSelectorItem implements SourceStructureExplorerItem {
     BlockSelectorItem() {
     }
@@ -185,7 +187,7 @@ public final class BlockSelectorBox extends Box {
   private String getBuiltinDrawerNames(String drawerName) {
     String name;
 
-    OdeLog.wlog("getBuiltinDrawerNames: drawerName = " + drawerName);
+    LOG.warning("getBuiltinDrawerNames: drawerName = " + drawerName);
 
     if (drawerName.equals("Control")) {
        name = MESSAGES.builtinControlLabel();
@@ -228,7 +230,7 @@ public final class BlockSelectorBox extends Box {
     for (final String typeName : typeList) {
       TreeItem itemNode = new TreeItem(new HTML("<span>" + typesAndIcons.get(typeName)
           + MESSAGES.textAnyComponentLabel()
-          + ComponentsTranslation.getComponentName(typeName) + "</span>"));
+          + ComponentTranslationTable.getComponentName(typeName) + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected(NativeEvent source) {

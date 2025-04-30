@@ -18,6 +18,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -25,6 +26,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,6 +56,7 @@ import java.util.List;
     description = "<p>A formatting element in which to place components " +
         "that should be displayed in the tab format</p>")
 @SimpleObject
+@UsesLibraries({"cardview.jar", "cardview.aar", "material.jar", "material.aar", "recyclerview.aar", "recyclerview.jar", "viewpager2.jar", "viewpager2.aar"})
 public class TabArrangement extends AndroidViewComponent<LinearLayout> implements ComponentContainer {
   private TabLayout tabLayout;
   private ViewPager2 viewPager;
@@ -184,7 +187,20 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   @Override
   public void setChildHeight(AndroidViewComponent<? extends View> component, int height) {
   }
-  
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return Collections.unmodifiableList(tabs);
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent<?> component) {
+    // not needed for linear layout
+  }
+
+  /**
+   * Indicates when the selected tab has changed in the TabArrangement.
+   */
   @SimpleEvent
   public void ShowTab(Tab tab) {
     EventDispatcher.dispatchEvent(this, "ShowTab", tab);

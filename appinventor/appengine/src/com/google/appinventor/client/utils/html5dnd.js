@@ -1,4 +1,4 @@
-// -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: javascript; js-indent-level: 2; -*-
 // Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -23,10 +23,21 @@ top.HTML5DragDrop_getOpenProjectId = function() { return ''; };
 top.HTML5DragDrop_handleUploadResponse = function(_projectId, type, name, response) {};
 top.HTML5DragDrop_reportError = function(errorCode) {};
 top.HTML5DragDrop_confirmOverwriteKey = function(callback) {};
+top.HTML5DragDrop_getNewProjectName = function(filename, callback) {};
+top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {};
+top.HTML5DragDrop_checkProjectNameForCollision = function(name) {};
+top.HTML5DragDrop_shouldShowDropTarget = function(target) {};
+
+top.HTML5DragDrop_importProject = importProject;
 
 var dropdiv = document.createElement('div');
 dropdiv.className = 'dropdiv';
 dropdiv.innerHTML = '<div><p>Drop files here</p></div>';
+
+function hideDropDiv() {
+  dropdiv.className = 'dropdiv';
+  dropdiv.remove();
+}
 
 function isUrl(str) {
   return str.indexOf('http:') === 0 || str.indexOf('https:') === 0;
@@ -40,7 +51,14 @@ function readUrl(item, cb) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         if (xhr.response.name === undefined) {
-          xhr.response.name = item.substr(item.lastIndexOf('/') + 1);
+          var name = item.substring(item.lastIndexOf('/') + 1);
+          // Discourse generates random names that sometimes begin with numbers. The actual file
+          // name is given in a Content-Disposition header, but browsers block access to it on
+          // security grounds. Instead, we prepend Project_ to make it a valid project name.
+          if (/^[0-9].*/.exec(name)) {
+            name = "Project_" + name;
+          }
+          xhr.response.name = name;
         }
         cb(xhr.response);
       }
@@ -52,23 +70,36 @@ function readUrl(item, cb) {
 function handleDroppedItem(item, cb) {
   if (isUrl(item.name)) {
     readUrl(item.name, cb);
+  } else if (/[-a-zA-Z0-9+.]+:.*/.exec(item.name)) {
+    // URI-like thing without http/https as checked by isUrl
+    // Suppressing this is conservative, but if the filename contains a colon it's likely to be
+    // rejected elsewhere in the system as well, e.g., buildserver.
+    // Examples: data:image/png;base64,..., about:blank
+
+    // noinspection UnnecessaryReturnStatementJS
+    return;
   } else {
     cb(item);
   }
 }
 
 function importProject(droppedItem) {
-  function doImportProject(blob) {
+  if (typeof droppedItem == "string") {
+    droppedItem = {"name": droppedItem} // stop gap for handling different sources
+  }
+  var filename = droppedItem.name;
+  filename = filename.substring(filename.lastIndexOf('/') + 1);
+  var projectName = filename.substring(0, filename.length - 4);
+  function doUploadProject(blob) {
+    // Upload project
     var xhr = new XMLHttpRequest();
     var formData = new FormData();
-    var filename = blob.name;
-    filename = filename.substr(filename.lastIndexOf('/') + 1);
     formData.append('uploadProjectArchive', blob);
-    xhr.open('POST', '/ode/upload/project/' + filename.substr(0, filename.length - 4));
+    xhr.open('POST', '/ode/upload/project/' + projectName);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          top.HTML5DragDrop_handleUploadResponse(null, 'project', droppedItem.name, xhr.response);
+          top.HTML5DragDrop_handleUploadResponse(null, 'project', blob.name, xhr.response);
         } else {
           top.HTML5DragDrop_reportError(xhr.status);
         }
@@ -76,7 +107,16 @@ function importProject(droppedItem) {
     };
     xhr.send(formData);
   }
-  handleDroppedItem(droppedItem, doImportProject);
+  if (!top.HTML5DragDrop_checkProjectNameForCollision(projectName)) {
+    handleDroppedItem(droppedItem, function(blob) {
+      top.HTML5DragDrop_getNewProjectName(blob.name, function(fileName) {
+        projectName = fileName;
+        doUploadProject(blob);
+      });
+    });
+  } else {
+    handleDroppedItem(droppedItem,doUploadProject);
+  }
 }
 
 function uploadExtension(droppedItem) {
@@ -109,8 +149,8 @@ function uploadAsset(droppedItem) {
     top.HTML5DragDrop_reportError(1);
     return;
   }
+  var projectId = top.HTML5DragDrop_getOpenProjectId();
   function doUploadAsset(blob) {
-    var projectId = top.HTML5DragDrop_getOpenProjectId();
     var xhr = new XMLHttpRequest();
     var formData = new FormData();
     formData.append('uploadFile', blob);
@@ -126,7 +166,11 @@ function uploadAsset(droppedItem) {
     };
     xhr.send(formData);
   }
-  handleDroppedItem(droppedItem, doUploadAsset);
+  handleDroppedItem(droppedItem, function(blob) {
+    top.HTML5DragDrop_confirmOverwriteAsset(projectId, blob.name, function() {
+      doUploadAsset(blob);
+    });
+  });
 }
 
 function uploadKeystore(droppedItem) {
@@ -150,26 +194,29 @@ function uploadKeystore(droppedItem) {
 }
 
 function isProject(item) {
-  return goog.string.endsWith(item.name, '.aia');
+  return top.goog.string.endsWith(item.name, '.aia');
 }
 
 function isExtension(item) {
-  return goog.string.endsWith(item.name, '.aix');
+  return top.goog.string.endsWith(item.name, '.aix');
 }
 
 function isKeystore(item) {
-  return goog.string.endsWith(item.name, 'android.keystore');
+  return top.goog.string.endsWith(item.name, 'android.keystore');
 }
 
 function checkValidDrag(e) {
-  e.preventDefault();
   var dragType = 'none';
+  var valid = false;
   if (e.dataTransfer.types.indexOf('Files') >= 0 ||
       e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
     dragType = 'copy';
     dropdiv.className = 'dropdiv good';
+    valid = true;
+    e.preventDefault();
   }
   e.dataTransfer.dropEffect = dragType;
+  return valid;
 }
 
 function doUploadKeystore(item) {
@@ -187,7 +234,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk')) {
+    } else if (top.goog.string.endsWith(item.name, '.apk') || top.goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);
@@ -222,9 +269,10 @@ function targetIsBlocksEditor(el) {
 }
 
 function targetIsGwtDialogBox(e) {
-  if (e.path) {
-    for (var i = e.path.length - 1; i > 0; i--) {
-      if (e.path[i].classList && e.path[i].classList.contains('ode-DialogBox')) {
+  var path = e.composedPath();
+  if (path) {
+    for (var i = path.length - 1; i > 0; i--) {
+      if (path[i].classList && path[i].classList.contains('ode-DialogBox')) {
         return true;
       }
     }
@@ -247,22 +295,41 @@ function targetIsGwtDialogBox(e) {
 function onDragEnter(e) {
   var el = /** @type {HTMLElement} */ e.target;
   if (targetIsBlocksEditor(el)) {
-    console.log('target is blocks editor');
     return;  // Allow for blocks editor to handle block png drag and drop
   }
   if (document.querySelector('.ode-DialogBox')) {
     return;  // dialog box is open
   }
-  dragId = setTimeout(function() {
-    if (el.tagName !== 'INPUT' && !dropdiv.parentNode) {
-      document.body.appendChild(dropdiv);
-    }
-  }, 50);
-  checkValidDrag(e);
+
+  // Check if the mouse is over a valid drop area in the UI
+  var target = /** @type {HTMLElement} */ top.HTML5DragDrop_shouldShowDropTarget(el);
+  if (!target) {
+    return;  // Not a valid drop target
+  }
+
+  // Position drop visualizer over drop target
+  var rect = target.getBoundingClientRect();
+  dropdiv.style.position = 'absolute';
+  dropdiv.style.left = (window.scrollX + rect.x) + 'px';
+  dropdiv.style.top = (window.scrollY + rect.y) + 'px';
+  dropdiv.style.width = rect.width + 'px';
+  dropdiv.style.height = rect.height + 'px';
+
+  if (checkValidDrag(e)) {
+    dragId = setTimeout(function() {
+      if (el.tagName !== 'INPUT' && !dropdiv.parentNode) {
+        document.body.appendChild(dropdiv);
+      }
+    }, 50);
+  }
 }
 
 function onDragOver(e) {
   var el = /** @type {HTMLElement} */ e.target;
+  if (!dropdiv.parentElement) {
+    // drop div not visible.
+    return;
+  }
   if (targetIsBlocksEditor(el) || targetIsGwtDialogBox(e)) {
     dropdiv.className = 'dropdiv';
     if (dragId) {
@@ -270,35 +337,69 @@ function onDragOver(e) {
       dragId = null;
     }
     return;  // Allow for blocks editor to handle block png drag and drop
+  } else {
+    // Remove the drop area if the mouse is outside of it
+    // The dropdiv doesn't receive mouse events, so we check this on the <body>
+    var rect = dropdiv.getBoundingClientRect();
+    if (!(rect.left < e.clientX && e.clientX < rect.right &&
+      rect.top < e.clientY && e.clientY < rect.bottom)) {
+      hideDropDiv();
+      return;  // Left the drop area
+    }
   }
   checkValidDrag(e);
 }
 
 function onDragLeave(e) {
-  e.preventDefault();
   var node = e.target;
-  if (node === dropdiv || node.querySelector('.ode-DeckPanel')
-    || (e.path && e.path.length <= 10)) {
-    dropdiv.className = 'dropdiv';
-    dropdiv.remove();
+  var path = e.composedPath();
+  if (node === dropdiv
+      || (node.nodeType === Node.ELEMENT_NODE && node.querySelector('.ode-DeckPanel'))
+      || (path && path.length <= 10)) {
+    hideDropDiv();
   }
 }
 
 function onDrop(e) {
   try {
-    if (!targetIsBlocksEditor(e.target) && !targetIsGwtDialogBox(e)) {  // blocks editor handles its own drop
+    if (document.querySelector('.ode-DialogBox')) {
+      // If there is a dialog open, don't do anything with drag and drop.
+      return;
+    }
+    if (!dropdiv.parentElement) {
+      // Don't let drop occur if dropdiv isn't visible.
+
+      // noinspection UnnecessaryReturnStatementJS
+      return;
+    } else if (!top.HTML5DragDrop_shouldShowDropTarget(e.target)) {
+      // Don't let drop occur if there isn't a valid receive beneath
+
+      // noinspection UnnecessaryReturnStatementJS
+      return;
+    } else if (!targetIsBlocksEditor(e.target) && !targetIsGwtDialogBox(e)) {  // blocks editor handles its own drop
       checkValidDrop(e);
     }
   } finally {
     dropdiv.remove();
+    if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+      // Cancel drop events generally unless the target is an input
+      e.preventDefault();
+    }
   }
 }
 
 function cancelDrop(e) {
-  if (dropdiv.classList.contains('good')) {
+  if (dropdiv.classList.contains('good') && dropdiv.parentElement) {
     if (e.buttons === 0) {
-      dropdiv.remove();
-      dropdiv.className = 'dropdiv';
+      hideDropDiv();
+    } else {
+      // Remove the drop area if the mouse is outside of it
+      // The dropdiv doesn't receive mouse events, so we check this on the <body>
+      var rect = dropdiv.getBoundingClientRect();
+      if (!(rect.left < e.clientX && e.clientX < rect.right &&
+        rect.top < e.clientY && e.clientY < rect.bottom)) {
+        hideDropDiv();
+      }
     }
   }
 }
@@ -307,4 +408,5 @@ top.document.body.addEventListener('dragenter', onDragEnter, false);
 top.document.body.addEventListener('dragover', onDragOver, true);
 top.document.body.addEventListener('dragleave', onDragLeave, true);
 top.document.body.addEventListener('drop', onDrop, true);
-top.document.body.addEventListener('mousemove', cancelDrop);
+top.document.body.addEventListener('mousemove', cancelDrop, {passive: true, capture: true});
+top.document.body.addEventListener('mouseout', cancelDrop, {passive: true, capture: true});

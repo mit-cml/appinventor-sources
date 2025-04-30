@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
@@ -29,6 +30,9 @@ public final class MockTableArrangement extends MockContainer<MockTableLayout> {
   // Form UI components
   protected final AbsolutePanel layoutWidget;
 
+  private int rows;
+  private int columns;
+
   /**
    * Creates a new MockTableArrangement component.
    *
@@ -46,6 +50,66 @@ public final class MockTableArrangement extends MockContainer<MockTableLayout> {
     initComponent(layoutWidget);
   }
 
+  @Override
+  public boolean canPasteComponentOfType(String type) {
+    if (!super.canPasteComponentOfType(type)) {
+      return false;
+    }
+
+    // See if we can find a free cell to obtain the pasted component
+    MockComponent[][] cells = computeTable();
+    for (int row = 0; row < rows; row++) {
+      for (int column = 0; column < columns; column++) {
+        if (cells[row][column] == null) {
+          return true;
+        }
+      }
+    }
+
+    // No free spaces available so abort.
+    return false;
+  }
+
+  @Override
+  public void onPaste(MockComponent child) {
+    super.onPaste(child);
+    MockTableLayout.Cell cell = ((MockTableLayout) layout).getCellContainingPoint(
+        DragSourceSupport.absX - child.getAbsoluteLeft(),
+        DragSourceSupport.absY - child.getAbsoluteTop());
+    MockComponent[][] cells = computeTable();
+
+    // Do we have a valid, empty cell?
+    if (cell != null && cells[cell.row][cell.col] == null) {
+      child.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, "" + cell.row);
+      child.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, "" + cell.col);
+      return;
+    }
+
+    // Either cell is null (no valid cell) or cell is valid but not empty, so find an empty cell
+    // and move the component there.
+    for (int row = 0; row < rows; row++) {
+      for (int column = 0; column < columns; column++) {
+        if (cells[row][column] == null) {
+          child.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, "" + row);
+          child.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, "" + column);
+          return;
+        }
+      }
+    }
+  }
+
+  private MockComponent[][] computeTable() {
+    MockComponent[][] cells = new MockComponent[rows][columns];
+    for (MockComponent component : children) {
+      int row = Integer.parseInt(component.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_ROW));
+      int column = Integer.parseInt(component.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_COLUMN));
+      if (0 <= row && row < rows && 0 <= column && column < columns) {
+        cells[row][column] = component;
+      }
+    }
+    return cells;
+  }
+
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
     component.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW,
         "" + ComponentConstants.DEFAULT_ROW_COLUMN);
@@ -56,7 +120,7 @@ public final class MockTableArrangement extends MockContainer<MockTableLayout> {
 
   private void setColumnsProperty(String value) {
     try {
-      int columns = Integer.parseInt(value);
+      columns = Integer.parseInt(value);
       ((MockTableLayout) layout).setColumns(columns);
     } catch (NumberFormatException e) {
       // Ignore this. If we throw an exception here, the project is unrecoverable.
@@ -65,7 +129,7 @@ public final class MockTableArrangement extends MockContainer<MockTableLayout> {
 
   private void setRowsProperty(String value) {
     try {
-      int rows = Integer.parseInt(value);
+      rows = Integer.parseInt(value);
       ((MockTableLayout) layout).setRows(rows);
     } catch (NumberFormatException e) {
       // Ignore this. If we throw an exception here, the project is unrecoverable.
