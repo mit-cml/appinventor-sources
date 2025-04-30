@@ -324,7 +324,7 @@ public class ARFilamentRenderer {
 
 
 
-    /**
+    /**CSB best to bake in the lights for the filament renderer
      * Set up basic lighting for the scene
      */
     private void setupLighting() {
@@ -334,7 +334,7 @@ public class ARFilamentRenderer {
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
         lightBuilder.color(1.0f, 1.0f, 0.8f)    // Slightly warm sunlight color
                 .intensity(80000.0f)           // Bright sunlight
-                .direction(0.0f, -1.0f, 0.0f)  // Coming from above and slightly in front
+                .direction(0.0f, 5.0f, 0.0f)  // Coming from above and slightly in front
                 .castShadows(true);
 
         LightManager lightManager = engine.getLightManager();
@@ -361,7 +361,7 @@ public class ARFilamentRenderer {
 
         try {
             Log.d(LOG_TAG, "read from basic.filamat to get material");
-            ByteBuffer materialBuffer = readAsset("basic.filamat");
+            ByteBuffer materialBuffer = readAsset("basic.filamat", true);
             if (materialBuffer != null) {
                 testMaterial = new Material.Builder()
                         .payload(materialBuffer, materialBuffer.capacity())
@@ -1000,7 +1000,7 @@ private void handleRenderableBufferRead() {
 
         try {
             // Read the asset file
-            ByteBuffer buffer = readAsset(modelFile);
+            ByteBuffer buffer = readAsset(modelFile, false);
 
             // Create the asset
             FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
@@ -1114,8 +1114,15 @@ private void handleRenderableBufferRead() {
     /**
      * Read an asset into a ByteBuffer
      */
-    private ByteBuffer readAsset(String assetName) throws IOException {
-        try (java.io.InputStream is = MediaUtil.getAssetsIgnoreCaseInputStream(this.formCopy, assetName)) {
+    private ByteBuffer readAsset(String assetName, boolean isInternal) throws IOException {
+
+        try {
+            java.io.InputStream is = null;
+            if (isInternal){
+                is = MediaUtil.getAssetsIgnoreCaseInputStream(this.formCopy, assetName);
+            } else{
+                is = this.formCopy.openAsset(assetName);
+            }
             if (is == null) {
                 throw new IOException("Asset not found: " + assetName);
             }
@@ -1126,6 +1133,7 @@ private void handleRenderableBufferRead() {
             byteBuffer.put(buffer);
             byteBuffer.rewind();
             return byteBuffer;
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error reading asset " + assetName + ": " + e.getMessage());
             throw new IOException("Failed to read asset: " + assetName, e);

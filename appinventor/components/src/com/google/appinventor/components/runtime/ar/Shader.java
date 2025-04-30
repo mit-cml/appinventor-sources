@@ -139,10 +139,12 @@ public class Shader implements Closeable {
             throws IOException {
         Log.d(TAG, "shader " +vertexShaderFileName);
         Log.d(TAG, "shader " +fragmentShaderFileName);
+        final AssetManager am = render.getForm().getAssets();
+
         return new Shader(
                 render,
-                inputStreamToString(render.getForm().openAsset(vertexShaderFileName)),
-                inputStreamToString(render.getForm().openAsset(fragmentShaderFileName)),
+                inputStreamToString(am.open(vertexShaderFileName)),
+                inputStreamToString(am.open(fragmentShaderFileName)),
                 defines);
     }
 

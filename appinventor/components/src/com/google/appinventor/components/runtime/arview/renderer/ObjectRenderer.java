@@ -17,7 +17,7 @@ import java.util.Map;
 
 /** Renders an object loaded from an OBJ file in OpenGL. */
 @UsesAssets(fileNames = "ar_object.vert, ar_object.frag," +
-        "pawn_albedo.png, pawn.obj")
+        "pawn_albedo.png, pawn.obj, cube.obj")
 public class ObjectRenderer {
   private static final String TAG = ObjectRenderer.class.getSimpleName();
 
@@ -34,12 +34,12 @@ public class ObjectRenderer {
   }
 
   // Default model and texture if none specified
-  private static final String DEFAULT_MODEL_NAME = "pawn.obj";
-  private static final String DEFAULT_TEXTURE_NAME = "pawn_albedo.png";
+  private static final String DEFAULT_MODEL_NAME = Form.ASSETS_PREFIX +"cube.obj";
+  private static final String DEFAULT_TEXTURE_NAME = Form.ASSETS_PREFIX +"Palette.png";
 
   // Shader names.
-  private static final String VERTEX_SHADER_NAME = "ar_object.vert";
-  private static final String FRAGMENT_SHADER_NAME = "ar_object.frag";
+  private static final String VERTEX_SHADER_NAME = Form.ASSETS_PREFIX +"ar_object.vert";
+  private static final String FRAGMENT_SHADER_NAME = Form.ASSETS_PREFIX +"ar_object.frag";
 
   // Cache for meshes and textures
   private final Map<String, Mesh> meshCache = new HashMap<>();
@@ -112,7 +112,8 @@ public class ObjectRenderer {
 
     // Create new mesh and cache it
     try {
-      Mesh newMesh = Mesh.createFromAsset(render, modelName);
+      Log.d(TAG, "loading model: " + modelName );
+      Mesh newMesh = Mesh.createFromAsset(render, modelName); // TODO CSB - provide for internal and external meshes..
       meshCache.put(modelName, newMesh);
       return newMesh;
     } catch (IOException e) {

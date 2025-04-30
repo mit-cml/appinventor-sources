@@ -34,13 +34,13 @@ import android.util.Log;
 
   @SimpleObject
 
-@UsesAssets(fileNames = "sphere.obj,Palette.png")
+@UsesAssets(fileNames = "sphere.obj")
   public final class SphereNode extends ARNodeBase implements ARSphere {
 
     private Anchor anchor = null;
     private Trackable trackable = null;
     private String objectModel = "sphere.obj";
-    private String texture = "Palette.png";
+    private String texture = "";
     public SphereNode(final ARNodeContainer container) {
       super(container);
       //parentSession = session;
@@ -69,12 +69,12 @@ import android.util.Log;
     public void Model(String model) {this.objectModel = model;}
 
     @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
+    @SimpleFunction(description = "move a sphere node properties at the " +
             "specified (x,y,z) position.")
     public void MoveTo(float x, float y, float z){}
 
     @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
+    @SimpleFunction(description = "move a sphere node properties at the " +
             "specified (x,y,z) position.")
     public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
       this.trackable = (Trackable) targetPlane.DetectedPlane();

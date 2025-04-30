@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.ArrayList;
 import android.util.Log;
 
-@UsesAssets(fileNames = "Palette.png, chick_baby_chicken_bird.glb")
+@UsesAssets(fileNames = "Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a 3D model in an ARView3D.  " +
       "External model files can be uploaded to the server for use, but the files " +
@@ -41,8 +41,8 @@ import android.util.Log;
 
     private Anchor anchor = null;
     private Trackable trackable = null;
-    private String objectModel = "chick_baby_chicken_bird.glb";
-    private String texture = "Palette.png";
+    private String objectModel = "";
+    private String texture = Form.ASSETS_PREFIX + "Palette.png";
     private float scale = 1.0f;
 
     public ModelNode(final ARNodeContainer container) {

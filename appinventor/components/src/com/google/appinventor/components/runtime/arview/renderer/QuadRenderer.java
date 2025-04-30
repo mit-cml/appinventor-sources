@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import android.opengl.GLES30;
 import android.util.Log;
 import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.util.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,8 +30,8 @@ public class QuadRenderer {
     private static final String TAG = QuadRenderer.class.getSimpleName();
 
     // Shader names - you would need to create these shader files
-    private static final String VERTEX_SHADER_NAME = "quad.vert";
-    private static final String FRAGMENT_SHADER_NAME = "quad.frag";
+    private static final String VERTEX_SHADER_NAME = Form.ASSETS_PREFIX +"quad.vert";
+    private static final String FRAGMENT_SHADER_NAME = Form.ASSETS_PREFIX +"quad.frag";
 
     // Quad geometry constants
     private static final int VERTICES_PER_QUAD = 4;

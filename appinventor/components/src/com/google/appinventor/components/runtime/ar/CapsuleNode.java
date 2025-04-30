@@ -6,7 +6,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
-
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -34,14 +33,14 @@ import java.util.Collection;
 
   @SimpleObject
 
-@UsesAssets(fileNames = "pawn_albedo.png, pawn.obj")
+@UsesAssets(fileNames = "torus.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
 
   private Anchor anchor = null;
   private Trackable trackable = null;
-  private String texture = "pawn_albedo.png";
-  private String objectModel = "pawn.obj";
+  private String texture = "";
+  private String objectModel = Form.ASSETS_PREFIX + "torus.obj";
   private float scale = 1.0f;
 
     public CapsuleNode(final ARNodeContainer container) {
@@ -66,7 +65,16 @@ import java.util.Collection;
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
     @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
             "sizing properties.  Values less than zero will be treated as their absolute value.")
-   public float Scale() {return this.scale;}
+   public float Scale() {
+        Log.d("capnode","get scale on capnode");
+        return this.scale;
+    }
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+    public void Scale(float s) {
+        Log.d("capnode", "set scale on capnode");
+        this.scale = s;}
 
 
     @Override
@@ -119,9 +127,16 @@ import java.util.Collection;
     public void CapRadiusInCentimeters(float capRadiusInCentimeters) {}
 
     @Override
-    public String Texture()  { return this.texture; }
+    public String Texture()  {
+        Log.d("capnode","get texture on capnode" + this.texture);
+        return this.texture; }
 
     @Override
-    public void Texture(String texture) {this.texture = texture;}
+    @SimpleProperty(description = "The 3D model file to be loaded.",
+            category = PropertyCategory.APPEARANCE)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+    public void Texture(String texture) {
+        Log.d("capnode","set texture on capnode" + texture);
+        this.texture = texture;}
 
   }

@@ -1,11 +1,11 @@
 package com.google.appinventor.components.runtime;
-
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.util.Log;
-
+import android.content.res.AssetManager;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -126,15 +126,20 @@ public class Texture implements Closeable {
         }
     }
 
-    /**
-     * Create a texture from the given asset file name.
+    /*
+     * Create a texture from the given asset file name. Could be an external or internal asset
      */
     public static Texture createFromAsset(
             ARViewRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
             throws IOException {
         Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
         Bitmap bitmap = null;
+
+        java.io.InputStream inputStream = null;
         try {
+            inputStream = MediaUtil.openMedia(render.getForm(), assetFileName);
+            Log.i(TAG, "texture asset found: " + assetFileName);
+
             // The following lines up to glTexImage2D could technically be replaced with
             // GLUtils.texImage2d, but this method does not allow for loading sRGB images.
 
@@ -142,7 +147,7 @@ public class Texture implements Closeable {
             // the ARGB_8888 config is actually stored in RGBA order.
             bitmap =
                     convertBitmapToConfig(
-                            BitmapFactory.decodeStream(render.getForm().openAsset(assetFileName)),
+                            BitmapFactory.decodeStream(inputStream),
                             Bitmap.Config.ARGB_8888);
 
             ByteBuffer buffer = ByteBuffer.allocateDirect(bitmap.getByteCount());

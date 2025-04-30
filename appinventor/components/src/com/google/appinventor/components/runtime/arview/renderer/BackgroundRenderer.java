@@ -1,5 +1,5 @@
 package com.google.appinventor.components.runtime.arview.renderer;
-import com.google.appinventor.components.annotations.UsesAssets;
+
 import android.media.Image;
 import android.opengl.GLES30;
 import com.google.appinventor.components.runtime.*;
@@ -11,15 +11,19 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import android.util.Log;
-
+import com.google.appinventor.components.annotations.*;
 /**
  * This class both renders the AR camera background and composes the a scene foreground. The camera
  * background can be rendered as either camera image data or camera depth data. The virtual scene
  * can be composited with or without depth occlusion.
  */
-@UsesAssets(fileNames = "background_show_camera.frag, background_show_camera.vert," +
+
+@UsesAssets(fileNames =
+        "background_show_camera.frag, background_show_camera.vert," +
+        "background.frag, background.vert," +
         "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
-        "occlusion.frag, occlusion.vert, depth_color_palette.png")
+        "occlusion.frag, occlusion.vert, depth_color_palette.png"
+)
 public class BackgroundRenderer {
     private static final String LOG_TAG = BackgroundRenderer.class.getSimpleName();
 
@@ -63,10 +67,10 @@ public class BackgroundRenderer {
     private boolean useOcclusion;
     private float aspectRatio;
 
-    /**
-     * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
-     * during a {@link ARViewRender} callback, typically in {@link
-     */
+    // Shader names - you would need to create these shader files
+    private static final String VERTEX_SHADER_NAME = Form.ASSETS_PREFIX +"background_show_camera.vert";
+    private static final String FRAGMENT_SHADER_NAME = Form.ASSETS_PREFIX +"background_show_camera.frag";
+
     public BackgroundRenderer(ARViewRender render) throws IOException{
         placeHolderTexture =
                 new Texture(
@@ -119,8 +123,8 @@ public class BackgroundRenderer {
 
         backgroundShader = Shader.createFromAssets(
                         render,
-                        "background_show_camera.vert",
-                        "background_show_camera.frag",
+                        VERTEX_SHADER_NAME,
+                        FRAGMENT_SHADER_NAME,
                         null)
                 .setTexture("u_CameraColorTexture", cameraColorTexture)
                // .setTexture("u_Texture", placeHolderTexture)
@@ -180,8 +184,8 @@ public class BackgroundRenderer {
             backgroundShader =
                     Shader.createFromAssets(
                                     render,
-                                    "background_show_camera.vert",
-                                    "background_show_camera.frag",
+                                    VERTEX_SHADER_NAME,
+                                    FRAGMENT_SHADER_NAME,
                                     /*defines=*/ null)
                             .setTexture("u_CameraColorTexture", cameraColorTexture)
                            // .setTexture("u_Texture", placeHolderTexture)

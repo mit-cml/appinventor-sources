@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import android.opengl.GLES30;
 import android.util.Log;
 import de.javagl.obj.Obj;
@@ -84,7 +85,11 @@ public class Mesh implements Closeable {
 
 
     public static Mesh createFromAsset(ARViewRender render, String assetFileName) throws IOException {
-        try (InputStream inputStream = render.getForm().openAsset(assetFileName)) {
+        //(InputStream inputStream = render.getForm().getAssets().openAsset(assetFileName)) {
+        try {
+            InputStream inputStream = MediaUtil.openMedia(render.getForm(), assetFileName);
+
+            Log.i(TAG, "mesh asset found: " + assetFileName);
             Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
 
             // Obtain the data from the OBJ, as direct buffers:
@@ -102,7 +107,10 @@ public class Mesh implements Closeable {
             IndexBuffer indexBuffer = new IndexBuffer(render, vertexIndices);
 
             return new Mesh(render, Mesh.PrimitiveMode.TRIANGLES, indexBuffer, vertexBuffers);
-        }
+        } catch (Exception e) {
+            Log.e(TAG, "Error reading asset " + assetFileName + ": " + e.getMessage());
+            throw new IOException("Failed to read asset: " + assetFileName, e);
+         }
     }
 
     @Override

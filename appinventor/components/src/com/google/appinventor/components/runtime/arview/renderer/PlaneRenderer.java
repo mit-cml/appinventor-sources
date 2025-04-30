@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.util.*;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 /** Renders the detected AR planes. */
-@UsesAssets(fileNames = "plane.vert, plane.frag,trigrid.png")
+@UsesAssets(fileNames = "plane.vert, plane.frag, trigrid.png")
 public class PlaneRenderer {
     private static final String TAG = PlaneRenderer.class.getSimpleName();
 
     // Shader names.
-    private static final String VERTEX_SHADER_NAME = "plane.vert";
-    private static final String FRAGMENT_SHADER_NAME = "plane.frag";
-    private static final String TEXTURE_NAME = "trigrid.png";
+    private static final String VERTEX_SHADER_NAME = Form.ASSETS_PREFIX + "plane.vert";
+    private static final String FRAGMENT_SHADER_NAME = Form.ASSETS_PREFIX + "plane.frag";
+    private static final String TEXTURE_NAME = Form.ASSETS_PREFIX + "trigrid.png";
 
     private static final int BYTES_PER_FLOAT = Float.SIZE / 8;
     private static final int BYTES_PER_INT = Integer.SIZE / 8;
