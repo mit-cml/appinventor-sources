@@ -111,7 +111,7 @@ public class ComponentConstants {
   public static final int POLYGON_PREFERRED_HEIGHT = 30;
   public static final int RECTANGLE_PREFERRED_WIDTH = 50;
   public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
-  
+
   /**
    * Tab Bar Arrangement
    */
@@ -128,7 +128,6 @@ public class ComponentConstants {
   public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
   public static final int LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT = 5;
-
 
   /*
    * Chart Components

@@ -448,7 +448,7 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
-  
+
   /**
    * Tab Bar Position
    * @see

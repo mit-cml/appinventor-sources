@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020-2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
@@ -57,7 +62,8 @@ import java.util.List;
         "that should be displayed in the tab format</p>")
 @SimpleObject
 @UsesLibraries({"cardview.jar", "cardview.aar", "material.jar", "material.aar", "recyclerview.aar", "recyclerview.jar", "viewpager2.jar", "viewpager2.aar"})
-public class TabArrangement extends AndroidViewComponent<LinearLayout> implements ComponentContainer {
+public class TabArrangement extends AndroidViewComponent<LinearLayout> implements
+    ComponentContainer {
   private TabLayout tabLayout;
   private ViewPager2 viewPager;
   private RecyclerView.Adapter adapter;
@@ -69,11 +75,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private int selectedTabTextColor = COLOR_WHITE;
   private int tabBarPosition;
   private boolean tabBarVisible = true;
-  
+
   /**
    * Creates a new TabArrangement component.
    *
-   * @param container  container, component will be placed in
+   * @param container container, component will be placed in
    */
   public TabArrangement(ComponentContainer container) {
     super(container);
@@ -87,7 +93,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     SelectedTabTextColor(selectedTabTextColor);
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
     tabs = new ArrayList<>();
-    
+
     // ViewPager2 uses the recycler view adapter, which allows us to paginate custom views.
     adapter = new RecyclerView.Adapter() {
       @Override
@@ -108,32 +114,32 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
         };
         return viewHolder;
       }
-      
+
       @Override
       public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         ViewGroup childViewGroup = tabs.get(i).viewLayout.getLayoutManager();
-        if (childViewGroup.getParent()!=null) {
+        if (childViewGroup.getParent() != null) {
           ((ViewGroup) childViewGroup.getParent()).removeView(childViewGroup);
         }
-        ((ViewGroup)(viewHolder.itemView)).addView(childViewGroup);
+        ((ViewGroup) (viewHolder.itemView)).addView(childViewGroup);
       }
-  
+
       @Override
       public int getItemViewType(int position) {
         return position;
       }
-      
+
       @Override
       public int getItemCount() {
         return tabs.size();
       }
     };
     viewPager.setAdapter(adapter);
-    
+
     /**
-    * TabLayoutMediator is a mediator to link a TabLayout with a ViewPager2.
-    * The mediator will synchronize the ViewPager2's position with the selected tab when a tab is selected,
-    * and the TabLayout's scroll position when the user drags the ViewPager2.
+     * TabLayoutMediator is a mediator to link a TabLayout with a ViewPager2.
+     * The mediator will synchronize the ViewPager2's position with the selected tab when a tab is selected,
+     * and the TabLayout's scroll position when the user drags the ViewPager2.
      */
     new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
       @Override
@@ -143,47 +149,47 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     }).attach();
     container.$add(this);
   }
-  
+
   @Override
   public LinearLayout getView() {
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
     if (tabLayout.getParent() != null) {
-      ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+      ((ViewGroup) tabLayout.getParent()).removeView(tabLayout);
     }
     layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
     if (viewPager.getParent() != null) {
-      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      ((ViewGroup) viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
     tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
     return layout;
   }
-  
+
   void addTab(Tab tab) {
     tabLayout.addTab(tabLayout.newTab());
     tabs.add(tab);
     adapter.notifyDataSetChanged();
   }
-  
+
   @Override
   public Activity $context() {
     return container.$context();
   }
-  
+
   @Override
   public Form $form() {
     return container.$form();
   }
-  
+
   @Override
   public void $add(AndroidViewComponent<? extends View> component) {
   }
-  
+
   @Override
   public void setChildWidth(AndroidViewComponent<? extends View> component, int width) {
   }
-  
+
   @Override
   public void setChildHeight(AndroidViewComponent<? extends View> component, int height) {
   }
@@ -205,11 +211,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void ShowTab(Tab tab) {
     EventDispatcher.dispatchEvent(this, "ShowTab", tab);
   }
-  
+
   /**
    * Specifies the horizontal width of the `TabArrangement`, measured in pixels.
    *
-   * @param  width in pixels
+   * @param width in pixels
    */
   @Override
   @SimpleProperty(description = "Specifies the horizontal width of the %type%, measured in pixels.")
@@ -219,11 +225,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     }
     super.Width(width);
   }
-  
+
   /**
    * Specifies the `TabArrangement`'s vertical height, measured in pixels.
    *
-   * @param  height in pixels
+   * @param height in pixels
    */
   @Override
   @SimpleProperty(description = "Specifies the vertical height of the %type%, measured in pixels.")
@@ -233,7 +239,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     }
     super.Height(height);
   }
-  
+
   /**
    * Returns the background color of the tab bar as an alpha-red-green-blue
    * integer.
@@ -246,7 +252,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public int TabBackgroundColor() {
     return tabBackgroundColor;
   }
-  
+
   /**
    * Specifies the background color of the tab bar as an alpha-red-green-blue
    * integer.
@@ -254,13 +260,13 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
    * @param argb background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-  defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
+      defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
   @SimpleProperty(description = "Specifies the background color of the tab bar")
   public void TabBackgroundColor(int argb) {
     tabBackgroundColor = argb;
     tabLayout.setBackgroundColor(tabBackgroundColor);
   }
-  
+
   /**
    * Returns the indicator color of the selected tab as an alpha-red-green-blue
    * integer.
@@ -273,7 +279,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public int SelectedTabIndicatorColor() {
     return selectedTabIndicatorColor;
   }
-  
+
   /**
    * Specifies the indicator color of the selected tab as an alpha-red-green-blue
    * integer.
@@ -287,7 +293,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     selectedTabIndicatorColor = argb;
     tabLayout.setSelectedTabIndicatorColor(selectedTabIndicatorColor);
   }
-  
+
   /**
    * Returns the text color of the tab label as an alpha-red-green-blue
    * integer.
@@ -300,7 +306,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public int TabTextColor() {
     return textColor;
   }
-  
+
   /**
    * Specifies the text color of the tab label as an alpha-red-green-blue
    * integer.
@@ -312,9 +318,9 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   @SimpleProperty(description = "Specifies the text color of the tab label")
   public void TabTextColor(int argb) {
     textColor = argb;
-    tabLayout.setTabTextColors(textColor,selectedTabTextColor);
+    tabLayout.setTabTextColors(textColor, selectedTabTextColor);
   }
-  
+
   /**
    * Returns the text color of the label of selected tab as an alpha-red-green-blue
    * integer.
@@ -327,7 +333,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public int SelectedTabTextColor() {
     return selectedTabTextColor;
   }
-  
+
   /**
    * Specifies the text color of the label of selected tab as an alpha-red-green-blue
    * integer.
@@ -339,9 +345,9 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   @SimpleProperty(description = "Specifies the text color of the label of selected tab")
   public void SelectedTabTextColor(int argb) {
     selectedTabTextColor = argb;
-    tabLayout.setTabTextColors(textColor,selectedTabTextColor);
+    tabLayout.setTabTextColors(textColor, selectedTabTextColor);
   }
-  
+
   /**
    * Returns a number that encodes the position of the tab bar.
    * The choices are: 1 = default, 2 = top, 3 = bottom.
@@ -352,7 +358,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public int TabBarPosition() {
     return tabBarPosition;
   }
-  
+
   /**
    * Specifies a number that encodes the position of the tab bar.
    * The choices are: 1 = default, 2 = top, 3 = bottom.
@@ -380,7 +386,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
         break;
     }
   }
-  
+
   /**
    * Returns true if the tab bar is visible.
    *
@@ -391,7 +397,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public boolean TabBarVisible() {
     return tabBarVisible;
   }
-  
+
   /**
    * Specifies whether the tab bar is visible.
    *
@@ -417,7 +423,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
         break;
     }
   }
-  
+
   public void alignTabsAtTop() {
     layout.removeAllViews();
     if (tabBarVisible) {
@@ -427,16 +433,16 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
       layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
     }
     if (viewPager.getParent() != null) {
-      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      ((ViewGroup) viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
     tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
   }
-  
+
   public void alignTabsAtBottom() {
     layout.removeAllViews();
     if (viewPager.getParent() != null) {
-      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      ((ViewGroup) viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
     if (tabBarVisible) {

@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020-2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -24,12 +29,12 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 
 public class MockTab extends MockHVArrangement {
-  
+
   /**
    * Component type name.
    */
   public static final String TYPE = "Tab";
-  
+
   /**
    * Component properties.
    */
@@ -39,12 +44,12 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_SHOW_ICON = "ShowIcon";
   public static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
   private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
-  
+
   /**
    * Default Tab height.
    */
   private static final int ANDROID_TAB_HEIGHT = 48;
-  
+
   /**
    * UI components.
    */
@@ -52,7 +57,7 @@ public class MockTab extends MockHVArrangement {
   private Image tabImage = null;
   private Label tabLabel;
   private String imagePath = "";
-  
+
   /**
    * Creates a new MockTab component.
    *
@@ -62,7 +67,7 @@ public class MockTab extends MockHVArrangement {
     super(editor, TYPE, images.tab(),
         ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
         ComponentConstants.SCROLLABLE_ARRANGEMENT);
-    
+
     // Initialize MockTab UI.
     tab = new AbsolutePanel();
     tab.setWidth("48px");
@@ -80,35 +85,35 @@ public class MockTab extends MockHVArrangement {
     }, ClickEvent.getType());
     initComponent(tab);
   }
-  
+
   public Label getTabLabel() {
     return tabLabel;
   }
-  
+
   protected void addWidthHeightProperties() {
     // Tabs always fill their TabArrangement.
   }
-  
+
   @Override
   public void onCreateFromPalette() {
     // Change tab text to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
-  
+
   @Override
   int getWidthHint() {
     return LENGTH_FILL_PARENT;
   }
-  
+
   @Override
   int getHeightHint() {
     return ANDROID_TAB_HEIGHT;
   }
-  
+
   public Widget getTabContentView() {
     return layoutWidget;
   }
-  
+
   @Override
   protected void onSelectedChange(boolean selected) {
     if (selected) {
@@ -118,7 +123,7 @@ public class MockTab extends MockHVArrangement {
     }
     super.onSelectedChange(selected);
   }
-  
+
   @Override
   protected boolean isPropertyVisible(String propertyName) {
     if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {
@@ -126,11 +131,11 @@ public class MockTab extends MockHVArrangement {
     }
     return super.isPropertyVisible(propertyName);
   }
-  
+
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-    
+
     if (PROPERTY_NAME_ICON.equals(propertyName)) {
       setIconProperty(newValue);
     } else if (PROPERTY_NAME_TEXT.equals(propertyName)) {
@@ -139,11 +144,11 @@ public class MockTab extends MockHVArrangement {
       setShowText(newValue);
     } else if (PROPERTY_NAME_SHOW_ICON.equals(propertyName)) {
       setShowIcon(newValue);
-    }  else if (PROPERTY_NAME_SCROLLABLE.equals(propertyName)) {
+    } else if (PROPERTY_NAME_SCROLLABLE.equals(propertyName)) {
       setScrollable(newValue);
     }
   }
-  
+
   @SuppressWarnings("Convert2Lambda")
   private void setIconProperty(String newValue) {
     if (tabImage == null) {
@@ -174,7 +179,7 @@ public class MockTab extends MockHVArrangement {
     }
     imagePath = newValue;
   }
-  
+
   private void setShowText(String newValue) {
     if ("True".equals(newValue)) {
       if (!tabLabel.isAttached()) {
@@ -184,7 +189,7 @@ public class MockTab extends MockHVArrangement {
       tabLabel.removeFromParent();
     }
   }
-  
+
   private void setShowIcon(String newValue) {
     if (!imagePath.isEmpty()) {
       if ("True".equals(newValue)) {
@@ -196,7 +201,7 @@ public class MockTab extends MockHVArrangement {
       }
     }
   }
-  
+
   private void setScrollable(String newValue) {
     if ("True".equals(newValue)) {
       layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");

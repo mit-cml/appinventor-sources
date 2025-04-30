@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020-2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.Drawable;
@@ -42,23 +47,23 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   private Drawable icon = null;
   private boolean showIcon = true;
   public boolean isScrollable = false;
-  
+
   /**
    * Creates a new Tab component.
    *
-   * @param container  container, component will be placed in
+   * @param container container, component will be placed in
    */
-  public Tab (TabArrangement container) {
+  public Tab(TabArrangement container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
         new FrameLayout(container.$context()));
     container.addTab(this);
   }
-  
+
   public TabLayout.Tab getTab() {
     return tab;
   }
-  
-  public void setTab (TabLayout.Tab tab) {
+
+  public void setTab(TabLayout.Tab tab) {
     this.tab = tab;
   }
 
@@ -94,7 +99,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     this.text = text;
     tab.setText(showText ? text : "");
   }
-  
+
   /**
    * Returns the text displayed by the tab label.
    *
@@ -105,13 +110,13 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     CharSequence text = tab.getText();
     return (text == null ? "" : text.toString());
   }
-  
+
   /**
    * Specifies the visibility of the tab label.
    *
    * @param show true if the tab label should be visible
    */
-  @DesignerProperty(editorType =  PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Specifies the visibility of the tab label")
@@ -119,7 +124,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     showText = show;
     tab.setText(show ? text : "");
   }
-  
+
   /**
    * Returns the visibility of the tab label.
    *
@@ -129,7 +134,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public boolean ShowText() {
     return showText;
   }
-  
+
   /**
    * Specifies the icon displayed in the tab.
    *
@@ -146,7 +151,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     } catch (IOException e) {
     }
   }
-  
+
   /**
    * Returns the icon displayed in the tab.
    *
@@ -156,7 +161,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public String Icon() {
     return iconPath;
   }
-  
+
   /**
    * Specifies the visibility of the tab icon.
    *
@@ -170,7 +175,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     showIcon = show;
     tab.setIcon(show ? icon : null);
   }
-  
+
   /**
    * Returns the visibility of the tab icon.
    *
@@ -180,13 +185,13 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public boolean ShowIcon() {
     return showIcon;
   }
-  
+
   /**
    * When checked, there will be a vertical scrollbar on the tab arrangement, and the height of the
    * tab content can exceed the physical height of the tab arrangement. When unchecked, the tab content
    * height is constrained to the height of the tab arrangement.
    *
-   * @param isScrollable  true if the tab content should be vertically scrollable
+   * @param isScrollable true if the tab content should be vertically scrollable
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -194,11 +199,11 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   public void Scrollable(boolean isScrollable) {
     this.isScrollable = isScrollable;
   }
-  
+
   /**
    * Scrollable property getter method.
    *
-   * @return  true if the tab content is vertically scrollable
+   * @return true if the tab content is vertically scrollable
    */
   @SimpleProperty
   public boolean Scrollable() {

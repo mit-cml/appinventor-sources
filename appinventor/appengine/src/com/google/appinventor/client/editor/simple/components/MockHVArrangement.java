@@ -42,7 +42,7 @@ public class MockHVArrangement extends MockContainer<MockHVLayout> {
 
   // Form UI components
   protected final AbsolutePanel layoutWidget;
-  
+
   protected final MockHVLayout myLayout;
 
   // Property names
@@ -86,7 +86,7 @@ public class MockHVArrangement extends MockContainer<MockHVLayout> {
     layoutWidget = new AbsolutePanel();
     layoutWidget.setStylePrimaryName("ode-SimpleMockContainer");
     layoutWidget.add(rootPanel);
-  
+
     image = new Image();
     image.addErrorHandler(new ErrorHandler() {
       @Override
@@ -104,7 +104,7 @@ public class MockHVArrangement extends MockContainer<MockHVLayout> {
       }
     });
   }
-  
+
   protected void finishConfiguration() {
     initComponent(layoutWidget);
     try {

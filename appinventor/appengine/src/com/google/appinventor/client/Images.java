@@ -834,13 +834,13 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/trendline.png")
   ImageResource trendline();
-  
+
   /**
    * Designer palette item: TabArrangement
    */
   @Source("com/google/appinventor/images/horizontal.png")
   ImageResource tabArrangement();
-  
+
   /**
    * Designer palette item: Tab
    */

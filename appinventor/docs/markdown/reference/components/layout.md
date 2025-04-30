@@ -308,14 +308,14 @@ Use a tab component to add a new tab in a tab arrangement.
 {:.events}
 
 {:id="Tab.Click"} Click()
-: Event for Click
+: Indicates that the user selected the tab.
 
 ### Methods  {#Tab-Methods}
 
 {:.methods}
 
 {:id="Tab.Show" class="method"} <i/> Show()
-: Method for Show
+: Shows the tab contents if not currently active.
 
 ## TabArrangement  {#TabArrangement}
 
@@ -398,7 +398,7 @@ Use a tab arrangement component to arrange the group of components in tab format
 {:.events}
 
 {:id="TabArrangement.ShowTab"} ShowTab(*tab*{:.component})
-: Event for ShowTab
+: Indicates when the selected tab has changed in the TabArrangement.
 
 ### Methods  {#TabArrangement-Methods}
 
