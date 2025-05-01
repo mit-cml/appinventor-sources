@@ -98,6 +98,7 @@
         }, 2000);
       })();
     </script>
+    <script src="static/js/tutorial.js"></script>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>
