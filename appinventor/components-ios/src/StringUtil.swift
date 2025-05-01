@@ -131,6 +131,14 @@ public func toString(_ object: Any?) -> String {
 
   // MARK: - Public Methods
 
+  /**
+   * Constructs a new `String` by joining the elements of the `list` with the given `separator`.
+   *
+   * - Parameter list: A `YailList` of entities.
+   * - Parameter separator: A `String` used to separate two entities in `list`.
+   *
+   * - Returns: A new `String` combining the elements of `list` with `separator`.
+   */
   @objc static func joinStrings(_ list: YailList<SCMValueProtocol>, _ separator: NSString) -> String {
     let buffer = NSMutableString()
     var sep = NSString()
@@ -146,7 +154,7 @@ public func toString(_ object: Any?) -> String {
 
     return buffer.copy() as! String
   }
-  
+
   /**
    * Reverses a `String`. Called from runtime.scm to reverse a UTF-8 string in a Unicode-aware way.
    *
