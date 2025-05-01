@@ -21,7 +21,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import com.google.ar.core.Anchor;
-import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 
@@ -65,11 +64,11 @@ import android.util.Log;
     @Override
     public void Trackable(Trackable t) { this.trackable = t;}
 
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
-  @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-          "sizing properties.  Values less than zero will be treated as their absolute value.")
-  public float Scale() {return this.scale;}
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
+    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
+            "sizing properties.  Values less than zero will be treated as their absolute value.")
+    public float Scale() {return this.scale;}
 
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",
@@ -102,7 +101,14 @@ import android.util.Log;
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
             "specified (x,y,z) position.")
-    public void MoveTo(float x, float y, float z){}
+    public void MoveTo(float x, float y, float z){
+      float[] position = {x, y, z};
+      float[] rotation = {0, 0, 0, 1};
+      float[] currentAnchorPoseRotation = Anchor().getPose().getTranslation();
+      Pose newPose = new Pose(position, currentAnchorPoseRotation);
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("model","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+    }
 
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +

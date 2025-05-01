@@ -153,9 +153,7 @@ public class ObjectRenderer {
     } catch (IOException e) {
       Log.e(TAG, "Failed to load texture: " + textureName + ", using default", e);
       // Try to load default texture instead
-      if (!textureName.equals(DEFAULT_TEXTURE_NAME)) {
-        return createOrGetTexture(render, DEFAULT_TEXTURE_NAME);
-      }
+
       throw e; // If default texture also fails, propagate the exception
     }
   }
@@ -236,7 +234,9 @@ public class ObjectRenderer {
 
         // Get or create the mesh and texture for this node
         Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
+
         String textureToUse = arNode.Texture();
+        Log.i(TAG, "texture from arnode " + textureToUse);
         Texture nodeTexture = createOrGetTexture(render, textureToUse);
 
         // Set the texture for this render pass

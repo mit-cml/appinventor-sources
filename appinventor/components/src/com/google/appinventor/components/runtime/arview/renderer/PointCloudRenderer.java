@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Renders a point cloud. */
-@UsesAssets(fileNames = "point_cloud.frag, point_cloud.vert," +
-        "plane.frag, plane.vert")
+@UsesAssets(fileNames = "point_cloud.frag, point_cloud.vert" )
 public class PointCloudRenderer {
     private static final String TAG = PointCloud.class.getSimpleName();
     private VertexBuffer pointCloudVertexBuffer;
@@ -26,8 +25,8 @@ public class PointCloudRenderer {
     private Shader shader;
     private long lastPointCloudTimestamp = 0;
     // Shader names.
-    private static final String VERTEX_SHADER_NAME = "point_cloud.vert";
-    private static final String FRAGMENT_SHADER_NAME = "point_cloud.frag";
+    private static final String VERTEX_SHADER_NAME = Form.ASSETS_PREFIX + "point_cloud.vert";
+    private static final String FRAGMENT_SHADER_NAME = Form.ASSETS_PREFIX + "point_cloud.frag";
 
 
 
@@ -46,7 +45,7 @@ public class PointCloudRenderer {
 
     public PointCloudRenderer(ARViewRender render) throws IOException {
         shader = Shader.createFromAssets(render,
-                "point_cloud.vert", "point_cloud.frag",
+                VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME,
                 /*defines=*/ null).setVec4("u_Color", new float[]{31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f}).setFloat("u_PointSize", 5.0f);
         pointCloudVertexBuffer = new VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 4, /*entries=*/ null);
         final VertexBuffer[] pointCloudVertexBuffers = {pointCloudVertexBuffer};

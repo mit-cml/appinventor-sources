@@ -26,21 +26,17 @@ import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 import android.util.Log;
-// TODO: update the component version
-@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
-    description = "A component that displays a sphere in an ARView3D.  The sphere is positioned " +
-      "at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
 
-  @SimpleObject
 
-@UsesAssets(fileNames = "sphere.obj")
+@UsesAssets(fileNames = "sphere.obj, Palette.png")
   public final class SphereNode extends ARNodeBase implements ARSphere {
 
     private Anchor anchor = null;
     private Trackable trackable = null;
-    private String objectModel = "sphere.obj";
-    private String texture = "";
+    private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
+    private String texture = Form.ASSETS_PREFIX + "Palette.png";
+    private float scale = 1.0f;
+
     public SphereNode(final ARNodeContainer container) {
       super(container);
       //parentSession = session;

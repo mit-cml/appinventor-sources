@@ -2,21 +2,14 @@ package com.google.appinventor.components.runtime;
 
 import static android.Manifest.permission.CAMERA;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.app.Activity;
-import android.media.Image;
 import android.opengl.GLES30;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
-import android.view.Choreographer;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-import android.opengl.EGL14;
-import android.opengl.EGLContext;
 
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
@@ -56,24 +49,14 @@ import com.google.ar.core.LightEstimate;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Point;
 import com.google.ar.core.Pose;
-import com.google.ar.core.PointCloud;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
-import com.google.android.filament.Renderer;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import android.util.Log;
 import java.util.Collection;
@@ -121,14 +104,14 @@ import java.util.stream.Collectors;
                 theme = "@android:style/Theme.Material.Light.Dialog.Alert"
         )
 })
-@UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag, Cat_diffuse.jpg," +
-        "cat.obj, cube.obj, pawn.obj, sphere.obj, torus.obj, trigrid.png, chick_baby_chicken_bird.glb," +
+@UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag," +
+        "cube.obj, sphere.obj, torus.obj, trigrid.png," +
         "background_show_camera.frag, background_show_camera.vert," +
         "basic.filamat, material_background.filamat, material_basic.filamat," +
         "background.frag, background.vert," +
         "basic.frag, basic.vert," +
         "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
-        "occlusion.frag, occlusion.vert, depth_color_palette.png, pawn_albedo.png"
+        "occlusion.frag, occlusion.vert, depth_color_palette.png"
 )
 public class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer,
         ARImageMarkerContainer, ARDetectedPlaneContainer, ARLightContainer,
@@ -569,56 +552,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-    private Anchor defaultNodePosition(ARNode node, float[] viewMatrix) {
-
-            // Create a model matrix for initial placement
-            float[] modelMatrix = new float[16];
-            Matrix.setIdentityM(modelMatrix, 0);
-
-            // Get camera position from view matrix
-            float[] cameraPosition = new float[3];
-            float[] cameraMatrix = new float[16];
-            Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
-            cameraPosition[0] = cameraMatrix[12];
-            cameraPosition[1] = cameraMatrix[13];
-            cameraPosition[2] = cameraMatrix[14];
-
-            // Get camera forward direction
-            float[] forward = new float[3];
-            forward[0] = -viewMatrix[2];
-            forward[1] = -viewMatrix[6];
-            forward[2] = -viewMatrix[10];
-
-            // Place object 2 units in front of camera
-        //TODO random function so if more than one node, they are scattered
-            float distanceInFront = 2.0f;
-            float objectX = cameraPosition[0] + forward[0] * distanceInFront;
-            float objectY = cameraPosition[1] + forward[1] * distanceInFront;
-            float objectZ = cameraPosition[2] + forward[2] * distanceInFront;
-
-            // Set position in the model matrix
-            modelMatrix[12] = objectX;
-            modelMatrix[13] = objectY;
-            modelMatrix[14] = objectZ;
-
-            // Apply scaling
-            float nodeScale = node.Scale();
-            Matrix.scaleM(modelMatrix, 0, nodeScale, nodeScale, nodeScale);
-
-            // Create an anchor at this position
-            Anchor anchor = session.createAnchor(new Pose(
-                    new float[]{objectX, objectY, objectZ},
-                    new float[]{0, 0, 0, 1}  // Default orientation quaternion
-            ));
-
-            return anchor;
-    }
 
 
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
         float[] position = {0f, 0f, -1.5f};
-        float[] rotation = {0, 90, 0, 1};
+        float[] rotation = {0, 0, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 
@@ -1082,7 +1021,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
             "specified (x,y,z) position.")
-    public BoxNode CreateBoxNode(float x, float y, float z) {
+    public com.google.appinventor.components.runtime.ar.BoxNode CreateBoxNode(float x, float y, float z) {
         return new BoxNode(this);
     }
 

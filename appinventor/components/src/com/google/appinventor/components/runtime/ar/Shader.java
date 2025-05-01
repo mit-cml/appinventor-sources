@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**
  * Represents a GPU shader, the state of its associated uniforms, and some additional draw state.
@@ -80,6 +81,9 @@ public class Shader implements Closeable {
         int vertexShaderId = 0;
         int fragmentShaderId = 0;
         String definesCode = createShaderDefinesCode(defines);
+
+        Log.d(TAG, " vertex shader " +vertexShaderCode);
+        Log.d(TAG, " frag shader " +fragmentShaderCode);
         try {
             vertexShaderId =
                     createShader(
@@ -107,6 +111,7 @@ public class Shader implements Closeable {
             }
         } catch (Throwable t) {
             close();
+            Log.d(TAG, " can't create shader " +t);
             throw t;
         } finally {
             // Shader objects can be flagged for deletion immediately after program creation.
@@ -139,12 +144,21 @@ public class Shader implements Closeable {
             throws IOException {
         Log.d(TAG, "shader " +vertexShaderFileName);
         Log.d(TAG, "shader " +fragmentShaderFileName);
-        final AssetManager am = render.getForm().getAssets();
 
+
+        java.io.InputStream inputStreamVertex = null;
+        java.io.InputStream inputStreamFrag = null;
+        try {
+            inputStreamVertex = MediaUtil.openMedia(render.getForm(), vertexShaderFileName);
+            inputStreamFrag = MediaUtil.openMedia(render.getForm(), fragmentShaderFileName);
+            Log.i(TAG, "shaders assets found: " + vertexShaderFileName);
+        } catch (Throwable t) {
+                throw t;
+            }
         return new Shader(
                 render,
-                inputStreamToString(am.open(vertexShaderFileName)),
-                inputStreamToString(am.open(fragmentShaderFileName)),
+                inputStreamToString(inputStreamVertex),
+                inputStreamToString(inputStreamFrag),
                 defines);
     }
 

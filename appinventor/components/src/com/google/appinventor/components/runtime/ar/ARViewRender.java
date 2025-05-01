@@ -9,11 +9,12 @@ import android.opengl.EGL14;
 import android.opengl.EGLContext;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
+//import com.google.appinventor.components.annotations.UsesAssets;
 /**
  * A render context that uses GLSurfaceView for ARCore compatibility,
  * with optional Choreographer support for additional frame timing control.
  */
+
 public class ARViewRender {
     private static final String LOG_TAG = ARViewRender.class.getSimpleName();
 

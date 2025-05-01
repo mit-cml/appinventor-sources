@@ -40,6 +40,8 @@ import android.util.Log;
     private Trackable trackable = null;
     private String objectModel = "torus.obj";
     private String texture = "Palette.png";
+    private float scale = 1.0f;
+
     public TorusNode(final ARNodeContainer container) {
       super(container);
       //parentSession = session;

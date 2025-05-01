@@ -66,14 +66,12 @@ import java.util.Collection;
     @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
             "sizing properties.  Values less than zero will be treated as their absolute value.")
    public float Scale() {
-        Log.d("capnode","get scale on capnode");
         return this.scale;
     }
 
     @Override
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     public void Scale(float s) {
-        Log.d("capnode", "set scale on capnode");
         this.scale = s;}
 
 
@@ -89,7 +87,20 @@ import java.util.Collection;
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
             "specified (x,y,z) position.")
-    public void MoveTo(float x, float y, float z){}
+    public void MoveTo(float x, float y, float z){
+      float[] position = {x, y, z};
+      float[] rotation = {0, 0, 0, 1};
+
+      float[] currentAnchorPoseRotation = rotation;
+      if (this.Anchor() != null) {
+        currentAnchorPoseRotation = Anchor().getPose().getTranslation();
+      }
+      Pose newPose = new Pose(position, currentAnchorPoseRotation);
+      if (this.trackable != null){
+        Anchor(this.trackable.createAnchor(newPose));
+      }
+      Log.i("capsule","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+    }
 
     @Override
     @SimpleFunction(description = "move a capsule node properties to detectedplane.")
@@ -127,12 +138,14 @@ import java.util.Collection;
     public void CapRadiusInCentimeters(float capRadiusInCentimeters) {}
 
     @Override
+    @SimpleProperty(description = "Gets the 3D texture",
+            category = PropertyCategory.APPEARANCE)
     public String Texture()  {
         Log.d("capnode","get texture on capnode" + this.texture);
         return this.texture; }
 
     @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
+    @SimpleProperty(description = "The 3D texturebe loaded.",
             category = PropertyCategory.APPEARANCE)
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     public void Texture(String texture) {
