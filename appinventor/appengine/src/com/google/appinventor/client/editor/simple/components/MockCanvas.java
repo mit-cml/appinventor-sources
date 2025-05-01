@@ -23,7 +23,7 @@ import java.util.TreeSet;
  * Mock Canvas component.
  *
  */
-public final class MockCanvas extends MockContainer {
+public final class MockCanvas extends MockContainer<MockCanvasLayout> {
 
   /**
    * Component type name.
