@@ -314,6 +314,7 @@
      ((equal? type 'pair) (coerce-to-pair arg))
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
+     ((equal? type 'matrix) (coerce-to-matrix arg))
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
@@ -395,11 +396,16 @@
       (yail:invoke (yail:invoke AIComponentKit.Form 'activeForm) 'ShowListsAsJson)))))
 
 (define (coerce-to-string arg)
+  (display arg)
+  (display "\n")
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
         ((eq? arg #undefined) *the-null-value-printed-rep*)
         ((string? arg) arg)
         ((number? arg) (appinventor-number->string arg))
         ((boolean? arg) (boolean->string arg))
+        ((or (yail-matrix? arg)
+             (yail:isa arg SchemeKit.YailMatrix))
+          (yail:invoke arg 'toString))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((or (yail-dictionary? arg)
              (yail:isa arg NSDictionary))
@@ -504,6 +510,21 @@
             result
             *non-coercible-value*))
       (exception java.lang.Exception *non-coercible-value*)))))
+
+(define (coerce-to-matrix arg)
+  (cond
+    ((yail-matrix? arg) arg)
+    ((yail-list? arg)
+      (let* ((rows (length arg))
+             (is-valid-matrix (and (> rows 0)
+                                   (every (lambda (row)
+                                            (and (yail-list? row)
+                                                 (= (length (car arg)) (length row))))
+                                          arg))))
+        (if is-valid-matrix
+            (make-yail-matrix rows (length (car arg)) arg)
+            *non-coercible-value*)))
+    (else *non-coercible-value*))) ; Cannot coerce
 
 (define (coerce-to-boolean arg)
   (cond
@@ -1666,7 +1687,7 @@ Matrix implementation.
 - get matrix row        (yail-matrix-get-row yail-matrix row)
 - get matrix column     (yail-matrix-get-column yail-matrix col)
 - get matrix cell       (yail-matrix-get-cell yail-matrix row col)
-- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
+- set matrix cell       (yail-matrix-set-cell yail-matrix row col value)
 - is YailMatrix?        (yail-matrix? x)
 - get matrix inverse    (yail-matrix-inverse matrix)
 - get matrix transpose  (yail-matrix-transpose matrix)
@@ -1680,48 +1701,48 @@ Matrix implementation.
 |#
 
 (define (make-yail-matrix . dataValues)
-  (yail:invoke 'SchemeKit.YailMatrix 'makeMatrix: dataValues))
+  (invoke 'SchemeKit.YailMatrix 'makeMatrix:error: (apply make-yail-list dataValues)))
 
 (define (yail-matrix-get-row matrix row)
-  (apply make-yail-list (*:getRow (as YailMatrix matrix) row)))
+  (invoke matrix 'getRow:error: row))
 
 (define (yail-matrix-get-column matrix col)
-  (apply make-yail-list (*:getColumn (as YailMatrix matrix) col)))
+  (invoke matrix 'getCol:error: col))
 
 (define (yail-matrix-get-cell matrix row col)
-  (invoke 'SchemeKit.YailMatrix 'getCell: matrix row col))
+  (invoke matrix 'getCell row col))
 
 (define (yail-matrix-set-cell! matrix row col value)
-  (invoke 'SchemeKit.YailMatrix 'setCell: matrix row col value))
+  (invoke matrix 'setCell:::error: row col value))
 
 (define (yail-matrix? x)
-  (instance? x YailMatrix))
+  (instance? x SchemeKit.YailMatrix))
 
 (define (yail-matrix-inverse matrix)
-  (YailMatrix:inverse (as YailMatrix matrix)))
+  (invoke 'SchemeKit.YailMatrix 'inverse:error: matrix))
 
 (define (yail-matrix-transpose matrix)
-  (YailMatrix:transpose (as YailMatrix matrix)))
+  (invoke 'SchemeKit.YailMatrix 'transpose matrix))
 
 (define (yail-matrix-add matrix1 matrix2)
-  (YailMatrix:add (as YailMatrix matrix1) (as YailMatrix matrix2)))
+  (invoke 'SchemeKit.YailMatrix 'add::error: matrix1 matrix2))
 
 (define (yail-matrix-subtract matrix1 matrix2)
-  (YailMatrix:subtract (as YailMatrix matrix1) (as YailMatrix matrix2)))
+  (invoke 'SchemeKit.YailMatrix 'subtract::error: matrix1 matrix2))
 
 (define (yail-matrix-multiply matrix1 matrix2-or-scalar)
   (if (number? matrix2-or-scalar)
-      (YailMatrix:scalarMultiply (as YailMatrix matrix1) matrix2-or-scalar)
-      (YailMatrix:multiply (as YailMatrix matrix1) (as YailMatrix matrix2-or-scalar))))
+      (invoke 'SchemeKit.YailMatrix 'scalarMultiply:: matrix1 matrix2-or-scalar)
+      (invoke 'SchemeKit.YailMatrix 'multiply::error: matrix1 matrix2-or-scalar)))
 
 (define (yail-matrix-power matrix exponent)
-  (YailMatrix:power (as YailMatrix matrix) exponent))
+  (invoke 'SchemeKit.YailMatrix 'power::error: matrix exponent))
 
 (define (yail-matrix-to-alist matrix)
   (YailMatrix:matrixToAlist matrix))
 
 (define (yail-matrix-equal? matrix1 matrix2)
-  (YailMatrix:matrixEqual (as YailMatrix matrix1) (as YailMatrix matrix2)))
+  (YailMatrix:matrixEqual matrix1 matrix2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Matrix implementation

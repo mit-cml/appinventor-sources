@@ -13,6 +13,7 @@
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
 #include <stdlib.h>
+#import <SchemeKit/SchemeKit-Swift.h>
 
 static pic_value
 yail_invoke_internal(pic_state *pic, NSInvocation *method, int argc, pic_value args[]);
@@ -1026,6 +1027,8 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
       } else if ([value isKindOfClass:[YailDictionary class]]) {
         return yail_make_native_instance(pic, value);
       } else if ([value isKindOfClass:[YailList class]]) {
+        return yail_make_native_instance(pic, value);
+      } else if ([value isKindOfClass:[YailMatrix class]]) {
         return yail_make_native_instance(pic, value);
       } else if ([[value class] conformsToProtocol:@protocol(SCMValue)]) {
         return [(id<SCMValue>)value value];

@@ -62,16 +62,12 @@
         super.init()
     }
     
-    @objc public static func makeMatrix(_ dataValues: [AnyObject]) throws -> YailMatrix {
-        guard let firstValue = dataValues.first as? [Any] else {
-            throw MatrixError.dimensionMismatch("Invalid structure")
-        }
-        
-        guard let rows = firstValue[0] as? Int, let cols = firstValue[1] as? Int else {
+    @objc public static func makeMatrix(_ dataValues: YailList<AnyObject>) throws -> YailMatrix {
+        guard let rows = dataValues[1] as? Int, let cols = dataValues[2] as? Int else {
             throw MatrixError.dimensionMismatch("First two elements must be rows and cols integers")
         }
         
-        if dataValues.count != 2 + rows * cols {
+        if dataValues.count != 2 + rows * cols + 1{
             throw MatrixError.dimensionMismatch("Matrix data size invalid: expected \(rows * cols) values but got \(dataValues.count - 2)")
         }
         
@@ -79,7 +75,7 @@
         for i in 0..<rows {
             var row: [Double] = []
             for j in 0..<cols {
-                let value = dataValues[2 + i * cols + j]
+                let value = dataValues[2 + i * cols + j + 1]
                 if let number = value as? Double {
                     row.append(number)
                 } else {
@@ -92,22 +88,30 @@
         return try YailMatrix(rows: rows, cols: cols, data: matrixData)
     }
     
-    func getCell(row: Int, col: Int) throws -> Double {
+    @objc public func getCell(_ row: Int,_ col: Int) -> Double {
+      do {
         try validateIndices(row: row, col: col)
         return data[row - 1][col - 1]
+      } catch {
+        return Double.nan
+      }
     }
+  
+  //NSLog(@"%@", [SCMNameResolver lookupMethodsForClass:[yail_native_instance_ptr(pic, native_object)->object_ class]]);
+
     
-    func setCell(row: Int, col: Int, value: Double) throws {
+    @objc public func setCell(_ row: Int, _ col: Int, _ value: Double) throws {
         try validateIndices(row: row, col: col)
         data[row - 1][col - 1] = value
     }
     
-    func getRow(row: Int) throws -> [Double] {
+    @objc public func getRow(_ row: Int) throws -> [Double] {
         try validateRowIndex(row)
+        print(data[row - 1])
         return data[row - 1]
     }
     
-    func getColumn(col: Int) throws -> [Double] {
+    @objc public func getCol(_ col: Int) throws -> [Double] {
         try validateColumnIndex(col)
         return data.map { $0[col - 1] }
     }
@@ -129,7 +133,7 @@
         }
     }
     
-    static func transpose(matrix: YailMatrix) -> YailMatrix {
+    @objc public static func transpose(_ matrix: YailMatrix) -> YailMatrix {
         var transposedData: [[Double]] = Array(repeating: Array(repeating: 0.0, count: matrix.rows), count: matrix.cols)
         for i in 0..<matrix.rows {
             for j in 0..<matrix.cols {
@@ -138,8 +142,17 @@
         }
         return try! YailMatrix(rows: matrix.cols, cols: matrix.rows, data: transposedData)
     }
+  
+    static func smartRound(_ value: Double, precision: Int = 10, tolerance: Double = 1e-8) -> Double {
+        let rounded = Double(round(value))
+        if abs(value - rounded) < tolerance {
+            return rounded
+        }
+        let factor = pow(10.0, Double(precision))
+        return Double(round(value * factor)) / factor
+    }
     
-    static func inverse(matrix: YailMatrix) throws -> YailMatrix {
+    @objc public static func inverse(_ matrix: YailMatrix) throws -> YailMatrix {
         if matrix.rows != matrix.cols {
             throw MatrixError.matrixInversionError("Matrix must be square for inversion")
         }
@@ -179,14 +192,14 @@
         var inverseData: [[Double]] = Array(repeating: Array(repeating: 0.0, count: n), count: n)
         for i in 0..<n {
             for j in 0..<n {
-                inverseData[i][j] = augmented[i][j + n]
+                inverseData[i][j] = smartRound(augmented[i][j + n])
             }
         }
         
         return try YailMatrix(rows: n, cols: n, data: inverseData)
     }
     
-    static func add(matrix1: YailMatrix, matrix2: YailMatrix) throws -> YailMatrix {
+    @objc public static func add(_ matrix1: YailMatrix, _ matrix2: YailMatrix) throws -> YailMatrix {
         if matrix1.rows != matrix2.rows || matrix1.cols != matrix2.cols {
             throw MatrixError.dimensionMismatch("Matrix dimensions must match for addition")
         }
@@ -201,7 +214,7 @@
         return try! YailMatrix(rows: matrix1.rows, cols: matrix1.cols, data: resultData)
     }
     
-    static func subtract(matrix1: YailMatrix, matrix2: YailMatrix) throws -> YailMatrix {
+    @objc public static func subtract(_ matrix1: YailMatrix, _ matrix2: YailMatrix) throws -> YailMatrix {
         if matrix1.rows != matrix2.rows || matrix1.cols != matrix2.cols {
             throw MatrixError.dimensionMismatch("Matrix dimensions must match for subtraction")
         }
@@ -216,9 +229,9 @@
         return try! YailMatrix(rows: matrix1.rows, cols: matrix1.cols, data: resultData)
     }
     
-    static func multiply(matrix1: YailMatrix, matrix2OrScalar: Any) throws -> YailMatrix {
+    @objc public static func multiply(_ matrix1: YailMatrix, _ matrix2OrScalar: Any) throws -> YailMatrix {
         if let scalar = matrix2OrScalar as? Double {
-            return try scalarMultiply(matrix: matrix1, scalar: scalar)
+          return scalarMultiply(matrix1, scalar)
         } else if let matrix2 = matrix2OrScalar as? YailMatrix {
             if matrix1.cols != matrix2.rows {
                 throw MatrixError.dimensionMismatch("Matrix multiplication requires matching inner dimensions")
@@ -238,7 +251,7 @@
         }
     }
     
-    static func scalarMultiply(matrix: YailMatrix, scalar: Double) -> YailMatrix {
+    @objc public static func scalarMultiply(_ matrix: YailMatrix,_ scalar: Double) -> YailMatrix {
         var resultData: [[Double]] = Array(repeating: Array(repeating: 0.0, count: matrix.cols), count: matrix.rows)
         for i in 0..<matrix.rows {
             for j in 0..<matrix.cols {
@@ -248,7 +261,7 @@
         return try! YailMatrix(rows: matrix.rows, cols: matrix.cols, data: resultData)
     }
     
-    static func power(matrix: YailMatrix, exponent: Int) throws -> YailMatrix {
+    @objc public static func power(_ matrix: YailMatrix, _ exponent: Int) throws -> YailMatrix {
         if matrix.rows != matrix.cols {
             throw MatrixError.dimensionMismatch("Matrix exponentiation requires a square matrix")
         }
@@ -257,10 +270,10 @@
             throw MatrixError.dimensionMismatch("Matrix exponent must be non-negative")
         }
         
-        var result = try identityMatrix(size: matrix.rows)
+        var result = identityMatrix(size: matrix.rows)
         
         for _ in 0..<exponent {
-            result = try multiply(matrix1: result, matrix2OrScalar: matrix)
+          result = try multiply(result, matrix)
         }
         
         return result
@@ -274,7 +287,7 @@
         return try! YailMatrix(rows: size, cols: size, data: identityData)
     }
     
-    public func toString() -> String {
+    @objc public func toString() -> String {
         var builder = "["
         for i in 0..<rows {
             builder += "["
