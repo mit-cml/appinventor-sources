@@ -93,4 +93,6 @@
  */
 + (void)registerProtocol:(Protocol *)proto forName:(NSString *)name;
 
++ (NSDictionary<NSString *, SCMMethod *> *)lookupMethodsForClass:(Class)clazz;
+
 @end
