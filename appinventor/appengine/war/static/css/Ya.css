@@ -3451,3 +3451,34 @@ div.dropdiv p {
     flex-direction: column;
   }
 }
+
+.popup {
+  background-color: transparent;
+  position: absolute;
+}
+
+.popup .popup-triangle {
+  position: absolute;
+  top: -8px;
+  left: calc(50% - 8px);
+  height: 0;
+  width: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #128BA8;
+  border-top: 0 solid transparent;
+}
+
+.popup .popup-content {
+  background-color: #128BA8;
+  color: #fff;
+  padding: 8px 16px;
+  max-width: 300px;
+  text-align: justify;
+  border-radius: 8px;
+}
+
+.popup a {
+  color: #fff;
+  text-decoration: underline;
+}

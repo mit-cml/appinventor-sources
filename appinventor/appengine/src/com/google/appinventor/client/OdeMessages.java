@@ -5788,4 +5788,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+
+  @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
+  @Description("Message shown in the info popup when the user first opens the Neo UI.")
+  String neoWelcomeMessage();
 }

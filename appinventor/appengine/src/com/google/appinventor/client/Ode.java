@@ -53,6 +53,7 @@ import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 
+import com.google.appinventor.client.widgets.TutorialPopup;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -86,6 +87,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
@@ -540,9 +542,7 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag && !getShowUIPicker()) {  // We are loading a template, open it instead unless UI needs to be picked
-                                // of the last project
-
+    if (templateLoadingFlag) {  // We are loading a template, open it instead
       //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
       if (templatePath.endsWith(".aia")){
         HTML5DragDrop.importProjectFromUrl(templatePath);
@@ -1026,10 +1026,6 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
-    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
-
-      showSplashScreens();
-    }
 
     // Projects tab
     projectsTabIndex = 0;
@@ -1086,6 +1082,9 @@ public class Ode implements EntryPoint {
     setupMotd();
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
+    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
+      showSplashScreens();
+    }
     return resolve(result);
   }
 
@@ -1750,6 +1749,18 @@ public class Ode implements EntryPoint {
       }
       return null;
     });
+    if (getShowUIPicker()) {
+      TutorialPopup popup = new TutorialPopup(MESSAGES.neoWelcomeMessage(), () -> {
+        setUserNewLayout(false);
+        saveUserDesignSettings();
+      });
+      setShowUIPicker(false);
+      userSettings.saveSettings(null);
+      Scheduler.get().scheduleFixedDelay(() -> {
+        popup.show(getTopToolbar().getSettingsDropDown().getElement());
+        return false;
+      }, 375);
+    }
   }
 
   /*
@@ -1846,10 +1857,7 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-
-    if (getShowUIPicker()) {
-      new UISettingsWizard(true).show();
-    } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
+    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       maybeShowNoProjectsDialog();
