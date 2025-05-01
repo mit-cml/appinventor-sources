@@ -24,11 +24,5 @@ class StringUtilTests: XCTestCase {
 
   func testReplaceMappingsWithDictionary()  {
     XCTAssertEqual("peace for you and I and Irselves please", StringUtil.replaceAllMappingsDictionary("peace for me and you and yourselves please", ["you":"me", "me": "you","I": "you", "you": "I", "yourselves": "ourselves", "ourselves": "yourselves","myself": "yourself", "yourself": "myself", "mine": "yours", "ours": "yours", "yours": "mine" ]))
-  
-
   }
-
-  
-
-
 }
