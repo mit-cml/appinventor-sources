@@ -11,10 +11,20 @@ import org.keyczar.Crypter;
 import org.keyczar.util.Base64Coder;
 import org.keyczar.exceptions.KeyczarException;
 
+import com.google.protobuf.ByteString;
+
+import java.util.Arrays;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 public class Token {
 
   private static Flag<String> tokenKey = Flag.createFlag("token.key", "WEB-INF/tokenkey");
+  private static Flag<String> stokenKey = Flag.createFlag("stoken.key", "");
   private static Crypter crypter;
+
+  private static final String HMAC_ALGORITHM = "HmacSHA256";
 
   static {
     try {
@@ -78,6 +88,14 @@ public class Token {
     }
   }
 
+  /**
+   * Verify a Keyczar encrypted token.
+   *
+   * @param inToken encrypted token
+   * @returns decoded token
+   * @throws TokenException on any error
+   */
+
   public static TokenProto.token verifyToken(String inToken) throws TokenException {
     try {
       byte [] decrypted = crypter.decrypt(Base64Coder.decode(inToken));
@@ -87,4 +105,36 @@ public class Token {
       throw new TokenException(e.getMessage());
     }
   }
+
+  /**
+   * Verify an HMAC Signed token.
+   *
+   * WARNING: These tokens are *not* encrypted, their contents is visible
+   * to the end-user (but usually encrypted in transit.
+   *
+   * @param inEnvelope base64 encoded envelope which contains the token
+   * @returns decoded token
+   * @throws TokenException on any error
+  */
+
+  public static TokenProto.token verifySToken(String inEnvelope) throws TokenException {
+    String key = stokenKey.get();
+    if (key.isEmpty()) {
+      throw new TokenException("stoken.key may not be empty!");
+    }
+    try {
+      TokenProto.envelope envelope = TokenProto.envelope.parseFrom(Base64Coder.decode(inEnvelope));
+      SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), HMAC_ALGORITHM);
+      Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
+      hmac.init(secretKeySpec);
+      byte [] signature = hmac.doFinal(envelope.getUnsigned().toByteArray());
+      if (!Arrays.equals(signature, envelope.getSignature().toByteArray())) {
+        throw new TokenException("Signature does not match");
+      }
+      return TokenProto.token.parseFrom(envelope.getUnsigned().toByteArray());
+    } catch (Exception e) {
+      throw new TokenException(e.getMessage());
+    }
+  }
+
 }

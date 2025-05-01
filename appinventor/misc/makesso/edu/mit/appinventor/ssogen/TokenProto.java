@@ -3,7 +3,7 @@
 // source: token.proto
 // Protobuf Java Version: 4.28.1
 
-package com.google.appinventor.server.tokens;
+package edu.mit.appinventor.ssogen;
 
 public final class TokenProto {
   private TokenProto() {}
@@ -38,7 +38,7 @@ public final class TokenProto {
      * <code>required .tokens.token.CommandType command = 1;</code>
      * @return The command.
      */
-    com.google.appinventor.server.tokens.TokenProto.token.CommandType getCommand();
+    edu.mit.appinventor.ssogen.TokenProto.token.CommandType getCommand();
 
     /**
      * <pre>
@@ -419,15 +419,15 @@ public final class TokenProto {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_token_descriptor;
+      return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_token_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_token_fieldAccessorTable
+      return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_token_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.google.appinventor.server.tokens.TokenProto.token.class, com.google.appinventor.server.tokens.TokenProto.token.Builder.class);
+              edu.mit.appinventor.ssogen.TokenProto.token.class, edu.mit.appinventor.ssogen.TokenProto.token.Builder.class);
     }
 
     /**
@@ -657,7 +657,7 @@ public final class TokenProto {
       }
       public static final com.google.protobuf.Descriptors.EnumDescriptor
           getDescriptor() {
-        return com.google.appinventor.server.tokens.TokenProto.token.getDescriptor().getEnumTypes().get(0);
+        return edu.mit.appinventor.ssogen.TokenProto.token.getDescriptor().getEnumTypes().get(0);
       }
 
       private static final CommandType[] VALUES = values();
@@ -694,9 +694,9 @@ public final class TokenProto {
      * <code>required .tokens.token.CommandType command = 1;</code>
      * @return The command.
      */
-    @java.lang.Override public com.google.appinventor.server.tokens.TokenProto.token.CommandType getCommand() {
-      com.google.appinventor.server.tokens.TokenProto.token.CommandType result = com.google.appinventor.server.tokens.TokenProto.token.CommandType.forNumber(command_);
-      return result == null ? com.google.appinventor.server.tokens.TokenProto.token.CommandType.SSOLOGIN : result;
+    @java.lang.Override public edu.mit.appinventor.ssogen.TokenProto.token.CommandType getCommand() {
+      edu.mit.appinventor.ssogen.TokenProto.token.CommandType result = edu.mit.appinventor.ssogen.TokenProto.token.CommandType.forNumber(command_);
+      return result == null ? edu.mit.appinventor.ssogen.TokenProto.token.CommandType.SSOLOGIN : result;
     }
 
     public static final int TS_FIELD_NUMBER = 2;
@@ -1481,10 +1481,10 @@ public final class TokenProto {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.google.appinventor.server.tokens.TokenProto.token)) {
+      if (!(obj instanceof edu.mit.appinventor.ssogen.TokenProto.token)) {
         return super.equals(obj);
       }
-      com.google.appinventor.server.tokens.TokenProto.token other = (com.google.appinventor.server.tokens.TokenProto.token) obj;
+      edu.mit.appinventor.ssogen.TokenProto.token other = (edu.mit.appinventor.ssogen.TokenProto.token) obj;
 
       if (hasCommand() != other.hasCommand()) return false;
       if (hasCommand()) {
@@ -1642,44 +1642,44 @@ public final class TokenProto {
       return hash;
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(byte[] data)
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(java.io.InputStream input)
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1687,26 +1687,26 @@ public final class TokenProto {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.token parseDelimitedFrom(java.io.InputStream input)
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.token parseDelimitedFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.token parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.token parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1719,7 +1719,7 @@ public final class TokenProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.google.appinventor.server.tokens.TokenProto.token prototype) {
+    public static Builder newBuilder(edu.mit.appinventor.ssogen.TokenProto.token prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1740,21 +1740,21 @@ public final class TokenProto {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:tokens.token)
-        com.google.appinventor.server.tokens.TokenProto.tokenOrBuilder {
+        edu.mit.appinventor.ssogen.TokenProto.tokenOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_token_descriptor;
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_token_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_token_fieldAccessorTable
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_token_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.google.appinventor.server.tokens.TokenProto.token.class, com.google.appinventor.server.tokens.TokenProto.token.Builder.class);
+                edu.mit.appinventor.ssogen.TokenProto.token.class, edu.mit.appinventor.ssogen.TokenProto.token.Builder.class);
       }
 
-      // Construct using com.google.appinventor.server.tokens.TokenProto.token.newBuilder()
+      // Construct using edu.mit.appinventor.ssogen.TokenProto.token.newBuilder()
       private Builder() {
 
       }
@@ -1789,17 +1789,17 @@ public final class TokenProto {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_token_descriptor;
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_token_descriptor;
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.token getDefaultInstanceForType() {
-        return com.google.appinventor.server.tokens.TokenProto.token.getDefaultInstance();
+      public edu.mit.appinventor.ssogen.TokenProto.token getDefaultInstanceForType() {
+        return edu.mit.appinventor.ssogen.TokenProto.token.getDefaultInstance();
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.token build() {
-        com.google.appinventor.server.tokens.TokenProto.token result = buildPartial();
+      public edu.mit.appinventor.ssogen.TokenProto.token build() {
+        edu.mit.appinventor.ssogen.TokenProto.token result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1807,14 +1807,14 @@ public final class TokenProto {
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.token buildPartial() {
-        com.google.appinventor.server.tokens.TokenProto.token result = new com.google.appinventor.server.tokens.TokenProto.token(this);
+      public edu.mit.appinventor.ssogen.TokenProto.token buildPartial() {
+        edu.mit.appinventor.ssogen.TokenProto.token result = new edu.mit.appinventor.ssogen.TokenProto.token(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(com.google.appinventor.server.tokens.TokenProto.token result) {
+      private void buildPartial0(edu.mit.appinventor.ssogen.TokenProto.token result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -1882,16 +1882,16 @@ public final class TokenProto {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.google.appinventor.server.tokens.TokenProto.token) {
-          return mergeFrom((com.google.appinventor.server.tokens.TokenProto.token)other);
+        if (other instanceof edu.mit.appinventor.ssogen.TokenProto.token) {
+          return mergeFrom((edu.mit.appinventor.ssogen.TokenProto.token)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.google.appinventor.server.tokens.TokenProto.token other) {
-        if (other == com.google.appinventor.server.tokens.TokenProto.token.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.mit.appinventor.ssogen.TokenProto.token other) {
+        if (other == edu.mit.appinventor.ssogen.TokenProto.token.getDefaultInstance()) return this;
         if (other.hasCommand()) {
           setCommand(other.getCommand());
         }
@@ -1984,8 +1984,8 @@ public final class TokenProto {
                 break;
               case 8: {
                 int tmpRaw = input.readEnum();
-                com.google.appinventor.server.tokens.TokenProto.token.CommandType tmpValue =
-                    com.google.appinventor.server.tokens.TokenProto.token.CommandType.forNumber(tmpRaw);
+                edu.mit.appinventor.ssogen.TokenProto.token.CommandType tmpValue =
+                    edu.mit.appinventor.ssogen.TokenProto.token.CommandType.forNumber(tmpRaw);
                 if (tmpValue == null) {
                   mergeUnknownVarintField(1, tmpRaw);
                 } else {
@@ -2094,16 +2094,16 @@ public final class TokenProto {
        * @return The command.
        */
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.token.CommandType getCommand() {
-        com.google.appinventor.server.tokens.TokenProto.token.CommandType result = com.google.appinventor.server.tokens.TokenProto.token.CommandType.forNumber(command_);
-        return result == null ? com.google.appinventor.server.tokens.TokenProto.token.CommandType.SSOLOGIN : result;
+      public edu.mit.appinventor.ssogen.TokenProto.token.CommandType getCommand() {
+        edu.mit.appinventor.ssogen.TokenProto.token.CommandType result = edu.mit.appinventor.ssogen.TokenProto.token.CommandType.forNumber(command_);
+        return result == null ? edu.mit.appinventor.ssogen.TokenProto.token.CommandType.SSOLOGIN : result;
       }
       /**
        * <code>required .tokens.token.CommandType command = 1;</code>
        * @param value The command to set.
        * @return This builder for chaining.
        */
-      public Builder setCommand(com.google.appinventor.server.tokens.TokenProto.token.CommandType value) {
+      public Builder setCommand(edu.mit.appinventor.ssogen.TokenProto.token.CommandType value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -3291,12 +3291,12 @@ public final class TokenProto {
     }
 
     // @@protoc_insertion_point(class_scope:tokens.token)
-    private static final com.google.appinventor.server.tokens.TokenProto.token DEFAULT_INSTANCE;
+    private static final edu.mit.appinventor.ssogen.TokenProto.token DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.google.appinventor.server.tokens.TokenProto.token();
+      DEFAULT_INSTANCE = new edu.mit.appinventor.ssogen.TokenProto.token();
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.token getDefaultInstance() {
+    public static edu.mit.appinventor.ssogen.TokenProto.token getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3332,7 +3332,7 @@ public final class TokenProto {
     }
 
     @java.lang.Override
-    public com.google.appinventor.server.tokens.TokenProto.token getDefaultInstanceForType() {
+    public edu.mit.appinventor.ssogen.TokenProto.token getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3432,15 +3432,15 @@ public final class TokenProto {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_envelope_descriptor;
+      return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_envelope_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_envelope_fieldAccessorTable
+      return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_envelope_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.google.appinventor.server.tokens.TokenProto.envelope.class, com.google.appinventor.server.tokens.TokenProto.envelope.Builder.class);
+              edu.mit.appinventor.ssogen.TokenProto.envelope.class, edu.mit.appinventor.ssogen.TokenProto.envelope.Builder.class);
     }
 
     private int bitField0_;
@@ -3597,10 +3597,10 @@ public final class TokenProto {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.google.appinventor.server.tokens.TokenProto.envelope)) {
+      if (!(obj instanceof edu.mit.appinventor.ssogen.TokenProto.envelope)) {
         return super.equals(obj);
       }
-      com.google.appinventor.server.tokens.TokenProto.envelope other = (com.google.appinventor.server.tokens.TokenProto.envelope) obj;
+      edu.mit.appinventor.ssogen.TokenProto.envelope other = (edu.mit.appinventor.ssogen.TokenProto.envelope) obj;
 
       if (hasVersion() != other.hasVersion()) return false;
       if (hasVersion()) {
@@ -3656,44 +3656,44 @@ public final class TokenProto {
       return hash;
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(byte[] data)
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(java.io.InputStream input)
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3701,26 +3701,26 @@ public final class TokenProto {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseDelimitedFrom(java.io.InputStream input)
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseDelimitedFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.google.appinventor.server.tokens.TokenProto.envelope parseFrom(
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3733,7 +3733,7 @@ public final class TokenProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.google.appinventor.server.tokens.TokenProto.envelope prototype) {
+    public static Builder newBuilder(edu.mit.appinventor.ssogen.TokenProto.envelope prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -3754,21 +3754,21 @@ public final class TokenProto {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:tokens.envelope)
-        com.google.appinventor.server.tokens.TokenProto.envelopeOrBuilder {
+        edu.mit.appinventor.ssogen.TokenProto.envelopeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_envelope_descriptor;
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_envelope_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_envelope_fieldAccessorTable
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_envelope_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.google.appinventor.server.tokens.TokenProto.envelope.class, com.google.appinventor.server.tokens.TokenProto.envelope.Builder.class);
+                edu.mit.appinventor.ssogen.TokenProto.envelope.class, edu.mit.appinventor.ssogen.TokenProto.envelope.Builder.class);
       }
 
-      // Construct using com.google.appinventor.server.tokens.TokenProto.envelope.newBuilder()
+      // Construct using edu.mit.appinventor.ssogen.TokenProto.envelope.newBuilder()
       private Builder() {
 
       }
@@ -3792,17 +3792,17 @@ public final class TokenProto {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.google.appinventor.server.tokens.TokenProto.internal_static_tokens_envelope_descriptor;
+        return edu.mit.appinventor.ssogen.TokenProto.internal_static_tokens_envelope_descriptor;
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.envelope getDefaultInstanceForType() {
-        return com.google.appinventor.server.tokens.TokenProto.envelope.getDefaultInstance();
+      public edu.mit.appinventor.ssogen.TokenProto.envelope getDefaultInstanceForType() {
+        return edu.mit.appinventor.ssogen.TokenProto.envelope.getDefaultInstance();
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.envelope build() {
-        com.google.appinventor.server.tokens.TokenProto.envelope result = buildPartial();
+      public edu.mit.appinventor.ssogen.TokenProto.envelope build() {
+        edu.mit.appinventor.ssogen.TokenProto.envelope result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -3810,14 +3810,14 @@ public final class TokenProto {
       }
 
       @java.lang.Override
-      public com.google.appinventor.server.tokens.TokenProto.envelope buildPartial() {
-        com.google.appinventor.server.tokens.TokenProto.envelope result = new com.google.appinventor.server.tokens.TokenProto.envelope(this);
+      public edu.mit.appinventor.ssogen.TokenProto.envelope buildPartial() {
+        edu.mit.appinventor.ssogen.TokenProto.envelope result = new edu.mit.appinventor.ssogen.TokenProto.envelope(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(com.google.appinventor.server.tokens.TokenProto.envelope result) {
+      private void buildPartial0(edu.mit.appinventor.ssogen.TokenProto.envelope result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -3841,16 +3841,16 @@ public final class TokenProto {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.google.appinventor.server.tokens.TokenProto.envelope) {
-          return mergeFrom((com.google.appinventor.server.tokens.TokenProto.envelope)other);
+        if (other instanceof edu.mit.appinventor.ssogen.TokenProto.envelope) {
+          return mergeFrom((edu.mit.appinventor.ssogen.TokenProto.envelope)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.google.appinventor.server.tokens.TokenProto.envelope other) {
-        if (other == com.google.appinventor.server.tokens.TokenProto.envelope.getDefaultInstance()) return this;
+      public Builder mergeFrom(edu.mit.appinventor.ssogen.TokenProto.envelope other) {
+        if (other == edu.mit.appinventor.ssogen.TokenProto.envelope.getDefaultInstance()) return this;
         if (other.hasVersion()) {
           setVersion(other.getVersion());
         }
@@ -4122,12 +4122,12 @@ public final class TokenProto {
     }
 
     // @@protoc_insertion_point(class_scope:tokens.envelope)
-    private static final com.google.appinventor.server.tokens.TokenProto.envelope DEFAULT_INSTANCE;
+    private static final edu.mit.appinventor.ssogen.TokenProto.envelope DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.google.appinventor.server.tokens.TokenProto.envelope();
+      DEFAULT_INSTANCE = new edu.mit.appinventor.ssogen.TokenProto.envelope();
     }
 
-    public static com.google.appinventor.server.tokens.TokenProto.envelope getDefaultInstance() {
+    public static edu.mit.appinventor.ssogen.TokenProto.envelope getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4163,7 +4163,7 @@ public final class TokenProto {
     }
 
     @java.lang.Override
-    public com.google.appinventor.server.tokens.TokenProto.envelope getDefaultInstanceForType() {
+    public edu.mit.appinventor.ssogen.TokenProto.envelope getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4203,8 +4203,8 @@ public final class TokenProto {
       "N\020\007\022\r\n\tSSOLOGIN3\020\010\022\010\n\004NOOP\020\024\022\021\n\rDELETEAC" +
       "COUNT\020\025\"U\n\010envelope\022\022\n\007version\030\001 \001(\004:\0011\022" +
       "\020\n\005keyid\030\002 \001(\004:\0011\022\020\n\010unsigned\030\003 \001(\014\022\021\n\ts" +
-      "ignature\030\004 \001(\014B2\n$com.google.appinventor" +
-      ".server.tokensB\nTokenProto"
+      "ignature\030\004 \001(\014B(\n\032edu.mit.appinventor.ss" +
+      "ogenB\nTokenProto"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

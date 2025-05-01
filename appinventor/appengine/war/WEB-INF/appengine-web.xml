@@ -192,5 +192,7 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <property name="stoken.key" value="changeme"/>
+
   </system-properties>
 </appengine-web-app>

@@ -1,0 +1,55 @@
+There are two jars in this directory, directly downloaded from
+code.google.com.  The general keyczar one is needed to run the
+encryption/decryption; the KeyczarTool one is needed to generate keys.
+
+Note that the log4j and the gson libraries are also needed at runtime.
+
+--------------------------------------------------------------------------------
+
+To generate a key:
+
+java  -jar keyczar/KeyczarTool.jar create  --location=$location --purpose=crypt
+java  -jar keyczar/KeyczarTool.jar addkey --location=$location
+java  -jar keyczar/KeyczarTool.jar promote --location=$location --version=1
+
+where location is going to be something like ...appengine.../war/keystore
+
+--------------------------------------------------------------------------------
+
+Here's the documentation for the KeyczarTool
+
+create --location=/path/to/keys --purpose=(crypt|sign) [--name="A name"] [--asymmetric=(dsa|rsa|ec)]
+        Creates a new, empty key set in the given location.
+        This key set must have a purpose of either "crypt" or "sign"
+        and may optionally be given a name. The optional asymmetric
+        flag will generate a public key set of the given algorithm.
+        The "dsa" and "ec" asymmetric values are valid only for sets
+        with "sign" purpose.
+addkey --location=/path/to/keys [--status=(active|primary)] [--size=size] [--crypter=crypterLocation]
+        Adds a new key to an existing key set. Optionally
+        specify a status, which is active by default. Optionally
+        specify a key size in bits. Also optionally specify the
+        location of a set of crypting keys, which will be used to
+        encrypt this key set.
+pubkey --location=/path/to/keys --destination=/destination
+        Extracts public keys from a given key set and writes them
+        to the destination. The "pubkey" command Only works for
+        key sets that were created with the "--asymmetric" flag.
+promote --location=/path/to/keys --version=versionNumber
+        Promotes the status of the given key version in the given
+        location. Active keys are promoted to primary (which demotes
+        any existing primary key to active). Inactive keys are
+        promoted to be active.
+demote --location=/path/to/keys --version=versionNumber
+        Demotes the status of the given key version in the given
+        location. Primary keys are demoted to active. Active keys
+        are made inactive.
+revoke --location=/path/to/keys --version=versionNumber
+        Revokes the key of the given version number.
+        This key must have been demoted to inactive to be revoked.
+        WARNING: The key will be destroyed.
+
+Optional flags are in [brackets]. The notation (a|b|c) means "a", "b", and "c"
+are the valid choices 
+
+--------------------------------------------------------------------------------

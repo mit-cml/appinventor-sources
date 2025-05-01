@@ -11,6 +11,7 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
+  <ui:with field="isAvailable" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -19,26 +20,26 @@
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false">
         <actions:SwitchToProjectAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{isAvailable}">
         <actions:NewProjectAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="false">
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{isAvailable}">
         <actions:ImportProjectAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="false">
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="{isAvailable}">
         <actions:ImportTemplateAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{isAvailable}">
         <actions:DeleteAction/>
       </ai:DropDownItem>
       <hr/>
       <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{isAvailable}">
         <actions:SaveAsAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{isAvailable}">
         <actions:CheckpointAction/>
       </ai:DropDownItem>
       <hr/>

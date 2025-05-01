@@ -59,7 +59,7 @@ public class ReceiveBuildServlet extends OdeServlet {
     }
 
     // Set the user in the OdeFilter, which is used everywhere as the UserInfoProvider.
-    odeFilter.setUserFromUserId(userId, false, false);
+    odeFilter.setUserFromUserId(userId, false, false, 0, null);
     try {
       String buildFileDirPath = uriComponents[4];
       ZipInputStream zipInputStream = new ZipInputStream(req.getInputStream());

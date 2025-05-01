@@ -12,6 +12,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="isAvailable" type="java.lang.Boolean"/>
 
   <ai:Toolbar>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />

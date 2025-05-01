@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.style.neo;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.Toolbar;
@@ -25,16 +26,23 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected Boolean isAvailable;
+  @UiField protected ToolbarItem backArrow;
 
   @Override
   public void bindUI() {
     DesignToolbarUiBinderNeo uibinder = GWT.create(DesignToolbarUiBinderNeo.class);
     populateToolbar(uibinder.createAndBindUi(this));
+
+    boolean isAvailable = !Ode.getInstance().getOneProjectMode();
+
     super.pickFormItem = pickFormItem;
     super.addFormItem = addFormItem;
     super.removeFormItem = removeFormItem;
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
     super.sendToGalleryItem = sendToGalleryItem;
+    super.isAvailable = isAvailable;
+    super.backArrow = backArrow;
   }
 }
