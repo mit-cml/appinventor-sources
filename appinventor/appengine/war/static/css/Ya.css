@@ -310,16 +310,6 @@ div.StatusPanel {
 }
 
 /*
- * MotdBox
- */
-
-.ode-Motd {
-  background-color: #f7f9f2;
-  font-size: small;
-  color: #555;
-}
-
-/*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
 .ode-ProjectFieldSpan {
