@@ -13,6 +13,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData.PWData;
+import com.google.appinventor.server.storage.StoredData.ProjectNotFoundException;
 
 import com.google.appinventor.server.tokens.Token;
 import com.google.appinventor.server.tokens.TokenException;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -269,7 +271,7 @@ public class LoginServlet extends HttpServlet {
       out.println("<input type=submit value=\"" + bundle.getString("sendlink") + "\" style=\"font-size: 300%;\">\n");
       out.println("</form>\n");
       return;
-    } else if (page.equals("token")) {
+    } else if (page.equals("token") || page.equals("stoken")) {
       String encodedToken = params.get("token");
       if (encodedToken == null) {
         fail(req, resp, "No Authentication Token Provided", locale);
@@ -277,7 +279,11 @@ public class LoginServlet extends HttpServlet {
       }
       TokenProto.token token = null;
       try {
-        token = Token.verifyToken(encodedToken);
+        if (page.equals("token")) {
+          token = Token.verifyToken(encodedToken);
+        } else {
+          token = Token.verifySToken(encodedToken);
+        }
       } catch (TokenException e) {
         fail(req, resp, e.getMessage(), locale);
         return;
@@ -301,7 +307,6 @@ public class LoginServlet extends HttpServlet {
 
       userInfo = new OdeAuthFilter.UserInfo();
       if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN) {
-        userInfo.setReadOnly(token.getReadOnly());
         userInfo.setUserId(token.getUuid());
       } else if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN2) { // SSOLOGIN2
         String email = token.getName();
@@ -324,6 +329,25 @@ public class LoginServlet extends HttpServlet {
           listener.onLogin(user, token);
         }
       }
+
+      userInfo.setReadOnly(token.getReadOnly());
+
+      // Check to see if this is a one project token
+      long oneProjectId = token.getOneProjectId();
+      LOG.log(Level.INFO, "oneProjectId = " + oneProjectId);
+      if (oneProjectId != 0) {  // It is...
+        try {
+          userInfo.setUserId(storageIo.getProjectUserId(oneProjectId));
+          userInfo.setOneProjectId(oneProjectId);
+        } catch (ProjectNotFoundException e) {
+          fail(req, resp, e.getMessage(), locale);
+        }
+      }
+
+      userInfo.setFauxProjectName(token.getDisplayprojectname());
+
+      String fauxUserName = token.getDisplayaccountname();
+
 
       String newCookie = userInfo.buildCookie(false);
       if (newCookie != null) {

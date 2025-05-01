@@ -43,6 +43,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
+  protected ToolbarItem backArrow;
 
   /*
    * A Screen groups together the form editor and blocks editor for an
@@ -121,6 +122,7 @@ public class DesignToolbar extends Toolbar {
   public View currentView = View.FORM;
 
   @UiField public Label projectNameLabel;
+  @UiField (provided = true) protected Boolean isAvailable;
 
   // Project currently displayed in designer
   private DesignProject currentProject;
@@ -152,7 +154,14 @@ public class DesignToolbar extends Toolbar {
    */
   public DesignToolbar() {
     super();
+    isAvailable = !Ode.getInstance().getOneProjectMode();
     bindUI();
+
+    if (Ode.getInstance().getOneProjectMode()) {
+      if (backArrow != null) {
+        setVisibleItem(backArrow, false);
+      }
+    }
 
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
@@ -264,7 +273,12 @@ public class DesignToolbar extends Toolbar {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
       }
-      projectNameLabel.setText(projectName);
+      String fauxProjectName = Ode.getInstance().getFauxProjectName();
+      if (fauxProjectName != null && !fauxProjectName.isEmpty()) {
+        projectNameLabel.setText(fauxProjectName);
+      } else {
+        projectNameLabel.setText(projectName);
+      }
       YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project
     } else {
       ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +

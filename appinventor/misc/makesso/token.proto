@@ -1,6 +1,10 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016 MIT, All rights reserved.
+// This is unreleased code.
+
 package tokens;
 
-option java_package = "com.google.appinventor.server.tokens";
+option java_package = "edu.mit.appinventor.ssogen";
 option java_outer_classname = "TokenProto";
 
 message token {
