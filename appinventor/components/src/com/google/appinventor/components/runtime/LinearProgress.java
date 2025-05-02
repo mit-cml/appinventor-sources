@@ -157,7 +157,7 @@ public final class LinearProgress extends AndroidViewComponent {
       category = PropertyCategory.APPEARANCE)
   public void IndeterminateColor(int color) {
     this.indeterminateColor = color;
-    Drawable drawable = progressBar.getProgressDrawable();
+    Drawable drawable = progressBar.getIndeterminateDrawable();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       drawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
     } else {
