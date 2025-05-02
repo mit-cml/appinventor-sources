@@ -70,6 +70,9 @@ public final class Main {
     @Option(name = "--ext",
         usage = "Specifies the build type to use.")
     String ext = "apk";
+
+    @Option(name = "--debug", usage = "Enable debugging in app manifest")
+    boolean debug = false;
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -119,6 +122,7 @@ public final class Main {
                                          zip,
                                          commandLineOptions.outputDir,
                                          commandLineOptions.outputFileName,
+                                         commandLineOptions.debug,
                                          commandLineOptions.isForCompanion,
                                          commandLineOptions.isForEmulator,
                                          commandLineOptions.includeDangerousPermissions,

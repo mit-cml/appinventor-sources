@@ -30,6 +30,7 @@ public class CompilerContext<P extends Paths> {
   Set<String> blockPermissions;
   Reporter reporter;
   StatReporter statReporter;
+  boolean debuggable;
   boolean isForCompanion;
   boolean isForEmulator;
   boolean includeDangerousPermissions;
@@ -59,6 +60,7 @@ public class CompilerContext<P extends Paths> {
     private Set<String> blockPermissions;
     private Reporter reporter;
     private StatReporter statReporter;
+    private boolean debuggable = false;
     private boolean isForCompanion = false;
     private boolean isForEmulator = false;
     private boolean includeDangerousPermissions = false;
@@ -101,6 +103,11 @@ public class CompilerContext<P extends Paths> {
 
     public Builder<R, T> withStatReporter(StatReporter statReporter) {
       this.statReporter = statReporter;
+      return this;
+    }
+
+    public Builder<R, T> withDebuggable(boolean debuggable) {
+      this.debuggable = debuggable;
       return this;
     }
 
@@ -175,6 +182,7 @@ public class CompilerContext<P extends Paths> {
       context.blockPermissions = blockPermissions;
       context.reporter = reporter;
       context.statReporter = statReporter;
+      context.debuggable = debuggable;
       context.isForCompanion = isForCompanion;
       context.isForEmulator = isForEmulator;
       context.includeDangerousPermissions = includeDangerousPermissions;
@@ -234,6 +242,10 @@ public class CompilerContext<P extends Paths> {
 
   public StatReporter getStatReporter() {
     return statReporter;
+  }
+
+  public boolean isDebuggable() {
+    return debuggable;
   }
 
   public boolean isForCompanion() {
