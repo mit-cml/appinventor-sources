@@ -95,10 +95,10 @@ Blockly.BlockSvg.isRenderingOn = true;
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.getSvgRoot()),
                            'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -107,10 +107,10 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.getSvgRoot()),
                               'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -118,7 +118,7 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
+  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.getSvgRoot()),
     'badBlock');
 };
 
@@ -129,7 +129,9 @@ Blockly.BlockSvg.prototype.badBlock = function() {
   this.isBad = true;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
+    if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {
+      throw Error('Block is not rendered.');
+    }
     this.addBadBlock();
   }
 };
@@ -141,7 +143,9 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
+    if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {
+      throw Error('Block is not rendered.');
+    }
     this.removeBadBlock();
   }
 };
