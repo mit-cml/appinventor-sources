@@ -56,6 +56,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private YailList items = new YailList();
   private int oldAdapterCount;
   private int oldSelectionIndex;
+  private boolean isEnabled;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -74,6 +75,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
+    Enabled(true);
 
     container.$add(this);
 
@@ -191,6 +193,32 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       category = PropertyCategory.APPEARANCE)
   public void Prompt(String str){
     view.setPrompt(str);
+  }
+
+  /**
+   * Specifies whether the %type% should be active and clickable.
+   *
+   * @param isEnabled {@code true} for enabled, {@code false} disabled
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @SimpleProperty
+  public void Enabled(boolean isEnabled)  {
+    this.isEnabled = isEnabled;
+    view.setEnabled(isEnabled);
+    view.invalidate();
+  }
+
+  /**
+   * If set, user can tap `%type%` to cause action.
+   *
+   * @return  {@code true} indicates enabled, {@code false} disabled
+   */
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR,
+    description = "If set, user can tap %type% to cause action."
+  )
+  public boolean Enabled()  {
+    return this.isEnabled;
   }
 
   @SimpleFunction(description = "Displays the dropdown list for selection, " +
