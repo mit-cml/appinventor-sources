@@ -1906,7 +1906,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // MakeDate, MakeTime, MakeInstantFromParts methods added
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // Timezones property, ChangeTimezone method added
+    5: "noUpgrade"
 
   }, // End Clock upgraders
 
