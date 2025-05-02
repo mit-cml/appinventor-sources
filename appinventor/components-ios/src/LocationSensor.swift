@@ -175,7 +175,10 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
 
   @objc open var CurrentAddress: String {
     get {
-      return getAddressFromLocation(location: _lastLocation)
+      if let form = _form, form.isRepl {
+        form.view.makeToast("CurrentAddress is not supported. Use the ReverseGeocode/GotADdress blocks instead.", duration: 3.5)
+      }
+      return "No Address Available"
     }
   }
 
@@ -255,9 +258,10 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
             // do something here too --> Placemark was nil
             return
           }
-          let postalAddress = CNMutablePostalAddress(placemark: placemark)
-          let addressStr = CNPostalAddressFormatter().string(from: postalAddress)
-          address = addressStr.isEmpty ? address : addressStr
+          if let postalAddress = placemark.postalAddress {
+            let addressStr = CNPostalAddressFormatter().string(from: postalAddress)
+            address = addressStr.isEmpty ? address : addressStr
+          }
           self.GotAddress(address)
         }
       })
@@ -267,33 +271,6 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   @objc open func GotAddress(_ address: String) {
     EventDispatcher.dispatchEvent(of: self, called: "GotAddress", arguments: address as NSString)
   }
-
-  fileprivate func getAddressFromLocation (location: CLLocation?) -> String {
-    var address = "No Address Available"
-    guard let location = location else {
-      return address
-    }
-    if -90...90 ~= location.coordinate.latitude && -180...180 ~= location.coordinate.longitude {
-        self.geocoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
-          if let error = error {
-            self._form?.dispatchErrorOccurredEvent(self, "getAddressFromLocation",
-                Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
-                error.localizedDescription)
-            return
-          } else if let placemarks = placemarks {
-            guard let placemark = placemarks.first else {
-              // do something here too --> Placemark was nil
-              return
-            }
-            let postalAddress = CNMutablePostalAddress(placemark: placemark)
-            let addressStr = CNPostalAddressFormatter().string(from: postalAddress)
-            address = addressStr.isEmpty ? address : addressStr
-          }
-        })
-    }
-    return address
-  }
-
 
   // MARK: LocationDelegate
   open func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
