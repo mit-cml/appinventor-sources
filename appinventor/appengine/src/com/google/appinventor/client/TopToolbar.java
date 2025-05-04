@@ -84,6 +84,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton settingsDropDown;
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
+  @UiField (provided = true) protected Boolean isAvailable;
 
   protected boolean readOnly;
 
@@ -110,6 +111,10 @@ public class TopToolbar extends Composite {
     // UIBinder can't negate the boolean itself.
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
+
+    boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
+
+    isAvailable = !oneProjectMode && hasWriteAccess;
 
     bindUI();
     if (iamChromebook) {
