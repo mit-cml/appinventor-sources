@@ -1,8 +1,7 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import android.content.res.AssetManager;
 import android.opengl.GLES30;
 import android.opengl.GLException;
 import android.util.Log;
@@ -15,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+
+import com.google.appinventor.components.runtime.arview.renderer.ARViewRender;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**

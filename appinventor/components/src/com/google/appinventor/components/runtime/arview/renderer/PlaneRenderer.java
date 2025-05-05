@@ -2,7 +2,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
-import com.google.appinventor.components.runtime.util.*;
+import com.google.appinventor.components.runtime.ar.*;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;

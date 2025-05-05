@@ -1,4 +1,4 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.Matrix;

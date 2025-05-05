@@ -1,15 +1,15 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
+import com.google.appinventor.components.runtime.arview.renderer.ARViewRender;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.util.Log;
-import android.content.res.AssetManager;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * A GPU-side texture.

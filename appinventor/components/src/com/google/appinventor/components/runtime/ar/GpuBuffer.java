@@ -1,7 +1,8 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
 import android.opengl.GLES30;
 import android.util.Log;
+
 import java.nio.Buffer;
 
 /* package-private */

@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import android.media.Image;
 import android.opengl.GLES30;
 import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.ar.*;
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 import java.io.IOException;

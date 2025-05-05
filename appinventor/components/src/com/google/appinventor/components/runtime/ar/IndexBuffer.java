@@ -1,7 +1,8 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
 
 import android.opengl.GLES30;
+import com.google.appinventor.components.runtime.arview.renderer.ARViewRender;
 
 import java.io.Closeable;
 import java.nio.IntBuffer;

@@ -1,5 +1,6 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
+import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
 
 import android.app.Activity;
@@ -20,12 +21,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.arview.helper.TrackingStateHelper;
 import com.google.appinventor.components.runtime.arview.helper.TapHelper;
 import com.google.appinventor.components.runtime.arview.helper.DisplayRotationHelper;
-import com.google.appinventor.components.runtime.arview.renderer.BackgroundRenderer;
-import com.google.appinventor.components.runtime.arview.renderer.ObjectRenderer;
-import com.google.appinventor.components.runtime.arview.renderer.PlaneRenderer;
-import com.google.appinventor.components.runtime.arview.renderer.PointCloudRenderer;
-import com.google.appinventor.components.runtime.arview.renderer.QuadRenderer;
-import com.google.appinventor.components.runtime.arview.renderer.SpecularCubeMapFilter;
+import com.google.appinventor.components.runtime.arview.renderer.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARDetectedPlane;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARDetectedPlaneContainer;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARImageMarker;
@@ -1021,7 +1017,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
             "specified (x,y,z) position.")
-    public com.google.appinventor.components.runtime.ar.BoxNode CreateBoxNode(float x, float y, float z) {
+    public BoxNode CreateBoxNode(float x, float y, float z) {
         return new BoxNode(this);
     }
 
@@ -1083,6 +1079,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("creating Capsule node, anchor is", capNode.Anchor().toString());
         return capNode;
     }
+
 
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the specified (x,y,z) position.")
     public CapsuleNode CreateCapsuleNode(float x, float y, float z) {

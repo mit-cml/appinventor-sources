@@ -3,8 +3,8 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
-
+package com.google.appinventor.components.runtime.ar;
+import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
 import com.google.appinventor.components.annotations.DesignerProperty;

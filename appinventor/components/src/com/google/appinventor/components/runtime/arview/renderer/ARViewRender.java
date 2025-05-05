@@ -1,5 +1,6 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.arview.renderer;
 
+import com.google.appinventor.components.runtime.*;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
@@ -7,6 +8,10 @@ import android.util.Log;
 import android.view.Choreographer;
 import android.opengl.EGL14;
 import android.opengl.EGLContext;
+import com.google.appinventor.components.runtime.ar.Framebuffer;
+import com.google.appinventor.components.runtime.ar.Mesh;
+import com.google.appinventor.components.runtime.ar.Shader;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 //import com.google.appinventor.components.annotations.UsesAssets;

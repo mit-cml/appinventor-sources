@@ -1,5 +1,6 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
+import com.google.appinventor.components.runtime.arview.renderer.ARViewRender;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import android.opengl.GLES30;
 import android.util.Log;

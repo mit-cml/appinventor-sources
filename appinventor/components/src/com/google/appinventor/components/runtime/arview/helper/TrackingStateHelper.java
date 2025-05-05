@@ -3,7 +3,6 @@ package com.google.appinventor.components.runtime.arview.helper;
 
 import android.app.Activity;
 import android.view.WindowManager;
-import com.google.appinventor.components.runtime.ARView3D;
 import com.google.ar.core.Camera;
 import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;

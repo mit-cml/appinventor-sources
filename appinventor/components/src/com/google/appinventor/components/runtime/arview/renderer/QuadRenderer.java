@@ -1,9 +1,8 @@
 package com.google.appinventor.components.runtime.arview.renderer;
 
-import android.opengl.GLES30;
 import android.util.Log;
 import com.google.appinventor.components.runtime.*;
-import com.google.appinventor.components.runtime.util.*;
+import com.google.appinventor.components.runtime.ar.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,12 +15,7 @@ import android.opengl.Matrix;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
-import com.google.ar.core.Trackable;
-import java.io.IOException;
-import java.nio.FloatBuffer;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+
 /**
  * StableQuadRenderer renders textured quads with stable performance.
  * Following the same architecture as PlaneRenderer and ObjectRenderer.

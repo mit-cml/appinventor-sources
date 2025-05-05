@@ -1,10 +1,6 @@
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.arview.renderer;
 
 import android.opengl.GLSurfaceView;
-import android.view.SurfaceView;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.Choreographer;
 import android.opengl.GLES30;  // Import all GLES30 methods statically
 import android.os.Looper;
 import android.os.Handler;
@@ -17,9 +13,7 @@ import com.google.android.filament.Box;
 import com.google.android.filament.Camera;
 import com.google.android.filament.Engine;
 import com.google.android.filament.EntityManager;
-import com.google.android.filament.Fence;
 import com.google.android.filament.IndexBuffer;
-import com.google.android.filament.Texture.PixelBufferDescriptor;
 import com.google.android.filament.LightManager;
 import com.google.android.filament.Material;
 import com.google.android.filament.MaterialInstance;
@@ -27,10 +21,8 @@ import com.google.android.filament.RenderableManager;
 import com.google.android.filament.Renderer;
 import com.google.android.filament.RenderTarget;
 import com.google.android.filament.Scene;
-import com.google.android.filament.Stream;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.Texture;
-import com.google.android.filament.TextureSampler;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.View;
@@ -40,14 +32,13 @@ import com.google.android.filament.gltfio.FilamentAsset;
 import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.android.filament.gltfio.ResourceLoader;
 
+import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.ARViewRender;
+
 
 import com.google.ar.core.Pose;
-import com.google.ar.core.Frame;
-import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import java.lang.System;
 import java.io.IOException;

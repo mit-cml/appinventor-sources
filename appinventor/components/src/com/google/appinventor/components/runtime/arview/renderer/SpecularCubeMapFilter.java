@@ -22,7 +22,7 @@ import static java.lang.Math.min;
 import android.media.Image;
 import android.opengl.GLES30;
 import android.util.Log;
-import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.ar.*;
 import com.google.ar.core.ImageFormat;
 
 import java.io.Closeable;

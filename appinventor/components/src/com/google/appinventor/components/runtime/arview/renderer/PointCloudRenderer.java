@@ -2,19 +2,11 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import com.google.appinventor.components.annotations.UsesAssets;
 import android.opengl.Matrix;
 import com.google.appinventor.components.runtime.*;
-import com.google.ar.core.Camera;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Pose;
-import com.google.ar.core.TrackingState;
+import com.google.appinventor.components.runtime.ar.*;
+
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+
 import com.google.ar.core.PointCloud;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** Renders a point cloud. */
 @UsesAssets(fileNames = "point_cloud.frag, point_cloud.vert" )
