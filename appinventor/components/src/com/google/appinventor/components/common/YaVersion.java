@@ -603,7 +603,9 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
-  public static final int YOUNG_ANDROID_VERSION = 231;
+  // For YOUNG_ANDROID_VERSION 232:
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -739,7 +741,9 @@ public class YaVersion {
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
 
-
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
+  // - AbsoluteArrangement component was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
@@ -1690,12 +1694,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.73a";
+  public static final String PREFERRED_COMPANION = "2.74";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.73a", "2.73au" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.74", "2.74u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

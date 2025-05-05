@@ -610,6 +610,7 @@ they get cut off in Windows.
 
   .ode-Designer-RightColumns {
     width: 222px;
+    flex-shrink: 0;
   }
 
   .ode-NavArrow {

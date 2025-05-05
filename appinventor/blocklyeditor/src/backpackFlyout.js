@@ -26,12 +26,7 @@
 
  'use strict';
 
-goog.provide('Blockly.BackpackFlyout');
-
-goog.require('Blockly.Block');
-goog.require('Blockly.Comment');
-goog.require('Blockly.WorkspaceSvg');
-goog.require('goog.userAgent');
+goog.provide('AI.Blockly.BackpackFlyout');
 
 /**
  * BackpackFlyout provides a Blockly flyout that presents opposite of the drawer and contains
@@ -39,18 +34,20 @@ goog.require('goog.userAgent');
  * @param workspaceOptions Options to control the look-and-feel of the flyout
  * @constructor
  */
-Blockly.BackpackFlyout = function(workspaceOptions) {
-  Blockly.BackpackFlyout.superClass_.constructor.call(this, workspaceOptions);
-  // Backpack flyout is opposite the blocks flyout
-  this.toolboxPosition_ = this.RTL ? Blockly.TOOLBOX_AT_LEFT : Blockly.TOOLBOX_AT_RIGHT;
-};
-goog.inherits(Blockly.BackpackFlyout, Blockly.Flyout);
+AI.Blockly.BackpackFlyout = class extends Blockly.VerticalFlyout {
+  constructor(workspaceOptions) {
+    super(workspaceOptions);
+    // Backpack flyout is opposite the blocks flyout
+    this.toolboxPosition_ = workspaceOptions.RTL ?
+        Blockly.utils.toolbox.Position.LEFT : Blockly.utils.toolbox.Position.RIGHT;
+  }
+}
 
 /**
  * Creates the flyout's DOM.  Only needs to be called once.
  * @return {!Element} The flyout's SVG group.
  */
-Blockly.BackpackFlyout.prototype.createDom = function(tagName) {
+AI.Blockly.BackpackFlyout.prototype.createDom = function(tagName) {
   Blockly.Flyout.prototype.createDom.call(this, tagName);
   this.svgBackground_.setAttribute('class', 'blocklybackpackFlyoutBackground');
   return this.svgGroup_;
@@ -60,13 +57,13 @@ Blockly.BackpackFlyout.prototype.createDom = function(tagName) {
  * Dispose of this flyout.
  * Unlink from all DOM elements to prevent memory leaks.
  */
-Blockly.BackpackFlyout.prototype.dispose = function() {
+AI.Blockly.BackpackFlyout.prototype.dispose = function() {
   this.hide();
-  Blockly.unbindEvent_(this.eventWrappers_);
+  Blockly.browserEvents.unbind(this.eventWrappers_);
   this.eventWrappers_.length = 0;
-  if (this.scrollbar_) {
-    this.scrollbar_.dispose();
-    this.scrollbar_ = null;
+  if (this.scrollbar) {
+    this.scrollbar.dispose();
+    this.scrollbar = null;
   }
   this.workspace_ = null;
   if (this.svgGroup_) {
@@ -74,7 +71,7 @@ Blockly.BackpackFlyout.prototype.dispose = function() {
     this.svgGroup_ = null;
   }
   this.svgBackground_ = null;
-  this.targetWorkspace_ = null;
+  this.targetWorkspace = null;
 };
 
 /**
@@ -83,7 +80,7 @@ Blockly.BackpackFlyout.prototype.dispose = function() {
  * @param {!Blockly.BlockSvg} _block The block to copy from the flyout.
  * @return {boolean} True if the flyout allows the block to be instantiated.
  */
-Blockly.BackpackFlyout.prototype.isBlockCreatable_ = function(_block) {
+AI.Blockly.BackpackFlyout.prototype.isBlockCreatable_ = function(_block) {
   return true;
 }
 
@@ -91,16 +88,16 @@ Blockly.BackpackFlyout.prototype.isBlockCreatable_ = function(_block) {
  * Stop binding to the global mouseup and mousemove events.
  * @private
  */
-Blockly.BackpackFlyout.terminateDrag_ = function() {
-  if (Blockly.BackpackFlyout.onMouseUpWrapper_) {
-    Blockly.unbindEvent_(Blockly.BackpackFlyout.onMouseUpWrapper_);
-    Blockly.BackpackFlyout.onMouseUpWrapper_ = null;
+AI.Blockly.BackpackFlyout.terminateDrag_ = function() {
+  if (AI.Blockly.BackpackFlyout.onMouseUpWrapper_) {
+    Blockly.browserEvents.unbind(AI.Blockly.BackpackFlyout.onMouseUpWrapper_);
+    AI.Blockly.BackpackFlyout.onMouseUpWrapper_ = null;
   }
-  if (Blockly.BackpackFlyout.onMouseMoveWrapper_) {
-    Blockly.unbindEvent_(Blockly.BackpackFlyout.onMouseMoveWrapper_);
-    Blockly.BackpackFlyout.onMouseMoveWrapper_ = null;
+  if (AI.Blockly.BackpackFlyout.onMouseMoveWrapper_) {
+    Blockly.browserEvents.unbind(AI.Blockly.BackpackFlyout.onMouseMoveWrapper_);
+    AI.Blockly.BackpackFlyout.onMouseMoveWrapper_ = null;
   }
-  Blockly.BackpackFlyout.startDownEvent_ = null;
-  Blockly.BackpackFlyout.startBlock_ = null;
-  Blockly.BackpackFlyout.startFlyout_ = null;
+  AI.Blockly.BackpackFlyout.startDownEvent_ = null;
+  AI.Blockly.BackpackFlyout.startBlock_ = null;
+  AI.Blockly.BackpackFlyout.startFlyout_ = null;
 };

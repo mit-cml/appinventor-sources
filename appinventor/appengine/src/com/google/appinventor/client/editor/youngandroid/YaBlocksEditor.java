@@ -1,9 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -40,7 +43,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
@@ -60,8 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Editor for Young Android Blocks (.blk) files.
@@ -86,7 +86,7 @@ public final class YaBlocksEditor extends FileEditor
   // Keep a map from projectid_formname -> YaBlocksEditor for handling blocks workspace changed
   // callbacks from the BlocklyPanel objects. This has to be static because it is used by
   // static methods that are called from the Javascript Blockly world.
-  private static final Map<String, YaBlocksEditor> formToBlocksEditor = Maps.newHashMap();
+  private static final Map<String, YaBlocksEditor> formToBlocksEditor = new HashMap<>();
 
   // projectid_formname for this blocks editor. Our index into the static formToBlocksEditor map.
   private String fullFormName;
@@ -241,6 +241,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
     loadBlocksEditor();
+    blocksArea.setBlocklyVisible(true);
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_BLOCKS);
     sendComponentData();  // Send Blockly the component information for generating Yail
   }
@@ -288,6 +289,7 @@ public final class YaBlocksEditor extends FileEditor
     LOG.info("YaBlocksEditor: got onHide() for " + getFileId());
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       super.onHide();
+      blocksArea.setBlocklyVisible(false);
       unloadBlocksEditor();
     } else {
       LOG.warning("YaBlocksEditor.onHide: Not doing anything since we're not the "
@@ -470,6 +472,25 @@ public final class YaBlocksEditor extends FileEditor
       YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
       //get type name from form editor
       return blocksEditor.myFormEditor.getComponentInstanceTypeName(instanceName);
+  }
+
+  /**
+   * Get the UUID for the parent component identified by {@code instanceName}. If the component
+   * is not contained within another component (e.g., Form), the empty string is returned.
+   *
+   * @param formName the name for the screen in project_name format
+   * @param instanceName the name of the component instance of interest
+   * @return the parent component UUID
+   */
+  public static String getComponentContainerUuid(String formName, String instanceName) {
+    YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
+    MockComponent component = blocksEditor.myFormEditor.getComponents().get(instanceName);
+    component = component.getContainer();
+    if (component == null) {
+      return "";
+    } else {
+      return component.getUuid();
+    }
   }
 
   public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName){
@@ -733,6 +754,9 @@ public final class YaBlocksEditor extends FileEditor
   public void onComponentTypeRemoved(Map<String, String> componentTypes) {
     blocksArea.populateComponentTypes(COMPONENT_DATABASE.getComponentsJSONString());
     blocksArea.verifyAllBlocks();
+    // Blockly won't fire the events that would mark the workspace as dirty until later, so
+    // we do this here to immediately allow a save due to the removal of an extension.
+    Ode.getInstance().getEditorManager().scheduleAutoSave(this);
   }
 
   @Override
@@ -811,11 +835,11 @@ public final class YaBlocksEditor extends FileEditor
 
   public native void pasteFromJSNI(JavaScriptObject componentSubstitutionMap, JsArrayString blocks)/*-{
     var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
-    if (Blockly.Events.isEnabled()) {
-      Blockly.Events.setGroup(true);
+    if ($wnd.Blockly.Events.isEnabled()) {
+      $wnd.Blockly.Events.setGroup(true);
     }
     blocks.forEach(function(blockXml) {
-      var dom = Blockly.Xml.textToDom(blockXml);
+      var dom = $wnd.Blockly.utils.xml.textToDom(blockXml);
       var mutations = dom.getElementsByTagName('mutation');
       for (var i = 0; i < mutations.length; i++) {
         var mutation = mutations[i];
@@ -834,7 +858,7 @@ public final class YaBlocksEditor extends FileEditor
         }
       }
       try {
-        var block = Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
+        var block = $wnd.Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
         var blockX = parseInt(dom.firstElementChild.getAttribute('x'), 10);
         var blockY = parseInt(dom.firstElementChild.getAttribute('y'), 10);
         if (!isNaN(blockX) && !isNaN(blockY)) {
@@ -858,8 +882,8 @@ public final class YaBlocksEditor extends FileEditor
               // Check for blocks in snap range to any of its connections.
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
-                var neighbour = connection.closest(Blockly.SNAP_RADIUS,
-                  new goog.math.Coordinate(blockX, blockY));
+                var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
+                  new $wnd.goog.math.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;
@@ -868,25 +892,25 @@ public final class YaBlocksEditor extends FileEditor
             }
             if (collide) {
               if (workspace.RTL) {
-                blockX -= Blockly.SNAP_RADIUS;
+                blockX -= $wnd.Blockly.config.snapRadius;
               } else {
-                blockX += Blockly.SNAP_RADIUS;
+                blockX += $wnd.Blockly.config.snapRadius;
               }
-              blockY += Blockly.SNAP_RADIUS * 2;
+              blockY += $wnd.Blockly.config.snapRadius * 2;
             }
           } while (collide);
           block.moveBy(blockX, blockY);
         }
         if (workspace.rendered) {
           block.initSvg();
-          workspace.requestRender(block);
+          block.queueRender();
         }
       } catch(e) {
-        console.log(e);
+        console.error(e);
       }
     });
-    if (Blockly.Events.isEnabled()) {
-      Blockly.Events.setGroup(false);
+    if ($wnd.Blockly.Events.isEnabled()) {
+      $wnd.Blockly.Events.setGroup(false);
     }
   }-*/;
 
@@ -896,23 +920,23 @@ public final class YaBlocksEditor extends FileEditor
     var result = [];
     for (var i = 0, block; block = topBlocks[i]; i++) {
       if (block.instanceName === name) {
-        result.push('<xml>' + Blockly.Xml.domToText(Blockly.Xml.blockToDomWithXY(block)) + '</xml>');
+        result.push('<xml>' + $wnd.Blockly.Xml.domToText($wnd.Blockly.Xml.blockToDomWithXY(block)) + '</xml>');
       }
     }
     return result;
   }-*/;
 
   public static native void resendAssetsAndExtensions()/*-{
-    if (top.ReplState && (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
-                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
-      Blockly.ReplMgr.resendAssetsAndExtensions();
+    if (top.ReplState && (top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.ASSET)) {
+      $wnd.Blockly.ReplMgr.resendAssetsAndExtensions();
     }
   }-*/;
 
   public static native void resendExtensionsList()/*-{
-    if (top.ReplState && top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
-      Blockly.ReplMgr.loadExtensions();
+    if (top.ReplState && top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED) {
+      $wnd.Blockly.ReplMgr.loadExtensions();
     }
   }-*/;
 

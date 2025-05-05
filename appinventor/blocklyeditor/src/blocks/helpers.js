@@ -12,9 +12,10 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.helpers');
+goog.provide('AI.Blocks.helpers');
 
-goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.Blockly.FieldInvalidDropdown');
+goog.require('AI.BlockUtils');
 
 Blockly.COLOUR_HELPERS = "#BF4343";
 
@@ -28,7 +29,7 @@ Blockly.Blocks['helpers_dropdown'] = {
     this.setColour(Blockly.COLOUR_HELPERS);
     // Everything else gets handled by domToMutaiton.
   },
- 
+
   mutationToDom: function() {
     var mutation = document.createElement('mutation');
     mutation.setAttribute('key', this.key_);
@@ -52,15 +53,15 @@ Blockly.Blocks['helpers_dropdown'] = {
     this.appendDummyInput()
         .appendField(tag)
         .appendField(dropdown, 'OPTION');
-    
+
     var value = xml.getAttribute('value') || optionList.defaultOpt;
     this.setFieldValue(value, 'OPTION');
   },
 
   getOutputType: function() {
     var check = [];
-    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        'enum', Blockly.Blocks.Utilities.OUTPUT);
+    var blocklyType = AI.BlockUtils.YailTypeToBlocklyType(
+        'enum', AI.BlockUtils.OUTPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
         // Clone array.
@@ -70,7 +71,7 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
 
-    var helperType = Blockly.Blocks.Utilities.helperKeyToBlocklyType(
+    var helperType = AI.BlockUtils.helperKeyToBlocklyType(
       { type: 'OPTION_LIST', key: this.key_ }, this);
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
@@ -127,7 +128,7 @@ Blockly.Blocks['helpers_dropdown'] = {
   },
 
   typeblock: function() {
-    var db = Blockly.mainWorkspace.getComponentDatabase();
+    var db = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
     db.forEachOptionList(function(optionList) {
@@ -152,7 +153,7 @@ Blockly.Blocks['helpers_dropdown'] = {
 
 Blockly.Blocks['helpers_screen_names'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
     var dropdown = new Blockly.FieldInvalidDropdown(
         this.generateOptions.bind(this));
 
@@ -194,7 +195,7 @@ Blockly.Blocks['helpers_screen_names'] = {
   typeblock: function() {
     var tb = [];
 
-    var screens = Blockly.mainWorkspace.getScreenList();
+    var screens = Blockly.common.getMainWorkspace().getScreenList();
     for (var i = 0, screen; (screen = screens[i]); i++) {
       tb.push({
         translatedName: Blockly.Msg.LANG_SCREENS_TITLE + screen,
@@ -210,7 +211,7 @@ Blockly.Blocks['helpers_screen_names'] = {
 
 Blockly.Blocks['helpers_assets'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 
@@ -282,7 +283,7 @@ Blockly.Blocks['helpers_assets'] = {
     // Must include the '' so .some returns true if no restrictions.
     var restrictedFormats = [''];
     var types = this.outputConnection.targetConnection &&
-        this.outputConnection.targetConnection.check_;
+        this.outputConnection.targetConnection.getCheck();
     if (types) {
       for (var i = 0, type; type = types[i]; i++) {
         if (Array.isArray(type)) {
@@ -316,8 +317,8 @@ Blockly.Blocks['helpers_assets'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var assets = Blockly.mainWorkspace.getAssetList();
+    var tb = [];
+    var assets = Blockly.common.getMainWorkspace().getAssetList();
     for (var i = 0, asset; (asset = assets[i]); i++) {
       tb.push({
         translatedName: asset,
@@ -332,7 +333,7 @@ Blockly.Blocks['helpers_assets'] = {
 
 Blockly.Blocks['helpers_providermodel'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 
@@ -438,8 +439,8 @@ Blockly.Blocks['helpers_providermodel'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var modelproviders = Blockly.mainWorkspace.getProviderModelList();
+    var tb = [];
+    var modelproviders = Blockly.common.getMainWorkspace().getProviderModelList();
     for (var i = 0, providermodel; (providermodel = modelproviders[i]); i++) {
       tb.push({
         translatedName: providermodel,
@@ -454,7 +455,7 @@ Blockly.Blocks['helpers_providermodel'] = {
 
 Blockly.Blocks['helpers_provider'] = {
   init: function() {
-    var utils = Blockly.Blocks.Utilities;
+    var utils = AI.BlockUtils;
 
     this.setColour(Blockly.COLOUR_HELPERS);
 
@@ -560,8 +561,8 @@ Blockly.Blocks['helpers_provider'] = {
   },
 
   typeblock: function() {
-    tb = [];
-    var providers = Blockly.mainWorkspace.getProviderList();
+    var tb = [];
+    var providers = Blockly.common.getMainWorkspace().getProviderList();
     for (var i = 0, provider; (provider = providers[i]); i++) {
       tb.push({
         translatedName: provider,
