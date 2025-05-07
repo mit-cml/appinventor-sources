@@ -37,7 +37,9 @@
 		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
 		471232A82DA5C67F0065B73F /* AppLibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */; };
+		4722B4942DB4412B004C0B91 /* AppTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4722B4932DB44121004C0B91 /* AppTableViewCell.swift */; };
 		47D10E222D7E1FE40084D7C3 /* samples in Resources */ = {isa = PBXBuildFile; fileRef = 47D10E212D7E1FE30084D7C3 /* samples */; };
+		47EF49882DCAFCCE00C9E91F /* myAppLibrary.png in Resources */ = {isa = PBXBuildFile; fileRef = 47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */; };
 		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
 		C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */; };
 /* End PBXBuildFile section */
@@ -116,7 +118,9 @@
 		27D9D934728B60311591CBCD /* Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3D0329B479305BA955F33EC1 /* Pods-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLibraryViewController.swift; sourceTree = "<group>"; };
+		4722B4932DB44121004C0B91 /* AppTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTableViewCell.swift; sourceTree = "<group>"; };
 		47D10E212D7E1FE30084D7C3 /* samples */ = {isa = PBXFileReference; lastKnownFileType = folder; name = samples; path = aicompanionapp/src/samples; sourceTree = "<group>"; };
+		47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myAppLibrary.png; sourceTree = "<group>"; };
 		48988B3241F275E69F533B33 /* Pods-AICompanionAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppUITests/Pods-AICompanionAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		508620DE32C8BAF851F5708A /* Pods-AICompanionApp-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		52712EFD54D64AB76B9ABB68 /* Pods-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -215,6 +219,7 @@
 				066FE95A25ACB94C00C6193B /* SystemVariables.swift */,
 				471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */,
 				066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */,
+				4722B4932DB44121004C0B91 /* AppTableViewCell.swift */,
 				06463EFD1D95956800B23DCD /* ViewController.swift */,
 				47D10E172D7E1FB20084D7C3 /* samples */,
 			);
@@ -248,6 +253,7 @@
 				06B216131DBC5F1B000B3366 /* Instructions.png */,
 				06B216141DBC5F1B000B3366 /* mooning.png */,
 				06B216151DBC5F1B000B3366 /* Title.png */,
+				47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */,
 			);
 			name = resources;
 			sourceTree = "<group>";
@@ -410,6 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47D10E222D7E1FE40084D7C3 /* samples in Resources */,
+				47EF49882DCAFCCE00C9E91F /* myAppLibrary.png in Resources */,
 				06B216181DBC5F1B000B3366 /* Instructions.png in Resources */,
 				06B216171DBC5F1B000B3366 /* connectwQR.png in Resources */,
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
@@ -642,6 +649,7 @@
 			files = (
 				06463EFE1D95956800B23DCD /* ViewController.swift in Sources */,
 				06984C3E1DBFE3D100FD4FA7 /* NSString_SHA1.m in Sources */,
+				4722B4942DB4412B004C0B91 /* AppTableViewCell.swift in Sources */,
 				066FE95B25ACB94C00C6193B /* SystemVariables.swift in Sources */,
 				C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */,
 				066FE95F25ACB98100C6193B /* UIFont_Fitting.swift in Sources */,

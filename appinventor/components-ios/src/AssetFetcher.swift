@@ -126,6 +126,7 @@ class AssetLoadError: Error {
     let task = URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
       let samplesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
           .appendingPathComponent("samples", isDirectory: true)
+      try? FileManager.default.createDirectory(at: samplesDirectory, withIntermediateDirectories: true)
       let destination = samplesDirectory.appendingPathComponent(projectName + ".aia")
       print("Saving project to \(destination)")
       if let data = data {
@@ -134,6 +135,9 @@ class AssetLoadError: Error {
           DispatchQueue.main.async {
             completionHandler(true, nil)
           }
+          // Unzips the .aia project into the /apps directory to allow for access to the app icon for the Library
+          let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("samples/\(projectName).aia", isDirectory: false))
         } catch {
           getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: depth + 1, completionHandler: completionHandler)
         }

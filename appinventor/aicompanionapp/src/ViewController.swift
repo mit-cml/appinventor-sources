@@ -279,6 +279,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         }
         self.setPopup(popup: responseContent)
       }
+      SystemVariables.inConnectedApp = true
     }
     )
     task.priority = 1.0
@@ -293,10 +294,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func openLibrary(){
-//    let name = "CodiGram"
-//    let newapp = BundledApp(aiaPath: Bundle.main.url(forResource: "samples/\(name)", withExtension: "aia")!)
-//    newapp.makeCurrent()
-//    newapp.loadScreen1(self.form)
       let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as! AppLibraryViewController
       libraryVC.form = self.form
       self.pushViewController(libraryVC, animated:true)
@@ -323,12 +320,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
       controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
         self?.reset()
+        SystemVariables.inConnectedApp = false
         controller.dismiss(animated: false)
       })
-      controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
-        RetValManager.shared().startCache()
-        controller.dismiss(animated:true)
-      })
+      if SystemVariables.inConnectedApp {
+        controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
+          RetValManager.shared().startCache()
+          controller.dismiss(animated:true)
+        })
+      }
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
         controller.dismiss(animated: true)
       })
