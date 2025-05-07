@@ -510,16 +510,7 @@ div.StatusPanel {
 
 .ode-Logo {
   margin: 0 0 4px 4px;
-/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
-  filter:         drop-shadow(0px 0px 1px #222); */
 }
-
-/*
-.ode-Logo:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
-}
-*/
 
 .ode-LogoText {
   font-size: 16px;
@@ -1922,7 +1913,6 @@ path.ode-SimpleMockMapFeature-selected {
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
   z-index: 1000;
-  vertical-align: middle;
   min-height: 40px;
 }
 
@@ -3269,6 +3259,7 @@ textarea::-webkit-input-placeholder {
 .ac-active {
   background-color: #b2b4bf;
 }
+
 .ai_type_block {
   position: absolute;
   z-index: 2000;

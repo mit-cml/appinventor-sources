@@ -21,6 +21,9 @@ body {
 
 .ode-Logo {
     content: logo-image;
+    height: 37px;
+    width: 167px;
+    display: inline-block;
 }
 
 .dyslexic * {
@@ -394,17 +397,6 @@ body {
   background-image: unset;
 }
 
-.ode-Logo {
-    margin: 0 0 4px 4px;
-    /* -webkit-filter: drop-shadow(0px 0px 1px gray-900); */
-    filter:         drop-shadow(0px 0px 1px gray-900); 
-  }
-  
-  .ode-Logo:hover {
-    /* -webkit-filter: drop-shadow(0px 0px 3px gray-900); */
-    filter:         drop-shadow(0px 0px 3px gray-900);
-  }
- 
 
 .ode-LogoText {
   color: grey;
@@ -1087,6 +1079,10 @@ select.ode-PropertyEditor[disabled] {
   overflow: auto;
 }
 
+.ode-DialogBox .dialogContent td a {
+    color: selected-color;
+}
+
 .ode-SimpleMockContainer {
     border: 2px solid tab-bar-color;
   }
@@ -1336,7 +1332,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-noDialogDivHeader {
-    background-color: clr-primary-600;
+    background-color: selected-color;
     border-bottom: 1px gray-200 solid;
 }
 
@@ -1881,16 +1877,32 @@ input[type="checkbox"]:focus {
 
 /* Blocks editor */
 
+.ac-renderer {
+    font: normal 13px Arial, sans-serif;
+    background: v-white;
+    border: 1px solid gray-700;
+    color: v-black;
+}
+
+.ac-row {
+    cursor: pointer;
+    padding: .4em;
+    background: v-white;
+}
+
+.ac-active {
+    background-color: gray-200;
+}
+
 .blocklySvg text {
   fill: blockly-indicator;
 }
 
-.ac-renderer {
-  background: v-white;
-  border: 1px solid gray-700;
-}
-.ac-active {
-  background-color: #b2b4bf;
+.warningNav {
+    fill: gray-200;
+    stroke: blockly-indicator;
+    stroke-width: 1;
+    cursor: pointer;
 }
 
 .ya-Toolbar .left {

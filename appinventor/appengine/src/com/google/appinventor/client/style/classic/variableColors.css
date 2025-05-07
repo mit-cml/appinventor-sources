@@ -19,6 +19,9 @@ body {
 
 .ode-Logo {
     content: logo-image;
+    height: 37px;
+    width: 167px;
+    display: inline-block;
 }
 
 /* For the TOS Form*/
@@ -114,6 +117,10 @@ body {
 
 .ode-ProjectRow {
   background-color: v-white;
+}
+
+.ode-ProjectFolderList {
+    background: v-white;
 }
 
 .ode-ProjectTable {
@@ -778,6 +785,10 @@ path.ode-SimpleMockMapFeature-selected {
   border-bottom: 4px solid clr-primary-600;
 }
 
+.ode-DialogBox-message a {
+    color: clr-primary-600;
+}
+
 .ode-DialogBox .gwt-Label {
   color: gray-800;
 }
@@ -807,6 +818,10 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .dialogContent td {
   color: gray-800;
+}
+
+.ode-DialogBox .dialogContent td a {
+    color: clr-primary-500;
 }
 
 /* AI2 Extensions Styles */
@@ -1190,12 +1205,31 @@ textarea::-webkit-input-placeholder {
 
 
 .ac-renderer {
-  background: v-white;
-  border: 1px solid #666;
+    font: normal 13px Arial, sans-serif;
+    background: v-white;
+    border: 1px solid gray-700;
+    color: v-black;
+}
+
+.ac-row {
+    cursor: pointer;
+    padding: .4em;
+    background: v-white;
 }
 
 .ac-active {
-  background-color: #b2b4bf;
+    background-color: gray-200;
+}
+
+.blocklySvg text {
+    fill: gray-600;
+}
+
+.warningNav {
+    fill: gray-300;
+    stroke:gray-600;
+    stroke-width:1;
+    cursor:pointer;
 }
 
 .download-barcode:before {
