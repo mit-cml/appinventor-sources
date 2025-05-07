@@ -310,7 +310,7 @@ open class Notifier: NonvisibleComponent {
       activeAlert.dismiss(animated: true) { [weak self] _ in
         // Clear `_activeAlert` reference after dismissal
         print("Progress dialog dismissed. Promoting next alert...")
-        self?.promoteNextAlert()
+        self?.promoteNextAlert(activeAlert)
       }
     } else {
       print("Active progress alert not found in _activeAlerts.")
@@ -323,14 +323,19 @@ open class Notifier: NonvisibleComponent {
     }
     activeAlert.dismiss(animated: true) { [weak self] _ in
       guard let self = self else { return }
-      self.promoteNextAlert() // Promote the next alert
+      self.promoteNextAlert(activeAlert) // Promote the next alert
     }
   }
   
-  private func promoteNextAlert() {
+  private func promoteNextAlert(_ oldAlert: CustomAlertView? = nil) {
+    print("promoteNextAlert")
     if !_activeAlerts.isEmpty {
       // Remove the dismissed alert from the list if necessary
-      _activeAlerts.removeLast()
+      if let oldAlert = oldAlert {
+        _activeAlerts.removeAll { $0 == oldAlert }
+      } else {
+        _activeAlerts.removeLast()
+      }
       // Promote the next alert if available
       if let nextAlert = _activeAlert {
         nextAlert.show(animated: true)
@@ -371,26 +376,26 @@ open class Notifier: NonvisibleComponent {
       let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
     newAlert.alertType = .Choose
 
-      // Configure buttons
-      let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
-      makeBorder(for: button1, vertical: false)
-      let button2 = makeButton(button2text, with: button2text as NSString, action: #selector(afterChoosing(sender:)))
-      makeBorder(for: button2, vertical: false)
-      newAlert.stack.addArrangedSubview(button1)
-      newAlert.stack.addArrangedSubview(button2)
+    // Configure buttons
+    let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))
+    makeBorder(for: button1, vertical: false)
+    let button2 = makeButton(button2text, with: button2text as NSString, action: #selector(afterChoosing(sender:)))
+    makeBorder(for: button2, vertical: false)
+    newAlert.stack.addArrangedSubview(button1)
+    newAlert.stack.addArrangedSubview(button2)
 
-      // Add cancel button if needed
-      if cancelable {
-        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
-        makeBorder(for: cancel, vertical: false)
-        cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
-        newAlert.stack.addArrangedSubview(cancel)
-      }
+    // Add cancel button if needed
+    if cancelable {
+      let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
+      makeBorder(for: cancel, vertical: false)
+      cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+      newAlert.stack.addArrangedSubview(cancel)
+    }
 
-      // Add the alert to the queue
-      _activeAlerts.append(newAlert)
-      print("Added new alert to _activeAlerts. Total alerts: \(_activeAlerts.count)")
-      newAlert.show(animated: true)
+    // Add the alert to the queue
+    _activeAlerts.append(newAlert)
+    print("Added new alert to _activeAlerts. Total alerts: \(_activeAlerts.count)")
+    newAlert.show(animated: true)
   }
 
   @objc open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
@@ -502,16 +507,18 @@ open class Notifier: NonvisibleComponent {
   @objc fileprivate func afterChoosing(sender: UIButton) {
     DismissActiveDialog()
     if let button = sender as? CustomButton, let choice = button.value as? String {
-      if choice == "Cancel" {
-        ChoosingCanceled()
-      }
       AfterChoosing(choice)
     }
   }
 
   @objc fileprivate func cancelChoosing(sender: UIButton) {
-    ChoosingCanceled()
-    afterChoosing(sender: sender)
+    DismissActiveDialog()
+    if !ChoosingCanceled() {
+      guard let button = sender as? CustomButton, let choice = button.value as? String else {
+        return
+      }
+      AfterChoosing(choice)
+    }
   }
 
   // MARK: Notifier Events
@@ -523,8 +530,8 @@ open class Notifier: NonvisibleComponent {
     EventDispatcher.dispatchEvent(of: self, called: "AfterTextInput", arguments: response as NSString)
   }
 
-  @objc open func ChoosingCanceled() {
-    EventDispatcher.dispatchEvent(of: self, called: "ChoosingCanceled")
+  @objc open func ChoosingCanceled() -> Bool {
+    return EventDispatcher.dispatchEvent(of: self, called: "ChoosingCanceled")
   }
 
   @objc open func TextInputCanceled() {
