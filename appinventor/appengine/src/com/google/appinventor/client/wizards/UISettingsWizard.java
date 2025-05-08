@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.RadioButton;
 
 import java.util.logging.Logger;
 import java.lang.Boolean;
@@ -30,13 +31,12 @@ public class UISettingsWizard {
   @UiField protected Button applyButton;
   @UiField protected Button cancelButton;
   @UiField protected Label introText;
-//  @UiField protected Button darkModeButton;
-//  @UiField protected RadioButton lightModeRadioButton;
-//  @UiField protected RadioButton darkModeRadioButton;
   @UiField protected Button topInvisible;
   @UiField protected Button bottomInvisible;
   @UiField protected InputElement classicRadioButton;
   @UiField protected InputElement modernRadioButton;
+  @UiField protected InputElement classicDarkRadioButton;
+  @UiField protected InputElement modernDarkRadioButton;
   Boolean userThemePreference;
   Boolean userLayoutPreference;
   Boolean firstUIChoice = false;
@@ -46,11 +46,6 @@ public class UISettingsWizard {
    */
   public UISettingsWizard() {
     this(false);
-//    if (userThemePreference){
-//      darkModeRadioButton.setValue(true);
-//    }else{
-//      lightModeRadioButton.setValue(true);
-//    }
   }
 
   public UISettingsWizard(boolean intro) {
@@ -58,13 +53,18 @@ public class UISettingsWizard {
     firstUIChoice = intro;
     userThemePreference = Ode.getUserDarkThemeEnabled();
     userLayoutPreference = Ode.getUserNewLayout();
-    if (intro || userLayoutPreference) {
+    if (intro || (userLayoutPreference && !userThemePreference)) {
       modernRadioButton.setChecked(true);
-    } else {
+    } else if (!userLayoutPreference && !userThemePreference) {
       classicRadioButton.setChecked(true);
+    } else if (userLayoutPreference && userThemePreference) {
+      modernDarkRadioButton.setChecked(true);
+    } else {
+      classicDarkRadioButton.setChecked(true);
     }
     introText.setVisible(intro);
     cancelButton.setVisible(!intro);
+    show();
   }
 
   public void bindUI() {
@@ -77,20 +77,6 @@ public class UISettingsWizard {
     classicRadioButton.focus();
   }
 
-  // @UiHandler("darkModeButton")
-  // protected void switchTheme(ClickEvent e) {
-  //   // Boolean userThemePreference;
-  //   if (Ode.getUserDarkThemeEnabled()) {
-  //       darkModeButton.setTitle("light");
-  //       Ode.setUserDarkThemeEnabled(false);
-  //     } else {
-  //       darkModeButton.setTitle("dark");
-  //       Ode.setUserDarkThemeEnabled(true);
-  //     }
-  //   // Ode.setUserDarkThemeEnabled(userThemePreference);
-  //   // UIDialog.hide();
-  // }
-
   @UiHandler("cancelButton")
   protected void cancelAdd(ClickEvent e) {
     Ode.setUserNewLayout(userLayoutPreference);
@@ -100,26 +86,13 @@ public class UISettingsWizard {
 
   @UiHandler("applyButton")
   protected void applySettings(ClickEvent e) {
-    // Boolean userThemePreference;
-    // if (Ode.getUserDarkThemeEnabled()) {
-    //     userThemePreference = false;
-    //   } else {
-    //     userThemePreference = true;
-    //   }
-    // Ode.setUserDarkThemeEnabled(userThemePreference);
-//    if (lightModeRadioButton.getValue()){
-//      if (Ode.getUserDarkThemeEnabled()){
-//          Ode.setUserDarkThemeEnabled(false);
-//      }
-//    }else{
-//      if (!Ode.getUserDarkThemeEnabled()){
-//          Ode.setUserDarkThemeEnabled(true);
-//      }
-//    }
+
     if (firstUIChoice) {
       Ode.setShowUIPicker(false);
     }
-    Ode.setUserNewLayout(modernRadioButton.isChecked());
+    Ode.setUserNewLayout(modernRadioButton.isChecked() || modernDarkRadioButton.isChecked());
+    Ode.setUserDarkThemeEnabled(classicDarkRadioButton.isChecked()
+         || modernDarkRadioButton.isChecked());
     Ode.saveUserDesignSettings();
     UIDialog.hide();
   }
