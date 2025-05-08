@@ -493,7 +493,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
 
-            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
+            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode"};
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
             if (objRenderer != null && objectNodes.size() > 0){
@@ -554,8 +554,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
-        float[] position = {0f, 0f, -1.5f};
-        float[] rotation = {0, 0, 0, 1};
+        float[] position = {0f, 0f, 1};
+        float[] rotation = {0, 2, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 

@@ -11,7 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesAssets;
 
-
+import android.util.Log;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -19,20 +19,18 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 
-// TODO: update the component version
+
+@UsesAssets(fileNames = "cube.obj, Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a box in an ARView3D.  The box is positioned " +
-      "at a point and can be colored or textured as well as rotated.",
+        "at a point and can be colored or textured as well as rotated.",
     category = ComponentCategory.AR)
-
-  @SimpleObject
-
-  public final class BoxNode extends ARNodeBase implements ARBox {
+@SimpleObject public final class BoxNode extends ARNodeBase implements ARBox {
 
     private Anchor anchor = null;
     private Trackable trackable = null;
     private String texture = "";
-    private String objectModel = Form.ASSETS_PREFIX + "torus.obj";
+    private String objectModel = Form.ASSETS_PREFIX + "cube.obj";
     private float scale = 1.0f;
 
 
@@ -55,18 +53,10 @@ import com.google.ar.core.Trackable;
     public void Trackable(Trackable t) { this.trackable = t;}
 
     @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
-    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-        "sizing properties.  Values less than zero will be treated as their absolute value.")
-    public float Scale() {
-      return this.scale;
-    }
+    public float Scale() { return this.scale; }
 
     @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Scale(float s) {
-      this.scale = s;}
-
+    public void Scale(float t) { this.scale = t;}
 
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",

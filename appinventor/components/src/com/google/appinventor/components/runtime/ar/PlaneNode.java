@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.ar;
 
+import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -15,23 +16,84 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import android.util.Log;
 
-// TODO: update the component version
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
+import com.google.ar.core.Trackable;
+
+
+// TODO: either supply a simple quad or make one
+@UsesAssets(fileNames = "cube.obj, Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a plane in an ARView3D.  The plane is positioned " +
       "at a point and can be colored or textured as well as rotated.",
     category = ComponentCategory.AR)
 
   @SimpleObject
-
   public final class PlaneNode extends ARNodeBase implements ARPlane {
-    public PlaneNode(final ARNodeContainer container) {
-      super(container);
-      // Additional updates
+
+
+  private Anchor anchor = null;
+  private Trackable trackable = null;
+  // TODO: either supply a simple quad or make one
+  private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
+  private String texture = Form.ASSETS_PREFIX + "Palette.png";
+  private float scale = 1.0f;
+
+  public PlaneNode(final ARNodeContainer container) {
+    super(container);
+    // Additional updates
+    container.addNode(this);
+  }
+
+  @Override // wht is the significance?
+  public Anchor Anchor() { return this.anchor; }
+
+  @Override
+  public void Anchor(Anchor a) { this.anchor = a;}
+
+  @Override
+  public Trackable Trackable() { return this.trackable; }
+
+  @Override
+  public void Trackable(Trackable t) { this.trackable = t;}
+
+  @Override
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  public String Model() { return this.objectModel; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Model(String model) {this.objectModel = model;}
+
+  @Override
+  @SimpleFunction(description = "move a sphere node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveTo(float x, float y, float z){}
+
+  @Override
+  @SimpleFunction(description = "move a sphere node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
     }
+    Anchor(this.trackable.createAnchor((Pose) p));
+    Log.i("created Anchor!", " " );
+  }
+
+  @Override
+  public float Scale() { return this.scale; }
+
+  @Override
+  public void Scale(float t) { this.scale = t;}
 
     @Override
     @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the x-axis.  " +
