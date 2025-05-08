@@ -33,7 +33,6 @@ public final class TextValidators {
     DUPLICATEINTRASH
   }
 
-  // TODO ASK JEFF
   public enum UserStatus {
     VALID,
     INVALIDFORMAT,
@@ -142,14 +141,13 @@ public final class TextValidators {
    * @return {@code true} if the user name is valid, {@code false} otherwise
    */
   public static UserStatus checkNewUserName(String userName) {
-    // Check the format of the folder name
+    // Check the format of the email
     if (isValidEmailList(userName) != "") {
-      // TODO: Decide whether to use new strings
       Window.alert("bad username for some reason: " + userName);
       return UserStatus.INVALIDFORMAT;
     }
 
-    // Check that user email is gmail
+    // Check that user email exists/is gmail?
     
     return UserStatus.VALID;
   }
@@ -310,13 +308,12 @@ public final class TextValidators {
       if (!temp.matches(regex)) {
         if (!temp.matches(firstCharacterLetter)) {
           //Check to make sure that the first character is a letter
-          // TODO add to messages
-          errorMessage = "The email maust start with a valid character";
+          errorMessage = MESSAGES.invalidFirstCharUserEmailError();
         } else { //The text contains a character that is not a letter, number, or underscore
           if (!temp.matches(containsAt)) {
-            errorMessage = "The email maust contain @";
+            errorMessage = MESSAGES.invalidCharUserEmailError();
           } else {
-            errorMessage = "The email maust end with domain";
+            errorMessage = MESSAGES.invalidDomainUserEmailError();
           }
         }
       }

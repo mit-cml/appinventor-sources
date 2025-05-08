@@ -16,7 +16,6 @@
   <wiz:Dialog ui:field="shareDialog" caption="{messages.shareProjectsWizardCaption}"
               styleName="ode-DialogBox" width="340px" height="40px">
     <g:FlowPanel>
-    <!-- what is this button for?? -->
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <!--ProjectName-->
       <g:FlowPanel>

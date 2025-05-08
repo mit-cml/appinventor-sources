@@ -543,10 +543,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
           assert psd.id != null;
 
-          LOG.log(Level.INFO, "Created new share project id: " + psd.id + " for project " + psd.projectKey + 
-          " owned by " + psd.ownerKey +
-          " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
-
           for (TextFile file : project.getSourceFiles()) {
             try {
               addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,
@@ -653,11 +649,9 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           // delete the ProjectSharingData object
-          Key<ProjectData> projectKey = projectKey(projectId);
           List<Long> shareIds = getProjectShareLinks(projectId);
           for (long shareProjectId : shareIds) {
             datastore.delete(sharingProjectKey(shareProjectId));
-            LOG.log(Level.INFO, "Delete share project id: " + shareProjectId + " for project " + projectId);
           }
         }
       }, true);
@@ -748,7 +742,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
 
-    // TODO(ZAMANOVA) GET SHARED PROJECTS
+    // TODO: GET SHARED PROJECTS
   @Override
   public List<Long> getProjects(final String userId) {
     final List<Long> projects = new ArrayList<Long>();
@@ -1839,6 +1833,7 @@ public class ObjectifyStorageIo implements StorageIo {
           memcache.delete(fileKey.getString());
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
+            // TODO: this is a hack and should not be merged!
             // if (fileData.userId != null && !fileData.userId.equals("")) {
             //   if (!fileData.userId.equals(userId)) {
             //     throw CrashReport.createAndLogError(LOG, null,
@@ -1915,7 +1910,7 @@ public class ObjectifyStorageIo implements StorageIo {
     validateGCS();
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();
-    final List<String> readOnlyUserEmails = new ArrayList<String>();
+    // final List<String> readOnlyUserEmails = new ArrayList<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1925,11 +1920,11 @@ public class ObjectifyStorageIo implements StorageIo {
           if (fd.t == null) {
             fd.t = datastore.find(fileKey);
           }
-          Key<ProjectData> projectKey = projectKey(projectId);
-          for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
-            readOnlyUserEmails.addAll(new ArrayList<String>( 
-              Arrays.asList(psd.permissions.split(","))));
-          }
+          // Key<ProjectData> projectKey = projectKey(projectId);
+          // for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
+          //   readOnlyUserEmails.addAll(new ArrayList<String>( 
+          //     Arrays.asList(psd.permissions.split(","))));
+          // }
         }
       }, false); // Transaction not needed
     } catch (ObjectifyException e) {
@@ -1940,8 +1935,9 @@ public class ObjectifyStorageIo implements StorageIo {
     FileData fileData = fd.t;
 
     if (fileData != null) {
+      // TODO: this is a hack and should not be merged!
       if (fileData.userId != null && !fileData.userId.equals("")) {
-        // TODO zamanova: add a check?
+        // TODO: could use this?
         // if (!fileData.userId.equals(userId) && !readOnlyUserEmails.contains(userId)) {
         //   throw CrashReport.createAndLogError(LOG, null,
         //     collectUserProjectErrorInfo(userId, projectId),
@@ -2597,7 +2593,6 @@ public class ObjectifyStorageIo implements StorageIo {
     return new Key<ProjectData>(ProjectData.class, projectId);
   }
 
-  // TODO(zamanova) how does this even work???
   private Key<ProjectSharingData> sharingProjectKey(long shareId) {
     return new Key<ProjectSharingData>(ProjectSharingData.class, shareId);
   }
@@ -3046,7 +3041,7 @@ public class ObjectifyStorageIo implements StorageIo {
     return returnValue;
   }
 
-  // TODO(zamanova) do we need to remove from permissions?
+  // TODO: do we need to remove account from permissions?
   @Override
   public boolean deleteAccount(final String userId) {
     List<Long> projectIds = getProjects(userId);

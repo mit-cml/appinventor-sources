@@ -2424,9 +2424,9 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for the wizard to create a new Young Android project")
   String newYoungAndroidProjectWizardCaption();
 
-    @DefaultMessage("Project name:")
-    @Description("Label for the project name input text box")
-    String projectNameLabel();
+  @DefaultMessage("Project name:")
+  @Description("Label for the project name input text box")
+  String projectNameLabel();
 
   // Used in youngandroid/TextValidators.java
 
@@ -2455,6 +2455,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Invalid character. Project names can only contain letters, numbers, and underscores")
   @Description("Error shown when user types invalid character into project name.")
   String invalidCharProjectNameError();
+
+  @DefaultMessage("Invalid character. User emails can only start with letters, number, and any of . _ % + -")
+  @Description("Error shown when user types invalid first character into user email.")
+  String invalidFirstCharUserEmailError();
+
+  @DefaultMessage("Invalid character. User emails must contain special character @")
+  @Description("Error shown when user does not type @ into user email.")
+  String invalidCharUserEmailError();
+
+  @DefaultMessage("Invalid domain. User emails must end with dot and at least 2 more letters")
+  @Description("Error shown when user does not type domain into user email.")
+  String invalidDomainUserEmailError();
 
   // Used in youngandroid/YoungAndroidFormUpgrader.java
 

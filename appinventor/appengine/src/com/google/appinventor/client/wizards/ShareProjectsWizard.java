@@ -317,7 +317,6 @@ public class ShareProjectsWizard {
             if (hide) {
               shareDialog.hide();
             }
-            // }  
           }
     };
     this.mainOde.getProjectService().updateProjectPermissions(projectID, shareAll, users, callback);

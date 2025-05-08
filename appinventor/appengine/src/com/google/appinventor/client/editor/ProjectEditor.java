@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import javax.print.DocFlavor.STRING;
-
 /**
  * Abstract superclass for all project editors.
  * Each ProjectEditor is associated with a single project and may have multiple
@@ -64,14 +62,10 @@ public abstract class ProjectEditor extends Composite {
    * @param projectRootNode  the project root node
    */
   public ProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory uiFactory) {
-    LOG.info("creating project editor?");
     this.projectRootNode = projectRootNode;
     this.uiFactory = uiFactory;
     projectId = projectRootNode.getProjectId();
-    LOG.info("got id");
     project = Ode.getInstance().getProjectManager().getProject(projectId);
-    LOG.info("got project" + String.valueOf(project));
-    LOG.info("PROJECT ID:" + String.valueOf(projectId));
 
     openFileEditors = Maps.newHashMap();
     fileIds = new ArrayList<String>();

@@ -292,8 +292,8 @@ public interface StorageIo {
   /**
    * get access list for the given project
    * @param projectId the id of the project
-   * @return the list of users who have read access 
-   * TODO: list of users who can edit + creator?
+   * @return the list of users who have read access and the owner
+   * TODO: list of users who can edit?
    */
   HashMap<String, List<String>> getAccessInfo(long projectId);
 

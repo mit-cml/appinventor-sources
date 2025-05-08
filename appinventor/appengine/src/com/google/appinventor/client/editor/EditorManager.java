@@ -110,10 +110,13 @@ public final class EditorManager {
       ProjectEditorFactory factory = Ode.getProjectEditorRegistry().get(projectRootNode);
       if (factory != null) {
         projectEditor = factory.createProjectEditor(projectRootNode);
+
         // Add the editor to the openProjectEditors map.
         openProjectEditors.put(projectId, projectEditor);
+
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
+
         // Prepare the project before Loading into the editor.
         // Components are prepared before the project is actually loaded.
         // Load the project into the editor. The actual loading is asynchronous.

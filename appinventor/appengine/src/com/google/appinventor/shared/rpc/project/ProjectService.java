@@ -93,7 +93,7 @@ public interface ProjectService extends RemoteService {
   UserProject restoreProject(long projectId);
 
   // PROJECT SHARING 
-  // TODO(zamanova) add access type in the future
+  // TODO: add access type in the future
 
   /**
    * update access for users for the given project

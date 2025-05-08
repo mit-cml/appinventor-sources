@@ -681,17 +681,13 @@ public class Ode implements EntryPoint {
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
-            // zamanova_TODO FIRST check whether its owned by someone else
+            // TODO: FIRST check whether its owned by someone else?
             openSharedProject(projectService, user.getUserEmail(), projectId, true);
-            // see whether has access and open
-            // switchToProjectsView();  // the user will need to select a project...
-            // ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
           return null;
         });
       }
     }
-
     // else projectIdString == 0; do nothing
   }
 
@@ -712,6 +708,7 @@ public class Ode implements EntryPoint {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
+
       viewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
@@ -1826,7 +1823,6 @@ public class Ode implements EntryPoint {
         }
       }
       if (!templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
-        LOG.info("no project!" + sharedProjectLoadingFlag);
         ErrorReporter.hide();  // hide the "Please choose a project" message
         createNoProjectsDialog(true);
       }
