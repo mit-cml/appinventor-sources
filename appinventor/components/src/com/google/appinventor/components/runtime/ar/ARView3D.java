@@ -584,9 +584,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Anchor a = hit.createAnchor();
                 Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
                 if (mostRecentTrackable instanceof Plane){
-                    ARDetectedPlane arplane = (ARDetectedPlane) new DetectedPlane((Plane)mostRecentTrackable);
+                    ARDetectedPlane arplane = new DetectedPlane((Plane)mostRecentTrackable);
 
-                    ClickOnDetectedPlaneAt(arplane, (Object) a.getPose(), true);
+                    ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
 
                 }
                 else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
@@ -1036,6 +1036,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new BoxNode(this);
     }
 
+
+    @SimpleFunction(description = "Create a new BoxNode with default properties at the plane position.")
+    public BoxNode CreateBoxNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+        Log.i("creating Capsule node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        BoxNode bNode = new BoxNode(this);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        bNode.Anchor(trackable.createAnchor(pose));
+        bNode.Trackable(trackable);
+
+        Log.i("creating Box node, anchor is", bNode.Anchor().toString());
+        return bNode;
+    }
+
     @SimpleFunction(description = "Create a new SphereNode with default properties at the detected plane position.")
     public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
         Log.i("creating Sphere node", "with detected plane and pose");
@@ -1070,6 +1085,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public PlaneNode CreatePlaneNode(float x, float y, float z) {
         return new PlaneNode(this);
     }
+
+    @SimpleFunction(description = "Create a new PlaneNode with default properties at the detected plane position.")
+    public PlaneNode CreatePlaneAtPlane(ARDetectedPlane targetPlane, Object p) {
+        Log.i("creating plane node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        PlaneNode vNode = new PlaneNode(this);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        vNode.Anchor(trackable.createAnchor(pose));
+        vNode.Trackable(trackable);
+        Log.i("creating video node, anchor is", vNode.Anchor().toString());
+        return vNode;
+    }
+
 
     @SimpleFunction(description = "Create a new CylinderNode with default properties at the specified (x,y,z) position.")
     public CylinderNode CreateCylinderNode(float x, float y, float z) {
@@ -1159,9 +1188,36 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new VideoNode(this);
     }
 
+
+    @SimpleFunction(description = "Create a new VideoNode with default properties at the detected plane position.")
+    public VideoNode CreateVideoNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+        Log.i("creating video node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        VideoNode vNode = new VideoNode(this);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        vNode.Anchor(trackable.createAnchor(pose));
+        vNode.Trackable(trackable);
+        Log.i("creating video node, anchor is", vNode.Anchor().toString());
+        return vNode;
+    }
+
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the specified (x,y,z) position.")
     public WebViewNode CreateWebViewNode(float x, float y, float z) {
         return new WebViewNode(this);
+    }
+
+    @SimpleFunction(description = "Create a new WebViewNode with default properties at the detected plane position.")
+    public WebViewNode CreateWebViewNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+        Log.i("creating web node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        WebViewNode webNode = new WebViewNode(this);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        webNode.Anchor(trackable.createAnchor(pose));
+        webNode.Trackable(trackable);
+        Log.i("creating web node, anchor is", webNode.Anchor().toString());
+        return webNode;
     }
 
 }
