@@ -13,11 +13,9 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
-import com.google.appinventor.client.widgets.properties.PropertyHelpWidget;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -31,27 +29,23 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.youngandroid.TextValidators;
-import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.Window;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * Wizard for creating new Young Android projects.
- *
- * @author markf@google.com (Mark Friedman)
+ * Wizard for sharing Young Android projects.
  */
 
 public class ShareProjectsWizard {
@@ -85,7 +79,7 @@ public class ShareProjectsWizard {
   private boolean isSharedAll;
 
   /**
-   * Creates a new YoungAndroid project wizard.
+   * Creates a share YoungAndroid project wizard.
    */
   public ShareProjectsWizard() {
 
@@ -93,14 +87,12 @@ public class ShareProjectsWizard {
     userNameTextBox.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
-        LOG.warning("error?: " + value);
         errorMessage = TextValidators.isValidEmailList(value);
         userNameTextBox.setErrorMessage(errorMessage);
         if (errorMessage.length() > 0) {
           shareButton.setEnabled(false);
           return false;
         }
-        // errorMessage = TextValidators.getWarningMessages(value);
         shareButton.setEnabled(true);
         return true;
       }
@@ -113,7 +105,6 @@ public class ShareProjectsWizard {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
-        // TODO DEPENDS ON HOW MUCH WE COPY GOOGLE DOCS
         if (keyCode == KeyCodes.KEY_ENTER) {
           shareButton.click();
         } else if (keyCode == KeyCodes.KEY_ESCAPE) {
@@ -138,6 +129,7 @@ public class ShareProjectsWizard {
   public void show() {
     shareDialog.center();
     userNameTextBox.setFocus(true);
+    linkForProject.setVisible(false);
 
     // TODO ADD THE ? ICON
     // PropertyHelpWidget themeHelpWidget = new PropertyHelpWidget(theme);
@@ -201,33 +193,80 @@ public class ShareProjectsWizard {
     // anything we wanna do? check whether any emails are given?
   }
 
+  public static native void copyTextToClipboard(String text) /*-{
+    var textArea = document.createElement("textarea");
+    //
+    // *** This styling is an extra step which is likely not required. ***
+    //
+    // Why is it here? To ensure:
+    // 1. the element is able to have focus and selection.
+    // 2. if element was to flash render it has minimal visual impact.
+    // 3. less flakyness with selection and copying which **might** occur if
+    //    the textarea element is not visible.
+    //
+    // The likelihood is the element won't even render, not even a flash,
+    // so some of these are just precautions. However in IE the element
+    // is visible whilst the popup box asking the user for permission for
+    // the web page to copy to the clipboard.
+    //
+
+    // Place in top-left corner of screen regardless of scroll position.
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+
+    // Ensure it has a small width and height. Setting to 1px / 1em
+    // doesn't work as this gives a negative w/h on some browsers.
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+
+    // We don't need padding, reducing the size if it does flash render.
+    textArea.style.padding = 0;
+
+    // Clean up any borders.
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+
+    // Avoid flash of white box if rendered for any reason.
+    textArea.style.background = 'transparent';
+
+
+    textArea.value = text;
+
+    document.body.appendChild(textArea);
+
+    textArea.select();
+
+    try {
+        var successful = document.execCommand('copy');
+    } catch (err) {
+        console.log('Unable to copy');
+    }
+    document.body.removeChild(textArea);
+  }-*/;
+
+
   @UiHandler("copyButton")
   protected void copyShareLink(ClickEvent e) {
     String result = this.shareIds.stream()
                                 .map(String::valueOf)
                                 .collect(Collectors.joining(","));
-    LOG.info("Here is the link: " + result);
-    // anything we wanna do? check whether any emails are given?
-    // String[] users = userNameTextBox.getText().split(",");
-    // List<String> validUsers = this.checkUsers();
+    String ourURL = Window.Location.getHref();
+    Integer hashtagIdx = ourURL.indexOf("#");
+    String locale = Window.Location.getParameter("locale");
+    LOG.info("other way of linking " + Window.Location.createUrlBuilder().setParameter("shared", result).buildString() + " with project id being " + Window.Location.getHash());
+    if (hashtagIdx == -1) {
+      ourURL += (locale != null ? "&" : "?") + "shared="+result;
+    } else {
+      ourURL = ourURL.substring(0, hashtagIdx) + (locale != null ? "&" : "?") + "shared=" + result;
+    }
 
-    // if (users.length == validUsers.size()) {
-    //   String link = shareProjects(this.projectsToShareIds, validUsers, true);
-    // }
-    // this.mainOde.getProjectService().getProjectPermissions(project, shareAll, users, callback);
-    // OdeAsyncCallback<Void> callback =
-    //     new OdeAsyncCallback<Void>(
-    //       // failure message
-    //       MESSAGES.getLinkForProjectError()) {
-    //       @Override
-    //       public void onSuccess(String result) {
-    //           LOG.info("Finished getting link for project");
-    //           linkForProject.setText(result);
-    //           linkForProject.setVisible(true);
-    //         }  
-    //       }
-    // };
-    // this.ode.getProjectService().getLinkForProject(project, callback);
+    LOG.info("Here is the link: " + ourURL);
+
+    copyTextToClipboard(ourURL);
+
+    linkForProject.setVisible(true);
   }
 
   @UiHandler("cancelButton")
@@ -251,26 +290,15 @@ public class ShareProjectsWizard {
     for (String user: users) {
       // check that users are valid
       user = user.trim();
-      LOG.info("Checking usernames: " + user);
       TextValidators.UserStatus status = TextValidators.checkNewUserName(user);
       if (status == TextValidators.UserStatus.VALID) {
-        LOG.info("Valid user");
         validUsers.add(user);
       } else {
-        LOG.info("Checking for error");
         String errorMessage = TextValidators.getErrorMessageForUser(userNameTextBox.getText());
         if (!errorMessage.isEmpty()) {
-          LOG.info("Found error: " + errorMessage);
           userNameTextBox.setErrorMessage(errorMessage);
         } else {
-          // errorMessage = TextValidators.getWarningMessages(userNameTextBox.getText());
-          // if (!errorMessage.isEmpty()) {
-          //   userNameTextBox.setErrorMessage(errorMessage);
-          // } else {
-            // Internationalize or change handling here.
           userNameTextBox.setErrorMessage("There has been an unexpected error validating the users.");
-            // TODO(zamanova) also break???
-          // }
         }
         break;
       }
@@ -280,21 +308,15 @@ public class ShareProjectsWizard {
 
   public void shareProjects(List<Long> projectIDs, List<String> users, Boolean hide) {
     // TODO when do we change access url?
-    LOG.info("trying to share projects");
     // get checkbox value for share all
     Long projectID = projectIDs.get(0);
     Boolean shareAll = checkBoxShareAll.getValue();
-    LOG.info("go whether to share all " + shareAll);
     OdeAsyncCallback<Void> callback =
         new OdeAsyncCallback<Void>(
           // failure message
           MESSAGES.shareProjectError()) {
           @Override
           public void onSuccess(Void result) {
-            // int left = remainingProjects.decrementAndGet();
-            // LOG.info("shared one project left " + left);
-            // if (left == 0) {
-            //   LOG.info("Finished sharing all projects");
             if (hide) {
               shareDialog.hide();
             }

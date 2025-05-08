@@ -94,6 +94,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -132,6 +133,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -176,6 +178,13 @@ public class Ode implements EntryPoint {
   // Set to true if we are loading from the new Gallery
   private boolean newGalleryLoadingFlag = false;
   private String newGalleryId;
+
+  // collaboration path if set by /?shared=
+  // Set to true if we are loading shared project
+  private boolean sharedProjectLoadingFlag = false;
+  private String sharedProjectId;
+
+  private boolean openingProjectFromURLFlag = false;
 
   // Nonce Information
   private String nonce;
@@ -559,6 +568,9 @@ public class Ode implements EntryPoint {
         };
       LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
       return true;
+    } else if (sharedProjectLoadingFlag) {
+      openSharedProject(projectService, user.getUserEmail(), Long.parseLong(sharedProjectId), true);
+      return true;
     }
     return false;
   }
@@ -594,7 +606,8 @@ public class Ode implements EntryPoint {
    *
    * @return a Promise to load the user's access type to project
    */
-  private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId) {
+  // userId here is email
+  private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId, boolean openInReadOnlyMode) {
     projectService.getSharedProject(userId, shareId, new AsyncCallback<UserProject>() {
         @Override
         public void onFailure(Throwable caught) {
@@ -607,22 +620,53 @@ public class Ode implements EntryPoint {
         @Override
         public void onSuccess(UserProject sharedProject) {
           if (sharedProject != null) {
-            Ode.getInstance().setReadOnly();
             LOG.info("trying to load project");
             final long sharedProjectId = sharedProject.getProjectId();
             LOG.info("project is " + String.valueOf(sharedProjectId));
-            projectManager.addProject(sharedProject);
-            projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
-              Project loadedProject = projectManager.getProject(sharedProjectId);
-              if (loadedProject != null) {
-                openYoungAndroidProjectInDesigner(loadedProject);
-              } else {
-                LOG.info("user" + user.getUserEmail() + "could not get access to project" + String.valueOf(sharedProjectId));
-                switchToProjectsView();  // the user will need to select a project...
-                ErrorReporter.reportInfo(MESSAGES.chooseProject());
+            getAccessInfo(sharedProjectId, new OdeAsyncCallback<HashMap<String, List<String>>>() {
+              @Override
+              public void onSuccess(HashMap<String, List<String>> result) {
+                if (result.get("owner").get(0).equals(userId)) {
+                  LOG.info("is onwer" + Window.Location.getHref());
+                  Project loadedProject = projectManager.getProject(sharedProjectId);
+                  // Window.Location.assign(Window.Location.createUrlBuilder().removeParameter("shared").setHash(String.valueOf(sharedProjectId)).buildString());
+                  UrlBuilder builder = Window.Location.createUrlBuilder();
+                  builder.setPath(Window.Location.getPath());  // Ensures "/" is preserved
+                  LOG.info("old url " + Window.Location.getPath() + " old href " + Window.Location.getHref());
+                  builder.removeParameter("shared");
+                  builder.setHash(String.valueOf(sharedProjectId));
+                  String finalUrl = builder.buildString();
+                  if (!finalUrl.contains("/?")) {
+                    // Inject the slash if it's missing (quick patch)
+                    LOG.info("have to replace" + finalUrl);
+                    finalUrl = finalUrl.replace("?", "/?");
+                  }
+                  LOG.info("new url " + finalUrl + " could be " + Window.Location.createUrlBuilder().removeParameter("shared").setHash(String.valueOf(sharedProjectId)).buildString());
+                  Window.Location.assign(finalUrl);
+                  LOG.info("open the shared project from here");
+                  openYoungAndroidProjectInDesigner(loadedProject);
+                } else {
+                  LOG.info("is not onwer");
+                  if (openInReadOnlyMode) {
+                    Ode.getInstance().setReadOnly();
+                  }
+                  projectManager.addProject(sharedProject);
+                  projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+                    Project loadedProject = projectManager.getProject(sharedProjectId);
+                    if (loadedProject != null) {
+                      openYoungAndroidProjectInDesigner(loadedProject);
+                    } else {
+                      LOG.info("user" + user.getUserEmail() + "could not get access to project" + String.valueOf(sharedProjectId));
+                      switchToProjectsView();  // the user will need to select a project...
+                      ErrorReporter.reportInfo(MESSAGES.chooseProject());
+                    }
+                    return null;
+                  });
+                }
               }
-              return null;
             });
+            
+            
             // openYoungAndroidProjectInDesigner(Project.createProject(loadedProject));
           }
         }
@@ -632,13 +676,17 @@ public class Ode implements EntryPoint {
   private void openProject(String projectIdString) {
     LOG.info("project link: " + projectIdString);
     if (projectIdString.equals("")) {
+      LOG.info("entered if");
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
+      LOG.info("entered else if " + projectIdString);
       final long projectId = Long.parseLong(projectIdString);
+      LOG.info("parsed long??? ");
       // check whether user has the project
       LOG.info("check whether user has the project " + projectIdString);
       Project project = projectManager.getProject(projectId);
       if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
+        LOG.info("open project from manager");
         openYoungAndroidProjectInDesigner(project);
       } else {
         // The project hasn't been added to the ProjectManager yet.
@@ -649,11 +697,12 @@ public class Ode implements EntryPoint {
         projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
           Project loadedProject = projectManager.getProject(projectId);
           if (loadedProject != null) {
+            LOG.info("loaded project to manager");
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
             // zamanova_TODO FIRST check whether its owned by someone else
             LOG.info("user" + user.getUserEmail() + "doesnt own the project" + projectIdString);
-            openSharedProject(projectService, user.getUserEmail(), projectId);
+            openSharedProject(projectService, user.getUserEmail(), projectId, true);
             // see whether has access and open
             // switchToProjectsView();  // the user will need to select a project...
             // ErrorReporter.reportInfo(MESSAGES.chooseProject());
@@ -662,15 +711,14 @@ public class Ode implements EntryPoint {
         });
       }
     }
+
     // else projectIdString == 0; do nothing
   }
 
   public void openYoungAndroidProjectInDesigner(final Project project) {
     LOG.info("trying to open the project" + String.valueOf(project.getProjectId()) + Ode.getInstance().isReadOnly());
     ProjectRootNode projectRootNode = project.getRootNode();
-    LOG.info("project root node");
     if (projectRootNode == null) {
-      LOG.info("entered if block"  + Ode.getInstance().isReadOnly());
       // The project nodes haven't been loaded yet.
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
@@ -680,35 +728,24 @@ public class Ode implements EntryPoint {
           openYoungAndroidProjectInDesigner(project);
         }
       });
-      LOG.info("added change listener"  + Ode.getInstance().isReadOnly());
       project.loadProjectNodes();
-      LOG.info("loadded project nodes"  + Ode.getInstance().isReadOnly());
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
-      LOG.info("entered else block"  + Ode.getInstance().isReadOnly());
       viewerBox.show(projectRootNode);
-      LOG.info("show root node"  + Ode.getInstance().isReadOnly());
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
-      LOG.info("project id"  + Ode.getInstance().isReadOnly());
       if (!History.getToken().equals(projectIdString)) {
         // insert token into history but do not trigger listener event
-        LOG.info("history if block"  + Ode.getInstance().isReadOnly());
         History.newItem(projectIdString, false);
-        LOG.info("history"  + Ode.getInstance().isReadOnly());
       }
       assetManager.loadAssets(project.getProjectId());
-      LOG.info("load assets"  + Ode.getInstance().isReadOnly());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
-      LOG.info("get assets"  + Ode.getInstance().isReadOnly());
     }
-    LOG.info("finish ifelse"  + Ode.getInstance().isReadOnly());
     getTopToolbar().updateFileMenuButtons(1);
-    LOG.info("finish fully"  + Ode.getInstance().isReadOnly());
   }
 
   /**
@@ -770,6 +807,12 @@ public class Ode implements EntryPoint {
       if (newGalleryId != null) {
         LOG.warning("Got a new Gallery ID of " + newGalleryId);
         newGalleryLoadingFlag = true;
+      } else {
+        sharedProjectId = Window.Location.getParameter("shared");
+        if (sharedProjectId != null) {
+          LOG.warning("Got a new shared project ID of " + sharedProjectId);
+          sharedProjectLoadingFlag = true;
+        }
       }
     }
 
@@ -823,6 +866,7 @@ public class Ode implements EntryPoint {
           return resolve(projects);
         })
         .then0(this::retrieveTemplateData)
+        .then0(this::maybeOpenProject)
         .then0(this::maybeOpenLastProject)
         .error(caught -> {
           if (caught == null) {
@@ -911,10 +955,22 @@ public class Ode implements EntryPoint {
   }
 
   private Promise<Object> maybeOpenLastProject() {
-    if (!handleQueryString() && shouldAutoloadLastProject()) {
+    if (!handleQueryString() && shouldAutoloadLastProject() && !openingProjectFromURLFlag) {
       openPreviousProject();
     }
+    openingProjectFromURLFlag = false;
+    return null;
+  }
 
+  private Promise<Object> maybeOpenProject() {
+    String projectId = Window.Location.getHash();
+    LOG.info("the hash! " + projectId);
+    if (projectId != "") {
+      openingProjectFromURLFlag = true;
+      openProject(projectId.substring(1));
+    } else {
+      openingProjectFromURLFlag = false;
+    }
     return null;
   }
 
@@ -1791,7 +1847,8 @@ public class Ode implements EntryPoint {
           return null;  // We have at least one valid project so exit early
         }
       }
-      if (!templateLoadingFlag && !newGalleryLoadingFlag) {
+      if (!templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
+        LOG.info("no project!" + sharedProjectLoadingFlag);
         ErrorReporter.hide();  // hide the "Please choose a project" message
         createNoProjectsDialog(true);
       }
@@ -1906,7 +1963,7 @@ public class Ode implements EntryPoint {
   private void maybeShowSplash2() {
     projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
       if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
-          && !templateLoadingFlag && !newGalleryLoadingFlag) {
+          && !templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
         showSplashScreens();
       }

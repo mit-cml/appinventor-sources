@@ -113,6 +113,9 @@ public class StoredData {
     // key of project that this id shares
     @Indexed Key<ProjectData> projectKey;
 
+    // The user (parent's) key
+    Key<UserData> ownerKey;
+
     // some permission info
     String permissions;
 

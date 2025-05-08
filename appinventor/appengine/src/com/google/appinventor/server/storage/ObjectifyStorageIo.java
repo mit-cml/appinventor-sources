@@ -530,10 +530,12 @@ public class ObjectifyStorageIo implements StorageIo {
           // written in this job, reading the assigned id from pd should work.
 
           Key<ProjectData> projectKey = projectKey(projectId.t);
+          Key<UserData> ownerKey = userKey(userId);
 
           // do we create share data here?
           ProjectSharingData psd = new ProjectSharingData();
           psd.id = null;
+          psd.ownerKey = ownerKey;
           psd.projectKey = projectKey;
           psd.isProjectSharedWithAll = false;
           psd.permissions = "";
@@ -542,6 +544,7 @@ public class ObjectifyStorageIo implements StorageIo {
           assert psd.id != null;
 
           LOG.log(Level.INFO, "Created new share project id: " + psd.id + " for project " + psd.projectKey + 
+          " owned by " + psd.ownerKey +
           " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
 
           for (TextFile file : project.getSourceFiles()) {
@@ -768,33 +771,26 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public HashMap<String, List<String>> getAccessInfo(long projectId){
-    // String owner = "";
-    // try {
-    //   runJobWithRetries(new JobRetryHelper() {
-    //     @Override
-    //     public void run(Objectify datastore) {
-    //       UserProjectData pd = datastore.find(projectKey(projectId));
-    //       if (pd != null) {
-    //         settings.t = pd.settings;
-    //       } else {
-    //         settings.t = "";
-    //       }
-    //     }
-    //   }, false);
-    // } catch (ObjectifyException e) {
-    //   throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), e);
-    // }
     List<String> readOnlyUserEmails = new ArrayList<String>();
     List<String> shareIds = new ArrayList<String>();
     List<String> isSharedAll = new ArrayList<String>();
+    List<String> owner = new ArrayList<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           Key<ProjectData> projectKey = projectKey(projectId);
           for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey =", projectKey)) {
-            readOnlyUserEmails.addAll(new ArrayList<String>( 
+            if (psd.permissions != "") {
+              readOnlyUserEmails.addAll(new ArrayList<String>( 
               Arrays.asList(psd.permissions.split(","))));
+            }
+            UserData userData = datastore.find(psd.ownerKey);
+            if (owner.size() == 1 && userData.email != owner.get(0)) {
+              throw CrashReport.createAndLogError(LOG, null, collectShareProjectErrorInfo(projectId), new Throwable("Somehow got two owners for a single project!"));
+            } else if (owner.size() == 0) {
+              owner.add(userData.email);
+            }
             shareIds.add(String.valueOf(psd.id));
             isSharedAll.add(String.valueOf(psd.isProjectSharedWithAll));
           }
@@ -806,6 +802,7 @@ public class ObjectifyStorageIo implements StorageIo {
     HashMap<String, List<String>> result = new HashMap<>();
     result.put("readonly",readOnlyUserEmails);
     result.put("shareIds",shareIds);
+    result.put("owner", owner);
     result.put("isSharedAll", isSharedAll);
     return result;
   }
@@ -819,7 +816,9 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           ProjectSharingData psd = datastore.find(sharingProjectKey(shareId));
-          if (!psd.isProjectSharedWithAll && !Arrays.asList(psd.permissions.split(",")).contains(userId)) {
+          UserData userData = datastore.find(psd.ownerKey);
+          LOG.info("user is " + userId + " with permissions: " + psd.permissions + " with owner: " + userData.email);
+          if (!psd.isProjectSharedWithAll && !Arrays.asList(psd.permissions.split(",")).contains(userId) && !userData.email.equals(userId)) {
             throw CrashReport.createAndLogError(LOG, null,
                 collectUserProjectErrorInfo(userId, psd.projectKey.getId()),
                 new UnauthorizedAccessException(userId, psd.projectKey.getId(), null));
@@ -844,8 +843,10 @@ public class ObjectifyStorageIo implements StorageIo {
         public void run(Objectify datastore) {
           Key<ProjectData> projectKey = projectKey(projectId);
           for (ProjectSharingData psd : datastore.query(ProjectSharingData.class).filter("projectKey", projectKey)) {
-            currentUserEmails.addAll(new ArrayList<String>( 
+            if (psd.permissions != "") {
+              currentUserEmails.addAll(new ArrayList<String>( 
               Arrays.asList(psd.permissions.split(","))));
+            }
           }
         }
       }, false);
@@ -910,64 +911,76 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void shareProjectWithUsers(final long projectId, List<String> userEmails) {
-    Key<ProjectData> projectKey = projectKey(projectId);
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          List<Long> shareIds = getProjectShareLinks(projectId);
-          for (long shareProjectId : shareIds) {
-            ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
-            if (psd != null) {
-              String permissions =  psd.permissions;
-              for (String userEmail : userEmails) {
-                  permissions = permissions + String.join(",", userEmails);
+    if (userEmails.size() != 0){
+      Key<ProjectData> projectKey = projectKey(projectId);
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            List<Long> shareIds = getProjectShareLinks(projectId);
+            for (long shareProjectId : shareIds) {
+              ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
+              if (psd != null) {
+                String permissions =  psd.permissions;
+                // for (String userEmail : userEmails) {
+                if (permissions == "") {
+                  permissions = String.join(",", userEmails);
+                } else {
+                  permissions = permissions + "," + String.join(",", userEmails);
+                }
+                // }
+                psd.permissions = permissions;
+                LOG.info("Update share project id: " + psd.id + " for project " + psd.projectKey + 
+                " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+                datastore.put(psd);
+              } else {
+                LOG.info("no projects?");
               }
-              psd.permissions = permissions;
-              LOG.log(Level.INFO, "Update share project id: " + psd.id + " for project " + psd.projectKey + 
-              " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
-              datastore.put(psd);
             }
           }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "error while giving access to users: " + userEmails, e);
+        }, true);
+      } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+            "error while giving access to users: " + userEmails, e);
+      }
     }
   }
 
 
   @Override
   public void retractAccessFromUsers(final long projectId, List<String> userEmails) {
-    Key<ProjectData> projectKey = projectKey(projectId);
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          List<Long> shareIds = getProjectShareLinks(projectId);
-          for (long shareProjectId : shareIds) {
-            ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
-            if (psd != null) {
-              String permissions =  psd.permissions;
-              for (String userEmail : userEmails) {
-                int index = permissions.indexOf(userEmail);
-                if (index != -1) {
-                  permissions = permissions.substring(0, index) + permissions.substring(index + userEmail.length());
-                  psd.isProjectSharedWithAll = false;
+    if (userEmails.size() != 0){
+      Key<ProjectData> projectKey = projectKey(projectId);
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            List<Long> shareIds = getProjectShareLinks(projectId);
+            for (long shareProjectId : shareIds) {
+              ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
+              if (psd != null) {
+                String permissions =  psd.permissions;
+                for (String userEmail : userEmails) {
+                  int index = permissions.indexOf(userEmail+",");
+                  if (index != -1) {
+                    permissions = permissions.substring(0, index) + permissions.substring(index + userEmail.length() + 1);
+                    LOG.log(Level.INFO, "Setting project shared all to false: " + psd.id + " for project " + psd.projectKey + 
+                " shared with " + psd.permissions);
+                    psd.isProjectSharedWithAll = false;
+                  }
                 }
+                psd.permissions = permissions;
+                LOG.log(Level.INFO, "Retract share project id: " + psd.id + " for project " + psd.projectKey + 
+                " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
+                datastore.put(psd);
               }
-              psd.permissions = permissions;
-              LOG.log(Level.INFO, "Retract share project id: " + psd.id + " for project " + psd.projectKey + 
-              " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
-              datastore.put(psd);
             }
           }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "error while retracting access from users: " + userEmails, e);
+        }, true);
+      } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+            "error while retracting access from users: " + userEmails, e);
+      }
     }
   }
 

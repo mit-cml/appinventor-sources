@@ -37,14 +37,15 @@
       </g:FlowPanel>
       
       <!-- checkbox to send email with link -->
-      <g:FlowPanel>
+       <!-- TODO: make visible once emailing is implemented -->
+      <g:FlowPanel visible="false">
         <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/> -->
         <g:CheckBox ui:field='checkBoxSendEmail' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.sendEmail}'/>
       </g:FlowPanel>
       <!-- copy link -->
       <g:FlowPanel>
         <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
-        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false"/>
+        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false" text='Copied!'/>
       </g:FlowPanel>
       
       <!-- cancel/done -->

@@ -2390,6 +2390,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label for the share projects button")
   String shareProjectButton();
 
+  @DefaultMessage("Share Project...")
+  @Description("Label of the menu item for sharing a project with other users")
+  String shareProjectMenuItem();
+
   @DefaultMessage("Server error: could not share project. Please try again later!")
   @Description("Error message reported when the project couldn't be shared on the server.")
   String shareProjectError();

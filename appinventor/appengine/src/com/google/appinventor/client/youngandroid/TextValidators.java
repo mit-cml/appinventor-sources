@@ -213,10 +213,10 @@ public final class TextValidators {
    */
   public static String isValidEmailList(String text) {
     String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(,\\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\s*)*$";
-    if(!text.matches(regex)) {
-      return MESSAGES.invalidEmailListError();
+    if(text.matches(regex) || text == "") {
+      return "";
     }
-    return "";
+    return MESSAGES.invalidEmailListError();
   }
 
   /**
