@@ -1222,12 +1222,12 @@ textarea::-webkit-input-placeholder {
 }
 
 .blocklySvg text {
-    fill: gray-600;
+    fill: gray-450;
 }
 
 .warningNav {
     fill: gray-300;
-    stroke:gray-600;
+    stroke:gray-450;
     stroke-width:1;
     cursor:pointer;
 }
