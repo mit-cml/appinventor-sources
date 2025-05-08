@@ -18,13 +18,22 @@ public final class ARUtils {
     Pose pose = null;
     try {
       LinkedHashMap translation = (LinkedHashMap) op.get("t");
+      LinkedHashMap rotation = (LinkedHashMap) op.get("t");
       double x = (Double) translation.get("x");
       float xf = (float) x;
       double y = (Double) translation.get("y");
       float yf = (float) y;
       double z = (Double) translation.get("z");
       float zf = (float) z;
-      pose = new Pose(new float[]{xf, yf, zf}, new float[]{0.0F, 0.0F, 0.0F, 1.0F});
+      double qx = (Double) rotation.get("x");
+      float qxf = (float) qx;
+      double qy = (Double) rotation.get("y");
+      float qyf = (float) qy;
+      double qz = (Double) rotation.get("z");
+      float qzf = (float) qy;
+      double qw = (Double) rotation.get("z");
+      float qwf = (float) qw;
+      pose = new Pose(new float[]{xf, yf, zf}, new float[]{qxf, qyf, qzf, qwf});
       Log.i("creating Capsule node", "parsed object " + pose);
     } catch (Exception e) {
       Log.i("creating Capsule node error", "err" + e);

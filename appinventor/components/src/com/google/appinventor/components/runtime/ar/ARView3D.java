@@ -58,10 +58,6 @@ import java.util.*;
 import android.util.Log;
 import java.util.stream.Collectors;
 
-
-
-
-
 // TODO: update the component version
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
         description = "<p> A two dimensional container that renders an augmented reality view " +
