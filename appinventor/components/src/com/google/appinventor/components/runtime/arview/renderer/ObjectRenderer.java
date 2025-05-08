@@ -219,7 +219,8 @@ public class ObjectRenderer {
         Anchor anchor = arNode.Anchor();
         Trackable trackable = arNode.Trackable();
 
-        if (anchor == null || trackable == null) {
+        if (anchor == null) { // || trackable == null) {
+          Log.d(TAG, "Skipping nodes no anchor ");
           continue;
         }
 

@@ -3,8 +3,9 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ar;
 
+import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -24,6 +25,7 @@ import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 import java.util.Collection;
+import java.util.Locale;
 
 // TODO: update the component version
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
@@ -49,11 +51,41 @@ import java.util.Collection;
       container.addNode(this);
     }
 
-    @Override // wht is the significance?
+    @Override
     public Anchor Anchor() { return this.anchor; }
 
     @Override
     public void Anchor(Anchor a) { this.anchor = a;}
+
+  @SimpleProperty(description = "Get the current pose of the object",
+      category = PropertyCategory.APPEARANCE)
+  public Object Pose() { Object o = (Object)this.anchor.getPose(); return o;}
+
+
+  @SimpleProperty(description = "Get the current pose of the object",
+      category = PropertyCategory.APPEARANCE)
+  public Object PoseAsJson() {
+      Pose p = this.anchor.getPose();
+      Locale locale = Locale.ENGLISH;
+      Object[] var2 = new Object[]{p.tx(), p.ty(), p.tz(), p.qx(), p.qy(), p.qz(), p.qw()};
+      String result = String.format(locale, "{\"t\":{\"x\":%.3f, \"y\":%.3f, \"z\":%.3f}, \"q\":{\"x\":%.2f, \"y\":%.2f, \"z\":%.2f, \"w\":%.2f}}", var2);
+      Log.i("exporting Capsule pose as JSON", "with " +result);
+      return result;
+
+  }
+
+  @SimpleProperty(description = "Set the current pose of the object",
+      category = PropertyCategory.APPEARANCE)
+  public void Pose(Object p) {
+    Log.i("setting Capsule pose", "with " +p);
+    Pose pose = (Pose) p;
+
+    float[] position = {pose.tx(), pose.ty(), pose.tz()};
+    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+
+    Anchor(myAnchor);
+  }
 
     @Override
     public Trackable Trackable() { return this.trackable; }
@@ -93,13 +125,15 @@ import java.util.Collection;
 
       float[] currentAnchorPoseRotation = rotation;
       if (this.Anchor() != null) {
-        currentAnchorPoseRotation = Anchor().getPose().getTranslation();
+        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); not working yet
       }
-      Pose newPose = new Pose(position, currentAnchorPoseRotation);
+      Pose newPose = new Pose(position, rotation);
       if (this.trackable != null){
         Anchor(this.trackable.createAnchor(newPose));
+        Log.i("capsule","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+      }else {
+        Log.i("capsule", "tried to move anchor to pose");
       }
-      Log.i("capsule","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
     }
 
     @Override
@@ -112,6 +146,24 @@ import java.util.Collection;
         Anchor(this.trackable.createAnchor((Pose) p));
         Log.i("created Capsule Anchor!", " ");
     }
+
+
+  @SimpleFunction(description = "move a capsule node properties to detectedplane.")
+  public void MoveToPose(String p) {
+
+    Pose pose = ARUtils.parseObject(p);
+    if (this.anchor != null) {
+      this.anchor.detach();
+    }
+    if (this.trackable != null) {
+      Anchor(this.trackable.createAnchor(pose));
+      Log.i("created Capsule Anchor!", " ");
+    } else {
+      Log.e("could not Capsule Anchor, no trackable found", " ");
+    }
+
+    Log.i("created Capsule Anchor!", " ");
+  }
 
 
     @Override

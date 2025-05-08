@@ -1,15 +1,16 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
-// Released under the Apache License, Version 2.0
-// http://www.apache.org/licenses/LICENSE-2.0
-
 package com.google.appinventor.components.runtime.ar;
 
-import android.util.Log;
-import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.runtime.ARNodeBase;
-import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesAssets;
+
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -89,7 +90,7 @@ import com.google.ar.core.Trackable;
         this.anchor.detach();
       }
       Anchor(this.trackable.createAnchor((Pose) p));
-      Log.i("created Capsule Anchor!", " ");
+
     }
 
 

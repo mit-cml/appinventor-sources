@@ -12,6 +12,7 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
 
+
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.MetaDataElement;
@@ -32,6 +33,7 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContainer;
 
 
+import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
@@ -51,11 +53,9 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
 import java.io.IOException;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import android.util.Log;
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 
@@ -332,6 +332,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node: nodes){
             if (node.Anchor() == null) {
+                Log.d(LOG_TAG, "Creating default anchor for " + node);
                 // TBD handle if anchor is loaded from a db
                 node.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
             }
@@ -426,8 +427,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             String[] modelNodeType = new String[]{"ModelNode"};
             List<ARNode> modelNodes = sort(arNodes, modelNodeType);
 
-            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
-            List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
 
 
@@ -461,7 +460,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         GLES30.glEnable(GLES30.GL_BLEND);
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
             // Skip further rendering if tracking is pau
 
        if (ShowFeaturePoints()) {
@@ -481,6 +480,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
            for (Plane plane : planes) {
+               ARDetectedPlane arplane = new DetectedPlane(plane);
+               Log.i("has tracking arplane", arplane.toString());
+               PlaneDetected(arplane); //dispatch
                Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
                        ", type: " + plane.getType() +
                        ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
@@ -493,6 +495,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (error != GLES30.GL_NO_ERROR) {
                 Log.e(LOG_TAG, "GL error before [draw arfilament]: 0x" + Integer.toHexString(error));
             }
+
+
+            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode"};
+            List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
             if (objRenderer != null && objectNodes.size() > 0){
                 Log.d(LOG_TAG, "objects " + objectNodes);
@@ -607,6 +613,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 return true;
             }
         }
+
         return false;
     }
 
@@ -839,13 +846,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             "component added at the location of the real-world plane.  This event will only trigger if " +
             "PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default " +
             "FillColor of a DetectedPlane is None, so it is shown visually by default.")
-    public void PlaneDetected(ARDetectedPlane detectedPlane) {}
+    public void PlaneDetected(ARDetectedPlane detectedPlane) {
+        container.$form().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(ARView3D.this, "PlaneDetected",detectedPlane);
+                Log.i("dispatching detected Plane", " plane is " + detectedPlane);
+            }
+        });
+
+    }
 
     @Override
     @SimpleEvent(description = "A DetectedPlane updated its properties, either its rotation, " +
             "position, or size.  This event will only trigger if PlaneDetection is not None, and the " +
             "TrackingType is WorldTracking.")
-    public void DetectedPlaneUpdated(ARDetectedPlane detectedPlane) {}
+    public void DetectedPlaneUpdated(ARDetectedPlane detectedPlane) {
+        EventDispatcher.dispatchEvent(this, "DetectedPlaneUpdated",detectedPlane);
+        Log.i("dispatching updated Plane", "");
+    }
 
     @Override
     @SimpleEvent(description = "The user long-pressed on a DetectedPlane, detectedPlane.  (x,y,z) is " +
@@ -1081,13 +1100,34 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
+    @SimpleFunction(description = "Create a new CapsuleNode with default properties with a pose.")
+    public CapsuleNode CreateCapsuleNodeWithPose(String p) {
+
+        if (session != null) {
+            CapsuleNode capNode = new CapsuleNode(this);
+
+            Pose pose = ARUtils.parseObject(p);
+
+            float[] position = {pose.tx(), pose.ty(), pose.tz()};
+            float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+            Log.i("creating Capsule anchor is", position + " " + rotation);
+            Anchor myAnchor = session.createAnchor(new Pose(new float[]{0f, 0f, -1f}, (new float[]{0f, 0f, 0f, 1f})));
+
+            capNode.Anchor(myAnchor);
+
+            Log.i("created Capsule node, anchor is", capNode.Anchor().toString());
+            return capNode;
+        }
+        Log.i("cannot create Capsule node"," since there is no session");
+        return null;
+    }
+
+
+
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the specified (x,y,z) position.")
     public CapsuleNode CreateCapsuleNode(float x, float y, float z) {
         Log.i("creating Capsule node", "with x, y, z " + x + " " + y + " " + z);
         CapsuleNode capNode = new CapsuleNode(this);
-        capNode.XPosition(x);
-        capNode.YPosition(y);
-        capNode.ZPosition(z);
 
         float[] position = {x, y, z};
         float[] rotation = {0, 0, 0, 1};

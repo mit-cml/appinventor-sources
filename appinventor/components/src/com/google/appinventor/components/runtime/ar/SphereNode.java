@@ -5,15 +5,13 @@
 
 package com.google.appinventor.components.runtime.ar;
 
-import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.*;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesAssets;
+
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 
@@ -24,6 +22,13 @@ import android.util.Log;
 
 
 @UsesAssets(fileNames = "sphere.obj, Palette.png")
+@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
+    description = "A component that displays a 3D model in an ARView3D.  " +
+        "External model files can be uploaded to the server for use, but the files " +
+        "must be less than 5 MB.  An error will occur if the provided model file " +
+        "cannot be loaded.", // TODO: include anything about converting models when uploaded to the server.
+    category = ComponentCategory.AR)
+@SimpleObject
   public final class SphereNode extends ARNodeBase implements ARSphere {
 
     private Anchor anchor = null;
@@ -76,6 +81,11 @@ import android.util.Log;
       Log.i("created Anchor!", " " );
     }
 
+  @Override
+  public float Scale() { return this.scale; }
+
+  @Override
+  public void Scale(float t) { this.scale = t;}
 
     @Override
     @SimpleProperty(description = "The radius of the sphere in centimeters.")
