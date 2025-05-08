@@ -113,7 +113,7 @@ public final class EditorManager {
 
         // Add the editor to the openProjectEditors map.
         openProjectEditors.put(projectId, projectEditor);
-
+        
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 

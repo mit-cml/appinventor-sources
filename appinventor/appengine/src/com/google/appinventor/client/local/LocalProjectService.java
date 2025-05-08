@@ -40,6 +40,7 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -263,6 +264,31 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   @Override
   public void restoreProject(long projectId, AsyncCallback<UserProject> callback) {
+
+  }
+
+  @Override
+  public void updateProjectPermissions(long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback) {
+
+  }
+
+  @Override
+  public void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback) {
+
+  }
+
+  @Override
+  public void retractAccessFromUsers(long projectId, List<String> userEmails, AsyncCallback<Void> callback) {
+
+  }
+
+  @Override
+  public void getAccessInfo(long projectId, AsyncCallback<HashMap<String, List<String>>> callback) {
+
+  }
+
+  @Override
+  public void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback) {
 
   }
 
