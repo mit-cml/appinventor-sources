@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2019 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -434,6 +434,10 @@ public class BlocklyPanel extends HTMLPanel {
     return YaBlocksEditor.getComponentInstanceTypeName(formName, instanceName);
   }
 
+  public static String getComponentContainerUuid(String formName, String instanceName) {
+    return YaBlocksEditor.getComponentContainerUuid(formName, instanceName);
+  }
+
   public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName) {
     return YaBlocksEditor.getComponentInstancePropertyValue(formName, instanceName, propertyName);
   }
@@ -592,6 +596,7 @@ public class BlocklyPanel extends HTMLPanel {
     callback.call(null, arg);
   }-*/;
 
+  @SuppressWarnings("LineLength")
   private static native void exportMethodsToJavascript() /*-{
     $wnd.BlocklyPanel_callToggleWarning =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::callToggleWarning());
@@ -636,7 +641,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getSharedBackpack(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_storeSharedBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::storeSharedBackpack(Ljava/lang/String;Ljava/lang/String;));
-
+    $wnd.BlocklyPanel_getComponentContainerUuid =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentContainerUuid(*));
   }-*/;
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl)/*-{
@@ -666,6 +672,7 @@ public class BlocklyPanel extends HTMLPanel {
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
+    workspace.setVisible(false);  // The workspace is invisible by default
   }-*/;
 
   /**

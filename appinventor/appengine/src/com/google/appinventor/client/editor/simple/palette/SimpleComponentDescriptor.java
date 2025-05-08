@@ -12,6 +12,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 
+import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
@@ -574,6 +575,8 @@ public final class SimpleComponentDescriptor {
       return new MockScrollVerticalArrangement(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
+    } else if (name.equals(MockAbsoluteArrangement.TYPE)) {
+      return new MockAbsoluteArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {
       return new MockImageSprite(editor);
     } else if (name.equals(MockBall.TYPE)) {

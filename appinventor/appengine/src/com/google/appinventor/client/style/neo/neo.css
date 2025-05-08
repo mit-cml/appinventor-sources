@@ -610,6 +610,7 @@ they get cut off in Windows.
 
   .ode-Designer-RightColumns {
     width: 222px;
+    flex-shrink: 0;
   }
 
   .ode-NavArrow {
@@ -1109,17 +1110,6 @@ they get cut off in Windows.
     border-bottom: 2px #b9b9b9 solid;
     border-color: shadow-color;
     border-radius: 0px;
-  }
-
-  /* class for the ListView Mock component */
-  .listViewComponentStyle {
-    width: 315px;
-    display: block;
-    overflow: unset;
-  }
-
-  .listViewItemStyle {
-    border-bottom: 1px solid gray;
   }
   
   .spinnerComponentStyle {

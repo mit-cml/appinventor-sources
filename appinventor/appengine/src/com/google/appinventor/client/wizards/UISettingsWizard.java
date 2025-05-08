@@ -45,14 +45,7 @@ public class UISettingsWizard {
    * Creates a new YoungAndroid project wizard.
    */
   public UISettingsWizard() {
-    bindUI();
-    userThemePreference = Ode.getUserDarkThemeEnabled();
-    userLayoutPreference = Ode.getUserNewLayout();
-    if (userLayoutPreference) {
-      modernRadioButton.setChecked(true);
-    } else {
-      classicRadioButton.setChecked(true);
-    }
+    this(false);
 //    if (userThemePreference){
 //      darkModeRadioButton.setValue(true);
 //    }else{
@@ -61,10 +54,17 @@ public class UISettingsWizard {
   }
 
   public UISettingsWizard(boolean intro) {
-    this();
+    bindUI();
+    firstUIChoice = intro;
+    userThemePreference = Ode.getUserDarkThemeEnabled();
+    userLayoutPreference = Ode.getUserNewLayout();
+    if (intro || userLayoutPreference) {
+      modernRadioButton.setChecked(true);
+    } else {
+      classicRadioButton.setChecked(true);
+    }
     introText.setVisible(intro);
     cancelButton.setVisible(!intro);
-    firstUIChoice = intro;
   }
 
   public void bindUI() {
