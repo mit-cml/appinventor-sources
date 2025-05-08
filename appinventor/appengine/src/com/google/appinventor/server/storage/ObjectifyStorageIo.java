@@ -817,7 +817,6 @@ public class ObjectifyStorageIo implements StorageIo {
         public void run(Objectify datastore) {
           ProjectSharingData psd = datastore.find(sharingProjectKey(shareId));
           UserData userData = datastore.find(psd.ownerKey);
-          LOG.info("user is " + userId + " with permissions: " + psd.permissions + " with owner: " + userData.email);
           if (!psd.isProjectSharedWithAll && !Arrays.asList(psd.permissions.split(",")).contains(userId) && !userData.email.equals(userId)) {
             throw CrashReport.createAndLogError(LOG, null,
                 collectUserProjectErrorInfo(userId, psd.projectKey.getId()),
@@ -912,7 +911,6 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public void shareProjectWithUsers(final long projectId, List<String> userEmails) {
     if (userEmails.size() != 0){
-      Key<ProjectData> projectKey = projectKey(projectId);
       try {
         runJobWithRetries(new JobRetryHelper() {
           @Override
@@ -922,16 +920,12 @@ public class ObjectifyStorageIo implements StorageIo {
               ProjectSharingData psd = datastore.find(sharingProjectKey(shareProjectId));
               if (psd != null) {
                 String permissions =  psd.permissions;
-                // for (String userEmail : userEmails) {
                 if (permissions == "") {
                   permissions = String.join(",", userEmails);
                 } else {
                   permissions = permissions + "," + String.join(",", userEmails);
                 }
-                // }
                 psd.permissions = permissions;
-                LOG.info("Update share project id: " + psd.id + " for project " + psd.projectKey + 
-                " shared with " + psd.permissions + " share all flag is " + psd.isProjectSharedWithAll);
                 datastore.put(psd);
               } else {
                 LOG.info("no projects?");

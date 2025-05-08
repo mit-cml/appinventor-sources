@@ -255,14 +255,11 @@ public class ShareProjectsWizard {
     String ourURL = Window.Location.getHref();
     Integer hashtagIdx = ourURL.indexOf("#");
     String locale = Window.Location.getParameter("locale");
-    LOG.info("other way of linking " + Window.Location.createUrlBuilder().setParameter("shared", result).buildString() + " with project id being " + Window.Location.getHash());
     if (hashtagIdx == -1) {
       ourURL += (locale != null ? "&" : "?") + "shared="+result;
     } else {
       ourURL = ourURL.substring(0, hashtagIdx) + (locale != null ? "&" : "?") + "shared=" + result;
     }
-
-    LOG.info("Here is the link: " + ourURL);
 
     copyTextToClipboard(ourURL);
 

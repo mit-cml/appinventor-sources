@@ -217,7 +217,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   @Override
   public void storeProjectSettings(String userId, long projectId, String projectSettings) {
-    LOG.info("trying to store something");
     super.storeProjectSettings(userId, projectId, projectSettings);
 
     // If the icon has been changed, update the project properties file.
