@@ -1131,7 +1131,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         if (session != null) {
             CapsuleNode capNode = new CapsuleNode(this);
 
-            Pose pose = ARUtils.parseObject(p);
+            Pose pose = ARUtils.parsePoseObject(p);
 
             float[] position = {pose.tx(), pose.ty(), pose.tz()};
             float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
@@ -1140,6 +1140,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             capNode.Anchor(myAnchor);
 
+            Log.i("created Capsule node, anchor is", capNode.Anchor().toString());
+            return capNode;
+        }
+        Log.i("cannot create Capsule node"," since there is no session");
+        return null;
+    }
+
+    @SimpleFunction(description = "Create a new CapsuleNode with default properties with a pose.")
+    public CapsuleNode CreateCapsuleNodeFromJson(String p) {
+
+        if (session != null) {
+            CapsuleNode capNode = new CapsuleNode(this);
+
+            ARUtils.parseNodeObject(capNode, p, session);
+
+            Anchor myAnchor = session.createAnchor((Pose) capNode.Pose());
+            //capNode.Anchor(myAnchor);
             Log.i("created Capsule node, anchor is", capNode.Anchor().toString());
             return capNode;
         }

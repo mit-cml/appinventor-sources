@@ -35,14 +35,14 @@ import java.util.Locale;
 
   @SimpleObject
 
-@UsesAssets(fileNames = "torus.obj, Palette.png")
+@UsesAssets(fileNames = "pawn.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
 
   private Anchor anchor = null;
   private Trackable trackable = null;
   private String texture = "";
-  private String objectModel = Form.ASSETS_PREFIX + "torus.obj";
+  private String objectModel = Form.ASSETS_PREFIX + "pawn.obj";
   private float scale = 1.0f;
 
     public CapsuleNode(final ARNodeContainer container) {
@@ -59,12 +59,16 @@ import java.util.Locale;
 
   @SimpleProperty(description = "Get the current pose of the object",
       category = PropertyCategory.APPEARANCE)
-  public Object Pose() { Object o = (Object)this.anchor.getPose(); return o;}
+  @Override
+  public Object Pose() {
+      Pose p = (Pose)this.anchor.getPose();
+      return p;
+    }
 
 
   @SimpleProperty(description = "Get the current pose of the object",
       category = PropertyCategory.APPEARANCE)
-  public Object PoseAsJson() {
+  public Object PoseToJson() {
       Pose p = this.anchor.getPose();
       Locale locale = Locale.ENGLISH;
       Object[] var2 = new Object[]{p.tx(), p.ty(), p.tz(), p.qx(), p.qy(), p.qz(), p.qw()};
@@ -76,15 +80,30 @@ import java.util.Locale;
 
   @SimpleProperty(description = "Set the current pose of the object",
       category = PropertyCategory.APPEARANCE)
+  @Override
   public void Pose(Object p) {
     Log.i("setting Capsule pose", "with " +p);
     Pose pose = (Pose) p;
 
     float[] position = {pose.tx(), pose.ty(), pose.tz()};
     float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-    Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }
 
-    Anchor(myAnchor);
+
+  @SimpleProperty(description = "Serialize the capsule node to json",
+      category = PropertyCategory.APPEARANCE)
+  public Object CapsuleNodeToJson() {
+    Pose p = this.anchor.getPose();
+    Locale locale = Locale.ENGLISH;
+    Object[] var2 = new Object[]{this.Model(), this.Texture(), this.Scale(), this.PoseToJson(), "capsule"};
+    String result = String.format(locale, "{\"node\":{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": \"%s\", \"type\": \"%s\"}}", var2);
+    Log.i("exporting Capsule pose as JSON", "with " +result);
+    return result;
+
   }
 
     @Override
@@ -151,7 +170,7 @@ import java.util.Locale;
   @SimpleFunction(description = "move a capsule node properties to detectedplane.")
   public void MoveToPose(String p) {
 
-    Pose pose = ARUtils.parseObject(p);
+    Pose pose = ARUtils.parsePoseObject(p);
     if (this.anchor != null) {
       this.anchor.detach();
     }

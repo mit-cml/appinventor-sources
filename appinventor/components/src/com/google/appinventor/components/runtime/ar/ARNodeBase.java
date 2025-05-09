@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 
@@ -49,6 +50,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   public void Anchor(Anchor a) {}
+
+  @Override
+  public Object Pose() { return null; }
+
+  @Override
+  public void Pose(Object p) {}
 
   @Override
   public Trackable Trackable() { return null; }

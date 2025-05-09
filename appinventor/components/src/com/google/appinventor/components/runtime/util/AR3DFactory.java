@@ -13,6 +13,7 @@ import java.util.List;
 import com.google.appinventor.components.runtime.util.YailList;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 
@@ -54,6 +55,9 @@ public final class AR3DFactory {
      String Model();
      void Model(String o);
 
+    Object Pose();
+    void Pose(Object o);
+
      boolean Visible();
      void Visible(boolean visible);
 
@@ -80,6 +84,8 @@ public final class AR3DFactory {
 
      boolean PanToMove();
      void PanToMove(boolean panToMove);
+
+
 
      boolean RotateWithGesture();
      void RotateWithGesture(boolean rotateWithGesture);
