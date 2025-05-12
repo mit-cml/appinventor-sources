@@ -100,7 +100,7 @@ import java.util.Locale;
     Pose p = this.anchor.getPose();
     Locale locale = Locale.ENGLISH;
     Object[] var2 = new Object[]{this.Model(), this.Texture(), this.Scale(), this.PoseToJson(), "capsule"};
-    String result = String.format(locale, "{\"node\":{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": \"%s\", \"type\": \"%s\"}}", var2);
+    String result = String.format(locale, "{\"node\":{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": %s, \"type\": \"%s\"}}", var2);
     Log.i("exporting Capsule pose as JSON", "with " +result);
     return result;
 
