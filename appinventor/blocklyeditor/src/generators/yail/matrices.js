@@ -43,6 +43,17 @@ AI.Yail['matrices_create'] = function() {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
+AI.Yail['matrices_create_multidim'] = function() {
+  var dims = AI.Yail.valueToCode(this, 'DIM', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var initial = AI.Yail.valueToCode(this, 'INITIAL', AI.Yail.ORDER_NONE) || '0';
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-matrix-multidim" + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code += dims + AI.Yail.YAIL_SPACER + initial;
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + "list number" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_DOUBLE_QUOTE + "create multidimensional matrix" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
+};
 
 AI.Yail['matrices_get_row'] = function() {
   var argument0 = AI.Yail.valueToCode(this, 'MATRIX', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
@@ -69,30 +80,42 @@ AI.Yail['matrices_get_column'] = function() {
 };
 
 AI.Yail['matrices_get_cell'] = function() {
-  var argument0 = AI.Yail.valueToCode(this, 'MATRIX', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
-  var argument1 = AI.Yail.valueToCode(this, 'ROW', AI.Yail.ORDER_NONE) || 1;
-  var argument2 = AI.Yail.valueToCode(this, 'COLUMN', AI.Yail.ORDER_NONE) || 1;
+  var matrix = AI.Yail.valueToCode(this, 'MATRIX', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-matrix-get-cell" + AI.Yail.YAIL_SPACER;
   code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
-  code += argument0 + AI.Yail.YAIL_SPACER + argument1 + AI.Yail.YAIL_SPACER + argument2 + AI.Yail.YAIL_CLOSE_COMBINATION;
-  code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
-  code += "matrix number number" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += matrix;
+  for (var i = 0; i < this.itemCount_; i++) {
+    var idx = AI.Yail.valueToCode(this, 'DIM' + i, AI.Yail.ORDER_NONE) || '1';
+    code += AI.Yail.YAIL_SPACER + idx;
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION + "matrix";
+  for (var i = 0; i < this.itemCount_; i++) {
+    code += " number";
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
   code += AI.Yail.YAIL_DOUBLE_QUOTE + "get matrix cell" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 AI.Yail['matrices_set_cell'] = function() {
-  var argument0 = AI.Yail.valueToCode(this, 'MATRIX', AI.Yail.ORDER_NONE);
-  var argument1 = AI.Yail.valueToCode(this, 'ROW', AI.Yail.ORDER_NONE);
-  var argument2 = AI.Yail.valueToCode(this, 'COLUMN', AI.Yail.ORDER_NONE);
-  var argument3 = AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE);
+  var matrix = AI.Yail.valueToCode(this, 'MATRIX', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var value  = AI.Yail.valueToCode(this, 'VALUE',  AI.Yail.ORDER_NONE) || 1;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-matrix-set-cell!" + AI.Yail.YAIL_SPACER;
   code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
-  code += argument0 + AI.Yail.YAIL_SPACER + argument1 + AI.Yail.YAIL_SPACER + argument2 + AI.Yail.YAIL_SPACER + argument3 + AI.Yail.YAIL_CLOSE_COMBINATION;
-  code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
-  code += "matrix number number number" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += matrix + AI.Yail.YAIL_SPACER + value;
+  for (var i = 0; i < this.itemCount_; i++) {
+    var idx = AI.Yail.valueToCode(this, 'DIM' + i, AI.Yail.ORDER_NONE) || '1';
+    code += AI.Yail.YAIL_SPACER + idx;
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION + "matrix";
+  for (var i = 0; i < this.itemCount_ + 1; i++) {
+    code += " number";
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
   code += AI.Yail.YAIL_DOUBLE_QUOTE + "set matrix cell" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
-  return code;
+  return code; 
 };
 
 AI.Yail['matrices_operations'] = function() {
@@ -118,9 +141,19 @@ AI.Yail['matrices_operations'] = function() {
 AI.Yail.matrices_operations.OPERATORS = {
   INVERSE: ['yail-matrix-inverse', 'inverse', AI.Yail.ORDER_NONE],
   TRANSPOSE: ['yail-matrix-transpose', 'transpose', AI.Yail.ORDER_NONE],
+  ROTATE_LEFT: ['yail-matrix-rotate-left', 'rotate_left', AI.Yail.ORDER_NONE],
+  ROTATE_RIGHT: ['yail-matrix-rotate-right', 'rotate_right', AI.Yail.ORDER_NONE]
 };
 
 AI.Yail['matrices_transpose'] = function() {
+  return AI.Yail.matrices_operations.call(this);
+};
+
+AI.Yail['matrices_rotate_left'] = function() {
+  return AI.Yail.matrices_operations.call(this);
+};
+
+AI.Yail['matrices_rotate_right'] = function() {
   return AI.Yail.matrices_operations.call(this);
 };
 
@@ -129,8 +162,8 @@ AI.Yail['matrices_arithmetic'] = function(mode, block) {
   var operator = tuple[0];
   var order = tuple[1];
 
-  var argument0 = AI.Yail.valueToCode(block, 'A', order);
-  var argument1 = AI.Yail.valueToCode(block, 'B', order);
+  var argument0 = AI.Yail.valueToCode(block, 'A', order) || 0;
+  var argument1 = AI.Yail.valueToCode(block, 'B', order) || 0;
 
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator + AI.Yail.YAIL_SPACER;
   code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -149,20 +182,59 @@ AI.Yail['matrices_arithmetic'] = function(mode, block) {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
-AI.Yail['matrices_add'] = function() {
-  return AI.Yail.matrices_arithmetic("ADD", this);
-};
-
 AI.Yail['matrices_subtract'] = function() {
   return AI.Yail.matrices_arithmetic("MINUS", this);
 };
 
-AI.Yail['matrices_multiply'] = function() {
-  return AI.Yail.matrices_arithmetic("MULTIPLY", this);
-};
-
 AI.Yail['matrices_power'] = function() {
   return AI.Yail.matrices_arithmetic("POWER", this);
+};
+
+AI.Yail['matrices_add'] = function() {
+  return AI.Yail.matrices_arithmetic_list("ADD", this);
+};
+
+AI.Yail['matrices_multiply'] = function() {
+  return AI.Yail.matrices_arithmetic_list("MULTIPLY", this);
+};
+
+AI.Yail['matrices_arithmetic_list'] = function(mode, block) {
+  var tuple = AI.Yail.matrices_arithmetic.OPERATORS[mode];
+  var operator = tuple[0];
+  var order = tuple[1];
+
+  var argCodes = [];
+  for (var i = 0; i < block.itemCount_; i++) {
+    var c = AI.Yail.valueToCode(block, 'MAT' + i, order) || 0;
+    if (c) argCodes.push(c);
+  }
+
+  if (mode === 'ADD') {
+    if (argCodes.length === 0) return ['0', order];
+    if (argCodes.length === 1) return [argCodes[0], order];
+  }
+  if (mode === 'MULTIPLY') {
+    if (block.itemCount_ === 0) return ['1', order];
+    if (argCodes.length === 0) return ['0', order];
+    if (argCodes.length === 1) return [argCodes[0], order];
+  }
+
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code += argCodes.join(AI.Yail.YAIL_SPACER) +  AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
+  if (mode === "ADD") {
+    for (var i = 0; i < argCodes.length; i++) {
+      code += "matrix" + AI.Yail.YAIL_SPACER;
+    }
+  } else if (mode === "MULTIPLY") {
+    code += "matrix" + AI.Yail.YAIL_SPACER;
+    for (var i = 1; i < argCodes.length; i++) {
+      code += "any" + AI.Yail.YAIL_SPACER;
+    }
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_DOUBLE_QUOTE + operator + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 AI.Yail.matrices_arithmetic.OPERATORS = {

@@ -729,14 +729,20 @@
 	"Blockly.Msg.LANG_DICTIONARIES_IS_DICT_HELPURL": "/reference/blocks/dictionaries.html#is-a-dictionary",
 
 	"Blockly.Msg.LANG_CATEGORY_MATRICES": "Matrices",
-	"Blockly.Msg.LANG_MATRICES_CREATE": "create matrix with size",
-	"Blockly.Msg.LANG_MATRICES_CREATE_TOOLTIP": "Return a matrix with specified dimensions",
+	"Blockly.Msg.LANG_MATRICES_CREATE": "create 2D matrix with size",
+	"Blockly.Msg.LANG_MATRICES_CREATE_TOOLTIP": "Return a 2D matrix with specified dimensions",
 	"Blockly.Msg.LANG_MATRICES_CREATE_HELPURL": "/reference/blocks/matrices.html#creatematrix",
 
-	"Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW": "row",
-	"Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN": "column",
+	"Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM": "create matrix with dimension list",
+	"Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_INITIAL": "initialized with value",
+	"Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_TOOLTIP": "Return a multidimensional matrix with specified dimensions filled with initial value",
+	"Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_HELPURL": "/reference/blocks/matrices.html#creatematrixmultidim",
+
+	"Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW": "row index",
+	"Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN": "column index",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE": "value",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX": "matrix",
+	"Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM": "dim",
 	
 	"Blockly.Msg.LANG_MATRICES_GET_ROW": "get matrix row",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP": "Returns the row of the matrix",
@@ -761,6 +767,14 @@
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TRANSPOSE": "transpose",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_TRANSPOSE": "Returns the transpose of the matrix",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_TRANSPOSE": "/reference/blocks/matrices.html#transpose",
+
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_LEFT": "rotate left",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_ROTATE_LEFT": "Returns the left rotation of the matrix (90 degrees counterclockwise)",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_ROTATE_LEFT": "/reference/blocks/matrices.html#rotateleft",
+
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_RIGHT": "rotate right",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_ROTATE_RIGHT": "Returns the right rotation of the matrix (90 degrees clockwise)",
+	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_ROTATE_RIGHT": "/reference/blocks/matrices.html#rotateright",
 
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_ADD_TOOLTIP": "Returns the sum of two matrices",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP": "Returns the different between two matrices",

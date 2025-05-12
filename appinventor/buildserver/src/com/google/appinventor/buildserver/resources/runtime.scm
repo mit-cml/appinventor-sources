@@ -1853,6 +1853,10 @@
         ((or (null? x1) (null? x2)) #f)
         ((and (yail-matrix? x1) (yail-matrix? x2))
           (yail-matrix-equal? x1 x2))
+        ((and (yail-matrix? x1) (yail-list? x2))
+          (yail-equal? (yail-matrix-to-alist x1) x2))
+        ((and (yail-list? x1) (yail-matrix? x2))
+          (yail-equal? x1 (yail-matrix-to-alist x2)))
         ((and (not (pair? x1)) (not (pair? x2)))
          (yail-atomic-equal? x1 x2))
         ((or (not (pair? x1)) (not (pair? x2)))
@@ -3267,25 +3271,31 @@ Dictionary implementation.
 #|
 Matrix implementation.
 
-- make matrix           (make-yail-matrix . dataValues)
-- get matrix row        (yail-matrix-get-row yail-matrix row)
-- get matrix column     (yail-matrix-get-column yail-matrix col)
-- get matrix cell       (yail-matrix-get-cell yail-matrix row col)
-- set matrix cell       (yail-matrix-set-cell! yail-matrix row col value)
-- is YailMatrix?        (yail-matrix? x)
-- get matrix inverse    (yail-matrix-inverse matrix)
-- get matrix transpose  (yail-matrix-transpose matrix)
-- matrix add            (yail-matrix-add matrix1 matrix2)
-- matrix subtract       (yail-matrix-subtract matrix1 matrix2)
-- matrix multiply       (yail-matrix-multiply matrix1 matrix2-or-scalar)
-- matrix power          (yail-matrix-power matrix exponent)
-- turn matrix to alist  (yail-matrix-to-alist matrix)
-- matrix equal?         (yail-matrix-equal? m1 m2)
+- make matrix                   (make-yail-matrix . dataValues)
+- make multidimensional matrix  (make-yail-matrix-multidim dims init)
+- get matrix row                (yail-matrix-get-row matrix row)
+- get matrix column             (yail-matrix-get-column matrix col)
+- get matrix cell               (yail-matrix-get-cell matrix . idxs)
+- set matrix cell               (yail-matrix-set-cell! matrix value . idxs)
+- is YailMatrix?                (yail-matrix? x)
+- get matrix inverse            (yail-matrix-inverse matrix)
+- get matrix transpose          (yail-matrix-transpose matrix)
+- get matrix rotate left        (yail-matrix-rotate-left matrix)
+- get matrix rotate right        (yail-matrix-rotate-right matrix)
+- matrix add                    (yail-matrix-add . args)
+- matrix subtract               (yail-matrix-subtract matrix1 matrix2)
+- matrix multiply               (yail-matrix-multiply . args)
+- matrix power                  (yail-matrix-power matrix exponent)
+- turn matrix to alist          (yail-matrix-to-alist matrix)
+- matrix equal?                 (yail-matrix-equal? m1 m2)
 
 |#
 
 (define (make-yail-matrix . dataValues)
   (YailMatrix:makeMatrix dataValues))
+
+(define (make-yail-matrix-multidim dims init)
+  (YailMatrix:makeMultidimMatrix dims init))
 
 (define (yail-matrix-get-row matrix row)
   (apply make-yail-list (*:getRow (as YailMatrix matrix) row)))
@@ -3293,11 +3303,11 @@ Matrix implementation.
 (define (yail-matrix-get-column matrix col)
   (apply make-yail-list (*:getColumn (as YailMatrix matrix) col)))
 
-(define (yail-matrix-get-cell matrix row col)
-  (*:getCell (as YailMatrix matrix) row col))
+(define (yail-matrix-get-cell matrix . idxs)
+  (apply *:getCell (as YailMatrix matrix) idxs))
 
-(define (yail-matrix-set-cell! matrix row col value)
-  (*:setCell (as YailMatrix matrix) row col value))
+(define (yail-matrix-set-cell! matrix value . idxs)
+  (apply *:setCell (as YailMatrix matrix) value idxs))
 
 (define (yail-matrix? x)
   (instance? x YailMatrix))
@@ -3308,16 +3318,20 @@ Matrix implementation.
 (define (yail-matrix-transpose matrix)
   (YailMatrix:transpose (as YailMatrix matrix)))
 
-(define (yail-matrix-add matrix1 matrix2)
-  (YailMatrix:add (as YailMatrix matrix1) (as YailMatrix matrix2)))
+(define (yail-matrix-rotate-left matrix)
+  (YailMatrix:rotateLeft (as YailMatrix matrix)))
+
+(define (yail-matrix-rotate-right matrix)
+  (YailMatrix:rotateRight (as YailMatrix matrix)))
+
+(define (yail-matrix-add . args)
+  (YailMatrix:add args))
 
 (define (yail-matrix-subtract matrix1 matrix2)
   (YailMatrix:subtract (as YailMatrix matrix1) (as YailMatrix matrix2)))
 
-(define (yail-matrix-multiply matrix1 matrix2-or-scalar)
-  (if (number? matrix2-or-scalar)
-      (YailMatrix:scalarMultiply (as YailMatrix matrix1) matrix2-or-scalar)
-      (YailMatrix:multiply (as YailMatrix matrix1) (as YailMatrix matrix2-or-scalar))))
+(define (yail-matrix-multiply . args)
+  (YailMatrix:multiply args))
 
 (define (yail-matrix-power matrix exponent)
   (YailMatrix:power (as YailMatrix matrix) exponent))

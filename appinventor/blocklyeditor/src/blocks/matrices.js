@@ -23,9 +23,9 @@ Blockly.Blocks['matrices_create'] = {
 
     this.appendDummyInput()
       .appendField(Blockly.Msg.LANG_MATRICES_CREATE)
-      .appendField(new Blockly.FieldNumber(2, 1, null, null, this.updateMatrixSize.bind(this)), 'ROWS')
+      .appendField(new Blockly.FieldNumber(2, 1, null, null), 'ROWS')
       .appendField(AI.BlockUtils.times_symbol)
-      .appendField(new Blockly.FieldNumber(2, 1, null, null, this.updateMatrixSize.bind(this)), 'COLS');
+      .appendField(new Blockly.FieldNumber(2, 1, null, null), 'COLS');
 
     this.setTooltip(Blockly.Msg.LANG_MATRICES_CREATE_TOOLTIP);
 
@@ -102,6 +102,156 @@ Blockly.Blocks['matrices_create'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_CREATE }]
 };
 
+Blockly.Blocks['matrices_create_multidim'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_HELPURL,
+  init: function() {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
+
+    this.appendValueInput('DIM')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM);
+    this.appendValueInput('INITIAL')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_INITIAL)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM }]
+};
+
+Blockly.Blocks['matrix_mutator_item_dim'] = {
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField("dimension");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.contextMenu = false;
+  }
+};
+
+Blockly.Blocks['matrices_get_cell'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_GET_CELL_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
+
+    this.appendValueInput('MATRIX')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATRICES_GET_CELL)
+        .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX);
+    this.appendValueInput('DIM0')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('DIM1')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "2")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_CELL_TOOLTIP);
+
+    this.setMutator(new Blockly.icons.MutatorIcon(['matrix_mutator_item_dim'], this));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'DIM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+  },
+  decompose: function(workspace) {
+    return Blockly.decompose(workspace, 'matrix_mutator_item_dim', this);
+  },
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+  },
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {
+    var input = this.appendValueInput(this.repeatingInputName + '0')
+    .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
+    input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.itemCount_ = 1;
+  },
+  addInput: function(n) {
+    var input = this.appendValueInput(this.repeatingInputName + n)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
+    input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + (n + 1))
+        .setAlign(Blockly.ALIGN_RIGHT);
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(
+      Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM, 'CONTAINER_TEXT');
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_GET_CELL }]
+};
+
+Blockly.Blocks['matrices_set_cell'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_SET_CELL_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.appendValueInput('MATRIX')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_MATRICES_SET_CELL)
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX);
+    this.appendValueInput('VALUE')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE)
+      .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('DIM0')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
+      .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('DIM1')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "2")
+      .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_SET_CELL_TOOLTIP);
+
+    this.setMutator(new Blockly.icons.MutatorIcon(['matrix_mutator_item_dim'], this));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'DIM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+  },
+  decompose: function(workspace) {
+    return Blockly.decompose(workspace, 'matrix_mutator_item_dim', this);
+  },
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+  },
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {
+    var input = this.appendValueInput(this.repeatingInputName + '0')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
+    input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
+         .setAlign(Blockly.ALIGN_RIGHT);
+    this.itemCount_ = 1;
+  },
+  addInput: function(n) {
+    var input = this.appendValueInput(this.repeatingInputName + n)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
+    input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + (n + 1))
+        .setAlign(Blockly.ALIGN_RIGHT);
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(
+      Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM, 'CONTAINER_TEXT');
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_SET_CELL }]
+};
+
 Blockly.Blocks['matrices_get_row'] = {
   category: 'Matrices',
   helpUrl: Blockly.Msg.LANG_MATRICES_GET_ROW_HELPURL,
@@ -119,7 +269,7 @@ Blockly.Blocks['matrices_get_row'] = {
     this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_ROW}]
-}
+};
 
 Blockly.Blocks['matrices_get_column'] = {
   category: 'Matrices',
@@ -138,58 +288,168 @@ Blockly.Blocks['matrices_get_column'] = {
     this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_COLUMN_TOOLTIP);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_COLUMN}]
-}
+};
 
-Blockly.Blocks['matrices_get_cell'] = {
-  category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_GET_CELL_HELPURL,
+Blockly.Blocks['matrix_mutator_item_mat'] = {
   init: function () {
     this.setColour(Blockly.MATRIX_CATEGORY_HUE);
-    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
-    this.appendValueInput('MATRIX')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_CELL)
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX);
-    this.appendValueInput('ROW')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW)
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('COLUMN')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN)
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_CELL_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_CELL}]
-}
-
-Blockly.Blocks['matrices_set_cell'] = {
-  category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_SET_CELL_HELPURL,
-  init: function () {
-    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
-    this.appendValueInput('MATRIX')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_SET_CELL)
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX);
-    this.appendValueInput('ROW')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW)
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('COLUMN')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN)
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('VALUE')
-      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE)
-      .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput()
+        .appendField("matrix");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_SET_CELL_TOOLTIP);
+    this.contextMenu = false;
+  }
+};
+
+Blockly.Blocks['matrices_add'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_ADD_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('MAT0')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
+    this.appendValueInput('MAT1')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    this.setInputsInline(true);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_ADD_TOOLTIP);
+
+    this.setMutator(new Blockly.icons.MutatorIcon(['matrix_mutator_item_mat'], this));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'MAT';
+    this.itemCount_ = 2;
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_SET_CELL}]
-}
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('0 ' + Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    }
+  },
+  decompose: function(workspace) {
+    return Blockly.decompose(workspace, 'matrix_mutator_item_mat', this);
+  },
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('0 ' + Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    }
+  },
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {
+    this.appendDummyInput(this.emptyInputName)
+        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+  },
+  addInput: function(n) {
+    var input = this.appendValueInput(this.repeatingInputName + n)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
+    if (n !== 0) {
+      input.appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(
+      Blockly.Msg.LANG_MATH_ARITHMETIC_ADD, 'CONTAINER_TEXT');
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_ADD}]
+};
+
+Blockly.Blocks['matrices_subtract'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_SUBTRACT_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('A')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
+    this.appendValueInput('B')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS);
+    this.setInputsInline(true);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS}]
+};
+
+Blockly.Blocks['matrices_multiply'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_MULTIPLY_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('MAT0')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
+    this.appendValueInput('MAT1')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT)
+          .concat(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT)))
+        .appendField(AI.BlockUtils.times_symbol);
+    this.setInputsInline(true);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY_TOOLTIP);
+
+    this.setMutator(new Blockly.icons.MutatorIcon(['matrix_mutator_item_mat'], this));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'MAT';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('1 ' + AI.BlockUtils.times_symbol);
+    }
+  },
+  decompose: function(workspace) {
+    return Blockly.decompose(workspace, 'matrix_mutator_item_mat', this);
+  },
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('1 ' + AI.BlockUtils.times_symbol);
+    }
+  },
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {
+    this.appendDummyInput(this.emptyInputName)
+        .appendField(AI.BlockUtils.times_symbol);
+  },
+  addInput: function(n) {
+    var input = this.appendValueInput(this.repeatingInputName + n)
+        .setCheck(
+          n === 0
+            ? AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT)
+            : AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT)
+                .concat(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        );
+    if (n !== 0) {
+      input.appendField(AI.BlockUtils.times_symbol);
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(
+      AI.BlockUtils.times_symbol, 'CONTAINER_TEXT');
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY}]
+};
+
+Blockly.Blocks['matrices_power'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_POWER_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('A')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
+    this.appendValueInput('B')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_POWER);
+    this.setInputsInline(true);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_POWER}]
+};
 
 Blockly.Blocks['matrices_operations'] = {
   category: 'Matrices',
@@ -221,25 +481,44 @@ Blockly.Blocks['matrices_operations'] = {
       titleName: 'OP',
       value: 'TRANSPOSE'
     }
+  }, {
+    translatedName: Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_LEFT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'ROTATE_LEFT'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_RIGHT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'ROTATE_RIGHT'
+    }
   }]
 };
 
 Blockly.Blocks.matrices_operations.OPERATORS = function () {
   return [[Blockly.Msg.LANG_MATRICES_OPERATIONS_INVERSE, 'INVERSE'],
-    [Blockly.Msg.LANG_MATRICES_OPERATIONS_TRANSPOSE, 'TRANSPOSE']];
+    [Blockly.Msg.LANG_MATRICES_OPERATIONS_TRANSPOSE, 'TRANSPOSE'],
+    [Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_LEFT, 'ROTATE_LEFT'],
+    [Blockly.Msg.LANG_MATRICES_OPERATIONS_ROTATE_RIGHT, 'ROTATE_RIGHT']
+  ];
 };
 
 Blockly.Blocks.matrices_operations.TOOLTIPS = function () {
   return {
     INVERSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_INVERSE,
-    TRANSPOSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_TRANSPOSE
+    TRANSPOSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_TRANSPOSE,
+    ROTATE_LEFT: Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_ROTATE_LEFT,
+    ROTATE_RIGHT: Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_ROTATE_RIGHT
   }
 };
 
 Blockly.Blocks.matrices_operations.HELPURLS = function () {
   return {
     INVERSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_INVERSE,
-    TRANSPOSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_TRANSPOSE
+    TRANSPOSE: Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_TRANSPOSE,
+    ROTATE_LEFT: Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_ROTATE_LEFT,
+    ROTATE_RIGHT: Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_ROTATE_RIGHT
   }
 };
 
@@ -264,71 +543,44 @@ Blockly.Blocks['matrices_transpose'] = {
   }
 };
 
-Blockly.Blocks['matrices_add'] = {
+Blockly.Blocks['matrices_rotate_left'] = {
   category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_ADD_HELPURL,
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.matrices_operations.HELPURLS()[mode];
+  },
   init: function () {
     this.setColour(Blockly.MATRIX_CATEGORY_HUE);
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
-    this.appendValueInput('A')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('MATRIX')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
-        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_ADD_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_ADD}]
+        .appendField(new Blockly.FieldDropdown(Blockly.Blocks.matrices_operations.OPERATORS), 'OP');
+    this.setFieldValue('ROTATE_LEFT', "OP");
+    var thisBlock = this;
+    this.setTooltip(function () {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.matrices_operations.TOOLTIPS()[mode];
+    });
+  }
 };
 
-Blockly.Blocks['matrices_subtract'] = {
+Blockly.Blocks['matrices_rotate_right'] = {
   category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_SUBTRACT_HELPURL,
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.matrices_operations.HELPURLS()[mode];
+  },
   init: function () {
     this.setColour(Blockly.MATRIX_CATEGORY_HUE);
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
-    this.appendValueInput('A')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('MATRIX')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
-        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS}]
-};
-
-Blockly.Blocks['matrices_multiply'] = {
-  category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_MULTIPLY_HELPURL,
-  init: function () {
-    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
-    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
-    this.appendValueInput('A')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
-    this.appendValueInput('B')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT)
-          .concat(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT)))
-        .appendField(AI.BlockUtils.times_symbol);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY}]
-};
-
-Blockly.Blocks['matrices_power'] = {
-  category: 'Matrices',
-  helpUrl: Blockly.Msg.LANG_MATRICES_POWER_HELPURL,
-  init: function () {
-    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
-    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.OUTPUT));
-    this.appendValueInput('A')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT));
-    this.appendValueInput('B')
-        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-        .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_POWER);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_POWER}]
+        .appendField(new Blockly.FieldDropdown(Blockly.Blocks.matrices_operations.OPERATORS), 'OP');
+    this.setFieldValue('ROTATE_RIGHT', "OP");
+    var thisBlock = this;
+    this.setTooltip(function () {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.matrices_operations.TOOLTIPS()[mode];
+    });
+  }
 };
