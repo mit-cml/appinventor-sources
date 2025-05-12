@@ -24,7 +24,7 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
-import java.util.Collection;
+import org.json.JSONObject;
 import java.util.Locale;
 
 // TODO: update the component version
@@ -71,10 +71,23 @@ import java.util.Locale;
   public Object PoseToJson() {
       Pose p = this.anchor.getPose();
       Locale locale = Locale.ENGLISH;
-      Object[] var2 = new Object[]{p.tx(), p.ty(), p.tz(), p.qx(), p.qy(), p.qz(), p.qw()};
-      String result = String.format(locale, "{\"t\":{\"x\":%.3f, \"y\":%.3f, \"z\":%.3f}, \"q\":{\"x\":%.2f, \"y\":%.2f, \"z\":%.2f, \"w\":%.2f}}", var2);
-      Log.i("exporting Capsule pose as JSON", "with " +result);
-      return result;
+
+    JSONObject innerObject = new JSONObject();
+    JSONObject saveObject = new JSONObject();
+    innerObject.put("x", p.tx());
+    innerObject.put("y", p.ty());
+    innerObject.put("z", p.tz());
+    saveObject.put("t", innerObject);
+    innerObject.put("x", p.qx());
+    innerObject.put("y", p.qy());
+    innerObject.put("z", p.qz());
+    innerObject.put("w", p.qw());
+    saveObject.put("q", innerObject);
+
+      //Object[] var2 = new Object[]{p.tx(), p.ty(), p.tz(), p.qx(), p.qy(), p.qz(), p.qw()};
+      //String result = String.format(locale, "{\"t\":{\"x\":%.3f, \"y\":%.3f, \"z\":%.3f}, \"q\":{\"x\":%.2f, \"y\":%.2f, \"z\":%.2f, \"w\":%.2f}}", var2);
+      Log.i("exporting Capsule pose as JSON", "with " +saveObject);
+      return saveObject;
 
   }
 
@@ -99,10 +112,18 @@ import java.util.Locale;
   public Object CapsuleNodeToJson() {
     Pose p = this.anchor.getPose();
     Locale locale = Locale.ENGLISH;
+
+    JSONObject saveObject = new JSONObject();
+    saveObject.put("model", this.Model());
+    saveObject.put("texture", this.Texture());
+    saveObject.put("scale", this.Scale());
+    saveObject.put("pose", this.PoseToJson());
+    saveObject.put("type", "capsule");
+
     Object[] var2 = new Object[]{this.Model(), this.Texture(), this.Scale(), this.PoseToJson(), "capsule"};
-    String result = String.format(locale, "{\"node\":{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": %s, \"type\": \"%s\"}}", var2);
-    Log.i("exporting Capsule pose as JSON", "with " +result);
-    return result;
+    String result = String.format(locale, "{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": %s, \"type\": \"%s\"}", var2);
+    Log.i("exporting Capsule pose as JSON", "with " + " " + saveObject);
+    return saveObject;
 
   }
 
