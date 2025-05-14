@@ -12,6 +12,9 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import org.json.JSONException;
+
 
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
@@ -33,6 +36,8 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContainer;
 
 
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.YailList;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.ArCoreApk;
@@ -327,7 +332,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Filter ARNodes by type and ensure they have anchors
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node: nodes){
-            if (node.Anchor() == null) {
+            if (node != null && node.Anchor() == null) {
                 Log.d(LOG_TAG, "Creating default anchor for " + node);
                 // TBD handle if anchor is loaded from a db
                 node.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
@@ -793,11 +798,65 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             session.close();
             session = null;
         }
-
         if (arFilamentRenderer != null) {
             arFilamentRenderer.destroy();
             arFilamentRenderer = null;
         }
+    }
+
+    @SimpleFunction(description = "Load scene from storage")
+    public void LoadScene(List<YailDictionary> dictionaries) {
+
+        ARNode addNode = null;
+        for (Object obj : dictionaries) {
+            Log.i(LOG_TAG, "loadscene obj is " + obj);
+            if (obj == null || obj instanceof gnu.mapping.Symbol){
+                Log.i(LOG_TAG, "loadscene null or list " + obj);
+                continue;
+            }
+
+            YailDictionary nodeDict = (YailDictionary) obj;
+            String type = (String) nodeDict.get("type");
+            Log.i(LOG_TAG, "loadscene TYPE is " + type);
+            switch (type) {
+                case "Capsule":
+                    addNode = this.CreateCapsuleNodeFromYail(nodeDict);
+                    break;
+                case "Box":
+                    addNode = this.CreateBoxNodeFromYail(nodeDict);
+                    break;
+                case "Sphere":
+                    addNode = this.CreateSphereNodeFromYail(nodeDict);
+                    break;
+                case "Video":
+                    addNode = this.CreateVideoNodeFromYail(nodeDict);
+                    break;
+                default:
+                    // currently not storing or handling modelNode..
+                    break;
+            }
+
+            if (addNode != null) {
+                addNode(addNode);
+                Log.i(LOG_TAG, "loaded " + addNode);
+            }
+
+        }
+        Log.i(LOG_TAG, "loadscene " + arNodes);
+    }
+
+
+    @SimpleFunction(description = "Get scene from storage")
+    public List<YailDictionary> SaveScene() {
+
+        List<YailDictionary> dictionaries = new ArrayList<>();
+        for (ARNode node : arNodes) {
+            String type = node.Type();
+            dictionaries.add(node.ARNodeToYail());
+            Log.i(LOG_TAG, "saving node " + type);
+        }
+        return dictionaries;
+
     }
 
     @SimpleFunction(description = "Sets Visible to false for all Lights.")
@@ -875,8 +934,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
             "None, and the TrackingType is WorldTracking.")
     public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean isANodeAtPoint) {
-        EventDispatcher.dispatchEvent(this, "ClickOnDetectedPlaneAt",targetPlane, p, isANodeAtPoint);
-        Log.i("dispatching Click On Detected Plane", "");
+            container.$form().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt",targetPlane, p, isANodeAtPoint);
+                    Log.i("dispatching Click On Detected Plane", "");
+                }
+            });
+
     }
 
     @Override
@@ -1051,6 +1116,32 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return bNode;
     }
 
+    @SimpleFunction(description = "Create a new boxNode with default properties with a pose.")
+    public BoxNode CreateBoxNodeFromYail(YailDictionary yailNodeObj) {
+
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+
+                BoxNode boxNode = new BoxNode(this);
+                ARUtils.parseYailToNode(boxNode, yailNodeObj, session);
+
+                Log.i(LOG_TAG, "SUCCESS created boxNode node from json, anchor is" +  boxNode.Anchor().toString());
+                return boxNode;
+            } catch(JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e){
+                Log.e(LOG_TAG, "tried to create boxNode node from db string which is yail list" + e);
+                throw e;
+            }
+
+        }
+        Log.i("cannot create boxNode "," since there is no session");
+        return null;
+    }
+
+
     @SimpleFunction(description = "Create a new SphereNode with default properties at the detected plane position.")
     public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
         Log.i("creating Sphere node", "with detected plane and pose");
@@ -1062,6 +1153,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         sphereNode.Trackable(trackable);
         Log.i("creating sphere node, anchor is", sphereNode.Anchor().toString());
         return sphereNode;
+    }
+
+    @SimpleFunction(description = "Create a new boxNode with default properties with a pose.")
+    public SphereNode CreateSphereNodeFromYail(YailDictionary yailNodeObj) {
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+
+                SphereNode sphereNode = new SphereNode(this);
+                ARUtils.parseYailToNode(sphereNode, yailNodeObj, session);
+
+                Log.i(LOG_TAG, "SUCCESS created SphereNode node from json, anchor is" +  sphereNode.Anchor().toString());
+                return sphereNode;
+            } catch(JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e){
+                Log.e(LOG_TAG, "tried to create SphereNode node from db string which is yail list" + e);
+                throw e;
+            }
+
+        }
+        Log.i("cannot create boxNode "," since there is no session");
+        return null;
     }
 
     @SimpleFunction(description = "Create a new SphereNode with default properties at the specified (x,y,z) position.")
@@ -1135,7 +1250,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             float[] position = {pose.tx(), pose.ty(), pose.tz()};
             float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-            Log.i("creating Capsule anchor is", position + " " + rotation);
+            Log.i(LOG_TAG, position + " " + rotation);
             Anchor myAnchor = session.createAnchor(new Pose(new float[]{0f, 0f, -1f}, (new float[]{0f, 0f, 0f, 1f})));
 
             capNode.Anchor(myAnchor);
@@ -1147,18 +1262,27 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return null;
     }
 
+
     @SimpleFunction(description = "Create a new CapsuleNode with default properties with a pose.")
-    public CapsuleNode CreateCapsuleNodeFromJson(String p) {
+    public CapsuleNode CreateCapsuleNodeFromYail(YailDictionary yailNodeObj) {
 
         if (session != null) {
-            CapsuleNode capNode = new CapsuleNode(this);
+            try {
+                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
 
-            ARUtils.parseNodeObject(capNode, p, session);
+                CapsuleNode capNode = new CapsuleNode(this);
+                ARUtils.parseYailToNode(capNode, yailNodeObj, session);
 
-            Anchor myAnchor = session.createAnchor((Pose) capNode.Pose());
-            //capNode.Anchor(myAnchor);
-            Log.i("created Capsule node, anchor is", capNode.Anchor().toString());
-            return capNode;
+                Log.i(LOG_TAG, "SUCCESS created Capsule node from json, anchor is" +  capNode.Anchor().toString());
+                return capNode;
+            } catch(JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e){
+                Log.e(LOG_TAG, "tried to create capsure node from db string which is yail list" + e);
+                throw e;
+            }
+
         }
         Log.i("cannot create Capsule node"," since there is no session");
         return null;
@@ -1217,6 +1341,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         vNode.Trackable(trackable);
         Log.i("creating video node, anchor is", vNode.Anchor().toString());
         return vNode;
+    }
+
+    @SimpleFunction(description = "Create a new boxNode with default properties with a pose.")
+    public VideoNode CreateVideoNodeFromYail(YailDictionary yailNodeObj) {
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+
+                VideoNode videoNode = new VideoNode(this);
+                ARUtils.parseYailToNode(videoNode, yailNodeObj, session);
+
+                Log.i(LOG_TAG, "SUCCESS created videoNode node from json, anchor is" +  videoNode.Anchor().toString());
+                return videoNode;
+            } catch(JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e){
+                Log.e(LOG_TAG, "tried to create videoNode node from db string which is yail list" + e);
+                throw e;
+            }
+
+        }
+        Log.i("cannot create boxNode "," since there is no session");
+        return null;
     }
 
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the specified (x,y,z) position.")

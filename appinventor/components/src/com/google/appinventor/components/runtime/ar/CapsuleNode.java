@@ -20,6 +20,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import android.util.Log;
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
@@ -69,8 +71,9 @@ import java.util.Locale;
   @SimpleProperty(description = "Get the current pose of the object",
       category = PropertyCategory.APPEARANCE)
   public Object PoseToJson() {
-      Pose p = this.anchor.getPose();
-      Locale locale = Locale.ENGLISH;
+    Log.i("capsuleNode", "about to export Capsule pose as JSON");
+    Pose p = this.anchor.getPose();
+    Locale locale = Locale.ENGLISH;
 
     JSONObject innerObject = new JSONObject();
     JSONObject saveObject = new JSONObject();
@@ -84,12 +87,12 @@ import java.util.Locale;
     innerObject.put("w", p.qw());
     saveObject.put("q", innerObject);
 
-      //Object[] var2 = new Object[]{p.tx(), p.ty(), p.tz(), p.qx(), p.qy(), p.qz(), p.qw()};
-      //String result = String.format(locale, "{\"t\":{\"x\":%.3f, \"y\":%.3f, \"z\":%.3f}, \"q\":{\"x\":%.2f, \"y\":%.2f, \"z\":%.2f, \"w\":%.2f}}", var2);
-      Log.i("exporting Capsule pose as JSON", "with " +saveObject);
-      return saveObject;
+    Log.i("exporting Capsule pose as JSON", "with " +saveObject);
+
+   return saveObject;
 
   }
+
 
   @SimpleProperty(description = "Set the current pose of the object",
       category = PropertyCategory.APPEARANCE)
@@ -107,25 +110,7 @@ import java.util.Locale;
   }
 
 
-  @SimpleProperty(description = "Serialize the capsule node to json",
-      category = PropertyCategory.APPEARANCE)
-  public Object CapsuleNodeToJson() {
-    Pose p = this.anchor.getPose();
-    Locale locale = Locale.ENGLISH;
 
-    JSONObject saveObject = new JSONObject();
-    saveObject.put("model", this.Model());
-    saveObject.put("texture", this.Texture());
-    saveObject.put("scale", this.Scale());
-    saveObject.put("pose", this.PoseToJson());
-    saveObject.put("type", "capsule");
-
-    Object[] var2 = new Object[]{this.Model(), this.Texture(), this.Scale(), this.PoseToJson(), "capsule"};
-    String result = String.format(locale, "{\"model\":\"%s\", \"texture\":\"%s\", \"scale\":%f}, \"pose\": %s, \"type\": \"%s\"}", var2);
-    Log.i("exporting Capsule pose as JSON", "with " + " " + saveObject);
-    return saveObject;
-
-  }
 
     @Override
     public Trackable Trackable() { return this.trackable; }

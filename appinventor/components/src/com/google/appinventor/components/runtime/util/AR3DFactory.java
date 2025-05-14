@@ -55,8 +55,12 @@ public final class AR3DFactory {
      String Model();
      void Model(String o);
 
-    Object Pose();
-    void Pose(Object o);
+     Object Pose();
+     void Pose(Object o);
+
+
+     YailDictionary PoseToYailDictionary();
+     YailDictionary ARNodeToYail();
 
      boolean Visible();
      void Visible(boolean visible);

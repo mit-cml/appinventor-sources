@@ -14,10 +14,12 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
+import android.util.Log;
 
 import java.util.List;
 import java.util.Collection;
@@ -79,6 +81,55 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(description = "Returns the type of node as a String.")
   public String Type() { return getClass().getSimpleName(); };
 
+
+
+  @SimpleProperty(description = "Convert current pose to yail",
+      category = PropertyCategory.APPEARANCE)
+  public YailDictionary PoseToYailDictionary() {
+    Log.i("poseToYailDictionary", "Capsule pose as YailDict");
+    Pose p = this.Anchor().getPose();
+    Log.i("poseToYailDictionary", "pose is " + p);
+    if (p != null) {
+      YailDictionary innerDictSave = new YailDictionary();
+      YailDictionary yailDictSave = new YailDictionary();
+
+      innerDictSave.put("x", p.tx());
+      innerDictSave.put("y", p.ty());
+      innerDictSave.put("z", p.tz());
+      yailDictSave.put("t", innerDictSave);
+      innerDictSave.put("x", p.qx());
+      innerDictSave.put("y", p.qy());
+      innerDictSave.put("z", p.qz());
+      innerDictSave.put("w", p.qw());
+      yailDictSave.put("q", innerDictSave);
+
+      Log.i("exporting pose as YailDict", "with " + yailDictSave);
+      return yailDictSave;
+    }
+    return null;
+
+  }
+
+  @SimpleProperty(description = "Serialize the arnode to yail",
+      category = PropertyCategory.APPEARANCE)
+  public YailDictionary ARNodeToYail() {
+    Log.i("arNode", "going to try to export ARNode as yail");
+    YailDictionary yailDict = new YailDictionary();
+
+    yailDict.put("model", this.Model());
+    yailDict.put("texture", this.Texture());
+    yailDict.put("scale", this.Scale());
+    yailDict.put("pose", this.PoseToYailDictionary());
+    yailDict.put("type", "capsule");
+
+    try {
+      Log.i("exporting ARNode as Yail", "convert toYail " + " " + yailDict);
+      return yailDict;
+    } catch (Exception e){
+      Log.e("failed to export as yail", "");
+    }
+    return null;
+  }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,

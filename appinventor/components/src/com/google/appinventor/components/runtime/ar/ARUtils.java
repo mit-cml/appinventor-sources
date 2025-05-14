@@ -2,14 +2,25 @@ package com.google.appinventor.components.runtime.ar;
 
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import android.util.Log;
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.gson.Gson;
 
-import java.util.LinkedHashMap;
+import java.util.*;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.osmdroid.util.GeoPoint;
+
+import static java.lang.Float.parseFloat;
 
 public final class ARUtils {
-
+  private static final java.util.Map<String, Object> nodes = new HashMap<String, Object>();
+  private static final String ERROR_UNKNOWN_TYPE = "Unrecognized/invalid type in JSON object";
+  private static final String ARJSON_COORDINATES = "coordinates";
   public static Pose parsePoseObject(String s) {
     Gson gson = new Gson();
     //TBD s.pose
@@ -23,8 +34,6 @@ public final class ARUtils {
 
 
   public static Pose parsePoseLinkedHashMap(LinkedHashMap op) {
-    //TBD s.pose
-    //ArrayList sRep = s.replace("{", "[").replace("}", "]");
     // Deserializing the JSON string back to a Java object
     Log.i("parsing pose hash Json...", "");
 
@@ -32,20 +41,14 @@ public final class ARUtils {
     try {
       LinkedHashMap translation = (LinkedHashMap) op.get("t");
       LinkedHashMap rotation = (LinkedHashMap) op.get("q");
-      double x = (Double) translation.get("x");
-      float xf = (float) x;
-      double y = (Double) translation.get("y");
-      float yf = (float) y;
-      double z = (Double) translation.get("z");
-      float zf = (float) z;
-      double qx = (Double) rotation.get("x");
-      float qxf = (float) qx;
-      double qy = (Double) rotation.get("y");
-      float qyf = (float) qy;
-      double qz = (Double) rotation.get("z");
-      float qzf = (float) qy;
-      double qw = (Double) rotation.get("z");
-      float qwf = (float) qw;
+
+      float xf = parseFloat((String)translation.get("x"));
+      float yf = parseFloat((String)translation.get("y"));
+      float zf = parseFloat((String)translation.get("z"));
+      float qxf = parseFloat((String)rotation.get("x"));
+      float qyf = parseFloat((String)rotation.get("y"));
+      float qzf =  parseFloat((String)rotation.get("z"));
+      float qwf = parseFloat((String)rotation.get("w"));
       pose = new Pose(new float[]{xf, yf, zf}, new float[]{qxf, qyf, qzf, qwf});
       Log.i("creating Pose in parsePoseLinkedHM ", "parsed object " + pose);
     } catch (Exception e) {
@@ -56,34 +59,114 @@ public final class ARUtils {
   }
 
 
-  public static ARNode parseNodeObject(ARNode node, String s, Session trackingObj) {
+  public static ARNode parseNodeObject(ARNode node, String s) {
 
     Gson gson = new Gson();
     Log.i("creating node from Json", s);
+
     LinkedHashMap op = gson.fromJson(s, LinkedHashMap.class);
-    Log.i("creating node from Json", "op is " + op);
+    Log.i("parseNodeObject", "op is " + op);
     try {
       LinkedHashMap nodeJson = (LinkedHashMap) op.get("node");
       String model = (String) nodeJson.get("model");
       String texture = (String) nodeJson.get("texture");
       String type = (String) nodeJson.get("type");
 
-      Log.i("creating node from json", "parsed model " + model);
-      Log.i("creating node from json", "parsed texture " + texture);
-      Log.i("creating node from json", "parsed type " + type);
+      Log.i("parseNodeObject", "parsed model " + model);
+      Log.i("parseNodeObject", "parsed texture " + texture);
+      Log.i("parseNodeObject", "parsed type " + type);
       node.Model(model);
       node.Texture(texture);
       //node.Type(type);
 
       LinkedHashMap poseHM = (LinkedHashMap) nodeJson.get("pose");
-      node.Anchor(trackingObj.createAnchor(parsePoseLinkedHashMap(poseHM)));
-      Log.i("creating node from json", "node now has anchor  " + node.Anchor());
+      node.Pose(parsePoseLinkedHashMap(poseHM));
+      Log.i("parseNodeObject", "node now has anchor  " + node.Anchor());
     } catch (Exception e) {
-      Log.i("creating node from jsonerror", "err" + e);
+      Log.i("parseNodeObject error", "err" + e);
+      throw e;
 
     }
     return node;
 
+  }
+
+  public static ARNode parseYailToNode(ARNode node, Object yailObj, Session trackingObj) {
+
+    try{
+      YailDictionary keyvalue = (YailDictionary)yailObj;
+      Object o1 = keyvalue.getObject(0);
+
+      String model = (String) keyvalue.get("model");
+      String texture = (String) keyvalue.get("texture");
+      String type = (String) keyvalue.get("type");
+
+      Log.i("parseYailToNode", "parsed model " + model);
+      Log.i("parseYailToNode", "parsed texture " + texture);
+      Log.i("parseYailToNode", "parsed type " + type);
+      node.Model(model);
+      node.Texture(texture);
+
+      LinkedHashMap poseHM = (LinkedHashMap) keyvalue.get("pose");
+      node.Anchor(trackingObj.createAnchor(parsePoseLinkedHashMap(poseHM)));
+      //node.Type(type);
+      Log.i("parseYailToNode", "first object is " + o1);
+      Log.i("parseYailToNode", "node now has anchor  " + node.Anchor());
+    } catch (Exception e) {
+      Log.i("parseYailToNode error", "err" + e);
+      throw e;
+
+    }
+    return node;
+
+  }
+
+  public static YailList jsonObjectToYail(final String logTag, final JSONObject object) throws JSONException {
+    List<YailList> pairs = new ArrayList<YailList>();
+    @SuppressWarnings("unchecked")  // json only allows String keys
+    Iterator<String> j = object.keys();
+    while (j.hasNext()) {
+      String key = j.next();
+      Object value = object.get(key);
+      Log.wtf(logTag,"value is " + value);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        pairs.add(YailList.makeList(new Object[] { key, value }));
+      } else if (value instanceof JSONArray) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail(logTag, (JSONArray) value)}));
+      } else if (value instanceof JSONObject) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail(logTag, (JSONObject) value)}));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(pairs);
+  }
+
+  public static YailList jsonArrayToYail(final String logTag, final JSONArray array) throws JSONException {
+    List<Object> items = new ArrayList<Object>();
+    for (int i = 0; i < array.length(); i++) {
+      Object value = array.get(i);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        items.add(value);
+      } else if (value instanceof JSONArray) {
+        items.add(jsonArrayToYail(logTag, (JSONArray) value));
+      } else if (value instanceof JSONObject) {
+        items.add(jsonObjectToYail(logTag, (JSONObject) value));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(items);
   }
 
 }
