@@ -1384,4 +1384,18 @@ public class FileUtil {
     }
     return null;
   }
+
+  public static File getOutputFile(String prefix) throws IOException {
+    Form form = Form.getActiveForm();
+    String tempdir = resolveFileName(form, "", form.DefaultFileScope());
+    if (tempdir.startsWith("file://")) {
+      tempdir = tempdir.substring(7);
+    } else if (tempdir.startsWith("file:")) {
+      tempdir = tempdir.substring(5);
+    }
+    Log.d(LOG_TAG, "tempdir = " + tempdir);
+    File outFile = File.createTempFile(prefix, ".png", new File(tempdir));
+    Log.d(LOG_TAG, "outfile = " + outFile);
+    return outFile;
+  }
 }

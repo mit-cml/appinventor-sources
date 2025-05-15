@@ -558,7 +558,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
           ImageBotToken.response response = ImageBotToken.response.parseFrom(
             connection.getInputStream());
           byte[] imageData = response.getImage().toByteArray();
-          File outFile = getOutputFile();
+          File outFile = FileUtil.getOutputFile("ImageBot");
           FileOutputStream out = new FileOutputStream(outFile);
           try {
             out.write(imageData);
@@ -622,19 +622,6 @@ public class ImageBot extends AndroidNonvisibleComponent {
       bitmap = newBitmap;
     }
     return bitmap;
-  }
-
-  private File getOutputFile() throws IOException {
-    String tempdir = FileUtil.resolveFileName(form, "", form.DefaultFileScope());
-    if (tempdir.startsWith("file://")) {
-      tempdir = tempdir.substring(7);
-    } else if (tempdir.startsWith("file:")) {
-      tempdir = tempdir.substring(5);
-    }
-    Log.d(LOG_TAG, "tempdir = " + tempdir);
-    File outFile = File.createTempFile("ImageBot", ".png", new File(tempdir));
-    Log.d(LOG_TAG, "outfile = " + outFile);
-    return outFile;
   }
 
   // We are synchronized because we are called simultaneously from two
