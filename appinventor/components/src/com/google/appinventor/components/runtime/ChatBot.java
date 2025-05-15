@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023, 2025 MIT, All rights reserved
+// Copyright 2023-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -264,12 +264,12 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       public void run() {
         performRequest(uuid, question, null, false);
       }
-      });
+    });
   }
 
   @SimpleFunction(description = "Create an Image. Note: Only Gemini is currently supported. " +
-                                "Do not specify a model in order to get the most up-to-date " +
-                                "model to use.")
+    "Do not specify a model in order to get the most up-to-date " +
+    "model to use.")
   public void CreateImage(final String prompt) {
 
     AsynchUtil.runAsynchronously(new Runnable() {
@@ -277,7 +277,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       public void run() {
         performRequest(uuid, prompt, null, true);
       }
-      });
+    });
   }
 
   private void performRequest(String uuid, String question, Bitmap image, boolean doImage) {
@@ -690,7 +690,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     }
     if (responseImage != null && responseImage.length > 0) {
       try {
-        File outFile = getOutputFile();
+        File outFile = FileUtil.getOutputFile("ChatBotImage");
         FileOutputStream out = new FileOutputStream(outFile);
         try {
           out.write(responseImage);
@@ -702,7 +702,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         GotResponseWithImage(responseText, responseImageUri);
         return;
       } catch (IOException e) {
-        ErrorOccurred(521, "IO Error Writing Image File");
+        ErrorOccurred(ErrorMessages.ERROR_CANNOT_CREATE_FILE, "IO Error Writing Image File");
         return;
       }
     }
@@ -724,20 +724,6 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       Log.e(LOG_TAG, "Getting System Certificates", e);
       return new X509Certificate[0];
     }
-  }
-
-  // Copied from ImageBot
-  private File getOutputFile() throws IOException {
-    String tempdir = FileUtil.resolveFileName(form, "", form.DefaultFileScope());
-    if (tempdir.startsWith("file://")) {
-      tempdir = tempdir.substring(7);
-    } else if (tempdir.startsWith("file:")) {
-      tempdir = tempdir.substring(5);
-    }
-    Log.d(LOG_TAG, "tempdir = " + tempdir);
-    File outFile = File.createTempFile("ImageBot", ".png", new File(tempdir));
-    Log.d(LOG_TAG, "outfile = " + outFile);
-    return outFile;
   }
 
 }

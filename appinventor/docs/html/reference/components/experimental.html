@@ -176,9 +176,6 @@
  https://appinv.us/chatbot for current information.</dd>
   <dt id="ChatBot.GotResponse">GotResponse(<em class="text">responseText</em>)</dt>
   <dd>Event indicating that a request has finished and has returned data (output from ChatBot).</dd>
-  <dt id="ChatBot.GotResponseWithImage">GotResponseWithImage(<em class="text">responseText</em>,<em class="text">responseImage</em>)</dt>
-  <dd>Event indicating that we have received a response from the chatbot proxy which
- includes an Image and possibly text to go with it.</dd>
 </dl>
 
 <h3 id="ChatBot-Methods">Methods</h3>
@@ -188,8 +185,6 @@
   <dd>Ask a question of the Chat Bot. Successive calls will remember information from earlier in the conversation. Use the “ResetConversation” function to reset for a new conversation.</dd>
   <dt id="ChatBot.ConverseWithImage" class="method"><i></i> ConverseWithImage(<em class="text">question</em>,<em class="any">source</em>)</dt>
   <dd>Ask a question of the Chat Bot using an Image. Successive calls will remember information from earlier in the conversation. Use the “ResetConversation” function to reset for a new conversation.</dd>
-  <dt id="ChatBot.CreateImage" class="method"><i></i> CreateImage(<em class="text">prompt</em>)</dt>
-  <dd>Create an Image. Note: Only Gemini is currently supported. Do not specify a model in order to get the most up-to-date model to use.</dd>
   <dt id="ChatBot.ResetConversation" class="method"><i></i> ResetConversation()</dt>
   <dd>Reset the current conversation, Chat bot will forget any previous conversation when responding in the future.</dd>
 </dl>
