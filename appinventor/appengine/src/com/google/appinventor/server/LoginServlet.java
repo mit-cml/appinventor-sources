@@ -348,6 +348,7 @@ public class LoginServlet extends HttpServlet {
 
       String fauxUserName = token.getDisplayaccountname();
 
+      userInfo.setFauxAccountName(fauxUserName);
 
       String newCookie = userInfo.buildCookie(false);
       if (newCookie != null) {
