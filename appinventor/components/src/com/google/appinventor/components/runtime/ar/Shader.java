@@ -83,8 +83,6 @@ public class Shader implements Closeable {
         int fragmentShaderId = 0;
         String definesCode = createShaderDefinesCode(defines);
 
-        Log.d(TAG, " vertex shader " +vertexShaderCode);
-        Log.d(TAG, " frag shader " +fragmentShaderCode);
         try {
             vertexShaderId =
                     createShader(
