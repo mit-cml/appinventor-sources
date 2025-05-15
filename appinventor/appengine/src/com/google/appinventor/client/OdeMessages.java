@@ -819,13 +819,13 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Select light or dark mode")
   String selectMode();  
 
-  @DefaultMessage("Dark Mode")
-  @Description("Switch to enable dark theme")
-  String enableDarkTheme();
+  @DefaultMessage("Classic Dark")
+  @Description("Switch to enable dark theme for Classic")
+  String enableClassicDarkTheme();
 
-  @DefaultMessage("Light Mode")
-  @Description("Switch to disable dark theme")
-  String disableDarkTheme();
+  @DefaultMessage("Neo Dark")
+  @Description("Switch to enable dark theme for Neo")
+  String enableModernDarkTheme();
 
   @DefaultMessage("Toggle Light/Dark Theme")
   @Description("Switch to disable dark theme")
