@@ -9,94 +9,10 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface DarkModeImagesNeo extends Images {
+public interface DarkModeImagesNeo extends ImagesNeo {
    /*
    * These are from Google's Material Icon set https://fonts.google.com/icons
    * */
-
-  /**
-   * Phone status bar for Android Holo shown above the form in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/phonebar.png")
-  ImageResource phonebar();
-
-  /**
-   * Phone status bar for the Android Material form in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/phonebarAndroidMaterial.png")
-  ImageResource phonebarAndroidMaterial();
-
-  /**
-   * Phone status bar for iPhone containing white left side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPhoneLeftWhiteFB.png")
-  ImageResource phonebariPhoneLeftWhite();
-
-  /**
-   * Phone status bar for iPhone containing white right side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPhoneRightWhite.png")
-  ImageResource phonebariPhoneRightWhite();
-
-  /**
-   * Phone status bar for iPhone containing black left side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPhoneLeftBlack.png")
-  ImageResource phonebariPhoneLeftBlack();
-
-  /**
-   * Phone status bar for iPhone containing black right side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPhoneRightBlack.png")
-  ImageResource phonebariPhoneRightBlack();
-
-  /**
-   * Phone status bar for iPad containing black left side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPadBlackFB.png")
-  ImageResource phonebariPadLeftBlack();
-
-  /**
-   * Phone status bar for iPad containing black right side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPadRightBlack.png")
-  ImageResource phonebariPadRightBlack();
-
-  /**
-   * Phone status bar for iPad containing white left side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPadLeftWhiteFB.png")
-  ImageResource phonebariPadLeftWhite();
-
-  /**
-   * Phone status bar for iPad containing white right side icons in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iPadRightWhite.png")
-  ImageResource phonebariPadRightWhite();
-
-  /**
-   * Phone status bar containing white book icon for the iOS form in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iOSBookmarkWhite.png")
-  ImageResource bookIconWhite();
-
-  /**
-   * Phone status bar containing black book icon for the iOS form in the visual designer
-   */
-  @Override
-  @Source("darkmode-images/iOSBookmarkBlack.png")
-  ImageResource bookIconBlack();
 
   /**
    * Designer palette item: nearfield component
