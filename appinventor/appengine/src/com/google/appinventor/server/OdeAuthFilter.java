@@ -112,23 +112,24 @@ public class OdeAuthFilter implements Filter {
     boolean isReadOnly = userInfo.isReadOnly;
     long oneProjectId = userInfo.oneProjectId;
     String fauxProjectName = userInfo.fauxProjectName;
+    String fauxAccountName = userInfo.fauxAccountName;
 
 //    Object oIsAdmin = httpRequest.getSession().getAttribute("isadmin");
 //    if (oIsAdmin != null) {
 //      isAdmin = (boolean) oIsAdmin;
 //    }
 
-    doMyFilter(userInfo, isAdmin, isReadOnly, oneProjectId, fauxProjectName, httpRequest, httpResponse, chain);
+    doMyFilter(userInfo, isAdmin, isReadOnly, oneProjectId, fauxProjectName, fauxAccountName, httpRequest, httpResponse, chain);
   }
 
   @VisibleForTesting
   void doMyFilter(UserInfo userInfo, boolean isAdmin, boolean isReadOnly,
-    long oneProjectId, String fauxProjectName,
+    long oneProjectId, String fauxProjectName, String fauxAccountName,
     HttpServletRequest request, HttpServletResponse response, FilterChain chain)
     throws IOException, ServletException {
 
     // Setup the user object for OdeRemoteServiceServlet
-    setUserFromUserId(userInfo.userId, isAdmin, isReadOnly, oneProjectId, fauxProjectName);
+    setUserFromUserId(userInfo.userId, isAdmin, isReadOnly, oneProjectId, fauxProjectName, fauxAccountName);
 
     // If using local login, we *must* have an email address because that is how we
     // find the UserData object.
@@ -203,7 +204,7 @@ public class OdeAuthFilter implements Filter {
    * that was encrypted in the URL.
    */
   void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly, long oneProjectId,
-    String fauxProjectName) {
+    String projectName, String displayAccountName) {
     User user = storageIo.getUser(userId);
     if (!user.getIsAdmin() && isAdmin) {
       user.setIsAdmin(true);    // If session says they are an admin (which is the case
@@ -211,7 +212,11 @@ public class OdeAuthFilter implements Filter {
     }
     user.setReadOnly(isReadOnly);
     user.setOneProjectId(oneProjectId);
-    user.setFauxProjectName(fauxProjectName);
+    user.setFauxProjectName(projectName);
+    LOG.severe("OdeAuthFilter: displayAccountName = " + displayAccountName);
+    if (!displayAccountName.isEmpty()) {
+      user.setUserEmail(displayAccountName);
+    }
     localUser.set(user);
   }
 
@@ -381,6 +386,7 @@ public class OdeAuthFilter implements Filter {
             uInfo.isReadOnly = cookieToken.getIsReadOnly();
             uInfo.oneProjectId = cookieToken.getOneProjectId();
             uInfo.fauxProjectName = cookieToken.getDisplayprojectname();
+            uInfo.fauxAccountName = cookieToken.getDisplayaccountname();
             if (uInfo.isValid()) {
               return uInfo;
             } else {
