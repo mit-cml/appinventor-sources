@@ -498,7 +498,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
 
-            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode"};
+            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"};
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
             if (objRenderer != null && objectNodes.size() > 0){
@@ -833,6 +833,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     break;
                 case "video":
                     addNode = this.CreateVideoNodeFromYail(nodeDict);
+                    break;
+                case "webview":
+                    addNode = this.CreateWebViewNodeFromYail(nodeDict);
                     break;
                 default:
                     // currently not storing or handling modelNode..
@@ -1395,6 +1398,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         webNode.Trackable(trackable);
         Log.i("creating web node, anchor is", webNode.Anchor().toString());
         return webNode;
+    }
+
+    @SimpleFunction(description = "Create a new webviewer with default properties with a pose.")
+    public WebViewNode CreateWebViewNodeFromYail(YailDictionary yailNodeObj) {
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+
+                WebViewNode webNode = new WebViewNode(this);
+                ARUtils.parseYailToNode(webNode, yailNodeObj, session);
+
+                Log.i(LOG_TAG, "SUCCESS created webNode node from json, anchor is" +  webNode.Anchor().toString());
+                return webNode;
+            } catch(JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e){
+                Log.e(LOG_TAG, "tried to create webNode node from db string which is yail list" + e);
+                throw e;
+            }
+
+        }
+        Log.i("cannot create boxNode "," since there is no session");
+        return null;
     }
 
 }

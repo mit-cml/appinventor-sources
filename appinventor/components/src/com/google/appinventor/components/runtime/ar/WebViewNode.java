@@ -5,33 +5,78 @@
 
 package com.google.appinventor.components.runtime.ar;
 
-import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-// TODO: update the component version
-@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
-description = "<p>A component that displays a webpage in an ARView3D.  The webpage is positioned " +
-      "at a point and can be interacted with as well as changed.  Because you can interact with " +
-      "the webage, you cannot use gestures such as Click, LongClick, PanToMove, PinchToScale, and " +
-      "RotateWithGesture.</p>" +
-      "<p>Warning: This is not a full browser as some pages may not be fully rendered.</p>",
-category = ComponentCategory.AR)
 
+import android.util.Log;
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
+import com.google.ar.core.Trackable;
+
+
+@UsesAssets(fileNames = "cube.obj, Palette.png")
+@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
+    description = "A component that displays a video in an ARView3D.  The video is positioned " +
+        "at a point, and the source, or video to be played, can be set." +
+        "<p>App Inventor for Android only permits video files under 1 MB and " +
+        "limits the total size of an application to 5 MB, not all of which is " +
+        "available for media (video, audio, and sound) files.  If your media " +
+        "files are too large, you may get errors when packaging or installing " +
+        "your application, in which case you should reduce the number of media " +
+        "files or their sizes.  Most video editing software, such as Windows " +
+        "Movie Maker and Apple iMovie, can help you decrease the size of videos " +
+        "by shortening them or re-encoding the video into a more compact format.</p>",
+    category = ComponentCategory.AR)
 @SimpleObject
 public final class WebViewNode extends ARNodeBase implements ARWebView {
+
+
+  private Anchor anchor = null;
+  private Trackable trackable = null;
+  private String texture = "";
+  private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
+  private float scale = 1.0f;
+
+
   public WebViewNode(final ARNodeContainer container) {
     super(container);
     // Additional updates
+    container.addNode(this);
   }
+  @Override // wht is the significance?
+  public Anchor Anchor() { return this.anchor; }
+
+  @Override
+  public void Anchor(Anchor a) { this.anchor = a;}
+
+  @Override
+  public Trackable Trackable() { return this.trackable; }
+
+  @Override
+  public void Trackable(Trackable t) { this.trackable = t;}
+
+  @Override
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  public String Model() { return this.objectModel; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Model(String model) {this.objectModel = model;}
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the WebViewNode extends along the x-axis.  " +
@@ -113,6 +158,18 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
   @Override
   @SimpleProperty(userVisible = false)
   public void FillColorOpacity(int textureOpacity) {}
+
+  @Override
+  @SimpleFunction(description = "move a webview node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
+    }
+    Anchor(this.trackable.createAnchor((Pose) p));
+    Log.i("created Anchor!", " " );
+  }
 
   @Override
   @SimpleProperty(userVisible = false)
