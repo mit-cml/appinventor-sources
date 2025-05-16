@@ -180,6 +180,15 @@ public class Ode implements EntryPoint {
 
   private boolean isReadOnly;
 
+  // oneProjectMode == true if we have been logged in with a token that
+  // includes a projectId. In this case we just open the one specified
+  // project.
+
+  private boolean oneProjectMode;
+  private long oneProjectId;    // The ID of the one project we open
+
+  private String fauxProjectName; // Fake Project Name provided by login token
+
   private String sessionId = generateUuid(); // Create new session id
 
   private Random random = new Random(); // For generating random nonce
@@ -197,6 +206,11 @@ public class Ode implements EntryPoint {
   private FileEditor currentFileEditor;
 
   private AssetManager assetManager = AssetManager.getInstance();
+  private boolean isAnon = false;
+  private boolean displayedCodes = false; // True means we have displayed the dialog box
+                                          // with the four word codes for an anonymous account
+                                          // to revisit us. Only used if we are an anonymous
+                                          // account. I.e. isAnon is true
 
   private DropTargetProvider dragDropTargets;
 
@@ -582,6 +596,11 @@ public class Ode implements EntryPoint {
       LOG.warning("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
+    if (oneProjectMode) {
+      openProject("" + oneProjectId);
+      return;
+    }
+
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     if (value.isEmpty()) {
@@ -757,6 +776,14 @@ public class Ode implements EntryPoint {
           }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
+          oneProjectId = user.getOneProjectId();
+          fauxProjectName = user.getFauxProjectName();
+          if (oneProjectId != 0) {
+            oneProjectMode = true;
+          }
+          if (user.getUserId().startsWith("anon-")) { // We are a anonymous user
+            isAnon = true;
+          }
           registerIosExtensions(config.getIosExtensions());
           return resolve(null);
         })
@@ -835,7 +862,7 @@ public class Ode implements EntryPoint {
 
   private Promise<Object> checkTos() {
     // If user hasn't accepted terms of service, ask them to.
-    if (!user.getUserTosAccepted() && !isReadOnly) {
+    if (!user.getUserTosAccepted() && !isReadOnly && !oneProjectMode) {
       // We expect that the redirect to the TOS page should be handled
       // by the onFailure method below. The server should return a
       // "forbidden" error if the TOS wasn't accepted.
@@ -1440,6 +1467,9 @@ public class Ode implements EntryPoint {
   public static boolean getUserNewLayout() {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    if (value == null) {        // Default to NEO
+      return true;
+    }
     return Boolean.parseBoolean(value);
     // return true;
   }
@@ -1462,8 +1492,9 @@ public class Ode implements EntryPoint {
   }
 
   public static boolean getShowUIPicker() {
-    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+    return false;
+    // return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+    //         .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
   }
 
   public static void saveUserDesignSettings() {
@@ -2360,6 +2391,14 @@ public class Ode implements EntryPoint {
   // See the comment there...
   public void setReadOnly() {
     isReadOnly = true;
+  }
+
+  public boolean getOneProjectMode() {
+    return oneProjectMode;
+  }
+
+  public String getFauxProjectName() {
+    return fauxProjectName;
   }
 
   // Code to lock out certain screen and project switching code
