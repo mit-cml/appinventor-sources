@@ -42,18 +42,28 @@ public final class ARUtils {
       LinkedHashMap translation = (LinkedHashMap) op.get("t");
       LinkedHashMap rotation = (LinkedHashMap) op.get("q");
 
-      float xf = parseFloat((String)translation.get("x"));
+      /*float xf = parseFloat((String)translation.get("x"));
       float yf = parseFloat((String)translation.get("y"));
       float zf = parseFloat((String)translation.get("z"));
       float qxf = parseFloat((String)rotation.get("x"));
       float qyf = parseFloat((String)rotation.get("y"));
       float qzf =  parseFloat((String)rotation.get("z"));
-      float qwf = parseFloat((String)rotation.get("w"));
-      pose = new Pose(new float[]{xf, yf, zf}, new float[]{qxf, qyf, qzf, qwf});
+      float qwf = parseFloat((String)rotation.get("w"));*/
+
+      float x = parseFloat(String.format("%.2f",((Double)translation.get("x")).floatValue()));
+      float y = parseFloat(String.format("%.2f",((Double)translation.get("y")).floatValue()));
+      float z = parseFloat(String.format("%.2f",((Double)translation.get("z")).floatValue()));
+      float qx = parseFloat(String.format("%.2f",((Double)rotation.get("x")).floatValue()));
+      float qy = parseFloat(String.format("%.2f",((Double)rotation.get("y")).floatValue()));
+      float qz = parseFloat(String.format("%.2f",((Double)rotation.get("z")).floatValue()));
+      float qw = parseFloat(String.format("%.2f",((Double)rotation.get("w")).floatValue()));
+
+
+      pose = new Pose(new float[]{x, y, z}, new float[]{qx, qy, qz, qw});
       Log.i("creating Pose in parsePoseLinkedHM ", "parsed object " + pose);
     } catch (Exception e) {
       Log.i("creating Pose error", "err" + e);
-
+      pose = new Pose(new float[]{0f, 0f, -1f}, new float[]{0f, 0f, 0f, 1f});
     }
     return pose;
   }
@@ -108,10 +118,10 @@ public final class ARUtils {
       node.Texture(texture);
 
       LinkedHashMap poseHM = (LinkedHashMap) keyvalue.get("pose");
+      Log.i("parseYailToNode", "parsed pose before conversion " + poseHM);
       node.Anchor(trackingObj.createAnchor(parsePoseLinkedHashMap(poseHM)));
-      //node.Type(type);
-      Log.i("parseYailToNode", "first object is " + o1);
-      Log.i("parseYailToNode", "node now has anchor  " + node.Anchor());
+
+      Log.i("parseYailToNode", type + " new node from yail now has anchor  " + node.Anchor());
     } catch (Exception e) {
       Log.i("parseYailToNode error", "err" + e);
       throw e;

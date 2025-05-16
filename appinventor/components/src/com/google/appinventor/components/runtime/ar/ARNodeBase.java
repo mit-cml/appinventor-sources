@@ -82,7 +82,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public String Type() { return getClass().getSimpleName(); };
 
 
-
   @SimpleProperty(description = "Convert current pose to yail",
       category = PropertyCategory.APPEARANCE)
   public YailDictionary PoseToYailDictionary() {

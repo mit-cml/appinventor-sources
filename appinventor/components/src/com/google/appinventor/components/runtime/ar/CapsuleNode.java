@@ -76,16 +76,17 @@ import java.util.Locale;
     Locale locale = Locale.ENGLISH;
 
     JSONObject innerObject = new JSONObject();
+    JSONObject innerObject2 = new JSONObject();
     JSONObject saveObject = new JSONObject();
     innerObject.put("x", p.tx());
     innerObject.put("y", p.ty());
     innerObject.put("z", p.tz());
     saveObject.put("t", innerObject);
-    innerObject.put("x", p.qx());
-    innerObject.put("y", p.qy());
-    innerObject.put("z", p.qz());
-    innerObject.put("w", p.qw());
-    saveObject.put("q", innerObject);
+    innerObject2.put("x", p.qx());
+    innerObject2.put("y", p.qy());
+    innerObject2.put("z", p.qz());
+    innerObject2.put("w", p.qw());
+    saveObject.put("q", innerObject2);
 
     Log.i("exporting Capsule pose as JSON", "with " +saveObject);
 

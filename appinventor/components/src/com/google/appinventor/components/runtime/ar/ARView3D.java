@@ -560,7 +560,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
         float[] position = {0f, 0f, 1};
-        float[] rotation = {0, 2, 0, 1};
+        float[] rotation = {0, 2, -2, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 
@@ -571,7 +571,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         MotionEvent tap = tapHelper.poll();
         if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-            Log.i("inside handle tap2  ", "");
+            Log.i(LOG_TAG, "inside handle tap2 ");
             List<HitResult> hitResultList;
             /*if (instantPlacementSettings.isInstantPlacementEnabled()) {
                 hitResultList =
@@ -583,6 +583,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             //TBD node tapped?
 
             hitResultList = frame.hitTest(tap);
+            Log.i(LOG_TAG, "how many hits? " + hitResultList.size());
+
             for (HitResult hit : hitResultList) {
 
                 Trackable mostRecentTrackable = hit.getTrackable();
@@ -805,9 +807,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Load scene from storage")
-    public void LoadScene(List<YailDictionary> dictionaries) {
-
+    public List<ARNode> LoadScene(List<YailDictionary> dictionaries) {
+        Log.i(LOG_TAG, "loading stored scene " + dictionaries);
         ARNode addNode = null;
+        List<ARNode> newNodes = new ArrayList<>();
         for (Object obj : dictionaries) {
             Log.i(LOG_TAG, "loadscene obj is " + obj);
             if (obj == null || obj instanceof gnu.mapping.Symbol){
@@ -818,17 +821,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             YailDictionary nodeDict = (YailDictionary) obj;
             String type = (String) nodeDict.get("type");
             Log.i(LOG_TAG, "loadscene TYPE is " + type);
-            switch (type) {
-                case "Capsule":
+            switch (type.toLowerCase()) {
+                case "capsule":
                     addNode = this.CreateCapsuleNodeFromYail(nodeDict);
                     break;
-                case "Box":
+                case "box":
                     addNode = this.CreateBoxNodeFromYail(nodeDict);
                     break;
-                case "Sphere":
+                case "sphere":
                     addNode = this.CreateSphereNodeFromYail(nodeDict);
                     break;
-                case "Video":
+                case "video":
                     addNode = this.CreateVideoNodeFromYail(nodeDict);
                     break;
                 default:
@@ -838,21 +841,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             if (addNode != null) {
                 addNode(addNode);
+                newNodes.add(addNode);
                 Log.i(LOG_TAG, "loaded " + addNode);
             }
 
         }
-        Log.i(LOG_TAG, "loadscene " + arNodes);
+        Log.i(LOG_TAG, "loadscene new nodes are " + newNodes);
+        return newNodes;
+
     }
 
 
     @SimpleFunction(description = "Get scene from storage")
-    public List<YailDictionary> SaveScene() {
+    public List<YailDictionary> SaveScene(List<ARNode> newNodes) {
 
         List<YailDictionary> dictionaries = new ArrayList<>();
-        for (ARNode node : arNodes) {
-            String type = node.Type();
-            dictionaries.add(node.ARNodeToYail());
+        for (Object node : newNodes) {
+            if (node == null || node instanceof gnu.mapping.Symbol){
+                Log.i(LOG_TAG, "savescene null or list " + node);
+                continue;
+            }
+            Log.i(LOG_TAG, "savescene node" + node);
+            ARNode arnode = (ARNode) node;
+            String type = arnode.Type();
+            dictionaries.add(arnode.ARNodeToYail());
             Log.i(LOG_TAG, "saving node " + type);
         }
         return dictionaries;
@@ -868,7 +880,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void addNode(ARNode node){
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
-        Log.i("ADDED ARNODE", "");
+        Log.i("ADDED ARNODE", node.Type());
         // or would this dispatch a create node event?
     }
 
@@ -1121,7 +1133,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (session != null) {
             try {
-                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+                Log.i(LOG_TAG," creating block node from " + yailNodeObj);
 
                 BoxNode boxNode = new BoxNode(this);
                 ARUtils.parseYailToNode(boxNode, yailNodeObj, session);
@@ -1159,7 +1171,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public SphereNode CreateSphereNodeFromYail(YailDictionary yailNodeObj) {
         if (session != null) {
             try {
-                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+                Log.i(LOG_TAG," triggered via block, sphere node is " + yailNodeObj);
 
                 SphereNode sphereNode = new SphereNode(this);
                 ARUtils.parseYailToNode(sphereNode, yailNodeObj, session);
@@ -1268,7 +1280,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (session != null) {
             try {
-                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+                Log.i(LOG_TAG," triggered via block, capnode is  " + yailNodeObj);
 
                 CapsuleNode capNode = new CapsuleNode(this);
                 ARUtils.parseYailToNode(capNode, yailNodeObj, session);
