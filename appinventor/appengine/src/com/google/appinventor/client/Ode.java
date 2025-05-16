@@ -1467,6 +1467,9 @@ public class Ode implements EntryPoint {
   public static boolean getUserNewLayout() {
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    if (value == null) {        // Default to NEO
+      return true;
+    }
     return Boolean.parseBoolean(value);
     // return true;
   }
@@ -1489,8 +1492,9 @@ public class Ode implements EntryPoint {
   }
 
   public static boolean getShowUIPicker() {
-    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+    return false;
+    // return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+    //         .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
   }
 
   public static void saveUserDesignSettings() {
