@@ -49,6 +49,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0])
     
     self.appTitles = getAppNames()
     self.appIconPaths = getAppIcons() ?? []
