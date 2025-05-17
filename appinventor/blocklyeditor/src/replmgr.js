@@ -1139,10 +1139,13 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
             break;
         case "startCache":
-            var success = top.BlocklyPanel_startCache();
-            if (!success) {
-                console.log("Error encountered, app was not downloaded")
-            }
+            top.BlocklyPanel_startCache().then((success) => {
+                if (!success) {
+                    console.log("Failed to cache project.");
+                }})
+                .catch((error) => {
+                    console.log("Error while caching project: " + error);
+                });
             break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);

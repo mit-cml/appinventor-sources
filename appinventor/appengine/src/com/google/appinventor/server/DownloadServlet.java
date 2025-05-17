@@ -257,7 +257,6 @@ public class DownloadServlet extends OdeServlet {
           downloadableFile = new RawFile("AppInventor.certSigningRequest", csr);
         }
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_CACHED)) {
-        System.out.println("Downloading project cache");
         // Download project source files as a zip.
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE);
@@ -266,9 +265,8 @@ public class DownloadServlet extends OdeServlet {
         final boolean includeProjectHistory = true;
         String zipName = (projectTitle == null) ? null :
                 StringUtils.normalizeForFilename(projectTitle) + ".aia";
-        // If the requester is an Admin, we include any Yail files in the
-        // project in the export
-        boolean includeYail = userInfoProvider.getIsAdmin();
+        // Set includeYail to true by default to ensure downloaded file has yail file on hand.
+        boolean includeYail = true;
         boolean includeScreenShots = includeYail;
         StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
