@@ -153,6 +153,7 @@ public interface Component {
   static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+  static final int LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT = 5;
   static final String LISTVIEW_KEY_MAIN_TEXT = "Text1";
   static final String LISTVIEW_KEY_DESCRIPTION = "Text2";
   static final String LISTVIEW_KEY_IMAGE = "Image";

@@ -1111,17 +1111,6 @@ they get cut off in Windows.
     border-color: shadow-color;
     border-radius: 0px;
   }
-
-  /* class for the ListView Mock component */
-  .listViewComponentStyle {
-    width: 315px;
-    display: block;
-    overflow: unset;
-  }
-
-  .listViewItemStyle {
-    border-bottom: 1px solid gray;
-  }
   
   .spinnerComponentStyle {
     outline: 1px solid lightgray;

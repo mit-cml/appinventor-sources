@@ -238,12 +238,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     YoungAndroidSettingsBuilder oldProperties = new YoungAndroidSettingsBuilder(properties);
 
 
+    // Project settings do not include the name and package (main). So we add them
+    // here so the comparison below is accurate. Before this change, we always write out the
+    // project properties file, even when there are no changes to it.
+    String projectName = properties.getProperty("name");
+    String qualifiedName = properties.getProperty("main");
+    newProperties.setProjectName(projectName)
+      .setQualifiedFormName(qualifiedName);
+
     if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
-      String projectName = properties.getProperty("name");
-      String qualifiedName = properties.getProperty("main");
-      String newContent = newProperties.setProjectName(projectName)
-          .setQualifiedFormName(qualifiedName).toProperties();
+      String newContent = newProperties.toProperties();
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }

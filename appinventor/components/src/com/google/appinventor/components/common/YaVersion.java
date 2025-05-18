@@ -1204,6 +1204,7 @@ public class YaVersion {
   // - Changed the default ElementColor from Black to None
   // For LISTVIEW_COMPONENT_VERSION 10:
   // - Changed TextSize property to FontSize
+  // - Add new layout
   public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
@@ -1391,7 +1392,7 @@ public class YaVersion {
   // For SLIDER_COMPONENT_VERSION 2:
   // - Added the property to allow for the removal of the Thumb Slider
   // For SLIDER_COMPONENT_VERSION 3:
-  // - Added the NumberOfStepsand ColorThumb property, TouchDown and TouchUp events
+  // - Added the NumberOfStepsand ThumbColor property, TouchDown and TouchUp events
   public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:
@@ -1712,12 +1713,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.74";
+  public static final String PREFERRED_COMPANION = "2.75";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.74", "2.74u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.75", "2.75u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.VerticalAlign;
@@ -104,8 +105,8 @@ public final class MockListView extends MockVisibleComponent {
     detailTypeface = "0";
     mainFontSize = "22.0";
     detailFontSize = "14.0";
-    imageHeight = 200;
-    imageWidth = 200;
+    imageHeight = 40; // (200 / 5)
+    imageWidth = 40; // (200 / 5)
 
     initComponent(listViewWidget);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
@@ -245,6 +246,8 @@ public final class MockListView extends MockVisibleComponent {
     detail.getElement().getStyle().setMarginLeft(5, Unit.PX);
     horizontalItemPanel.add(main);
     horizontalItemPanel.add(detail);
+    horizontalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.BASELINE);  
+    //horizontalItemPanel.getElement().getStyle().setAlignItems(Style.AlignItems.BASELINE);
     setItemHeight(false, false);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -283,11 +286,48 @@ public final class MockListView extends MockVisibleComponent {
     verticalItemPanel.add(main);
     verticalItemPanel.add(detail);
     verticalItemPanel.getElement().getStyle().setDisplay(Display.INLINE_FLEX);
-    verticalItemPanel.getElement().getStyle().setProperty("flex-direction", "column");
+    verticalItemPanel.getElement().getStyle().setProperty("flexDirection", "column");
     verticalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);    
     horizontalItemPanel.add(createImage(image, imageWidth + "px", imageHeight + "px"));
     horizontalItemPanel.add(verticalItemPanel);
     setItemHeight(true, true);
+    decorateWidget(horizontalItemPanel);
+    listPanel.add(horizontalItemPanel);
+  }
+
+  private void createImageTwoTextVerticalLayout(JSONObject object) {
+    FlowPanel verticalItemPanel = new FlowPanel();
+    FlowPanel horizontalItemPanel = new FlowPanel();
+    FlowPanel container = new FlowPanel();
+    String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
+    String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
+    String image = object.containsKey("Image") ? object.get("Image").isString().stringValue() : "None";
+    InlineLabel main = createInlineLabel(text1, textColor);
+    MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
+    main.getElement().getStyle().setTextAlign(TextAlign.CENTER);
+    InlineLabel detail = createInlineLabel(text2, detailTextColor);
+    MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
+    detail.getElement().getStyle().setTextAlign(TextAlign.CENTER);
+    verticalItemPanel.add(main);
+    verticalItemPanel.add(detail);
+    verticalItemPanel.getElement().getStyle().setDisplay(Display.FLEX);
+    verticalItemPanel.getElement().getStyle().setProperty("flexDirection", "column");
+    verticalItemPanel.getElement().getStyle().setProperty("alignItems", "center");
+    FlowPanel imageContainer = createImage(image, imageWidth + "px", imageHeight + "px");
+    imageContainer.getElement().getStyle().setProperty("padding", "0px 0px 5px 0px");
+    container.add(imageContainer);
+    container.add(verticalItemPanel);
+    container.getElement().getStyle().setDisplay(Display.FLEX);
+    container.getElement().getStyle().setProperty("flexDirection", "column");
+    container.getElement().getStyle().setProperty("justifyContent", "center");
+    container.getElement().getStyle().setProperty("alignItems", "center");
+    container.setWidth("100%");
+    horizontalItemPanel.add(container);
+    int height = Math.round(Float.parseFloat(mainFontSize) + Float.parseFloat(detailFontSize));
+    itemHeight = imageHeight + height + 13;
+    
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
   }
@@ -321,6 +361,8 @@ public final class MockListView extends MockVisibleComponent {
       createImageSingleTextLayout(object);
     } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
       createImageTwoTextLayout(object);
+    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
+      createImageTwoTextVerticalLayout(object);
     }
   }
 
@@ -360,6 +402,7 @@ public final class MockListView extends MockVisibleComponent {
     InlineLabel label = new InlineLabel(value.isEmpty() ? " ​" : value);
     MockComponentsUtil.setWidgetTextColor(label, color);
     label.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
+    label.getElement().getStyle().setTextAlign(TextAlign.LEFT);    
     return label;
   }
 

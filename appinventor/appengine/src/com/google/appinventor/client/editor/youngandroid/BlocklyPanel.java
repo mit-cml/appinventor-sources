@@ -672,6 +672,7 @@ public class BlocklyPanel extends HTMLPanel {
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
+    workspace.setVisible(false);  // The workspace is invisible by default
   }-*/;
 
   /**

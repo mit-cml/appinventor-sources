@@ -2426,6 +2426,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Error shown when user types invalid character into project name.")
   String invalidCharProjectNameError();
 
+  @DefaultMessage("The first character of the folder name must be a letter")
+  @Description("Error shown when user does not type letter as first character in folder name.")
+  String firstCharFolderNameError();
+
+  @DefaultMessage("Invalid character. Folder names can only contain letters, numbers, and underscores")
+  @Description("Error shown when user types invalid character into folder name.")
+  String invalidCharFolderNameError();
+
+  @DefaultMessage("Folder names cannot contain spaces")
+  @Description("Error shown when user types space into folder name.")
+  String whitespaceFolderNameError();
+
   // Used in youngandroid/YoungAndroidFormUpgrader.java
 
   @DefaultMessage("This project was created with an older version of the App Inventor " +
@@ -5645,21 +5657,25 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display Text for ListView layout choice having single text.")
   String singleTextLayout();
 
-  @DefaultMessage("MainText,DetailText(Vertical)")
+  @DefaultMessage("MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having two lines of text.")
   String twoTextLayout();
 
-  @DefaultMessage("MainText, DetailText(Horizontal)")
+  @DefaultMessage("MainText, DetailText (Horizontal)")
   @Description("Display Text for ListView layout choice having two lines of text in linear manner.")
   String twoTextLinearLayout();
 
-  @DefaultMessage("Image,MainText")
+  @DefaultMessage("Image, MainText")
   @Description("Display Text for ListView layout choice having an image and single line of text.")
   String imageSingleTextLayout();
 
-  @DefaultMessage("Image, MainText, DetailText(Vertical)")
+  @DefaultMessage("Image, MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having an image and two lines of text.")
   String imageTwoTextLayout();
+
+  @DefaultMessage("Image (Top), MainText, DetailText")
+  @Description("Display Text for ListView layout choice having an image on top and two lines of text.")
+  String imageTopTwoTextLayout();
 
   // File Scope choices
 
