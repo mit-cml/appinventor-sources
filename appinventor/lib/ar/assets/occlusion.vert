@@ -27,9 +27,7 @@ out vec2 v_VirtualSceneTexCoord;
 void main() {
   gl_Position = a_Position;
   #if USE_OCCLUSION
-    v_CameraTexCoord = a_CameraTexCoord;
+  v_CameraTexCoord = a_CameraTexCoord;
   #endif
-
-
   v_VirtualSceneTexCoord = a_VirtualSceneTexCoord;
 }

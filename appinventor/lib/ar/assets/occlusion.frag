@@ -20,10 +20,8 @@ precision mediump float;
 // composed with the background image depending on which modes were set in
 // DepthCompositionRenderer.setDepthModes.
 uniform sampler2D u_VirtualSceneColorTexture;
-uniform sampler2D u_CameraColorTexture;
 
 #if USE_OCCLUSION
-
 // The AR camera depth texture.
 uniform sampler2D u_CameraDepthTexture;
 // The depth texture for the virtual scene.
@@ -37,9 +35,9 @@ uniform float u_ZFar;
 uniform float u_DepthAspectRatio;
 #endif  // USE_OCCLUSION
 
-//#if USE_OCCLUSION
+#if USE_OCCLUSION
 in vec2 v_CameraTexCoord;
-//#endif  // USE_OCCLUSION
+#endif  // USE_OCCLUSION
 in vec2 v_VirtualSceneTexCoord;
 
 layout(location = 0) out vec4 o_FragColor;
@@ -47,137 +45,154 @@ layout(location = 0) out vec4 o_FragColor;
 #if USE_OCCLUSION
 
 float Depth_GetCameraDepthInMillimeters(const sampler2D depthTexture,
-                                        const vec2 depthUv) {
-  // Depth is packed into the red and green components of its texture.
-  // The texture is a normalized format, storing millimeters.
-  vec3 packedDepthAndVisibility = texture(depthTexture, depthUv).xyz;
-  return dot(packedDepthAndVisibility.xy, vec2(255.0, 256.0 * 255.0));
+const vec2 depthUv) {
+    // Depth is packed into the red and green components of its texture.
+    // The texture is a normalized format, storing millimeters.
+    vec3 packedDepthAndVisibility = texture(depthTexture, depthUv).xyz;
+    return dot(packedDepthAndVisibility.xy, vec2(255.0, 256.0 * 255.0));
 }
 
 float Depth_GetVirtualSceneDepthMillimeters(const sampler2D depthTexture,
-                                            const vec2 depthUv, float zNear,
-                                            float zFar) {
-  // Determine the depth of the virtual scene fragment in millimeters.
-  const float kMetersToMillimeters = 1000.0;
-  // This value was empirically chosen to correct errors with objects appearing
-  // to phase through the floor. In millimeters.
-  const float kBias = -80.0;
-  float ndc = 2.0 * texture(depthTexture, depthUv).x - 1.0;
-  return 2.0 * zNear * zFar / (zFar + zNear - ndc * (zFar - zNear)) *
-             kMetersToMillimeters +
-         kBias;
+const vec2 depthUv, float zNear,
+float zFar) {
+    // Determine the depth of the virtual scene fragment in millimeters.
+    const float kMetersToMillimeters = 1000.0;
+    // This value was empirically chosen to correct errors with objects appearing
+    // to phase through the floor. In millimeters.
+    const float kBias = -80.0;
+    float ndc = 2.0 * texture(depthTexture, depthUv).x - 1.0;
+    return 2.0 * zNear * zFar / (zFar + zNear - ndc * (zFar - zNear)) *
+    kMetersToMillimeters +
+    kBias;
 }
 
 // Returns a value between 0.0 (completely visible) and 1.0 (completely
 // occluded), representing how visible or occluded is the pixel in relation to
 // the depth map.
 float Depth_GetOcclusion(const sampler2D depthTexture, const vec2 depthUv,
-                         float assetDepthMm) {
-  float depthMm = Depth_GetCameraDepthInMillimeters(depthTexture, depthUv);
+float assetDepthMm) {
+    float depthMm = Depth_GetCameraDepthInMillimeters(depthTexture, depthUv);
 
-  // Instead of a hard z-buffer test, allow the asset to fade into the
-  // background along a 2 * kDepthTolerancePerMm * assetDepthMm
-  // range centered on the background depth.
-  const float kDepthTolerancePerMm = 0.01;
-  return clamp(1.0 -
-                   0.5 * (depthMm - assetDepthMm) /
-                       (kDepthTolerancePerMm * assetDepthMm) +
-                   0.5,
-               0.0, 1.0);
+    // Instead of a hard z-buffer test, allow the asset to fade into the
+    // background along a 2 * kDepthTolerancePerMm * assetDepthMm
+    // range centered on the background depth.
+    const float kDepthTolerancePerMm = 0.01;
+    return clamp(1.0 -
+    0.5 * (depthMm - assetDepthMm) /
+    (kDepthTolerancePerMm * assetDepthMm) +
+    0.5,
+    0.0, 1.0);
 }
 
 float Depth_GetBlurredOcclusionAroundUV(const sampler2D depthTexture,
-                                        const vec2 uv, float assetDepthMm) {
-  // Kernel used:
-  // 0   4   7   4   0
-  // 4   16  26  16  4
-  // 7   26  41  26  7
-  // 4   16  26  16  4
-  // 0   4   7   4   0
-  const float kKernelTotalWeights = 269.0;
-  float sum = 0.0;
+const vec2 uv, float assetDepthMm) {
+    // Kernel used:
+    // 0   4   7   4   0
+    // 4   16  26  16  4
+    // 7   26  41  26  7
+    // 4   16  26  16  4
+    // 0   4   7   4   0
+    const float kKernelTotalWeights = 269.0;
+    float sum = 0.0;
 
-  const float kOcclusionBlurAmount = 0.01;
-  vec2 blurriness =
-      vec2(kOcclusionBlurAmount, kOcclusionBlurAmount * u_DepthAspectRatio);
+    const float kOcclusionBlurAmount = 0.01;
+    vec2 blurriness =
+    vec2(kOcclusionBlurAmount, kOcclusionBlurAmount * u_DepthAspectRatio);
 
-  float current = 0.0;
+    float current = 0.0;
 
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-1.0, -2.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+1.0, -2.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-1.0, +2.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+1.0, +2.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-2.0, +1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+2.0, +1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-2.0, -1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+2.0, -1.0) * blurriness, assetDepthMm);
-  sum += current * 4.0;
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-1.0, -2.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+1.0, -2.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-1.0, +2.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+1.0, +2.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-2.0, +1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+2.0, +1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-2.0, -1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+2.0, -1.0) * blurriness, assetDepthMm);
+    sum += current * 4.0;
 
-  current = 0.0;
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-2.0, -0.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+2.0, +0.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+0.0, +2.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-0.0, -2.0) * blurriness, assetDepthMm);
-  sum += current * 7.0;
+    current = 0.0;
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-2.0, -0.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+2.0, +0.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+0.0, +2.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-0.0, -2.0) * blurriness, assetDepthMm);
+    sum += current * 7.0;
 
-  current = 0.0;
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-1.0, -1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+1.0, -1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-1.0, +1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+1.0, +1.0) * blurriness, assetDepthMm);
-  sum += current * 16.0;
+    current = 0.0;
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-1.0, -1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+1.0, -1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-1.0, +1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+1.0, +1.0) * blurriness, assetDepthMm);
+    sum += current * 16.0;
 
-  current = 0.0;
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+0.0, +1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-0.0, -1.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(-1.0, -0.0) * blurriness, assetDepthMm);
-  current += Depth_GetOcclusion(
-      depthTexture, uv + vec2(+1.0, +0.0) * blurriness, assetDepthMm);
-  sum += current * 26.0;
+    current = 0.0;
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+0.0, +1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-0.0, -1.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(-1.0, -0.0) * blurriness, assetDepthMm);
+    current += Depth_GetOcclusion(
+    depthTexture, uv + vec2(+1.0, +0.0) * blurriness, assetDepthMm);
+    sum += current * 26.0;
 
-  sum += Depth_GetOcclusion(depthTexture, uv, assetDepthMm) * 41.0;
+    sum += Depth_GetOcclusion(depthTexture, uv, assetDepthMm) * 41.0;
 
-  return sum / kKernelTotalWeights;
+    return sum / kKernelTotalWeights;
 }
 #endif  // USE_OCCLUSION
-//uniform float u_Alpha;
 
 void main() {
+    o_FragColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
 
     #if USE_OCCLUSION
-    // Only sample camera if we have coordinates
-    vec4 cameraColor = texture(u_CameraColorTexture, v_CameraTexCoord);
-    #else
-    // Default camera color if no coordinates
-    vec4 cameraColor = vec4(0.0, 0.0, 0.0, 1.0);
-    #endif
-    // Sample the Filament texture
-    vec4 filamentColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
+    if (o_FragColor.a == 0.0) {
+        // There's no sense in calculating occlusion for a fully transparent pixel.
+        return;
+    }
+    float assetDepthMm = Depth_GetVirtualSceneDepthMillimeters(
+    u_VirtualSceneDepthTexture, v_VirtualSceneTexCoord, u_ZNear, u_ZFar);
 
-    // Amplify colors and force full opacity
-    //o_FragColor = vec4(filamentColor.rgb , .5);
-    // Simple alpha blending
-   vec4 finalColor = mix(cameraColor, filamentColor, 1.0);
+    float occlusion = Depth_GetBlurredOcclusionAroundUV(
+    u_CameraDepthTexture, v_CameraTexCoord, assetDepthMm);
 
-    // Output the composited color
-   o_FragColor = finalColor;
+    // If the above blur operation is too expensive, you can replace it with the
+    // following lines.
+    /* float occlusion = Depth_GetOcclusion(u_CameraDepthTexture,
+      v_CameraTexCoord, assetDepthMm); */
+
+    // The virtual object mask is blurred, we make the falloff steeper to simulate
+    // erosion operator. This is needed to make the fully occluded virtual object
+    // invisible.
+    float objectMaskEroded = pow(occlusion, 10.0);
+
+    // occlusionTransition equal to 1 means fully occluded object. This operation
+    // boosts occlusion near the edges of the virtual object, but does not affect
+    // occlusion within the object.
+    float occlusionTransition =
+    clamp(occlusion * (2.0 - objectMaskEroded), 0.0, 1.0);
+
+    // Clips occlusion if we want to partially show fully occluded object.
+    float kMaxOcclusion = 1.0;
+    occlusionTransition = min(occlusionTransition, kMaxOcclusion);
+
+    o_FragColor *= 1.0 - occlusion;
+
+    #endif  // USE_OCCLUSION
 }
