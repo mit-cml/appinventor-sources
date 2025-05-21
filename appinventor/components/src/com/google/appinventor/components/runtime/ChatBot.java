@@ -339,7 +339,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
           ChatBotToken.response response = ChatBotToken.response.parseFrom(connection.getInputStream());
           if (responseCode == 200) {
             this.uuid = response.getUuid();
-            parseResponse(response);
+            parseResponse(response, doImage);
           } else {
             String returnText = getResponseContent(connection, true);
             ErrorOccurred(responseCode, returnText);
@@ -682,13 +682,13 @@ public final class ChatBot extends AndroidNonvisibleComponent {
    * @param parsed protocol buffer returned from proxy
    * @returns Void
    */
-  private void parseResponse(ChatBotToken.response response) {
+  private void parseResponse(ChatBotToken.response response, boolean doImage) {
     String responseText = response.getAnswer();
     byte[] responseImage = response.getOutputimage().toByteArray();
     if (DEBUG) {
       Log.d(LOG_TAG, "parseResponse: responseImage = " + responseImage);
     }
-    if (responseImage != null && responseImage.length > 0) {
+    if (responseImage != null && responseImage.length > 0) { // doImage == true implied here
       try {
         File outFile = FileUtil.getOutputFile("ChatBotImage");
         FileOutputStream out = new FileOutputStream(outFile);
@@ -705,8 +705,12 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         ErrorOccurred(ErrorMessages.ERROR_CANNOT_CREATE_FILE, "IO Error Writing Image File");
         return;
       }
+    } else if (doImage) { // If we asked for an image, but didn't get one, still
+      // trigger "GotResponseWithImage, but provide an empty string for the image
+      GotResponseWithImage(responseText, "");
+    } else {
+      GotResponse(responseText);
     }
-    GotResponse(responseText);
   }
 
   /*
