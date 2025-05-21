@@ -1755,6 +1755,15 @@ public final class ChatBotToken {
      * <code>optional bytes inputimage = 9;</code>
      */
     com.google.protobuf.ByteString getInputimage();
+
+    /**
+     * <code>optional bool doimage = 20;</code>
+     */
+    boolean hasDoimage();
+    /**
+     * <code>optional bool doimage = 20;</code>
+     */
+    boolean getDoimage();
   }
   /**
    * Protobuf type {@code request}
@@ -1776,6 +1785,7 @@ public final class ChatBotToken {
       provider_ = "chatgpt";
       model_ = "";
       inputimage_ = com.google.protobuf.ByteString.EMPTY;
+      doimage_ = false;
     }
 
     @java.lang.Override
@@ -1863,6 +1873,11 @@ public final class ChatBotToken {
             case 74: {
               bitField0_ |= 0x00000100;
               inputimage_ = input.readBytes();
+              break;
+            }
+            case 160: {
+              bitField0_ |= 0x00000200;
+              doimage_ = input.readBool();
               break;
             }
           }
@@ -2193,6 +2208,21 @@ public final class ChatBotToken {
       return inputimage_;
     }
 
+    public static final int DOIMAGE_FIELD_NUMBER = 20;
+    private boolean doimage_;
+    /**
+     * <code>optional bool doimage = 20;</code>
+     */
+    public boolean hasDoimage() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional bool doimage = 20;</code>
+     */
+    public boolean getDoimage() {
+      return doimage_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2232,6 +2262,9 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeBytes(9, inputimage_);
       }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBool(20, doimage_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2269,6 +2302,10 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(9, inputimage_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(20, doimage_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2332,6 +2369,11 @@ public final class ChatBotToken {
         result = result && getInputimage()
             .equals(other.getInputimage());
       }
+      result = result && (hasDoimage() == other.hasDoimage());
+      if (hasDoimage()) {
+        result = result && (getDoimage()
+            == other.getDoimage());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2379,6 +2421,11 @@ public final class ChatBotToken {
       if (hasInputimage()) {
         hash = (37 * hash) + INPUTIMAGE_FIELD_NUMBER;
         hash = (53 * hash) + getInputimage().hashCode();
+      }
+      if (hasDoimage()) {
+        hash = (37 * hash) + DOIMAGE_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getDoimage());
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2521,6 +2568,8 @@ public final class ChatBotToken {
         bitField0_ = (bitField0_ & ~0x00000080);
         inputimage_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000100);
+        doimage_ = false;
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -2585,6 +2634,10 @@ public final class ChatBotToken {
           to_bitField0_ |= 0x00000100;
         }
         result.inputimage_ = inputimage_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.doimage_ = doimage_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2665,6 +2718,9 @@ public final class ChatBotToken {
         }
         if (other.hasInputimage()) {
           setInputimage(other.getInputimage());
+        }
+        if (other.hasDoimage()) {
+          setDoimage(other.getDoimage());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3334,6 +3390,38 @@ public final class ChatBotToken {
         onChanged();
         return this;
       }
+
+      private boolean doimage_ ;
+      /**
+       * <code>optional bool doimage = 20;</code>
+       */
+      public boolean hasDoimage() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional bool doimage = 20;</code>
+       */
+      public boolean getDoimage() {
+        return doimage_;
+      }
+      /**
+       * <code>optional bool doimage = 20;</code>
+       */
+      public Builder setDoimage(boolean value) {
+        bitField0_ |= 0x00000200;
+        doimage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool doimage = 20;</code>
+       */
+      public Builder clearDoimage() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        doimage_ = false;
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
@@ -3440,6 +3528,15 @@ public final class ChatBotToken {
      */
     com.google.protobuf.ByteString
         getAnswerBytes();
+
+    /**
+     * <code>optional bytes outputimage = 5;</code>
+     */
+    boolean hasOutputimage();
+    /**
+     * <code>optional bytes outputimage = 5;</code>
+     */
+    com.google.protobuf.ByteString getOutputimage();
   }
   /**
    * Protobuf type {@code response}
@@ -3457,6 +3554,7 @@ public final class ChatBotToken {
       status_ = 0L;
       uuid_ = "";
       answer_ = "";
+      outputimage_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -3507,6 +3605,11 @@ public final class ChatBotToken {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
               answer_ = bs;
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              outputimage_ = input.readBytes();
               break;
             }
           }
@@ -3656,6 +3759,21 @@ public final class ChatBotToken {
       }
     }
 
+    public static final int OUTPUTIMAGE_FIELD_NUMBER = 5;
+    private com.google.protobuf.ByteString outputimage_;
+    /**
+     * <code>optional bytes outputimage = 5;</code>
+     */
+    public boolean hasOutputimage() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional bytes outputimage = 5;</code>
+     */
+    public com.google.protobuf.ByteString getOutputimage() {
+      return outputimage_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -3680,6 +3798,9 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, answer_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, outputimage_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -3701,6 +3822,10 @@ public final class ChatBotToken {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, answer_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, outputimage_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3739,6 +3864,11 @@ public final class ChatBotToken {
         result = result && getAnswer()
             .equals(other.getAnswer());
       }
+      result = result && (hasOutputimage() == other.hasOutputimage());
+      if (hasOutputimage()) {
+        result = result && getOutputimage()
+            .equals(other.getOutputimage());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -3767,6 +3897,10 @@ public final class ChatBotToken {
       if (hasAnswer()) {
         hash = (37 * hash) + ANSWER_FIELD_NUMBER;
         hash = (53 * hash) + getAnswer().hashCode();
+      }
+      if (hasOutputimage()) {
+        hash = (37 * hash) + OUTPUTIMAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getOutputimage().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -3894,6 +4028,8 @@ public final class ChatBotToken {
         bitField0_ = (bitField0_ & ~0x00000004);
         answer_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        outputimage_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -3934,6 +4070,10 @@ public final class ChatBotToken {
           to_bitField0_ |= 0x00000008;
         }
         result.answer_ = answer_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.outputimage_ = outputimage_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3991,6 +4131,9 @@ public final class ChatBotToken {
           bitField0_ |= 0x00000008;
           answer_ = other.answer_;
           onChanged();
+        }
+        if (other.hasOutputimage()) {
+          setOutputimage(other.getOutputimage());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -4251,6 +4394,41 @@ public final class ChatBotToken {
         onChanged();
         return this;
       }
+
+      private com.google.protobuf.ByteString outputimage_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes outputimage = 5;</code>
+       */
+      public boolean hasOutputimage() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional bytes outputimage = 5;</code>
+       */
+      public com.google.protobuf.ByteString getOutputimage() {
+        return outputimage_;
+      }
+      /**
+       * <code>optional bytes outputimage = 5;</code>
+       */
+      public Builder setOutputimage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        outputimage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes outputimage = 5;</code>
+       */
+      public Builder clearOutputimage() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        outputimage_ = getDefaultInstance().getOutputimage();
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
@@ -4333,15 +4511,16 @@ public final class ChatBotToken {
       "\022\n\007version\030\002 \001(\004:\0010\022\025\n\ngeneration\030\003 \001(\004:" +
       "\0010\"i\n\005token\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005keyid" +
       "\030\002 \001(\004:\0011\022\025\n\ngeneration\030\003 \001(\004:\0010\022\020\n\010unsi" +
-      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"\262\001\n\007reques" +
+      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"\303\001\n\007reques" +
       "t\022\022\n\007version\030\001 \001(\004:\0011\022\025\n\005token\030\002 \001(\0132\006.t" +
       "oken\022\014\n\004uuid\030\003 \001(\t\022\020\n\010question\030\004 \001(\t\022\016\n\006" +
       "system\030\005 \001(\t\022\016\n\006apikey\030\006 \001(\t\022\031\n\010provider" +
       "\030\007 \001(\t:\007chatgpt\022\r\n\005model\030\010 \001(\t\022\022\n\ninputi" +
-      "mage\030\t \001(\014\"O\n\010response\022\022\n\007version\030\001 \001(\004:",
-      "\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014\n\004uuid\030\003 \001(\t\022\016\n\006a" +
-      "nswer\030\004 \001(\tBA\n1com.google.appinventor.co" +
-      "mponents.runtime.chatbotB\014ChatBotToken"
+      "mage\030\t \001(\014\022\017\n\007doimage\030\024 \001(\010\"d\n\010response\022",
+      "\022\n\007version\030\001 \001(\004:\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014" +
+      "\n\004uuid\030\003 \001(\t\022\016\n\006answer\030\004 \001(\t\022\023\n\013outputim" +
+      "age\030\005 \001(\014BA\n1com.google.appinventor.comp" +
+      "onents.runtime.chatbotB\014ChatBotToken"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4372,13 +4551,13 @@ public final class ChatBotToken {
     internal_static_request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_request_descriptor,
-        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", "Provider", "Model", "Inputimage", });
+        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", "Provider", "Model", "Inputimage", "Doimage", });
     internal_static_response_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_response_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_response_descriptor,
-        new java.lang.String[] { "Version", "Status", "Uuid", "Answer", });
+        new java.lang.String[] { "Version", "Status", "Uuid", "Answer", "Outputimage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

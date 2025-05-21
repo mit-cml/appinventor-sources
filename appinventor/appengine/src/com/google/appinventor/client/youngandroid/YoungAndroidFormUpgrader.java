@@ -899,6 +899,10 @@ public final class YoungAndroidFormUpgrader {
       // The ConverseWithImage block was added
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The CreateImage and GotResponseWithImage block added
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
