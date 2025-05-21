@@ -270,12 +270,12 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   @SimpleFunction(description = "Create an Image. Note: Only Gemini is currently supported. " +
     "Do not specify a model in order to get the most up-to-date " +
     "model to use.")
-  public void CreateImage(final String prompt) {
+  public void CreateImage(final String description) {
 
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        performRequest(uuid, prompt, null, true);
+        performRequest(uuid, description, null, true);
       }
     });
   }
@@ -414,11 +414,11 @@ public final class ChatBot extends AndroidNonvisibleComponent {
    * @param ResponseImage Uri of Image Response
    */
   @SimpleEvent(description = "Event fired when the Chat Bot answers a question, with an image.")
-  public void GotResponseWithImage(final String responseText, final String responseImage) {
+  public void GotResponseWithImage(final String responseText, final String fileName) {
     form.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        EventDispatcher.dispatchEvent(ChatBot.this, "GotResponseWithImage", responseText, responseImage);
+        EventDispatcher.dispatchEvent(ChatBot.this, "GotResponseWithImage", responseText, fileName);
       }
     });
   }
