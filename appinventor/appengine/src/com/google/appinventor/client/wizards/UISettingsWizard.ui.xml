@@ -8,7 +8,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
-  <wiz:Dialog ui:field="UIDialog" caption="{messages.uiSettings}"
+  <wiz:Dialog ui:field="uiDialog" caption="{messages.uiSettings}"
               styleName="ode-DialogBox ode-UserSettingsDialog">
     <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
@@ -24,7 +24,10 @@
           <label class="image-label">
             <input type="radio" class="hidden-radio" name="UI" value="classic"
                    ui:field="classicRadioButton" />
-            <img src="/static/images/ai2-classic-style.png" />
+            <div>
+            <img class="light" src="/static/images/ai2-classic-style.png" />
+            <img class="dark" src="/static/images/ai2-classic-dark-style.png" />
+            </div>
             <br/>
             <g:Label text="{messages.disableNewLayout}" />
           </label>
@@ -33,7 +36,10 @@
           <label class="image-label">
             <input type="radio" class="hidden-radio" name="UI" value="modern"
                    ui:field="modernRadioButton" />
-            <img src="/static/images/ai2-neo-style.png" />
+            <div>
+            <img class="light" src="/static/images/ai2-neo-style.png" />
+            <img class="dark" src="/static/images/ai2-neo-dark-style.png" />
+            </div>
             <br/>
             <g:Label text="{messages.enableNewLayout}" />
           </label>
@@ -41,26 +47,8 @@
       </g:HTMLPanel>
     </g:FlowPanel>
     <g:FlowPanel styleName="ode-DialogRow">
-    <g:HTMLPanel styleName="image-radio-group">
-        <div class="image-radio">
-          <label class="image-label">
-            <input type="radio" class="hidden-radio" name="UI" value="classicdark"
-                ui:field="classicDarkRadioButton" />
-            <img src="/static/images/ai2-classic-dark-style.png" />
-            <br/>
-            <g:Label text="{messages.enableClassicDarkTheme}" />
-          </label>
-        </div>
-        <div class="image-radio">
-          <label class="image-label">
-            <input type="radio" class="hidden-radio" name="UI" value="moderndark"
-                ui:field="modernDarkRadioButton" />
-            <img src="/static/images/ai2-neo-dark-style.png" />
-            <br/>
-            <g:Label text="{messages.enableModernDarkTheme}" />
-          </label>
-        </div>
-      </g:HTMLPanel>
+      <g:Label text="{messages.selectTheme}" />
+      <g:ListBox multipleSelect="false" ui:field="themeSelector" />
     </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>

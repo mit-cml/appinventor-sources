@@ -3415,7 +3415,7 @@ div.dropdiv p {
   transition: border-color 0.2s ease-in-out;
 }
 
-.hidden-radio:checked + img {
+.hidden-radio:checked + div img {
   border-color: #7D9D36;
 }
 
@@ -3423,7 +3423,7 @@ div.dropdiv p {
   border-color: #b3c833;
 }
 
-.hidden-radio:focus + img {
+.hidden-radio:focus div + img {
   box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
 }
 
@@ -3441,4 +3441,8 @@ div.dropdiv p {
   .image-radio-group {
     flex-direction: column;
   }
+}
+
+.ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
+  display: none;
 }

@@ -2085,7 +2085,7 @@ display: contents;
 
 .ode-DialogRow {
   display: inline-flex;
-  margin: 10px;
+  margin: 10px 0;
   font-size: 14px;
   gap: 5px;
   align-items: center;
