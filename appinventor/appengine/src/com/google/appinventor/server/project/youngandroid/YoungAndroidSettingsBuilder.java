@@ -29,6 +29,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.ASSETS_FOLDER;
 import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.SRC_FOLDER;
 
@@ -65,6 +66,7 @@ public class YoungAndroidSettingsBuilder {
   private String nsCameraUsage = "";
   private String nsSpeechRecognitionUsage = "";
   private String nsLocationUsage = "";
+  private String aiVersioning = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -107,6 +109,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
     buildNumber = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_BUILDNUMBER));
+    aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_AIVERSIONING));
     nsBluetoothAlwaysUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE));
     nsBluetoothPeripheralUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -150,6 +154,7 @@ public class YoungAndroidSettingsBuilder {
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
     buildNumber = properties.getProperty("buildnumber", "1");
+    aiVersioning = properties.getProperty("aiversioning", "");
     nsBluetoothAlwaysUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, "");
     nsBluetoothPeripheralUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, "");
     nsContactsUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, "");
@@ -249,6 +254,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setAIVersioning(String aiVersioning) {
+    this.aiVersioning = aiVersioning;
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -272,6 +282,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     object.put(YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
+    object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
     object.put(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
@@ -312,6 +323,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
     addPropertyIfSet(result, "buildnumber", buildNumber);
+    addPropertyIfSet(result, "aiversioning", aiVersioning);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
@@ -364,6 +376,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
       result &= other.buildNumber.equals(buildNumber);
+      result &= other.aiVersioning.equals(aiVersioning);
       result &= other.nsBluetoothAlwaysUsage.equals(nsBluetoothAlwaysUsage);
       result &= other.nsBluetoothPeripheralUsage.equals(nsBluetoothPeripheralUsage);
       result &= other.nsContactsUsage.equals(nsContactsUsage);

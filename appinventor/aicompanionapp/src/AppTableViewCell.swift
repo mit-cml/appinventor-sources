@@ -18,9 +18,10 @@ class AppTableViewCell: UITableViewCell {
   @IBOutlet weak var appName: UILabel!
   @IBOutlet weak var lastOpened: UILabel!
   @IBOutlet weak var settingsButton: UIButton!
+  @IBOutlet weak var warningLabel: UILabel!
+  
   
   weak var delegate: AppTableCellDelegate?
-  
   
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -34,6 +35,13 @@ class AppTableViewCell: UITableViewCell {
     let settingsIcon = UIImage(named: "SettingsIcon")
     settingsButton.setImage(settingsIcon, for: .normal)
     settingsButton.setTitle("", for: .normal)
+    
+    warningLabel.text = "⚠️ WARNING: This project is out of date with the Companion App. \nPlease redownload this project in order to open it without issues."
+    warningLabel.textColor = .red
+    warningLabel.numberOfLines = 0
+    warningLabel.lineBreakMode = .byWordWrapping
+    warningLabel.font = UIFont.systemFont(ofSize: 14)
+    warningLabel.isHidden = true
     
     settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
   }

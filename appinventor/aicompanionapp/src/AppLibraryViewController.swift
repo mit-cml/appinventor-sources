@@ -17,11 +17,11 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   @IBOutlet var searchBar: UISearchBar!
   @IBOutlet var libraryViewHeaderTitle: UILabel!
   public var form: ReplForm!
-  private var appTitles: [String] =  []
-  private var appIconPaths: [String] = []
-  private var filteredAppTitles: [String] = []
-  private var filteredAppIconPaths: [String] = []
-  private var isSearching = false
+  private var downloadedAppsTitles: [String] = []
+  private var downloadedApps: [String : DownloadedApp] = [:]
+  private var filteredAppsTitles: [String] = []
+  private var filteredApps: [String : DownloadedApp] = [:]
+  private var isSearching: Bool = false
   private let noDownloadedAppsTitle: UILabel = {
     let label = UILabel()
     label.text = "No Apps Downloaded"
@@ -47,19 +47,26 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     return label
   }()
   
+  private struct DownloadedApp {
+    var title: String
+    var iconPath: String?
+    var aiVersioning: Int?
+  }
+  
+  private static var AIVersioning: Int = 231;
+  
   override func viewDidLoad() {
     super.viewDidLoad()
-    print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0])
     
-    self.appTitles = getAppNames()
-    self.appIconPaths = getAppIcons() ?? []
+    self.initDownloadedApps()
+    self.getAppProperties()
 
-    configureScreen()
-    updateUIOnAppAvailability()
+    self.configureScreen()
+    self.updateUIOnAppAvailability()
   
-    searchBar.delegate = self
-    tableView.delegate = self
-    tableView.dataSource = self
+    self.searchBar.delegate = self
+    self.tableView.delegate = self
+    self.tableView.dataSource = self
   }
   
   private func configureScreen(){
@@ -98,24 +105,25 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     If not, present a simple screen that informs the user they have no apps downloaded yet, with a description how to do so.
    */
   private func updateUIOnAppAvailability() {
-    let downloadedApps = appTitles.isEmpty
-    tableView.isHidden = downloadedApps
-    libraryViewHeaderTitle.isHidden = downloadedApps
-    searchBar.isHidden = downloadedApps
-    noDownloadedAppsTitle.isHidden = !downloadedApps
-    noDownloadedAppsDescription.isHidden = !downloadedApps
+    let hasDownloadedApps = downloadedApps.isEmpty
+    tableView.isHidden = hasDownloadedApps
+    libraryViewHeaderTitle.isHidden = hasDownloadedApps
+    searchBar.isHidden = hasDownloadedApps
+    noDownloadedAppsTitle.isHidden = !hasDownloadedApps
+    noDownloadedAppsDescription.isHidden = !hasDownloadedApps
   }
   
   
-  private func getAppNames() -> [String] {
+  private func initDownloadedApps() {
     let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
           .appendingPathComponent("samples", isDirectory: true)
-    var appTitles : [String] = []
     do {
       let apps = try FileManager.default.contentsOfDirectory(at: libraryPath, includingPropertiesForKeys: nil)
       for app in apps {
         let projectFile = app.path.components(separatedBy: "/").last!
-        appTitles.append(projectFile.components(separatedBy: ".")[0])
+        let appTitle = projectFile.components(separatedBy: ".")[0]
+        self.downloadedAppsTitles.append(appTitle)
+        self.downloadedApps[appTitle] = DownloadedApp(title: appTitle)
       }
     } catch {
       DispatchQueue.main.async {
@@ -127,17 +135,21 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
                          title: nil, image: nil, completion: nil)
       }
     }
-    return appTitles
+//    return appTitles
   }
   
-  private func getAppIcons() -> [String]? {
-    var appIconPaths: [String] = []
+  /**
+   Access each downloaded app's properties and retrieve the path of the icon and the AI versioning to make sure that
+   downloaded apps are valid and can be launched within the Companion App's system
+   */
+  private func getAppProperties(){
     let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
           .appendingPathComponent("apps", isDirectory: true)
-    for app in appTitles {
+    for app in self.downloadedApps.keys {
       let appPropertiesPath = libraryPath.appendingPathComponent("\(app)/youngandroidproject/project.properties")
       
-      var foundIcon = false
+      var iconPath = "default"
+      var appAIVersioning = -1
       
       do {
         let content = try String(contentsOf: appPropertiesPath)
@@ -152,43 +164,52 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
               let key = keyValue[0].trimmingCharacters(in: .whitespaces)
               let value = keyValue[1].trimmingCharacters(in: .whitespaces)
               if key == "icon" {
-                let iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)")
-                appIconPaths.append(iconPath.path)
-                foundIcon = true
-                break
+                iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
+              } else if key == "aiversioning" {
+                appAIVersioning = Int(value)!
               }
           }
         }
         
-        if !foundIcon {
-          appIconPaths.append("default")
-        }
+        self.downloadedApps[app]?.iconPath = iconPath
+        self.downloadedApps[app]?.aiVersioning = appAIVersioning
+        
       } catch {
         print("Was not able to read project.properties file of \(app).aia properly.")
-        return nil
       }
     }
-    
-    return appIconPaths
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return isSearching ? filteredAppTitles.count : appTitles.count
+    return self.isSearching ? self.filteredApps.keys.count : self.downloadedApps.keys.count
   }
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 82
+    guard (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles).indices.contains(indexPath.row) else {
+        return 92
+    }
+    
+    let title = isSearching ? self.filteredAppsTitles[indexPath.row] : self.downloadedAppsTitles[indexPath.row]
+    
+    let projectAIVersion = self.downloadedApps[title]!.aiVersioning!
+    
+    if  projectAIVersion < AppLibraryViewController.AIVersioning {
+      return 152
+    } else {
+      return 92
+    }
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    guard (isSearching ? filteredAppTitles : appTitles).indices.contains(indexPath.row) else {
+    guard (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles).indices.contains(indexPath.row) else {
         return UITableViewCell()
     }
     
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AppTableViewCell
     
-    let title = isSearching ? filteredAppTitles[indexPath.row] : appTitles[indexPath.row]
-    let iconPath = isSearching ? filteredAppIconPaths[indexPath.row] : appIconPaths[indexPath.row]
+    let title = isSearching ? self.filteredAppsTitles[indexPath.row] : self.downloadedAppsTitles[indexPath.row]
+    let iconPath = isSearching ? self.filteredApps[title]!.iconPath : self.downloadedApps[title]!.iconPath
+    let projectVersioning = isSearching ? self.filteredApps[title]!.aiVersioning : self.downloadedApps[title]!.aiVersioning
     
     cell.appName.text = title
     cell.lastOpened.text = "Last opened: NA"
@@ -196,7 +217,10 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       //TODO determine default icon
       cell.appIconImage.image = UIImage(named: "Onboard-1")
     } else {
-      cell.appIconImage.image = UIImage(named: iconPath)
+      cell.appIconImage.image = UIImage(named: iconPath!)
+    }
+    if projectVersioning! < AppLibraryViewController.AIVersioning {
+      cell.warningLabel.isHidden = false
     }
     
     cell.delegate = self
@@ -225,9 +249,9 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
           try FileManager.default.removeItem(at: appDirectoryPath)
           try FileManager.default.removeItem(at: appAIAPath)
           
-          if let index = self.appTitles.firstIndex(of: appName) {
-            self.appTitles.remove(at: index)
-            self.appIconPaths.remove(at: index)
+          if let index = self.downloadedAppsTitles.firstIndex(of: appName) {
+            self.downloadedAppsTitles.remove(at: index)
+            self.downloadedApps.removeValue(forKey: appName)
           }
           self.tableView.reloadData()
           self.updateUIOnAppAvailability()
@@ -259,28 +283,41 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let name = self.appTitles[indexPath.row]
-    let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("samples/\(name).aia", isDirectory: false))
-    newapp.makeCurrent()
-    newapp.loadScreen1(self.form)
-    self.navigationController?.popViewController(animated: true)
+    let name = self.downloadedAppsTitles[indexPath.row]
+    let projectVersion = self.downloadedApps[name]!.aiVersioning!
+    if projectVersion < AppLibraryViewController.AIVersioning {
+      DispatchQueue.main.async {
+        guard let window = UIApplication.shared.keyWindow else {
+          return
+        }
+        let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+        window.makeToast("ERROR: This project is out of date with the Companion App. Please redownload this project in order to open it without issues.", point: center,
+                         title: nil, image: nil, completion: nil)
+      }
+      tableView.deselectRow(at: indexPath, animated: true)
+      return
+    } else {
+      let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("samples/\(name).aia", isDirectory: false))
+      newapp.makeCurrent()
+      newapp.loadScreen1(self.form)
+      self.navigationController?.popViewController(animated: true)
+    }
   }
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchText.isEmpty {
-      isSearching = false
+      self.isSearching = false
     } else {
-      isSearching = true
-      filteredAppTitles = []
-      filteredAppIconPaths = []
-      for (index, title) in appTitles.enumerated() {
+      self.isSearching = true
+      self.filteredApps = [:]
+      for title in self.downloadedApps.keys {
         if title.lowercased().contains(searchText.lowercased()) {
-          filteredAppTitles.append(title)
-          filteredAppIconPaths.append(appIconPaths[index])
+          self.filteredApps[title] = self.downloadedApps[title]
+          self.filteredAppsTitles.append(title)
         }
       }
     }
-    tableView.reloadData()
+    self.tableView.reloadData()
   }
 }
