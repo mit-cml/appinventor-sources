@@ -166,7 +166,11 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
               if key == "icon" {
                 iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
               } else if key == "aiversioning" {
-                appAIVersioning = Int(value)!
+                if app == "SettingsBuild3" {
+                  appAIVersioning = 220
+                } else {
+                  appAIVersioning = Int(value)!
+                }
               }
           }
         }
@@ -221,6 +225,8 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     if projectVersioning! < AppLibraryViewController.AIVersioning {
       cell.warningLabel.isHidden = false
+    } else {
+      cell.warningLabel.isHidden = true
     }
     
     cell.delegate = self
@@ -284,25 +290,11 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let name = self.downloadedAppsTitles[indexPath.row]
-    let projectVersion = self.downloadedApps[name]!.aiVersioning!
-    if projectVersion < AppLibraryViewController.AIVersioning {
-      DispatchQueue.main.async {
-        guard let window = UIApplication.shared.keyWindow else {
-          return
-        }
-        let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
-        window.makeToast("ERROR: This project is out of date with the Companion App. Please redownload this project in order to open it without issues.", point: center,
-                         title: nil, image: nil, completion: nil)
-      }
-      tableView.deselectRow(at: indexPath, animated: true)
-      return
-    } else {
-      let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("samples/\(name).aia", isDirectory: false))
-      newapp.makeCurrent()
-      newapp.loadScreen1(self.form)
-      self.navigationController?.popViewController(animated: true)
-    }
+    let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent("samples/\(name).aia", isDirectory: false))
+    newapp.makeCurrent()
+    newapp.loadScreen1(self.form)
+    self.navigationController?.popViewController(animated: true)
   }
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -311,12 +303,14 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     } else {
       self.isSearching = true
       self.filteredApps = [:]
+      self.filteredAppsTitles = []
       for title in self.downloadedApps.keys {
         if title.lowercased().contains(searchText.lowercased()) {
           self.filteredApps[title] = self.downloadedApps[title]
           self.filteredAppsTitles.append(title)
         }
       }
+      print(self.filteredApps)
     }
     self.tableView.reloadData()
   }
