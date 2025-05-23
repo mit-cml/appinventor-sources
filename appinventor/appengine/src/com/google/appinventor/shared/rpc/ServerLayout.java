@@ -93,6 +93,12 @@ public class ServerLayout {
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a project's sources for local device caching.
+   */
+  public static final String DOWNLOAD_PROJECT_CACHED = "project-cached";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading selected of a user's projects' sources.
    */
   public static final String DOWNLOAD_SELECTED_PROJECTS_SOURCE = "selected-projects-source";
@@ -121,6 +127,8 @@ public class ServerLayout {
    * for downloading a user file
    */
   public static final String DOWNLOAD_USERFILE = "userfile";
+
+  public static final String DOWNLOAD_CSR = "certificate-request";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.UploadServlet}

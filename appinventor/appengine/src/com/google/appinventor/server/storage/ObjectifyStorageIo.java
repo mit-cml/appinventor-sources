@@ -6,6 +6,8 @@
 
 package com.google.appinventor.server.storage;
 
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
+
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
@@ -26,6 +28,7 @@ import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
 import com.google.appinventor.server.storage.StoredData.Backpack;
@@ -59,13 +62,15 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
+
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -87,8 +92,10 @@ import com.google.appengine.tools.cloudstorage.RetryParams;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -97,6 +104,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -105,8 +113,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-
-import org.json.JSONObject;
 
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
@@ -1548,7 +1554,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   boolean useGCSforFile(String fileName, int length) {
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab") || fileName.endsWith(".ipa");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -1778,27 +1784,31 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
+   * Exports project files as a zip archive
+   *
+   * @param userId                 a user Id (the request is made on behalf of this user)
+   * @param projectId              project ID
    * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param includeYail include any yail files in the project
-   * @param includeScreenShots include any screen shots stored with the project
-   * @param fatalError Signal a fatal error if a file is not found
-   * @param forGallery flag to indicate we are exporting for the gallery
-   * @return  project with the content as requested by params.
+   * @param includeAndroidKeystore whether or not to include the Android keystore
+   * @param zipName                the name of the zip file, if a specific one is desired
+   * @param includeYail            include any yail files in the project
+   * @param includeScreenShots     include any screen shots stored with the project
+   * @param forGallery             flag to indicate we are exporting for the gallery
+   * @param fatalError             Signal a fatal error if a file is not found
+   * @param forAppStore            true if the export is for an App Store build
+   * @return project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
-    final boolean includeProjectHistory,
-    final boolean includeAndroidKeystore,
-    @Nullable String zipName,
-    final boolean includeYail,
-    final boolean includeScreenShots,
-    final boolean forGallery,
-    final boolean fatalError) throws IOException {
+      final boolean includeProjectHistory,
+      final boolean includeAndroidKeystore,
+      @Nullable String zipName,
+      final boolean includeYail,
+      final boolean includeScreenShots,
+      final boolean forGallery,
+      final boolean fatalError,
+      final boolean forAppStore,
+      final boolean locallyCachedApp) throws IOException {
     final boolean forBuildserver = includeAndroidKeystore && includeYail;
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
@@ -1844,7 +1854,9 @@ public class ObjectifyStorageIo implements StorageIo {
               it.remove();
             } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
                       (fileName.startsWith("screenshots") && !includeScreenShots) ||
-                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail)) {
+                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".bky") && locallyCachedApp) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".scm") && locallyCachedApp)) {
               // Skip legacy remix history files that were previous stored with the project
               // only include screenshots if asked ...
               // Don't include YAIL files when exporting projects
@@ -1854,6 +1866,9 @@ public class ObjectifyStorageIo implements StorageIo {
               // Otherwise Yail files are confusing cruft. In the case of
               // the Firebase Component they may contain secrets which we would
               // rather not have leak into an export .aia file or into the Gallery
+              // We don't include the .scm and .bky files when exporting the source
+              // to be cached locally by a device to avoid leaking potentially sensitive
+              // information such as keys.
               it.remove();
             } else if (forBuildserver && fileName.startsWith("src/") &&
                 (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
@@ -1955,6 +1970,18 @@ public class ObjectifyStorageIo implements StorageIo {
           }
         } else {
           data = fd.content;
+          if (fileName.endsWith(".properties") && locallyCachedApp == true) {
+            String projectProperties = new String(data, StandardCharsets.UTF_8);
+            Properties oldProperties = new Properties();
+            try {
+              oldProperties.load(new StringReader(projectProperties));
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+            YoungAndroidSettingsBuilder oldPropertiesBuilder = new YoungAndroidSettingsBuilder(oldProperties);
+            String updatedProperties = oldPropertiesBuilder.setAIVersioning(Integer.toString(YOUNG_ANDROID_VERSION)).toProperties();
+            data = updatedProperties.getBytes(StandardCharsets.UTF_8);
+          }
         }
         if (data == null) {     // This happens if file creation is interrupted
           data = new byte[0];
@@ -1999,6 +2026,12 @@ public class ObjectifyStorageIo implements StorageIo {
                   if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
                       (ufd.content.length > 0)) {
                     out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
+                    out.write(ufd.content, 0, ufd.content.length);
+                    out.closeEntry();
+                    fileCount.t++;
+                  } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
+                      && ufd.content.length > 0) {
+                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;

@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -29,20 +30,38 @@ public class LabeledTextBox extends Composite {
   private Validator validator;
 
   /**
-   * Creates a new TextBox with the given leading caption.
-   *
-   * @param caption  caption for leading label
+   * Creates a new TextBox with a placeholder caption..
    */
   public LabeledTextBox() {
     this("Placedholder");
   }
 
+  /**
+   * Creates a new TextBox with the given leading caption.
+   *
+   * @param caption  caption for leading label
+   */
   public LabeledTextBox(String caption) {
+    this(caption, false);
+  }
+
+  /**
+   * Creates a new TextBox with the given caption. If password is true, a PasswordTextBox will be
+   * used instead.
+   *
+   * @param caption  caption for leading label
+   * @param password  true if the textbox should be a password entry
+   */
+  public LabeledTextBox(String caption, boolean password) {
     HorizontalPanel panel = new HorizontalPanel();
     captionLabel = new Label(caption);
     panel.add(captionLabel);
     panel.setCellVerticalAlignment(captionLabel, HasVerticalAlignment.ALIGN_MIDDLE);
-    textbox = new TextBox();
+    if (password) {
+      textbox = new PasswordTextBox();
+    } else {
+      textbox = new TextBox();
+    }
     textbox.setStylePrimaryName("ode-LabeledTextBox");
     panel.add(textbox);
     panel.setCellWidth(captionLabel, "45%");
