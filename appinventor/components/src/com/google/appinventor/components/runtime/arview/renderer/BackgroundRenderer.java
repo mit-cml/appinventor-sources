@@ -138,8 +138,8 @@ public class BackgroundRenderer {
         defines.put("USE_OCCLUSION", "0");  // Start with occlusion disabled
         occlusionShader = Shader.createFromAssets(
                         render,
-                        "occlusion.vert",
-                        "occlusion.frag",
+                Form.ASSETS_PREFIX +"occlusion.vert",
+                Form.ASSETS_PREFIX +"occlusion.frag",
                         defines)
                 .setTexture("u_VirtualSceneColorTexture", cameraColorTexture)
                 .setDepthTest(false)
