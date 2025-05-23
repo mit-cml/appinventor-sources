@@ -15,6 +15,7 @@ import com.google.appinventor.buildserver.FormPropertiesAnalyzer.PermissionBlock
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ScopeBlockExtractor;
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.tasks.common.BuildFactory;
 import com.google.appinventor.buildserver.util.Execution;
@@ -114,6 +115,7 @@ public final class ProjectBuilder {
         try {
           sourceFiles = ProjectUtils.extractProjectFiles(inputZip, projectRoot);
         } catch (IOException e) {
+          e.printStackTrace();
           LOG.severe("unexpected problem extracting project file from zip");
           return Result.createFailingResult("", "Problems processing zip file.");
         }
@@ -133,11 +135,17 @@ public final class ProjectBuilder {
           throw new IllegalStateException("No factory for target: " + ext);
         }
         if (outputFileName == null) {
-          outputFileName = project.getProjectName() + "." + factory.getExtension();
+          if (BuildType.ASC_EXTENSION.equals(ext)) {
+            outputFileName = "PlayerApp.ipa";
+          } else {
+            outputFileName = project.getProjectName() + "." + factory.getExtension();
+          }
         }
 
         File buildTmpDir = new File(projectRoot, "build/tmp");
-        buildTmpDir.mkdirs();
+        if (!buildTmpDir.mkdirs()) {
+          throw new IOException("Unable to create build dir");
+        }
 
         Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
         if (isForCompanion) {
@@ -212,22 +220,8 @@ public final class ProjectBuilder {
             srcPath);
 
         if (success) {
-          // Locate output file
-          String fileName = outputFileName;
-          if (fileName == null) {
-            fileName = project.getProjectName() + "." + ext;
-          }
-          File outputFile = new File(projectRoot,
-              "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
-          if (!outputFile.exists()) {
-            LOG.warning("Young Android build - " + outputFile + " does not exist");
-          } else {
-            outputApk = new File(outputDir, outputFile.getName());
-            Files.copy(outputFile, outputApk);
-            if (saveKeystore) {
-              outputKeystore = new File(outputDir, KEYSTORE_FILE_NAME);
-              Files.copy(keyStoreFile, outputKeystore);
-            }
+          for (File file : context.getOutputFiles()) {
+            Files.copy(file, new File(outputDir, file.getName()));
           }
         }
         return new Result(success, messages, context.getReporter().getUserOutput());

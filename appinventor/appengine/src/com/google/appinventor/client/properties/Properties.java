@@ -106,7 +106,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    * @return  encoded properties
    */
   public String encodeAllAsPairs() {
-    return encode(true, true);
+    return encode(false, true);
   }
 
   /**
@@ -126,8 +126,8 @@ public class Properties<T extends Property> implements Iterable<T> {
     for (Property property : this) {
       // Don't encode non-persistable properties or properties being assigned their default value
       // unless encoding for all properties was explicitly requested
-      if ((property.isPersisted() || (property.isYail() && forYail)) &&
-          (all || !property.getDefaultValue().equals(property.getValue()))) {
+      if (((property.isPersisted() && !forYail) || (property.isYail() && forYail))
+          && (all || !property.getDefaultValue().equals(property.getValue()))) {
         sb.append(separator);
         separator = ",";
         property.encode(sb);

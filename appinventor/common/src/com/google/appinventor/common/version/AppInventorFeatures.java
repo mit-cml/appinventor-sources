@@ -152,4 +152,21 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  /**
+   * If set to true, iOS ad hoc builds will be allowed.
+   *
+   * @return true to enable iOS ad hoc builds
+   */
+  public static boolean allowIosBuilds() {
+    return false;
+  }
+
+  /**
+   * If set to true, iOS builds for the App Store will be allowed.
+   *
+   * @return true to enable iOS app store builds
+   */
+  public static boolean allowAppStoreBuilds() {
+    return false;
+  }
 }

@@ -557,12 +557,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)replaceInput {
   [self.session beginConfiguration];
-
-  if (@available(iOS 16.0, *)) {
-    if (self.session.isMultitaskingCameraAccessSupported) {
-      self.session.multitaskingCameraAccessEnabled = true;
-    }
-  }
   
   if (self.session && self.input) {
     [self.session removeInput:self.input];
