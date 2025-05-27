@@ -364,43 +364,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       newapp.makeCurrent()
       newapp.loadScreen1(form)
     } else {
-      openProjectFromWeb(named: name)
+      view.makeToast("Unable to locate project \(name)")
     }
   }
 
   private func setPopup(popup: String) {
     phoneStatus.setPopup(popup)
-  }
-
-  private var urlSession = URLSession(configuration: .ephemeral)
-
-  private func openProjectFromWeb(named name: String) {
-    DispatchQueue(label: "ProjectLoader").async {
-      guard let url = URL(string: "https://appserver.appinventor.mit.edu/serve/\(name).aia") else {
-        return
-      }
-      let task = self.urlSession.dataTask(with: url) { (data, response, error) in
-        do {
-          let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-          var destination = paths[0]
-          destination.appendPathComponent("\(name).aia")
-          if let data = data {
-            do {
-              try data.write(to: destination)
-              let app = BundledApp(aiaPath: destination)
-              DispatchQueue.main.async {
-                app.makeCurrent()
-                app.loadScreen1(self.form)
-              }
-            } catch {
-              print(error)
-            }
-          }
-        }
-      }
-      task.priority = 1.0
-      task.resume()
-    }
   }
 
   /**

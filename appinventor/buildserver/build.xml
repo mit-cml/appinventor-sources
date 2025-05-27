@@ -144,7 +144,7 @@
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
       <fileset dir="${lib.dir}" includes="dd-plist/dd-plist.jar"/>
-      <fileset dir="res" />
+      <fileset dir="res" if:true="${ios.build.run}" />
     </copy>
   </target>
 
