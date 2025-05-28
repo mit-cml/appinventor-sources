@@ -430,7 +430,7 @@ they get cut off in Windows.
     background-color: background-color;
     background-image: unset;
   }
-  
+
   /*.ode-Logo {
     margin: 0 0 4px 4px;
     -webkit-filter: drop-shadow(0px 0px 1px #222);
@@ -482,6 +482,7 @@ they get cut off in Windows.
     padding-top: 5px;
     font-size: unset;
     padding-right: unset;
+    align-items: center;
   }
   
   .right-spacer {
@@ -520,6 +521,9 @@ they get cut off in Windows.
   
   .ode-TopPanelWarningLabel {
     color: #FF0000;
+    text-align: left;
+    margin-left: 200px;
+    font-size: large;
   }
   
   .ode-TopPanelLabel {
