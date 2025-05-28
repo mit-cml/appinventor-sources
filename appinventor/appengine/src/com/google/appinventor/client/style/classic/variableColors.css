@@ -1,14 +1,7 @@
-/*
-* Copyright 2007-2011 Google Inc. All Rights Reserved.
-* Copyright 2011-2017 MIT, All Rights Reserved.
+/* -*- mode: java; c-basic-offset: 2; -
+* Copyright 2023-2025 MIT, All rights reserved
 * Released under the Apache License, Version 2.0
 * http://www.apache.org/licenses/LICENSE-2.0
-*/
-
-/*
-Droid Sans has a bug in the size of its descenders:
-they get cut off in Windows.
-@import url("http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold");
 */
 
 @external .*;
