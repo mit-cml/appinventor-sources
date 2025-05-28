@@ -682,7 +682,7 @@ public class ARFilamentRenderer {
 
             updateAnimations();
             // renderer renders into filamentRenderTarget
-            // then we read those pixels and push them into displayTextureId
+            // then we read those pixels and push them into displayTextureId to use in ARView3D's filamentFramebuffer
             try {
                 // Render the view
                 renderer.render(view);
@@ -747,10 +747,11 @@ private void handleRenderableBufferRead() {
                         GLES30.glDeleteTextures(1, textures, 0);
                     }
 
-                    // Generate new texture
+                    // keep same number for clarity in tracing texture
                     int[] textures = new int[1];
+                    textures[0] = displayTextureId;
                     GLES30.glGenTextures(1, textures, 0);
-                    displayTextureId = textures[0];
+
 
                     // Bind and configure the new texture
                     GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);

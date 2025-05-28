@@ -156,6 +156,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private PlaneRenderer planeRenderer;
     private PointCloudRenderer pointCloudRenderer;
     private Framebuffer virtualSceneFramebuffer;
+    private Framebuffer filamentFramebuffer;
     private int quadShader = 0;
     private Shader virtualObjectShader;
 
@@ -295,6 +296,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         }
 
+
+        // Create or resize framebuffer
+        if (filamentFramebuffer != null) {
+            filamentFramebuffer.resize(width, height);
+        } else {
+            // Create the virtual scene framebuffer
+            try {
+                filamentFramebuffer = new Framebuffer(render, width, height);
+                Log.d(LOG_TAG, "Created filamentFramebuffer: " +
+                    filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
+            }
+        }
+
         currentViewportWidth = width;
         currentViewportHeight = height;
 
@@ -385,25 +401,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null){
                 backgroundRenderer.updateDisplayGeometry(frame);
                 if (frame.getTimestamp() != 0) {
-                    if (arFilamentRenderer != null) {
-                        // just thought I'd see if i can push this texture to mix in with the camera texture
-                        // if this could work, I could confirm there is nothing wrong with the texture from filament
-                        filamentTextureId = arFilamentRenderer.getDisplayTextureId();
-                        Log.d(LOG_TAG, "arFilamentRenderer texture id is " + filamentTextureId);
-                        if (filamentTextureId > 0){
-                            backgroundRenderer.drawBackground(render, filamentTextureId, currentViewportWidth, currentViewportHeight);
-                        }
-                    }else{
-                        backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
-
-                    }
-
-
+                    backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
                 }
             }
 
@@ -419,66 +425,59 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             camera.getViewMatrix(viewMatrix, 0);
 
-
-            Log.d(LOG_TAG, "drawing, camera is not paused" );
-
-
             setDefaultPositions(arNodes);
 
             String[] modelNodeType = new String[]{"ModelNode"};
             List<ARNode> modelNodes = sort(arNodes, modelNodeType);
 
-
-
-
-
+            //Framebuffer A
             if (arFilamentRenderer != null && modelNodes.size() > 0) {
 
                 arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
-
                 filamentTextureId = arFilamentRenderer.getDisplayTextureId();
 
                 if (filamentTextureId > 0 && currentFilamentTexture == null) {
                     currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
-                    Log.d(LOG_TAG, "current filament texture " + currentFilamentTexture.getTextureId());
+                    Log.d(LOG_TAG, "create texture from filament texture id  " + filamentTextureId + " and should match:" + currentFilamentTexture.getTextureId());
                 }
-                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
-                GLES30.glViewport(0, 0, virtualSceneFramebuffer.getWidth(), virtualSceneFramebuffer.getHeight());
-
+                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, filamentFramebuffer.getFramebufferId());
+                GLES30.glViewport(0, 0, filamentFramebuffer.getWidth(), filamentFramebuffer.getHeight());
 
                 // Draw the Filament texture to the framebuffer
                 Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
-                        " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
-                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
-                GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                        " to framebuffer " + filamentFramebuffer.getFramebufferId());
+                GLES30.glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
                 GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-
 
                 //use model node as SCENE nodes to which pose/translation the quad is attached?
                 ARNode filamentSceneNode = modelNodes.get(0);
 
-                quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, virtualSceneFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+                // render the quad texture (from filament texture id) into the filamentFramebuffer
+                quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
             }
-        GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+
+
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
-            // Skip further rendering if tracking is pau
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-       if (ShowFeaturePoints()) {
-            pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-        }
 
-        // Draw planes and feature points
-       if (PlaneDetectionType() != 0) {
-           Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
-           planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
-                   camera.getDisplayOrientedPose(), projectionMatrix);
 
-       }
 
-        Collection<Plane> planes = session.getAllTrackables(Plane.class);
-        Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
+           if (ShowFeaturePoints()) {
+                pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
+            }
 
+            // Draw planes and feature points
+           if (PlaneDetectionType() != 0) {
+               Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
+               planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
+                       camera.getDisplayOrientedPose(), projectionMatrix);
+           }
+
+           Collection<Plane> planes = session.getAllTrackables(Plane.class);
+           Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
 
            for (Plane plane : planes) {
                ARDetectedPlane arplane = new DetectedPlane(plane);
@@ -488,9 +487,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                        ", type: " + plane.getType() +
                        ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
            }
-/*
 
-*/
             error = GLES30.glGetError();
 
             if (error != GLES30.GL_NO_ERROR) {
@@ -503,22 +500,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             if (objRenderer != null && objectNodes.size() > 0){
                 Log.d(LOG_TAG, "objects " + objectNodes);
-                objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
+                //objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, virtualSceneFramebuffer);
             }
 
             handleTap(frame, camera);
 
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-           GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
-           backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+            //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+            backgroundRenderer.drawVirtualScene(render, filamentFramebuffer, Z_NEAR, Z_FAR);
 
             GLES30.glDisable(GLES30.GL_BLEND);
             // Create another fence after drawing
             GLES30.glFinish();
 
-            // Note: we don't need to extract texture or draw composed scene manually
-            // Filament renders directly to the swapchain
+        // Note: we don't need to extract texture or draw composed scene manually
+        // Filament renders directly to the swapchain
         } catch (Exception e) {
             Log.e(LOG_TAG, "Exception in onDrawFrame: " + e.getMessage(), e);
         }
@@ -531,12 +527,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             // Initialize background renderer
             backgroundRenderer = new BackgroundRenderer(arViewRender);
 
-            // Initialize plane renderer for showing detected planes
             planeRenderer = new PlaneRenderer(arViewRender);
 
             // Initialize point cloud renderer for showing feature points
             pointCloudRenderer = new PointCloudRenderer(arViewRender);
-
 
             objRenderer = new ObjectRenderer(arViewRender);
 
@@ -546,15 +540,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             arFilamentRenderer = new ARFilamentRenderer(this.container, this.glview);
             arFilamentRenderer.initialize();
 
-
-
-
             Log.d(LOG_TAG, "ARFilamentRenderer initialized successfully");
         } catch (IOException e) {
             Log.e(LOG_TAG, "Failed to initialize Filament and renderers", e);
         }
     }
-
 
 
     // Create a default anchor for placing objects

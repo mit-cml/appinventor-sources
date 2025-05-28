@@ -262,9 +262,6 @@ public class BackgroundRenderer {
             // Update the vertex buffer with the new coordinates
             cameraTexCoordsVertexBuffer.set(cameraTexCoords);
 
-            // Debug log to verify buffer sizes
-            Log.d(LOG_TAG, "NDC buffer size: " + NDC_QUAD_COORDS_BUFFER.capacity() +
-                    ", Camera tex coords size: " + cameraTexCoords.capacity());
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error in updateDisplayGeometry", e);
         }
@@ -301,29 +298,12 @@ public class BackgroundRenderer {
 
     public void drawBackground(ARViewRender render, int textureId, int width, int height) {
         try {
-            backgroundShader.setTexture("u_CameraColorTexture", cameraColorTexture);
-            if (textureId > 0) {
-                Log.d(LOG_TAG, "adding in texture to background");
-                Texture temptex = Texture.createFromId(render, textureId);
-
-                backgroundShader.setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
-
-
-
-                //backgroundShader.setTexture("u_Texture", temptex);
-            }
+            //backgroundShader.setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
             render.draw(mesh, backgroundShader, null);
         } catch (java.lang.Exception e) {
             Log.d(LOG_TAG, "Error trying to creat texture" + e);
         }
-
-
     }
-
-    /*public void drawBackground(ARViewRender render, ARFrameBuffer framebuffer) {
-
-        render.draw(mesh, backgroundShader, framebuffer);
-    }*/
 
     /**
      * Draws the virtual scene. Any objects rendered in the given {@link Framebuffer} will be drawn
@@ -334,10 +314,8 @@ public class BackgroundRenderer {
      * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
      */
     public void drawVirtualScene(
-            ARViewRender render, Framebuffer framebuffer, /*ARFrameBuffer virtualSceneFramebuffer,*/
+            ARViewRender render, Framebuffer framebuffer,
             float zNear, float zFar) {
-
-
 
         if (occlusionShader == null) {
             Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
@@ -349,18 +327,19 @@ public class BackgroundRenderer {
         try {
 // filament texture that was written to framebuffer by quadrenderer
             tempShader.setTexture("u_VirtualSceneColorTexture", framebuffer.getColorTexture());
+
+
+            // check framebuffer.getDepthTexture();
         } catch (java.lang.Exception e) {
             throw new RuntimeException(e);
         }
 
         // Explicitly bind to default framebuffer
        // GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-        Log.d(LOG_TAG, "Drawing virtual scene with occlusionShader" + framebuffer.getColorTexture().getTextureId());
+        Log.d(LOG_TAG, "Drawing virtual scene with fb and color TEXTURE id " + framebuffer.getFramebufferId() + " " + framebuffer.getColorTexture().getTextureId());
         // Draw to default framebuffer
         render.draw(mesh, tempShader, null);
 
-        // Restore the camera texture for the next regular camera background draw
-        //tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
     }
 
 
