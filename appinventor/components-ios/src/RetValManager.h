@@ -9,7 +9,7 @@
 
 + (nonnull instancetype)sharedManager NS_SWIFT_NAME(shared());
 - (void)appendReturnValue:(nonnull NSString *)item forBlock:(nonnull NSString *)blockId withStatus:(nonnull NSString *)status;
-- (void)appendLogValue:(nonnull NSString *)item forBlock:(nonnull NSString *)blockId withStatus:(nonnull NSString *)status withLevel:(nonnull NSString *)level;
+- (void)appendLogValue:(NSString *)item forBlock:(NSString *)blockId withStatus:(NSString *)status withLevel:(NSString *)level;
 - (void)sendError:(nonnull NSString *)error;
 - (void)pushScreen:(nonnull NSString *)screenName withValue:(nonnull NSObject *)value;
 - (void)popScreen:(nonnull NSString *)value;

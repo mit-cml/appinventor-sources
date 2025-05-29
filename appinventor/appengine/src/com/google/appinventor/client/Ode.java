@@ -23,10 +23,10 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
-import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -2460,14 +2460,6 @@ public class Ode implements EntryPoint {
     if (currentFileEditor != null) {
       currentFileEditor.resize();
     }
-  }
-
-  private void hideConsole() {
-    consolePanel.setVisible(false);
-  }
-
-  private void showConsole() {
-    consolePanel.setVisible(true);
   }
 
   public void setConsoleVisible(boolean visible) {

@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -39,4 +44,3 @@ public class ConsolePanel extends FlowPanel {
    
   }-*/;
 }
-

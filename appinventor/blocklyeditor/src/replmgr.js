@@ -1141,6 +1141,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "error":
             console.log("processRetVals: Error value = " + r.value);
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            break;
         case "log":
             top.ConsolePanel_addLog(r.level, r.item);
             console.log("processRetVals: Log level = " + r.level);
