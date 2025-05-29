@@ -141,7 +141,7 @@ public class BackgroundRenderer {
                 Form.ASSETS_PREFIX +"occlusion.vert",
                 Form.ASSETS_PREFIX +"occlusion.frag",
                         defines)
-                .setTexture("u_VirtualSceneColorTexture", cameraColorTexture)
+                .setTexture("u_CameraColorTexture", cameraColorTexture)
                 .setDepthTest(false)
                 .setDepthWrite(false)
                 .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
@@ -327,7 +327,7 @@ public class BackgroundRenderer {
         try {
 // filament texture that was written to framebuffer by quadrenderer
             tempShader.setTexture("u_VirtualSceneColorTexture", framebuffer.getColorTexture());
-
+            //tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
 
             // check framebuffer.getDepthTexture();
         } catch (java.lang.Exception e) {

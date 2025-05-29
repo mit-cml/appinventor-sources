@@ -2,14 +2,20 @@ package com.google.appinventor.components.runtime.arview.renderer;
 
 import android.opengl.Matrix;
 import android.util.Log;
+import android.opengl.GLES30;
 import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.ar.*;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.Trackable;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,18 +52,14 @@ public class ObjectRenderer {
 
   private Shader shader;
 
-  // Temporary matrices allocated here to reduce allocations for each frame.
-  private final float[] viewMatrix = new float[16];
-  private final float[] modelMatrix = new float[16];
-  private final float[] modelViewMatrix = new float[16];
-  private final float[] modelViewProjectionMatrix = new float[16];
-  private final float[] arNodeAngleUvMatrix = new float[4]; // 2x2 rotation matrix for uv coords
 
   // Default lighting and material parameters
   private final float[] defaultLightingParameters = {0.0f, 1.0f, 0.0f, 1.0f};
   private final float[] defaultMaterialParameters = {0.3f, 0.5f, 0.2f, 16.0f};
   private final float[] defaultColorCorrectionParameters = {1.0f, 1.0f, 1.0f, 1.0f};
   private final float[] defaultObjectColor = {1.0f, 1.0f, 1.0f, 1.0f}; // White
+
+
 
   public ObjectRenderer(ARViewRender render) throws IOException {
     // Create the shader once during initialization
@@ -77,22 +79,15 @@ public class ObjectRenderer {
    * @param scaleFactor A separate scaling factor to apply before the {@code modelMatrix}.
    * @see android.opengl.Matrix
    */
-  public void updateModelMatrix(float[] modelMatrix, float scaleFactor) {
+  public float[] updateModelMatrix(float[] modelMatrix, float scaleFactor) {
     float[] scaleMatrix = new float[16];
     Matrix.setIdentityM(scaleMatrix, 0);
     scaleMatrix[0] = scaleFactor;
     scaleMatrix[5] = scaleFactor;
     scaleMatrix[10] = scaleFactor;
-    Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
-  }
-
-  public void updateModelMatrix(float[] modelMatrix, float scaleFactorX, float scaleFactorY, float scaleFactorZ) {
-    float[] scaleMatrix = new float[16];
-    Matrix.setIdentityM(scaleMatrix, 0);
-    scaleMatrix[0] = scaleFactorX;
-    scaleMatrix[5] = scaleFactorY;
-    scaleMatrix[10] = scaleFactorZ;
-    Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
+    float[] result = new float[16];
+    Matrix.multiplyMM(result, 0, modelMatrix, 0, scaleMatrix, 0);
+    return result;
   }
 
   /**
@@ -196,6 +191,43 @@ public class ObjectRenderer {
     }
   }
 
+  private void renderSingleObject(ARViewRender render, ARNode arNode,
+                                  float[] viewMatrix, float[] cameraProjection, Framebuffer virtualFrameBuffer) {
+    try {
+      Anchor anchor = arNode.Anchor();
+      if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
+        return;
+      }
+
+
+      // Get mesh and texture
+      Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
+      Texture nodeTexture = createOrGetTexture(render, arNode.Texture());
+      shader.setTexture("u_Texture", nodeTexture);
+
+      // Calculate matrices
+      float[] anchorMatrix = new float[16];
+      anchor.getPose().toMatrix(anchorMatrix, 0);
+
+      float[] modelMatrix = updateModelMatrix(anchorMatrix, 1.0f);
+      float[] localModelViewMatrix = new float[16];
+      float[] localModelViewProjectionMatrix = new float[16];
+
+      Matrix.multiplyMM(localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+      Matrix.multiplyMM(localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
+
+      shader.setMat4("u_ModelView", localModelViewMatrix);
+      shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
+
+      Log.d(TAG, "Drawing arnode: " + arNode.toString());
+      // Draw this single object
+      render.draw(nodeMesh, shader, virtualFrameBuffer);
+
+    } catch (Exception e) {
+      Log.e(TAG, "Error rendering single object: " + e.toString(), e);
+    }
+  }
+
   /**
    * Draws the model.
    *
@@ -207,64 +239,30 @@ public class ObjectRenderer {
   public void draw(
           ARViewRender render,
           Collection<ARNode> allObjectNodes,
-          float[] viewMatrix,
-          float[] cameraProjection
+          /*Pose cameraPose,*/
+          float [] viewMatrix,
+          float[] cameraProjection,
+          Framebuffer virtualFrameBuffer
   ) {
     if (allObjectNodes == null || allObjectNodes.isEmpty()) {
       return;
     }
     Log.i("Object renderer", "number of ar nodes is "+ allObjectNodes.size());
-    for (ARNode arNode : allObjectNodes) {
+
+    shader.setVec4("u_LightingParameters", defaultLightingParameters);
+    shader.setVec4("u_MaterialParameters", defaultMaterialParameters);
+    shader.setVec4("u_ColorCorrectionParameters", defaultColorCorrectionParameters);
+    shader.setVec4("u_ObjColor", defaultObjectColor);
+    shader.setDepthTest(true);
+    shader.setDepthWrite(true);
+
+    ARNode arNode = (ARNode) ((ArrayList) allObjectNodes).get(0);
+    //for (ARNode arNode : allObjectNodes) {
       try {
-        Anchor anchor = arNode.Anchor();
-        Trackable trackable = arNode.Trackable();
-
-        if (anchor == null) { // || trackable == null) {
-          Log.d(TAG, "Skipping nodes no anchor ");
-          continue;
-        }
-
-
-        if (anchor.getTrackingState() != TrackingState.TRACKING) {
-          Log.d(TAG, "Skipping node with non-tracking anchor: " + arNode + ", state: " + anchor.getTrackingState());
-          continue;
-        }
-
-        Log.i(TAG, "Rendering node: " + arNode.toString() + " " + arNode.Model());
-
-        // Get or create the mesh and texture for this node
-        Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
-
-        String textureToUse = arNode.Texture();
-        Log.i(TAG, "texture from arnode " + textureToUse);
-        Texture nodeTexture = createOrGetTexture(render, textureToUse);
-
-        // Set the texture for this render pass
-        shader.setTexture("u_Texture", nodeTexture);
-
-        // Get the world position of the anchor
-        float[] anchorMatrix = new float[16];
-        anchor.getPose().toMatrix(anchorMatrix, 0);
-
-        // Apply transformations
-        System.arraycopy(anchorMatrix, 0, modelMatrix, 0, 16);
-        updateModelMatrix(modelMatrix, 1.0f);
-        Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
-        Matrix.multiplyMM(modelViewProjectionMatrix, 0, cameraProjection, 0, modelViewMatrix, 0);
-
-        // Populate the shader uniforms for this frame
-        shader.setMat4("u_ModelView", modelViewMatrix);
-        shader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-        shader.setVec4("u_LightingParameters", defaultLightingParameters);
-        shader.setVec4("u_MaterialParameters", defaultMaterialParameters);
-        shader.setVec4("u_ColorCorrectionParameters", defaultColorCorrectionParameters);
-        shader.setVec4("u_ObjColor", defaultObjectColor);
-
-        // Draw the mesh with this shader
-        render.draw(nodeMesh, shader);
+        renderSingleObject(render, arNode, viewMatrix, cameraProjection, virtualFrameBuffer);
       } catch (Exception e) {
         Log.e(TAG, "Error rendering object: " + e.toString(), e);
       }
-    }
+   // }
   }
 }

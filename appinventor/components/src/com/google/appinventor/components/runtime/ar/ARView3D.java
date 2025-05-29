@@ -356,6 +356,86 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
+public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, float[] viewMatrix, float[] projectionMatrix){
+    if (ShowFeaturePoints()) {
+        pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
+    }
+
+    // Draw planes and feature points
+    if (PlaneDetectionType() != 0) {
+        Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
+        planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
+            camera.getDisplayOrientedPose(), projectionMatrix);
+    }
+
+    Collection<Plane> planes = session.getAllTrackables(Plane.class);
+    Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
+
+    for (Plane plane : planes) {
+        ARDetectedPlane arplane = new DetectedPlane(plane);
+        Log.i("has tracking arplane", arplane.toString());
+        PlaneDetected(arplane); //dispatch
+        Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
+            ", type: " + plane.getType() +
+            ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
+    }
+
+}
+
+    public void drawObjects(ARViewRender render, List<ARNode>objectNodes, float[] viewMatrix, float[] projectionMatrix) {
+
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
+        GLES30.glViewport(0, 0, virtualSceneFramebuffer.getWidth(), virtualSceneFramebuffer.getHeight());
+
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+
+        GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);    // Enable depth testing
+        GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
+        GLES30.glDepthMask(true);
+
+        // Draw the Filament texture to the framebuffer
+        Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
+            " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
+
+
+        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, virtualSceneFramebuffer);
+    }
+
+
+    public void drawAnimatedObjects(ARViewRender render, List<ARNode>modelNodes, float[] viewMatrix, float[] projectionMatrix) {
+        arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
+        filamentTextureId = arFilamentRenderer.getDisplayTextureId();
+
+        try{
+            if (filamentTextureId > 0 && currentFilamentTexture == null) {
+                currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
+                Log.d(LOG_TAG, "create texture from filament texture id  " + filamentTextureId + " and should match:" + currentFilamentTexture.getTextureId());
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception in createFromId in onDrawFrame: " + e.getMessage(), e);
+        }
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, filamentFramebuffer.getFramebufferId());
+        GLES30.glViewport(0, 0, filamentFramebuffer.getWidth(), filamentFramebuffer.getHeight());
+
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        GLES30.glDepthFunc(GLES30.GL_LESS);
+        // Draw the Filament texture to the framebuffer
+        Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
+            " to framebuffer " + filamentFramebuffer.getFramebufferId());
+
+
+        //use model node as SCENE nodes to which pose/translation the quad is attached?
+        ARNode filamentSceneNode = modelNodes.get(0);
+
+        //quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+    }
+
+
     @Override
     public void onDrawFrame(ARViewRender render) {
         if (session == null) {
@@ -396,14 +476,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
 
-            GLES30.glFinish();
-
-
 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+            GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
+            GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+            GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+            GLES30.glDepthFunc(GLES30.GL_LESS);
 
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null){
@@ -430,87 +509,65 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             String[] modelNodeType = new String[]{"ModelNode"};
             List<ARNode> modelNodes = sort(arNodes, modelNodeType);
 
+
+
+
             //Framebuffer A
             if (arFilamentRenderer != null && modelNodes.size() > 0) {
-
-                arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
-                filamentTextureId = arFilamentRenderer.getDisplayTextureId();
-
-                if (filamentTextureId > 0 && currentFilamentTexture == null) {
-                    currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
-                    Log.d(LOG_TAG, "create texture from filament texture id  " + filamentTextureId + " and should match:" + currentFilamentTexture.getTextureId());
-                }
-                GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, filamentFramebuffer.getFramebufferId());
-                GLES30.glViewport(0, 0, filamentFramebuffer.getWidth(), filamentFramebuffer.getHeight());
-
-                // Draw the Filament texture to the framebuffer
-                Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
-                        " to framebuffer " + filamentFramebuffer.getFramebufferId());
-                GLES30.glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-                GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-
-                //use model node as SCENE nodes to which pose/translation the quad is attached?
-                ARNode filamentSceneNode = modelNodes.get(0);
-
-                // render the quad texture (from filament texture id) into the filamentFramebuffer
-                quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+                //drawAnimatedObjects(render, modelNodes, viewMatrix, projectionMatrix);
             }
 
-
-
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-
-
-
-
-           if (ShowFeaturePoints()) {
-                pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
-            }
-
-            // Draw planes and feature points
-           if (PlaneDetectionType() != 0) {
-               Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
-               planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
-                       camera.getDisplayOrientedPose(), projectionMatrix);
-           }
-
-           Collection<Plane> planes = session.getAllTrackables(Plane.class);
-           Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
-
-           for (Plane plane : planes) {
-               ARDetectedPlane arplane = new DetectedPlane(plane);
-               Log.i("has tracking arplane", arplane.toString());
-               PlaneDetected(arplane); //dispatch
-               Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
-                       ", type: " + plane.getType() +
-                       ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
-           }
 
             error = GLES30.glGetError();
-
             if (error != GLES30.GL_NO_ERROR) {
                 Log.e(LOG_TAG, "GL error before [draw arfilament]: 0x" + Integer.toHexString(error));
             }
+            GLES30.glFinish();
 
+
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
+            GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+
+            
 
             String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"};
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
-            if (objRenderer != null && objectNodes.size() > 0){
-                Log.d(LOG_TAG, "objects " + objectNodes);
-                //objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, virtualSceneFramebuffer);
+            //Framebuffer B
+            if (virtualSceneFramebuffer != null) {
+                if (objRenderer != null && objectNodes.size() > 0){
+                    Log.d(LOG_TAG, "objects " + objectNodes);
+                    drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
+                }
             }
+            GLES30.glFinish();
+
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
+            GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+            //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+            error = GLES30.glGetError();
+            if (error != GLES30.GL_NO_ERROR) {
+                Log.e(LOG_TAG, "GL error afger [draw objects]: 0x" + Integer.toHexString(error));
+            }
+
 
             handleTap(frame, camera);
 
 
-            //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-            backgroundRenderer.drawVirtualScene(render, filamentFramebuffer, Z_NEAR, Z_FAR);
+
+
 
             GLES30.glDisable(GLES30.GL_BLEND);
-            // Create another fence after drawing
             GLES30.glFinish();
 
         // Note: we don't need to extract texture or draw composed scene manually
