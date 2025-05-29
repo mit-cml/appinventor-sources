@@ -206,6 +206,12 @@ public interface ImagesNeo extends Images {
   ImageResource datePickerComponent();
 
   /**
+   * Designer palette item: form component
+   */
+  @Source("com/google/appinventor/images/form.png")
+  ImageResource form();
+
+  /**
    * Designer palette item: horizontal arrangement component
    */
   @Override
