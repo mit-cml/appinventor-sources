@@ -64,8 +64,8 @@ public class BackgroundRenderer {
     private Texture placeHolderTexture;
     private Texture depthColorPaletteTexture;
 
-    private boolean useDepthVisualization;
-    private boolean useOcclusion;
+    private boolean useDepthVisualization = false;
+    private boolean useOcclusion = false;
     private float aspectRatio;
 
     // Shader names - you would need to create these shader files
@@ -209,17 +209,23 @@ public class BackgroundRenderer {
             this.useOcclusion = useOcclusion;
         }
         HashMap<String, String> defines = new HashMap<>();
-        defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
-        occlusionShader =
+        defines.put("USE_OCCLUSION", "1");// useOcclusion ? "1" : "0");
+       /* tkae out for now to just test occlusion
+       occlusionShader =
                 Shader.createFromAssets(render, "occlusion.vert", "occlusion.frag", defines)
                         .setDepthTest(false)
-                        .setDepthWrite(false)
-                        .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
-        if (useOcclusion) {
-            occlusionShader
+                        .setDepthWrite(false);
+
+        if (useOcclusion) {*/
+        occlusionShader =
+            Shader.createFromAssets(render,  Form.ASSETS_PREFIX +"occlusion.vert",  Form.ASSETS_PREFIX +"occlusion.frag", defines)
                     .setTexture("u_CameraDepthTexture", cameraDepthTexture)
-                    .setFloat("u_DepthAspectRatio", aspectRatio);
-        }
+                    .setTexture("u_CameraColorTexture", cameraColorTexture)
+                    .setFloat("u_DepthAspectRatio", aspectRatio)
+                .setDepthTest(true)
+                .setDepthWrite(false)
+                .setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ZERO); // Add this line
+       // }
     }
 
     /**
@@ -323,11 +329,13 @@ public class BackgroundRenderer {
         }
         Shader tempShader = occlusionShader;
 
-
         try {
 // filament texture that was written to framebuffer by quadrenderer
             tempShader.setTexture("u_VirtualSceneColorTexture", framebuffer.getColorTexture());
-            //tempShader.setTexture("u_CameraColorTexture", cameraColorTexture);
+            tempShader.setTexture("u_VirtualSceneDepthTexture", framebuffer.getDepthTexture())
+                .setFloat("u_ZNear", zNear)
+                .setFloat("u_ZFar", zFar)
+                .setTexture("u_CameraColorTexture", cameraColorTexture);
 
             // check framebuffer.getDepthTexture();
         } catch (java.lang.Exception e) {

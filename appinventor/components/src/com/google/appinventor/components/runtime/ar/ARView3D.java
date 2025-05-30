@@ -232,6 +232,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
 
+        depthSettings.setUseDepthForOcclusion(true);
+
         // Register with container and form lifecycle events
         container.$add(this);
         container.$form().registerForOnClear(this);
@@ -495,6 +497,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null){
                 backgroundRenderer.updateDisplayGeometry(frame);
+                try {
+                    backgroundRenderer.setUseDepthVisualization(render, false);
+                    backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Failed to read a required asset file", e);
+                    return;
+                }
                 if (frame.getTimestamp() != 0) {
                     backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
                 }
@@ -502,6 +511,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             if (camera.getTrackingState() == TrackingState.PAUSED) {
                 return;
+            }
+
+            if (camera.getTrackingState() == TrackingState.TRACKING
+                && (depthSettings.useDepthForOcclusion()
+                || depthSettings.depthColorVisualizationEnabled())) {
+                try (android.media.Image depthImage = frame.acquireDepthImage16Bits()) {
+                    backgroundRenderer.updateCameraDepthTexture(depthImage);
+                } catch (NotYetAvailableException e) {
+                    // This normally means that depth data is not available yet. This is normal so we will not
+                    // spam the logcat with this.
+                }
             }
 
             int error = GLES30.glGetError();
@@ -678,30 +698,44 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Configure ARCore session
     private void configureSession() {
 
-            Config config = session.getConfig();
-            config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-            config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+        Config config = session.getConfig();
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
 
-            // This is the critical part for plane detection
-            if (PlaneDetectionType() == 1 || PlaneDetectionType() == 3) {
-                config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
-            } else if (PlaneDetectionType() == 2) {
-                config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
-            } else if (PlaneDetectionType() == 3) {
-                config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
-            } else {
-                config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
-            }
-
-            if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-                config.setDepthMode(Config.DepthMode.AUTOMATIC);
-            } else {
-                config.setDepthMode(Config.DepthMode.DISABLED);
-            }
-
-            config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
-            session.configure(config);
+        // This is the critical part for plane detection
+        if (PlaneDetectionType() == 1 || PlaneDetectionType() == 3) {
+            config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
+        } else if (PlaneDetectionType() == 2) {
+            config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
+        } else if (PlaneDetectionType() == 3) {
+            config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
+        } else {
+            config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
         }
+
+
+// Check whether the user's device supports the Depth API.
+        boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
+        boolean isGeospatialSupported =
+            session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
+        Log.i(LOG_TAG, "geosaption supported ? " + isGeospatialSupported);
+
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        } else {
+            config.setDepthMode(Config.DepthMode.DISABLED);
+        }
+        /*if (isDepthSupported && isGeospatialSupported) {
+            // These three settings are needed to use Geospatial Depth.
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+            config.setGeospatialMode(Config.GeospatialMode.ENABLED);
+            Log.i(LOG_TAG, "setting geospatial mode " + isGeospatialSupported);
+           // config.setStreetscapeGeometryMode(Config.StreetscapeGeometryMode.ENABLED);
+        }*/
+
+        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        session.configure(config);
+    }
 
     // Update lighting estimation from ARCore
    /* private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {

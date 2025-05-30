@@ -38,17 +38,11 @@ public final class ARUtils {
     Log.i("parsing pose hash Json...", "");
 
     Pose pose = null;
-    try {
-      LinkedHashMap translation = (LinkedHashMap) op.get("t");
-      LinkedHashMap rotation = (LinkedHashMap) op.get("q");
+    LinkedHashMap translation = (LinkedHashMap) op.get("t");
+    LinkedHashMap rotation = (LinkedHashMap) op.get("q");
 
-      /*float xf = parseFloat((String)translation.get("x"));
-      float yf = parseFloat((String)translation.get("y"));
-      float zf = parseFloat((String)translation.get("z"));
-      float qxf = parseFloat((String)rotation.get("x"));
-      float qyf = parseFloat((String)rotation.get("y"));
-      float qzf =  parseFloat((String)rotation.get("z"));
-      float qwf = parseFloat((String)rotation.get("w"));*/
+    try {
+
 
       float x = parseFloat(String.format("%.2f",((Double)translation.get("x")).floatValue()));
       float y = parseFloat(String.format("%.2f",((Double)translation.get("y")).floatValue()));
@@ -63,7 +57,17 @@ public final class ARUtils {
       Log.i("creating Pose in parsePoseLinkedHM ", "parsed object " + pose);
     } catch (Exception e) {
       Log.i("creating Pose error", "err" + e);
-      pose = new Pose(new float[]{0f, 0f, -1f}, new float[]{0f, 0f, 0f, 1f});
+
+
+      float x = parseFloat((String)translation.get("x"));
+      float y = parseFloat((String)translation.get("y"));
+      float z = parseFloat((String)translation.get("z"));
+      float qx = parseFloat((String)rotation.get("x"));
+      float qy= parseFloat((String)rotation.get("y"));
+      float qz =  parseFloat((String)rotation.get("z"));
+      float qw= parseFloat((String)rotation.get("w"));
+
+      pose = new Pose(new float[]{x, y, z}, new float[]{qx, qy, qz, qw});
     }
     return pose;
   }

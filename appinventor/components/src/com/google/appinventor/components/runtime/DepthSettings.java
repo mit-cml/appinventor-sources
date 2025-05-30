@@ -14,7 +14,7 @@ public class DepthSettings {
 
     // Current depth-based settings used by the app.
     private boolean depthColorVisualizationEnabled = false;
-    private boolean useDepthForOcclusion = false;
+    private boolean useDepthForOcclusion = true;
     private SharedPreferences sharedPreferences;
 
     /**
