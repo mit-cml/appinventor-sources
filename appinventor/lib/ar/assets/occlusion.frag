@@ -1,4 +1,6 @@
 #version 300 es
+#extension GL_OES_EGL_image_external_essl3 : require
+
 /*
  * Copyright 2020 Google LLC
  *
@@ -20,7 +22,8 @@ precision mediump float;
 // composed with the background image depending on which modes were set in
 // DepthCompositionRenderer.setDepthModes.
 uniform sampler2D u_VirtualSceneColorTexture;
-uniform sampler2D u_CameraColorTexture;
+
+uniform samplerExternalOES u_CameraColorTexture;
 
 #if USE_OCCLUSION
 // The AR camera depth texture.
@@ -163,42 +166,22 @@ void main() {
     vec4 virtualSceneColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
     vec4 cameraColor = texture(u_CameraColorTexture, v_CameraTexCoord);
 
-    o_FragColor.r = virtualSceneColor.r + (.00001 + cameraColor.r);
-    o_FragColor.gb = virtualSceneColor.gb;
-    o_FragColor= vec4(o_FragColor.rgb, virtualSceneColor.a > .1 ? 1.0 : 0.0);
-
-    #if USE_OCCLUSION
-    if (o_FragColor.a == 0.0) {
-        // There's no sense in calculating occlusion for a fully transparent pixel.
+    // If no virtual content, show camera background
+    if (virtualSceneColor.a <= 0.1) {
+        o_FragColor = cameraColor;
         return;
     }
+
+    #if USE_OCCLUSION
     float assetDepthMm = Depth_GetVirtualSceneDepthMillimeters(
     u_VirtualSceneDepthTexture, v_VirtualSceneTexCoord, u_ZNear, u_ZFar);
 
     float occlusion = Depth_GetBlurredOcclusionAroundUV(
     u_CameraDepthTexture, v_CameraTexCoord, assetDepthMm);
 
-    // If the above blur operation is too expensive, you can replace it with the
-    // following lines.
-    /* float occlusion = Depth_GetOcclusion(u_CameraDepthTexture,
-      v_CameraTexCoord, assetDepthMm); */
-
-    // The virtual object mask is blurred, we make the falloff steeper to simulate
-    // erosion operator. This is needed to make the fully occluded virtual object
-    // invisible.
-    float objectMaskEroded = pow(occlusion, 10.0);
-
-    // occlusionTransition equal to 1 means fully occluded object. This operation
-    // boosts occlusion near the edges of the virtual object, but does not affect
-    // occlusion within the object.
-    float occlusionTransition =
-    clamp(occlusion * (2.0 - objectMaskEroded), 0.0, 1.0);
-
-    // Clips occlusion if we want to partially show fully occluded object.
-    float kMaxOcclusion = 1.0;
-    occlusionTransition = min(occlusionTransition, kMaxOcclusion);
-
-    o_FragColor *= 1.0 - occlusion;
-
-    #endif  // USE_OCCLUSION
+    // THIS IS THE KEY: blend between virtual object and camera based on occlusion
+    o_FragColor = mix(virtualSceneColor, cameraColor, occlusion);
+    #else
+    o_FragColor = virtualSceneColor;
+    #endif
 }
