@@ -60,6 +60,8 @@
     <link type="text/css" rel="stylesheet" href="static/css/iOS.css">
     <link type="text/css" rel="stylesheet" href="static/css/DarkTheme.css">
     <link type="text/css" rel="stylesheet" href="static/css/fonts.css">
+
+    <link type="text/css" rel="stylesheet" href="static/css/nano.min.css">
     <noscript>
       <div class="floatingBox">
         <h2> App Inventor needs JavaScript enabled to run.</h2>
@@ -104,6 +106,7 @@
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta1.min.js"></script>
+    <script type="text/javascript" src="static/js/pickr.min.js"></script>
     <script type="text/javascript" src="static/js/keyboard-navigation-0.5.13.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>

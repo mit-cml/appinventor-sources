@@ -372,6 +372,9 @@ public abstract class ProjectEditor extends Composite {
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
                                                     SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+    String colors = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+    Ode.getInstance().setProjectColors(colors);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);
