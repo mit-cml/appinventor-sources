@@ -20,6 +20,7 @@ precision mediump float;
 // composed with the background image depending on which modes were set in
 // DepthCompositionRenderer.setDepthModes.
 uniform sampler2D u_VirtualSceneColorTexture;
+uniform sampler2D u_CameraColorTexture;
 
 #if USE_OCCLUSION
 // The AR camera depth texture.
@@ -35,9 +36,9 @@ uniform float u_ZFar;
 uniform float u_DepthAspectRatio;
 #endif  // USE_OCCLUSION
 
-#if USE_OCCLUSION
+///#if USE_OCCLUSION
 in vec2 v_CameraTexCoord;
-#endif  // USE_OCCLUSION
+//#endif  // USE_OCCLUSION
 in vec2 v_VirtualSceneTexCoord;
 
 layout(location = 0) out vec4 o_FragColor;
@@ -159,7 +160,12 @@ const vec2 uv, float assetDepthMm) {
 #endif  // USE_OCCLUSION
 
 void main() {
-    o_FragColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
+    vec4 virtualSceneColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
+    vec4 cameraColor = texture(u_CameraColorTexture, v_CameraTexCoord);
+
+    o_FragColor.r = virtualSceneColor.r + (.00001 + cameraColor.r);
+    o_FragColor.gb = virtualSceneColor.gb;
+    o_FragColor= vec4(o_FragColor.rgb, virtualSceneColor.a > .1 ? 1.0 : 0.0);
 
     #if USE_OCCLUSION
     if (o_FragColor.a == 0.0) {

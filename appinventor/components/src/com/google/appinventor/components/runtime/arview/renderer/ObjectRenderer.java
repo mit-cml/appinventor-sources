@@ -249,20 +249,20 @@ public class ObjectRenderer {
     }
     Log.i("Object renderer", "number of ar nodes is "+ allObjectNodes.size());
 
-    shader.setVec4("u_LightingParameters", defaultLightingParameters);
-    shader.setVec4("u_MaterialParameters", defaultMaterialParameters);
-    shader.setVec4("u_ColorCorrectionParameters", defaultColorCorrectionParameters);
-    shader.setVec4("u_ObjColor", defaultObjectColor);
-    shader.setDepthTest(true);
-    shader.setDepthWrite(true);
+    //shader.setVec4("u_LightingParameters", defaultLightingParameters);
+    //shader.setVec4("u_MaterialParameters", defaultMaterialParameters);
+    //shader.setVec4("u_ColorCorrectionParameters", defaultColorCorrectionParameters);
+    //shader.setVec4("u_ObjColor", defaultObjectColor);
+    //shader.setDepthTest(true);
+    //shader.setDepthWrite(true);
 
-    ARNode arNode = (ARNode) ((ArrayList) allObjectNodes).get(0);
-    //for (ARNode arNode : allObjectNodes) {
+    //ARNode arNode = (ARNode) ((ArrayList) allObjectNodes).get(0);
+    for (ARNode arNode : allObjectNodes) {
       try {
         renderSingleObject(render, arNode, viewMatrix, cameraProjection, virtualFrameBuffer);
       } catch (Exception e) {
         Log.e(TAG, "Error rendering object: " + e.toString(), e);
       }
-   // }
+   }
   }
 }

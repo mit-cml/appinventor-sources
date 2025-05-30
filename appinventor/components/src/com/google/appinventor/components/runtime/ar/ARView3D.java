@@ -128,8 +128,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
             0x009688, 0x4CAF50, 0x8BC34A, 0xCDDC39, 0xFFEB3B, 0xFFC107, 0xFF9800,
     };
-    private static final float Z_NEAR = 0.01f;
-    private static final float Z_FAR = 100f;
+    private static final float Z_NEAR = 0.1f;
+    private static final float Z_FAR = 40f;
     private static final int CUBE_MAP_RESOLUTION = 16;
     private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
@@ -356,31 +356,35 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, float[] viewMatrix, float[] projectionMatrix){
-    if (ShowFeaturePoints()) {
-        pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
+    public void emitPlaneDetectedEvent() {
+        Collection<Plane> planes = session.getAllTrackables(Plane.class);
+        Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
+
+        for (Plane plane : planes) {
+            ARDetectedPlane arplane = new DetectedPlane(plane);
+            Log.i("has tracking arplane", arplane.toString());
+            PlaneDetected(arplane); //dispatch
+            Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
+                ", type: " + plane.getType() +
+                ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
+        }
     }
 
-    // Draw planes and feature points
-    if (PlaneDetectionType() != 0) {
-        Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
-        planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
-            camera.getDisplayOrientedPose(), projectionMatrix);
+    public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, float[] viewMatrix, float[] projectionMatrix){
+        if (ShowFeaturePoints()) {
+            pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
+        }
+
+        // Draw planes and feature points
+        /*if (PlaneDetectionType() != 0) {
+            Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
+            planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
+                camera.getDisplayOrientedPose(), projectionMatrix);
+        }*/
+
+        emitPlaneDetectedEvent();
+
     }
-
-    Collection<Plane> planes = session.getAllTrackables(Plane.class);
-    Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
-
-    for (Plane plane : planes) {
-        ARDetectedPlane arplane = new DetectedPlane(plane);
-        Log.i("has tracking arplane", arplane.toString());
-        PlaneDetected(arplane); //dispatch
-        Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
-            ", type: " + plane.getType() +
-            ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
-    }
-
-}
 
     public void drawObjects(ARViewRender render, List<ARNode>objectNodes, float[] viewMatrix, float[] projectionMatrix) {
 
@@ -391,9 +395,9 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
         GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
-        GLES30.glEnable(GLES30.GL_DEPTH_TEST);    // Enable depth testing
-        GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
-        GLES30.glDepthMask(true);
+        //GLES30.glEnable(GLES30.GL_DEPTH_TEST);    // Enable depth testing
+       // GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
+       // GLES30.glDepthMask(true);
 
         // Draw the Filament texture to the framebuffer
         Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
@@ -424,6 +428,8 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
 
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         GLES30.glDepthFunc(GLES30.GL_LESS);
+
+        GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
         // Draw the Filament texture to the framebuffer
         Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
             " to framebuffer " + filamentFramebuffer.getFramebufferId());
@@ -480,8 +486,10 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-            GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-            GLES30.glDepthFunc(GLES30.GL_LESS);
+            // DISABLE depth for camera background
+            GLES30.glDisable(GLES30.GL_DEPTH_TEST);
+            GLES30.glDepthMask(false); // Don't write to screen depth buffer    // DISABLE depth for camera background
+            GLES30.glEnable(GLES30.GL_BLEND);
 
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
@@ -527,12 +535,15 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
+            // DISABLE depth for camera background
+            GLES30.glDisable(GLES30.GL_DEPTH_TEST);
+            GLES30.glDepthMask(false); // Don't write to screen depth buffer
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
             drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+            //emitPlaneDetectedEvent();
 
-            
 
             String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"};
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
@@ -548,13 +559,14 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
+            GLES30.glDisable(GLES30.GL_DEPTH_TEST);
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
             //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
-            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+
             error = GLES30.glGetError();
             if (error != GLES30.GL_NO_ERROR) {
                 Log.e(LOG_TAG, "GL error afger [draw objects]: 0x" + Integer.toHexString(error));
@@ -562,10 +574,6 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
 
 
             handleTap(frame, camera);
-
-
-
-
 
             GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
@@ -696,7 +704,7 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
         }
 
     // Update lighting estimation from ARCore
-    private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {
+   /* private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {
         if (virtualObjectShader == null) {
             return;
         }
@@ -726,7 +734,7 @@ public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, 
 
         // Update cube map
         cubeMapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
-    }
+    }*/
 
     // Update spherical harmonics coefficients for lighting
     private void updateSphericalHarmonicsCoefficients(float[] coefficients) {
