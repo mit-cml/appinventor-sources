@@ -52,11 +52,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
 import java.util.Locale;
@@ -71,14 +69,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -132,9 +129,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  private static final Flag<String> buildServerPassword =
+          Flag.createFlag("build.server.password", "");
   // host[:port] to use for connecting to the second build server
   private static final Flag<String> buildServerHost2 =
       Flag.createFlag("build2.server.host", "");
+  private static final Flag<String> buildServerPassword2 =
+          Flag.createFlag("build2.server.password", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> appengineHost =
       Flag.createFlag("appengine.host", "");
@@ -538,6 +539,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           outputFileDir,
           isAab));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
+      setBuildServerPassword(connection, secondBuildserver);
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
 
@@ -788,9 +790,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   private String getBuildServerUrlStr(String userName, String userId,
     long projectId, boolean secondBuildserver, String fileName, boolean isAab)
       throws EncryptionException {
+    final String buildServerHost = secondBuildserver
+            ? YoungAndroidProjectService.buildServerHost2.get()
+            : YoungAndroidProjectService.buildServerHost.get();
+
     UriBuilder uriBuilder = new UriBuilder(
         "http://"
-            + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get())
+            + buildServerHost
             + "/buildserver/build-all-from-zip-async")
         .add("uname", userName)
         .add("callback", "http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH +
@@ -802,6 +808,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
     }
     return uriBuilder.build();
+  }
+
+  private void setBuildServerPassword(HttpURLConnection connection, boolean secondBuildserver) {
+    final String buildServerPassword = secondBuildserver
+            ? YoungAndroidProjectService.buildServerPassword2.get()
+            : YoungAndroidProjectService.buildServerPassword.get();
+
+    if (Objects.isNull(buildServerPassword) || buildServerPassword.isEmpty()) {
+      // No need to set a password, as the build server is not password protected.
+      return;
+    }
+
+    // Set the password as Password token...
+    connection.setRequestProperty("Authorization", "Password " + buildServerPassword);
   }
 
   private String getCurrentHost() {
