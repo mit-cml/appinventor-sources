@@ -13,6 +13,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME;
@@ -121,6 +122,7 @@ public class LocalProjectService implements ProjectServiceAsync {
         "main=" + qualifiedName + ".Screen1\n" +
         "source=../src\n" +
         "actionbar=True\n" +
+        "projectcolors=\n" +
         "useslocation=False\n" +
         "assets=../assets\n" +
         "build=../build\n" +
@@ -320,6 +322,7 @@ public class LocalProjectService implements ProjectServiceAsync {
             properties.put(parts[0].trim(), parts[1].trim());
           }
         }
+
         ProjectSettings settings = new ProjectSettings(
             Ode.getInstance().getProjectManager().getProject(projectId));
         YoungAndroidSettings child = (YoungAndroidSettings) settings.getSettings(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);
@@ -353,6 +356,8 @@ public class LocalProjectService implements ProjectServiceAsync {
             properties.getOrDefault("color.accent", ""));
         child.changePropertyValue(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE,
             properties.getOrDefault("defaultfilescope", ""));
+        child.changePropertyValue(YOUNG_ANDROID_SETTINGS_PROJECT_COLORS,
+                properties.getOrDefault("projectcolors", ""));
         callback.onSuccess(settings.encodeSettings());
       } catch (Exception e) {
         callback.onFailure(e);

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="protobuf" level="project" />
+    <orderEntry type="library" name="gcs" level="project" />
+    <orderEntry type="library" name="plovr" level="project" />
+    <orderEntry type="library" name="junit-4.13.2" level="project" />
+    <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="library" name="lib3" level="project" />
+    <orderEntry type="library" name="build" level="project" />
+    <orderEntry type="library" name="appengine" level="project" />
+    <orderEntry type="library" name="tools" level="project" />
+    <orderEntry type="library" name="gwt-dnd-3.2.3" level="project" />
+    <orderEntry type="library" name="android" level="project" />
+    <orderEntry type="library" name="build2" level="project" />
+    <orderEntry type="library" name="jsr305" level="project" />
+    <orderEntry type="library" name="owasp-java-html-sanitizer-20160628.1" level="project" />
+    <orderEntry type="library" name="checkstyle" level="project" />
+    <orderEntry type="library" name="common" level="project" />
+    <orderEntry type="library" name="firebase" level="project" />
+    <orderEntry type="library" name="robolectric" level="project" />
+    <orderEntry type="library" name="responderiq-test" level="project" />
+    <orderEntry type="library" name="junit-addons-1.4" level="project" />
+    <orderEntry type="library" name="deps" level="project" />
+    <orderEntry type="library" name="components" level="project" />
+    <orderEntry type="library" name="gwt-incubator-20101117-r1766" level="project" />
+    <orderEntry type="library" name="keyczar" level="project" />
+    <orderEntry type="library" name="charba" level="project" />
+    <orderEntry type="library" name="2.8.1-patched" level="project" />
+    <orderEntry type="library" name="objectify-3.1" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="lib-gwt-svg-0.5.15" level="project" />
+    <orderEntry type="library" name="files" level="project" />
+    <orderEntry type="library" name="commons-fileupload-1.2.2" level="project" />
+    <orderEntry type="library" name="log4j-1.2.16" level="project" />
+    <orderEntry type="library" name="tools2" level="project" />
+    <orderEntry type="library" name="guava" level="project" />
+    <orderEntry type="library" name="lib2" level="project" />
+    <orderEntry type="library" name="gwtquery-1.5-beta1" level="project" />
+    <orderEntry type="library" name="powermock" level="project" />
+    <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="components2" />
+    <orderEntry type="module" module-name="build3" />
+  </component>
+</module>
