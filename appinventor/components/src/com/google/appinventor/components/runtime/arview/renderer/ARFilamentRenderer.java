@@ -102,7 +102,7 @@ public class ARFilamentRenderer {
     Texture filamentRenderTexture;
     RenderTarget filamentRenderTarget;
     private int displayTextureId = -1;
-    private int simpleFrameBuffer = -1;
+
 
     // Animation support
     private float animationTime = 0.0f;
@@ -168,9 +168,6 @@ public class ARFilamentRenderer {
             return;
         }
 
-        int[] fbos = new int[1];
-        GLES30.glGenFramebuffers(1, fbos, 0);
-        simpleFrameBuffer = fbos[0];
 
 
         Log.d(LOG_TAG, "Initializing Filament " + this.glSurfaceView);
@@ -536,7 +533,22 @@ public class ARFilamentRenderer {
             GLES30.glPixelStorei(GLES30.GL_UNPACK_ALIGNMENT, 1);
 
 
-            Log.d(LOG_TAG, "Render target stream initialized with texture ID " + displayTextureId);
+            // Allocate texture storage once (use glTexImage2D with null data)
+            GLES30.glTexImage2D(
+                GLES30.GL_TEXTURE_2D,
+                0,
+                GLES30.GL_RGBA8,
+                viewportWidth,
+                viewportHeight,
+                0,
+                GLES30.GL_RGBA,
+                GLES30.GL_UNSIGNED_BYTE,
+                null                 // Allocate storage without uploading data
+            );
+
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+
+            Log.d(LOG_TAG, "Render target  initialized with texture ID " + displayTextureId);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error initializing render target: " + e.getMessage(), e);
         }
@@ -707,89 +719,51 @@ public class ARFilamentRenderer {
 
 
 long lastSuccessfulFrameTime = 0;
-
-private void handleRenderableBufferRead() {
-    // Capture the current context before read pixels
-    final EGLContext originalContext = EGL14.eglGetCurrentContext();
-    Log.d(LOG_TAG, "Original context before readPixels: " + originalContext);
-
-    int sampleSize = 4 * viewportWidth * viewportHeight;
-    final ByteBuffer sampleBuffer = ByteBuffer.allocateDirect(sampleSize);
-    sampleBuffer.order(ByteOrder.nativeOrder());
-
-    Runnable callbackRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Ensure we're on the GL thread with the correct context
-            glSurfaceView.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    EGLContext currentGLContext = EGL14.eglGetCurrentContext();
-                    Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
-
-                    try {
-                        // Process sample and ensure texture is updated in this context
-                        processSmallSample(sampleBuffer, viewportWidth * viewportHeight);
-
-                        // Explicitly recreate the texture in the current context
-                        recreateDisplayTexture(sampleBuffer);
-
-                        lastSuccessfulFrameTime = System.currentTimeMillis();
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error updating texture", e);
-                    }
-                }
-
-                private void recreateDisplayTexture(ByteBuffer pixelBuffer) {
-                    // Delete existing texture if it exists
-                    if (displayTextureId > 0) {
-                        int[] textures = {displayTextureId};
-                        GLES30.glDeleteTextures(1, textures, 0);
-                    }
-
-                    // keep same number for clarity in tracing texture
-                    int[] textures = new int[1];
-                    textures[0] = displayTextureId;
-                    GLES30.glGenTextures(1, textures, 0);
+    // Add these as class fields
 
 
-                    // Bind and configure the new texture
-                    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
-
-                    // Set texture parameters
-                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-                    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
-
-                    // Upload pixel data
-                    GLES30.glTexImage2D(
-                            GLES30.GL_TEXTURE_2D,
-                            0,
-                            GLES30.GL_RGBA,
-                            viewportWidth,
-                            viewportHeight,
-                            0,
-                            GLES30.GL_RGBA,
-                            GLES30.GL_UNSIGNED_BYTE,
-                            pixelBuffer
-                    );
-
-                    // Check for OpenGL errors
-                    int error = GLES30.glGetError();
-                    if (error != GLES30.GL_NO_ERROR) {
-                        Log.e(LOG_TAG, "OpenGL texture creation error: 0x" + Integer.toHexString(error));
-                    }
-
-                    Log.d(LOG_TAG, "Recreated display texture with ID: " + displayTextureId);
-                }
-            });
+    private void handleRenderableBufferRead() {
+        // Reuse buffer allocation
+        if (pixelBuffer == null || pixelBuffer.capacity() != pixelBufferSize) {
+            int sampleSize = 4 * viewportWidth * viewportHeight;
+            pixelBuffer = ByteBuffer.allocateDirect(sampleSize);
+            pixelBuffer.order(ByteOrder.nativeOrder());
+            pixelBufferSize = sampleSize;
+            Log.d(LOG_TAG, "Allocated new pixel buffer of size: " + sampleSize);
+        } else {
+            pixelBuffer.rewind();
         }
-    };
 
-    // Rest of the readPixels configuration remains the same
-    Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
-            sampleBuffer,
+        // Capture context for debugging
+        final EGLContext originalContext = EGL14.eglGetCurrentContext();
+        Log.d(LOG_TAG, "Original context before readPixels: " + originalContext);
+
+        Runnable callbackRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Ensure we're on the GL thread with the correct context
+                if (glSurfaceView != null) {
+                    glSurfaceView.queueEvent(new Runnable() {
+                        @Override
+                        public void run() {
+                            EGLContext currentGLContext = EGL14.eglGetCurrentContext();
+                            Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
+
+                            try {
+                                // Single unified texture update method
+                                updateDisplayTexture(pixelBuffer);
+                                lastSuccessfulFrameTime = System.currentTimeMillis();
+                            } catch (Exception e) {
+                                Log.e(LOG_TAG, "Error updating texture", e);
+                            }
+                        }
+                    });
+                }
+            }
+        };
+
+        Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
+            pixelBuffer,
             Texture.Format.RGBA,
             Texture.Type.UBYTE,
             4,                    // Alignment
@@ -798,64 +772,101 @@ private void handleRenderableBufferRead() {
             viewportWidth,        // Stride
             new Handler(Looper.getMainLooper()),  // Explicit main looper handler
             callbackRunnable
-    );
+        );
 
         // Read pixels with error handling
-    renderer.readPixels(
-                filamentRenderTarget,
-                0, 0,              // x, y start
-                viewportWidth,
-                viewportHeight,    // width, height
-                descriptor
+        renderer.readPixels(
+            filamentRenderTarget,
+            0, 0,              // x, y start
+            viewportWidth,
+            viewportHeight,    // width, height
+            descriptor
         );
     }
 
-    private void processSmallSample(final ByteBuffer sampleBuffer, final int pixelCount) {
-        // Ensure we're on the main thread
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            new Handler(Looper.getMainLooper()).post(() -> processSmallSample(sampleBuffer, pixelCount));
+    /**
+     * Unified texture update method that handles both recreation and updates efficiently
+     */
+    private void updateDisplayTexture(ByteBuffer pixelBuffer) {
+        if (displayTextureId <= 0) {
+            Log.e(LOG_TAG, "Invalid texture ID");
             return;
         }
-        // Now we should be on the UI thread
-        Log.d(LOG_TAG, "Processing smallSample on UI thread");
 
+        pixelBuffer.rewind();
 
-        sampleBuffer.rewind();
+        // Check if we need to recreate the texture (only when necessary)
+        boolean needsRecreation = false;
 
-        // Bind the texture and push data to the target displayTexture
-        if (displayTextureId > 0) {
+        // Test if texture is still valid by trying to bind it
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+        int error = GLES30.glGetError();
+        if (error != GLES30.GL_NO_ERROR) {
+            Log.d(LOG_TAG, "Texture needs recreation due to GL error: 0x" + Integer.toHexString(error));
+            needsRecreation = true;
+        }
+
+        if (needsRecreation) {
+            recreateTexture();
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+        }
 
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+        // Set texture parameters (only when needed)
+        setTextureParameters();
 
+        // Upload pixel data
+        GLES30.glTexImage2D(
+            GLES30.GL_TEXTURE_2D,
+            0,
+            GLES30.GL_RGBA8,
+            viewportWidth,
+            viewportHeight,
+            0,
+            GLES30.GL_RGBA,
+            GLES30.GL_UNSIGNED_BYTE,
+            pixelBuffer
+        );
 
-            GLES30.glTexImage2D(
-                    GLES30.GL_TEXTURE_2D,
-                    0,
-                    GLES30.GL_RGBA8,
-                    viewportWidth,
-                    viewportHeight,
-                    0,
-                    GLES30.GL_RGBA,
-                    GLES30.GL_UNSIGNED_BYTE,
-                    sampleBuffer
-            );
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
 
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-            // Check for errors
-            int error = GLES30.glGetError();
-            if (error != GLES30.GL_NO_ERROR) {
-                Log.e(LOG_TAG, "OpenGL error: 0x" + Integer.toHexString(error));
-            } else {
-                Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
-            }
+        // Check for errors
+        error = GLES30.glGetError();
+        if (error != GLES30.GL_NO_ERROR) {
+            Log.e(LOG_TAG, "OpenGL texture update error: 0x" + Integer.toHexString(error));
+        } else {
+            Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
         }
     }
 
+    /**
+     * Recreate texture only when necessary
+     */
+    private void recreateTexture() {
+        Log.d(LOG_TAG, "Recreating display texture");
 
+        // Delete existing texture if it exists
+        if (displayTextureId > 0) {
+            int[] textures = {displayTextureId};
+            GLES30.glDeleteTextures(1, textures, 0);
+        }
+
+        // Generate new texture with same ID for clarity
+        int[] textures = new int[1];
+        GLES30.glGenTextures(1, textures, 0);
+        displayTextureId = textures[0];
+
+        Log.d(LOG_TAG, "Created new texture with ID: " + displayTextureId);
+    }
+
+    /**
+     * Set texture parameters - extracted for reuse
+     */
+    private void setTextureParameters() {
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+    }
 
     /**
      * Process all ARNodes for rendering
