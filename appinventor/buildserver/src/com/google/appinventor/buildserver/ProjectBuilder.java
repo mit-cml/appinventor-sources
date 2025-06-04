@@ -139,7 +139,7 @@ public final class ProjectBuilder {
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
 
-        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
+        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory(), projectRoot);
         if (isForCompanion) {
           componentTypes.addAll(getAllComponentTypes());
         }
@@ -271,13 +271,17 @@ public final class ProjectBuilder {
     return result;
   }
 
-  private static Set<String> getComponentTypes(List<String> files, File assetsDir)
+  private static Set<String> getComponentTypes(List<String> files, File assetsDir, File projectRoot)
       throws IOException, JSONException {
     Map<String, String> nameTypeMap = createNameTypeMap(assetsDir);
 
+    // Make sure to skip any .scm file not in the src/ directory, to avoid corrupted AIAs
+    //   containing extensions.
+    String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
+
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
-      if (f.endsWith(".scm")) {
+      if (f.startsWith(sourcePrefix) && f.endsWith(".scm")) {
         File scmFile = new File(f);
         String scmContent = new String(Files.toByteArray(scmFile),
             PathUtil.DEFAULT_CHARSET);
