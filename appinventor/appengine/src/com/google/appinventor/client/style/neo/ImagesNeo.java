@@ -15,20 +15,6 @@ public interface ImagesNeo extends Images {
    * */
 
   /**
-   * Phone status bar for Android Holo shown above the form in the visual designer
-   */
-  @Override
-  @Source("images/phonebar.png")
-  ImageResource phonebar();
-
-  /**
-   * Phone status bar for the Android Material form in the visual designer
-   */
-  @Override
-  @Source("images/phonebarAndroidMaterial.png")
-  ImageResource phonebarAndroidMaterial();
-
-  /**
    * Designer palette item: nearfield component
    */
   @Override
@@ -458,13 +444,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/bluetooth.png")
   ImageResource bluetooth();
-
-  /**
-   * Designer palette item: FusiontablesControl component
-   */
-  @Override
-  @Source("images/fusiontables.png")
-  ImageResource fusiontables();
 
   /**
    * Designer palette item: WebViewer component
