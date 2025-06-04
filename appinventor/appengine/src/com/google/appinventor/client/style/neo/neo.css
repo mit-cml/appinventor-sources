@@ -436,6 +436,7 @@ body {
   padding-top: 5px;
   font-size: unset;
   padding-right: unset;
+  align-items: center;
 }
 
 .right-spacer {
@@ -471,6 +472,9 @@ body {
 
 .ode-TopPanelWarningLabel {
   color: v-red;
+  text-align: left;
+  margin-left: 200px;
+  font-size: large;
 }
 
 .ode-TopPanelLabel {
