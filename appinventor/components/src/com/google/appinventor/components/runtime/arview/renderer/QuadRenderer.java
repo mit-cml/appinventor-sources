@@ -153,20 +153,17 @@ public class QuadRenderer {
         Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
     }
 
-    public void updateModelMatrix(float[] modelMatrix, float scaleFactorX, float scaleFactorY, float scaleFactorZ) {
-        float[] scaleMatrix = new float[16];
-        Matrix.setIdentityM(scaleMatrix, 0);
-        scaleMatrix[0] = scaleFactorX;
-        scaleMatrix[5] = scaleFactorY;
-        scaleMatrix[10] = scaleFactorZ;
-        Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
-    }
+
 
     public void draw(ARViewRender render, ARNode filamentSceneNode, Texture currentFilamentTexture,
                      Framebuffer target, Pose cameraPose, float[] cameraProjection) {
 
+        if (currentFilamentTexture == null ) {
+            Log.w(TAG, "Invalid texture  " + currentFilamentTexture);
+            return;
+        }
         int texId = currentFilamentTexture.getTextureId();
-        if (texId <= 0) {
+        if ( texId <= 0) {
             Log.w(TAG, "Invalid texture ID: " + texId);
             return;
         }
@@ -178,7 +175,7 @@ public class QuadRenderer {
             if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
                 return;
             }
-
+            Log.w(TAG, "quad texture ID: " + texId);
             // Get the world position of the anchor
             float[] anchorMatrix = new float[16];
             anchor.getPose().toMatrix(anchorMatrix, 0);
@@ -187,7 +184,7 @@ public class QuadRenderer {
             cameraPose.inverse().toMatrix(viewMatrix, 0);
 
             // Calculate the billboard matrix (always facing camera)
-           calculateBillboardMatrix(anchorMatrix, viewMatrix);
+            calculateBillboardMatrix(anchorMatrix, viewMatrix);
 
             // Apply scale
             updateModelMatrix(modelMatrix, 2.0f);
@@ -198,7 +195,7 @@ public class QuadRenderer {
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, cameraProjection, 0, modelViewMatrix, 0);
 
 
-
+            shader.setTexture("u_Texture", currentFilamentTexture);
             // Set shader uniforms - much simpler now!
             shader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
 

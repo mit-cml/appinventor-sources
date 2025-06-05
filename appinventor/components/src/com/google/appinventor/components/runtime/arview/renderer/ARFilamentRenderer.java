@@ -23,6 +23,7 @@ import com.google.android.filament.RenderTarget;
 import com.google.android.filament.Scene;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.Texture;
+import com.google.android.filament.TextureSampler;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.View;
@@ -32,6 +33,7 @@ import com.google.android.filament.gltfio.FilamentAsset;
 import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.android.filament.gltfio.ResourceLoader;
 
+import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -54,17 +56,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+
 /**
  * ARFilamentRenderer handles 3D rendering using Google Filament engine
  * integrated with ARCore for Augmented Reality applications.
  */
+@UsesAssets(fileNames = "occlusion2.filamat")
 public class ARFilamentRenderer {
     private static final String LOG_TAG = ARFilamentRenderer.class.getSimpleName();
 
     // Filament core components
     private Engine engine;
     private Renderer renderer;
-    private Scene scene;
+    private Scene modelScene;    // For 3D models only
+    private Scene compositeScene; // For final composite quad
     private View view;
     private Camera camera;
     private SwapChain swapChain;
@@ -98,10 +104,15 @@ public class ARFilamentRenderer {
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
 
-    // target for virtual scene
-    Texture filamentRenderTexture;
+
     RenderTarget filamentRenderTarget;
     private int displayTextureId = -1;
+    private Texture colorTexture;
+    private Texture arDepthTexture;
+    private Texture virtualSceneDepthTexture;
+    private int depthTextureId = -1;
+    private MaterialInstance occlusionMaterialInstance;
+    private float[] depthUvTransform = new float[16];
 
 
     // Animation support
@@ -247,7 +258,10 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "Engine created successfully");
 
             renderer = engine.createRenderer();
-            scene = engine.createScene();
+
+
+            modelScene = engine.createScene();
+            compositeScene = engine.createScene();
 
             // Create camera entity
             cameraEntity = EntityManager.get().create();
@@ -303,10 +317,10 @@ public class ARFilamentRenderer {
     private void initializeFilamentScene() {
         initializeDisplayTexture(); //display texture setup
         //drawTestTriangleWithMaterialEntity();  //entity added to scene
-        makeSimpleTextureBufferForRenderTarget();
+        //makeSimpleTextureBufferForRenderTarget();  wait
         //createDummyTriangeWithMaterialEntity();
-        createQuadTargetEntity();
-        view.setScene(scene);
+        //createQuadTargetEntity();
+        view.setScene(modelScene);
 
     }
 
@@ -327,7 +341,7 @@ public class ARFilamentRenderer {
 
         LightManager lightManager = engine.getLightManager();
         lightBuilder.build(engine, mainLightEntity);
-        scene.addEntity(mainLightEntity);
+        modelScene.addEntity(mainLightEntity);
 
         // Add an ambient light - use SUN type for version 1.9.11 compatibility
         int ambientLightEntity = EntityManager.get().create();
@@ -337,25 +351,26 @@ public class ARFilamentRenderer {
                 .direction(0.0f, 1.0f, 0.0f)   // Coming from below (bounce light)
                 .castShadows(false)
                 .build(engine, ambientLightEntity);
-        scene.addEntity(ambientLightEntity);
+        modelScene.addEntity(mainLightEntity);
+        modelScene.addEntity(ambientLightEntity);
 
         Log.d(LOG_TAG, "Lighting setup complete with main and ambient lights");
     }
 
 
-    private MaterialInstance loadOrCreateMaterial() {
+    private MaterialInstance loadOrCreateMaterial(String assetName, boolean isInternal) {
         Material testMaterial = null;
         MaterialInstance materialInstance = null;
 
         try {
-            Log.d(LOG_TAG, "read from basic.filamat to get material");
-            ByteBuffer materialBuffer = readAsset("basic.filamat", true);
+            Log.d(LOG_TAG, "read from, to get material" + assetName);
+            ByteBuffer materialBuffer = readAsset(assetName, isInternal);
             if (materialBuffer != null) {
                 testMaterial = new Material.Builder()
                         .payload(materialBuffer, materialBuffer.capacity())
                         .build(engine);
                 materialInstance = testMaterial.getDefaultInstance(); //createInstance();
-                Log.d(LOG_TAG, "loadOrCreateMaterial, Created material from basic.filamat file");
+                Log.d(LOG_TAG, "loadOrCreateMaterial, Created material from " + assetName);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "loadOrCreateMaterial Failed to load material: " + e.getMessage());
@@ -363,7 +378,7 @@ public class ARFilamentRenderer {
 
         // If loading from file failed, create a default material
         if (materialInstance == null) {
-            Log.d(LOG_TAG, "material instance is null");
+            Log.d(LOG_TAG, "material instance is null, creating default material");
             try {
                 // Use a default material builder
                 testMaterial = new Material.Builder().build(engine);
@@ -382,6 +397,7 @@ public class ARFilamentRenderer {
         return materialInstance;
     }
 
+    /* put this in the 'target composite scene' */
     private int createQuadTargetEntity() {
         try {
             quadEntity = EntityManager.get().create();
@@ -389,11 +405,13 @@ public class ARFilamentRenderer {
             setupBuffers();
 
             // Basic material - simplest possible
-            MaterialInstance materialInstance = loadOrCreateMaterial();
+            MaterialInstance materialInstance = loadOrCreateMaterial("occlusion2.filamat", true); // used to be basic.filamat
             // Build renderable
+
+            occlusionMaterialInstance = materialInstance;
             materialInstance.setParameter("baseColor", 1.0f, 1.0f, 0.0f, 1.0f); // yellow
             RenderableManager.Builder builder = new RenderableManager.Builder(1);
-            builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -0.4f))
+            builder.boundingBox(new Box(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f))
                     .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBufferObj, indexBufferObj)
                     .material(0, materialInstance)
                     .culling(false)
@@ -402,10 +420,9 @@ public class ARFilamentRenderer {
                     .castShadows(false)
                     .build(engine, quadEntity);
 
-
-            Log.e(LOG_TAG, "created quad entity" );
+            Log.e(LOG_TAG, "created quad entity with occlusion filamat" );
             // Add to scene
-            scene.addEntity(quadEntity);
+            compositeScene.addEntity(quadEntity);
 
             return quadEntity;
         } catch (Exception e) {
@@ -421,10 +438,10 @@ public class ARFilamentRenderer {
             EntityManager entityManager = EntityManager.get();
             simpleTriangleEntity = entityManager.create();
 
-            MaterialInstance materialInstance = loadOrCreateMaterial();
+            MaterialInstance materialInstance = loadOrCreateMaterial("basic.filamat", false);
 
             // Explicitly set a bright, contrasting color
-            materialInstance.setParameter("baseColor", 0.0f, 1.0f, 0.0f, 1.0f); // Bright green
+            materialInstance.setParameter("baseColor", 1.0f, 0.0f, 0.0f, 1.0f); // Bright green
             Log.d(LOG_TAG, "Material color set to bright green");
 
             // Adjusted vertices to cover more of the screen vertically
@@ -487,19 +504,26 @@ public class ARFilamentRenderer {
                     Arrays.toString(vertices));
 
             // Add entity to scene
-            scene.addEntity(simpleTriangleEntity);
+            //modelScene.addEntity(simpleTriangleEntity);
 
             Log.d(LOG_TAG, "Dummy triangle added to scene");
-            Log.d(LOG_TAG, "Scene renderable count: " + scene.getRenderableCount());
+            Log.d(LOG_TAG, "Scene renderable count: " + modelScene.getRenderableCount());
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error creating dummy triangle", e);
         }
     }
 
+    /* renderTarget with color and depth set up */
     public void makeSimpleTextureBufferForRenderTarget(){
         // Use actual viewport dimensions
         viewportWidth = 1020;
-        viewportHeight = 1745;
+        viewportHeight = 1410;//1745;
+
+        EGLContext context = EGL14.eglGetCurrentContext();
+        if (context == EGL14.EGL_NO_CONTEXT) {
+            Log.e(LOG_TAG, "No GL context when creating render target");
+            return;
+        }
 
         Texture.Builder textureBuilder = new Texture.Builder()
                 .width(viewportWidth)      // Use actual width
@@ -508,10 +532,25 @@ public class ARFilamentRenderer {
                 .sampler(Texture.Sampler.SAMPLER_2D)
                 .usage(Texture.Usage.COLOR_ATTACHMENT | Texture.Usage.SAMPLEABLE);
 
-        Texture colorTexture = textureBuilder.build(engine);
+        colorTexture = textureBuilder.build(engine);
 
+
+        // Depth texture for virtual scene for comparison with ARCore depth
+        Texture.Builder depthTextureBuilder = new Texture.Builder()
+            .width(viewportWidth)
+            .height(viewportHeight)
+            .format(Texture.InternalFormat.DEPTH24)  // or DEPTH32F
+            .sampler(Texture.Sampler.SAMPLER_2D)
+            .usage(Texture.Usage.DEPTH_ATTACHMENT | Texture.Usage.SAMPLEABLE);
+
+        virtualSceneDepthTexture = depthTextureBuilder.build(engine);
+
+        // Build render target with BOTH color and depth
         RenderTarget.Builder renderTargetBuilder = new RenderTarget.Builder()
-                .texture(RenderTarget.AttachmentPoint.COLOR, colorTexture);
+            .texture(RenderTarget.AttachmentPoint.COLOR, colorTexture)
+            .texture(RenderTarget.AttachmentPoint.DEPTH, virtualSceneDepthTexture);
+
+
 
         filamentRenderTarget = renderTargetBuilder.build(engine);
         view.setRenderTarget(filamentRenderTarget);
@@ -520,10 +559,10 @@ public class ARFilamentRenderer {
     private void initializeDisplayTexture() {
         try {
             // Create an external texture for display
-            int[] textures = new int[1];
-            GLES30.glGenTextures(1, textures, 0);
-            displayTextureId = textures[0]; // a GL texture so ARView3d can fetch it..
-
+            int[] textures = new int[2];
+            GLES30.glGenTextures(2, textures, 0);
+            displayTextureId = textures[0] ; // a GL texture so ARView3d can fetch it..
+            depthTextureId = textures[1] ;
             // Set up the texture parameters
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
@@ -546,9 +585,33 @@ public class ARFilamentRenderer {
                 null                 // Allocate storage without uploading data
             );
 
+
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTextureId);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+            GLES30.glPixelStorei(GLES30.GL_UNPACK_ALIGNMENT, 1);
+
+
+            // Allocate texture storage once (use glTexImage2D with null data)
+            GLES30.glTexImage2D(
+                GLES30.GL_TEXTURE_2D,
+                0,
+                GLES30.GL_DEPTH_COMPONENT32F,
+                viewportWidth,
+                viewportHeight,
+                0,
+                GLES30.GL_RGBA,
+                GLES30.GL_UNSIGNED_BYTE,
+                null                 // Allocate storage without uploading data
+            );
+
+
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
 
             Log.d(LOG_TAG, "Render target  initialized with texture ID " + displayTextureId);
+            Log.d(LOG_TAG, "Render target  initialized with depth texture ID " + depthTextureId);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error initializing render target: " + e.getMessage(), e);
         }
@@ -558,6 +621,10 @@ public class ARFilamentRenderer {
     // Add a getter for the display texture
     public int getDisplayTextureId() {
         return displayTextureId;
+    }
+
+    public int getDepthTextureId() {
+        return depthTextureId;
     }
 
     public void updateSurfaceDimensions(int width, int height) {
@@ -605,7 +672,7 @@ public class ARFilamentRenderer {
                     (double) 120.0,                   // vertical field of view
                     (double) viewportWidth / viewportHeight,  // aspect ratio
                     0.01f,                  // near plane (closer for AR)
-                    100.0f,                 // far plane
+                    40.0f,                 // far plane SHOULD MATCH ARView3d!!
                     Camera.Fov.VERTICAL
             );
 
@@ -625,12 +692,204 @@ public class ARFilamentRenderer {
     }
 
 
+    private void createARCoreDepthTexture() {
+        Texture.Builder depthTextureBuilder = new Texture.Builder()
+            .width(viewportWidth)
+            .height(viewportHeight)
+            .format(Texture.InternalFormat.RG8) // ARCore uses 16-bit depth in RG format
+            .sampler(Texture.Sampler.SAMPLER_2D)
+            .usage(Texture.Usage.SAMPLEABLE);
+
+        arDepthTexture = depthTextureBuilder.build(engine);
+    }
+
+    private void createARCoreDepthTextureWithSize(int width, int height) {
+        {
+            Texture.Builder depthTextureBuilder = new Texture.Builder()
+                .width(width)
+                .height(height)
+                .format(Texture.InternalFormat.RG8) // ARCore uses 16-bit depth in RG format
+                .sampler(Texture.Sampler.SAMPLER_2D)
+                .usage(Texture.Usage.SAMPLEABLE);
+
+            arDepthTexture = depthTextureBuilder.build(engine);
+        }
+    }
+
+
+    public void updateARCoreDepth(ByteBuffer depthData, float[] uvTransform, float nearPlane, float farPlane, int depthWidth, int depthHeight) {
+        if (arDepthTexture != null && depthData != null) {
+            // Update the depth texture with ARCore data
+            Texture.PixelBufferDescriptor descriptor = new Texture.PixelBufferDescriptor(
+                depthData,
+                Texture.Format.RG,
+                Texture.Type.UBYTE,
+                4,                    // Alignment
+                0,                    // Left padding
+                0,                    // Top padding
+                depthWidth,        // Stride
+                null,  // Explicit main looper handler
+                null
+            );
+            Log.d(LOG_TAG, "viewport width is : " + viewportWidth + " " + viewportHeight);
+            Log.d(LOG_TAG, "depth width is : " + depthWidth + " " + depthHeight);
+            arDepthTexture.setImage(engine, 0, descriptor);
+
+
+            Log.d(LOG_TAG, "updateARCoreDepth called - buffer size: " + depthData.remaining() +
+                ", dimensions: " + depthWidth + "x" + depthHeight);
+
+            // Check if we have any non-zero depth values
+            depthData.rewind();
+            boolean hasNonZeroData = false;
+            for (int i = 0; i < Math.min(100, depthData.remaining()); i++) {
+                if (depthData.get(i) != 0) {
+                    hasNonZeroData = true;
+                    break;
+                }
+            }
+            depthData.rewind();
+
+            Log.d(LOG_TAG, "Depth buffer has non-zero data: " + hasNonZeroData);
+
+            // Store UV transform for shader
+            System.arraycopy(uvTransform, 0, depthUvTransform, 0, 16);
+
+            // Update material parameters if occlusion material is loaded
+            if (hasNonZeroData){
+                updateOcclusionMaterialParams(nearPlane, farPlane);
+            }
+        } else {
+            // Create/recreate texture with correct size
+            createARCoreDepthTextureWithSize(depthWidth, depthHeight);
+
+        }
+    }
+
+    private void updateOcclusionMaterialParams(float nearPlane, float farPlane) {
+        if (occlusionMaterialInstance != null) {
+            Log.d(LOG_TAG, "Updating occlusion material");
+            try {
+                // For texture parameters, you need to use TextureSampler
+                TextureSampler sampler = new TextureSampler(
+                    TextureSampler.MinFilter.LINEAR,
+                    TextureSampler.MagFilter.LINEAR,
+                    TextureSampler.WrapMode.CLAMP_TO_EDGE
+                );
+
+                // Set texture with sampler
+                occlusionMaterialInstance.setParameter("depthTexture", arDepthTexture, sampler);
+                occlusionMaterialInstance.setParameter("virtualDepthTexture", virtualSceneDepthTexture, sampler);
+                occlusionMaterialInstance.setParameter("colorTexture", colorTexture, sampler);
+                // For mat4 (matrix), pass as 16 individual float values
+               /* occlusionMaterialInstance.setParameter("depthUvTransform",
+                    depthUvTransform[0], depthUvTransform[1], depthUvTransform[2], depthUvTransform[3],
+                    depthUvTransform[4], depthUvTransform[5], depthUvTransform[6], depthUvTransform[7],
+                    depthUvTransform[8], depthUvTransform[9], depthUvTransform[10], depthUvTransform[11],
+                    depthUvTransform[12], depthUvTransform[13], depthUvTransform[14], depthUvTransform[15]);
+*/
+                // Float parameters
+                occlusionMaterialInstance.setParameter("nearPlane", nearPlane);
+                occlusionMaterialInstance.setParameter("farPlane", farPlane);
+                occlusionMaterialInstance.setParameter("occlusionBias", 0.01f);
+
+                // Float3 baseColor as individual RGB values
+
+
+                occlusionMaterialInstance.setParameter("debugMode", 7);
+                occlusionMaterialInstance.setParameter("baseColor", 0.0f, 1.0f, 0.0f, 1.0f);
+
+                Log.d(LOG_TAG, "Material parameters set successfully");
+
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error setting material parameters: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    private void robustBeginFrame(){
+        // Robust frame beginning with multiple attempts
+        boolean frameBegun = false;
+        int maxAttempts = 3;
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                frameBegun = renderer.beginFrame(swapChain, 0L);
+                if (frameBegun) break;
+
+                // Short sleep between attempts to prevent tight looping
+                Thread.sleep(5);
+            } catch (Exception beginFrameError) {
+                Log.e(LOG_TAG, "Frame begin attempt " + (attempt + 1) + " failed", beginFrameError);
+            }
+        }
+
+        if (!frameBegun) {
+            Log.e(LOG_TAG, "Failed to begin frame after " + maxAttempts + " attempts");
+            return;
+        }
+    }
+
+    private void modelSceneRenderPass() {
+        try {
+
+            view.setScene(modelScene);       // Render composite quad
+            view.setRenderTarget(filamentRenderTarget);  // Final output
+
+            robustBeginFrame();
+            // Render the view
+            renderer.render(view);
+
+            Log.d(LOG_TAG, "Rendered to modelScene");
+
+        } catch (Exception renderError) {
+            Log.e(LOG_TAG, "Rendering to model scene process error", renderError);
+        } finally {
+            // Always end the frame
+            renderer.endFrame();
+        }
+    }
+
+    private void compositeSceneRenderPass() {
+        // PASS 2: Render composite quad with occlusion
+
+        // renderer renders into filamentRenderTarget
+        // then we read those pixels and push them into displayTextureId to use in ARView3D's filamentFramebuffer
+        try {
+            view.setScene(compositeScene);       // Render composite quad
+            view.setRenderTarget(filamentRenderTarget);  // Final output
+
+            robustBeginFrame();
+
+            // Render the view
+            renderer.render(view);
+            // Pixel buffer preparation with diagnostic logging
+            handleRenderableBufferRead();
+
+            Log.d(LOG_TAG, "Rendered to target with depth texture: " + virtualSceneDepthTexture);
+            Log.d(LOG_TAG, "Render target has depth attachment: " + (filamentRenderTarget != null));
+
+        } catch (Exception renderError) {
+            Log.e(LOG_TAG, "Rendering composite scene process error", renderError);
+        } finally {
+            // Always end the frame
+            renderer.endFrame();
+        }
+    }
 
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
 
         if (!isInitialized) {
             Log.d(LOG_TAG, "Skipping draw - Filament not yet initialized");
             return;
+        }
+
+
+        if (filamentRenderTarget == null) {
+            makeSimpleTextureBufferForRenderTarget();
+        }
+        // Create quad after render target exists AND we have ARCore depth
+        if (quadEntity == 0 && arDepthTexture != null) {
+            createQuadTargetEntity();
         }
 
         try {
@@ -660,8 +919,6 @@ public class ARFilamentRenderer {
 
             }
 
-            view.setScene(scene);
-            view.setRenderTarget(filamentRenderTarget);
             view.setBlendMode(View.BlendMode.TRANSLUCENT);
 
             Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
@@ -672,42 +929,13 @@ public class ARFilamentRenderer {
             clearOptions.clearColor[3] = 1.0f; // Alpha
             renderer.setClearOptions(clearOptions);
 
-            // Robust frame beginning with multiple attempts
-            boolean frameBegun = false;
-            int maxAttempts = 3;
-            for (int attempt = 0; attempt < maxAttempts; attempt++) {
-                try {
-                    frameBegun = renderer.beginFrame(swapChain, 0L);
-                    if (frameBegun) break;
-
-                    // Short sleep between attempts to prevent tight looping
-                    Thread.sleep(5);
-                } catch (Exception beginFrameError) {
-                    Log.e(LOG_TAG, "Frame begin attempt " + (attempt + 1) + " failed", beginFrameError);
-                }
-            }
-
-            if (!frameBegun) {
-                Log.e(LOG_TAG, "Failed to begin frame after " + maxAttempts + " attempts");
-                return;
-            }
-
             updateAnimations();
-            // renderer renders into filamentRenderTarget
-            // then we read those pixels and push them into displayTextureId to use in ARView3D's filamentFramebuffer
-            try {
-                // Render the view
-                renderer.render(view);
-                // Pixel buffer preparation with diagnostic logging
-                handleRenderableBufferRead();
 
-
-            } catch (Exception renderError) {
-                Log.e(LOG_TAG, "Rendering process error", renderError);
-            } finally {
-                // Always end the frame
-                renderer.endFrame();
-            }
+            modelSceneRenderPass(); // this renders a pink chicken if combined with the handleRenderableBufferRead()
+            GLES30.glFlush();
+            GLES30.glFinish();
+            compositeSceneRenderPass(); // this second pass should provide filament depth info.. however it renders a black rectangle, so the occlusion still isn't right
+            //handleRenderableBufferRead();
 
         } catch (Exception catastrophicError) {
             Log.e(LOG_TAG, "Catastrophic rendering error", catastrophicError);
@@ -750,7 +978,6 @@ long lastSuccessfulFrameTime = 0;
                             Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
 
                             try {
-                                // Single unified texture update method
                                 updateDisplayTexture(pixelBuffer);
                                 lastSuccessfulFrameTime = System.currentTimeMillis();
                             } catch (Exception e) {
@@ -811,7 +1038,6 @@ long lastSuccessfulFrameTime = 0;
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
         }
 
-        // Set texture parameters (only when needed)
         setTextureParameters();
 
         // Upload pixel data
@@ -828,7 +1054,8 @@ long lastSuccessfulFrameTime = 0;
         );
 
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-
+        GLES30.glFlush();  // Ensure commands complete
+        GLES30.glFinish(); // Wait for completion
         // Check for errors
         error = GLES30.glGetError();
         if (error != GLES30.GL_NO_ERROR) {
@@ -989,7 +1216,34 @@ long lastSuccessfulFrameTime = 0;
     }
 
 
+    private void applySimpleMaterial(FilamentAsset asset) {
+        try {
+            // Load the simple material
+            MaterialInstance simpleMaterial = loadOrCreateMaterial( "basic.filamat", true);
 
+            if (simpleMaterial != null) {
+                // Set basic PBR values
+                simpleMaterial.setParameter("baseColor", 1.0f, 0f, 1.0f, 1.0f);
+                Log.d(LOG_TAG, "Applying simple material");
+                // Occlusion will be set up automatically when depth data arrives
+
+                // Apply to all parts of the model
+                RenderableManager renderableManager = engine.getRenderableManager();
+                for (int entityId : asset.getEntities()) {
+                    if (renderableManager.hasComponent(entityId)) {
+                        int instance = renderableManager.getInstance(entityId);
+                        for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
+                            renderableManager.setMaterialInstanceAt(instance, i, simpleMaterial);
+                        }
+                    }
+                }
+
+                Log.d(LOG_TAG, "loaded basic.filamat material");
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to apply simple material: " + e.getMessage(), e);
+        }
+    }
     /**
      * Loads a model for a node
      */
@@ -1018,13 +1272,13 @@ long lastSuccessfulFrameTime = 0;
 
             // Add root and all renderable entities to scene
             int rootEntityId = asset.getRoot();
-            scene.addEntity(rootEntityId);
+            modelScene.addEntity(rootEntityId);
             entityIds.add(rootEntityId);
             Log.d(LOG_TAG, "  root Entity ID: " + rootEntityId);
             for (int entityId : asset.getEntities()) {
                 //Log.d(LOG_TAG, "  Entity ID: " + entityId);
                 if (entityId != rootEntityId) {
-                    scene.addEntity(entityId);
+                    modelScene.addEntity(entityId);
                     entityIds.add(entityId);
                 }
             }
@@ -1034,23 +1288,10 @@ long lastSuccessfulFrameTime = 0;
             resourceLoader.loadResources(asset);
             Log.d(LOG_TAG, "Resource loading completed successfully");
 
-            // Only apply a default material if the model doesn't have its own
-            if (asset.getMaterialInstances().length == 0) {
-                Log.d(LOG_TAG, "model doesn't have materials ");
-                MaterialInstance materialInstance = loadOrCreateMaterial();
-                materialInstance.setParameter("baseColor", 0.0f, 1.0f, 1.0f, 0.5f);
+            //if (asset.getMaterialInstances().length == 0) {
+                // No materials - apply simple PBR with occlusion
+            applySimpleMaterial(asset);
 
-                // Apply to all entities in the model that need materials
-                for (int entityId : asset.getEntities()) {
-                    if (renderableManager.hasComponent(entityId)) {
-                        int instance = renderableManager.getInstance(entityId);
-                        for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
-                            renderableManager.setMaterialInstanceAt(instance, i, materialInstance);
-                        }
-                        renderableManager.setCulling(instance, false);
-                    }
-                }
-            }
 
             // Check material instances after loading
             MaterialInstance[] materials = asset.getMaterialInstances();
@@ -1085,7 +1326,7 @@ long lastSuccessfulFrameTime = 0;
         cFloatBuffer.put(quadColors).position(0);
 
         vertexBufferObj = new VertexBuffer.Builder()
-                .vertexCount(3)  // Assuming 3 floats per position
+                .vertexCount(4)  // Assuming 4 floats per position - with alpha I guess? csb
                 .bufferCount(2)
                 .attribute(VertexBuffer.VertexAttribute.POSITION, 0,
                         VertexBuffer.AttributeType.FLOAT3, 0, 0)
@@ -1124,9 +1365,10 @@ long lastSuccessfulFrameTime = 0;
             if (isInternal){
                 is = MediaUtil.getAssetsIgnoreCaseInputStream(this.formCopy, assetName);
             } else{
-                is = this.formCopy.openAsset(assetName);
+                is = this.formCopy.openAsset(assetName); // adds on the /storage/emultated.. prefix for assets in project
             }
             if (is == null) {
+                Log.e(LOG_TAG, "asset not found" + assetName);
                 throw new IOException("Asset not found: " + assetName);
             }
 
@@ -1165,13 +1407,13 @@ long lastSuccessfulFrameTime = 0;
 
             // Clean up entities
             if (testTriangleEntity != 0) {
-                scene.remove(testTriangleEntity);
+                modelScene.remove(testTriangleEntity);
                 EntityManager.get().destroy(testTriangleEntity);
                 testTriangleEntity = 0;
             }
 
             if (mainLightEntity != 0) {
-                scene.remove(mainLightEntity);
+                modelScene.remove(mainLightEntity);
                 EntityManager.get().destroy(mainLightEntity);
                 mainLightEntity = 0;
             }
@@ -1184,7 +1426,8 @@ long lastSuccessfulFrameTime = 0;
             // Clean up Filament resources
             engine.destroyRenderer(renderer);
             engine.destroyView(view);
-            engine.destroyScene(scene);
+            engine.destroyScene(modelScene);
+            engine.destroyScene(compositeScene);
             engine.destroyCamera(camera);
 
             if (swapChain != null) {

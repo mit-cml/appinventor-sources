@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.ar;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
 
+
 import android.app.Activity;
 import android.opengl.GLES30;
 import android.view.SurfaceView;
@@ -42,6 +43,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
+import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Config;
 import com.google.ar.core.Config.InstantPlacementMode;
 import com.google.ar.core.DepthPoint;
@@ -58,6 +60,7 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import android.util.Log;
@@ -104,7 +107,7 @@ import java.util.stream.Collectors;
 @UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag," +
         "cube.obj, sphere.obj, torus.obj, trigrid.png," +
         "background_show_camera.frag, background_show_camera.vert," +
-        "basic.filamat, material_background.filamat, material_basic.filamat," +
+        "basic.filamat, material_background.filamat, material_basic.filamat, occlusion2.filamat," +
         "background.frag, background.vert," +
         "basic.frag, basic.vert," +
         "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
@@ -285,7 +288,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         // Create or resize framebuffer
-        if (virtualSceneFramebuffer != null) {
+       /* if (virtualSceneFramebuffer != null) {
             virtualSceneFramebuffer.resize(width, height);
         } else {
             // Create the virtual scene framebuffer
@@ -296,22 +299,24 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
             }
-        }
+        }*/
 
 
-        // Create or resize framebuffer
+// Instead of resize, recreate the framebuffer
         if (filamentFramebuffer != null) {
-            filamentFramebuffer.resize(width, height);
-        } else {
-            // Create the virtual scene framebuffer
-            try {
-                filamentFramebuffer = new Framebuffer(render, width, height);
-                Log.d(LOG_TAG, "Created filamentFramebuffer: " +
-                    filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
-            }
+            filamentFramebuffer.close(); // Clean up old framebuffer
+            filamentFramebuffer = null;
         }
+
+// Always create fresh framebuffer, NOT resizing it as that seems to cause GL Errors? bc the framebuffer is given the display and depth textures from filament..
+        try {
+            filamentFramebuffer = new Framebuffer(render, width, height);
+            Log.d(LOG_TAG, "Created fresh filamentFramebuffer: " +
+                filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
+        }
+
 
         currentViewportWidth = width;
         currentViewportHeight = height;
@@ -410,7 +415,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    public void drawAnimatedObjects(ARViewRender render, List<ARNode>modelNodes, float[] viewMatrix, float[] projectionMatrix) {
+    public void drawAnimatedObjects(ARViewRender render, Camera camera, List<ARNode>modelNodes, float[] viewMatrix, float[] projectionMatrix) {
         arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
         filamentTextureId = arFilamentRenderer.getDisplayTextureId();
 
@@ -440,9 +445,109 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         //use model node as SCENE nodes to which pose/translation the quad is attached?
         ARNode filamentSceneNode = modelNodes.get(0);
 
-        //quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+        quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
     }
 
+    private ByteBuffer convertDepthImageToBuffer(android.media.Image depthImage) {
+        // ARCore depth is 16-bit, stored as DEPTH16 format
+        android.media.Image.Plane plane = depthImage.getPlanes()[0];
+        ByteBuffer depthBuffer = plane.getBuffer().asReadOnlyBuffer();
+
+        // Create a copy since we need to modify it
+        ByteBuffer result = ByteBuffer.allocateDirect(depthBuffer.remaining());
+        result.put(depthBuffer);
+        result.rewind();
+
+        return result;
+    }
+
+    private void updateFilamentWithARCoreDepth(Frame frame, android.media.Image depthImage) {
+        try {
+
+            // Get actual depth image dimensions
+            int depthWidth = depthImage.getWidth();
+            int depthHeight = depthImage.getHeight();
+
+            Log.d(LOG_TAG, "ARCore depth image size: " + depthWidth + "x" + depthHeight);
+            // Convert ARCore depth image to ByteBuffer
+            ByteBuffer depthBuffer = convertDepthImageToBuffer(depthImage);
+
+            // Get depth UV transform from ARCore
+            // Define 4 corner points in NDC coordinates (8 floats = 4 coordinate pairs)
+            float[] ndcQuad = {
+                -1f, -1f,  // bottom-left
+                1f, -1f,  // bottom-right
+                -1f,  1f,  // top-left
+                1f,  1f   // top-right
+            };
+            float[] textureCoords = new float[8];
+
+
+            // Transform coordinates from NDC to texture space - also see background renderer which does the same thing
+            frame.transformCoordinates2d(
+                Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
+                ndcQuad,           // Input: 8 floats (4 coordinate pairs)
+                Coordinates2d.TEXTURE_NORMALIZED,
+                textureCoords      // Output: 8 floats (4 coordinate pairs)
+            );
+
+            // Convert the 4 corner points to a transformation matrix
+            float[] depthUvTransform = calculateTransformMatrix(textureCoords);
+
+
+            // Pass to Filament renderer
+            if (arFilamentRenderer != null) {
+                arFilamentRenderer.updateARCoreDepth(
+                    depthBuffer,
+                    depthUvTransform,
+                    Z_NEAR,
+                    Z_FAR,
+                    depthWidth,
+                    depthHeight
+                );
+            }
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error updating Filament with ARCore depth", e);
+        }
+    }
+
+    /**
+     * Calculate transformation matrix from 4 corner texture coordinates
+     */
+    private float[] calculateTransformMatrix(float[] textureCoords) {
+        // For now, create a simple UV scale/offset matrix from the corner points
+        float[] transform = new float[16];
+
+        // Extract UV bounds from the transformed coordinates
+        float minU = Math.min(Math.min(textureCoords[0], textureCoords[2]),
+            Math.min(textureCoords[4], textureCoords[6]));
+        float maxU = Math.max(Math.max(textureCoords[0], textureCoords[2]),
+            Math.max(textureCoords[4], textureCoords[6]));
+        float minV = Math.min(Math.min(textureCoords[1], textureCoords[3]),
+            Math.min(textureCoords[5], textureCoords[7]));
+        float maxV = Math.max(Math.max(textureCoords[1], textureCoords[3]),
+            Math.max(textureCoords[5], textureCoords[7]));
+
+        // Create scale and offset matrix
+        Matrix.setIdentityM(transform, 0);
+
+        // Scale
+        float scaleU = maxU - minU;
+        float scaleV = maxV - minV;
+
+        // Offset
+        float offsetU = minU;
+        float offsetV = minV;
+
+        // Apply scale and offset
+        transform[0] = scaleU;    // U scale
+        transform[5] = scaleV;    // V scale
+        transform[12] = offsetU;  // U offset
+        transform[13] = offsetV;  // V offset
+
+        return transform;
+    }
 
     @Override
     public void onDrawFrame(ARViewRender render) {
@@ -518,6 +623,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 || depthSettings.depthColorVisualizationEnabled())) {
                 try (android.media.Image depthImage = frame.acquireDepthImage16Bits()) {
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
+                    if (arFilamentRenderer != null) {
+                       updateFilamentWithARCoreDepth(frame, depthImage);
+                    }
                 } catch (NotYetAvailableException e) {
                     // This normally means that depth data is not available yet. This is normal so we will not
                     // spam the logcat with this.
@@ -542,7 +650,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             //Framebuffer A
             if (arFilamentRenderer != null && modelNodes.size() > 0) {
-                //drawAnimatedObjects(render, modelNodes, viewMatrix, projectionMatrix);
+                drawAnimatedObjects(render, camera, modelNodes, viewMatrix, projectionMatrix);
             }
 
 
@@ -561,7 +669,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+
             //emitPlaneDetectedEvent();
 
 
@@ -584,7 +692,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
             //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+            backgroundRenderer.drawVirtualScene(render, filamentFramebuffer, Z_NEAR, Z_FAR);
 
 
             error = GLES30.glGetError();
@@ -594,6 +702,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
             handleTap(frame, camera);
+
+            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
 
             GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
@@ -635,7 +745,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
         float[] position = {0f, 0f, 1};
-        float[] rotation = {0, 2, -2, 1};
+        float[] rotation = {0, 2, 1.5f, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 
