@@ -910,7 +910,7 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockForm {
   border: none;
-  border-radius: 25px;
+  border-radius: 30px;
 }
 
 /* making changes for modern mockform */
@@ -930,7 +930,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 12px 15px 10px 10px;
+  padding: 10px 15px 7px 10px;
 
 }
 
