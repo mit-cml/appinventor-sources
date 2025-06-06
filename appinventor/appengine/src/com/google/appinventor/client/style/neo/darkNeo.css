@@ -37,12 +37,12 @@
 @def simple-panel-shadow                rgba(82, 168, 236, 0.8);
 @def project-color                      #112abb;
 
-@def phoneLandscape                      url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscape.png');
+@def phoneLandscape                      url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeModern.png');
 @def phonePortrait                       url('static/images/dark_mode_mockups/dark-mode-phonePortraitModern.png');
-@def phoneLandscapeTablet                url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscapeTablet.png');
-@def phonePortraitTablet                 url('static/images/dark_mode_mockups/dark-mode-phonephonePortraitTablet.png');
-@def phoneLandscapeMonitor               url('static/images/dark_mode_mockups/dark-mode-phonephoneLandscapeMonitor.png');
-@def phonePortraitMonitor                url('static/images/dark_mode_mockups/dark-mode-phonephonePortraitMonitor.png');
+@def phoneLandscapeTablet                url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeTablet.png');
+@def phonePortraitTablet                 url('static/images/dark_mode_mockups/dark-mode-phonePortraitTablet.png');
+@def phoneLandscapeMonitor               url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeMonitor.png');
+@def phonePortraitMonitor                url('static/images/dark_mode_mockups/dark-mode-phonePortraitMonitor.png');
 
 @def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
 @def navigationbarLandscape              url('static/images/navigationbarLandscape.png');

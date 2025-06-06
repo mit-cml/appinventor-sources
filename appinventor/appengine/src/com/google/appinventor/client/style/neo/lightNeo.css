@@ -37,7 +37,7 @@
 @def simple-panel-shadow                rgba(82, 168, 236, 0.8);
 @def project-color                      #112abb;
 
-@def phoneLandscape                      url('static/images/phoneLandscape.png');
+@def phoneLandscape                      url('static/images/phoneLandscapeModern.png');
 @def phonePortrait                       url('static/images/phonePortraitModern.png');
 @def phoneLandscapeTablet                url('static/images/phoneLandscapeTablet.png');
 @def phonePortraitTablet                 url('static/images/phonePortraitTablet.png');

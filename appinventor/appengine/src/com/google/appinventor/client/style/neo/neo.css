@@ -910,7 +910,7 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockForm {
   border: none;
-  border-radius: 36px;
+  border-radius: 25px;
 }
 
 /* making changes for modern mockform */
@@ -922,16 +922,15 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 11px 43px 7px 48px;
+  padding: 11px 55px 7px 12px;
 }
 
 .ode-SimpleMockFormPhonePortrait {
-  /* background-image: url('static/images/phonePortraitModern (1).png'); */
   background-image: phonePortrait;
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 12px 15px 12px 15px;
+  padding: 12px 15px 10px 10px;
 
 }
 
