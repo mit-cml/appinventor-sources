@@ -8,9 +8,12 @@
 (define-macro (invoke object method . params)
   (let ((n (if (symbol? method) (symbol->string method) method))
         (args (map (lambda (x) (if (symbol? x) (symbol->string x) x)) params)))
-    `(##inline-host-expression "@1@[@scm2host@(@2@)].apply(@1@, @scm2host@(@3@))" ,object ,method ,@params)))
+    `(##inline-host-expression "@1@[@scm2host@(@2@)].apply(@1@, @scm2host@(@3@))" ,object ,method (list ,@args))))
 (define (YailNumberToString:format n)
   (!e "@host2scm@(yailNumberToString(@scm2host@(@1@)))" n))
+(define com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 37)
+(define (AssetFetcher:loadExtensions json)
+  #t)
 (define (!js-object-get object name)
   (let ((n (if (##symbol? name) (symbol->string name) name)))
     (!e "@host2scm@(@1@[@scm2host@(@2@)])" object n)))
@@ -24,6 +27,11 @@
 (define *the-empty-string-printed-rep* "*empty-string*")
 (define *testing* #f)
 (define YailRuntimeError 'appinventor.YailRuntimeError)
+
+(define (symbol-append . symbols)
+  (string->symbol
+   (apply string-append
+          (map symbol->string symbols))))
 
 (!s "window.yailListHeader = @1@;" '*list*)
 
@@ -40,8 +48,6 @@
      (if *this-is-the-repl*
          (begin expr ...)
          (add-to-form-do-after-creation (delay (begin expr ...)))))))
-
-(define com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 37)
 
 (define (reset-current-form-environment)
   (!s "@1@.environment = {};" *this-form*))
@@ -61,13 +67,24 @@
 (define *init-thunk-environment* (!e "{}"))
 
 (define (add-init-thunk component-name thunk)
-  (!s "@1@[@scm2host@(@2@)] = @scm2host@(@3@);" *init-thunk-environment* component-name thunk))
+  (!s "@1@[@scm2host@(@2@)] = @3@;" *init-thunk-environment* component-name thunk))
 
 (define (get-init-thunk component-name)
-  (!js-object-get *init-thunk-environment* component-name))
+  (!e "(@1@[@scm2host@(@2@)] || false)" *init-thunk-environment* component-name))
 
 (define (clear-init-thunks)
   (set! *init-thunk-environment* (!e "{}")))
+
+(define (in-ui blockid promise)
+  (set! *this-is-the-repl* #t)
+  (send-to-block blockid
+                 (try-catch (list "OK" (get-display-representation (force promise)))
+                            (exception YailRuntimeError (list "NOK" (format #f "~A" exception))))))
+
+(define (send-to-block blockid message)
+  (let* ((good (car message))
+         (value (cadr message)))
+    (!s "RetValManager.appendReturnValue(@scm2host@(@1@), @scm2host@(@2@), @scm2host@(@3@));" blockid good value)))
 
 (define (clear-current-form)
   (when (not (eq? *this-form* #!void))
@@ -79,6 +96,9 @@
 
 (define (set-form-name form-name)
   (!s "@1@.setFormName(@scm2host@(@2@));" *this-form* form-name))
+
+(define (registerEventForDelegation form component-name event-name)
+  (!s "appinventor.EventDispatcher.registerEventForDelegation(@1@, @scm2host@(@2@), @scm2host@(@3@));" form component-name event-name))
 
 (define (make component-type container)
   (let ((typename (if (symbol? component-type) (symbol->string component-type) component-type)))
@@ -97,9 +117,9 @@
   (syntax-rules ()
     ((_)
      (if *testing* #t
-         (get-property (get-repl-form) 'ShowListsAsJson)))))
+         (get-property 'Screen1 'ShowListsAsJson)))))
 
-#|
+
 ;(eval
 (define-syntax add-component
   ;; TODO(opensource): It's quite possible that we can now dispense with defining the <component-name>
@@ -109,7 +129,7 @@
   (syntax-rules ()
     ((_ container component-type component-name)
      (begin
-       (define component-name #!void)
+;       (define component-name #!void)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       'component-type
@@ -121,7 +141,7 @@
                               #f))))
     ((_ container component-type component-name init-property-form ...)
      (begin
-       (define component-name #!void)
+;       (define component-name #!void)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       'component-type
@@ -132,15 +152,35 @@
                               'component-name
                               (lambda () init-property-form ...)))))))
 ;)
-|#
 
+#|
 (define (add-component container-name component-type component-name)
   (add-component-within-repl container-name component-type component-name #f))
-
+|#
 
 (define (set-and-coerce-property! component prop-sym property-value property-type)
   (let ((component (coerce-to-component-and-verify component)))
     (%set-and-coerce-property! component prop-sym property-value property-type)))
+
+
+(define (coerce-args procedure-name arglist typelist)
+  (cond ((null? typelist)
+         (if (null? arglist)
+             arglist
+             (signal-runtime-error
+              (string-append
+               "The procedure "
+               procedure-name
+               " expects no arguments, but it was called with the arguments: "
+               (show-arglist-no-parens arglist))
+              (string-append "Wrong number of arguments for" procedure-name))))
+        ((not (= (length arglist) (length typelist)))
+         (signal-runtime-error
+          (string-append "The arguments " (show-arglist-no-parens arglist)
+                         " are the wrong number of arguments for " (get-display-representation procedure-name))
+          (string-append "Wrong number of arguments for" (get-display-representation procedure-name))))
+        (else (map coerce-arg arglist typelist))))
+
 
 (define (coerce-to-component-and-verify component)
   (lookup-in-current-form-environment component))
@@ -198,8 +238,8 @@
   (let ((+inf +inf.0)
         (-inf -inf.0))
     (lambda (arg)
-      (cond ((= arg +inf) "+infinity")
-            ((= arg -inf) "-infinity")
+      (cond ((eq? arg +inf) "+infinity")
+            ((eq? arg -inf) "-infinity")
             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
             ((symbol? arg)
              (symbol->string arg))
@@ -217,7 +257,7 @@
 
 (define (get-property component prop-name)
   (let ((component (coerce-to-component-and-verify component)))
-    (sanitize-return-value component prop-name (invoke component prop-name))))
+    (sanitize-return-value component prop-name (##inline-host-expression "@host2scm@(@1@[@scm2host@(@2@)])" component prop-name))))
 
 (define (coerce-arg arg type)
   (let ((arg (sanitize-atomic arg)))
@@ -239,6 +279,14 @@
 
 (define (sanitize-return-value component func-name value)
   (sanitize-component-data value))
+
+(define (call-yail-primitive prim arglist typelist codeblocks-name)
+  ;; (android-log (format #f "applying procedure: ~A to ~A" codeblocks-name arglist))
+  (let ((coerced-args (coerce-args codeblocks-name arglist typelist)))
+    (if (all-coercible? coerced-args)
+        ;; note that we don't need to sanitize because this is coming from a Yail primitive
+        (apply prim coerced-args)
+        (generate-runtime-type-error codeblocks-name arglist))))
 
 (define (sanitize-component-data data)
   (cond
@@ -348,8 +396,8 @@
   (let ((+inf +inf.0)
         (-inf -inf.0))
     (lambda (arg)
-      (cond ((= arg +inf) "+infinity")
-            ((= arg -inf) "-infinity")
+      (cond ((eq? arg +inf) "+infinity")
+            ((eq? arg -inf) "-infinity")
             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
             ((symbol? arg)
              (symbol->string arg))
@@ -374,6 +422,21 @@
 (define (AssetFetcher:fetchAssets cookieValue projectId url asset)
   #f)
 
+(define (call-Initialize-of-components . component-names)
+  ;; Do any inherent/implied initializations
+  (for-each (lambda (component-name)
+              (let ((init-thunk (get-init-thunk component-name)))
+                (when init-thunk (init-thunk))))
+            component-names)
+  ;; Do the explicit component initialization methods and events
+  #|
+  (for-each (lambda (component-name)
+              (invoke *this-form* 'callInitialize
+                      (lookup-in-current-form-environment component-name)))
+            component-names)
+  |#
+  )
+
 (define (get-repl-form)
   (!e "appinventor.Screen1.getActiveForm()"))
 
@@ -385,7 +448,14 @@
   (set! *this-form* (get-repl-form)))
 
 (define (eval-scheme s)
-  (with-input-from-string s (lambda () (eval (read)))))
+  (with-input-from-string s
+    (lambda ()
+      (let loop ((retval #!void) (sexp (read)))
+        (if (not (eof-object? sexp))
+            (begin
+              (android-log (format "~a" sexp))
+              (loop (eval sexp) (read)))
+            retval)))))
 
 (!s "window.evalScheme = async function(form) { var result = await @scm2host@(@1@)(form); return @scm2host@(result); }" eval-scheme)
 

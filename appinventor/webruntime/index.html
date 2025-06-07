@@ -17,28 +17,145 @@
           return n < 0 ? "-infinity" : "+infinity";
         }
       }
+
+class RetValManager {
+  static values = [];
+
+  static appendReturnValue(blockid, ok, item) {
+    let response = {status: ok, type: 'return', value: item, blockid: blockid};
+    RetValManager.values.push(response);
+    console.log(response);
+  }
+}
+
+function getReplForm() {
+  try {
+    return appinventor.Screen1.getActiveForm();
+  } catch (e) {
+    return undefined;
+  }
+}
     </script>
     <script src="build/runtime.js" type="text/javascript"></script>
-    <script>
-      //evalScheme('(define-macro (add-component container component-type component-name . init-form) `(begin (define ,component-name #!void) (add-component-within-repl \',container \',component-type \',component-name (lambda () ,@init-form))))');
-      //evalScheme("(define-macro (add-component container component-type component-name) `(list ',container ',component-type ',component-name))");
-      /*
-      evalScheme(`(define-syntax unless
-    (syntax-rules ()
-      ((unless test body ...)
-       (if test #f (begin body ...)))))`);
-       */
-      /*
-      evalScheme(`(define-syntax add-component
+<script id="runtimeExtra" type="text/scheme">
+(define-syntax require
+  (syntax-rules ()
+    ((_ package)
+     #f)))
+(define-syntax process-repl-input
+  (syntax-rules ()
+    ((_ blockid expr)
+     (in-ui blockid (delay expr)))))
+(define-syntax add-component
   (syntax-rules ()
     ((_ container component-type component-name)
+     (add-component-within-repl 'container 'component-type 'component-name #f))
+    ((_ container component-type component-name init-property-form ...)
+     (let ((init-thunk (lambda () init-property-form ...)))
+       (add-component-within-repl 'container 'component-type 'component-name init-thunk)))))
+(define-syntax *list-for-runtime*
+  (syntax-rules ()
+    ((_  args ...)
+     (list args ...))))
+;;; (gen-event-name Button2 Click)
+;;; ==> Button2$Click
+(define-syntax gen-event-name (syntax-rules () ((_ component-name event-name) (symbol-append 'component-name (identifier-base '$) 'event-name))))
+#|
+; Android version
+(define-syntax define-event-helper
+  (syntax-rules ()
+    ((_ event-func-name (arg ...) (expr ...))
+
+     ;; Note that if we expand directly into a lambda expression  below we expose
+     ;; an error in the Kawa compiler and the function doesn't get defined properly.
+     ;; I think that it ends up not becoming a public method in the generated class.
+
      (begin
-       (define component-name #!void)
-           (add-component-within-repl 'container
-                                      'component-type
-                                      'component-name
-                                      #f)))))))`);
-       */
+       (define (event-func-name arg ...)
+         ;; The arguments to the handler come from the components and
+         ;; need to be sanitized before we can operate on them in Yail.  See
+         ;; the comments on sanitize below
+         (let ((arg (sanitize-component-data arg)) ...)
+           expr ...))
+       (if *this-is-the-repl*
+           (add-to-current-form-environment 'event-func-name event-func-name)
+           (add-to-form-environment 'event-func-name event-func-name))))))
+; iOS Version
+(define-syntax define-event-helper
+  (syntax-rules ()
+    ((_ event-func-name (arg ...) (expr ...))
+     (begin
+       (define (event-func-name arg ...)
+         (let ((arg (sanitize-component-data arg)) ...)
+           expr ...))
+       (if *this-is-the-repl*
+           (add-to-current-form-environment 'event-func-name event-func-name)
+           (add-to-form-environment 'event-func-name event-func-name))))))
+|#
+(define-syntax define-event-helper
+  (syntax-rules ()
+    ((_ event-func-name (arg ...) (expr ...))
+     (add-to-current-form-environment 'event-func-name (lambda (arg ...) expr ...)))))
+(define-macro (define-event component-name event-name args . body)
+  (let ((full-name (symbol-append component-name '$ event-name)))
+    `(begin
+       (define-event-helper ,full-name ,args ,body)
+       (registerEventForDelegation *this-form* ',component-name ',event-name))))
+(define-macro define-generic-event
+  (lambda (form env)
+    (let* ((component-type (cadr form))
+           (event-name (caddr form))
+           (args (cadddr form))
+           (body (cddddr form))
+           (full-name (symbol-append 'any$ component-type '$ event-name)))
+      #`(define-event-helper #,full-name #,args #,body))))
+(define-syntax try-catch
+  (syntax-rules ()
+    ((_ program (exception type handler))
+     (with-exception-handler
+      (lambda (exception) (if exception (begin (display exception) (display "\n") handler)))
+      (lambda () program)))))
+(define-syntax do-after-form-creation
+  (syntax-rules ()
+    ((_ expr ...)
+     (if *this-is-the-repl*
+         (begin expr ...)
+         (add-to-form-do-after-creation (delay (begin expr ...)))))))
+</script>
+<script id="sampleYail" type="text/yail">
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (AssetFetcher:loadExtensions "[]"))))
+;(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (define-syntax protect-enum   (lambda (x)     (syntax-case x ()       ((_ enum-value number-value)         (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 34)           #'number-value           #'enum-value)))))(clear-current-form))))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (try-catch (let ((attempt (delay (set-form-name "Screen1")))) (force attempt)) (exception java.lang.Throwable 'notfound)))))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (do-after-form-creation (set-and-coerce-property! 'Screen1 'ActionBar #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'AppName "GWTAndroidTest" 'text)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "0" 'text)
+
+)
+)))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (init-runtime))))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input "wvT3}2O~B^(xLo3]9rxj" (begin (define-event Button1 Click()(set-this-form)
+    (set-and-coerce-property! 'Button1 'Text (call-yail-primitive + (*list-for-runtime* (get-property 'Button1 'Text) 1 ) '(number number ) "+") 'text)))))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (call-Initialize-of-components 'Screen1 'Button1))))
+</script>
+<script>
+let runtimeExtras = document.getElementById('runtimeExtra').innerText.trim();
+function initRuntime() {
+  evalScheme(runtimeExtras);
+}
+function runYail() {
+  const yail = document.getElementById('sampleYail');
+  if (!yail) {
+    throw new Error('Cannot find YAIL');
+  }
+  evalScheme(yail.innerText);
+}
     </script>
     <script src="build/web/webemu/webemu.nocache.js" type="text/javascript"></script>
     <script>

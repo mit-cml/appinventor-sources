@@ -26,6 +26,9 @@ public class ComponentFactory {
     LOOKUP.put("ListPicker", ListPicker::new);
   }
   public static Component create(ComponentContainer parent, String type) {
+    if (type.startsWith("com.google.appinventor.components.runtime.")) {
+      type = type.substring("com.google.appinventor.components.runtime.".length());
+    }
     ComponentConstructor<? extends Component> constructor = LOOKUP.get(type);
     if (constructor == null) {
       throw new IllegalArgumentException("Unsupported component type: " + type);

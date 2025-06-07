@@ -36,9 +36,14 @@
   </condition>
 
   <target name="webruntime">
+    <mkdir dir="build"/>
     <exec executable="gsc">
       <arg line="-warnings -target js -o build/runtime.js -exe -nopreload" />
-      <arg line="~~lib/srfi/13/13.scm ~~lib/srfi/14/14.scm ~~lib/srfi/28/28.scm" />
+      <arg line="~~lib/_gambit#.scm" />
+      <arg line="~~lib/_define-library/define-library-expand.scm" />
+      <arg line="~~lib/_define-library/_define-library.scm" />
+      <arg line="~~lib/srfi/13/13.scm" />
+      <arg line="~~lib/srfi/14/14.scm ~~lib/srfi/28/28.scm" />
       <arg line="runtime.scm" />
     </exec>
   </target>

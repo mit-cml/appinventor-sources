@@ -100,6 +100,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import jsinterop.annotations.JsProperty;
 import org.json.JSONException;
 
 
@@ -252,6 +253,9 @@ public class Form extends AppInventorCompatActivity
   // the name of the secondary screen. It is saved so that it can be passed to the OtherScreenClosed
   // event.
   private String nextFormName;
+
+  @JsProperty
+  public final boolean isComponent = true;
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
@@ -1395,6 +1399,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The caption for the form, which apears in the title bar")
+  @JsProperty(name = "Title")
   public String Title() {
     return getTitle().toString();
   }
@@ -1408,6 +1413,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Title")
   public void Title(String title) {
     this.title = title;
     if (titleBar != null) {
@@ -1525,6 +1531,7 @@ public class Form extends AppInventorCompatActivity
       "landscape, portrait, sensor, user and unspecified.  " +
       "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
+  @JsProperty(name = "ScreenOrientation")
   public @Options(ScreenOrientation.class) String ScreenOrientation() {
     return ScreenOrientationAbstract().toUnderlyingValue();
   }
@@ -1590,6 +1597,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified", alwaysSend = true)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ScreenOrientation")
   public void ScreenOrientation(@Options(ScreenOrientation.class) String screenOrientation) {
     // Make sure screenOrientation is a valid ScreenOrientation.
     ScreenOrientation orientation = ScreenOrientation.fromUnderlyingValue(screenOrientation);
@@ -1604,6 +1612,7 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ActionBar")
   public void ActionBar(boolean enabled) {
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
       // ActionBar is available on SDK 11 or higher
@@ -1912,6 +1921,7 @@ public class Form extends AppInventorCompatActivity
           "See the documentation on responsive design in App Inventor for more information. " +
           "This property appears on Screen1 only and controls the sizing for all screens in the app.",
       category = PropertyCategory.GENERAL)
+  @JsProperty(name = "Sizing")
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
@@ -1961,6 +1971,7 @@ public class Form extends AppInventorCompatActivity
       + "defaulted to false. Older projects should not have been affected by "
       + "this default settings update."
     )
+  @JsProperty(name = "ShowListsAsJson")
   public void ShowListsAsJson(boolean asJson) {
     showListsAsJson = asJson;
   }
@@ -1974,6 +1985,7 @@ public class Form extends AppInventorCompatActivity
    * behavior for all screens in the app.
    */
   @SimpleProperty(category = PropertyCategory.GENERAL, userVisible = false)
+  @JsProperty(name = "ShowListsAsJson")
   public boolean ShowListsAsJson() {
     return showListsAsJson;
   }
@@ -1990,6 +2002,7 @@ public class Form extends AppInventorCompatActivity
       description = "This is the display name of the installed application in the phone." +
           "If the AppName is blank, it will be set to the name of the project when the project is built.",
       category = PropertyCategory.GENERAL)
+  @JsProperty(name = "AppName")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }

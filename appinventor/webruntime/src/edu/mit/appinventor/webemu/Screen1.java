@@ -16,6 +16,11 @@ import jsinterop.annotations.JsType;
 public class Screen1 extends ReplForm {
   private static final Logger LOG = Logger.getLogger(Screen1.class.getName());
 
+  static {
+    initRuntime();
+  }
+
+  @SuppressWarnings("FieldMayBeFinal")
   @JsProperty
   private JavaScriptObject environment = JavaScriptObject.createObject();
 
@@ -35,10 +40,24 @@ public class Screen1 extends ReplForm {
 
   @Override
   @SuppressWarnings("unusable-by-js")
-  public boolean dispatchEvent(Component component, String componentName, String eventName,
-      Object[] args) {
-    return false;
-  }
+  public native boolean dispatchEvent(Component component, String componentName, String eventName,
+      Object[] args)/*-{
+    // TODO(ewpatton): Move dispatchEvent to runtime.scm
+    var cb = this.@edu.mit.appinventor.webemu.Screen1::environment[componentName + '$' + eventName];
+    if (typeof cb !== 'function') {
+      // No event handler for this event.
+      return false;
+    }
+    // Call the event handler with the component as 'this'.
+    if (args === null || args === undefined) {
+      args = [];
+    }
+    // Convert args to an array if it is not already.
+    if (!Array.isArray(args)) {
+      args = Array.prototype.slice.call(args);
+    }
+    cb.apply($wnd, args);
+  }-*/;
 
   @Override
   public void dispatchGenericEvent(Component component, String eventName, boolean notAlreadyHandled,
@@ -65,5 +84,9 @@ public class Screen1 extends ReplForm {
 
   public native void evalScheme(String code) /*-{
     $wnd.evalScheme(code);
+  }-*/;
+
+  private static native void initRuntime() /*-{
+    $wnd.initRuntime();
   }-*/;
 }
