@@ -34,7 +34,7 @@ public class RunZipAlign implements AndroidTask {
     };
 
     if (!Execution.execute(null, zipAlignCommandLine,
-        System.out, System.err)) {
+        System.out, System.err, Execution.Timeout.SHORT)) {
       return TaskResult.generateError("Error while running ZipAlign tool");
     }
 

@@ -237,7 +237,7 @@ public class RunBundletool implements AndroidTask {
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, bundletoolBuildCommandLine,
-        System.out, System.err);
+        System.out, System.err, Execution.Timeout.LONG);
   }
 
   private boolean jarsigner(CompilerContext<AndroidPaths> context) {
@@ -265,6 +265,6 @@ public class RunBundletool implements AndroidTask {
     String[] jarsignerSignCommandLine = jarsignerCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, jarsignerSignCommandLine,
-        System.out, System.err);
+        System.out, System.err, Execution.Timeout.SHORT);
   }
 }

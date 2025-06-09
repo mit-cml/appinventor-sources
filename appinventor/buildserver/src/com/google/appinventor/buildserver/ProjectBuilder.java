@@ -406,7 +406,8 @@ public final class ProjectBuilder {
         "-keypass", "android"
     };
 
-    if (Execution.execute(null, keytoolCommandline, System.out, System.err)) {
+    if (Execution.execute(null, keytoolCommandline, System.out, System.err,
+        Execution.Timeout.SHORT)) {
       if (keyStoreFile.length() > 0) {
         return keyStoreFile.getAbsolutePath();
       }
