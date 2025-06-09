@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
+import com.google.appinventor.buildserver.util.Execution;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -115,6 +116,12 @@ public final class Main {
       LOG.severe("Problem opening inout zip file: " + commandLineOptions.inputZipFile.getName());
       System.exit(1);
     }
+
+    if (commandLineOptions.isForCompanion) {
+      // If we are building for the Companion, disable timeouts
+      Execution.disableTimeouts();
+    }
+
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,

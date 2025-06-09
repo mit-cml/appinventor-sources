@@ -30,6 +30,8 @@ public final class Execution {
   private static final Logger LOG = Logger.getLogger(Execution.class.getName());
   private static final Joiner joiner = Joiner.on(" ");
 
+  private static boolean DISABLE_TIMEOUTS = false;
+
   public enum Timeout {
     SHORT(5), // 5 seconds
     MEDIUM(30), // 30 seconds
@@ -44,6 +46,10 @@ public final class Execution {
     public int getSeconds() {
       return seconds;
     }
+  }
+
+  public static void disableTimeouts() {
+    DISABLE_TIMEOUTS = true;
   }
 
   /*
@@ -103,6 +109,10 @@ public final class Execution {
       process.getOutputStream().close();
       new RedirectStreamHandler(new PrintWriter(out, true), process.getInputStream());
       new RedirectStreamHandler(new PrintWriter(err, true), process.getErrorStream());
+
+      if (timeoutSeconds <= 0 || DISABLE_TIMEOUTS) {
+        return process.waitFor() == 0;
+      }
 
       if (!process.waitFor(timeoutSeconds, TimeUnit.SECONDS)) {
         process.destroyForcibly();

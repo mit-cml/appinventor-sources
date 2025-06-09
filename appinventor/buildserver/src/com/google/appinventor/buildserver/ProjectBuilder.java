@@ -207,7 +207,12 @@ public final class ProjectBuilder {
 
         boolean success;
         try {
-          success = executor.get(MAX_BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+          if (isForCompanion) {
+            // If we are building for companion, very likely in CI, don't limit the build time...
+            success = executor.get();
+          } else {
+            success = executor.get(MAX_BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+          }
         } catch (TimeoutException e) {
           LOG.severe("Build has timed out");
           context.getReporter().error("Build has timed out");
