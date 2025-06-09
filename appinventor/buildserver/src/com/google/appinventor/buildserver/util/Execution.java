@@ -107,8 +107,11 @@ public final class Execution {
     		command[i] = command[i].replace("\"", "\\\"");
     	}
     }
+
     try {
       Process process = Runtime.getRuntime().exec(command, null, workingDir);
+      // Prevent any interactive shell from waiting for input
+      process.getOutputStream().close();
       new RedirectStreamHandler(new PrintWriter(out, true), process.getInputStream());
       new RedirectStreamHandler(new PrintWriter(err, true), process.getErrorStream());
       return process.waitFor() == 0;
@@ -132,8 +135,11 @@ public final class Execution {
       StringBuffer err) throws IOException {
     LOG.log(Level.INFO, "____Executing " + joiner.join(command));
     Process process = Runtime.getRuntime().exec(command, null, workingDir);
+    // Prevent any interactive shell from waiting for input
+    process.getOutputStream().close();
     Thread outThread = new RedirectStreamToStringBuffer(out, process.getInputStream());
     Thread errThread = new RedirectStreamToStringBuffer(err, process.getErrorStream());
+
     try {
       process.waitFor();
       outThread.join();
