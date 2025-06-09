@@ -100,6 +100,8 @@ public class RunBundletool implements AndroidTask {
 
     context.getReporter().info("Signing bundle");
     if (!jarsigner(context)) {
+      context.getReporter().warn("We could not sign your app. In case you are using a custom keystore, please make " +
+        "sure its password is set to 'android', and the key is set to 'androidkey'.");
       return TaskResult.generateError("Could not sign bundle");
     }
     return TaskResult.generateSuccess();
