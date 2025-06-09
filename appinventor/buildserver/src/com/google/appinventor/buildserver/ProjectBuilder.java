@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -71,6 +73,8 @@ public final class ProjectBuilder {
 
   private static final int MAX_COMPILER_MESSAGE_LENGTH = 160;
   private static final String SEPARATOR = File.separator;
+
+  private static final int MAX_BUILD_TIMEOUT_SECONDS = 60 * 5; // 5 minutes
 
   // Project folder prefixes
   // TODO(user): These constants are (or should be) also defined in
@@ -201,7 +205,15 @@ public final class ProjectBuilder {
 
         Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
 
-        boolean success = executor.get();
+        boolean success;
+        try {
+          success = executor.get(MAX_BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+          LOG.severe("Build has timed out");
+          context.getReporter().error("Build has timed out");
+          success = false;
+        }
+
         statReporter.stopBuild(compiler, success);
         r.close();
 
