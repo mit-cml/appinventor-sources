@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,8 @@ public final class Execution {
   // Logging support
   private static final Logger LOG = Logger.getLogger(Execution.class.getName());
   private static final Joiner joiner = Joiner.on(" ");
+
+  private static final int SUBPROCESS_TIMEOUT_SECONDS = 5 * 60; // 5 minutes
 
   /*
    * Input stream handler used for stdout and stderr redirection.
@@ -114,7 +117,14 @@ public final class Execution {
       process.getOutputStream().close();
       new RedirectStreamHandler(new PrintWriter(out, true), process.getInputStream());
       new RedirectStreamHandler(new PrintWriter(err, true), process.getErrorStream());
-      return process.waitFor() == 0;
+
+      if (!process.waitFor(SUBPROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+        process.destroyForcibly();
+        err.println("Process had to be forcibly terminated due to timeout");
+        return false;
+      }
+
+      return process.exitValue() == 0;
     } catch (Exception e) {
       LOG.log(Level.WARNING, "____Execution failure: ", e);
       return false;
@@ -141,7 +151,11 @@ public final class Execution {
     Thread errThread = new RedirectStreamToStringBuffer(err, process.getErrorStream());
 
     try {
-      process.waitFor();
+      if (!process.waitFor(SUBPROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+        process.destroyForcibly();
+        err.append("Process had to be forcibly terminated due to timeout\n");
+      }
+
       outThread.join();
       errThread.join();
     } catch (InterruptedException e) {
