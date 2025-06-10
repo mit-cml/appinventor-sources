@@ -106,12 +106,19 @@ import android.util.Log;
     public void MoveTo(float x, float y, float z){
       float[] position = {x, y, z};
       float[] rotation = {0, 0, 0, 1};
-      float[] currentAnchorPoseRotation = Anchor().getPose().getTranslation();
-      Pose newPose = new Pose(position, currentAnchorPoseRotation);
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("model","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
-    }
 
+      float[] currentAnchorPoseRotation = rotation;
+      if (this.Anchor() != null) {
+        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+      }
+      Pose newPose = new Pose(position, rotation);
+      if (this.trackable != null){
+        Anchor(this.trackable.createAnchor(newPose));
+        Log.i("capsule","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+      }else {
+        Log.i("capsule", "tried to move anchor to pose");
+      }
+    }
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
             "specified (x,y,z) position.")

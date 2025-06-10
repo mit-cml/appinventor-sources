@@ -101,7 +101,7 @@ public class ARFilamentRenderer {
     private boolean hasSetTextureNames = false;
 
     private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 100f;
+    private static final float Z_FAR = 40f;
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
 
@@ -344,28 +344,26 @@ public class ARFilamentRenderer {
      * Set up basic lighting for the scene
      */
     private void setupLighting() {
-        // Create a main directional light (sun)
+        // Create main directional light (sun)
         mainLightEntity = EntityManager.get().create();
 
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
-        lightBuilder.color(1.0f, 1.0f, 0.8f)    // Slightly warm sunlight color
-                .intensity(80000.0f)           // Bright sunlight
-                .direction(0.0f, 5.0f, 0.0f)  // Coming from above and slightly in front
-                .castShadows(true);
+        lightBuilder.color(1.0f, 1.0f, 0.8f)
+            .intensity(180000.0f)
+            .direction(1.0f, -1.5f, -1.0f);  // ✅ More angled from above-front-right
 
-        LightManager lightManager = engine.getLightManager();
         lightBuilder.build(engine, mainLightEntity);
         modelScene.addEntity(mainLightEntity);
 
-        // Add an ambient light - use SUN type for version 1.9.11 compatibility
+        // Add fill light
         int ambientLightEntity = EntityManager.get().create();
-        new LightManager.Builder(LightManager.Type.SUN)
-                .color(0.8f, 0.8f, 1.0f)       // Slightly blue ambient light (sky color)
-                .intensity(80000.0f)           // Moderate intensity for ambient
-                .direction(0.0f, 1.0f, 0.0f)   // Coming from below (bounce light)
-                .castShadows(false)
-                .build(engine, ambientLightEntity);
-        modelScene.addEntity(mainLightEntity);
+        new LightManager.Builder(LightManager.Type.DIRECTIONAL)
+            .color(0.6f, 0.6f, 0.8f)       // Softer blue fill
+            .intensity(80000.0f)            // ✅ Lower intensity for fill
+            .direction(-0.5f, 0.5f, 1.0f)  // ✅ From below-back-left (opposite side)
+            .castShadows(false)
+            .build(engine, ambientLightEntity);
+
         modelScene.addEntity(ambientLightEntity);
 
         Log.d(LOG_TAG, "Lighting setup complete with main and ambient lights");
@@ -574,8 +572,8 @@ public class ARFilamentRenderer {
             camera.setProjection(
                     (double) 120.0,                   // vertical field of view
                     (double) viewportWidth / viewportHeight,  // aspect ratio
-                    0.01f,                  // near plane (closer for AR)
-                    40.0f,                 // far plane SHOULD MATCH ARView3d!!
+                    Z_NEAR,              // near plane (closer for AR)
+                    Z_FAR,                // far plane SHOULD MATCH ARView3d!!
                     Camera.Fov.VERTICAL
             );
 
@@ -682,15 +680,16 @@ public class ARFilamentRenderer {
                 occlusionMaterialInstance.setParameter("nearPlane", nearPlane);
                 occlusionMaterialInstance.setParameter("farPlane", farPlane);
 
-                // Matrix as 4 separate float4 vectors - these work
-               float[] row0 = {uvTransform[0], uvTransform[1], uvTransform[2], uvTransform[3]};
-                float[] row1 = {uvTransform[4], uvTransform[5], uvTransform[6], uvTransform[7]};
-                float[] row2 = {uvTransform[8], uvTransform[9], uvTransform[10], uvTransform[11]};
-                float[] row3 = {uvTransform[12], uvTransform[13], uvTransform[14], uvTransform[15]};
-                occlusionMaterialInstance.setParameter("uvTransformRow0", row0);
-                occlusionMaterialInstance.setParameter("uvTransformRow1", row1);
-                occlusionMaterialInstance.setParameter("uvTransformRow2", row2);
-                occlusionMaterialInstance.setParameter("uvTransformRow3", row3);
+
+                // CORRECT: Pass float4 as 4 individual float values
+                occlusionMaterialInstance.setParameter("uvTransformRow0",
+                    uvTransform[0], uvTransform[1], uvTransform[2], uvTransform[3]);
+                occlusionMaterialInstance.setParameter("uvTransformRow1",
+                    uvTransform[4], uvTransform[5], uvTransform[6], uvTransform[7]);
+                occlusionMaterialInstance.setParameter("uvTransformRow2",
+                    uvTransform[8], uvTransform[9], uvTransform[10], uvTransform[11]);
+                occlusionMaterialInstance.setParameter("uvTransformRow3",
+                    uvTransform[12], uvTransform[13], uvTransform[14], uvTransform[15]);
 
                 occlusionMaterialInstance.setParameter("occlusionBias", 0.01f);
 
@@ -721,7 +720,7 @@ public class ARFilamentRenderer {
                     Log.d(LOG_TAG, "AR depth text parameter set successfully");
                 }
                 if (virtualSceneDepthTexture != null) {
-                    occlusionMaterialInstance.setParameter("virtualDepthTexture", virtualSceneDepthTexture, sampler);
+                    //occlusionMaterialInstance.setParameter("virtualDepthTexture", virtualSceneDepthTexture, sampler);
                     Log.d(LOG_TAG, "DEPTH tex parameter set successfully");
                 }
                 if (virtualSceneColorTexture != null) {
@@ -729,7 +728,7 @@ public class ARFilamentRenderer {
                     Log.d(LOG_TAG, "COLOR  tex parameter set successfully");
                 }
 
-                occlusionMaterialInstance.setParameter("debugMode", 7);
+                occlusionMaterialInstance.setParameter("debugMode", 26);
                 occlusionMaterialInstance.setParameter("baseColor", 0.0f, 0.0f, 1.0f, 1.0f);
 
 
@@ -1025,8 +1024,8 @@ long lastSuccessfulFrameTime = 0;
 
         // Read pixels with error handling
         renderer.readPixels(
-            //compositeRenderTarget, // vs
-            filamentRenderTarget,
+            compositeRenderTarget, // vs
+            //filamentRenderTarget,
             0, 0,              // x, y start
             viewportWidth,
             viewportHeight,    // width, height
@@ -1249,15 +1248,16 @@ long lastSuccessfulFrameTime = 0;
                 // Occlusion will be set up automatically when depth data arrives
 
                 // Apply to all parts of the model
-                RenderableManager renderableManager = engine.getRenderableManager();
-                for (int entityId : asset.getEntities()) {
+               // RenderableManager renderableManager = engine.getRenderableManager();
+               // renderableManager.setMaterialInstance(asset);
+               /* for (int entityId : asset.getEntities()) {
                     if (renderableManager.hasComponent(entityId)) {
                         int instance = renderableManager.getInstance(entityId);
                         for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
                             renderableManager.setMaterialInstanceAt(instance, i, standardMaterialInstance);
                         }
                     }
-                }
+                }*/
 
                 Log.d(LOG_TAG, "loaded basic.filamat material");
             }
