@@ -33,7 +33,6 @@ public class RunApkSigner implements AndroidTask {
         "-ks", context.getKeystoreFilePath(),
         "-ks-key-alias", "AndroidKey",
         "-ks-pass", "pass:android",
-        // "-key-pass", "pass:android",
         context.getPaths().getDeployFile().getAbsolutePath()
     };
 

@@ -258,8 +258,6 @@ public class RunBundletool implements AndroidTask {
     jarsignerCommandLine.add(context.getKeystoreFilePath());
     jarsignerCommandLine.add("-storepass");
     jarsignerCommandLine.add("android");
-    // jarsignerCommandLine.add("-keypass");
-    // jarsignerCommandLine.add("android");
     jarsignerCommandLine.add(context.getPaths().getDeployFile().getAbsolutePath());
     jarsignerCommandLine.add("AndroidKey");
     String[] jarsignerSignCommandLine = jarsignerCommandLine.toArray(new String[0]);
