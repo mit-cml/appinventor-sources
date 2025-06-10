@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * A container for components that arranges them linearly, either
  * horizontally or vertically.
@@ -234,6 +236,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
           " horizontally. The choices are: 1 = left aligned, 2 = right aligned, " +
           " 3 = horizontally centered.  Alignment has no effect if the arrangement's width is " +
           "automatic.")
+  @JsProperty(name = "AlignHorizontal") // might want to double check this one
   public @Options(HorizontalAlignment.class) int AlignHorizontal() {
     return AlignHorizontalAbstract().toUnderlyingValue();
   }
@@ -266,6 +269,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
+  @JsProperty(name = "AlignHorizontal")
   public void AlignHorizontal(@Options(HorizontalAlignment.class) int alignment) {
     // Make sure alignment is a valid HorizontalAlignment.
     HorizontalAlignment align = HorizontalAlignment.fromUnderlyingValue(alignment);
@@ -288,6 +292,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
           " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
           "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
           "is automatic.")
+  @JsProperty(name = "AlignVertical")
   public @Options(VerticalAlignment.class) int AlignVertical() {
     return AlignVerticalAbstract().toUnderlyingValue();
   }
@@ -320,6 +325,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
+  @JsProperty(name = "AlignVertical")
   public void AlignVertical(@Options(VerticalAlignment.class) int alignment) {
     // Make sure alignment is a valid VerticalAlignment.
     VerticalAlignment align = VerticalAlignment.fromUnderlyingValue(alignment);
@@ -339,6 +345,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
      */
     @SimpleProperty(category = PropertyCategory.APPEARANCE,
             description = "Returns the background color of the %type%")
+    @JsProperty(name = "BackgroundColor")
     public int BackgroundColor() {
         return backgroundColor;
     }
@@ -357,6 +364,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
             defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
     @SimpleProperty(description = "Specifies the background color of the %type%. " +
             "The background color will not be visible if an Image is being displayed.")
+    @JsProperty(name = "BackgroundColor")
     public void BackgroundColor(int argb) {
         backgroundColor = argb;
 //        getView().setBackgroundColor(argb);
@@ -371,6 +379,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
+    @JsProperty(name = "Image")
     public String Image() {
         return imagePath;
     }
@@ -387,6 +396,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be visible.")
+    @JsProperty(name = "Image")
     public void Image(@Asset String path) {
         // If it's the same as on the prior call and the prior load was successful,
         // do nothing.
