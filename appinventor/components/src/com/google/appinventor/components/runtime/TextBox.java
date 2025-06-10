@@ -22,6 +22,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsMethod;
+
 /**
  * Users enter text in a text box component.
  *
@@ -140,6 +143,7 @@ public final class TextBox extends TextBoxBase {
       "Numbers can include a decimal point and an optional leading minus sign.  " +
       "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
       "can use [set Text to] to enter any text at all.")
+  @JsProperty(name = "NumbersOnly")
   public boolean NumbersOnly() {
     return acceptsNumbersOnly;
   }
@@ -159,6 +163,7 @@ public final class TextBox extends TextBoxBase {
       "Numbers can include a decimal point and an optional leading minus sign.  " +
       "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
       "can use [set Text to] to enter any text at all.")
+  @JsProperty(name = "NumbersOnly")
   public void NumbersOnly(boolean acceptsNumbersOnly) {
     if (acceptsNumbersOnly) {
       view.setInputType(
@@ -178,6 +183,7 @@ public final class TextBox extends TextBoxBase {
   @SimpleFunction(
       description = "Hide the keyboard.  Only multiline text boxes need this. " +
       "Single line text boxes close the keyboard when the users presses the Done key.")
+  @JsMethod(name = "HideKeyboard")
   public void HideKeyboard() {
     InputMethodManager imm =
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -197,6 +203,7 @@ public final class TextBox extends TextBoxBase {
                     "key instead of a return key, and pressing Done hides the keyboard.  " +
                     "The app should call the HideKeyboard method to hide the keyboard for " +
                     "a mutiline text box.")
+  @JsProperty(name = "MultiLine")
   public boolean MultiLine() {
     return multiLine;
   }
@@ -212,6 +219,7 @@ public final class TextBox extends TextBoxBase {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty()
+  @JsProperty(name = "MultiLine")
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;
     view.setSingleLine(!multiLine);
@@ -221,6 +229,7 @@ public final class TextBox extends TextBoxBase {
     category = PropertyCategory.BEHAVIOR,
     description = "Whether the %type% is read-only. By default, this is false."
   )
+  @JsProperty(name = "ReadOnly")
   public boolean ReadOnly() {
     return readOnly;
   }
@@ -234,6 +243,7 @@ public final class TextBox extends TextBoxBase {
     defaultValue = "False"
   )
   @SimpleProperty
+  @JsProperty(name = "ReadOnly")
   public void ReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
     view.setEnabled(!readOnly);
