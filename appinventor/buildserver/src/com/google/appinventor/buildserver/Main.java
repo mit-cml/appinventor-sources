@@ -6,6 +6,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.stats.NullStatReporter;
 import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
-import com.google.appinventor.buildserver.util.Execution;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
