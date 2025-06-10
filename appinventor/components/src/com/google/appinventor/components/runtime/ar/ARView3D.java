@@ -744,8 +744,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
-        float[] position = {0f, 0f, 1};
-        float[] rotation = {0, 2, 1.5f, 1};
+        float[] position = {0f, 0f, -2};
+        float[] rotation = {0, 2, 1, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 

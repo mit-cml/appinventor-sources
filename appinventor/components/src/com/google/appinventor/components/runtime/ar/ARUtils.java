@@ -68,6 +68,7 @@ public final class ARUtils {
       float qw= parseFloat((String)rotation.get("w"));
 
       pose = new Pose(new float[]{x, y, z}, new float[]{qx, qy, qz, qw});
+      Log.i("creating Pose error", "but corrected with string");
     }
     return pose;
   }

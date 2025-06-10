@@ -267,6 +267,7 @@ public class MediaUtil {
       return form.getAssets().open(mediaPath);
 
     } catch (IOException e) {
+      Log.d(LOG_TAG, "error in getAssetsIgnoreCaseInputStream " + mediaPath);
       String path = findCaseinsensitivePath(form, mediaPath);
       if (path == null) {
           throw e;

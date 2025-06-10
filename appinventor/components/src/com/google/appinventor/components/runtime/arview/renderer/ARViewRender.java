@@ -157,7 +157,7 @@ public class ARViewRender {
 
 
         EGLContext currentGLContext = EGL14.eglGetCurrentContext();
-        Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
+        Log.d(LOG_TAG, "GL Thread Context for drawing: " + currentGLContext);
         useFramebuffer(arframebuffer);
         shader.lowLevelUse();
         mesh.lowLevelDraw();

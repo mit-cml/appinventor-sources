@@ -142,17 +142,32 @@ Component for ARView3D
 {:id="ARView3D.CreateBoxNode" class="method returns component"} <i/> CreateBoxNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new BoxNode with default properties at the specified (x,y,z) position.
 
+{:id="ARView3D.CreateBoxNodeAtPlane" class="method returns component"} <i/> CreateBoxNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new BoxNode with default properties at the plane position.
+
+{:id="ARView3D.CreateBoxNodeFromYail" class="method returns component"} <i/> CreateBoxNodeFromYail(*yailNodeObj*{:.dictionary})
+: Create a new boxNode with default properties with a pose.
+
 {:id="ARView3D.CreateCapsuleNode" class="method returns component"} <i/> CreateCapsuleNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new CapsuleNode with default properties at the specified (x,y,z) position.
 
 {:id="ARView3D.CreateCapsuleNodeAtPlane" class="method returns component"} <i/> CreateCapsuleNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
 : Create a new CapsuleNode with default properties at the plane position.
 
+{:id="ARView3D.CreateCapsuleNodeFromYail" class="method returns component"} <i/> CreateCapsuleNodeFromYail(*yailNodeObj*{:.dictionary})
+: Create a new CapsuleNode with default properties with a pose.
+
+{:id="ARView3D.CreateCapsuleNodeWithPose" class="method returns component"} <i/> CreateCapsuleNodeWithPose(*p*{:.text})
+: Create a new CapsuleNode with default properties with a pose.
+
 {:id="ARView3D.CreateConeNode" class="method returns component"} <i/> CreateConeNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new ConeNode with default properties at the specified (x,y,z) position.
 
 {:id="ARView3D.CreateCylinderNode" class="method returns component"} <i/> CreateCylinderNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new CylinderNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreatePlaneAtPlane" class="method returns component"} <i/> CreatePlaneAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new PlaneNode with default properties at the detected plane position.
 
 {:id="ARView3D.CreatePlaneNode" class="method returns component"} <i/> CreatePlaneNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new PlaneNode with default properties at the specified (x,y,z) position.
@@ -164,7 +179,10 @@ Component for ARView3D
 : Create a new SphereNode with default properties at the specified (x,y,z) position.
 
 {:id="ARView3D.CreateSphereNodeAtPlane" class="method returns component"} <i/> CreateSphereNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
-: Create a new CapsuleNode with default properties at the plane position.
+: Create a new SphereNode with default properties at the detected plane position.
+
+{:id="ARView3D.CreateSphereNodeFromYail" class="method returns component"} <i/> CreateSphereNodeFromYail(*yailNodeObj*{:.dictionary})
+: Create a new boxNode with default properties with a pose.
 
 {:id="ARView3D.CreateTextNode" class="method returns component"} <i/> CreateTextNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new TextNode with default properties at the specified (x,y,z) position.
@@ -178,14 +196,29 @@ Component for ARView3D
 {:id="ARView3D.CreateVideoNode" class="method returns component"} <i/> CreateVideoNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new VideoNode with default properties at the specified (x,y,z) position.
 
+{:id="ARView3D.CreateVideoNodeAtPlane" class="method returns component"} <i/> CreateVideoNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new VideoNode with default properties at the detected plane position.
+
+{:id="ARView3D.CreateVideoNodeFromYail" class="method returns component"} <i/> CreateVideoNodeFromYail(*yailNodeObj*{:.dictionary})
+: Create a new boxNode with default properties with a pose.
+
 {:id="ARView3D.CreateWebViewNode" class="method returns component"} <i/> CreateWebViewNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new WebViewNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateWebViewNodeAtPlane" class="method returns component"} <i/> CreateWebViewNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
+: Create a new WebViewNode with default properties at the detected plane position.
+
+{:id="ARView3D.CreateWebViewNodeFromYail" class="method returns component"} <i/> CreateWebViewNodeFromYail(*yailNodeObj*{:.dictionary})
+: Create a new webviewer with default properties with a pose.
 
 {:id="ARView3D.HideAllLights" class="method"} <i/> HideAllLights()
 : Sets Visible to false for all Lights.
 
 {:id="ARView3D.HideAllNodes" class="method"} <i/> HideAllNodes()
 : Sets Visible to false for all Nodes.
+
+{:id="ARView3D.LoadScene" class="method returns list"} <i/> LoadScene(*dictionaries*{:.list})
+: Load scene from storage
 
 {:id="ARView3D.PauseTracking" class="method"} <i/> PauseTracking()
 : Pauses the live camera feed and pauses tracking.
@@ -195,6 +228,9 @@ Component for ARView3D
 
 {:id="ARView3D.ResetTracking" class="method"} <i/> ResetTracking()
 : Resets the tracking, resetting all items including DetectedPlanes and ImageMarkers. If this is called while tracking is not paused, then this resets and restarts tracking.  If tracking is paused and this is called, this will reset the ARView3D once StartTracking is called again.
+
+{:id="ARView3D.SaveScene" class="method returns list"} <i/> SaveScene(*newNodes*{:.list})
+: Get scene from storage
 
 {:id="ARView3D.StartTracking" class="method"} <i/> StartTracking()
 : Starts the live camera feed and begins tracking.
@@ -246,6 +282,9 @@ Component for BoxNode
 
 {:.properties}
 
+{:id="BoxNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="BoxNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the length, height, or width of the BoxNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be set to zero.
 
@@ -264,6 +303,9 @@ Component for BoxNode
 {:id="BoxNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the BoxNode extends along the z-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode will not appear.
 
+{:id="BoxNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="BoxNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -273,17 +315,17 @@ Component for BoxNode
 {:id="BoxNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="BoxNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
+
 {:id="BoxNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
-
-{:id="BoxNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
 {:id="BoxNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="BoxNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texturebe loaded.
 
 {:id="BoxNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -369,10 +411,10 @@ Component for BoxNode
 : Changes the node's position by (x,y,z).
 
 {:id="BoxNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="BoxNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties to detectedplane.
 
 {:id="BoxNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
@@ -398,6 +440,9 @@ Component for CapsuleNode
 ### Properties  {#CapsuleNode-Properties}
 
 {:.properties}
+
+{:id="CapsuleNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
 
 {:id="CapsuleNode.CapRadiusInCentimeters" .number} *CapRadiusInCentimeters*
 : The radius, in centimeters, of two hemispheres or caps at the ends of a CapsuleNode.  Values less than zero will be treated as their absolute values.  When set to zero or when set to greater than half of the Height, the CapsuleNode will not appear.
@@ -426,6 +471,15 @@ Component for CapsuleNode
 {:id="CapsuleNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="CapsuleNode.Pose" .any .bo} *Pose*
+: Set the current pose of the object
+
+{:id="CapsuleNode.PoseToJson" .any .ro .bo} *PoseToJson*
+: Get the current pose of the object
+
+{:id="CapsuleNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
+
 {:id="CapsuleNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -434,6 +488,9 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="CapsuleNode.Texture" .text} *Texture*
+: The 3D texturebe loaded.
 
 {:id="CapsuleNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -521,6 +578,9 @@ Component for CapsuleNode
 {:id="CapsuleNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties to detectedplane.
 
+{:id="CapsuleNode.MoveToPose" class="method"} <i/> MoveToPose(*p*{:.text})
+: move a capsule node properties to detectedplane.
+
 {:id="CapsuleNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -546,6 +606,9 @@ Component for ConeNode
 
 {:.properties}
 
+{:id="ConeNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="ConeNode.BottomRadiusInCentimeters" .number} *BottomRadiusInCentimeters*
 : This defines the radius of the bottom of the ConeNode.  A value of zero causes the cone to meet at a point at the bottom.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.
 
@@ -569,6 +632,9 @@ Component for ConeNode
 
 {:id="ConeNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="ConeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="ConeNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -696,6 +762,9 @@ Component for CylinderNode
 
 {:.properties}
 
+{:id="CylinderNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="CylinderNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -716,6 +785,9 @@ Component for CylinderNode
 
 {:id="CylinderNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="CylinderNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="CylinderNode.RadiusInCentimeters" .number} *RadiusInCentimeters*
 : The radius of the CylinderNode determines the size of the cicular base and top.  Values less than zero will be treated as their absolute value.  When set to zero, the CylinderNode will not be shown.
@@ -970,6 +1042,9 @@ Component for ModelNode
 
 {:.properties}
 
+{:id="ModelNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="ModelNode.BoundingBox" .list .ro .bo} *BoundingBox*
 : The minimum and maximum coordinates of the ModelNode.  The minimum and maximum are lists of the x-, y-, z-coordinates, and this returns a list of <code>[min, max]</code> where mine and max are <code>[x, y, z]</code>.
 
@@ -996,6 +1071,9 @@ Component for ModelNode
 
 {:id="ModelNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="ModelNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="ModelNode.RootNodeName" .text .ro} *RootNodeName*
 : The name of the root node to add to the scene.  If this is "" or a node with the given name does not exist, then the model's default root node will be added.
@@ -1159,6 +1237,9 @@ Component for PlaneNode
 
 {:.properties}
 
+{:id="PlaneNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="PlaneNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the height or width of the PlaneNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be treated as zero.
 
@@ -1174,6 +1255,9 @@ Component for PlaneNode
 {:id="PlaneNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="PlaneNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="PlaneNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -1183,11 +1267,11 @@ Component for PlaneNode
 {:id="PlaneNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="PlaneNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
+
 {:id="PlaneNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
-
-{:id="PlaneNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
 {:id="PlaneNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
@@ -1279,10 +1363,10 @@ Component for PlaneNode
 : Changes the node's position by (x,y,z).
 
 {:id="PlaneNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="PlaneNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: Changes the node's position to (x,y,z).
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="PlaneNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
@@ -1383,6 +1467,9 @@ Component for PyramidNode
 
 {:.properties}
 
+{:id="PyramidNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="PyramidNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1398,6 +1485,9 @@ Component for PyramidNode
 {:id="PyramidNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the PyramidNode extends along the z-axis.  Values less than zero will be treated as their absolute values.  When set to zero, the PyramidNode will not be shown.
 
+{:id="PyramidNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="PyramidNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -1406,6 +1496,9 @@ Component for PyramidNode
 
 {:id="PyramidNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="PyramidNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="PyramidNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -1503,10 +1596,10 @@ Component for PyramidNode
 : Changes the node's position by (x,y,z).
 
 {:id="PyramidNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="PyramidNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: Changes the node's position to (x,y,z).
+: move a capsule node properties to detectedplane.
 
 {:id="PyramidNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
@@ -1533,6 +1626,9 @@ Component for SphereNode
 
 {:.properties}
 
+{:id="SphereNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="SphereNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1554,14 +1650,14 @@ Component for SphereNode
 {:id="SphereNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="SphereNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
+
 {:id="SphereNode.RadiusInCentimeters" .number} *RadiusInCentimeters*
 : The radius of the sphere in centimeters.
 
 {:id="SphereNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
-
-{:id="SphereNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
 {:id="SphereNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
@@ -1653,10 +1749,10 @@ Component for SphereNode
 : Changes the node's position by (x,y,z).
 
 {:id="SphereNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a capsule node properties at the specified (x,y,z) position.
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="SphereNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: move a capsule node properties at the specified (x,y,z) position.
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="SphereNode.PlayAnimationsForAllNodes" class="method"} <i/> PlayAnimationsForAllNodes()
 : Plays all animations in the model, if it has animations.
@@ -1844,6 +1940,9 @@ Component for TextNode
 
 {:.properties}
 
+{:id="TextNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="TextNode.DepthInCentimeters" .number} *DepthInCentimeters*
 : How far, in centimeters, the TextNode extends along the z-axis.  Values less than zero will be treated as zero.
 
@@ -1867,6 +1966,9 @@ Component for TextNode
 
 {:id="TextNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="TextNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="TextNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -1994,6 +2096,9 @@ Component for TorusNode
 
 {:.properties}
 
+{:id="TorusNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="TorusNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2017,6 +2122,9 @@ Component for TorusNode
 
 {:id="TorusNode.PipeRadiusInCentimeters" .number} *PipeRadiusInCentimeters*
 : The pipe radius defines the size of the surface that encircles the ring, or the pipe radius.  This can be thought of as the band of the ring.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.
+
+{:id="TorusNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="TorusNode.RingRadiusInCentimeters" .number} *RingRadiusInCentimeters*
 : The ring radius defines the size of the overall torus (or major radius) in centimeters.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.
@@ -2141,6 +2249,9 @@ Component for TubeNode
 
 {:.properties}
 
+{:id="TubeNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="TubeNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2167,6 +2278,9 @@ Component for TubeNode
 
 {:id="TubeNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="TubeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="TubeNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -2291,6 +2405,9 @@ Component for VideoNode
 
 {:.properties}
 
+{:id="VideoNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="VideoNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2306,6 +2423,9 @@ Component for VideoNode
 {:id="VideoNode.IsPlaying" .boolean .ro .bo} *IsPlaying*
 : Returns true if the video is currently playing false otherwise.
 
+{:id="VideoNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="VideoNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -2315,11 +2435,11 @@ Component for VideoNode
 {:id="VideoNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="VideoNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
+
 {:id="VideoNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
-
-{:id="VideoNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
 {:id="VideoNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
@@ -2423,10 +2543,10 @@ Component for VideoNode
 : Changes the node's position by (x,y,z).
 
 {:id="VideoNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="VideoNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: Changes the node's position to (x,y,z).
+: move a sphere node properties at the specified (x,y,z) position.
 
 {:id="VideoNode.Pause" class="method"} <i/> Pause()
 : Pauses playback of the video.
@@ -2462,6 +2582,9 @@ Component for WebViewNode
 
 {:.properties}
 
+{:id="WebViewNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
+: Serialize the arnode to yail
+
 {:id="WebViewNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2477,6 +2600,9 @@ Component for WebViewNode
 {:id="WebViewNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="WebViewNode.Model" .text .ro} *Model*
+: The 3D model file to be loaded.
+
 {:id="WebViewNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -2485,6 +2611,9 @@ Component for WebViewNode
 
 {:id="WebViewNode.PinchToScale" .boolean .do} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="WebViewNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
+: Convert current pose to yail
 
 {:id="WebViewNode.RotateWithGesture" .boolean .do} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -2597,7 +2726,7 @@ Component for WebViewNode
 : Changes the node's position to (x,y,z).
 
 {:id="WebViewNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
-: Changes the node's position to (x,y,z).
+: move a webview node properties at the specified (x,y,z) position.
 
 {:id="WebViewNode.Reload" class="method"} <i/> Reload()
 : Reloads the current webpage.

@@ -104,7 +104,7 @@ public class Texture implements Closeable {
             GLES30.glGenTextures(1, textureId, 0);
         }
 
-        GLError.maybeThrowGLException("Texture creation failed", "glGenTextures");
+        GLError.maybeThrowGLException("Texture creation failed", "either using pre-existing textureid or glGenTextures");
 
         int minFilter = useMipmaps ? GLES30.GL_LINEAR_MIPMAP_LINEAR : GLES30.GL_LINEAR;
 
@@ -199,7 +199,7 @@ public class Texture implements Closeable {
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
 
-        Log.d("Texture", "Created wrapper for existing texture with ID " + textureId + " but new texture id is " + texture.getTextureId());
+        Log.d("Texture", "Created wrapper for existing texture with ID " + textureId + " and new texture id is " + texture.getTextureId());
         return texture;
     }
 
